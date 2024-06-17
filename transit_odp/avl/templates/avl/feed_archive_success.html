@@ -1,17 +1,14 @@
 {% extends "publish/base.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-  {% if form.errors %}{% trans 'Error: ' %}{% endif %}
+  {% if form.errors %}
+    {% trans 'Error: ' %}
+  {% endif %}
   {% trans 'Data feed deactivated' %}
 {% endblock %}
-
-{% block breadcrumb %}
-{% endblock %}
-
+{% block breadcrumb %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row govuk-!-margin-top-6 govuk-!-margin-bottom-9">
     <div class="govuk-grid-column-full">
@@ -20,12 +17,9 @@
         {% trans 'Data feed' %} {{ object.name }}
         {% trans 'has been deactivated.' %}
       </p>
-
-      <hr class="govuk-section-break govuk-section-break--l govuk-section-break">
-      <a role="button" class="govuk-button" href="{{ back_to_data_sets }}">
-        {{ _('Go back to your data feeds') }}
-      </a>
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
+      <a role="button" class="govuk-button" href="{{ back_to_data_sets }}">{{ _("Go back to your data feeds") }}</a>
     </div>
   </div>
-  <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
+  <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
 {% endblock %}

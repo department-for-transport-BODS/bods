@@ -1,21 +1,19 @@
 {% load i18n %}
-
 <div class="govuk-phase-banner">
-    <p class="govuk-phase-banner__content"><strong class="govuk-tag govuk-phase-banner__content__tag ">
-        {% trans "beta" %}
-        {#        {% version %}#}
+  <p class="govuk-phase-banner__content">
+    <strong class="govuk-tag govuk-phase-banner__content__tag ">
+      {% trans "beta" %}
+      {#        {% version %}#}
     </strong>
-        <span class="govuk-phase-banner__text">
-            {% url 'global-feedback' host hosts.root as support %}
-            {% trans 'This is a new service – your' %}
-            {% if not hide_global_feedback %}
-                <a class="govuk-link" href="{{ support }}?url={{ current_host }}{{ current_path }}">
-                    {% trans 'feedback' %}
-                </a>
-            {% else %}
-                {% trans 'feedback' %}
-            {% endif %}
-            {% trans 'will help us to improve it.' %}
-        </span>
-    </p>
+    <span class="govuk-phase-banner__text">
+      {% url 'global-feedback' host hosts.root as support %}
+      {% trans 'This is a new service – your' %}
+      {% if not hide_global_feedback %}
+        <a class="govuk-link" href="{{ support }}?url={{ current_host }}{{ current_path }}">{% trans 'feedback' %}</a>
+      {% else %}
+        {% trans 'feedback' %}
+      {% endif %}
+      {% trans 'will help us to improve it.' %}
+    </span>
+  </p>
 </div>

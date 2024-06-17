@@ -1,37 +1,31 @@
 {% extends "site_admin/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
-
 {% block title_tag %}
-    {% trans 'Revoke data consumer' %}
+  {% trans 'Revoke data consumer' %}
 {% endblock %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% url 'users:consumer-detail' pk=user.id host host.name as backlink %}
   {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}
-
 {% block content %}
-<h1 class="govuk-heading-xl">
-  {% trans 'Are you sure you would like to revoke API access for ' %}
-  {{user.email}}?
-</h1>
-<div class="govuk-width-container">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-three-quarters">
-      <p class="govuk-body-m govuk-!-margin-bottom-6">
-        {% trans 'This will stop' %}
-        {{user.email}}
-        {% trans 'from using the API key to consume data.' %}
-      </p>
-      {% crispy form %}
+  <h1 class="govuk-heading-xl">
+    {% trans 'Are you sure you would like to revoke API access for ' %}
+    {{ user.email }}?
+  </h1>
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-three-quarters">
+        <p class="govuk-body-m govuk-!-margin-bottom-6">
+          {% trans 'This will stop' %}
+          {{ user.email }}
+          {% trans 'from using the API key to consume data.' %}
+        </p>
+        {% crispy form %}
+      </div>
     </div>
   </div>
-</div>
 {% endblock %}

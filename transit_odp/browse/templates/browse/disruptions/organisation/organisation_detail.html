@@ -1,39 +1,30 @@
 {% extends 'browse/base.html' %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'Organisation Detail' %}
+  {% trans 'Organisation Detail' %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
-    {% breadcrumb_url 'Disruption data' 'disruptions-data' host hosts.data %}
-    {% with name=object.name|truncatechars:19 %}
-        {% breadcrumb_url name 'org-detail' orgId=org_id host hosts.data %}
-    {% endwith %}
+  {{ block.super }}
+  {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
+  {% breadcrumb_url 'Disruption data' 'disruptions-data' host hosts.data %}
+  {% with name=object.name|truncatechars:19 %}
+    {% breadcrumb_url name 'org-detail' orgId=org_id host hosts.data %}
+  {% endwith %}
 {% endblock %}
-
 {% block content %}
-    {# Page Heading Section #}
-    {% include 'browse/disruptions/page_heading.html' %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column">
-            {% if not error %}
-                {% include "browse/disruptions/organisation/success_content.html" %}
-            {% endif %}
-        </div>
+  {# Page Heading Section #}
+  {% include 'browse/disruptions/page_heading.html' %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column">
+      {% if not error %}
+        {% include "browse/disruptions/organisation/success_content.html" %}
+      {% endif %}
     </div>
+  </div>
 {% endblock %}
-
 {% block scripts %}
-    {{ block.super }}
-    {% if not error %}
-        <script>
-            BODSFrontend.initOrgMap("{{ api_root }}", "{{ org_id }}");
-        </script>
-    {% endif %}
+  {{ block.super }}
+  {% if not error %}<script>BODSFrontend.initOrgMap("{{ api_root }}", "{{ org_id }}");</script>{% endif %}
 {% endblock %}

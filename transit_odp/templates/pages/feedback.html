@@ -2,33 +2,27 @@
 {% load i18n %}
 {% load static %}
 {% load crispy_forms_tags %}
-
 {% block title_tag %}
-    {% trans 'Feedback' %}
+  {% trans 'Feedback' %}
 {% endblock %}
-
 {% block breadcrumb.content %}{% endblock %}
-
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-            <div class="component-wrapper">
-                <form method="post" enctype="multipart/form-data" novalidate>
-                    {% crispy form %}
-                </form>
-            </div>
-        </div>
-        <div class="govuk-grid-column-one-third">
-            {% block inner_secondary %}
-                {% include 'pages/snippets/inner_secondary.html' %}
-            {% endblock %}
-        </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
+      <div class="component-wrapper">
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% crispy form %}
+        </form>
+      </div>
     </div>
+    <div class="govuk-grid-column-one-third">
+      {% block inner_secondary %}
+        {% include 'pages/snippets/inner_secondary.html' %}
+      {% endblock %}
+    </div>
+  </div>
 {% endblock %}
-
 {% block scripts %}
-    {{ block.super }}
-    <script>
-        new BODSFrontend.CounterCharactersInTextBox("id_comment", "comment_char_count");
-    </script>
+  {{ block.super }}
+  <script>new BODSFrontend.CounterCharactersInTextBox("id_comment", "comment_char_count");</script>
 {% endblock %}

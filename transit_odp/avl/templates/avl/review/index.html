@@ -1,35 +1,29 @@
 {% extends "page.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load publish_stepper %}
 {% load crispy_forms_tags %}
-
 {% block title_tag %}
   {% if loading %}
-  {% trans "Your data is being processed"%}
+    {% trans "Your data is being processed" %}
   {% else %}
-  {% if error %}{% trans 'Error: ' %}{% endif %}
-  {% trans 'Review and publish' %}
+    {% if error %}
+      {% trans 'Error: ' %}
+    {% endif %}
+    {% trans 'Review and publish' %}
   {% endif %}
 {% endblock %}
-
 {# Breadcrumb #}
 {% block breadcrumb %}
-  <div class="govuk-breadcrumbs">
-  {% stepper %}
-  </div>
+  <div class="govuk-breadcrumbs">{% stepper %}</div>
 {% endblock %}
-
 {% block content %}
-
-   {% if not loading %}
+  {% if not loading %}
     {# Page Heading Section #}
     {% include 'avl/review/page_heading.html' %}
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
   {% endif %}
-
   <div class="govuk-grid-row">
     {# Main Section #}
     <div class="govuk-grid-column-two-thirds">
@@ -43,17 +37,10 @@
       {% endif %}
     </div>
     {# Related Links #}
-    <div class="govuk-grid-column-one-third">
-      {% include 'avl/review/related_links.html' %}
-    </div>
+    <div class="govuk-grid-column-one-third">{% include 'avl/review/related_links.html' %}</div>
   </div>
 {% endblock %}
-
 {% block scripts %}
   {{ block.super }}
-  {% if loading %}
-        <script>
-          new BODSFrontend.ProgressIndicator({{ object.dataset_id }});
-        </script>
-  {% endif %}
+  {% if loading %}<script>new BODSFrontend.ProgressIndicator({{ object.dataset_id }});</script>{% endif %}
 {% endblock %}

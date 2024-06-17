@@ -1,33 +1,26 @@
 {% extends 'page.html' %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
-
 {% block title_tag %}
   {% trans 'Resend invitations' %}
 {% endblock %}
-
 {# Breadcrumb #}
-{% block breadcrumb %}
-    {# No breadcrumb #}
-{% endblock %}
-
+{% block breadcrumb %}{# No breadcrumb #}{% endblock %}
 {# Backlink #}
 {% block backlink %}
-    {% include 'snippets/backlink.html' with url=back_url  %}
+  {% include 'snippets/backlink.html' with url=back_url %}
 {% endblock %}
-
 {% block content %}
   <div class="govuk-grid-row">
-      <h1 class="govuk-heading-xl">
-        {% if resend_ids|length > 1%}
-          {% trans "Are you sure you want to re-send these invitations?" %}
-        {% else %}
-          {% trans "Are you sure you want to re-send this invitation?" %}
-        {% endif %}
-      </h1>
-      {% crispy form form.helper %}
+    <h1 class="govuk-heading-xl">
+      {% if resend_ids|length > 1 %}
+        {% trans "Are you sure you want to re-send these invitations?" %}
+      {% else %}
+        {% trans "Are you sure you want to re-send this invitation?" %}
+      {% endif %}
+    </h1>
+    {% crispy form form.helper %}
   </div>
 {% endblock %}

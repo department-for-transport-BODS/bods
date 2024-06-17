@@ -1,88 +1,60 @@
 {% extends "data_quality/base.html" %}
-
 {% load i18n %}
 {% load filters %}
-
 {% block title_tag %}
-    {% trans 'Data quality report' %}
+  {% trans 'Data quality report' %}
 {% endblock %}
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <span class="govuk-caption-xl">Data quality report</span>
-      <h1 class="govuk-heading-xl">
-        {{ title }}
-      </h1>
-
+      <h1 class="govuk-heading-xl">{{ title }}</h1>
       <ul class="govuk-list">
+        <li>{% trans 'Please find your data quality observations below.' %}</li>
         <li>
-          {% trans 'Please find your data quality observations below.' %}
-        </li>
-        <li>
-        <a class="govuk-link" href="{% url 'guidance:dq-definitions' %}" target="_blank">
+          <a class="govuk-link" href="{% url 'guidance:dq-definitions' %}" target="_blank">
           {% trans 'What are the different type of observations?' %}</a>
         </li>
         <li>
-        <a class="govuk-link" target="_blank"
-          href="{% url 'dq:report-csv' pk1=view.kwargs.pk1 pk=view.kwargs.pk report_id=view.kwargs.report_id %}">
+          <a class="govuk-link"
+             target="_blank"
+             href="{% url 'dq:report-csv' pk1=view.kwargs.pk1 pk=view.kwargs.pk report_id=view.kwargs.report_id %}">
           {% trans 'Download data quality report.csv' %}</a>
         </li>
       </ul>
-
       <div class="govuk-grid-row govuk-!-margin-bottom-4">
         <div class="govuk-grid-column-full govuk-grid-column-three-quarters-from-desktop">
           <div class="govuk-grid-row">
-
             <div class="govuk-grid-column-one-quarter-from-desktop">
-              <p class="govuk-heading-xl govuk-!-margin-bottom-0">
-                {{ object.no_of_lines }}
-              </p>
-              <p class="govuk-body-s govuk-!-font-weight-bold">
-                Bus line{{ object.no_of_lines|pluralize:"s" }}
-              </p>
+              <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ object.no_of_lines }}</p>
+              <p class="govuk-body-s govuk-!-font-weight-bold">Bus line{{ object.no_of_lines|pluralize:"s" }}</p>
             </div>
-
             {% if dq_score %}
-            <div class="govuk-grid-column-one-quarter-from-desktop">
-              <p class="govuk-heading-xl govuk-!-margin-bottom-0">
-                {{ dq_score.score | percentage:"0" }}
-              </p>
-              <p class="govuk-body-s govuk-!-font-weight-bold">
-                <span class="status-indicator status-indicator--{{dq_score.css_indicator}}">
-                  {{dq_score.rag_level | upper}}
-                </span>
-                </br>
-                <a class="govuk-link" href="{% url 'guidance:dq-score-description' %}">
-                  Data quality
-                </a>
+              <div class="govuk-grid-column-one-quarter-from-desktop">
+                <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ dq_score.score | percentage:"0" }}</p>
+                <p class="govuk-body-s govuk-!-font-weight-bold">
+                  <span class="status-indicator status-indicator--{{ dq_score.css_indicator }}">{{ dq_score.rag_level | upper }}</span>
+                </br />
+                <a class="govuk-link" href="{% url 'guidance:dq-score-description' %}">Data quality</a>
               </p>
             </div>
-            {% endif %}
-
-            <div class="govuk-grid-column-one-quarter-from-desktop">
-              <p class="govuk-heading-xl govuk-!-margin-bottom-0">
-                {{ warning_data.Critical.count }}
-              </p>
-              <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
-                Critical observation{{ warning_data.Critical.count |pluralize:"s" }}
-              </p>
-            </div>
-
-            <div class="govuk-grid-column-one-quarter-from-desktop">
-              <p class="govuk-heading-xl govuk-!-margin-bottom-0">
-                {{ warning_data.Advisory.count }}
-              </p>
-              <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
-                Advisory observation{{ warning_data.Advisory.count|pluralize:"s" }}
-              </p>
-            </div>
-
+          {% endif %}
+          <div class="govuk-grid-column-one-quarter-from-desktop">
+            <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Critical.count }}</p>
+            <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
+              Critical observation{{ warning_data.Critical.count |pluralize:"s" }}
+            </p>
+          </div>
+          <div class="govuk-grid-column-one-quarter-from-desktop">
+            <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Advisory.count }}</p>
+            <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
+              Advisory observation{{ warning_data.Advisory.count|pluralize:"s" }}
+            </p>
           </div>
         </div>
       </div>
-
-      {% include 'data_quality/snippets/report_overview_table.html' %}
     </div>
+    {% include 'data_quality/snippets/report_overview_table.html' %}
   </div>
+</div>
 {% endblock %}

@@ -1,43 +1,35 @@
 {% extends "guidance/local_authorities/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-    <h1 data-qa="overview-header" class="govuk-heading-l">{% trans 'Overview' %}</h1>
-    <p class="govuk-body">
-        {% blocktrans %}
+  <h1 data-qa="overview-header" class="govuk-heading-l">{% trans 'Overview' %}</h1>
+  <p class="govuk-body">
+    {% blocktrans %}
             The Bus Open Data Service (BODS) is the central service for publishing high quality information for all local bus
             services in England. The Bus Services Act 2017 requires operators of local bus services in England to publish data to
             the Bus Open Data Service. There are three types of data that operators must published in certain data formats:
             timetables, bus location and fares.
         {% endblocktrans %}
-    </p>
-
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             Local transport authorities are required to maintain NaPTAN stop data and should
             enable operators to publish data to this service to fulfil the
         {% endblocktrans %}
-        <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
-            operator requirements.
-        </a>
-        {% blocktrans %}
+    <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">operator requirements.</a>
+    {% blocktrans %}
             Local transport authorities should be
         {% endblocktrans %}
-        <a class="govuk-link" href="?section=support">supporting operators</a>
-        {% blocktrans %}
+    <a class="govuk-link" href="?section=support">supporting operators</a>
+    {% blocktrans %}
             and may also act as an operator’s
         {% endblocktrans %}
-        <a class="govuk-link" href="?section=agent">agent</a>.
-    </p>
-
-    {% include "../snippets/requirements_table.html" %}
-
-    <p class="govuk-body">
-        {% blocktrans %}
+    <a class="govuk-link" href="?section=agent">agent</a>.
+  </p>
+  {% include "../snippets/requirements_table.html" %}
+  <p class="govuk-body">
+    {% blocktrans %}
             Community bus operators are currently outside the scope of the requirement
             if they have exemptions under Section 19 or Section 22 of the Local Government Act 1985.
         {% endblocktrans %}
-    </p>
-
+  </p>
 {% endblock %}

@@ -1,74 +1,69 @@
 {% extends "site_admin/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
-
 {% block title_tag %}
-    {% trans 'Overview' %}
+  {% trans 'Overview' %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Data monitoring' 'bods-metrics' host hosts.admin %}
-    {% breadcrumb_url 'Download all monitoring metrics' 'download-metrics' host host.name %}
+  {{ block.super }}
+  {% breadcrumb_url 'Data monitoring' 'bods-metrics' host hosts.admin %}
+  {% breadcrumb_url 'Download all monitoring metrics' 'download-metrics' host host.name %}
 {% endblock %}
-
 {% block content %}
-    <div class="govuk-width-container">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-xl">
-                    {% blocktrans %}
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
+          {% blocktrans %}
                         Download all monitoring metrics
                     {% endblocktrans %}
-                </h1>
-                <h2 class="govuk-heading-m">
-                    {% blocktrans %}
+        </h1>
+        <h2 class="govuk-heading-m">
+          {% blocktrans %}
                         Publisher metrics
                     {% endblocktrans %}
-                </h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </h2>
+        <p class="govuk-body">
+          {% blocktrans %}
                         The monitoring data is cached on the service and will be provided in CSV
                         format within a compressed ZIP file.
                     {% endblocktrans %}
-                </p>
-                <p class="govuk-body">
-                    <a class="govuk-link" href="{% url 'operational-metrics' host host.name %}">
-                        {% blocktrans %}
+        </p>
+        <p class="govuk-body">
+          <a class="govuk-link" href="{% url 'operational-metrics' host host.name %}">
+            {% blocktrans %}
                             Download all publisher monitoring metrics
                         {% endblocktrans %}
-                    </a>
-                </p>
-
-                <h2 class="govuk-heading-m">
-                    {% blocktrans %}
+          </a>
+        </p>
+        <h2 class="govuk-heading-m">
+          {% blocktrans %}
                         API consumer metrics
                     {% endblocktrans %}
-                </h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </h2>
+        <p class="govuk-body">
+          {% blocktrans %}
                         The monitoring data is cached on the service and will be provided in CSV
                         format within a compressed ZIP file.
                     {% endblocktrans %}
-                </p>
-                <div class="govuk-body">
-                    <ul class="govuk-list">
-                        {% for metrics_archive in object_list %}
-                            <li>
-                                <a class="govuk-link" href="{% url 'download-metrics-detail' pk=metrics_archive.id %}">
-                                    {% blocktrans %}
+        </p>
+        <div class="govuk-body">
+          <ul class="govuk-list">
+            {% for metrics_archive in object_list %}
+              <li>
+                <a class="govuk-link" href="{% url 'download-metrics-detail' pk=metrics_archive.id %}">
+                  {% blocktrans %}
                                         Download API consumer metrics for
                                     {% endblocktrans %}
-                                    {{ metrics_archive.end|date:"F Y" }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
+                  {{ metrics_archive.end|date:"F Y" }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
         </div>
+      </div>
     </div>
+  </div>
 {% endblock %}

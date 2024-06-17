@@ -1,46 +1,36 @@
 {% extends "page.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'Data set detail' %}
+  {% trans 'Data set detail' %}
 {% endblock %}
-
 {# Breadcrumb #}
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% include 'fares/feed_detail/breadcrumb.html' %}
+  {{ block.super }}
+  {% include 'fares/feed_detail/breadcrumb.html' %}
 {% endblock %}
-
 {% block content %}
-    {# Page Heading Section #}
-    {% include 'fares/feed_detail/page_heading.html' %}
-
-    <hr class="govuk-section-break govuk-section-break--xs govuk-section-break--visible">
-
-    {# Main Section #}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            {% if properties.status == 'error' %}
-                {% include 'fares/feed_detail/error_panel.html' %}
-            {% else %}
-                {% include 'fares/feed_detail/success_content.html' %}
-            {% endif %}
-        </div>
-        <div class="govuk-grid-column-one-third govuk-!-padding-top-5">
-            {% include 'fares/feed_detail/related_links.html' %}
-        </div>
+  {# Page Heading Section #}
+  {% include 'fares/feed_detail/page_heading.html' %}
+  <hr class="govuk-section-break govuk-section-break--xs govuk-section-break--visible" />
+  {# Main Section #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if properties.status == 'error' %}
+        {% include 'fares/feed_detail/error_panel.html' %}
+      {% else %}
+        {% include 'fares/feed_detail/success_content.html' %}
+      {% endif %}
     </div>
+    <div class="govuk-grid-column-one-third govuk-!-padding-top-5">
+      {% include 'fares/feed_detail/related_links.html' %}
+    </div>
+  </div>
 {% endblock %}
-
-
 {% block scripts %}
-    {{ block.super }}
-    {% if properties.show_map %}
-        <script>
-            BODSFrontend.initFaresDetailMap("{{ properties.api_root }}", {{ object.live_revision.id }});
-        </script>
-    {% endif %}
+  {{ block.super }}
+  {% if properties.show_map %}
+    <script>BODSFrontend.initFaresDetailMap("{{ properties.api_root }}", {{ object.live_revision.id }});</script>
+  {% endif %}
 {% endblock %}

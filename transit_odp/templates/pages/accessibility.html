@@ -1,111 +1,108 @@
 {% extends "page.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'Accessibility statement' %}
+  {% trans 'Accessibility statement' %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {% breadcrumb_url root_site.name 'home' host hosts.root %}
-    {% breadcrumb_url 'Accessibility' 'accessibility' host hosts.root %}
+  {% breadcrumb_url root_site.name 'home' host hosts.root %}
+  {% breadcrumb_url 'Accessibility' 'accessibility' host hosts.root %}
 {% endblock %}
-
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-xl">{% trans 'Accessibility statement' %}</h1>
-            <p class="govuk-body">
-                {% filter force_escape %}
-                    {% blocktrans %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{% trans 'Accessibility statement' %}</h1>
+      <p class="govuk-body">
+        {% filter force_escape %}
+          {% blocktrans %}
                         This statement applies to pages on
                     {% endblocktrans %}
-                {% endfilter %}
-                {% blocktrans with link="https://www.bus-data.dft.gov.uk/" %}
+        {% endfilter %}
+        {% blocktrans with link="https://www.bus-data.dft.gov.uk/" %}
                     <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">bus-data.dft.gov.uk</a>.
                 {% endblocktrans %}
-            </p>
-            <p class="govuk-body">
-                {% filter force_escape %}
-                    {% blocktrans %}
+      </p>
+      <p class="govuk-body">
+        {% filter force_escape %}
+          {% blocktrans %}
                         This website is run by the Department for
                         Transport. The text should be clear and simple
                         to understand. You should be able to:
                     {% endblocktrans %}
-                {% endfilter %}
-            </p>
-            <ul class="govuk-list govuk-list--bullet">
-                <li>
-                    {% filter force_escape %}
-                        {% blocktrans %}
+        {% endfilter %}
+      </p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>
+          {% filter force_escape %}
+            {% blocktrans %}
                             zoom in up to 300% without problems
                         {% endblocktrans %}
-                    {% endfilter %}
-                </li>
-                <li>
-                    {% filter force_escape %}
-                        {% blocktrans %}
+          {% endfilter %}
+        </li>
+        <li>
+          {% filter force_escape %}
+            {% blocktrans %}
                             navigate all of the website using just a
                             keyboard (except for maps which are not
                             essential to the functionality)
                         {% endblocktrans %}
-                    {% endfilter %}
-                </li>
-                <li>
-                    {% filter force_escape %}
-                        {% blocktrans %}
+          {% endfilter %}
+        </li>
+        <li>
+          {% filter force_escape %}
+            {% blocktrans %}
                             navigate all of the website using speech
                             recognition software
                         {% endblocktrans %}
-                    {% endfilter %}
-                </li>
-                <li>
-                    {% filter force_escape %}
-                        {% blocktrans %}
+          {% endfilter %}
+        </li>
+        <li>
+          {% filter force_escape %}
+            {% blocktrans %}
                             use all of the website using a screen
                             reader (including the most recent versions
                             of JAWS, NVDA and VoiceOver)
                         {% endblocktrans %}
-                    {% endfilter %}
-                </li>
-                <li>
-                    {% filter force_escape %}
-                        {% blocktrans %}
+          {% endfilter %}
+        </li>
+        <li>
+          {% filter force_escape %}
+            {% blocktrans %}
                             interpret page information through access
                             technology due to a consistent heading
                             structure
                         {% endblocktrans %}
-                    {% endfilter %}
-                </li>
-                <li>
-                    {% filter force_escape %}
-                        {% blocktrans %}
+          {% endfilter %}
+        </li>
+        <li>
+          {% filter force_escape %}
+            {% blocktrans %}
                             use all of the functionality with
                             Javascript turned off
                         {% endblocktrans %}
-                    {% endfilter %}
-                </li>
-                <li>
-                    {% filter force_escape %}
-                        {% blocktrans %}
+          {% endfilter %}
+        </li>
+        <li>
+          {% filter force_escape %}
+            {% blocktrans %}
                             access the site and use the associated
                             services with Google Chrome, Internet
                             Explorer, Safari, Opera, Firefox, and Edge
                         {% endblocktrans %}
-                    {% endfilter %}
-                </li>
-            </ul>
-            <br>
-
-            <section>
-                <p class="govuk-heading-m">
-                    {% filter force_escape %}{% trans 'How accessible this website is' %}{% endfilter %}
-                </p>
-                <p class="govuk-body">
-                    {% filter force_escape %}
-                        {% blocktrans %}
+          {% endfilter %}
+        </li>
+      </ul>
+      <br />
+      <section>
+        <p class="govuk-heading-m">
+          {% filter force_escape %}
+            {% trans 'How accessible this website is' %}
+          {% endfilter %}
+        </p>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% blocktrans %}
                             Parts of this website are not fully
                             accessible. These include the map
                             function, which isn’t readily
@@ -113,57 +110,58 @@
                             the key board function will not pick
                             it up directly.
                         {% endblocktrans %}
-                    {% endfilter %}
-                </p>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">
-                    {% filter force_escape %}{% trans 'Feedback and contact information' %}{% endfilter %}
-                </h2>
-                <p class="govuk-body">
-                    {% filter force_escape %}
-                        {% trans 'If you need information on this website in a different format like accessible PDF, large print, easy read, audio recording or braille:' %}
-                    {% endfilter %}
-                    <ul class="govuk-list govuk-list--bullet">
-                        <li>
-                            {% filter force_escape %}{% trans 'Email:' %}{% endfilter %}
-                            {% blocktrans with link="BusOpenData@dft.gov.uk" %}
+          {% endfilter %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">
+          {% filter force_escape %}
+            {% trans 'Feedback and contact information' %}
+          {% endfilter %}
+        </h2>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% trans 'If you need information on this website in a different format like accessible PDF, large print, easy read, audio recording or braille:' %}
+          {% endfilter %}
+          <ul class="govuk-list govuk-list--bullet">
+            <li>
+              {% filter force_escape %}
+                {% trans 'Email:' %}
+              {% endfilter %}
+              {% blocktrans with link="BusOpenData@dft.gov.uk" %}
                                 <a class="govuk-link" href="mailto:{{ link }}">{{ link }}</a>
                             {% endblocktrans %}
-                        </li>
-                    </ul>
-                </p>
-                <p class="govuk-body">
-                    {% filter force_escape %}{% trans 'We’ll consider your request and get back to you in 3 working days.' %}{% endfilter %}
-                </p>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">
-                    {% trans 'Reporting accessibility problems with this website' %}
-                </h2>
-                <p class="govuk-body">
-                    {% filter force_escape %}
-                        {% blocktrans %}
+            </li>
+          </ul>
+        </p>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% trans 'We’ll consider your request and get back to you in 3 working days.' %}
+          {% endfilter %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">{% trans 'Reporting accessibility problems with this website' %}</h2>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% blocktrans %}
                             We’re always looking to improve the
                             accessibility of this website.  If you
                             find any problems that are not listed on
                             this page or you think we're not meeting
                             the accessibility requirements, contact:
                         {% endblocktrans %}
-                    {% endfilter %}
-                    {% blocktrans with link="BusOpenData@dft.gov.uk" %}
+          {% endfilter %}
+          {% blocktrans with link="BusOpenData@dft.gov.uk" %}
                         <a class="govuk-link" href="mailto:{{ link }}">{{ link }}</a>
                     {% endblocktrans %}
-                </p>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">{% trans 'Enforcement procedure' %}</h2>
-                <p class="govuk-body">
-                    {% filter force_escape %}
-                        {% blocktrans %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">{% trans 'Enforcement procedure' %}</h2>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% blocktrans %}
                             The Equality and Human Rights Commission
                             (EHRC) is responsible for enforcing the
                             Public Sector Bodies (Websites and Mobile
@@ -172,150 +170,160 @@
                             regulations').  If you’re not happy with
                             how we respond to your complaint,
                         {% endblocktrans %}
-                    {% endfilter %}
-                    {% blocktrans with link="https://www.equalityadvisoryservice.com/"%}
+          {% endfilter %}
+          {% blocktrans with link="https://www.equalityadvisoryservice.com/"%}
                         <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">
                             contact the Equality Advisory and Support
                             Service (EASS).
                         </a>
                     {% endblocktrans %}
-                </p>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">
-                    {% trans "Technical information about this website's accessibility" %}
-                </h2>
-                <p class="govuk-body">
-                    {% filter force_escape %}
-                        {% blocktrans %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">{% trans "Technical information about this website's accessibility" %}</h2>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% blocktrans %}
                             Department for Transport is committed to
                             making its websites accessible, in
                             accordance with the Public Sector Bodies
                             (Websites and Mobile Applications) (No. 2)
                             Accessibility Regulations 2018.
                         {% endblocktrans %}
-                    {% endfilter %}
-                </p>
-            </section>
-            <br>
-
-            <section>
-                <p class="govuk-heading-m">
-                    {% filter force_escape %}
-                        {% trans "Compliance status" %}
-                    {% endfilter %}
-                </p>
-                <p class="govuk-body">
-                    {% filter force_escape %}{% trans 'This website follows the' %}{% endfilter %}
-                    {% blocktrans with link="https://www.w3.org/TR/WCAG21/" %}
+          {% endfilter %}
+        </p>
+      </section>
+      <br />
+      <section>
+        <p class="govuk-heading-m">
+          {% filter force_escape %}
+            {% trans "Compliance status" %}
+          {% endfilter %}
+        </p>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% trans 'This website follows the' %}
+          {% endfilter %}
+          {% blocktrans with link="https://www.w3.org/TR/WCAG21/" %}
                         <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">Web Content Accessibility Guidelines version 2.1</a>
                     {% endblocktrans %}
-                    {% filter force_escape %}{% trans 'AA standard.' %}{% endfilter %}
-                </p>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m" >{% filter force_escape %}{% trans 'Non-accessible content' %}{% endfilter %}</h2>
-                <p class="govuk-body govuk-!-font-weight-bold">
-                    {% filter force_escape %}
-                        {% trans 'The content listed below is non-accessible for the following reasons.' %}
-                    {% endfilter %}
-                </p>
-                <p class="govuk-body">
-                    {% filter force_escape %}
-                        {% trans 'Non-compliance with accessibility regulations' %}
-                    {% endfilter %}
-                </p>
-                <p class="govuk-body">
-                    <ul class="govuk-list govuk-list--bullet">
-                        <li>
-                            {% filter force_escape %}
-                                {% blocktrans %}
+          {% filter force_escape %}
+            {% trans 'AA standard.' %}
+          {% endfilter %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">
+          {% filter force_escape %}
+            {% trans 'Non-accessible content' %}
+          {% endfilter %}
+        </h2>
+        <p class="govuk-body govuk-!-font-weight-bold">
+          {% filter force_escape %}
+            {% trans 'The content listed below is non-accessible for the following reasons.' %}
+          {% endfilter %}
+        </p>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% trans 'Non-compliance with accessibility regulations' %}
+          {% endfilter %}
+        </p>
+        <p class="govuk-body">
+          <ul class="govuk-list govuk-list--bullet">
+            <li>
+              {% filter force_escape %}
+                {% blocktrans %}
                                     Maps functions cannot be directly
                                     read by a screen reader. Key
                                     information is in the text.
                                 {% endblocktrans %}
-                            {% endfilter %}
-                        </li>
-                        <li>
-                            {% filter force_escape %}
-                                {% blocktrans %}
+              {% endfilter %}
+            </li>
+            <li>
+              {% filter force_escape %}
+                {% blocktrans %}
                                     Keyboard only users may not
                                     be able to zoom on our maps.
                                 {% endblocktrans %}
-                            {% endfilter %}
-                        </li>
-                        <li>
-                            {% filter force_escape %}
-                                {% blocktrans %}
+              {% endfilter %}
+            </li>
+            <li>
+              {% filter force_escape %}
+                {% blocktrans %}
                                     Alternative versions can be
                                     provided in plain text, braille,
                                     BSL, large print or audio CD.
                                 {% endblocktrans %}
-                            {% endfilter %}
-                        </li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h2 class="govuk-heading-m">{% filter force_escape %}{% trans 'Preparation of this accessibility statement' %}{% endfilter %}</h2>
-                    <p class="govuk-body">
-                        {% filter force_escape %}
-                            {% blocktrans %}
+              {% endfilter %}
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2 class="govuk-heading-m">
+            {% filter force_escape %}
+              {% trans 'Preparation of this accessibility statement' %}
+            {% endfilter %}
+          </h2>
+          <p class="govuk-body">
+            {% filter force_escape %}
+              {% blocktrans %}
                                 This statement was prepared on 17 December
                                 2019. It was last reviewed on 1 March
                                 2022.
                             {% endblocktrans %}
-                        {% endfilter %}
-                    </p>
-                    <p class="govuk-body">
-                        {% filter force_escape %}
-                            {% blocktrans %}
+            {% endfilter %}
+          </p>
+          <p class="govuk-body">
+            {% filter force_escape %}
+              {% blocktrans %}
                                 This website was last tested on 20 October
                                 2020. The test was carried out by Digital
                                 Accessibility Centre.
                             {% endblocktrans %}
-                        {% endfilter %}
-                    </p>
-                    <p class="govuk-body">
-                        {% filter force_escape %}
-                            {% blocktrans %}
+            {% endfilter %}
+          </p>
+          <p class="govuk-body">
+            {% filter force_escape %}
+              {% blocktrans %}
                                 We used this approach to decide on a
                                 sample of pages to test the analysis of
                                 key user journeys on the platform.
                             {% endblocktrans %}
-                        {% endfilter %}
-                    </p>
-                    <p class="govuk-body">
-                        {% filter force_escape %}{% trans 'You can read the' %}{% endfilter %}
-                        {% blocktrans with link="http://digitalaccessibilitycentre.org/index.php/kpmg-publish-bus-open-data"%}
+            {% endfilter %}
+          </p>
+          <p class="govuk-body">
+            {% filter force_escape %}
+              {% trans 'You can read the' %}
+            {% endfilter %}
+            {% blocktrans with link="http://digitalaccessibilitycentre.org/index.php/kpmg-publish-bus-open-data"%}
                             <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">full accessibility test report from the Digital
                                 Accessibility Centre</a>.
                         {% endblocktrans %}
-                    </p>
-                </section>
-            </div>
-
-            <div class="govuk-grid-column-one-third">
-                <hr class="govuk-section-break govuk-section-break--l">
-                <h2 class="govuk-heading-m">{% trans 'Bus Open Data Service' %}</h2>
-                <div>
-                    <p class="govuk-body">
-                        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
-                            {% trans 'Contact us' %}
-                        </a>
-                    </p>
-                </div>
-                <hr class="govuk-section-break govuk-section-break--l">
-                <h2 class="govuk-heading-m">{% trans 'Follow us' %}</h2>
-                <div>
-                    <p class="govuk-body">
-                        <a href="https://twitter.com/busopendata" class="govuk-link" target="_blank">
-                            <img class="account-menu__icon govuk-!-margin-right-3" src="{% static 'frontend/images/twitter_icon.png' %}" alt="twitter icon" style="width: 26px;height: 26px;">{% trans 'Bus open data service Twitter' %}
-                        </a>
-                    </p>
-                </div>
-            </div>
+          </p>
+        </section>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <hr class="govuk-section-break govuk-section-break--l" />
+        <h2 class="govuk-heading-m">{% trans 'Bus Open Data Service' %}</h2>
+        <div>
+          <p class="govuk-body">
+            <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact us' %}</a>
+          </p>
         </div>
-{% endblock %}
+        <hr class="govuk-section-break govuk-section-break--l" />
+        <h2 class="govuk-heading-m">{% trans 'Follow us' %}</h2>
+        <div>
+          <p class="govuk-body">
+            <a href="https://twitter.com/busopendata" class="govuk-link" target="_blank">
+              <img class="account-menu__icon govuk-!-margin-right-3"
+                   src="{% static 'frontend/images/twitter_icon.png' %}"
+                   alt="twitter icon"
+                   style="width: 26px;
+                          height: 26px" />
+              {% trans 'Bus open data service Twitter' %}
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  {% endblock %}

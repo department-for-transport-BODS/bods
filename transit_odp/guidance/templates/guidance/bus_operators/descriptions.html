@@ -1,12 +1,9 @@
 {% extends "guidance/bus_operators/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-<h1 data-qa="descriptions-header" class="govuk-heading-l">{% trans 'Writing data descriptions' %}</h1>
-
-<p data-qa="descriptions-paragraph" class="govuk-body">
-  {% blocktrans %}
+  <h1 data-qa="descriptions-header" class="govuk-heading-l">{% trans 'Writing data descriptions' %}</h1>
+  <p data-qa="descriptions-paragraph" class="govuk-body">
+    {% blocktrans %}
   All data uploaded to the service requires a data description. This description
   will be publicly available so please do not use any personal information. Please include an explanation for what data is
   included in the data you are providing. This will give an indication to data consumers as to what they can expect to get
@@ -15,6 +12,5 @@
   provided i.e. a fares description could also include the types of fare products, elicitabilities, travel documents, etc.
   included within the data.
   {% endblocktrans %}
-</p>
-
+  </p>
 {% endblock %}

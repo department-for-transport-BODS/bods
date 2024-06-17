@@ -1,12 +1,9 @@
 {% extends "site_admin/base.html" %}
-
 {# This is the 'My Account' page #}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
-
 {% block title_tag %}
   {% if object.is_active %}
     {% trans 'Deactivate organisation' %}
@@ -14,19 +11,14 @@
     {% trans 'Activate organisation' %}
   {% endif %}
 {% endblock %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% url 'users:organisation-detail' pk=object.id host hosts.admin as backlink %}
   {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-
       <h1 class="govuk-heading-xl">
         {% if object.is_active %}
           {% trans 'Deactivate organisation' %}
@@ -41,7 +33,6 @@
           {% trans 'Would you like to activate' %} {{ object.name }}?
         {% endif %}
       </p>
-
       {% crispy form %}
     </div>
   </div>

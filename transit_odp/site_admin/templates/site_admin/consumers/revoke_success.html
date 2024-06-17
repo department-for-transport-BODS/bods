@@ -1,46 +1,34 @@
 {% extends "site_admin/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block title_tag %}
-    {% trans 'Data consumer revoked' %}
+  {% trans 'Data consumer revoked' %}
 {% endblock %}
-
-{% block content_heading %}
-{% endblock %}
-
+{% block content_heading %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-   <div class="govuk-panel govuk-panel--confirmation">
-    <h1 class="govuk-panel__title govuk-!-padding-9">
-      {% trans 'You have successfully revoked API access for' %} {{user.email}}
-    </h1>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half">
-      <h2 class="govuk-heading-m">What happens next?</h2>
-      <p class="govuk-body">
-        {% trans 'You can view the list of data consumers on your' %}
-        <a class="govuk-link"
-          href="{% url 'users:consumer-list' host host.name %}">
-          data consumers dashboard
-        </a>
-        {% trans 'or by clicking the button below.' %}
-      </p>
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title govuk-!-padding-9">
+        {% trans 'You have successfully revoked API access for' %} {{ user.email }}
+      </h1>
     </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half">
-      <a class="govuk-button" href={% url 'users:consumer-list' host host.name %}>
-        Return to Data Consumer list
-      </a>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <h2 class="govuk-heading-m">What happens next?</h2>
+        <p class="govuk-body">
+          {% trans 'You can view the list of data consumers on your' %}
+          <a class="govuk-link" href="{% url 'users:consumer-list' host host.name %}">data consumers dashboard</a>
+          {% trans 'or by clicking the button below.' %}
+        </p>
+      </div>
     </div>
-  </div>
-{% endblock %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-half">
+        <a class="govuk-button" href={% url 'users:consumer-list' host host.name %}>Return to Data Consumer list</a>
+      </div>
+    </div>
+  {% endblock %}

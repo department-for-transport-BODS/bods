@@ -2,9 +2,7 @@
   <p class="govuk-body" style="font-size: 18px">
     Showing {{ page.start_index }} - {{ page.end_index }} of {{ paginator.count }} results
   </p>
-
   <div style="flex: 1;"></div>
-
   {% if paginator %}
     {% include 'snippets/pagination.html' %}
   {% endif %}

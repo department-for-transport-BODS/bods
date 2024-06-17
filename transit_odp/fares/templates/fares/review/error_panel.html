@@ -1,71 +1,66 @@
 {% load i18n %}
-
-<h2 class="govuk-heading-l govuk-!-padding-top-5">
-  {{ object.name }}
-</h2>
-
-<div class="govuk-error-summary govuk-!-margin-bottom-0" aria-labelledby="error-summary-title" role="alert"
-     tabindex="-1" data-module="govuk-error-summary">
+<h2 class="govuk-heading-l govuk-!-padding-top-5">{{ object.name }}</h2>
+<div class="govuk-error-summary govuk-!-margin-bottom-0"
+     aria-labelledby="error-summary-title"
+     role="alert"
+     tabindex="-1"
+     data-module="govuk-error-summary">
   <h2 class="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
     {% trans 'Supplied data set has failed to upload' %}
   </h2>
-
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list ">
-      <li class="app-error-summary__item dont-break-out" style="text-decoration: none">{{ error.description | safe}}</li>
+      <li class="app-error-summary__item dont-break-out" style="text-decoration: none">{{ error.description | safe }}</li>
     </ul>
   </div>
 </div>
 <div class="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
-<a role="button" class="govuk-button govuk-!-margin-bottom-0"
-       href=
-               "{% url 'fares:upload-modify' pk=object.dataset_id pk1=pk1 host hosts.publish %}"
->
-        {{ _('Publish correct data set') }}
-</a>
+  <a role="button"
+     class="govuk-button govuk-!-margin-bottom-0"
+     href="{% url 'fares:upload-modify' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
+    {{ _("Publish correct data set") }}
+  </a>
 </div>
-
 <table class="govuk-table dataset-property-table">
   <tbody class="govuk-table__body">
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
-    <td class="govuk-table__cell dont-break-out">{% trans properties.name %}</td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
-    <td class="govuk-table__cell">{% trans properties.owner_name %}</td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Last updated' %}</th>
-    <td class="govuk-table__cell">
-      <div class="flex-between">
-        <span>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
+      <td class="govuk-table__cell dont-break-out">{% trans properties.name %}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
+      <td class="govuk-table__cell">{% trans properties.owner_name %}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header">{% trans 'Last updated' %}</th>
+      <td class="govuk-table__cell">
+        <div class="flex-between">
+          <span>
             {# Note we use last modified time rather than published_at since the revision won't be published yet #}
             {{ properties.last_modified|date:"j M Y H:i" }} {% trans 'by ' %}
-          {{ properties.last_modified_user|default_if_none:'System' }}
-        </span></div>
-    </td>
-  </tr>
+            {{ properties.last_modified_user|default_if_none:'System' }}
+          </span>
+        </div>
+      </td>
+    </tr>
   </tbody>
 </table>
 <h3 class="govuk-heading-m">{% trans 'What should I do next?' %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
-    {% blocktrans %}
+  {% blocktrans %}
       You can re-upload a different data set file again. Please ensure that your provided data format is correct and
       that your data set file contains valid data.
     {% endblocktrans %}
 </p>
 <p class="govuk-body app-!-text-muted govuk-!-font-size-19">
-    {% blocktrans %}
+  {% blocktrans %}
       Accepted file formats include .xml (Netex).
     {% endblocktrans %}
 </p>
-
 <div class="btn-group-justified">
-  <a role="button" class="govuk-button govuk-button--secondary"
-     href=
-             "{% url 'fares:revision-delete' pk=object.dataset_id pk1=pk1 host hosts.publish %}"
-  >
-    {{ _('Delete data') }}
+  <a role="button"
+     class="govuk-button govuk-button--secondary"
+     href="{% url 'fares:revision-delete' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
+    {{ _("Delete data") }}
   </a>
 </div>

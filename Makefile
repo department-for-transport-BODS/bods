@@ -47,3 +47,6 @@ local-db-backup:
 local-db-restore:
 	docker exec -i bods-postgres-1 psql -U transit_odp -d transit_odp < db_backup.sql
 	rm -rf db_backup.sql
+
+djlint:
+	djlint ./transit_odp --reformat

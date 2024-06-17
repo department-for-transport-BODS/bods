@@ -1,35 +1,26 @@
 {% extends "publish/base.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-  {% if form.errors %}{% trans 'Error: ' %}{% endif %}
+  {% if form.errors %}
+    {% trans 'Error: ' %}
+  {% endif %}
   {% trans 'Deactivate data feed' %}
 {% endblock %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% url 'avl:feed-detail' pk1=pk1 pk=object.id host host.name as backlink %}
   {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}
-
 {% block content %}
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-xl">
-        {% trans 'Would you like to deactivate this data feed?' %}
-      </h1>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <h1 class="govuk-heading-xl">{% trans 'Would you like to deactivate this data feed?' %}</h1>
+    </div>
   </div>
-</div>
-
-{% block inner %}
-  {% crispy form %}
-{% endblock %}
-
-{% block inner_secondary %}
-{% endblock %}
+  {% block inner %}
+    {% crispy form %}
+  {% endblock %}
+  {% block inner_secondary %}{% endblock %}
 {% endblock %}

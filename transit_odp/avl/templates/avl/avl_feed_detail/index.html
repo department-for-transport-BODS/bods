@@ -1,37 +1,28 @@
 {% extends "page.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'Data feed details' %}
+  {% trans 'Data feed details' %}
 {% endblock %}
-
 {# Breadcrumb #}
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% include 'avl/avl_feed_detail/breadcrumb.html' %}
+  {{ block.super }}
+  {% include 'avl/avl_feed_detail/breadcrumb.html' %}
 {% endblock %}
-
 {% block content %}
-    {% include 'avl/avl_feed_detail/page_heading.html' %}
-    <hr class="govuk-section-break govuk-section-break--xs govuk-section-break--visible">
-
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            {% if properties.status == 'inactive' and properties.has_schema_violations %}
-                {% include 'avl/snippets/avl_schema_panel.html' %}
-            {% endif %}
-
-            {% include 'avl/avl_feed_detail/success_content.html' %}
-        </div>
-        <div class="govuk-grid-column-one-third govuk-!-padding-top-5">
-            {% include 'avl/avl_feed_detail/related_links.html' %}
-        </div>
+  {% include 'avl/avl_feed_detail/page_heading.html' %}
+  <hr class="govuk-section-break govuk-section-break--xs govuk-section-break--visible" />
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if properties.status == 'inactive' and properties.has_schema_violations %}
+        {% include 'avl/snippets/avl_schema_panel.html' %}
+      {% endif %}
+      {% include 'avl/avl_feed_detail/success_content.html' %}
     </div>
+    <div class="govuk-grid-column-one-third govuk-!-padding-top-5">
+      {% include 'avl/avl_feed_detail/related_links.html' %}
+    </div>
+  </div>
 {% endblock %}
-
-{% block scripts %}
-    {{ block.super }}
-{% endblock %}
+{% block scripts %}{{ block.super }}{% endblock %}

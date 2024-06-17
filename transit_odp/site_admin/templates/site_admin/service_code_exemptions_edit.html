@@ -1,54 +1,39 @@
 {% extends "page.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
-
 {% block title_tag %}
-    {% if form.errors %}{% trans 'Error: ' %}{% endif %}
-    {% trans 'Edit organisation details' %}
+  {% if form.errors %}
+    {% trans 'Error: ' %}
+  {% endif %}
+  {% trans 'Edit organisation details' %}
 {% endblock %}
-
 {# Breadcrumb #}
 {% block breadcrumb.content %}
+  <div class="govuk-breadcrumbs">
     <div class="govuk-breadcrumbs">
-        <div class="govuk-breadcrumbs">
-            <ol class="publish-stepper govuk-breadcrumbs__list">
-                <li class="publish-stepper__item publish-stepper__item--previous">
-                    {% trans "1. Organisation detail" %}
-                </li>
-                <li class="publish-stepper__item publish-stepper__item--selected">
-                    {% trans "2. Service code exemptions" %}
-                </li>
-            </ol>
-        </div>
+      <ol class="publish-stepper govuk-breadcrumbs__list">
+        <li class="publish-stepper__item publish-stepper__item--previous">{% trans "1. Organisation detail" %}</li>
+        <li class="publish-stepper__item publish-stepper__item--selected">{% trans "2. Service code exemptions" %}</li>
+      </ol>
     </div>
+  </div>
 {% endblock %}
-
 {% block content %}
-    {# Main Section #}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            <h1 class="govuk-heading-xl">
-                {% trans "Service code exemptions" %}
-            </h1>
-            <form id="table-formset" method="post" novalidate>
-                {% crispy form %}
-                <button type="submit" name="submit"
-                    value="submit" class="govuk-button"
-                    data-module="govuk-button"
-                >
-                    {% trans "Save" %}
-                </button>
-                <a type="button"
-                    href="{{ cancel_url }}"
-                    class="govuk-button govuk-button--secondary"
-                    data-module="govuk-button"
-                >
-                    {% trans "Cancel" %}
-                </a>
-            </form>
-        </div>
+  {# Main Section #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">{% trans "Service code exemptions" %}</h1>
+      <form id="table-formset" method="post" novalidate>
+        {% crispy form %}
+        <button type="submit" name="submit" value="submit" class="govuk-button" data-module="govuk-button">
+          {% trans "Save" %}
+        </button>
+        <a type="button" href="{{ cancel_url }}" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+          {% trans "Cancel" %}
+        </a>
+      </form>
     </div>
+  </div>
 {% endblock %}

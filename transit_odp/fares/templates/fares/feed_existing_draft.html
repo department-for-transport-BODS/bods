@@ -1,34 +1,25 @@
 {# Not strictly a success page, but base_success has the closest layout and using it avoids re-implementation #}
 {% extends "base_success.html" %}
-
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
   {% trans 'Existing draft' %}
 {% endblock %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% url 'fares:feed-detail' pk=pk pk1=pk1 as backlink %}
   {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}
-
 {% block title_text %}
-    {% trans 'You already have a draft for this data set.' %}
+  {% trans 'You already have a draft for this data set.' %}
 {% endblock %}
-
-{% block body_section %}
-{% endblock %}
-
+{% block body_section %}{% endblock %}
 {% block done_button %}
   <div class="button-holder">
     <a role="button" class="govuk-button" href="{% url 'fares:revision-update-publish' pk1=pk1 pk=pk %}">
-        {% trans 'View draft' %}
+      {% trans 'View draft' %}
     </a>
-    <a role="button" class="govuk-button govuk-button--secondary" href="{% url 'fares:feed-detail' pk=pk pk1=pk1  %}">
+    <a role="button" class="govuk-button govuk-button--secondary" href="{% url 'fares:feed-detail' pk=pk pk1=pk1 %}">
       {% trans 'Cancel' %}
     </a>
   </div>

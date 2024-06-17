@@ -1,220 +1,186 @@
 {% extends "browse/feed_base.html" %}
-
 {% load humanize %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load publish_stepper %}
 {% load crispy_forms_tags %}
-
-
 {% block breadcrumb.content %}
-    {% stepper %}
+  {% stepper %}
 {% endblock %}
-
-
 {% block heading.title.text %}
-    {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
-        {% trans 'Review and publish' %}
-      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"/>
-    {% endif %}
+  {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
+    {% trans 'Review and publish' %}
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+  {% endif %}
 {% endblock %}
-
 {% block primary.extra %}
-    {% if object.status == 'success' %}
-      <div class="govuk-panel app-panel--confirmation-nofill" style="border-color: black">
-        <div class="govuk-panel__body govuk-!-font-size-19 govuk-!-font-weight-bold">
-            {% blocktrans %}
+  {% if object.status == 'success' %}
+    <div class="govuk-panel app-panel--confirmation-nofill" style="border-color: black">
+      <div class="govuk-panel__body govuk-!-font-size-19 govuk-!-font-weight-bold">
+        {% blocktrans %}
               Your data set has been successfully uploaded and passed our data quality checks.
             {% endblocktrans %}
-        </div>
-</div>
-  <p class="govuk-body">
-    {% crispy form %}
-  </p>
-
-    {% endif %}
+      </div>
+    </div>
+    <p class="govuk-body">{% crispy form %}</p>
+  {% endif %}
 {% endblock %}
-{% block heading.subtitle %}
-{% endblock %}
-
-{% block heading.subtitle.text %}
-{% endblock %}
-
+{% block heading.subtitle %}{% endblock %}
+{% block heading.subtitle.text %}{% endblock %}
 {% block secondary.title.text %}
-
-    {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
-        {{ object.name }}
-    {% endif %}
+  {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
+    {{ object.name }}
+  {% endif %}
 {% endblock %}
-
-{% block heading.extra %}
-{% endblock %}
-
+{% block heading.extra %}{% endblock %}
 {% block heading.secondary %}
-
-    {% if object.status != 'indexing' and object.status != 'processing' and object.status != 'pending' %}
-      <div class="govuk-grid-column-one-third">
-        <h2 class="govuk-heading-m">{% trans 'Need help with operator data requirements?' %}</h2>
-        <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-          <li>
-            <a class="govuk-link"
-               href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{% trans 'View our guidelines here' %}</a>
-          </li>
-          <li>
-            <a class="govuk-link"
-               href="{% url 'contact' host hosts.root %}">{% trans 'Contact support desk' %}</a>
-          </li>
-        </ul>
-      </div> {% endif %}
+  {% if object.status != 'indexing' and object.status != 'processing' and object.status != 'pending' %}
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">{% trans 'Need help with operator data requirements?' %}</h2>
+      <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+        <li>
+          <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{% trans 'View our guidelines here' %}</a>
+        </li>
+        <li>
+          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact support desk' %}</a>
+        </li>
+      </ul>
+    </div>
+  {% endif %}
 {% endblock %}
-
 {#{% block inner.secondary %}#}
 {#{% endblock %}#}
-
 {% block inner %}
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
       {% block inner.status_area %}
-
-          {# Map, Error Summary or Index Progess #}
+        {# Map, Error Summary or Index Progess #}
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-              {% if object.status == 'success' %}
-                <div id='map' style='width: 100%; height: 25rem;'></div>
-              {% elif object.status == 'error' %}
-                <div class="govuk-panel app-panel--error">
-                  <h2 class="govuk-heading-xl" style="color: white">
-                      {% trans 'Supplied data set has failed to upload' %}
-                  </h2>
+            {% if object.status == 'success' %}
+              <div id='map' style='width: 100%; height: 25rem;'></div>
+            {% elif object.status == 'error' %}
+              <div class="govuk-panel app-panel--error">
+                <h2 class="govuk-heading-xl" style="color: white">{% trans 'Supplied data set has failed to upload' %}</h2>
+              </div>
+              <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
+              <div class="govuk-error-summary"
+                   style="padding-bottom: 0"
+                   aria-labelledby="error-summary-title"
+                   role="alert"
+                   tabindex="-1"
+                   data-module="govuk-error-summary">
+                <h2 class="govuk-error-summary__title" id="error-summary-title">{% trans 'There is a problem' %}</h2>
+                <div class="govuk-error-summary__body">
+                  <ul class="govuk-list govuk-error-summary__list">
+                    {% for error in severe_errors %}
+                      <li class="govuk-!-font-size-19 govuk-!-font-weight-bold" style="color: #d4351c">{{ error.description }}</li>
+                    {% endfor %}
+                  </ul>
                 </div>
-                <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
-                <div class="govuk-error-summary" style="padding-bottom: 0" aria-labelledby="error-summary-title"
-                     role="alert" tabindex="-1" data-module="govuk-error-summary">
-                  <h2 class="govuk-error-summary__title" id="error-summary-title">
-                      {% trans 'There is a problem' %}
-                  </h2>
-                  <div class="govuk-error-summary__body">
-                    <ul class="govuk-list govuk-error-summary__list">
-                        {% for error in severe_errors %}
-                          <li class="govuk-!-font-size-19 govuk-!-font-weight-bold"
-                              style="color: #d4351c">{{ error.description }}</li>
-                        {% endfor %}
-                    </ul>
-                  </div>
-                  <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
-
-                  <a role="button" class="govuk-button" id="id-publish-review-publish-data" href="
-                        {% if is_update %}{% url 'update-modify' pk=object.dataset_id host hosts.publish %}
-                          {% else %}{% url 'upload-modify' pk=object.dataset_id host hosts.publish %} {% endif %}">
-                      {{ _('Publish correct data set') }}
-                  </a>
-                </div>
-
-              {% elif object.status == 'processing' or object.status == 'indexing' or object.status == 'pending' %}
-                <div class="govuk-panel govuk-panel--confirmation" style="background-color: #2b8cc4;">
-                  <h3 class="govuk-panel__title govuk-!-font-size-36">
-                      {% trans 'Your data is being processed' %}
-                  </h3>
-                  <div class="govuk-panel__body govuk-!-font-size-19">
-                    <div style="padding-bottom: 1rem">
-                        {% blocktrans %}
-                          Once successfully processed, the data set will be published, <br/>
+                <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
+                <a role="button"
+                   class="govuk-button"
+                   id="id-publish-review-publish-data"
+                   href=" {% if is_update %}{% url 'update-modify' pk=object.dataset_id host hosts.publish %} {% else %}{% url 'upload-modify' pk=object.dataset_id host hosts.publish %} {% endif %}">
+                  {{ _("Publish correct data set") }}
+                </a>
+              </div>
+            {% elif object.status == 'processing' or object.status == 'indexing' or object.status == 'pending' %}
+              <div class="govuk-panel govuk-panel--confirmation" style="background-color: #2b8cc4;">
+                <h3 class="govuk-panel__title govuk-!-font-size-36">{% trans 'Your data is being processed' %}</h3>
+                <div class="govuk-panel__body govuk-!-font-size-19">
+                  <div style="padding-bottom: 1rem">
+                    {% blocktrans %}
+                          Once successfully processed, the data set will be published, <br />
                           and you will be able to view the details here
-                        {% endblocktrans %}</div>
-                    <div id="progressOuterDiv"
-                            {#                         class="progress-bar-outer"#}
-                         style=" width: 100%; background-color: #005ea5;"
-                    >
-                      <div id="progressInnerDiv"
-                              {#                              class="progress-bar-inner"#}
-                           style="width: 0%;  height: 30px;  background-color: #ffffff; text-align: center;  line-height: 30px;  color: white;"
-                      >
-
-                      </div>
-
-                    </div>
-                    <span
-                            {#                      class="progress-bar-text"#}
-                            style="width: 70px; height: 41px; font-size: 36px; font-weight: bold; color: #ffffff; align-content: center"
-                            id="progressSpan">
-                  </span>
-
-
+                        {% endblocktrans %}
                   </div>
+                  <div id="progressOuterDiv"
+                    {#                         class="progress-bar-outer"#}
+                    style=" width: 100%; background-color: #005ea5;"
+                    >
+                    <div id="progressInnerDiv"
+                      {#                              class="progress-bar-inner"#}
+                      style="width: 0%;  height: 30px;  background-color: #ffffff; text-align: center;  line-height: 30px;  color: white;"
+                      ></div>
+                  </div>
+                  <span
+                    {#                      class="progress-bar-text"#}
+                    style="width: 70px; height: 41px; font-size: 36px; font-weight: bold; color: #ffffff; align-content: center"
+                  id="progressSpan"></span>
                 </div>
-              {% endif %}
+              </div>
+            {% endif %}
           </div>
         </div>
       {% endblock %}
-
-    <div class="govuk-grid-row">
-      <ul class="info-list">
-        <li>
-          <h4 class="info-item__title">{% trans 'Name' %}</h4>
-          <p class="info-item__description" id="id-publish-review-name">{% trans object.name %}</p>
-        </li>
+      <div class="govuk-grid-row">
+        <ul class="info-list">
+          <li>
+            <h4 class="info-item__title">{% trans 'Name' %}</h4>
+            <p class="info-item__description" id="id-publish-review-name">{% trans object.name %}</p>
+          </li>
           {% if object.status != 'error' and object.status != 'indexing' %}
             <li>
               <h4 class="info-item__title">{% trans 'Description' %}</h4>
-              <p class="info-item__description"
-                 id="id-publish-review-description">{% trans object.description %}</p>
+              <p class="info-item__description" id="id-publish-review-description">{% trans object.description %}</p>
             </li>
           {% endif %}
           {% block inner.status %}
-              {% if object.status != 'error' and object.status != 'indexing' %}
-                <li>
-                  <h4 class="info-item__title">{% trans 'Status' %}</h4>
-                  <div class="info-item__description">
-                    <div class="flex-between">
-                        {% block inner.status.indicator %}
-                            {% include 'organisation/snippets/status_indicator.html' with status=object.status %}
-                        {% endblock %}
-                    </div>
+            {% if object.status != 'error' and object.status != 'indexing' %}
+              <li>
+                <h4 class="info-item__title">{% trans 'Status' %}</h4>
+                <div class="info-item__description">
+                  <div class="flex-between">
+                    {% block inner.status.indicator %}
+                      {% include 'organisation/snippets/status_indicator.html' with status=object.status %}
+                    {% endblock %}
                   </div>
-                </li>
-              {% endif %}
+                </div>
+              </li>
+            {% endif %}
           {% endblock %}
-        <li>
-          <h4 class="info-item__title">{% trans 'Owner' %}</h4>
-          <p class="info-item__description"
-             id="id-publish-review-org-name">{% trans object.dataset.organisation.name %}</p>
-        </li>
+          <li>
+            <h4 class="info-item__title">{% trans 'Owner' %}</h4>
+            <p class="info-item__description" id="id-publish-review-org-name">{% trans object.dataset.organisation.name %}</p>
+          </li>
           {% if object.status != 'error' and object.status != 'indexing' %}
-              {% block inner.txc_version %}
-                <li>
-                  <h4 class="info-item__title">{% trans 'TransXChange version' %}</h4>
-                  <div class="info-item__description">
-                    <div class="flex-between" id="id-publish-review-trans-version">
-                      <span>{{ object.transxchange_version }}</span>
-                      <span class="no-wrap" style="text-align: right">
-                        {% block inner.txc_version.download %}
-                          {% url 'feed-download' pk=object.dataset_id  host host.name as download_link %}
-                          <a class="govuk-link"
-                             href="
-                               {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
-                            {% trans 'Download .xml' %}<br>{% trans '(TransXChange format)' %}
-                          </a>
-                        {% endblock %}
-                   </span>
-                    </div>
+            {% block inner.txc_version %}
+              <li>
+                <h4 class="info-item__title">{% trans 'TransXChange version' %}</h4>
+                <div class="info-item__description">
+                  <div class="flex-between" id="id-publish-review-trans-version">
+                    <span>{{ object.transxchange_version }}</span>
+                    <span class="no-wrap" style="text-align: right">
+                      {% block inner.txc_version.download %}
+                        {% url 'feed-download' pk=object.dataset_id  host host.name as download_link %}
+                        <a class="govuk-link"
+                           href=" {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
+                          {% trans 'Download .xml' %}
+                          <br />
+                          {% trans '(TransXChange format)' %}
+                        </a>
+                      {% endblock %}
+                    </span>
                   </div>
-                </li>
-              {% endblock %}
+                </div>
+              </li>
+            {% endblock %}
             <li>
               <h4 class="info-item__title">{% trans 'URL link' %}</h4>
               <div class="info-item__description">
                 <div class="flex-between">
                   <span></span>
                   <span class="no-wrap" style="text-align: right" id="id-publish-review-url-link">
-                      {{ url_link }}
-                          {% url 'feed-download' pk=object.dataset_id host host.name as download_link %}
-                          <a class="govuk-link"
-                             href="
-                               {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
-                           {% trans 'Publisher URL' %}
-                          </a>
-                   </span>
+                    {{ url_link }}
+                    {% url 'feed-download' pk=object.dataset_id host host.name as download_link %}
+                    <a class="govuk-link"
+                       href=" {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
+                      {% trans 'Publisher URL' %}
+                    </a>
+                  </span>
                 </div>
               </div>
             </li>
@@ -231,147 +197,133 @@
               <p class="info-item__description" id="id-publish-review-lines">{{ object.num_of_lines }}</p>
             </li>
           {% endif %}
-
           {% block inner.last_updated %}
             <li>
               <h4 class="info-item__title">{% trans 'Last updated' %}</h4>
               <div class="info-item__description">
                 <div class="flex-between" id="id-publish-review-last-updated">
-                    {#                  {{ object }}#}
+                  {#                  {{ object }}#}
                   <span>{{ object.modified|date:"j M Y H:i" }} {% trans 'by ' %} {{ object.last_modified_user.username }}</span>
                   <span style="text-align: right">
-                      {% block inner.last_updated.changelog_link %}
-                          {#                        <a class="govuk-link"#}
-                          {#                           href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans 'View change log' %}</a>#}
-                      {% endblock %}
+                    {% block inner.last_updated.changelog_link %}
+                      {#                        <a class="govuk-link"#}
+                      {#                           href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans 'View change log' %}</a>#}
+                    {% endblock %}
                   </span>
                 </div>
               </div>
             </li>
           {% endblock %}
-
-
           {% if object.status != 'expired' and object.status != 'indexing' and object.status != 'error' %}
             <li>
               <h4 class="info-item__title">{% trans 'Start date' %}</h4>
               <p class="info-item__description">
-                  {% if object.first_service_start is not None %}
-                      {{ object.first_service_start|date:"j M Y H:i" }}
-                  {% else %}
-                      {% trans 'Start date not specified' %}
-                  {% endif %}
+                {% if object.first_service_start is not None %}
+                  {{ object.first_service_start|date:"j M Y H:i" }}
+                {% else %}
+                  {% trans 'Start date not specified' %}
+                {% endif %}
               </p>
             </li>
           {% endif %}
-        <li>
-          <h4 class="info-item__title">{% trans 'Start date' %}</h4>
-          <p class="info-item__description" id="id-publish-review-start-date">
+          <li>
+            <h4 class="info-item__title">{% trans 'Start date' %}</h4>
+            <p class="info-item__description" id="id-publish-review-start-date">
               {% if object.first_service_start is not None %}
-                  {{ object.first_service_start|date:"j M Y H:i" }}
+                {{ object.first_service_start|date:"j M Y H:i" }}
               {% else %}
-                  {% trans 'Start date not specified' %}
+                {% trans 'Start date not specified' %}
               {% endif %}
-          </p>
-        </li>
-        <li>
-          <h4 class="info-item__title">{% trans 'Expiry date' %}</h4>
-          <p class="info-item__description" id="id-publish-review-expiry-date ">
+            </p>
+          </li>
+          <li>
+            <h4 class="info-item__title">{% trans 'Expiry date' %}</h4>
+            <p class="info-item__description" id="id-publish-review-expiry-date ">
               {% if object.first_expiring_service is not None %}
-                  {{ object.first_expiring_service|date:"j M Y H:i" }}
+                {{ object.first_expiring_service|date:"j M Y H:i" }}
               {% else %}
-                  {% trans 'Expiry not specified' %}
+                {% trans 'Expiry not specified' %}
               {% endif %}
-          </p>
-        </li>
-      </ul>
-      <div class="govuk-grid-column-full">
-          {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
-          {% endif %}
-
+            </p>
+          </li>
+        </ul>
+        <div class="govuk-grid-column-full">
+          {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}{% endif %}
           {% block inner.extra %}
-              {% if  object.status == 'error' %}
-                <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
-                <h2 class="govuk-heading-m">{% trans 'What should I do next?' %}</h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
-                      You can re-upload a different data set file again. Please ensure <br/>
-                      that your provided data format is correct and that your data set file <br/>
-                      contains valid data.<br/>
+            {% if  object.status == 'error' %}
+              <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
+              <h2 class="govuk-heading-m">{% trans 'What should I do next?' %}</h2>
+              <p class="govuk-body">
+                {% blocktrans %}
+                      You can re-upload a different data set file again. Please ensure <br />
+                      that your provided data format is correct and that your data set file <br />
+                      contains valid data.<br />
                       You can delete this data set to stop using the timetables
                     {% endblocktrans %}
-                </p>
-                <span class="govuk-caption-m">{% trans 'Accepted file formats include .zip and .xml (TransXChange).' %}</span>
-
-                <hr class="govuk-section-break govuk-section-break--l govuk-section-break"/>
-                  {#    <p class="govuk-body">#}
-                  {#    <a role="button" class="govuk-button govuk-button--secondary" href="{% url 'revision-delete' pk=object.dataset_id host hosts.publish %}">#}
-                  {#          {{ _('Delete data') }}#}
-                  {#    </a></p>#}
-
-                <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
-
-              {% elif object.status != 'expired' and object.is_published == True %}
-                <hr class="govuk-section-break govuk-section-break--s govuk-section-break"/>
-                <div class="govuk-grid-row">
-                  <hr class="govuk-section-break govuk-section-break--l govuk-section-break">
-                  <div class="govuk-grid-column-one-third">
-                    <a role="button" class="govuk-button"
-                       href="{% url 'feed-update' pk=object.id host hosts.publish %}">
-                        {{ _('Change data') }}
-                    </a>
-                    <a class="govuk-button govuk-button--link"
-                       href="{% url 'feed-archive' pk=object.id host hosts.publish %}">
-                        {{ _('Archive this data set') }}
-                    </a>
-                  </div>
+              </p>
+              <span class="govuk-caption-m">{% trans 'Accepted file formats include .zip and .xml (TransXChange).' %}</span>
+              <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
+              {#    <p class="govuk-body">#}
+              {#    <a role="button"
+       class="govuk-button govuk-button--secondary"
+       href="{% url 'revision-delete' pk=object.dataset_id host hosts.publish %}">#}
+              {#          {{ _('Delete data') }}#}
+              {#    </a></p>#}
+              <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
+            {% elif object.status != 'expired' and object.is_published == True %}
+              <hr class="govuk-section-break govuk-section-break--s govuk-section-break" />
+              <div class="govuk-grid-row">
+                <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
+                <div class="govuk-grid-column-one-third">
+                  <a role="button" class="govuk-button" href="{% url 'feed-update' pk=object.id host hosts.publish %}">
+                    {{ _("Change data") }}
+                  </a>
+                  <a class="govuk-button govuk-button--link" href="{% url 'feed-archive' pk=object.id host hosts.publish %}">
+                    {{ _("Archive this data set") }}
+                  </a>
                 </div>
-              {% endif %}
-              {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
-
-                <hr class="govuk-section-break govuk-section-break--s govuk-section-break"/>
-                <div class="govuk-grid-row">
-                  <hr class="govuk-section-break govuk-section-break--l govuk-section-break">
-                  <div class="govuk-grid-column-one-third">
-                    <a role="button" class="govuk-button govuk-button--secondary"
-                       href="{% url 'revision-delete' pk=object.dataset_id host hosts.publish %}">
-                        {{ _('Delete data') }}
-                    </a>
-                  </div>
+              </div>
+            {% endif %}
+            {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
+              <hr class="govuk-section-break govuk-section-break--s govuk-section-break" />
+              <div class="govuk-grid-row">
+                <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
+                <div class="govuk-grid-column-one-third">
+                  <a role="button"
+                     class="govuk-button govuk-button--secondary"
+                     href="{% url 'revision-delete' pk=object.dataset_id host hosts.publish %}">
+                    {{ _("Delete data") }}
+                  </a>
                 </div>
-              {% endif %}
+              </div>
+            {% endif %}
           {% endblock %}
+        </div>
       </div>
     </div>
-  </div>
-  <div class="govuk-grid-column-one-third">
+    <div class="govuk-grid-column-one-third">
       {% block inner.secondary %}
-          {% if object.status == 'indexing' or object.status == 'processing' or object.status == 'pending' %}
-            <h2 class="govuk-heading-m">{% trans 'Need help with operator data requirements?' %}</h2>
-            <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-              <li>
-                <a class="govuk-link"
-                   href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{% trans 'View our guidelines here' %}</a>
-              </li>
-              <li>
-                <a class="govuk-link"
-                   href="{% url 'contact' host hosts.root %}">{% trans 'Contact support desk' %}</a>
-              </li>
-            </ul> {% endif %}
+        {% if object.status == 'indexing' or object.status == 'processing' or object.status == 'pending' %}
+          <h2 class="govuk-heading-m">{% trans 'Need help with operator data requirements?' %}</h2>
+          <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+            <li>
+              <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{% trans 'View our guidelines here' %}</a>
+            </li>
+            <li>
+              <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact support desk' %}</a>
+            </li>
+          </ul>
+        {% endif %}
       {% endblock %}
+    </div>
   </div>
-</div>
 {% endblock %}
-
 {% block scripts %}
-    {{ block.super }}
-    {% if object.status == 'success' %}
-      <script>
-          BODSFrontend.initMap("{{ api_root }}", {{  object.id }});
-      </script>
-    {% endif %}
-    {% if object.status == 'processing' or object.status == 'indexing' or object.status == 'pending' %}
-      <script>
-        new BODSFrontend.ProgressIndicator({{ object.dataset_id }});
-      </script>
-    {% endif %}
+  {{ block.super }}
+  {% if object.status == 'success' %}
+    <script>BODSFrontend.initMap("{{ api_root }}", {{  object.id }});</script>
+  {% endif %}
+  {% if object.status == 'processing' or object.status == 'indexing' or object.status == 'pending' %}
+    <script>new BODSFrontend.ProgressIndicator({{ object.dataset_id }});</script>
+  {% endif %}
 {% endblock %}

@@ -1,43 +1,33 @@
 {% extends "guidance/developer/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-    <h1 class="govuk-heading-l">{% trans 'Find data' %}</h1>
-    <p class="govuk-body">
-        {% trans 'You can use the service to find open bus data for your applications and services.' %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans %}
+  <h1 class="govuk-heading-l">{% trans 'Find data' %}</h1>
+  <p class="govuk-body">
+    {% trans 'You can use the service to find open bus data for your applications and services.' %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             Publishers supply data sets (timetables) and data feeds (bus location) to the Bus Open Data Service.
             You can view, download or feedback on these individually when you
         {% endblocktrans %}
-        <a class="govuk-link"
-            href="{% url 'search' host hosts.data %}">{% trans 'Browse for specific data.' %}</a>
-    </p>
-    <p class="govuk-body">
-        {% trans 'Timetables and fares data are static data sets and can be accessed by either' %}
-
-        <a class="govuk-link"
-            href="{% url 'download-timetables' host hosts.data %}">{% trans 'Downloading data ' %}</a>
-        {% trans 'or' %}
-        <a class="govuk-link"
-            href="{% url 'api:timetableopenapi' host hosts.data %}">{% trans 'Using the APIs.' %}</a>
-    </p>
-    <p class="govuk-body govuk-!-padding-bottom-5">
-        {% trans 'Bus location data is provided in real time data feeds and can be accessed by' %}
-        <a class="govuk-link" href="{% url 'downloads' host hosts.data %}">
-            {% trans 'Downloading data ' %}
-        </a>
-        {% trans 'or' %}
-        <a class="govuk-link"
-            href="{% url 'api:avlopenapi' host hosts.data %}">{% trans 'Using the APIs.' %}</a>
-        {% trans 'You must' %}
-        <a class="govuk-link" href="{% url 'account_signup' host host.name %}">{% trans 'register' %}</a>
-        {% trans 'for an account to get an API key.' %}
-    </p>
-
-    {% url 'guidance:support-developer' host hosts.data as url %}
-    {% include '../snippets/previous.html' with url=url prev_page=prev_page %}
-    {% include '../snippets/next.html' with url=url next_page=next_page %}
+    <a class="govuk-link" href="{% url 'search' host hosts.data %}">{% trans 'Browse for specific data.' %}</a>
+  </p>
+  <p class="govuk-body">
+    {% trans 'Timetables and fares data are static data sets and can be accessed by either' %}
+    <a class="govuk-link" href="{% url 'download-timetables' host hosts.data %}">{% trans 'Downloading data ' %}</a>
+    {% trans 'or' %}
+    <a class="govuk-link" href="{% url 'api:timetableopenapi' host hosts.data %}">{% trans 'Using the APIs.' %}</a>
+  </p>
+  <p class="govuk-body govuk-!-padding-bottom-5">
+    {% trans 'Bus location data is provided in real time data feeds and can be accessed by' %}
+    <a class="govuk-link" href="{% url 'downloads' host hosts.data %}">{% trans 'Downloading data ' %}</a>
+    {% trans 'or' %}
+    <a class="govuk-link" href="{% url 'api:avlopenapi' host hosts.data %}">{% trans 'Using the APIs.' %}</a>
+    {% trans 'You must' %}
+    <a class="govuk-link" href="{% url 'account_signup' host host.name %}">{% trans 'register' %}</a>
+    {% trans 'for an account to get an API key.' %}
+  </p>
+  {% url 'guidance:support-developer' host hosts.data as url %}
+  {% include '../snippets/previous.html' with url=url prev_page=prev_page %}
+  {% include '../snippets/next.html' with url=url next_page=next_page %}
 {% endblock %}

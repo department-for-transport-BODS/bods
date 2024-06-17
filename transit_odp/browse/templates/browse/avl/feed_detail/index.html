@@ -1,53 +1,37 @@
 {% extends "page.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'Data feed details' %}
+  {% trans 'Data feed details' %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
-    <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link" href="{% url 'avl-search' host hosts.data %}?status=live">
-            Location Data
-        </a>
-    </li>
-    {% with name=object.name|truncatechars:19 %}
-        {% breadcrumb_url name 'avl-feed-detail' pk=object.id host hosts.data %}
-    {% endwith %}
+  {{ block.super }}
+  {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
+  <li class="govuk-breadcrumbs__list-item">
+    <a class="govuk-breadcrumbs__link" href="{% url 'avl-search' host hosts.data %}?status=live">Location Data</a>
+  </li>
+  {% with name=object.name|truncatechars:19 %}
+    {% breadcrumb_url name 'avl-feed-detail' pk=object.id host hosts.data %}
+  {% endwith %}
 {% endblock %}
-
 {% block content %}
-    {# Page Heading Section #}
-    {% include 'browse/avl/feed_detail/page_heading.html' %}
-
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-
-    {# Main Section #}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            {% if error %}
-                {% include 'browse/avl/feed_detail/error_panel.html' %}
-            {% else %}
-                {% include 'browse/avl/feed_detail/success_content.html' %}
-            {% endif %}
-        </div>
-        <div class="govuk-grid-column-one-third">
-            {% include 'browse/avl/feed_detail/related_links.html' %}
-        </div>
+  {# Page Heading Section #}
+  {% include 'browse/avl/feed_detail/page_heading.html' %}
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+  {# Main Section #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if error %}
+        {% include 'browse/avl/feed_detail/error_panel.html' %}
+      {% else %}
+        {% include 'browse/avl/feed_detail/success_content.html' %}
+      {% endif %}
     </div>
+    <div class="govuk-grid-column-one-third">{% include 'browse/avl/feed_detail/related_links.html' %}</div>
+  </div>
 {% endblock %}
-
-
 {% block scripts %}
-    {{ block.super }}
-    {% if not error %}
-        <script>
-            BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }});
-        </script>
-    {% endif %}
+  {{ block.super }}
+  {% if not error %}<script>BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }});</script>{% endif %}
 {% endblock %}

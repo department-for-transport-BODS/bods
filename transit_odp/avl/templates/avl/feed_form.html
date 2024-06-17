@@ -1,65 +1,59 @@
 {% extends "publish/base.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load publish_stepper %}
-
 {% block title_tag %}
-    {% if form.errors %}{% trans 'Error: ' %}{% endif %}
-
-    {% if title_tag_text %}
-        {{ title_tag_text }}
-    {% else %}
-        {{ block.super }}
-    {% endif %}
+  {% if form.errors %}
+    {% trans 'Error: ' %}
+  {% endif %}
+  {% if title_tag_text %}
+    {{ title_tag_text }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
 {% endblock %}
-
 {% block breadcrumb %}
-    <div class="govuk-breadcrumbs">
-        {% block breadcrumb.content %}
-            {% stepper %}
-        {% endblock %}
-    </div>
-{% endblock %}
-
-{% block content %}
-
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds" style="padding-left: 15px">
-            {% block inner %}
-                <form method="post" enctype="multipart/form-data" novalidate>
-                    {% csrf_token %}
-                    {{ wizard.form.media }}
-                    {{ wizard.management_form }}
-                    {% crispy wizard.form wizard.form.helper %}
-                </form>
-                {% if edit_mode %}
-                    {% if step_title == 'Keep track of the changes you made (optional)' %}
-                        <p class="govuk-body">
-                            <a class="govuk-link" href="{% url 'feed-archive' pk1=pk1 pk=object.dataset.id host hosts.publish %}">
-                                {{ _('Archive this data feed') }}
-                            </a>
-                        </p>
-                    {% endif %}{% endif %}
-                <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
-            {% endblock %}
-        </div>
-        {% if not edit_mode %}
-            <div class="govuk-grid-column-one-third">
-                {% block inner_secondary %}
-                    <h2 class="govuk-heading-m">{% trans 'Need help with operator data requirements?' %}</h2>
-                    <p class="govuk-body">
-                        <a class="govuk-link" style="font-size: 18px"
-                            href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{{ _('View our guidelines here') }}</a>
-                    </p>
-                    <p class="govuk-body">
-                        <a class="govuk-link" style="font-size: 18px"
-                            href="{% url 'contact' host hosts.root %}">{{ _('Contact support desk') }}</a></p>
-                {% endblock %}
-            </div>
-        {% endif %}
-    </div>
-
-    {% block extra_content %}
+  <div class="govuk-breadcrumbs">
+    {% block breadcrumb.content %}
+      {% stepper %}
     {% endblock %}
+  </div>
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds" style="padding-left: 15px">
+      {% block inner %}
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+          {{ wizard.form.media }}
+          {{ wizard.management_form }}
+          {% crispy wizard.form wizard.form.helper %}
+        </form>
+        {% if edit_mode %}
+          {% if step_title == 'Keep track of the changes you made (optional)' %}
+            <p class="govuk-body">
+              <a class="govuk-link" href="{% url 'feed-archive' pk1=pk1 pk=object.dataset.id host hosts.publish %}">
+                {{ _("Archive this data feed") }}
+              </a>
+            </p>
+          {% endif %}
+        {% endif %}
+        <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
+      {% endblock %}
+    </div>
+    {% if not edit_mode %}
+      <div class="govuk-grid-column-one-third">
+        {% block inner_secondary %}
+          <h2 class="govuk-heading-m">{% trans 'Need help with operator data requirements?' %}</h2>
+          <p class="govuk-body">
+            <a class="govuk-link" style="font-size: 18px" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{{ _("View our guidelines here") }}</a>
+          </p>
+          <p class="govuk-body">
+            <a class="govuk-link" style="font-size: 18px" href="{% url 'contact' host hosts.root %}">{{ _("Contact support desk") }}</a>
+          </p>
+        {% endblock %}
+      </div>
+    {% endif %}
+  </div>
+  {% block extra_content %}{% endblock %}
 {% endblock %}

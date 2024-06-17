@@ -1,29 +1,25 @@
 {% extends "site_admin/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
-
 {% block title_tag %}
-    {% trans 'Agent details' %}
+  {% trans 'Agent details' %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Agents' 'users:agent-list' host hosts.admin %}
-    {% breadcrumb_url 'Agent details' 'users:agent-detail' pk=pk host hosts.admin %}
+  {{ block.super }}
+  {% breadcrumb_url 'Agents' 'users:agent-list' host hosts.admin %}
+  {% breadcrumb_url 'Agent details' 'users:agent-detail' pk=pk host hosts.admin %}
 {% endblock %}
-
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            <h1 class="govuk-heading-xl">{% trans "Agent details" %}</h1>
-            <h2 class="govuk-heading-m">{{ object.agent_organisation }}</h2>
-            <h3 class="govuk-hint govuk-!-margin-bottom-9">{{ object.email }}</h3>
-            <p class="govuk-body">{% trans "The agent provides services to the below operator(s)" %}</p>
-            {% render_table table %}
-        </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">{% trans "Agent details" %}</h1>
+      <h2 class="govuk-heading-m">{{ object.agent_organisation }}</h2>
+      <h3 class="govuk-hint govuk-!-margin-bottom-9">{{ object.email }}</h3>
+      <p class="govuk-body">{% trans "The agent provides services to the below operator(s)" %}</p>
+      {% render_table table %}
     </div>
+  </div>
 {% endblock %}

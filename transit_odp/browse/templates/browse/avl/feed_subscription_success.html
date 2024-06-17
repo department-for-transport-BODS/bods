@@ -1,19 +1,14 @@
 {% extends 'browse/timetables/feed_subscription.html' %}
-
 {% load static %}
 {% load i18n %}
-
 {% block title_tag %}
-   {% if subscribe %}
+  {% if subscribe %}
     {% trans 'Subscribed successfully' %}
   {% else %}
     {% trans 'Unsubscribed successfully' %}
   {% endif %}
 {% endblock %}
-
-{% block backlink %}
-{% endblock %}
-
+{% block backlink %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -24,11 +19,7 @@
           {% trans 'You will no longer receive notification on the data feed' %}
         {% endif %}
       </h1>
-
-      <a role="button" class="govuk-button" href="{{ back_url }}">
-          {{ back_button_text }}
-      </a>
-
+      <a role="button" class="govuk-button" href="{{ back_url }}">{{ back_button_text }}</a>
     </div>
   </div>
 {% endblock %}

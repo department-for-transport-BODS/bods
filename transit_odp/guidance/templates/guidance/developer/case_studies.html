@@ -1,640 +1,581 @@
 {% extends "guidance/developer/base.html" %}
-
 {% load i18n %}
 {% load static %}
-
 {% block extra_content %}
-
-    <h1 data-qa="case-studies-header" class="govuk-heading-l">
-        {% filter force_escape %}
-            {% trans 'Case studies' %}
-        {% endfilter %}
-    </h1>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+  <h1 data-qa="case-studies-header" class="govuk-heading-l">
+    {% filter force_escape %}
+      {% trans 'Case studies' %}
+    {% endfilter %}
+  </h1>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 The Bus Open Data Service (BODS) is an online service that provides access to UK
                 bus company data.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 All the data on the service has been published by the bus companies themselves.
                 There are 3 types of data available on the service:
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-    <ul class="govuk-list govuk-list--bullet">
-        <li>
-            {% filter force_escape %}
-                {% trans 'Timetables data' %}
-            {% endfilter %}
-        </li>
-        <li>
-            {% filter force_escape %}
-                {% trans 'Bus location data' %}
-            {% endfilter %}
-        </li>
-        <li>
-            {% filter force_escape %}
-                {% trans 'Fares data' %}
-            {% endfilter %}
-        </li>
-    </ul>
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>
+      {% filter force_escape %}
+        {% trans 'Timetables data' %}
+      {% endfilter %}
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'Bus location data' %}
+      {% endfilter %}
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'Fares data' %}
+      {% endfilter %}
+    </li>
+  </ul>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 This guide has been created to show a simple example of how to use the BODS API.
                 For this case study, we will demonstrate how to download an individual dataset
                 from one of the operator companies on BODS via the API.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <h2 data-qa="setting-up-header" class="govuk-heading-m">
-        {% filter force_escape %}
-            {% trans 'Setting up' %}
-        {% endfilter %}
-    </h2>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <h2 data-qa="setting-up-header" class="govuk-heading-m">
+    {% filter force_escape %}
+      {% trans 'Setting up' %}
+    {% endfilter %}
+  </h2>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 To start using this guide, you will need:
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-    <ol class="govuk-list govuk-list--number">
-        <li>
-            {% filter force_escape %}
-                {% trans 'A Postman account' %}
-            {% endfilter %}
-        </li>
-        <li>
-            {% filter force_escape %}
-                {% trans 'An API key' %}
-            {% endfilter %}
-        </li>
-    </ol>
-
-    <h3 data-qa="postman-account-header" class="govuk-heading-s">
-        {% filter force_escape %}
-            {% trans 'Postman account' %}
-        {% endfilter %}
-    </h3>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <ol class="govuk-list govuk-list--number">
+    <li>
+      {% filter force_escape %}
+        {% trans 'A Postman account' %}
+      {% endfilter %}
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'An API key' %}
+      {% endfilter %}
+    </li>
+  </ol>
+  <h3 data-qa="postman-account-header" class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans 'Postman account' %}
+    {% endfilter %}
+  </h3>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 This guide uses Postman to download the data. Go to
             {% endblocktrans %}
-        {% endfilter %}
-        <a class="govuk-link"
-            href="http://www.postman.com"
-            target="_blank"
-            rel="noopener noreferrer">
-            {% filter force_escape %}
-                {% trans 'Postman' %}
-            {% endfilter %}
-        </a>
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <a class="govuk-link" href="http://www.postman.com" target="_blank" rel="noopener noreferrer">
+      {% filter force_escape %}
+        {% trans 'Postman' %}
+      {% endfilter %}
+    </a>
+    {% filter force_escape %}
+      {% blocktrans %}
                 and sign up (for free) if you don't already have an account.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <h3 data-qa="api-key-header" class="govuk-heading-s">
-        {% filter force_escape %}
-            {% trans 'API key' %}
-        {% endfilter %}
-    </h3>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% trans 'Next you need an' %}
-        {% endfilter %}
-        <b>
-            {% filter force_escape %}
-                {% trans 'API key' %}
-            {% endfilter %}
-        </b>
-        {% filter force_escape %}
-            {% trans 'for BODS.' %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <h3 data-qa="api-key-header" class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans 'API key' %}
+    {% endfilter %}
+  </h3>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% trans 'Next you need an' %}
+    {% endfilter %}
+    <b>
+      {% filter force_escape %}
+        {% trans 'API key' %}
+      {% endfilter %}
+    </b>
+    {% filter force_escape %}
+      {% trans 'for BODS.' %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 If you don't have an account on BODS, you can create one at
             {% endblocktrans %}
-        {% endfilter %}
-        <a class="govuk-link" href="{% url 'account_signup' host hosts.data %}">
-            {% filter force_escape %}
-                {% trans 'Create account' %}
-            {% endfilter %}
-        </a>.
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <a class="govuk-link" href="{% url 'account_signup' host hosts.data %}">
+      {% filter force_escape %}
+        {% trans 'Create account' %}
+      {% endfilter %}
+    </a>.
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 Sign in to BODS at
             {% endblocktrans %}
-        {% endfilter %}
-        <a class="govuk-link" href="{% url 'account_login' host hosts.data %}">
-            {% filter force_escape %}
-                {% trans 'Sign in' %}
-            {% endfilter %}
-        </a>.
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <a class="govuk-link" href="{% url 'account_login' host hosts.data %}">
+      {% filter force_escape %}
+        {% trans 'Sign in' %}
+      {% endfilter %}
+    </a>.
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 In the top right, click
             {% endblocktrans %}
-        {% endfilter %}
-        <span class="guidance-text-highlight">
-            {% filter force_escape %}
-                {% trans 'My account' %}
-            {% endfilter %}
-        </span>
-        <span class="govuk-!-padding-1">
-            {% filter force_escape %}
-                {% trans '>' %}
-            {% endfilter %}
-        </span>
-        <span class="guidance-text-highlight">
-            {% filter force_escape %}
-                {% trans 'Account settings' %}
-            {% endfilter %}
-        </span>
-    </p>
-
-    <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
-        <img class="govuk-!-width-full"
-            alt="Account settings"
-            src="{% static 'frontend/images/case-study/account-settings.png' %}">
-    </div>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% trans 'Your' %}
-        {% endfilter %}
-        <b>
-            {% filter force_escape %}
-                {% trans 'API key' %}
-            {% endfilter %}
-        </b>
-        {% filter force_escape %}
-            {% trans 'is shown in the settings. Make a note of it.' %}
-        {% endfilter %}
-    </p>
-
-    <h2 data-qa="download-dataset-header" class="govuk-heading-m">
-        {% filter force_escape %}
-            {% trans 'Download dataset' %}
-        {% endfilter %}
-    </h2>
-
-    <h3 data-qa="find-bods-datasets-header" class="govuk-heading-s">
-        {% filter force_escape %}
-            {% trans 'Find BODS datasets' %}
-        {% endfilter %}
-    </h3>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <span class="guidance-text-highlight">
+      {% filter force_escape %}
+        {% trans 'My account' %}
+      {% endfilter %}
+    </span>
+    <span class="govuk-!-padding-1">
+      {% filter force_escape %}
+        {% trans '>' %}
+      {% endfilter %}
+    </span>
+    <span class="guidance-text-highlight">
+      {% filter force_escape %}
+        {% trans 'Account settings' %}
+      {% endfilter %}
+    </span>
+  </p>
+  <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
+    <img class="govuk-!-width-full" alt="Account settings" src="{% static 'frontend/images/case-study/account-settings.png' %}" />
+  </div>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% trans 'Your' %}
+    {% endfilter %}
+    <b>
+      {% filter force_escape %}
+        {% trans 'API key' %}
+      {% endfilter %}
+    </b>
+    {% filter force_escape %}
+      {% trans 'is shown in the settings. Make a note of it.' %}
+    {% endfilter %}
+  </p>
+  <h2 data-qa="download-dataset-header" class="govuk-heading-m">
+    {% filter force_escape %}
+      {% trans 'Download dataset' %}
+    {% endfilter %}
+  </h2>
+  <h3 data-qa="find-bods-datasets-header" class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans 'Find BODS datasets' %}
+    {% endfilter %}
+  </h3>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 In order to download the dataset you’re interested in, you need to find its
             {% endblocktrans %}
-        {% endfilter %}
-        <b>
-            {% filter force_escape %}
-                {% trans 'Dataset ID.' %}
-            {% endfilter %}
-        </b>
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <b>
+      {% filter force_escape %}
+        {% trans 'Dataset ID.' %}
+      {% endfilter %}
+    </b>
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 The starting point for finding this is the data catalogue.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 Here’s how to download it.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% trans 'Type the URL' %}
-        {% endfilter %}
-        <span class="guidance-text-highlight">
-            https://data.bus-data.dft.gov.uk/catalogue/</span>
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% trans 'Type the URL' %}
+    {% endfilter %}
+    <span class="guidance-text-highlight">https://data.bus-data.dft.gov.uk/catalogue/</span>
+    {% filter force_escape %}
+      {% blocktrans %}
                 into the address bar of a web browser such as Google Chrome, hit Return and save
                 the resulting
             {% endblocktrans %}
-        {% endfilter %}
-        <span class="guidance-text-highlight">.zip</span>
-        {% filter force_escape %}
-            {% trans 'file.' %}
-        {% endfilter %}
-    </p>
-
-    <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
-        <img class="govuk-!-width-full"
-            alt="Chrome address bar"
-            src="{% static 'frontend/images/case-study/chrome-address-bar.png' %}">
-    </div>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <span class="guidance-text-highlight">.zip</span>
+    {% filter force_escape %}
+      {% trans 'file.' %}
+    {% endfilter %}
+  </p>
+  <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
+    <img class="govuk-!-width-full"
+         alt="Chrome address bar"
+         src="{% static 'frontend/images/case-study/chrome-address-bar.png' %}" />
+  </div>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 Unlock the
             {% endblocktrans %}
-        {% endfilter %}
-        <span class="guidance-text-highlight">.zip</span>
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <span class="guidance-text-highlight">.zip</span>
+    {% filter force_escape %}
+      {% blocktrans %}
                 file. The unzipped folder will contain a file called
             {% endblocktrans %}
-        {% endfilter %}
-        <span class="guidance-text-highlight">overall_data_catalogue.csv</span>.
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <span class="guidance-text-highlight">overall_data_catalogue.csv</span>.
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 Open this file in Excel (or equivalent) as a comma-separated file; be careful not
                 to specify any other separators, such as semi-colon.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 The spreadsheet that opens lists all the datasets for each operator.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 The column called
             {% endblocktrans %}
-        {% endfilter %}
-        <span class="guidance-text-highlight">Operator</span>
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <span class="guidance-text-highlight">Operator</span>
+    {% filter force_escape %}
+      {% blocktrans %}
                 lists the name of the bus company that published the data.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body govuk-!-margin-bottom-2">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body govuk-!-margin-bottom-2">
+    {% filter force_escape %}
+      {% blocktrans %}
                 The column
             {% endblocktrans %}
-        {% endfilter %}
-        <span class="guidance-text-highlight">Dataset Type</span>
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <span class="guidance-text-highlight">Dataset Type</span>
+    {% filter force_escape %}
+      {% blocktrans %}
                 lists the type of data in each dataset, which will be one of:
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <ul class="govuk-list govuk-list--bullet">
-        <li>
-            {% filter force_escape %}
-                {% trans 'Timetables' %}
-            {% endfilter %}
-        </li>
-        <li>
-            {% filter force_escape %}
-                {% trans 'Automatic Vehicle Locations (i.e. bus location data)' %}
-            {% endfilter %}
-        </li>
-        <li>
-            {% filter force_escape %}
-                {% trans 'Fares' %}
-            {% endfilter %}
-        </li>
-    </ul>
-
-    <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
-        <img class="govuk-!-width-full"
-            alt="Data catalogue"
-            src="{% static 'frontend/images/case-study/data-catalogue-operator.png' %}">
-    </div>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>
+      {% filter force_escape %}
+        {% trans 'Timetables' %}
+      {% endfilter %}
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'Automatic Vehicle Locations (i.e. bus location data)' %}
+      {% endfilter %}
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'Fares' %}
+      {% endfilter %}
+    </li>
+  </ul>
+  <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
+    <img class="govuk-!-width-full"
+         alt="Data catalogue"
+         src="{% static 'frontend/images/case-study/data-catalogue-operator.png' %}" />
+  </div>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 First, browse or search these two columns to find the data type from the operator
                 you're interested in.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 Then use the
             {% endblocktrans %}
-        {% endfilter %}
-        <span class="guidance-text-highlight">Data Set/Feed Name</span>
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <span class="guidance-text-highlight">Data Set/Feed Name</span>
+    {% filter force_escape %}
+      {% blocktrans %}
                 column to find the name of the dataset you want to download.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 Get the
             {% endblocktrans %}
-        {% endfilter %}
-        <b>
-            {% filter force_escape %}
-                {% trans 'Dataset ID' %}
-            {% endfilter %}
-        </b>
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <b>
+      {% filter force_escape %}
+        {% trans 'Dataset ID' %}
+      {% endfilter %}
+    </b>
+    {% filter force_escape %}
+      {% blocktrans %}
                 from the
             {% endblocktrans %}
-        {% endfilter %}
-        <span class="guidance-text-highlight">Dataset ID</span>
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <span class="guidance-text-highlight">Dataset ID</span>
+    {% filter force_escape %}
+      {% blocktrans %}
                 column.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
-        <img class="govuk-!-width-full"
-            alt="Data catalogue"
-            src="{% static 'frontend/images/case-study/data-catalogue-dataset-id.png' %}">
-    </div>
-
-    <h3 data-qa="download-header" class="govuk-heading-s">
-        {% filter force_escape %}
-            {% trans 'Download' %}
-        {% endfilter %}
-    </h3>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
+    <img class="govuk-!-width-full"
+         alt="Data catalogue"
+         src="{% static 'frontend/images/case-study/data-catalogue-dataset-id.png' %}" />
+  </div>
+  <h3 data-qa="download-header" class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans 'Download' %}
+    {% endfilter %}
+  </h3>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 Now that you have the
             {% endblocktrans %}
-        {% endfilter %}
-        <b>
-            {% filter force_escape %}
-                {% trans 'Dataset ID' %}
-            {% endfilter %}
-        </b>
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <b>
+      {% filter force_escape %}
+        {% trans 'Dataset ID' %}
+      {% endfilter %}
+    </b>
+    {% filter force_escape %}
+      {% blocktrans %}
                 you can download the dataset in Postman as follows.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 Go to Postman and create a new request:
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <ol class="govuk-list govuk-list--number">
+    {% endfilter %}
+  </p>
+  <ol class="govuk-list govuk-list--number">
+    <li>
+      {% filter force_escape %}
+        {% trans 'Set the request type to' %}
+      {% endfilter %}
+      <span class="guidance-text-highlight">GET</span>
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'Set the URL according to data type:' %}
+      {% endfilter %}
+      <ul class="govuk-list govuk-list--bullet">
         <li>
-            {% filter force_escape %}
-                {% trans 'Set the request type to' %}
-            {% endfilter %}
-            <span class="guidance-text-highlight">GET</span>
-        </li>
-        <li>
-            {% filter force_escape %}
-                {% trans 'Set the URL according to data type:' %}
-            {% endfilter %}
-            <ul class="govuk-list govuk-list--bullet">
-                <li>
-                    {% filter force_escape %}
-                        {% blocktrans %}
+          {% filter force_escape %}
+            {% blocktrans %}
                             For timetables data, use
                         {% endblocktrans %}
-                    {% endfilter %}
-                    <span class="guidance-text-highlight">
-                        https://data.bus-data.dft.gov.uk/api/v1/dataset/{ID}/</span>
-                </li>
-                <li>
-                    {% filter force_escape %}
-                        {% blocktrans %}
+          {% endfilter %}
+          <span class="guidance-text-highlight">https://data.bus-data.dft.gov.uk/api/v1/dataset/{ID}/</span>
+        </li>
+        <li>
+          {% filter force_escape %}
+            {% blocktrans %}
                             For bus location data, use
                         {% endblocktrans %}
-                    {% endfilter %}
-                    <span class="guidance-text-highlight">
-                        https://data.bus-data.dft.gov.uk/api/v1/datafeed/{ID}/</span>
-                </li>
-                <li>
-                    {% filter force_escape %}
-                        {% blocktrans %}
+          {% endfilter %}
+          <span class="guidance-text-highlight">https://data.bus-data.dft.gov.uk/api/v1/datafeed/{ID}/</span>
+        </li>
+        <li>
+          {% filter force_escape %}
+            {% blocktrans %}
                             For fares data, use
                         {% endblocktrans %}
-                    {% endfilter %}
-                    <span class="guidance-text-highlight">
-                        https://data.bus-data.dft.gov.uk/api/v1/fares/dataset/{ID}/</span>
-                </li>
-            </ul>
-            {% filter force_escape %}
-                {% trans 'where' %}
-            {% endfilter %}
-            <span class="guidance-text-highlight">{ID}</span>
-            {% filter force_escape %}
-                {% trans 'is the' %}
-            {% endfilter %}
-            <b>
-                {% filter force_escape %}
-                    {% trans 'Dataset ID' %}
-                {% endfilter %}
-            </b>
-
+          {% endfilter %}
+          <span class="guidance-text-highlight">https://data.bus-data.dft.gov.uk/api/v1/fares/dataset/{ID}/</span>
         </li>
-        <li>
-            {% filter force_escape %}
-                {% trans 'Set a param with key' %}
-            {% endfilter %}
-            <span class="guidance-text-highlight">api_key</span>
-            {% filter force_escape %}
-                {% trans 'and value equal to your' %}
-            {% endfilter %}
-            <b>
-                {% filter force_escape %}
-                    {% trans 'API key' %}
-                {% endfilter %}
-            </b>
-        </li>
-        <li>
-            {% filter force_escape %}
-                {% trans 'Click Send' %}
-            {% endfilter %}
-        </li>
-    </ol>
-
-    <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
-        <img class="govuk-!-width-full"
-            alt="Postman request"
-            src="{% static 'frontend/images/case-study/postman-timetables-request.png' %}">
-    </div>
-
-    <p class="govuk-body">
+      </ul>
+      {% filter force_escape %}
+        {% trans 'where' %}
+      {% endfilter %}
+      <span class="guidance-text-highlight">{ID}</span>
+      {% filter force_escape %}
+        {% trans 'is the' %}
+      {% endfilter %}
+      <b>
         {% filter force_escape %}
-            {% blocktrans %}
+          {% trans 'Dataset ID' %}
+        {% endfilter %}
+      </b>
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'Set a param with key' %}
+      {% endfilter %}
+      <span class="guidance-text-highlight">api_key</span>
+      {% filter force_escape %}
+        {% trans 'and value equal to your' %}
+      {% endfilter %}
+      <b>
+        {% filter force_escape %}
+          {% trans 'API key' %}
+        {% endfilter %}
+      </b>
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'Click Send' %}
+      {% endfilter %}
+    </li>
+  </ol>
+  <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
+    <img class="govuk-!-width-full"
+         alt="Postman request"
+         src="{% static 'frontend/images/case-study/postman-timetables-request.png' %}" />
+  </div>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 The response is different for each of the three data types. The following section
                 gives a synopsis for each type.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <h2 data-qa="setting-up-header" class="govuk-heading-m">
-        {% filter force_escape %}
-            {% trans 'Interpreting the response' %}
-        {% endfilter %}
-    </h2>
-
-    <h3 data-qa="setting-up-header" class="govuk-heading-s">
-        {% filter force_escape %}
-            {% trans 'Timetables and fares data' %}
-        {% endfilter %}
-    </h3>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <h2 data-qa="setting-up-header" class="govuk-heading-m">
+    {% filter force_escape %}
+      {% trans 'Interpreting the response' %}
+    {% endfilter %}
+  </h2>
+  <h3 data-qa="setting-up-header" class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans 'Timetables and fares data' %}
+    {% endfilter %}
+  </h3>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 For timetables and fares data, the response is a JSON text file that describes
                 properties of the dataset pertinent to BODS.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 To get more information, use the
             {% endblocktrans %}
-        {% endfilter %}
-        <span class="guidance-text-highlight">url</span>
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+    <span class="guidance-text-highlight">url</span>
+    {% filter force_escape %}
+      {% blocktrans %}
                 parameter to download the original dataset uploaded by the bus company.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
-        <img class="govuk-!-width-full"
-            alt="Postman response"
-            src="{% static 'frontend/images/case-study/postman-timetables-response.png' %}">
-    </div>
-
-    <ol class="govuk-list govuk-list--number">
+    {% endfilter %}
+  </p>
+  <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
+    <img class="govuk-!-width-full"
+         alt="Postman response"
+         src="{% static 'frontend/images/case-study/postman-timetables-response.png' %}" />
+  </div>
+  <ol class="govuk-list govuk-list--number">
+    <li>
+      {% filter force_escape %}
+        {% trans 'Click on the value of' %}
+      {% endfilter %}
+      <span class="guidance-text-highlight">url</span>
+      {% filter force_escape %}
+        {% trans 'in Postman' %}
+      {% endfilter %}
+      <ul class="govuk-list govuk-list--bullet">
         <li>
-            {% filter force_escape %}
-                {% trans 'Click on the value of' %}
-            {% endfilter %}
-            <span class="guidance-text-highlight">url</span>
-            {% filter force_escape %}
-                {% trans 'in Postman' %}
-            {% endfilter %}
-            <ul class="govuk-list govuk-list--bullet">
-                <li>
-                    {% filter force_escape %}
-                        {% trans 'This creates a new Postman request' %}
-                    {% endfilter %}
-                </li>
-            </ul>
+          {% filter force_escape %}
+            {% trans 'This creates a new Postman request' %}
+          {% endfilter %}
         </li>
+      </ul>
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'Set the request type to' %}
+      {% endfilter %}
+      <span class="guidance-text-highlight">GET</span>
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'Click "Send and Download" from the "Send" dropdown' %}
+      {% endfilter %}
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'Save the file to disk' %}
+      {% endfilter %}
+      <ul class="govuk-list govuk-list--bullet">
         <li>
-            {% filter force_escape %}
-                {% trans 'Set the request type to' %}
-            {% endfilter %}
-            <span class="guidance-text-highlight">GET</span>
+          {% filter force_escape %}
+            {% trans 'The file will either be a' %}
+          {% endfilter %}
+          <span class="guidance-text-highlight">.zip</span>
+          {% filter force_escape %}
+            {% trans 'or a' %}
+          {% endfilter %}
+          <span class="guidance-text-highlight">.xml</span>
+          {% filter force_escape %}
+            {% trans 'file' %}
+          {% endfilter %}
         </li>
-        <li>
-            {% filter force_escape %}
-                {% trans 'Click "Send and Download" from the "Send" dropdown' %}
-            {% endfilter %}
-        </li>
-        <li>
-            {% filter force_escape %}
-                {% trans 'Save the file to disk' %}
-            {% endfilter %}
-            <ul class="govuk-list govuk-list--bullet">
-                <li>
-                    {% filter force_escape %}
-                        {% trans 'The file will either be a' %}
-                    {% endfilter %}
-                    <span class="guidance-text-highlight">.zip</span>
-                    {% filter force_escape %}
-                        {% trans 'or a' %}
-                    {% endfilter %}
-                    <span class="guidance-text-highlight">.xml</span>
-                    {% filter force_escape %}
-                        {% trans 'file' %}
-                    {% endfilter %}
-                </li>
-            </ul>
-        </li>
-        <li>
-            {% filter force_escape %}
-                {% trans 'Open the file with an appropriate application' %}
-            {% endfilter %}
-        </li>
-    </ol>
-
-    <h3 data-qa="setting-up-header" class="govuk-heading-s">
-        {% filter force_escape %}
-            {% trans 'Bus location data' %}
-        {% endfilter %}
-    </h3>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+      </ul>
+    </li>
+    <li>
+      {% filter force_escape %}
+        {% trans 'Open the file with an appropriate application' %}
+      {% endfilter %}
+    </li>
+  </ol>
+  <h3 data-qa="setting-up-header" class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans 'Bus location data' %}
+    {% endfilter %}
+  </h3>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 For bus location data, the response from the dataset query comprises a SIRI-VM
                 XML file describing the data feed. It looks like this:
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
-        <img class="govuk-!-width-full"
-            alt="Postman response"
-            src="{% static 'frontend/images/case-study/postman-avl-response.png' %}">
-    </div>
-
+    {% endfilter %}
+  </p>
+  <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
+    <img class="govuk-!-width-full"
+         alt="Postman response"
+         src="{% static 'frontend/images/case-study/postman-avl-response.png' %}" />
+  </div>
 {% endblock %}

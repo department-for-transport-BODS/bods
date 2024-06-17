@@ -1,8 +1,5 @@
 {% extends "guidance/local_authorities/base.html" %}
-
 {% load i18n %}
-
-
 {% block extra_content %}
   <h1 class="govuk-heading-xl">{% trans 'Providing data for Local Authority operated buses' %}</h1>
   <p class="govuk-body">
@@ -10,9 +7,9 @@
       Bus operators owned or managed by Local Authorities must comply with the
       new legal requirements to publish open data - please see our
     {% endblocktrans %}
-    <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=Overview">operator guidance.</a></p>
-
-{% url 'guidance:support-local_authorities' host hosts.publish as url %}
-{% include '../snippets/previous.html' with url=url prev_page=prev_page %}
-{% include '../snippets/next.html' with url=url next_page=next_page %}
+    <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=Overview">operator guidance.</a>
+  </p>
+  {% url 'guidance:support-local_authorities' host hosts.publish as url %}
+  {% include '../snippets/previous.html' with url=url prev_page=prev_page %}
+  {% include '../snippets/next.html' with url=url next_page=next_page %}
 {% endblock %}

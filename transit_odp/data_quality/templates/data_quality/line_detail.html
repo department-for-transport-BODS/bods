@@ -1,15 +1,12 @@
 {% extends "data_quality/base.html" %}
 {% load render_table from django_tables2 %}
 {% load i18n %}
-
 {% block title_tag %}
-    {% blocktrans %}{{ title }} observation detail{% endblocktrans %}
+  {% blocktrans %}{{ title }} observation detail{% endblocktrans %}
 {% endblock %}
-
 {% block backlink %}
   {% include 'snippets/backlink.html' with url=back_url %}
 {% endblock %}
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -18,42 +15,30 @@
       {% include 'data_quality/snippets/detail_map.html' %}
     </div>
   </div>
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
-        {% trans "Which journeys have been affected?" %}
-      </h1>
-
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{% trans "Which journeys have been affected?" %}</h1>
       <div class="total_vehicles">
-        <span class="govuk-heading-xl govuk-!-margin-0">
-          {{ object.vehicle_journeys.all | length }}
-        </span>
+        <span class="govuk-heading-xl govuk-!-margin-0">{{ object.vehicle_journeys.all | length }}</span>
         <span class="govuk-body-s govuk-!-font-weight-bold">
           Total journeys affected
           {% if report_date %}over 7 days from {{ report_date | date:"d/m/Y" }}{% endif %}
         </span>
       </div>
-
-      <h2 class="govuk-heading-m">
-        {% trans "Example vehicle journeys affected" %}
-      </h2>
-      <p class="govuk-body">
-        Below are the list of journeys affected with missing block number.
-      </p>
+      <h2 class="govuk-heading-m">{% trans "Example vehicle journeys affected" %}</h2>
+      <p class="govuk-body">Below are the list of journeys affected with missing block number.</p>
       <div>{% render_table table %}</div>
     </div>
   </div>
 {% endblock %}
-
 {% block scripts %}
-    {{ block.super }}
-    <script>
+  {{ block.super }}
+  <script>
       BODSFrontend.initWarningDetailMap(
         "{{ api_root }}",
         "{{ service_pattern_id }}",
         "{{ stop_ids }}",
         "{{ affected_stop_ids }}",
         "{{ service_link_ids }}");
-    </script>
+  </script>
 {% endblock %}
