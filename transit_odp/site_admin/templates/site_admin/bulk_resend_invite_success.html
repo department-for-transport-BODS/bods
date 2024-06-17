@@ -1,35 +1,38 @@
 {% extends "base_success.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block title_tag %}
-    {% filter force_escape %}{% trans 'User invited' %}{% endfilter %}
+  {% filter force_escape %}
+    {% trans 'User invited' %}
+  {% endfilter %}
 {% endblock %}
-
 {% block title_text %}
-    {% filter force_escape %}{% trans 'Invitation has been sent' %}{% endfilter %}
+  {% filter force_escape %}
+    {% trans 'Invitation has been sent' %}
+  {% endfilter %}
 {% endblock %}
-
 {% block body_text %}
-    {% filter force_escape %}
-        {% blocktrans %}
+  {% filter force_escape %}
+    {% blocktrans %}
             An email invite has been sent to
         {% endblocktrans %}
-    {% endfilter %}
-    {% for email in resend_emails %}
-        {{ email }}{% if forloop.last %}.{% else %},{% endif %}
-    {% endfor %}
+  {% endfilter %}
+  {% for email in resend_emails %}
+    {{ email }}
+    {% if forloop.last %}
+      .
+    {% else %}
+      ,
+    {% endif %}
+  {% endfor %}
 {% endblock %}
-
 {% block button_href %}
-    {% url 'users:organisation-manage' host hosts.admin %}
+  {% url 'users:organisation-manage' host hosts.admin %}
 {% endblock %}
-
 {% block button_text %}
-    {% filter force_escape %}{% trans 'Go back to user management' %}{% endfilter %}
+  {% filter force_escape %}
+    {% trans 'Go back to user management' %}
+  {% endfilter %}
 {% endblock %}

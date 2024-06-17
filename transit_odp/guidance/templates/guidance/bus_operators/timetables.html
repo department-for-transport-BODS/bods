@@ -1,52 +1,47 @@
 {% extends "guidance/bus_operators/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-    <h1 data-qa="timetables-header" class="govuk-heading-l">{% trans 'Timetables data requirement' %}</h1>
-    <p class="govuk-body">
-        {% blocktrans %}
+  <h1 data-qa="timetables-header" class="govuk-heading-l">{% trans 'Timetables data requirement' %}</h1>
+  <p class="govuk-body">
+    {% blocktrans %}
             Operators will be expected to upgrade their systems/processes and upskill their staff to provide timetables data to the
             service in the TransXChange Version 2.4 from 31st December 2020. The Bus Open Data Service is now ready for operators to
             start publishing their data.
         {% endblocktrans %}
-    </p>
-
-    <h2 data-qa="what-trans-header" class="govuk-heading-l">{% trans 'What is TransXChange?' %}</h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <h2 data-qa="what-trans-header" class="govuk-heading-l">{% trans 'What is TransXChange?' %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             Timetables data must be published using TransXChange (TxC); the agreed industry
             standard for the publication of schedule data. Omnibus will launch a 2.4 validator
             and export in autumn 2020.
         {% endblocktrans %}
-    </p>
-
-    <h2 data-qa="produce-trans-header" class="govuk-heading-l">{% trans 'How can I produce TransXchange?' %}</h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <h2 data-qa="produce-trans-header" class="govuk-heading-l">{% trans 'How can I produce TransXchange?' %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             Speak with your Local Transport Authority about the TransXChange data they can provide
             to you. Methods of producing TransXChange 2.4 include procuring scheduling
             software or using the free TxC 2.4 tool provided by DfT, from the following website:
         {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.gov.uk/guidance/publish-bus-open-data">
                 https://www.gov.uk/guidance/publish-bus-open-data
             </a>
         {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             If you require additional support, DfT can support the creation of TxC using the
             tool. For more information please contact
             <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>
         {% endblocktrans %}
-    </p>
-
-    <h2 data-qa="block-number-header" class="govuk-heading-l">{% trans 'Block Number' %}</h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <h2 data-qa="block-number-header" class="govuk-heading-l">{% trans 'Block Number' %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             One of the fields within the timetables data is Block Number. Operators are encouraged to include the BlockNumber field
             in all their TransXChange 2.4 files as soon as this information becomes available to the operator because it enables
             data consumers to combine information from timetables and bus location data. This enables them to provide quality
@@ -55,34 +50,28 @@
             their apps and services. The corresponding object in the location data is BlockRef, often powered by running boards or
             driver duties.
         {% endblocktrans %}
-    </p>
-
-    <h2 data-qa="revision-number-header" class="govuk-heading-l">
-        {% trans 'Revision number' %}
-    </h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <h2 data-qa="revision-number-header" class="govuk-heading-l">{% trans 'Revision number' %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             Use the RevisionNumber in your TransXChange file to indicate the TransXChange file you are replacing. It will be
             important to indicate to consumers of your data how to connect datasets and maintain version control. If multiple files
             are valid within a period the highest revision number should be considered the correct file.
         {% endblocktrans %}
-    </p>
-
-    <h2 data-qa="trans-profile-header" class="govuk-heading-l">{% trans 'TransXChange profile' %}</h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <h2 data-qa="trans-profile-header" class="govuk-heading-l">{% trans 'TransXChange profile' %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             The guide is for technology suppliers (ETM and scheduling software) as well as operators. It provides an overview of how
             the TransXChange model works, a detailed description of the schema elements, worked examples and technical annexes,
             including a specification of the integrity rules used in TransXchange.
         {% endblocktrans %}
-    </p>
-
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.gov.uk/government/collections/transxchange">
                 https://www.gov.uk/government/collections/transxchange
             </a>
         {% endblocktrans %}
-    </p>
-
+  </p>
 {% endblock %}

@@ -1,7 +1,5 @@
 {% extends "guidance/local_authorities/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
   <h1 class="govuk-heading-xl">{% trans 'Providing an Assisted Digital channel' %}</h1>
   <p class="govuk-body">
@@ -10,18 +8,18 @@
       may wish to post bus information to you. At present many do this during the r
       egistration process. You may wish to contact these operators to ask why they are
       unable to use the digital channel, given that this is now easier than ever before.
-    {% endblocktrans %}</p>
-  <hr class="govuk-section-break govuk-section-break--s govuk-section-break">
+    {% endblocktrans %}
+  </p>
+  <hr class="govuk-section-break govuk-section-break--s govuk-section-break" />
   <p class="govuk-body">
-  {% blocktrans %}
+    {% blocktrans %}
     Your Local Authority may want to assist local bus operators who say that they are only
     able to provide a paper submission. In that case, we recommend that you take the
     information from the paper submission and use it to generate a TransXChange file,
     in the same way as you currently would for paper bus service registrations.
   {% endblocktrans %}
   </p>
-
-{% url 'guidance:support-local_authorities' host hosts.publish as url %}
-{% include '../snippets/previous.html' with url=url prev_page=prev_page %}
-{% include '../snippets/next.html' with url=url next_page=next_page %}
+  {% url 'guidance:support-local_authorities' host hosts.publish as url %}
+  {% include '../snippets/previous.html' with url=url prev_page=prev_page %}
+  {% include '../snippets/next.html' with url=url next_page=next_page %}
 {% endblock %}

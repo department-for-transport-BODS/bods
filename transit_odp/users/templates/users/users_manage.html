@@ -1,92 +1,71 @@
 {% extends "users/base.html" %}
-
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'Manage user access' %}
+  {% trans 'Manage user access' %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'User management' 'users:manage' pk=pk %}
+  {{ block.super }}
+  {% breadcrumb_url 'User management' 'users:manage' pk=pk %}
 {% endblock %}
-
-
-{% block title_text %}{% trans 'User management' %}{% endblock %}
+{% block title_text %}
+  {% trans 'User management' %}
+{% endblock %}
 {% block subtitle %}{% endblock %}
-
 {% block extra_content %}
-    <div class="govuk-!-margin-top-0">
-        <h2 class="govuk-heading-m">{% trans "Manage your team's access" %}</h2>
-        <table class="govuk-table manage-users-table">
-            <thead class="govuk-table__head govuk-body-m">
-                <tr class="govuk-table__row">
-                    <th class="govuk-table__header" scope="col">User</th>
-                    <th class="govuk-table__header">Type</th>
-                    <th class="govuk-table__header">Status</th>
-                    <th class="govuk-table__header">Actions</th>
-                    <th class="govuk-table__header"></th>
-                </tr>
-            </thead>
-            <tbody class="govuk-table__body govuk-body-m">
-
-                {% for user in users %}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell">
-                            <a class="govuk-link" href="{% url 'users:manage-user-detail' pk=user.id %}">
-                                {{ user.email }}
-                            </a>
-                        </td>
-                        <td class="govuk-table__cell">{% trans user.pretty_account_name %}</td>
-                        <td class="govuk-table__cell ">
-                            {% if user.is_active %}Active{% else %}Inactive{% endif %}
-                        </td>
-                        <td class="govuk-table__cell "></td>
-                    </tr>
-                {% endfor %}
-
-                {% for invite in pending_standard_invites %}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell">
-                            {{ invite.email }}
-                        </td>
-                        <td class="govuk-table__cell"></td>
-                        <td class="govuk-table__cell ">
-                            Pending invite
-                        </td>
-                        <td class="govuk-table__cell ">
-                            <a class="govuk-link"
-                                href="{% url 'users:re-invite' pk=invite.id host host.name %}">
-                                {{ _('Re-send invitation') }}
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-
-                {% for invite in pending_agent_invites %}
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell">
-                            {{ invite.email }}
-                        </td>
-                        <td class="govuk-table__cell">Agent</td>
-                        <td class="govuk-table__cell ">
-                            Pending Invite
-                        </td>
-                        <td class="govuk-table__cell ">
-                            <a class="govuk-link"
-                                href="{% url 'users:agent-resend-invite' pk=invite.id host host.name %}">
-                                {{ _('Re-send invitation') }}
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <a class="govuk-button"
-            href="{% url 'users:invite' host host.name %}" role="button">
-            {% trans "Add new user" %}
-        </a>
-    </div>
+  <div class="govuk-!-margin-top-0">
+    <h2 class="govuk-heading-m">{% trans "Manage your team's access" %}</h2>
+    <table class="govuk-table manage-users-table">
+      <thead class="govuk-table__head govuk-body-m">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">User</th>
+          <th class="govuk-table__header">Type</th>
+          <th class="govuk-table__header">Status</th>
+          <th class="govuk-table__header">Actions</th>
+          <th class="govuk-table__header"></th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body govuk-body-m">
+        {% for user in users %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+              <a class="govuk-link" href="{% url 'users:manage-user-detail' pk=user.id %}">{{ user.email }}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans user.pretty_account_name %}</td>
+            <td class="govuk-table__cell ">
+              {% if user.is_active %}
+                Active
+              {% else %}
+                Inactive
+              {% endif %}
+            </td>
+            <td class="govuk-table__cell "></td>
+          </tr>
+        {% endfor %}
+        {% for invite in pending_standard_invites %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ invite.email }}</td>
+            <td class="govuk-table__cell"></td>
+            <td class="govuk-table__cell ">Pending invite</td>
+            <td class="govuk-table__cell ">
+              <a class="govuk-link" href="{% url 'users:re-invite' pk=invite.id host host.name %}">{{ _("Re-send invitation") }}</a>
+            </td>
+          </tr>
+        {% endfor %}
+        {% for invite in pending_agent_invites %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ invite.email }}</td>
+            <td class="govuk-table__cell">Agent</td>
+            <td class="govuk-table__cell ">Pending Invite</td>
+            <td class="govuk-table__cell ">
+              <a class="govuk-link" href="{% url 'users:agent-resend-invite' pk=invite.id host host.name %}">
+                {{ _("Re-send invitation") }}
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <a class="govuk-button" href="{% url 'users:invite' host host.name %}" role="button">{% trans "Add new user" %}</a>
+  </div>
 {% endblock %}

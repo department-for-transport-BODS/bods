@@ -1,22 +1,17 @@
 {% extends "data_quality/base.html" %}
 {% load i18n %}
-
-{% block title_tag %}
-  {{observation.title}} observation detail
-{% endblock %}
-
+{% block title_tag %}{{ observation.title }} observation detail{% endblock %}
 {% block backlink %}
   {% include 'snippets/backlink.html' with url=back_url %}
 {% endblock %}
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
       <h1 class="govuk-heading-xl">{{ observation.title }}</h1>
-      <p class="govuk-body"> {{ observation.text | safe }}</p>
+      <p class="govuk-body">{{ observation.text | safe }}</p>
       {% if observation.impacts %}
         <h2 class="govuk-heading-l">Impacts</h2>
-        <p class="govuk-body"> {{ observation.impacts | safe }}</p>
+        <p class="govuk-body">{{ observation.impacts | safe }}</p>
       {% endif %}
     </div>
   </div>

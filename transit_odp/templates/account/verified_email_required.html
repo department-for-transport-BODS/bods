@@ -1,45 +1,34 @@
 {% extends "account/base.html" %}
-
 {% load i18n %}
 {% load breadcrumbs %}
-
 {# NOTE - this page shouldn't ever actually be used as we display verification error in the login form #}
-
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb 'Verification Required' %}
 {% endblock %}
-
-{% block head_title %}{% trans 'Verify Your E-mail Address' %}{% endblock %}
-
+{% block head_title %}
+  {% trans 'Verify Your E-mail Address' %}
+{% endblock %}
 {% block inner %}
   <h1 class="govuk-heading-l">{% trans "Verify Your E-mail Address" %}</h1>
-
   {% url 'account_email' host host.name as email_url %}
-
   <p class="govuk-heading">{% trans "We are sorry, but the sign up is currently closed." %}</p>
-
   <p class="govuk-heading">
     {% blocktrans %}
       This part of the site requires us to verify that you are who you claim to be. For this purpose, we require that
       you verify ownership of your email address.
     {% endblocktrans %}
   </p>
-
   <p class="govuk-heading">
     {% blocktrans %}
       We have sent an email to you for verification. Please click on the link inside this email. Please contact us if
       you do not receive it within a few minutes.
     {% endblocktrans %}
   </p>
-
   <p class="govuk-heading">
     {% blocktrans %}
       <strong>Note:</strong> you can still <a class="govuk-link" href="{{ email_url }}">change your email address</a>.
     {% endblocktrans %}
   </p>
 {% endblock %}
-
-
-{% block inner_secondary %}
-{% endblock %}
+{% block inner_secondary %}{% endblock %}

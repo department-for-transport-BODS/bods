@@ -1,27 +1,21 @@
 {% extends "users/base.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block title_tag %}
   {% trans 'Leave organisation?' %}
 {% endblock %}
-
 {% block backlink %}
   {% url 'users:home' host host.name as backlink %}
   {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
       <h1 class="govuk-heading-xl">
         Are you sure you would like to stop being an agent on behalf of
-        {{object.organisation.name}}?
+        {{ object.organisation.name }}?
       </h1>
       <p class="govuk-body-m govuk-!-margin-bottom-6">
         {% blocktrans %}

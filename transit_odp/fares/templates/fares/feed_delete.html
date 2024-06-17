@@ -1,16 +1,11 @@
 {% extends "publish/base.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
   {% trans 'Delete data set' %}
 {% endblock %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% if object.live_revision %}
     {% url 'fares:feed-detail' pk1=view.kwargs.pk1 pk=object.id host hosts.publish as backlink %}
@@ -19,7 +14,6 @@
   {% endif %}
   {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -51,11 +45,8 @@
       </p>
     </div>
   </div>
-
   {% block inner %}
     {% crispy form %}
   {% endblock %}
-
-  {% block inner_secondary %}
-  {% endblock %}
+  {% block inner_secondary %}{% endblock %}
 {% endblock %}

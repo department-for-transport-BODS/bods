@@ -1,32 +1,31 @@
 {% load i18n %}
-
 {% if object.stats.networkWideConsequencesCount or object.stats.operatorWideConsequencesCount %}
-{% include 'browse/disruptions/banner.html' %}
+  {% include 'browse/disruptions/banner.html' %}
 {% endif %}
 {% include 'publish/snippets/disruptions_map.html' %}
 <div class="govuk-grid-row govuk-!-margin-top-6">
-    <div class="govuk-grid-column-one-third flex-container flex-direction-column">
-        <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.stopsAffected }}</span>
-        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Affected stops'%}</span>
-    </div>
-    <div class="govuk-grid-column-one-third flex-container flex-direction-column">
-        <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.servicesAffected }}</span>
-        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Affected services'%}</span>
-    </div>
-    <div class="govuk-grid-column-one-third flex-container flex-direction-column">
-        <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.totalDisruptionsCount }}</span>
-        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Active disruptions'%}</span>
-    </div>
+  <div class="govuk-grid-column-one-third flex-container flex-direction-column">
+    <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.stopsAffected }}</span>
+    <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Affected stops' %}</span>
+  </div>
+  <div class="govuk-grid-column-one-third flex-container flex-direction-column">
+    <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.servicesAffected }}</span>
+    <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Affected services' %}</span>
+  </div>
+  <div class="govuk-grid-column-one-third flex-container flex-direction-column">
+    <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.totalDisruptionsCount }}</span>
+    <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Active disruptions' %}</span>
+  </div>
 </div>
 <div class="govuk-grid-row govuk-!-margin-bottom-3">
-    <div class="govuk-grid-column-one-third flex-container flex-direction-column">
-        <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.operatorWideConsequencesCount }}</span>
-        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Operator wide disruptions'%}</span>
-    </div>
-    <div class="govuk-grid-column-one-third flex-container flex-direction-column">
-        <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.networkWideConsequencesCount }}</span>
-        <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Network wide disruptions'%}</span>
-    </div>
+  <div class="govuk-grid-column-one-third flex-container flex-direction-column">
+    <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.operatorWideConsequencesCount }}</span>
+    <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Operator wide disruptions' %}</span>
+  </div>
+  <div class="govuk-grid-column-one-third flex-container flex-direction-column">
+    <span class="govuk-body govuk-!-font-size-48 govuk-!-margin-bottom-3 govuk-!-font-weight-bold">{{ object.stats.networkWideConsequencesCount }}</span>
+    <span class="govuk-body govuk-!-font-weight-bold">{% trans 'Network wide disruptions' %}</span>
+  </div>
 </div>
 <div>
   <table class="govuk-table consumer-property-table">
@@ -42,10 +41,7 @@
       <tr class="govuk-table__row">
         <th scope="row" class="govuk-table__header">{% trans 'Data catalogue' %}</th>
         <td class="govuk-table__cell" colspan="2">
-          <a class="govuk-link"
-             target="_blank" rel="noopener" rel="noreferrer"
-             href="{% url 'download-catalogue' %}"
-          >
+          <a class="govuk-link" target="_blank" rel="noopener" rel="noreferrer" href="{% url 'download-catalogue' %}">
             {% trans 'Link to catalogue' %}
           </a>
         </td>
@@ -55,9 +51,7 @@
         <td class="govuk-table__cell" colspan="2">
           <div class="flex-between">
             {% if object.stats.lastUpdated %}
-              <span>
-                {{ object.stats.lastUpdated|date:"d/m/Y" }}{% trans ' by owner' %}
-              </span>
+              <span>{{ object.stats.lastUpdated|date:"d/m/Y" }}{% trans ' by owner' %}</span>
             {% else %}
               <span>-</span>
             {% endif %}

@@ -1,10 +1,8 @@
 {% extends "snippets/help_modal_base.html" %}
 {% load i18n %}
-
 {% block help_heading %}
-{% trans "SIRI-VM" %}
+  {% trans "SIRI-VM" %}
 {% endblock %}
-
 {% block help_content %}
   <p class="govuk-body">
     {% filter force_escape %}
@@ -16,10 +14,12 @@
       {% endblocktrans %}
     {% endfilter %}
     <a class="govuk-link"
-          rel="noopener noreferrer"
-          target="_blank"
-          href="https://www.gov.uk/government/publications/technical-guidance-publishing-location-data-using-the-bus-open-data-service-siri-vm/technical-guidance-siri-vm">
-      {% filter force_escape %}{% trans 'here' %}{% endfilter %}
+       rel="noopener noreferrer"
+       target="_blank"
+       href="https://www.gov.uk/government/publications/technical-guidance-publishing-location-data-using-the-bus-open-data-service-siri-vm/technical-guidance-siri-vm">
+      {% filter force_escape %}
+        {% trans 'here' %}
+      {% endfilter %}
     </a>.
   </p>
 {% endblock %}

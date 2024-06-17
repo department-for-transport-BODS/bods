@@ -1,7 +1,6 @@
 {% load i18n %}
-
 {% include 'publish/snippets/dataset_map.html' %}
 {% include 'browse/fares/feed_detail/property_table.html' with property=object %}
 {% include 'browse/base/api_url_panel.html' %}
-{% include 'browse/base/subscribe_and_download.html' with subscribe_url_name="fares-feed-subscription" download_url_name="fares-feed-download"%}
-{% include 'browse/base/feedback.html' with feedback_url_name="fares-feed-feedback"%}
+{% include 'browse/base/subscribe_and_download.html' with subscribe_url_name="fares-feed-subscription" download_url_name="fares-feed-download" %}
+{% include 'browse/base/feedback.html' with feedback_url_name="fares-feed-feedback" %}

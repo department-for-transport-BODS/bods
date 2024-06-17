@@ -1,32 +1,23 @@
 {% extends "publish/base.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
   {% trans 'Data feed deleted' %}
 {% endblock %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
-{% block backlink %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
+{% block backlink %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-xl">
-        {% trans 'Data feed has been deleted' %}
-      </h1>
+      <h1 class="govuk-heading-xl">{% trans 'Data feed has been deleted' %}</h1>
       <p class="govuk-body-l">
         {% blocktrans %}
           Data feed has been deleted.
         {% endblocktrans %}
       </p>
       <a role="button" class="govuk-button govuk-!-margin-top-5" href="{% url 'avl:feed-list' pk1=pk1 host hosts.publish %}">
-        {{ _('Go back to your data feeds') }}
+        {{ _("Go back to your data feeds") }}
       </a>
     </div>
   </div>

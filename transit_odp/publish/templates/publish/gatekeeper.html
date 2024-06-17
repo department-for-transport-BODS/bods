@@ -1,40 +1,34 @@
 {% extends "publish/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {# TODO - not sure if this template is being used any more#}
 {% block title_tag %}
-    {% trans 'Publish your data' %}
+  {% trans 'Publish your data' %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {% breadcrumb_url root_site.name 'home' host hosts.root %}
-    {% breadcrumb_url site.name 'home' host hosts.publish %}
+  {% breadcrumb_url root_site.name 'home' host hosts.root %}
+  {% breadcrumb_url site.name 'home' host hosts.publish %}
 {% endblock %}
-
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">{% trans 'Publish your data' %}</h1>
-            <p class="govuk-body-l">
-                {% blocktrans %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{% trans 'Publish your data' %}</h1>
+      <p class="govuk-body-l">
+        {% blocktrans %}
                     Only bus operators and local authorities are able to provide their data.
                 {% endblocktrans %}
-            </p>
-            <p class="govuk-body-l">
-                {% if not user.is_authenticated %}
-                    <a class="govuk-link" href="{% url 'account_login' host host.name %}">{% trans 'Please login if you are an operator' %}</a>.
-                {% elif user.is_developer %}
-                    {% trans 'As a developer you can access and use these data sets.' %}
-                {% elif user.is_site_admin %}
-                    {% trans 'As a site admin you can manage organisations and accounts.' %}
-                {% endif %}
-            </p>
-            <a role="button" class="govuk-button" href="{% url 'home' host hosts.data %}">
-                {% trans 'Find open data' %}
-            </a>
-        </div>
+      </p>
+      <p class="govuk-body-l">
+        {% if not user.is_authenticated %}
+          <a class="govuk-link" href="{% url 'account_login' host host.name %}">{% trans 'Please login if you are an operator' %}</a>.
+        {% elif user.is_developer %}
+          {% trans 'As a developer you can access and use these data sets.' %}
+        {% elif user.is_site_admin %}
+          {% trans 'As a site admin you can manage organisations and accounts.' %}
+        {% endif %}
+      </p>
+      <a role="button" class="govuk-button" href="{% url 'home' host hosts.data %}">{% trans 'Find open data' %}</a>
     </div>
+  </div>
 {% endblock %}

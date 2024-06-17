@@ -1,51 +1,36 @@
 {% extends "users/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block above_heading %}
-    {% if user.is_agent_user %}
-        {% include "snippets/org_profile_selector.html" with current_url=current_url %}
-    {% endif %}
+  {% if user.is_agent_user %}
+    {% include "snippets/org_profile_selector.html" with current_url=current_url %}
+  {% endif %}
 {% endblock %}
-
 {% block title_tag %}
-    {% trans 'My organisation details' %}
+  {% trans 'My organisation details' %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Organisation profile' 'users:organisation-profile' pk=request.user.organisation.id host hosts.publish %}
+  {{ block.super }}
+  {% breadcrumb_url 'Organisation profile' 'users:organisation-profile' pk=request.user.organisation.id host hosts.publish %}
 {% endblock %}
-
-{% block backlink %}
-{% endblock %}
-
-{% block content_heading %}
-{% endblock %}
-
-{% block subtitle %}
-{% endblock %}
-
+{% block backlink %}{% endblock %}
+{% block content_heading %}{% endblock %}
+{% block subtitle %}{% endblock %}
 {% block inner %}
-    <h1 class="govuk-heading-xl">{{ organisation.name }}</h1>
-    {% if user.is_standard_user %}
-        {% include "organisation/snippets/organisation_profile_table.html" %}
-    {% else %}
-        {% include "organisation/snippets/psv_licence_panel.html" %}
-        {% include "organisation/snippets/organisation_profile_table.html" %}
-        <a role="button"
-            class="govuk-button govuk-button--secondary"
-            href="{% url 'users:edit-org-profile' pk=organisation.id host hosts.publish %}"
-        >
-            {% trans 'Edit' %}
-        </a>
-    {% endif %}
+  <h1 class="govuk-heading-xl">{{ organisation.name }}</h1>
+  {% if user.is_standard_user %}
+    {% include "organisation/snippets/organisation_profile_table.html" %}
+  {% else %}
+    {% include "organisation/snippets/psv_licence_panel.html" %}
+    {% include "organisation/snippets/organisation_profile_table.html" %}
+    <a role="button"
+       class="govuk-button govuk-button--secondary"
+       href="{% url 'users:edit-org-profile' pk=organisation.id host hosts.publish %}">{% trans 'Edit' %}</a>
+  {% endif %}
 {% endblock %}
-
 {% block inner_secondary %}
-    {% if not user.is_standard_user %}
-        {% include "common/snippets/organisation_helpful_links.html" %}
-    {% endif %}
+  {% if not user.is_standard_user %}
+    {% include "common/snippets/organisation_helpful_links.html" %}
+  {% endif %}
 {% endblock %}

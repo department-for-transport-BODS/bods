@@ -1,20 +1,18 @@
 {% load i18n %}
-
 <h3 class="govuk-heading-m">{% trans 'What should I do next?' %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
-    {% blocktrans %}
+  {% blocktrans %}
         You can re-upload a different dataset file again. Please ensure that your provided data format is correct and
         that your dataset file contains valid data.
     {% endblocktrans %}
 </p>
 <p class="govuk-body app-!-text-muted govuk-!-font-size-19">
-    {% blocktrans %}
+  {% blocktrans %}
         Accepted file formats include .xml (TransXChange).
     {% endblocktrans %}
 </p>
 <div class="btn-group-justified">
-    <a role="button" class="govuk-button govuk-button--secondary"
-        href="{% url 'revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
-        {{ _('Delete data') }}
-    </a>
+  <a role="button"
+     class="govuk-button govuk-button--secondary"
+     href="{% url 'revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">{{ _("Delete data") }}</a>
 </div>

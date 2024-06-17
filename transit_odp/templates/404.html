@@ -1,11 +1,11 @@
 {% extends "error_base.html" %}
-
 {% load i18n %}
-
-{% block title_tag %}{% trans 'Page not found' %}{% endblock %}
-
-{% block content_heading %}{% trans 'Page not found' %}{% endblock %}
-
+{% block title_tag %}
+  {% trans 'Page not found' %}
+{% endblock %}
+{% block content_heading %}
+  {% trans 'Page not found' %}
+{% endblock %}
 {% block content_body %}
   <p class="govuk-body">
     {% blocktrans %}

@@ -1,38 +1,30 @@
 {% extends "base_success.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block title_tag %}
-    {% trans 'User invited' %}
+  {% trans 'User invited' %}
 {% endblock %}
-
 {% block title_text %}
-    {% trans 'Invitation has been sent' %}
+  {% trans 'Invitation has been sent' %}
 {% endblock %}
-
 {% block body_text %}
-    <p class="govuk-body-m">
-        {% if invite_email %}
-            {% trans "An email invite has been sent to" %}
-            {{ invite_email }}.
-        {% else %}
-            {% trans "An email invite has been sent." %}
-        {% endif %}
-    </p>
-    <p class="govuk-body-m govuk-!-margin-bottom-6">
-        {% trans "You will be notified when they accept your invitation." %}
-    </p>
+  <p class="govuk-body-m">
+    {% if invite_email %}
+      {% trans "An email invite has been sent to" %}
+      {{ invite_email }}.
+    {% else %}
+      {% trans "An email invite has been sent." %}
+    {% endif %}
+  </p>
+  <p class="govuk-body-m govuk-!-margin-bottom-6">
+    {% trans "You will be notified when they accept your invitation." %}
+  </p>
 {% endblock %}
-
 {% block button_href %}
-    {% url 'users:org-user-manage' pk=pk host hosts.admin %}
+  {% url 'users:org-user-manage' pk=pk host hosts.admin %}
 {% endblock %}
-
 {% block button_text %}
-    {% trans 'Go back to user management' %}
+  {% trans 'Go back to user management' %}
 {% endblock %}

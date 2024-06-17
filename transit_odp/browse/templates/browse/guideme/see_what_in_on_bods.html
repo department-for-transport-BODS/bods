@@ -1,10 +1,7 @@
 {% load i18n %}
-<a class="govuk-link govuk-!-font-size-19" href="{% url 'select-data' host hosts.data %}">
-    {% trans 'Browse data' %}
-</a>
-
+<a class="govuk-link govuk-!-font-size-19" href="{% url 'select-data' host hosts.data %}">{% trans 'Browse data' %}</a>
 <p class="govuk-body">
-    {% blocktrans %}
+  {% blocktrans %}
     You can search and filter the database.
     You can also download the specific
     dataset or subscribe or copy the dataset
@@ -12,11 +9,10 @@
     {% endblocktrans %}
 </p>
 <a class="govuk-link govuk-!-font-size-19" href="{% url 'download-catalogue' host hosts.data %}">
-    {% trans 'Download the data catalogue' %}
+  {% trans 'Download the data catalogue' %}
 </a>
-
 <p class="govuk-body">
-    {% blocktrans %}
+  {% blocktrans %}
     Data catalogue will provide you with a
     comprehensive view of all data published
     on BODS and provide matching information

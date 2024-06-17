@@ -1,8 +1,7 @@
 {% load i18n %}
-
 {% include 'publish/snippets/dataset_map.html' %}
 {% include 'browse/timetables/dataset_detail/property_table.html' with property=object %}
 {% include 'browse/timetables/dataset_detail/review_service_codes.html' %}
 {% include 'browse/base/api_url_panel.html' %}
 {% include 'browse/base/subscribe_and_download.html' with download_url_name="feed-download" subscribe_url_name="feed-subscription" %}
-{% include 'browse/base/feedback.html' with feedback_url_name="feed-feedback"%}
+{% include 'browse/base/feedback.html' with feedback_url_name="feed-feedback" %}

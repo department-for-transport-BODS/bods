@@ -1,12 +1,9 @@
 {% extends "guidance/bus_operators/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-    <h1 class="govuk-heading-l">{% trans 'Overview' %}</h1>
-
-    <p data-qa="overview-paragraph" class="govuk-body">
-        {% blocktrans %}
+  <h1 class="govuk-heading-l">{% trans 'Overview' %}</h1>
+  <p data-qa="overview-paragraph" class="govuk-body">
+    {% blocktrans %}
             The Bus Open Data Service (BODS) is the central service for publishing high
             quality information for all local bus services in England. The Bus Services Act
             2017 requires operators of local bus services in England to publish data to the
@@ -14,8 +11,6 @@
             in certain data formats: timetables, bus location and fares. Local transport
             authorities are required to maintain NaPTAN stop data.
         {% endblocktrans %}
-    </p>
-
-    {% include "../snippets/requirements_table.html" %}
-
+  </p>
+  {% include "../snippets/requirements_table.html" %}
 {% endblock %}
