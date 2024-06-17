@@ -7,6 +7,6 @@ def get_checks_data(checks_list: list) -> list:
     """Returns checks data with queue names prefixed with environment name"""
 
     return [
-        {**check, "queue_name": f"{AWS_ENVIRONMENT}-{check['queue_name']}"}
+        {**check, "queue_name": f"dqs-{AWS_ENVIRONMENT}-{check['queue_name']}"}
         for check in checks_list
     ]
