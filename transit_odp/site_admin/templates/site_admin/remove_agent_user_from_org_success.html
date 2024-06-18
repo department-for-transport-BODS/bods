@@ -5,19 +5,19 @@
 {% block breadcrumb.content %}
 {% endblock %}
 {% block title_tag %}
-  {% trans 'Agent has been removed' %}
+  {% trans "Agent has been removed" %}
 {% endblock %}
 {% block backlink %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <h1 class="govuk-heading-xl">
-      {% trans 'Agent has been removed' %}
+      {% trans "Agent has been removed" %}
     </h1>
     <p class="govuk-body">
-      {% trans 'Agent user' %}
+      {% trans "Agent user" %}
       <b>{{ object.agent.email }}</b>
-      {% trans 'has been removed and will no longer be able to act on behalf of ' %}
+      {% trans "has been removed and will no longer be able to act on behalf of " %}
       <b>{{ object.organisation.name }}</b>.
     </p>
     <a href="{% url 'users:org-user-manage' pk=object.organisation.id host host.name %}"

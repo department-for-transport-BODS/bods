@@ -12,15 +12,15 @@
           aria-label="Select data type"
           onchange="window.location.assign(this.value)">
     <option value="{{ nav_url }}" data-qa="timetable-option" {% if nav_url == current_url %}selected{% endif %}>
-      {% trans 'Timetables data' %}
+      {% trans "Timetables data" %}
     </option>
     {% url 'avl:feed-list' pk1=pk1 host hosts.publish as nav_url %}
     <option value="{{ nav_url }}" data-qa="avl-option" {% if nav_url == current_url %}selected{% endif %}>
-      {% trans 'Bus location data' %}
+      {% trans "Bus location data" %}
     </option>
     {% url 'fares:feed-list' pk1=pk1 host hosts.publish as nav_url %}
     <option value="{{ nav_url }}" data-qa="fares-option" {% if nav_url == current_url %}selected{% endif %}>
-      {% trans 'Fares data' %}
+      {% trans "Fares data" %}
     </option>
   </select>
 </div>

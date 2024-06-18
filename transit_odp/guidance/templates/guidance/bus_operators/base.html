@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Bus operator requirements' %}
+  {% trans "Bus operator requirements" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -14,7 +14,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">
-        {% trans 'Bus operator requirements' %}
+        {% trans "Bus operator requirements" %}
       </h1>
       <p class="govuk-body-l">
         {% blocktrans %}
@@ -37,21 +37,21 @@
     <div class="govuk-grid-column-two-thirds">
       {% block extra_content %}
       {% endblock %}
-      {% include '../snippets/previous_section.html' with url=base_url section=prev_section %}
-      {% include '../snippets/next_section.html' with url=base_url section=next_section %}
+      {% include "../snippets/previous_section.html" with url=base_url section=prev_section %}
+      {% include "../snippets/next_section.html" with url=base_url section=next_section %}
     </div>
     <div class="govuk-grid-column-one-third">
       <h2 class="govuk-heading-s">
-        {% trans 'Related content' %}
+        {% trans "Related content" %}
       </h2>
       <ul class="govuk-list app-list--nav govuk-!-font-size-19">
         <li>
           <a class="govuk-link" href="{% url 'guidance:support-local_authorities' host hosts.publish %}">
-            {% trans 'Local authority requirements' %}
+            {% trans "Local authority requirements" %}
           </a>
         </li>
         <li>
-          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact the Bus Open Data Service' %}</a>
+          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact the Bus Open Data Service" %}</a>
         </li>
       </ul>
     </div>

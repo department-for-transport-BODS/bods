@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="govuk-panel app-panel--error govuk-!-padding-top-9 govuk-!-padding-bottom-9 govuk-!-margin-bottom-7">
   <h2 class="govuk-heading-xl govuk-panel__title govuk-!-font-size-36">
-    {% trans 'Data feed not available' %}
+    {% trans "Data feed not available" %}
   </h2>
 </div>
 <div class="govuk-error-summary govuk-!-margin-bottom-0"
@@ -10,7 +10,7 @@
      tabindex="-1"
      data-module="govuk-error-summary">
   <h2 class="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
-    {% trans 'There is a problem' %}
+    {% trans "There is a problem" %}
   </h2>
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list govuk-!-margin-bottom-6">
@@ -24,7 +24,7 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Name' %}
+        {% trans "Name" %}
       </th>
       <td class="govuk-table__cell dont-break-out">
         {% trans object.name %}
@@ -32,7 +32,7 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Owner' %}
+        {% trans "Owner" %}
       </th>
       <td class="govuk-table__cell">
         {% trans object.organisation.name %}
@@ -40,22 +40,22 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Last updated' %}
+        {% trans "Last updated" %}
       </th>
       <td class="govuk-table__cell">
         <div class="flex-between">
           <span>
             {{ object.published_at|date:"j M Y H:i" }}
-            {% trans 'by ' %}
+            {% trans "by " %}
             {% if object.live_revision.published_by %}
               {{ object.live_revision.published_by.username }}
             {% else %}
-              {% trans 'System' %}
+              {% trans "System" %}
             {% endif %}
           </span>
           <span style="text-align: right">
             {% block inner.last_updated.changelog_link %}
-              <a class="govuk-link" href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans 'View change log' %}</a>
+              <a class="govuk-link" href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans "View change log" %}</a>
             {% endblock %}
           </span>
         </div>
@@ -64,7 +64,7 @@
   </tbody>
 </table>
 <h3 class="govuk-heading-m">
-  {% trans 'What should I do next?' %}
+  {% trans "What should I do next?" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-16">
   {% blocktrans %}

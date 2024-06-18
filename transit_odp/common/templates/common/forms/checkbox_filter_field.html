@@ -5,7 +5,7 @@
 <div class="govuk-form-group govuk-checkboxes--tiny checkbox-filter">
   {# Render fieldset with legend #}
   <fieldset class="govuk-fieldset" {% if field.help_text %}aria-describedby="{{ field.auto_id }}-hint"{% endif %}>
-    {% include 'govuk/snippets/field_legend.html' %}
+    {% include "govuk/snippets/field_legend.html" %}
     {# style multi checkbox container #}
     <div class="govuk-checkboxes">
       {% for choice in field.field.choices %}

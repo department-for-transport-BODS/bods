@@ -9,7 +9,7 @@
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
-  {% include 'publish/dataset_detail/breadcrumb.html' %}
+  {% include "publish/dataset_detail/breadcrumb.html" %}
   <li class="govuk-breadcrumbs__list-item">
     <a class="govuk-breadcrumbs__link"
        href="{% url 'line-detail' pk1=pk1 pk=object.id host hosts.publish %}?line={{ line_name }}&service={{ service_code }}">
@@ -33,12 +33,12 @@
   <hr class="govuk-section-break govuk-section-break--l govuk-section-break--invisible" />
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {% include 'publish/snippets/dataset_map.html' %}
+      {% include "publish/snippets/dataset_map.html" %}
       <table class="govuk-table dataset-property-table">
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">
-              {% trans 'Type of service' %}
+              {% trans "Type of service" %}
             </th>
             <td class="govuk-table__cell dont-break-out" colspan="2">
               {{ service_type }}
@@ -46,7 +46,7 @@
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">
-              {% trans 'Registration Number' %}
+              {% trans "Registration Number" %}
             </th>
             <td class="govuk-table__cell dont-break-out" colspan="2">
               {{ service_code }}
@@ -54,7 +54,7 @@
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">
-              {% trans 'Current valid file(s)' %}
+              {% trans "Current valid file(s)" %}
             </th>
             <td class="govuk-table__cell dont-break-out" colspan="2">
               {% if current_valid_files %}
@@ -69,31 +69,31 @@
                   {% endif %}
                 {% endfor %}
               {% else %}
-                {% trans 'N/A' %}
+                {% trans "N/A" %}
               {% endif %}
             </td>
           </tr>
           {% if service_type == "Flexible" or service_type == "Flexible/Standard" %}
             <tr class="govuk-table__row">
               <th scope="row" class="govuk-table__header">
-                {% trans 'Booking arrangements' %}
+                {% trans "Booking arrangements" %}
               </th>
               <td class="govuk-table__cell dont-break-out" colspan="2">
                 {% if booking_arrangements %}
                   {{ booking_arrangements }}
                 {% else %}
-                  {% trans 'No currently valid files available in this dataset for this service' %}
+                  {% trans "No currently valid files available in this dataset for this service" %}
                 {% endif %}
               </td>
             </tr>
             <tr class="govuk-table__row">
               <th scope="row" class="govuk-table__header">
-                {% trans 'Booking methods' %}
+                {% trans "Booking methods" %}
               </th>
               <td class="govuk-table__cell dont-break-out" colspan="2">
                 <div class="stacked">
                   {% if not booking_methods %}
-                    {% trans 'No currently valid files available in this dataset for this service' %}
+                    {% trans "No currently valid files available in this dataset for this service" %}
                   {% else %}
                     {% if booking_methods.1 %}
                       Phone - {{ booking_methods.1 }}
@@ -115,13 +115,13 @@
       </table>
     </div>
     <div class="govuk-grid-column-one-third">
-      {% include 'publish/dataset_detail/related_links.html' %}
+      {% include "publish/dataset_detail/related_links.html" %}
     </div>
   </div>
   {% if is_timetable_visualiser_active %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        {% include 'publish/dataset_detail/timetable_filters.html' %}
+        {% include "publish/dataset_detail/timetable_filters.html" %}
         {% if not is_timetable_info_available %}
           <div class="govuk-inset-text">
             There is no timetable information available to view for this date. Please select another date.
@@ -129,7 +129,7 @@
         {% else %}
           {% for direction, timetable_details in timetable.items %}
             {% if not timetable_details.df.empty %}
-              {% include 'publish/dataset_detail/timetable_journey_stop.html' with direction=direction timetable_details=timetable_details %}
+              {% include "publish/dataset_detail/timetable_journey_stop.html" with direction=direction timetable_details=timetable_details %}
             {% endif %}
           {% endfor %}
         {% endif %}

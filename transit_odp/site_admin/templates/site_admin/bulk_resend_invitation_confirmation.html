@@ -1,10 +1,10 @@
-{% extends 'page.html' %}
+{% extends "page.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
 {% block title_tag %}
-  {% trans 'Resend invitations' %}
+  {% trans "Resend invitations" %}
 {% endblock %}
 {# Breadcrumb #}
 {% block breadcrumb %}
@@ -12,7 +12,7 @@
 {% endblock %}
 {# Backlink #}
 {% block backlink %}
-  {% include 'snippets/backlink.html' with url=back_url %}
+  {% include "snippets/backlink.html" with url=back_url %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">

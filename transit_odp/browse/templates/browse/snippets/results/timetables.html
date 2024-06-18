@@ -6,39 +6,39 @@
 {% block dataset_result_content %}
   {% if item.is_after_pti_compliance_date %}
     <li>
-      <span class="item__key">{% trans 'BODS compliant data:' %}</span>
+      <span class="item__key">{% trans "BODS compliant data:" %}</span>
       <span class="item__value">
         {% if item.is_pti_compliant %}
           {% filter force_escape %}
-            {% trans 'Compliant' %}
+            {% trans "Compliant" %}
           {% endfilter %}
         {% else %}
           <i class="help-icon fas fa-exclamation-circle"></i>
           {% filter force_escape %}
-            {% trans 'Non compliant' %}
+            {% trans "Non compliant" %}
           {% endfilter %}
         {% endif %}
       </span>
     </li>
   {% endif %}
   <li>
-    <span class="item__key">{% trans 'Data type:' %}</span>
-    <span class="item__value">{% trans 'Timetables data' %}</span>
+    <span class="item__key">{% trans "Data type:" %}</span>
+    <span class="item__value">{% trans "Timetables data" %}</span>
   </li>
   <li>
-    <span class="item__key">{% trans 'Data set ID:' %}</span>
+    <span class="item__key">{% trans "Data set ID:" %}</span>
     <span class="item__value">{{ item.id }}</span>
   </li>
   <li>
-    <span class="item__key">{% trans 'Publisher:' %}</span>
+    <span class="item__key">{% trans "Publisher:" %}</span>
     <span class="item__value">{{ item.organisation_name }}</span>
   </li>
   <li>
-    <span class="item__key">{% trans 'Timetable start date:' %}</span>
+    <span class="item__key">{% trans "Timetable start date:" %}</span>
     <span class="item__value">{{ item.first_service_start|date:"j M Y" }}</span>
   </li>
   <li>
-    <span class="item__key">{% trans 'Last updated:' %}</span>
+    <span class="item__key">{% trans "Last updated:" %}</span>
     <span class="item__value">{{ item.published_at|date:"j M Y" }}</span>
   </li>
 {% endblock %}

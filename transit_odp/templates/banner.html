@@ -7,13 +7,13 @@
     </strong>
     <span class="govuk-phase-banner__text">
       {% url 'global-feedback' host hosts.root as support %}
-      {% trans 'This is a new service – your' %}
+      {% trans "This is a new service – your" %}
       {% if not hide_global_feedback %}
-        <a class="govuk-link" href="{{ support }}?url={{ current_host }}{{ current_path }}">{% trans 'feedback' %}</a>
+        <a class="govuk-link" href="{{ support }}?url={{ current_host }}{{ current_path }}">{% trans "feedback" %}</a>
       {% else %}
-        {% trans 'feedback' %}
+        {% trans "feedback" %}
       {% endif %}
-      {% trans 'will help us to improve it.' %}
+      {% trans "will help us to improve it." %}
     </span>
   </p>
 </div>

@@ -3,7 +3,7 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Name' %}
+        {% trans "Name" %}
       </th>
       <td class="govuk-table__cell dont-break-out">
         {% trans properties.name %}
@@ -11,7 +11,7 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Data set ID' %}
+        {% trans "Data set ID" %}
       </th>
       <td class="govuk-table__cell dont-break-out">
         {{ object.dataset_id }}
@@ -19,23 +19,23 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'URL link' %}
+        {% trans "URL link" %}
       </th>
       <td class="govuk-table__cell">
         <span class="no-wrap" id="id-publish-review-url-link">
-          <a class="govuk-link" href="{{ object.url_link }}">{% trans 'Publisher URL' %}</a>
+          <a class="govuk-link" href="{{ object.url_link }}">{% trans "Publisher URL" %}</a>
         </span>
       </td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Description' %}
+        {% trans "Description" %}
       </th>
       <td class="govuk-table__cell">
         <div class="flex-between">
           {% trans properties.description %}
           <span style="text-align: right"><a class="govuk-link" href="{% url 'fares:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
-            {% trans 'Edit' %}
+            {% trans "Edit" %}
           </a>
         </span>
       </div>
@@ -43,30 +43,30 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Short description' %}
+      {% trans "Short description" %}
     </th>
     <td class="govuk-table__cell dont-break-out">
       <div class="flex-between">
         {% trans properties.short_description %}
         <a class="govuk-link" href="{% url 'fares:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
-          {% trans 'Edit' %}
+          {% trans "Edit" %}
         </a>
       </div>
     </td>
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Status' %}
+      {% trans "Status" %}
     </th>
     <td class="govuk-table__cell">
       <div class="flex-between">
-        {% include 'organisation/snippets/status_indicator.html' with status=properties.status %}
+        {% include "organisation/snippets/status_indicator.html" with status=properties.status %}
       </div>
     </td>
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Owner' %}
+      {% trans "Owner" %}
     </th>
     <td class="govuk-table__cell">
       {% trans properties.owner_name %}
@@ -74,7 +74,7 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'NeTEx Version ' %}
+      {% trans "NeTEx Version " %}
     </th>
     <td class="govuk-table__cell">
       {{ metadata.schema_version }}
@@ -82,28 +82,28 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Download NeTEx' %}
+      {% trans "Download NeTEx" %}
     </th>
     <td class="govuk-table__cell">
       <span class="no-wrap" style="text-align: right">
         {% url 'feed-download' pk1=pk1 pk=object.dataset_id host host.name as download_link %}
         <a class="govuk-link"
            href="  {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
-          {% trans 'Download .xml (NeTEx)' %}
+          {% trans "Download .xml (NeTEx)" %}
         </a>
       </span>
     </td>
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Last updated' %}
+      {% trans "Last updated" %}
     </th>
     <td class="govuk-table__cell">
       <div class="flex-between">
         <span>
           {# Note we use last modified time rather than published_at since the revision won't be published yet #}
           {{ properties.last_modified|date:"j M Y H:i" }}
-          {% trans 'by ' %}
+          {% trans "by " %}
           {{ properties.last_modified_user|default_if_none:'System' }}
         </span>
       </div>
@@ -111,7 +111,7 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Number of fare zones' %}
+      {% trans "Number of fare zones" %}
     </th>
     <td class="govuk-table__cell">
       {{ metadata.num_of_fare_zones }}
@@ -119,7 +119,7 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Number of lines' %}
+      {% trans "Number of lines" %}
     </th>
     <td class="govuk-table__cell">
       {{ metadata.num_of_lines }}
@@ -127,7 +127,7 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Number of sales offer packages ' %}
+      {% trans "Number of sales offer packages " %}
     </th>
     <td class="govuk-table__cell">
       {{ metadata.num_of_sales_offer_packages }}
@@ -135,7 +135,7 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Number of fare products' %}
+      {% trans "Number of fare products" %}
     </th>
     <td class="govuk-table__cell">
       {{ metadata.num_of_fare_products }}
@@ -143,7 +143,7 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Number of user types' %}
+      {% trans "Number of user types" %}
     </th>
     <td class="govuk-table__cell">
       {{ metadata.num_of_user_profiles }}
@@ -151,7 +151,7 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Earliest start date' %}
+      {% trans "Earliest start date" %}
     </th>
     <td class="govuk-table__cell">
       {{ metadata.valid_from }}
@@ -159,7 +159,7 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Earliest end date' %}
+      {% trans "Earliest end date" %}
     </th>
     <td class="govuk-table__cell">
       {{ metadata.valid_to }}

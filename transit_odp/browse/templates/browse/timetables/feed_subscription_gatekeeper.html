@@ -1,14 +1,14 @@
-{% extends 'browse/timetables/feed_subscription.html' %}
+{% extends "browse/timetables/feed_subscription.html" %}
 {% load static %}
 {% load i18n %}
 {% block backlink %}
-  {% include 'snippets/backlink.html' with url=backlink_url %}
+  {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l">
-        {% trans 'Get data set updates' %}
+        {% trans "Get data set updates" %}
       </h1>
       <p class="govuk-body-l">
         {% blocktrans %}

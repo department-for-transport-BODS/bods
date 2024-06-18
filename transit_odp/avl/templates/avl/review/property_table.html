@@ -3,7 +3,7 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Name' %}
+        {% trans "Name" %}
       </th>
       <td class="govuk-table__cell dont-break-out">
         {% trans properties.name %}
@@ -11,7 +11,7 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Data feed ID' %}
+        {% trans "Data feed ID" %}
       </th>
       <td class="govuk-table__cell dont-break-out">
         {{ object.dataset_id }}
@@ -19,14 +19,14 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Description' %}
+        {% trans "Description" %}
       </th>
       <td class="govuk-table__cell">
         <div class="flex-between">
           {% trans properties.description %}
           <span style="text-align: right">
             <a class="govuk-link" href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
-              {% trans 'Edit' %}
+              {% trans "Edit" %}
             </a>
           </span>
         </div>
@@ -34,30 +34,30 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Short description' %}
+        {% trans "Short description" %}
       </th>
       <td class="govuk-table__cell dont-break-out">
         <div class="flex-between">
           {% trans properties.short_description %}
           <a class="govuk-link" href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
-            {% trans 'Edit' %}
+            {% trans "Edit" %}
           </a>
         </div>
       </td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Status' %}
+        {% trans "Status" %}
       </th>
       <td class="govuk-table__cell">
         <div class="flex-between">
-          {% include 'organisation/snippets/status_indicator.html' with status=properties.status %}
+          {% include "organisation/snippets/status_indicator.html" with status=properties.status %}
         </div>
       </td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Owner' %}
+        {% trans "Owner" %}
       </th>
       <td class="govuk-table__cell">
         {% trans properties.owner_name %}
@@ -65,7 +65,7 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'SIRI-VM version' %}
+        {% trans "SIRI-VM version" %}
       </th>
       <td class="govuk-table__cell">
         {{ properties.siri_version }}
@@ -73,7 +73,7 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'URL link' %}
+        {% trans "URL link" %}
       </th>
       <td class="govuk-table__cell dont-break-out">
         {% trans object.url_link %}
@@ -81,14 +81,14 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Feed details last updated' %}
+        {% trans "Feed details last updated" %}
       </th>
       <td class="govuk-table__cell">
         <div class="flex-between">
           <span>
             {# Note we use last modified time rather than published_at since the revision won't be published yet #}
             {{ properties.last_modified|date:"j M Y H:i" }}
-            {% trans 'by ' %}
+            {% trans "by " %}
             {{ properties.last_modified_user|default_if_none:'System' }}
           </span>
         </div>
@@ -96,7 +96,7 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Last automated update' %}
+        {% trans "Last automated update" %}
       </th>
       <td class="govuk-table__cell">
         <div class="flex-between">
@@ -105,7 +105,7 @@
               {# Note we use last modified time rather than published_at since the revision won't be published yet #}
               {{ properties.last_server_update|date:"j M Y H:i" }}
             {% else %}
-              {% trans 'Unknown' %}
+              {% trans "Unknown" %}
             {% endif %}
           </span>
         </div>

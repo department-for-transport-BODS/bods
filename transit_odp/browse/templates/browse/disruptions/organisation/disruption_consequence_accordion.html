@@ -16,7 +16,7 @@
           <tbody class="govuk-table__body">
             <tr class="govuk-table__row">
               <th scope="row" class="govuk-table__header">
-                {% trans 'Consequence Type' %}
+                {% trans "Consequence Type" %}
               </th>
               <td class="govuk-table__cell" colspan="2">
                 {{ consequence.consequenceType|capfirst }}
@@ -24,7 +24,7 @@
             </tr>
             <tr class="govuk-table__row">
               <th scope="row" class="govuk-table__header">
-                {% trans 'Mode of transport' %}
+                {% trans "Mode of transport" %}
               </th>
               <td class="govuk-table__cell" colspan="2">
                 {{ consequence.vehicleMode|capfirst }}
@@ -33,7 +33,7 @@
             {% if consequence.consequenceType == "Services" %}
               <tr class="govuk-table__row">
                 <th scope="row" class="govuk-table__header">
-                  {% trans 'Service(s)' %}
+                  {% trans "Service(s)" %}
                 </th>
                 <td class="govuk-table__cell" colspan="2">
                   {% for service in consequence.services %}
@@ -48,7 +48,7 @@
             {% if consequence.consequenceType == "Services" or consequence.consequenceType == "Stops" %}
               <tr class="govuk-table__row">
                 <th scope="row" class="govuk-table__header">
-                  {% trans 'Stops affected' %}
+                  {% trans "Stops affected" %}
                 </th>
                 <td class="govuk-table__cell" colspan="2">
                   {% for stop in consequence.stops %}
@@ -63,7 +63,7 @@
             {% if consequence.consequenceType == "Operator Wide" %}
               <tr class="govuk-table__row">
                 <th scope="row" class="govuk-table__header">
-                  {% trans 'Operator(s) affected' %}
+                  {% trans "Operator(s) affected" %}
                 </th>
                 <td class="govuk-table__cell" colspan="2">
                   {% for operator in consequence.consequenceOperators %}
@@ -77,7 +77,7 @@
             {% endif %}
             <tr class="govuk-table__row">
               <th scope="row" class="govuk-table__header">
-                {% trans 'Advice to display' %}
+                {% trans "Advice to display" %}
               </th>
               <td class="govuk-table__cell" colspan="2">
                 {{ consequence.description|capfirst }}
@@ -85,7 +85,7 @@
             </tr>
             <tr class="govuk-table__row">
               <th scope="row" class="govuk-table__header">
-                {% trans 'Remove from journey planner' %}
+                {% trans "Remove from journey planner" %}
               </th>
               <td class="govuk-table__cell" colspan="2">
                 {{ consequence.removeFromJourneyPlanners|capfirst }}
@@ -93,7 +93,7 @@
             </tr>
             <tr class="govuk-table__row">
               <th scope="row" class="govuk-table__header">
-                {% trans 'Disruption delay' %}
+                {% trans "Disruption delay" %}
               </th>
               <td class="govuk-table__cell" colspan="2">
                 {{ consequence.disruptionDelay|default:"N/A" }}

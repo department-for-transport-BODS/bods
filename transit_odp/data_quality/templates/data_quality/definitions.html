@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Bus operator requirements' %}
+  {% trans "Bus operator requirements" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -13,10 +13,10 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl">
-        {% trans 'Observation definitions' %}
+        {% trans "Observation definitions" %}
       </h1>
       <p class="govuk-body-m">
-        {% trans 'Please find the definitions for the observations below.' %}
+        {% trans "Please find the definitions for the observations below." %}
       </p>
       <p class="govuk-body-m govuk-!-margin-bottom-6">
         <a class="govuk-link" href="https://www.gov.uk/government/collections/transxchange" target="_blank">
@@ -44,7 +44,7 @@
                             {% endblocktrans %}
             </p>
             {% for category in critical_observations %}
-              {% include 'data_quality/snippets/glossary_accordion.html' with category=category counter=forloop.counter type="critical" %}
+              {% include "data_quality/snippets/glossary_accordion.html" with category=category counter=forloop.counter type="critical" %}
             {% endfor %}
           </div>
         </div>
@@ -62,7 +62,7 @@
                             {% endblocktrans %}
             </p>
             {% for category in advisory_observations %}
-              {% include 'data_quality/snippets/glossary_accordion.html' with category=category counter=forloop.counter type="advisory" %}
+              {% include "data_quality/snippets/glossary_accordion.html" with category=category counter=forloop.counter type="advisory" %}
             {% endfor %}
           </div>
         </div>

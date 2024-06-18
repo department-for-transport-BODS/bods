@@ -1,9 +1,9 @@
-{% extends 'browse/base.html' %}
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'All timetables data' %}
+  {% trans "All timetables data" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -11,12 +11,12 @@
   {% breadcrumb_url 'All Timetables Data' 'download-timetables' host hosts.data %}
 {% endblock %}
 {% block heading.title.text %}
-  {% trans 'All timetables data' %}
+  {% trans "All timetables data" %}
 {% endblock %}
 {% block heading.subtitle.text %}
   <div class="govuk-!-margin-top-0">
     <h3 class="govuk-heading-m">
-      {% trans 'Download file in TransXChange format' %}
+      {% trans "Download file in TransXChange format" %}
     </h3>
     <p class="govuk-body">
       {% blocktrans %}
@@ -32,7 +32,7 @@
              href="{% url 'downloads-bulk' host hosts.data %}"
              onClick="addGATagEvent('All - timetables in txc format')">
             {% filter force_escape %}
-              {% trans 'All - Download timetables data in TransXChange format' %}
+              {% trans "All - Download timetables data in TransXChange format" %}
             {% endfilter %}
           </a>
         </li>
@@ -49,7 +49,7 @@
                onClick="addGATagEvent('{{ file.pretty_name_region_code }} - timetables in txc format')">
               {{ file.pretty_name_region_code }}
               {% filter force_escape %}
-                {% trans ' - Download timetables data in TransXChange format' %}
+                {% trans " - Download timetables data in TransXChange format" %}
               {% endfilter %}
             </a>
           </li>
@@ -60,7 +60,7 @@
   <div class="govuk-!-margin-top-8">
     <h3 class="govuk-heading-m">
       {% filter force_escape %}
-        {% trans 'Download data set updates in TransXChange format' %}
+        {% trans "Download data set updates in TransXChange format" %}
       {% endfilter %}
     </h3>
     <p class="govuk-body">
@@ -75,7 +75,7 @@
             <a class="govuk-link"
                href="{% url 'downloads-change' published_at=archive.published_at host hosts.data %}"
                onClick="addGATagEvent('All dataset from {{ archive.published_at|date:'l j F' }}')">
-              {% trans 'All data set updates from ' %}
+              {% trans "All data set updates from " %}
               {{ archive.published_at | date:"l j F " }} 00:00:00 -
               23:59:59
             </a>
@@ -92,7 +92,7 @@
   </div>
   <div class="govuk-!-margin-top-8">
     <h3 class="govuk-heading-m">
-      {% trans 'Download regional and national data sets in GTFS format' %}
+      {% trans "Download regional and national data sets in GTFS format" %}
     </h3>
     {% if is_new_gtfs_api_active %}
       <p class="govuk-body">
@@ -127,7 +127,7 @@
                href="{% url 'gtfs-file-download' id=region.regionName host hosts.data %}"
                onClick="sendStaticGTFSEvent('{{ region.regionDisplayName }}')">
               {{ region.regionDisplayName }}
-              {% trans '- Download timetables data in GTFS format' %}
+              {% trans "- Download timetables data in GTFS format" %}
             </a>
           </li>
         {% endfor %}
@@ -140,7 +140,7 @@
                href="{% url 'gtfs-file-download' id=file.id host hosts.data %}"
                onClick="sendStaticGTFSEvent('{{ file.pretty_name }}')">
               {{ file.pretty_name }}
-              {% trans '- Download timetables data in GTFS format' %}
+              {% trans "- Download timetables data in GTFS format" %}
             </a>
           </li>
         {% endfor %}

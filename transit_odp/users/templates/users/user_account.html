@@ -3,7 +3,7 @@
 {% load static %}
 {% load i18n %}
 {% block title_tag %}
-  {% trans 'My account' %}
+  {% trans "My account" %}
 {% endblock %}
 {% block header %}
   {% if host.name == hosts.admin %}
@@ -21,16 +21,16 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds govuk-body">
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
-        {% trans 'My account' %}
+        {% trans "My account" %}
       </h1>
       {% if user.is_developer %}
         <a class="govuk-link app-nav-bold" href="{% url 'users:feeds-manage' host hosts.data %}">
-          {% trans 'Manage subscriptions' %}
+          {% trans "Manage subscriptions" %}
         </a>
         <p class="govuk-body">
           {% trans "Manage subscribed data sets and notification preferences." %}
         </p>
-        <a class="govuk-link app-nav-bold" href="{% url 'users:settings' host host.name %}">{% trans 'Account settings' %}</a>
+        <a class="govuk-link app-nav-bold" href="{% url 'users:settings' host host.name %}">{% trans "Account settings" %}</a>
         <p class="govuk-body">
           {% trans "Edit your account settings and notification preferences." %}
         </p>
@@ -39,7 +39,7 @@
       {% elif user.is_agent_user %}
         {% include "users/agent_user_table.html" %}
       {% else %}
-        <a class="govuk-link app-nav-bold" href="{% url 'users:settings' host host.name %}">{% trans 'Account settings' %}</a>
+        <a class="govuk-link app-nav-bold" href="{% url 'users:settings' host host.name %}">{% trans "Account settings" %}</a>
         <p class="govuk-body">
           {% trans "Edit your account settings and notification preferences." %}
         </p>

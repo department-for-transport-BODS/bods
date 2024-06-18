@@ -4,18 +4,18 @@
 {% load breadcrumbs %}
 {% block title_tag %}
   {% if form.errors %}
-    {% trans 'Error: ' %}
+    {% trans "Error: " %}
   {% endif %}
-  {% trans 'Edit user details' %}
+  {% trans "Edit user details" %}
 {% endblock %}
 {% block breadcrumb.content %}
 {% endblock %}
 {% block backlink %}
   {% url 'users:manage-user-detail' pk=user.organisation.id pk1=user.id host host.name as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block title_text %}
-  {% trans 'Edit user' %}
+  {% trans "Edit user" %}
 {% endblock %}
 {% block inner %}
   {% crispy form %}

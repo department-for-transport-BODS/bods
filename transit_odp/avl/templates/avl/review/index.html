@@ -9,9 +9,9 @@
     {% trans "Your data is being processed" %}
   {% else %}
     {% if error %}
-      {% trans 'Error: ' %}
+      {% trans "Error: " %}
     {% endif %}
-    {% trans 'Review and publish' %}
+    {% trans "Review and publish" %}
   {% endif %}
 {% endblock %}
 {# Breadcrumb #}
@@ -23,7 +23,7 @@
 {% block content %}
   {% if not loading %}
     {# Page Heading Section #}
-    {% include 'avl/review/page_heading.html' %}
+    {% include "avl/review/page_heading.html" %}
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
   {% endif %}
   <div class="govuk-grid-row">
@@ -31,16 +31,16 @@
     <div class="govuk-grid-column-two-thirds">
       {% if loading %}
         {# Loading Progress #}
-        {% include 'avl/review/loading.html' %}
+        {% include "avl/review/loading.html" %}
       {% elif error %}
-        {% include 'avl/review/error_panel.html' %}
+        {% include "avl/review/error_panel.html" %}
       {% else %}
-        {% include 'avl/review/success_content.html' %}
+        {% include "avl/review/success_content.html" %}
       {% endif %}
     </div>
     {# Related Links #}
     <div class="govuk-grid-column-one-third">
-      {% include 'avl/review/related_links.html' %}
+      {% include "avl/review/related_links.html" %}
     </div>
   </div>
 {% endblock %}

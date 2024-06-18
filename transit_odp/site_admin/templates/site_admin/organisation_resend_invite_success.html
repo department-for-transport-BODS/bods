@@ -5,10 +5,10 @@
 {% block breadcrumb.content %}
 {% endblock %}
 {% block title_tag %}
-  {% trans 'User re-invited' %}
+  {% trans "User re-invited" %}
 {% endblock %}
 {% block title_text %}
-  {% trans 'Invitation has been re-sent' %}
+  {% trans "Invitation has been re-sent" %}
 {% endblock %}
 {% block body_text %}
   {% blocktrans %}Invitation has been re-sent to {{ invite_email }}{% endblocktrans %}
@@ -17,5 +17,5 @@
   {% url 'users:organisation-manage' host hosts.admin %}
 {% endblock %}
 {% block button_text %}
-  {% trans 'Go back to organisation management' %}
+  {% trans "Go back to organisation management" %}
 {% endblock %}

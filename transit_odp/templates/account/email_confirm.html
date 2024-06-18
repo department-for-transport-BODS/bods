@@ -7,7 +7,7 @@
   {% breadcrumb_url 'Confirm your email address' 'account_confirm_email' key=confirmation.key host host.name %}
 {% endblock %}
 {% block head_title %}
-  {% trans 'Confirm email address' %}
+  {% trans "Confirm email address" %}
 {% endblock %}
 {% block inner %}
   {% if verified %}
@@ -17,7 +17,7 @@
          tabindex="-1"
          data-module="govuk-error-summary">
       <h2 class="govuk-error-summary__title" id="error-summary-title">
-        {% trans 'Your account is already verified.' %}
+        {% trans "Your account is already verified." %}
       </h2>
       <div class="govuk-error-summary__body">
         <p class="govuk-body">
@@ -39,7 +39,7 @@
     <form method="post" action="{% url 'account_confirm_email' key=confirmation.key host host.name %}">
       {% csrf_token %}
       <button class="govuk-button" type="submit">
-        {% trans 'Confirm' %}
+        {% trans "Confirm" %}
       </button>
     </form>
   {% else %}
@@ -49,7 +49,7 @@
          tabindex="-1"
          data-module="govuk-error-summary">
       <h2 class="govuk-error-summary__title" id="error-summary-title">
-        {% trans 'This email confirmation link expired or is invalid.' %}
+        {% trans "This email confirmation link expired or is invalid." %}
       </h2>
       <div class="govuk-error-summary__body">
         <p class="govuk-body">

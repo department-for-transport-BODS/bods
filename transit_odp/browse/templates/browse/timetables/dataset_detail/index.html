@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Data set details' %}
+  {% trans "Data set details" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -16,18 +16,18 @@
   {% endwith %}
 {% endblock %}
 {% block content %}
-  {% include 'browse/timetables/dataset_detail/page_heading.html' %}
+  {% include "browse/timetables/dataset_detail/page_heading.html" %}
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% if error %}
-        {% include 'browse/timetables/dataset_detail/error_panel.html' %}
+        {% include "browse/timetables/dataset_detail/error_panel.html" %}
       {% else %}
-        {% include 'browse/timetables/dataset_detail/success_content.html' %}
+        {% include "browse/timetables/dataset_detail/success_content.html" %}
       {% endif %}
     </div>
     <div class="govuk-grid-column-one-third">
-      {% include 'browse/timetables/dataset_detail/related_links.html' %}
+      {% include "browse/timetables/dataset_detail/related_links.html" %}
     </div>
   </div>
 {% endblock %}

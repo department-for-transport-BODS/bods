@@ -6,7 +6,7 @@
 {% endblock %}
 {% block backlink %}
   {% url 'dq:overview' pk=view.kwargs.pk pk1=view.kwargs.pk1 report_id=view.kwargs.report_id host host.name as backlink_url %}
-  {% include 'snippets/backlink.html' with url=backlink_url %}
+  {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">

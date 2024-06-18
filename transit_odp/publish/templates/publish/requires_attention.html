@@ -4,7 +4,7 @@
 {% load render_table from django_tables2 %}
 {% block title_tag %}
   {% filter force_escape %}
-    {% trans 'Service Codes Requiring Attention' %}
+    {% trans "Service Codes Requiring Attention" %}
   {% endfilter %}
 {% endblock %}
 {% block breadcrumb.content %}
@@ -18,7 +18,7 @@
       <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds">
           <h1 class="govuk-heading-xl app-masthead__title">
-            {% trans 'Service codes requiring attention' %}
+            {% trans "Service codes requiring attention" %}
           </h1>
           <p class="app-masthead__description">
             {% filter force_escape %}
@@ -55,7 +55,7 @@
         <div class="feed-stat">
           <span class="feed-stat__value">{{ total_in_scope_in_season_services }}</span>
           <span class="feed-stat__label govuk-!-font-size-16">
-            {% trans 'Total in scope/<br />in season registered services' %}
+            {% trans "Total in scope/<br />in season registered services" %}
           </span>
         </div>
       </div>
@@ -63,12 +63,12 @@
         <div class="feed-stat">
           <span class="feed-stat__value">{{ services_require_attention_percentage }}%</span>
           <span class="feed-stat__label govuk-!-font-size-16 govuk-!-margin-bottom-2">
-            {% trans 'Services requiring<br />attention' %}
+            {% trans "Services requiring<br />attention" %}
           </span>
           {% if services_require_attention_percentage == 0 %}
-            <span class="govuk-tag govuk-tag--green" style="letter-spacing: 0px;">{% trans 'Compliant' %}</span>
+            <span class="govuk-tag govuk-tag--green" style="letter-spacing: 0px;">{% trans "Compliant" %}</span>
           {% else %}
-            <span class="govuk-tag govuk-tag--red" style="letter-spacing: 0px;">{% trans 'Not Compliant' %}</span>
+            <span class="govuk-tag govuk-tag--red" style="letter-spacing: 0px;">{% trans "Not Compliant" %}</span>
           {% endif %}
         </div>
       </div>
@@ -85,7 +85,7 @@
         <div class="govuk-grid-column-two-thirds">
           <h2 class="govuk-heading-m">
             {% filter force_escape %}
-              {% trans 'Sorry, no results found for your search' %}
+              {% trans "Sorry, no results found for your search" %}
             {% endfilter %}
           </h2>
           <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
@@ -113,11 +113,11 @@
     </div>
     <div class="govuk-grid-row govuk-!-margin-top-5">
       <p class="govuk-body-s">
-        {% trans 'Use the link below to download and view the entire list of service codes' %}
+        {% trans "Use the link below to download and view the entire list of service codes" %}
       </p>
       <p class="govuk-body-s">
         <a class="govuk-link" href={% url 'service-codes' pk1=org_id host hosts.publish %}>
-          {% trans 'Download detailed export' %}
+          {% trans "Download detailed export" %}
         </a>
       </p>
     </div>

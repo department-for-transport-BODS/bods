@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Publish bus open data' %}
+  {% trans "Publish bus open data" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {% breadcrumb_url root_site.name 'home' host hosts.root %}
@@ -15,27 +15,27 @@
       <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
           <h1 class="govuk-heading-xl app-masthead__title">
-            {% trans 'Publish bus open data' %}
+            {% trans "Publish bus open data" %}
           </h1>
           <p class="app-masthead__description">
             {% filter force_escape %}
-              {% trans 'Use this service to publish the following data:' %}
+              {% trans "Use this service to publish the following data:" %}
             {% endfilter %}
           </p>
           <ul class="app-masthead__description">
             <li>
               {% filter force_escape %}
-                {% trans 'Bus routes and timetable' %}
+                {% trans "Bus routes and timetable" %}
               {% endfilter %}
             </li>
             <li>
               {% filter force_escape %}
-                {% trans 'Automatic Vehicle Location (AVL)' %}
+                {% trans "Automatic Vehicle Location (AVL)" %}
               {% endfilter %}
             </li>
             <li>
               {% filter force_escape %}
-                {% trans 'Fares' %}
+                {% trans "Fares" %}
               {% endfilter %}
             </li>
           </ul>
@@ -44,7 +44,7 @@
              draggable="false"
              class="govuk-button app-button--inverted govuk-!-margin-bottom-0 govuk-button--start"
              data-module="govuk-button">
-            {% trans 'Publish data' %}
+            {% trans "Publish data" %}
             <svg class="govuk-button__start-icon"
                  xmlns="http://www.w3.org/2000/svg"
                  width="17.5"
@@ -66,37 +66,37 @@
       <h2 class="govuk-heading-s">
         <a class="govuk-link-bold" href="{% url 'guide-me' host hosts.publish %}">
           {% filter force_escape %}
-            {% trans 'Guide me' %}
+            {% trans "Guide me" %}
           {% endfilter %}
         </a>
       </h2>
       <p class="govuk-body govuk-!-margin-bottom-7">
         {% filter force_escape %}
-          {% trans 'Get started publishing data to BODS and learn about the different feature and requirements.' %}
+          {% trans "Get started publishing data to BODS and learn about the different feature and requirements." %}
         {% endfilter %}
       </p>
       <h2 class="govuk-heading-s">
         <a class="govuk-link-bold" href="{{ review_page }}">
           {% filter force_escape %}
-            {% trans 'Review my published data' %}
+            {% trans "Review my published data" %}
           {% endfilter %}
         </a>
       </h2>
       <p class="govuk-body govuk-!-margin-bottom-7">
         {% filter force_escape %}
-          {% trans 'Review all datasets published on BODS from your account and keep track of your data health.' %}
+          {% trans "Review all datasets published on BODS from your account and keep track of your data health." %}
         {% endfilter %}
       </p>
       <h2 class="govuk-heading-s">
         <a class="govuk-link-bold" href="{% url 'users:home' %}">
           {% filter force_escape %}
-            {% trans 'Manage your account' %}
+            {% trans "Manage your account" %}
           {% endfilter %}
         </a>
       </h2>
       <p class="govuk-body govuk-!-margin-bottom-7">
         {% filter force_escape %}
-          {% trans 'View or edit NOC codes, licence numbers and other information related to your account.' %}
+          {% trans "View or edit NOC codes, licence numbers and other information related to your account." %}
         {% endfilter %}
       </p>
     </div>
@@ -108,14 +108,14 @@
         <li>
           <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">
             {% filter force_escape %}
-              {% trans 'Service changelog' %}
+              {% trans "Service changelog" %}
             {% endfilter %}
           </a>
         </li>
         <li>
           <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
             {% filter force_escape %}
-              {% trans 'Contact us for technical issues' %}
+              {% trans "Contact us for technical issues" %}
             {% endfilter %}
           </a>
         </li>

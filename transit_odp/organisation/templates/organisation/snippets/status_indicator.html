@@ -1,15 +1,15 @@
 {% load i18n %}
 {% load static %}
 {% if status == 'live' %}
-  <span class="status-indicator status-indicator--success">{% trans 'Published' %}</span>
+  <span class="status-indicator status-indicator--success">{% trans "Published" %}</span>
   {% if record.draft_revisions %}
     <a class="govuk-link govuk-!-padding-left-1"
        href="{% url app_prefix|add:'feed-detail' pk1=record.organisation_id pk=record.id host hosts.publish %}">
-      {% trans 'View' %}
+      {% trans "View" %}
     </a>
     <div class="govuk-!-padding-top-3">
       {% if record.draft_revisions.0.status == 'success' %}
-        <span class="status-indicator status-indicator--draft">{% trans 'Draft' %}</span>
+        <span class="status-indicator status-indicator--draft">{% trans "Draft" %}</span>
       {% elif record.draft_revisions.0.status == 'indexing' or record.draft_revisions.0.status == 'pending' %}
         <div class="progress-centre">
           <div id="{{ record.id }}" class="pie-progress">
@@ -18,17 +18,17 @@
               <path fill="none" stroke="#006435" stroke-width="9" stroke-linecap="none">
               </path>
             </svg>
-            <span class="progress-percent">{% trans '' %}</span>
-            <span class="progress-text">{% trans 'Processing' %}</span>
+            <span class="progress-percent">{% trans "" %}</span>
+            <span class="progress-text">{% trans "Processing" %}</span>
           </div>
         </div>
       {% else %}
-        <span class="status-indicator status-indicator--error">{% trans 'Error' %}</span>
+        <span class="status-indicator status-indicator--error">{% trans "Error" %}</span>
       {% endif %}
       {% if record.draft_revisions.0.status != 'indexing' and record.draft_revisions.0.status != 'pending' %}
         <a class="govuk-link govuk-!-padding-left-1"
            href="{% url app_prefix|add:'revision-update-publish' pk1=record.organisation_id pk=record.id host hosts.publish %}">
-          {% trans 'View' %}
+          {% trans "View" %}
         </a>
       {% endif %}
     </div>
@@ -44,28 +44,28 @@
         <path fill="none" stroke="#006435" stroke-width="9" stroke-linecap="none">
         </path>
       </svg>
-      <span class="progress-percent">{% trans '' %}</span>
-      <span class="progress-text">{% trans 'Processing' %}</span>
+      <span class="progress-percent">{% trans "" %}</span>
+      <span class="progress-text">{% trans "Processing" %}</span>
     </div>
   </div>
 {% elif status == 'warning' %}
-  <span class="status-indicator status-indicator--warning">{% trans 'Warning' %}</span>
+  <span class="status-indicator status-indicator--warning">{% trans "Warning" %}</span>
 {% elif status == 'expiring' %}
-  <span class="status-indicator status-indicator--warning">{% trans 'Soon to expire' %}</span>
+  <span class="status-indicator status-indicator--warning">{% trans "Soon to expire" %}</span>
 {% elif status == 'error' %}
   {% if record.dataset_type == 2 or dataset_type == 2 %}
-    <span class="status-indicator status-indicator--success">{% trans 'Published' %}</span>
+    <span class="status-indicator status-indicator--success">{% trans "Published" %}</span>
   {% else %}
-    <span class="status-indicator status-indicator--error">{% trans 'Error' %}</span>
+    <span class="status-indicator status-indicator--error">{% trans "Error" %}</span>
   {% endif %}
 {% elif status == 'draft' or status == 'success' %}
-  <span class="status-indicator status-indicator--draft">{% trans 'Draft' %}</span>
+  <span class="status-indicator status-indicator--draft">{% trans "Draft" %}</span>
 {% elif status == 'expired' %}
-  <span class="status-indicator status-indicator--inactive">{% trans 'Expired' %}</span>
+  <span class="status-indicator status-indicator--inactive">{% trans "Expired" %}</span>
 {% elif status == 'inactive' %}
-  <span class="status-indicator status-indicator--inactive">{% trans 'Inactive' %}</span>
+  <span class="status-indicator status-indicator--inactive">{% trans "Inactive" %}</span>
 {% elif status == 'deleted' %}
-  <span class="status-indicator status-indicator--error">{% trans 'Deleted' %}</span>
+  <span class="status-indicator status-indicator--error">{% trans "Deleted" %}</span>
 {% else %}
   <span>{{ status }}</span>
 {% endif %}

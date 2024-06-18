@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'User details' %}
+  {% trans "User details" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -14,14 +14,14 @@
 {% endblock %}
 {% block inner %}
   <h2 class="govuk-heading-m">
-    {% trans 'User detail' %}
+    {% trans "User detail" %}
   </h2>
   <table class="govuk-table manage-users-table">
     <tbody class="govuk-table__body govuk-body-m">
       <tr class="govuk-table__row govuk-body-m" style="border-top:1px solid #bfc1c3">
         <td class="govuk-table__cell govuk-!-width-one-quarter">
           <b>
-            {% trans 'Status' %}
+            {% trans "Status" %}
           </b>
         </td>
         <td class="govuk-table__cell">
@@ -37,7 +37,7 @@
       <tr class="govuk-table__row">
         <td class="govuk-table__cell govuk-!-width-one-quarter">
           <b>
-            {% trans 'Username' %}
+            {% trans "Username" %}
           </b>
         </td>
         <td class="govuk-table__cell">
@@ -49,7 +49,7 @@
           <tr class="govuk-table__row">
             <td class="govuk-table__cell govuk-!-width-one-quarter">
               <b>
-                {% trans 'User type' %}
+                {% trans "User type" %}
               </b>
             </td>
             <td class="govuk-table__cell">
@@ -66,14 +66,14 @@
             <div class="button-holder">
               <a class="govuk-button govuk-button--secondary"
                  href="{% url 'users:manage-user-edit' pk=object.id host host.name %}"
-                 role="button">{% trans 'Edit' %}</a>
+                 role="button">{% trans "Edit" %}</a>
               <a class="govuk-button govuk-button--warning" href="{% url 'users:archive' pk=object.id host host.name %}" role="button">
-                {% trans 'Deactivate' %}
+                {% trans "Deactivate" %}
               </a>
             </div>
           {% else %}
             <a class="govuk-button" href="{% url 'users:activate' pk=object.id host host.name %}" role="button">
-              {% trans 'Activate' %}
+              {% trans "Activate" %}
             </a>
           {% endif %}
         {% endif %}
@@ -81,7 +81,7 @@
         {% if invite %}
           <a class="govuk-button govuk-button--warning"
              href="{% url 'users:agent-remove' pk=invite.id host host.name %}"
-             role="button">{% trans 'Remove' %}</a>
+             role="button">{% trans "Remove" %}</a>
         {% else %}
           <p class="govuk-body">
             {% trans "No invitation found" %}

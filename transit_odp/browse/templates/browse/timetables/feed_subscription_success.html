@@ -1,11 +1,11 @@
-{% extends 'browse/timetables/feed_subscription.html' %}
+{% extends "browse/timetables/feed_subscription.html" %}
 {% load static %}
 {% load i18n %}
 {% block title_tag %}
   {% if subscribe %}
-    {% trans 'Subscribed successfully' %}
+    {% trans "Subscribed successfully" %}
   {% else %}
-    {% trans 'Unsubscribed successfully' %}
+    {% trans "Unsubscribed successfully" %}
   {% endif %}
 {% endblock %}
 {% block backlink %}
@@ -15,9 +15,9 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">
         {% if subscribe %}
-          {% trans 'You have successfully subscribed to the data set' %}
+          {% trans "You have successfully subscribed to the data set" %}
         {% else %}
-          {% trans 'You will no longer receive notification on the data set' %}
+          {% trans "You will no longer receive notification on the data set" %}
         {% endif %}
       </h1>
       <a role="button" class="govuk-button" href="{{ back_url }}">{{ back_button_text }}</a>

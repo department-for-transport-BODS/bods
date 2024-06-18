@@ -17,19 +17,19 @@
 {% endblock %}
 {% block content %}
   {# Page Heading Section #}
-  {% include 'browse/fares/feed_detail/page_heading.html' %}
+  {% include "browse/fares/feed_detail/page_heading.html" %}
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
   {# Main Section #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% if object.status == 'error' %}
-        {% include 'browse/fares/feed_detail/error_panel.html' %}
+        {% include "browse/fares/feed_detail/error_panel.html" %}
       {% else %}
-        {% include 'browse/fares/feed_detail/success_content.html' %}
+        {% include "browse/fares/feed_detail/success_content.html" %}
       {% endif %}
     </div>
     <div class="govuk-grid-column-one-third">
-      {% include 'browse/fares/feed_detail/related_links.html' %}
+      {% include "browse/fares/feed_detail/related_links.html" %}
     </div>
   </div>
 {% endblock %}

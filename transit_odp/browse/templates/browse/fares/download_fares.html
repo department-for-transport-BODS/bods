@@ -1,9 +1,9 @@
-{% extends 'browse/base.html' %}
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'All fares data' %}
+  {% trans "All fares data" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -11,11 +11,11 @@
   {% breadcrumb_url 'All Fares Data' 'download-fares' host hosts.data %}
 {% endblock %}
 {% block heading.title.text %}
-  {% trans 'All fares data' %}
+  {% trans "All fares data" %}
 {% endblock %}
 {% block secondary.title %}
   <h3 class="govuk-heading-l">
-    {% trans 'Download file' %}
+    {% trans "Download file" %}
   </h3>
   <p class="govuk-body">
     {% blocktrans %}
@@ -27,28 +27,28 @@
   <ul class="govuk-list">
     <li>
       <b>
-        {% trans 'Format' %}
+        {% trans "Format" %}
       :</b>
-      {% trans 'NeTEx' %}
+      {% trans "NeTEx" %}
       {% include "browse/snippets/help_modals/netex.html" %}
     </li>
     <li>
       <b>
-        {% trans 'Mode' %}
+        {% trans "Mode" %}
       :</b>
-      {% trans 'Bus' %}
+      {% trans "Bus" %}
     </li>
     <li>
       <b>
-        {% trans 'File type' %}
+        {% trans "File type" %}
       :</b>
-      {% trans 'ZIP file' %}
+      {% trans "ZIP file" %}
     </li>
     <li>
       <b>
-        {% trans 'Update frequency' %}
+        {% trans "Update frequency" %}
       :</b>
-      {% trans 'Daily around 6:00 am GMT' %}
+      {% trans "Daily around 6:00 am GMT" %}
     </li>
   </ul>
 {% endblock %}
@@ -56,7 +56,7 @@
   <p class="govuk-body govuk-!-margin-bottom-0">
     {% if show_bulk_archive_url %}
       <a class="govuk-link" href="{% url 'downloads-fares-bulk' host hosts.data %}" onClick="addGATagEvent()">
-        {% trans 'Download all fares data  ' %}
+        {% trans "Download all fares data  " %}
       </a>
     {% else %}
       {% blocktrans %}

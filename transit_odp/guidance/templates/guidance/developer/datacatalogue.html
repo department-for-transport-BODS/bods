@@ -3,7 +3,7 @@
 {% block extra_content %}
   <h1 data-qa="using-api-header" class="govuk-heading-l">
     {% filter force_escape %}
-      {% trans 'Data Catalogue' %}
+      {% trans "Data Catalogue" %}
     {% endfilter %}
   </h1>
   <p class="govuk-body">
@@ -117,7 +117,7 @@
   </p>
   <h3 class="govuk-heading-m">
     {% filter force_escape %}
-      {% trans 'Field definitions:' %}
+      {% trans "Field definitions:" %}
     {% endfilter %}
   </h3>
   <p class="govuk-body">
@@ -130,43 +130,43 @@
   </p>
   <h4 class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Overall data catalogue:' %}
+      {% trans "Overall data catalogue:" %}
     {% endfilter %}
   </h4>
   {% include "../snippets/datacatalogue_table.html" with definitions_map=overall_column_map %}
   <h4 class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Timetables data catalogue:' %}
+      {% trans "Timetables data catalogue:" %}
     {% endfilter %}
   </h4>
   {% include "../snippets/datacatalogue_table.html" with definitions_map=timetable_column_map %}
   <h4 class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Fares data catalogue:' %}
+      {% trans "Fares data catalogue:" %}
     {% endfilter %}
   </h4>
   {% include "../snippets/datacatalogue_table.html" with definitions_map=fares_data_column_map %}
   <h4 class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Disruptions data catalogue:' %}
+      {% trans "Disruptions data catalogue:" %}
     {% endfilter %}
   </h4>
   {% include "../snippets/datacatalogue_table.html" with definitions_map=disruptions_column_map %}
   <h4 class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Organisations data catalogue:' %}
+      {% trans "Organisations data catalogue:" %}
     {% endfilter %}
   </h4>
   {% include "../snippets/datacatalogue_table.html" with definitions_map=org_column_map %}
   <h4 class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Location data catalogue:' %}
+      {% trans "Location data catalogue:" %}
     {% endfilter %}
   </h4>
   {% include "../snippets/datacatalogue_table.html" with definitions_map=location_definitions %}
   <h4 class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Operator NOC data catalogue:' %}
+      {% trans "Operator NOC data catalogue:" %}
     {% endfilter %}
   </h4>
   {% include "../snippets/datacatalogue_table.html" with definitions_map=operator_noc_column_map %}

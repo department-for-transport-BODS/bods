@@ -5,11 +5,11 @@
 {% block breadcrumb.content %}
 {% endblock %}
 {% block title_tag %}
-  {% trans 'Respond to invite' %}
+  {% trans "Respond to invite" %}
 {% endblock %}
 {% block backlink %}
   {% url 'users:home' host host.name as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">

@@ -4,7 +4,7 @@
 {% load publish_stepper %}
 {% block title_tag %}
   {% if form.errors %}
-    {% trans 'Error: ' %}
+    {% trans "Error: " %}
   {% endif %}
   {% if title_tag_text %}
     {{ title_tag_text }}
@@ -45,7 +45,7 @@
       <div class="govuk-grid-column-one-third">
         {% block inner_secondary %}
           <h2 class="govuk-heading-m">
-            {% trans 'Need help with operator data requirements?' %}
+            {% trans "Need help with operator data requirements?" %}
           </h2>
           <p class="govuk-body">
             <a class="govuk-link" style="font-size: 18px" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{{ _("View our guidelines here") }}</a>

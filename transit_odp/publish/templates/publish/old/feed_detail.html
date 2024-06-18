@@ -11,15 +11,15 @@
   {% if object.status != 'error' and object.status != 'indexing' %}
     <li>
       <h4 class="info-item__title">
-        {% trans 'Status' %}
+        {% trans "Status" %}
       </h4>
       <div class="info-item__description">
         <div class="flex-between">
           {% block inner.status.indicator %}
-            {% include 'organisation/snippets/status_indicator.html' with status=object.status %}
+            {% include "organisation/snippets/status_indicator.html" with status=object.status %}
           {% endblock %}
           <a class="govuk-link" href="{% url 'feed-detail' pk1=pk1 pk=object.id host hosts.data %}">
-            {% trans 'Preview developer view' %}
+            {% trans "Preview developer view" %}
           </a>
         </div>
       </div>
@@ -30,7 +30,7 @@
   {% if  object.status == 'error' and object.is_published == False %}
     <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
     <h2 class="govuk-heading-m">
-      {% trans 'What happens next?' %}
+      {% trans "What happens next?" %}
     </h2>
     <p class="govuk-body">
       {% blocktrans %}
@@ -39,7 +39,7 @@
             contains valid data.<br />
           {% endblocktrans %}
     </p>
-    <span class="govuk-caption-m">{% trans 'Accepted file formats include .zip and .xml (TransXChange).' %}</span>
+    <span class="govuk-caption-m">{% trans "Accepted file formats include .zip and .xml (TransXChange)." %}</span>
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
     {#    <a role="button" class="govuk-button" href="{% url 'feed-update' pk=object.id host hosts.publish %}">#}
     {#      {{ _('Publish data again') }}#}
@@ -65,14 +65,14 @@
   {% elif object.status == 'indexing' %}
     <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
     <h2 class="govuk-heading-m">
-      {% trans 'What happens next?' %}
+      {% trans "What happens next?" %}
     </h2>
     <p class="govuk-body">
       {% blocktrans %}
             We are now processing the data you've uploaded. You can view the <br />
             progress on your
           {% endblocktrans %}
-      <a class="govuk-link" href="{% url 'feed-list' pk1=pk1 host hosts.publish %}">{% trans 'data sets page.' %}</a>
+      <a class="govuk-link" href="{% url 'feed-list' pk1=pk1 host hosts.publish %}">{% trans "data sets page." %}</a>
       {% blocktrans %}
             Once this is processed, your data <br />
             will be live for everyone else to see.
@@ -98,16 +98,16 @@
 {% block inner.secondary %}
   <div class="govuk-!-margin-top-6">
     <h2 class="govuk-heading-m">
-      {% trans 'Need help with operator data requirements?' %}
+      {% trans "Need help with operator data requirements?" %}
     </h2>
     <ul class="govuk-list app-list--nav govuk-!-font-size-19">
       <li>
         <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
-          {% trans 'View our guidelines here' %}
+          {% trans "View our guidelines here" %}
         </a>
       </li>
       <li>
-        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact support desk' %}</a>
+        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact support desk" %}</a>
       </li>
     </ul>
   </div>
@@ -115,16 +115,16 @@
   {#  <div>#}
   {#  TODO - need to handle case when there is already a draft revision in process #}
   {#    {% if object.live_revision.status != 'indexing' and object.live_revision.is_published == True %}#}
-  {#    <h2 class="govuk-heading-m">{% trans 'Making changes to your data set?' %}</h2>#}
+  {#    <h2 class="govuk-heading-m">{% trans "Making changes to your data set?" %}</h2>#}
   {#    <ul class="govuk-list app-list--nav govuk-!-font-size-19">#}
   {#      <li>#}
   {#        <a class="govuk-link"#}
-  {#           href="{% url 'feed-update' pk=object.id host hosts.publish %}">{% trans 'Change data' %}</a>#}
+  {#           href="{% url 'feed-update' pk=object.id host hosts.publish %}">{% trans "Change data" %}</a>#}
   {#      </li>#}
   {#        {% if object.status != 'expired' %}#}
   {#          <li>#}
   {#            <a class="govuk-link"#}
-  {#               href="{% url 'feed-archive' pk=object.id host hosts.publish %}">{% trans 'Archive data set' %}</a>#}
+  {#               href="{% url 'feed-archive' pk=object.id host hosts.publish %}">{% trans "Archive data set" %}</a>#}
   {#          </li>#}
   {#        {% endif %}#}
   {#    </ul>#}

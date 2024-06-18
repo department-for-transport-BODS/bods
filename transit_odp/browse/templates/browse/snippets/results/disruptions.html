@@ -6,11 +6,11 @@
 {% endblock %}
 {% block dataset_result_content %}
   <li>
-    <span class="item__key">{% trans 'Active disruptions:' %}</span>
+    <span class="item__key">{% trans "Active disruptions:" %}</span>
     <span class="item__value">{{ item.stats.totalDisruptionsCount }}</span>
   </li>
   <li>
-    <span class="item__key">{% trans 'Last updated:' %}</span>
+    <span class="item__key">{% trans "Last updated:" %}</span>
     {% if item.stats.lastUpdated %}
       <span class="item__value">{{ item.stats.lastUpdated|date:"j M Y G:i:s" }}</span>
     {% else %}

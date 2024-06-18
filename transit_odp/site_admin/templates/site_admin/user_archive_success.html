@@ -4,18 +4,18 @@
 {% load breadcrumbs %}
 {% block title_tag %}
   {% if object.is_active %}
-    {% trans 'User activated' %}
+    {% trans "User activated" %}
   {% else %}
-    {% trans 'User deactivated' %}
+    {% trans "User deactivated" %}
   {% endif %}
 {% endblock %}
 {% block breadcrumb.content %}
 {% endblock %}
 {% block title_text %}
   {% if object.is_active %}
-    {% trans 'User has been activated' %}
+    {% trans "User has been activated" %}
   {% else %}
-    {% trans 'User has been deactivated' %}
+    {% trans "User has been deactivated" %}
   {% endif %}
 {% endblock %}
 {% block body_text %}
@@ -37,5 +37,5 @@
   {% url 'users:org-user-manage' pk=view.kwargs.pk host hosts.admin %}
 {% endblock %}
 {% block button_text %}
-  {% trans 'Go back to user management' %}
+  {% trans "Go back to user management" %}
 {% endblock %}

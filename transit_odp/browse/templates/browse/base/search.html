@@ -1,4 +1,4 @@
-{% extends 'browse/base.html' %}
+{% extends "browse/base.html" %}
 {% load i18n %}
 {% load static %}
 {% load crispy_forms_tags %}
@@ -16,12 +16,12 @@
     <div class="govuk-grid-row govuk-!-margin-top-8">
       <div class="govuk-grid-column-one-third">
         <h2 class="govuk-heading-m">
-          {% trans 'Filter by' %}
+          {% trans "Filter by" %}
         </h2>
         {% crispy filter.form filter.form.helper %}
       </div>
       <div class="govuk-grid-column-two-thirds">
-        {% include 'browse/snippets/search_list.html' with items=object_list ordering=ordering %}
+        {% include "browse/snippets/search_list.html" with items=object_list ordering=ordering %}
       </div>
     </div>
   </form>

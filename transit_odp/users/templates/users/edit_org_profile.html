@@ -7,10 +7,10 @@
 {% endblock %}
 {% block backlink %}
   {% url 'users:organisation-profile' host hosts.publish as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block title_text %}
-  {% trans 'Edit organisation detail' %}
+  {% trans "Edit organisation detail" %}
 {% endblock %}
 {% block inner %}
   {#   {% crispy form %}#}

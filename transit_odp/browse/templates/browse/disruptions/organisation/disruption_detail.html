@@ -1,21 +1,21 @@
-{% extends 'browse/base.html' %}
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Disruption Detail' %}
+  {% trans "Disruption Detail" %}
 {% endblock %}
 {% block breadcrumb.content %}
 {% endblock %}
 {% block backlink %}
   {% url 'org-detail' orgId=org_id host host.name as backlink_url %}
-  {% include 'snippets/backlink.html' with url=backlink_url %}
+  {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
 {% block content %}
   <h1 class="govuk-heading-xl dont-break-out">
-    {% trans 'Disruption detail' %}
+    {% trans "Disruption detail" %}
   </h1>
-  {% include 'publish/snippets/dataset_map.html' %}
+  {% include "publish/snippets/dataset_map.html" %}
   <h3 class="govuk-heading-l govuk-!-padding-top-8">
     {{ object.summary|capfirst }}
   </h3>
@@ -25,7 +25,7 @@
            width="20"
            height="20"
            src="{% static 'frontend/images/calendar-icon.png' %}"
-           alt="{% trans 'Calendar icon' %}" />
+           alt="{% trans "Calendar icon" %}" />
       {{ object.publishStartDate }} {{ object.publishStartTime }} onwards
     </p>
   {% else %}
@@ -34,7 +34,7 @@
            width="20"
            height="20"
            src="{% static 'frontend/images/calendar-icon.png' %}"
-           alt="{% trans 'Calendar icon' %}" />
+           alt="{% trans "Calendar icon" %}" />
       {{ object.publishStartDate }} {{ object.publishStartTime }} - {{ object.publishEndDate }} {{ object.publishEndTime }}
     </p>
   {% endif %}
@@ -47,7 +47,7 @@
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">
-              {% trans 'Associated link' %}
+              {% trans "Associated link" %}
             </th>
             <td class="govuk-table__cell" colspan="2">
               <a class="govuk-link" href={{ object.associatedLink }}>{{ object.associatedLink }}</a>
@@ -58,10 +58,10 @@
     </div>
   {% endif %}
   <h3 class="govuk-heading-l">
-    {% trans 'Consequences' %}
+    {% trans "Consequences" %}
   </h3>
   {% include "browse/disruptions/organisation/disruption_consequence_accordion.html" %}
-  <a href="{% url 'org-detail' orgId=org_id host host.name %}" class="govuk-button">{% trans 'Close and return' %}</a>
+  <a href="{% url 'org-detail' orgId=org_id host host.name %}" class="govuk-button">{% trans "Close and return" %}</a>
 {% endblock %}
 {% block scripts %}
   {{ block.super }}

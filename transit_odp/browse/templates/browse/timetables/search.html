@@ -1,9 +1,9 @@
-{% extends 'browse/base/search.html' %}
+{% extends "browse/base/search.html" %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
   {% filter force_escape %}
-    {% trans 'Browse Timetables Data' %}
+    {% trans "Browse Timetables Data" %}
   {% endfilter %}
 {% endblock %}
 {% block breadcrumb.content %}

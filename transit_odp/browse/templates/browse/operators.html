@@ -1,11 +1,11 @@
-{% extends 'browse/base.html' %}
+{% extends "browse/base.html" %}
 {% load breadcrumbs %}
 {% load i18n %}
 {% load query_transform %}
 {% load static %}
 {% block title_tag %}
   {% filter force_escape %}
-    {% trans 'Operator Profiles' %}
+    {% trans "Operator Profiles" %}
   {% endfilter %}
 {% endblock %}
 {% block breadcrumb.content %}
@@ -28,19 +28,19 @@
               <span class="govuk-body">
                 {% filter force_escape %}
                   {{ paginator.count }}
-                  {% trans 'results' %}
+                  {% trans "results" %}
                 {% endfilter %}
               </span>
             {% elif paginator.count == 1 %}
               <span class="govuk-body">
                 {% filter force_escape %}
-                  {% trans '1 result' %}
+                  {% trans "1 result" %}
                 {% endfilter %}
               </span>
             {% else %}
               <h3 class="govuk-heading-m">
                 {% filter force_escape %}
-                  {% trans 'Sorry, no results found' %}
+                  {% trans "Sorry, no results found" %}
                   {% if q %}
                     {% blocktrans %} for {{ q }}{% endblocktrans %}
                   {% endif %}
@@ -51,14 +51,14 @@
           <div class="govuk-body-s govuk-grid-row search-pillbox">
             {% if q %}
               <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-                {% trans 'Containing' as tmsg %}
+                {% trans "Containing" as tmsg %}
                 {{ tmsg | force_escape }}
               </span>
               <a href="?ordering={{ ordering }}">
                 <div class="pill-item">
                   <img class="pill-item__image"
                        src="{% static 'frontend/images/icon-cross.png' %}"
-                       alt="{% trans 'Delete icon' as tmsg %}{{ tmsg | force_escape }}" />
+                       alt="{% trans "Delete icon" as tmsg %}{{ tmsg | force_escape }}" />
                   <span class="pill-item__label">{{ q }}</span>
                 </div>
               </a>
@@ -72,22 +72,22 @@
             <select class="govuk-select" id="ordering" name="ordering" aria-label="Sort by" onchange="this.form.submit()">
               <option value="name" {% if ordering == "name" %}selected{% endif %}>
                 {% filter force_escape %}
-                  {% trans 'Name A-Z' %}
+                  {% trans "Name A-Z" %}
                 {% endfilter %}
               </option>
               <option value="-name" {% if ordering == "-name" %}selected{% endif %}>
                 {% filter force_escape %}
-                  {% trans 'Name Z-A' %}
+                  {% trans "Name Z-A" %}
                 {% endfilter %}
               </option>
               <option value="-created" {% if ordering == "-created" %}selected{% endif %}>
                 {% filter force_escape %}
-                  {% trans 'Date registered newest' %}
+                  {% trans "Date registered newest" %}
                 {% endfilter %}
               </option>
               <option value="created" {% if ordering == "created" %}selected{% endif %}>
                 {% filter force_escape %}
-                  {% trans 'Date registered oldest' %}
+                  {% trans "Date registered oldest" %}
                 {% endfilter %}
               </option>
             </select>
@@ -97,19 +97,19 @@
               {% if not forloop.first %}
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
               {% endif %}
-              {% include 'browse/snippets/results/operators.html' %}
+              {% include "browse/snippets/results/operators.html" %}
             {% empty %}
               <div>
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
                 <h4 class="govuk-heading-s">
                   {% filter force_escape %}
-                    {% trans 'Having trouble finding what you want?' %}
+                    {% trans "Having trouble finding what you want?" %}
                   {% endfilter %}
                 </h4>
                 <ul class="govuk-list govuk-list--bullet">
                   <li>
                     {% filter force_escape %}
-                      {% trans 'Check your spelling and try again' %}
+                      {% trans "Check your spelling and try again" %}
                     {% endfilter %}
                   </li>
                 </ul>

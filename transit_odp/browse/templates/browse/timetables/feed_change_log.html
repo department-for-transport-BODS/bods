@@ -4,18 +4,18 @@
 {% load render_table from django_tables2 %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Changelog' %}
+  {% trans "Changelog" %}
 {% endblock %}
 {% block breadcrumb.content %}
 {% endblock %}
 {% block backlink %}
   {% url 'feed-detail' pk=object.id host host.name as backlink_url %}
-  {% include 'snippets/backlink.html' with url=backlink_url %}
+  {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <span class="govuk-caption-xl">{% trans 'Changelog' %}</span>
+      <span class="govuk-caption-xl">{% trans "Changelog" %}</span>
       <h1 class="govuk-heading-xl dont-break-out">
         {{ feed.name }}
       </h1>

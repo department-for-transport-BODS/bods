@@ -1,6 +1,6 @@
 {% load i18n %}
 <a class="govuk-link govuk-!-font-size-19" href="{% url 'users:invite' host hosts.publish %}">
-  {% trans 'Invite members and agents' %}
+  {% trans "Invite members and agents" %}
 </a>
 <p class="govuk-body">
   {% blocktrans %}
@@ -9,7 +9,7 @@
     {% endblocktrans %}
 </p>
 <a class="govuk-link govuk-!-font-size-19" href={% url 'redirect-profile' host hosts.publish %}>
-  {% trans 'Update profile' %}
+  {% trans "Update profile" %}
 </a>
 <p class="govuk-body">
   {% blocktrans %}

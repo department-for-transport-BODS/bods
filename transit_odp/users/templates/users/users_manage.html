@@ -2,14 +2,14 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Manage user access' %}
+  {% trans "Manage user access" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'User management' 'users:manage' pk=pk %}
 {% endblock %}
 {% block title_text %}
-  {% trans 'User management' %}
+  {% trans "User management" %}
 {% endblock %}
 {% block subtitle %}
 {% endblock %}

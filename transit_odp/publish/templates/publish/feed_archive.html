@@ -4,20 +4,20 @@
 {% load breadcrumbs %}
 {% block title_tag %}
   {% if form.errors %}
-    {% trans 'Error: ' %}
+    {% trans "Error: " %}
   {% endif %}
-  {% trans 'Deactivate data set' %}
+  {% trans "Deactivate data set" %}
 {% endblock %}
 {% block breadcrumb.content %}
 {% endblock %}
 {% block backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
       <h1 class="govuk-heading-xl">
-        {% trans 'Would you like to deactivate this data set?' %}
+        {% trans "Would you like to deactivate this data set?" %}
       </h1>
       <p class="govuk-body">
         {% blocktrans %}

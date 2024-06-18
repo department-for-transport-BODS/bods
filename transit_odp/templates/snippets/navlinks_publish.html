@@ -3,11 +3,11 @@
 {% load active_url %}
 {% block menu.navlinks %}
   <li class="govuk-header__navigation-item {% active_url 'home' host=hosts.publish exact=True %} ">
-    <a class="govuk-header__link" href="{% url 'home' host hosts.publish %}">{% trans 'Home' %}</a>
+    <a class="govuk-header__link" href="{% url 'home' host hosts.publish %}">{% trans "Home" %}</a>
   </li>
   <li class="govuk-header__navigation-item">
     <a class="govuk-header__link {% active_url 'guide-me' css_class='govuk-link--active' host=hosts.publish exact=True %}"
-       href="{% url 'guide-me' host hosts.publish %}">{% trans 'Guide me' %}</a>
+       href="{% url 'guide-me' host hosts.publish %}">{% trans "Guide me" %}</a>
   </li>
   <li class="flexfill">
   </li>
@@ -15,24 +15,24 @@
     <li class="govuk-header__navigation-item dropdown bods-dropdown">
       <a href="#" class="govuk-header__link {% active_url 'users:home' css_class='govuk-link--active' host='publish' %}">
         <img class="account-menu__icon" src="{% static 'frontend/images/np-person-781585-ffffff.png' %}" alt="" />
-        {% trans 'My account' %}
+        {% trans "My account" %}
       </a>
       <div class="dropdown-content">
         <a class="govuk-link {% active_url 'users:home' css_class='govuk-link--active' host='publish' exact=True %}"
-           href="{% url 'users:home' host hosts.publish %}">{% trans 'My account' %}</a>
+           href="{% url 'users:home' host hosts.publish %}">{% trans "My account" %}</a>
         {% if request.user.is_org_admin %}
           {% include "snippets/org_admin_menu_items_publish.html" %}
         {% endif %}
         {% if request.user.organisation %}
           <a class="govuk-link {% active_url 'users:organisation-profile' css_class='govuk-link--active' host='publish' pk=request.user.organisation.id %}"
              href="{% url 'users:organisation-profile' pk=request.user.organisation.id host hosts.publish %}">
-            {% trans 'Organisation profile' %}
+            {% trans "Organisation profile" %}
           </a>
         {% endif %}
         <a class="govuk-link {% active_url 'users:settings' css_class='govuk-link--active' host='publish' %}"
-           href="{% url 'users:settings'  host hosts.publish %}">{% trans 'Account settings' %}</a>
+           href="{% url 'users:settings'  host hosts.publish %}">{% trans "Account settings" %}</a>
         <a class="govuk-link {% active_url 'account_logout' css_class='govuk-link--active' host='publish' %}"
-           href="{% url 'account_logout'  host hosts.publish %}">{% trans 'Sign out' %}</a>
+           href="{% url 'account_logout'  host hosts.publish %}">{% trans "Sign out" %}</a>
       </div>
     </li>
   {% else %}
@@ -40,7 +40,7 @@
       <a class="govuk-header__link {% active_url 'account_login' css_class='govuk-link--active' host='publish' %}"
          href="{% url 'account_login' host hosts.publish %}">
         <img class="account-menu__icon" src="{% static 'frontend/images/np-person-781585-ffffff.png' %}" alt="" />
-        {% trans 'Sign in' %}
+        {% trans "Sign in" %}
       </a>
     </li>
   {% endif %}

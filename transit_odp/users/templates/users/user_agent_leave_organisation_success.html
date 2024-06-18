@@ -5,7 +5,7 @@
 {% block breadcrumb.content %}
 {% endblock %}
 {% block title_tag %}
-  {% trans 'You are no longer an agent' %}
+  {% trans "You are no longer an agent" %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
@@ -15,9 +15,9 @@
       </h1>
     </div>
     <p class="govuk-body">
-      {% trans 'We have sent ' %}
+      {% trans "We have sent " %}
       {{ object.organisation.name }}
-      {% trans 'a confirmation email.' %}
+      {% trans "a confirmation email." %}
     </p>
     <a href="{% url 'users:home' host host.name %}"
        role="button"

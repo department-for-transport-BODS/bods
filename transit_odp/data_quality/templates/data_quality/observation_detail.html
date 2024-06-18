@@ -5,7 +5,7 @@
   {% blocktrans %}{{ title }} observation detail{% endblocktrans %}
 {% endblock %}
 {% block backlink %}
-  {% include 'snippets/backlink.html' with url=back_url %}
+  {% include "snippets/backlink.html" with url=back_url %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
@@ -14,7 +14,7 @@
       <h1 class="govuk-heading-xl">
         {{ subtitle }}
       </h1>
-      {% include 'data_quality/snippets/detail_map.html' %}
+      {% include "data_quality/snippets/detail_map.html" %}
       <div>
         {% render_table tables.0 %}
       </div>

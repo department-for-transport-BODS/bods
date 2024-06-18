@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block extra_content %}
   <h1 class="govuk-heading-xl">
-    {% trans 'Searching for Data' %}
+    {% trans "Searching for Data" %}
   </h1>
   <p class="govuk-body">
     {% blocktrans %}
@@ -11,7 +11,7 @@
   </p>
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
   <h2 class="govuk-heading-m">
-    {% trans 'Search Bar' %}
+    {% trans "Search Bar" %}
   </h2>
   <p class="govuk-body">
     {% blocktrans %}
@@ -26,7 +26,7 @@
   </p>
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
   <h2 class="govuk-heading-m">
-    {% trans 'API Searching' %}
+    {% trans "API Searching" %}
   </h2>
   <p class="govuk-body">
     {% blocktrans %}
@@ -35,6 +35,6 @@
     {% endblocktrans %}
   </p>
   {% url 'guidance:support-bus_operators' host hosts.publish as url %}
-  {% include '../snippets/previous.html' with url=url prev_page=prev_page %}
-  {% include '../snippets/next.html' with url=url next_page=next_page %}
+  {% include "../snippets/previous.html" with url=url prev_page=prev_page %}
+  {% include "../snippets/next.html" with url=url next_page=next_page %}
 {% endblock %}

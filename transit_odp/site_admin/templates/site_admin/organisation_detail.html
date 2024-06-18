@@ -4,7 +4,7 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Organisation detail' %}
+  {% trans "Organisation detail" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -24,7 +24,7 @@
       {% include "organisation/snippets/psv_licence_panel.html" %}
       <table class="govuk-table manage-users-table govuk-!-margin-top-8"">
         <caption class="govuk-table__caption manage-users-table__caption">
-          {% trans 'Organisation detail' %}
+          {% trans "Organisation detail" %}
         </caption>
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
@@ -36,7 +36,7 @@
           {# Short name #}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell manage-users-table__key">
-              {% trans 'Short name' %}
+              {% trans "Short name" %}
             </td>
             <td colspan="2" class="govuk-table__cell">
               {{ properties.short_name }}
@@ -45,7 +45,7 @@
           {# Status #}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell manage-users-table__key">
-              {% trans 'Status' %}
+              {% trans "Status" %}
             </td>
             <td colspan="2" class="govuk-table__cell">
               {{ properties.status }}
@@ -54,7 +54,7 @@
           {# Is ABODS Organisation #}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell manage-users-table__key">
-              {% trans 'Is ABODS Organisation' %}
+              {% trans "Is ABODS Organisation" %}
             </td>
             <td colspan="2" class="govuk-table__cell">
               {{ properties.is_abods_global_viewer }}
@@ -63,7 +63,7 @@
           {# Operator ID #}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell manage-users-table__key">
-              {% trans 'Operator ID' %}
+              {% trans "Operator ID" %}
             </td>
             <td colspan="2" class="govuk-table__cell">
               {{ properties.operator_id }}
@@ -74,7 +74,7 @@
             <tr class="govuk-table__row">
               <td class="govuk-table__cell manage-users-table__key" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
                 {% if forloop.first %}
-                  {% trans 'National operator Code' %}
+                  {% trans "National operator Code" %}
                 {% endif %}
               </td>
               <td colspan="2" class="govuk-table__cell" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
@@ -87,7 +87,7 @@
             <tr class="govuk-table__row">
               <td class="govuk-table__cell manage-users-table__key" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
                 {% if forloop.first %}
-                  {% trans 'PSV Licence Number' %}
+                  {% trans "PSV Licence Number" %}
                 {% endif %}
               </td>
               <td colspan="2" class="govuk-table__cell" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
@@ -98,7 +98,7 @@
           {% if not properties.licences %}
             <tr class="govuk-table__row">
               <td class="govuk-table__cell manage-users-table__key">
-                {% trans 'PSV Licence Number' %}
+                {% trans "PSV Licence Number" %}
               </td>
               <td colspan="2" class="govuk-table__cell">
               </td>
@@ -108,7 +108,7 @@
           {% if not properties.service_code_exemptions %}
             <tr class="govuk-table__row">
               <td class="govuk-table__cell manage-users-table__key">
-                {% trans 'Service codes exempt' %}
+                {% trans "Service codes exempt" %}
               </td>
               <td colspan="2" class="govuk-table__cell">
               </td>
@@ -118,7 +118,7 @@
             <tr class="govuk-table__row">
               <td class="govuk-table__cell manage-users-table__key" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
                 {% if forloop.first %}
-                  {% trans 'Service codes exempt' %}
+                  {% trans "Service codes exempt" %}
                 {% endif %}
               </td>
               <td class="govuk-table__cell" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
@@ -132,7 +132,7 @@
           {# Date added to BODS #}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell manage-users-table__key">
-              {% trans 'Date added to BODS' %}
+              {% trans "Date added to BODS" %}
             </td>
             <td colspan="2" class="govuk-table__cell">
               {{ properties.date_added|date:"d M Y" }}
@@ -141,7 +141,7 @@
           {# Last active #}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell manage-users-table__key">
-              {% trans 'Last active' %}
+              {% trans "Last active" %}
             </td>
             <td colspan="2" class="govuk-table__cell">
               {{ properties.last_active|date:"d M Y" }}
@@ -152,7 +152,7 @@
             <tr class="govuk-table__row">
               <td class="govuk-table__cell manage-users-table__key" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
                 {% if forloop.first %}
-                  {% trans 'Agents' %}
+                  {% trans "Agents" %}
                 {% endif %}
               </td>
               <td class="govuk-table__cell" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
@@ -166,7 +166,7 @@
           {# Timetables data sets created #}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell manage-users-table__key">
-              {% trans 'Timetables data sets created' %}
+              {% trans "Timetables data sets created" %}
             </td>
             <td class="govuk-table__cell">
               {{ properties.timetables_created|default_if_none:"0" }}
@@ -180,7 +180,7 @@
           {# Bus location data feeds created #}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell manage-users-table__key">
-              {% trans 'Bus location data feeds created' %}
+              {% trans "Bus location data feeds created" %}
             </td>
             <td class="govuk-table__cell">
               {{ properties.avls_created|default_if_none:"0" }}
@@ -194,7 +194,7 @@
           {# Fares data sets created #}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell manage-users-table__key">
-              {% trans 'Fares data sets created' %}
+              {% trans "Fares data sets created" %}
             </td>
             <td class="govuk-table__cell">
               {{ properties.fares_created|default_if_none:"0" }}
@@ -208,14 +208,14 @@
           {# Key contact #}
           <tr class="govuk-table__row">
             <td class="govuk-table__cell manage-users-table__key">
-              {% trans 'Key contact' %}
+              {% trans "Key contact" %}
             </td>
             <td class="govuk-table__cell">
               {{ properties.key_contact }}
             </td>
             <td class="govuk-table__cell">
               <a class="govuk-link" href="{% url 'users:org-user-manage' pk=object.id host hosts.admin %}">
-                {% trans 'View organisation users' %}
+                {% trans "View organisation users" %}
               </a>
             </td>
           </tr>
@@ -230,21 +230,21 @@
     {% if not properties.registration_complete %}
       <a role="button"
          class="govuk-button govuk-button--secondary app-!-mr-sm-4"
-         href="{% url 'users:organisation-update' pk=object.id host hosts.admin %}">{% trans 'Edit' %}</a>
+         href="{% url 'users:organisation-update' pk=object.id host hosts.admin %}">{% trans "Edit" %}</a>
     {% elif properties.is_active %}
       <a role="button"
          class="govuk-button govuk-button--secondary app-!-mr-sm-4"
-         href="{% url 'users:organisation-update' pk=object.id host hosts.admin %}">{% trans 'Edit' %}</a>
+         href="{% url 'users:organisation-update' pk=object.id host hosts.admin %}">{% trans "Edit" %}</a>
       <a role="button"
          class="govuk-button govuk-button--warning"
          href="{% url 'users:organisation-archive' pk=object.id host hosts.admin %}">
-        {% trans 'Deactivate organisation' %}
+        {% trans "Deactivate organisation" %}
       </a>
     {% else %}
       <a role="button"
          class="govuk-button govuk-button--warning"
          href="{% url 'users:organisation-archive' pk=object.id host hosts.admin %}">
-        {% trans 'Activate organisation' %}
+        {% trans "Activate organisation" %}
       </a>
     {% endif %}
   </div>

@@ -1,16 +1,16 @@
-{% extends 'browse/base.html' %}
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Guide me' %}
+  {% trans "Guide me" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'Guide Me' 'guide-me' host host.name %}
 {% endblock %}
 {% block heading.title.text %}
-  {% trans 'Guide me' %}
+  {% trans "Guide me" %}
 {% endblock %}
 {% block heading.subtitle %}
   <p class="govuk-body">

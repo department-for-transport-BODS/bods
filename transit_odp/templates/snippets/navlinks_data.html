@@ -3,11 +3,11 @@
 {% load active_url %}
 {% block menu.navlinks %}
   <li class="govuk-header__navigation-item {% active_url 'home' host='data' exact=True %} ">
-    <a class="govuk-header__link" href="{% url 'home' host hosts.data %}">{% trans 'Home' %}</a>
+    <a class="govuk-header__link" href="{% url 'home' host hosts.data %}">{% trans "Home" %}</a>
   </li>
   <li class="govuk-header__navigation-item">
     <a class="govuk-header__link {% active_url 'guidance' host='data' css_class='govuk-link--active' %}"
-       href="{% url 'guide-me' host hosts.data %}">{% trans 'Guide me' %}</a>
+       href="{% url 'guide-me' host hosts.data %}">{% trans "Guide me" %}</a>
   </li>
   <li class="flexfill">
   </li>
@@ -16,19 +16,19 @@
       {# TODO: use proper html rather than hacky href thing #}
       <a href="#" class="govuk-header__link {% active_url 'account' css_class='govuk-link--active' host='data' %}">
         <img class="account-menu__icon" src="{% static 'frontend/images/np-person-781585-ffffff.png' %}" alt="" />
-        {% trans 'My account' %}
+        {% trans "My account" %}
       </a>
       <div class="dropdown-content">
         <a href="{% url 'users:home' host hosts.data %}"
            class="govuk-link {% active_url 'users:home' host='data' css_class='govuk-link--active' exact=True %}">
-          {% trans 'My account' %}
+          {% trans "My account" %}
         </a>
         <a class="govuk-link {% active_url 'users:feeds-manage' host='data' css_class='govuk-link--active' %}"
-           href="{% url 'users:feeds-manage' host hosts.data %}">{% trans 'Manage subscriptions' %}</a>
+           href="{% url 'users:feeds-manage' host hosts.data %}">{% trans "Manage subscriptions" %}</a>
         <a class="govuk-link {% active_url 'users:settings' host='data' css_class='govuk-link--active' %}"
-           href="{% url 'users:settings' host hosts.data %}">{% trans 'Account settings' %}</a>
+           href="{% url 'users:settings' host hosts.data %}">{% trans "Account settings" %}</a>
         <a class="govuk-link {% active_url 'account_logout' host='data' css_class='govuk-link--active' %}"
-           href="{% url 'account_logout' host hosts.data %}">{% trans 'Sign out' %}</a>
+           href="{% url 'account_logout' host hosts.data %}">{% trans "Sign out" %}</a>
       </div>
     </li>
   {% else %}
@@ -37,7 +37,7 @@
       <a class="govuk-header__link {% active_url 'account_login' host='data' css_class='govuk-link--active' %}"
          href="{% url 'account_login' host hosts.data %}">
         <img class="account-menu__icon" src="{% static 'frontend/images/np-person-781585-ffffff.png' %}" alt="" />
-        {% trans 'Sign in' %}
+        {% trans "Sign in" %}
       </a>
     </li>
   {% endif %}
