@@ -690,7 +690,7 @@ class VehicleJourneyFinder:
         )
 
     def get_service_orgs_working_days_start_end_date(
-        self, org, result: ValidationResult
+        self, org, result: ValidationResult, recorded_at_time
     ):
         working_days = self.get_working_days(org)
         for date_range in working_days:
@@ -703,7 +703,7 @@ class VehicleJourneyFinder:
                 )
                 result.add_error(ErrorCategory.GENERAL, error_msg)
                 logger.info(error_msg)
-                return False, False
+                break
 
             end_date = date_range.get_text_or_default("EndDate")
             if not end_date:
@@ -714,13 +714,15 @@ class VehicleJourneyFinder:
                 )
                 result.add_error(ErrorCategory.GENERAL, error_msg)
                 logger.info(error_msg)
-                return False, False
+                break
 
             start_date_formatted = datetime.datetime.strptime(
                 start_date, "%Y-%m-%d"
             ).date()
             end_date_formatted = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
-        return start_date_formatted, end_date_formatted
+            if start_date_formatted <= recorded_at_time <= end_date_formatted:
+                return True
+        return False
 
     def filter_by_days_of_operation(
         self,
@@ -742,32 +744,24 @@ class VehicleJourneyFinder:
                 org.get_text_or_default("OrganisationCode"): org for org in service_orgs
             }
 
-            if len(service_org_ref_dict["days_of_non_operation"]):
+            if len(service_org_ref_dict["days_of_non_operation"]) > 0:
                 for service_org_ref in service_org_ref_dict["days_of_non_operation"]:
-                    if service_org_ref not in service_org_ref_dict:
+                    if service_org_ref not in service_orgs_dict:
                         continue
                     org = service_orgs_dict[service_org_ref]
-                    (
-                        start_date_formatted,
-                        end_date_formatted,
-                    ) = self.get_service_orgs_working_days_start_end_date(org, result)
-                    if not start_date_formatted or not end_date_formatted:
-                        break
-                    if start_date_formatted <= recorded_at_time <= end_date_formatted:
+                    if self.get_service_orgs_working_days_start_end_date(
+                        org, result, recorded_at_time
+                    ):
                         vehicle_journeys.remove(vj)
 
-            elif len(service_org_ref_dict["days_of_operation"]):
+            elif len(service_org_ref_dict["days_of_operation"]) > 0:
                 for service_org_ref in service_org_ref_dict["days_of_non_operation"]:
                     if service_org_ref not in service_org_ref_dict:
                         continue
                     org = service_orgs_dict[service_org_ref]
-                    (
-                        start_date_formatted,
-                        end_date_formatted,
-                    ) = self.get_service_orgs_working_days_start_end_date(org, result)
 
-                    if not (
-                        start_date_formatted <= recorded_at_time <= end_date_formatted
+                    if not self.get_service_orgs_working_days_start_end_date(
+                        org, result, recorded_at_time
                     ):
                         vehicle_journeys.remove(vj)
 
@@ -799,7 +793,9 @@ class VehicleJourneyFinder:
         journey_code_operating_profile_service_org = []
 
         for vj in reversed(vehicle_journeys):
-            service_org_ref, _, _ = self.get_service_org_ref_and_days_of_operation(vj)
+            service_org_ref, _, _, _ = self.get_service_org_ref_and_days_of_operation(
+                vj
+            )
             get_service_org_xml_string = self.get_service_org_xml_string(vj)
             journey_code = vj.vehicle_journey.get_element(
                 ["Operational", "TicketMachine", "JourneyCode"]
