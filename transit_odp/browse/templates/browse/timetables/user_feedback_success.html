@@ -7,7 +7,9 @@
   {% trans 'Feedback sent' %}
 {% endblock %}
 {# Breadcrumb #}
-{% block breadcrumb %}{# No breadcrumb #}{% endblock %}
+{% block breadcrumb %}
+  {# No breadcrumb #}
+{% endblock %}
 {# Backlink #}
 {% block backlink %}
   {% include 'snippets/backlink.html' with url=back_link %}
@@ -15,7 +17,9 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l app-!-mb-4">{% trans 'Your feedback has been submitted' %}</h1>
+      <h1 class="govuk-heading-l app-!-mb-4">
+        {% trans 'Your feedback has been submitted' %}
+      </h1>
       <div class="btn-group-justified">
         <a role="button" class="govuk-button app-!-mr-sm-4" href="{{ back_link }}">{% trans 'Go back to data set' %}</a>
       </div>

@@ -10,7 +10,8 @@
     {% trans 'Unsubscribe from data feed' %}
   {% endif %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block backlink %}
   {% include 'snippets/backlink.html' with url=backlink_url %}
 {% endblock %}
@@ -27,9 +28,13 @@
       </h1>
       <p class="govuk-body">
         {% if not is_subscribed %}
-          {% trans 'Would you like to subscribe to ' %} {% trans object.name %}{% trans ' data feed?' %}
+          {% trans 'Would you like to subscribe to ' %}
+          {% trans object.name %}
+          {% trans ' data feed?' %}
         {% else %}
-          {% trans 'Would you like to unsubscribe from ' %} {% trans object.name %}{% trans ' data feed?' %}
+          {% trans 'Would you like to unsubscribe from ' %}
+          {% trans object.name %}
+          {% trans ' data feed?' %}
         {% endif %}
       </p>
       {% crispy form %}

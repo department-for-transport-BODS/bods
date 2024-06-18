@@ -1,6 +1,8 @@
 {% load i18n %}
 <div class="govuk-panel govuk-panel--confirmation" style="background-color: #2b8cc4;">
-  <h1 class="govuk-panel__title govuk-!-font-size-36">{% trans 'Your data is being processed' %}</h1>
+  <h1 class="govuk-panel__title govuk-!-font-size-36">
+    {% trans 'Your data is being processed' %}
+  </h1>
   <div class="govuk-panel__body govuk-!-font-size-19">
     <div style="padding-bottom: 1rem">
       {% blocktrans %}
@@ -16,7 +18,8 @@
       <div id="progressInnerDiv"
         {#                              class="progress-bar-inner"#}
         style="width: 0%;  height: 30px;  background-color: #ffffff; text-align: center;  line-height: 30px;  color: white;"
-        ></div>
+        >
+      </div>
     </div>
     <span
       {#                      class="progress-bar-text"#}

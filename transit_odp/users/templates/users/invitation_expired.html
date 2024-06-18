@@ -5,11 +5,14 @@ This is the 'My Account' page
 {% block title_tag %}
   {% trans 'Invitation expired' %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-body govuk-!-padding-5">
-      <p class="govuk-body">{% trans 'This invitation link has already been accepted or has expired. ' %}</p>
+      <p class="govuk-body">
+        {% trans 'This invitation link has already been accepted or has expired. ' %}
+      </p>
       <p class="govuk-body">
         {% blocktrans %}
       Please request a new invitation by asking your organisation

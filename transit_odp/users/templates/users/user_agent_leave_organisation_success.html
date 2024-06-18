@@ -2,14 +2,17 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block title_tag %}
   {% trans 'You are no longer an agent' %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-panel govuk-panel--confirmation govuk-!-padding-9">
-      <h1 class="govuk-panel__title">You are no longer an agent for {{ object.organisation.name }}</h1>
+      <h1 class="govuk-panel__title">
+        You are no longer an agent for {{ object.organisation.name }}
+      </h1>
     </div>
     <p class="govuk-body">
       {% trans 'We have sent ' %}

@@ -11,25 +11,37 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <span class="govuk-caption-xl">{{ title }}</span>
-      <h1 class="govuk-heading-xl">{{ subtitle }}</h1>
+      <h1 class="govuk-heading-xl">
+        {{ subtitle }}
+      </h1>
       {% include 'data_quality/snippets/detail_map.html' %}
-      <div>{% render_table tables.0 %}</div>
+      <div>
+        {% render_table tables.0 %}
+      </div>
       {# designs sometimes include only one table #}
       {% if tables.1 %}
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{% trans "Which journeys have been affected?" %}</h1>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
+          {% trans "Which journeys have been affected?" %}
+        </h1>
         <div class="total_vehicles">
           <span class="govuk-heading-xl govuk-!-margin-0">{{ number_of_journeys }}</span>
           <span class="govuk-body-s govuk-!-font-weight-bold">Total journeys affected
-            {% if start_date %}from {{ start_date|date:"d/m/Y" }}{% endif %}
+            {% if start_date %}
+              from {{ start_date|date:"d/m/Y" }}
+            {% endif %}
           </span>
         </div>
-        <h2 class="govuk-heading-m">{% trans "Example vehicle journeys affected" %}</h2>
+        <h2 class="govuk-heading-m">
+          {% trans "Example vehicle journeys affected" %}
+        </h2>
         <p class="govuk-body">
           Below is a sample of up to 100 vehicle journeys from your data set that use the above timing
           pattern. Please refer back to these journeys in your scheduling tool and update the corresponding
           timetables(s) to address the observation <span class="govuk-!-font-weight-bold">"{{ title }}".</span>
         </p>
-        <div>{% render_table tables.1 %}</div>
+        <div>
+          {% render_table tables.1 %}
+        </div>
       {% endif %}
     </div>
   </div>

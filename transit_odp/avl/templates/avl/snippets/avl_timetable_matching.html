@@ -1,7 +1,9 @@
 {% load i18n %}
 {% load static %}
 <p class="govuk-body govuk-!-margin-bottom-0">
-  {% if properties.avl_timetables_matching != '100%' %}<i class="fas fa-exclamation-circle fa"></i>{% endif %}
+  {% if properties.avl_timetables_matching != '100%' %}
+    <i class="fas fa-exclamation-circle fa"></i>
+  {% endif %}
   {% if not properties.avl_timetables_matching %}
     {% trans 'Pending' %}
   {% else %}
@@ -9,7 +11,5 @@
     {% trans 'completely matched AVL to Timetables' %}
   </p>
   <a href="{% url 'avl:download-matching-report' pk1=pk1 pk=object.id host hosts.publish %}"
-     class="govuk-link"
-     style="margin-left: 24px;
-            margin-top: 5px">{% trans 'Download matching report' %}</a>
+     class="govuk-link govuk-!-margin-left-5 govuk-!-margin-top-1">{% trans 'Download matching report' %}</a>
 {% endif %}

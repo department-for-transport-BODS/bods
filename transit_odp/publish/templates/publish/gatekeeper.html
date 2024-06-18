@@ -13,7 +13,9 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">{% trans 'Publish your data' %}</h1>
+      <h1 class="govuk-heading-l">
+        {% trans 'Publish your data' %}
+      </h1>
       <p class="govuk-body-l">
         {% blocktrans %}
                     Only bus operators and local authorities are able to provide their data.
@@ -21,7 +23,9 @@
       </p>
       <p class="govuk-body-l">
         {% if not user.is_authenticated %}
-          <a class="govuk-link" href="{% url 'account_login' host host.name %}">{% trans 'Please login if you are an operator' %}</a>.
+          <a class="govuk-link" href="{% url 'account_login' host host.name %}">
+            {% trans 'Please login if you are an operator' %}
+          </a>.
         {% elif user.is_developer %}
           {% trans 'As a developer you can access and use these data sets.' %}
         {% elif user.is_site_admin %}

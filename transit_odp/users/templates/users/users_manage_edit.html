@@ -8,16 +8,21 @@
   {% endif %}
   {% trans 'Edit user details' %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block backlink %}
   {% url 'users:manage-user-detail' pk=user.id host host.name as backlink_url %}
   {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
 {% block content_heading %}
-  <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">{% trans 'Edit user' %}</h1>
+  <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">
+    {% trans 'Edit user' %}
+  </h1>
 {% endblock %}
-{% block subtitle %}{% endblock %}
+{% block subtitle %}
+{% endblock %}
 {% block inner %}
   {% crispy form %}
 {% endblock %}
-{% block inner_secondary %}{% endblock %}
+{% block inner_secondary %}
+{% endblock %}

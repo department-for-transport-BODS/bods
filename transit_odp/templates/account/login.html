@@ -19,8 +19,12 @@
 {% block inner %}
   <p class="govuk-body-m">
     {% if verified_email %}
-      <p class="govuk-body">{% trans 'Your email address has been confirmed.' %}</p>
-      <p class="govuk-body">{% trans 'You can now sign in to your account.' %}</p>
+      <p class="govuk-body">
+        {% trans 'Your email address has been confirmed.' %}
+      </p>
+      <p class="govuk-body">
+        {% trans 'You can now sign in to your account.' %}
+      </p>
     {% endif %}
   </p>
   {% crispy form %}

@@ -4,11 +4,14 @@
 {% block title_tag %}
   {% trans 'About bus open data' %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">{% trans 'About bus open data' %}</h1>
+      <h1 class="govuk-heading-l">
+        {% trans 'About bus open data' %}
+      </h1>
       <p class="govuk-body">
         {% blocktrans %}
         Here we will have an introduction of what open data is.
@@ -17,12 +20,16 @@
     </div>
     <div class="govuk-grid-column-one-third">
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible" />
-      <h2 class="govuk-heading-s">{% trans 'Bus open data service' %}</h2>
+      <h2 class="govuk-heading-s">
+        {% trans 'Bus open data service' %}
+      </h2>
       <div>
         <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact us' %}</a>
       </div>
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
-      <h2 class="govuk-heading-s">{% trans 'Follow us' %}</h2>
+      <h2 class="govuk-heading-s">
+        {% trans 'Follow us' %}
+      </h2>
       <div>
         <a href="https://twitter.com/busopendata?ref_src=twsrc%5Etfw" class="govuk-link" target="_blank">
           <img class="account-menu__icon"

@@ -27,7 +27,9 @@
         {% endfilter %}
       </h2>
       <div class="govuk-grid-column-one-quarter">
-        <h2 class="govuk-heading-m">Filter by</h2>
+        <h2 class="govuk-heading-m">
+          Filter by
+        </h2>
         {% crispy filter.form filter.form.helper %}
       </div>
       <div class="govuk-grid-column-three-quarters">
@@ -56,7 +58,8 @@
         <div class="govuk-body-s govuk-grid-row search-pillbox">
           {% if q %}
             <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-              {% trans 'Beginning' as tmsg %}{{ tmsg | force_escape }}
+              {% trans 'Beginning' as tmsg %}
+              {{ tmsg | force_escape }}
             </span>
             <a href="?q=">
               <div class="pill-item">
@@ -68,7 +71,8 @@
             </a>
           {% elif letters %}
             <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-              {% trans 'Beginning' as tmsg %}{{ tmsg | force_escape }}
+              {% trans 'Beginning' as tmsg %}
+              {{ tmsg | force_escape }}
             </span>
             <a href="?q=">
               <div class="pill-item">

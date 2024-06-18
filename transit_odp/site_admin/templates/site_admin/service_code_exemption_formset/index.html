@@ -18,8 +18,12 @@
           </th>
           <th scope="col"
               class="govuk-table__header {% if formset.field_has_error.justification %} error-message-colour {% else %} govuk-!-font-weight-regular {% endif %}"
-              style="white-space:nowrap">{{ fields.justification.label }}</th>
-          <th scope="col" class="govuk-table__header" style="display:none;">Delete</th>
+              style="white-space:nowrap">
+            {{ fields.justification.label }}
+          </th>
+          <th scope="col" class="govuk-table__header" style="display:none;">
+            Delete
+          </th>
         {% endwith %}
       </tr>
     </thead>

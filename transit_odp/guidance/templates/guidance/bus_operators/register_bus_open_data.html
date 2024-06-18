@@ -1,21 +1,29 @@
 {% extends "guidance/bus_operators/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="registring-header" class="govuk-heading-l">{% trans 'Registering' %}</h1>
+  <h1 data-qa="registring-header" class="govuk-heading-l">
+    {% trans 'Registering' %}
+  </h1>
   <p data-qa="registring-paragraph" class="govuk-body">
     {% blocktrans %}
             Operators can create an account for the Bus Open Data Digital Service by emailing
             <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>.
         {% endblocktrans %}
   </p>
-  <h2 data-qa="my-account-header" class="govuk-heading-l">{% trans 'My account' %}</h2>
+  <h2 data-qa="my-account-header" class="govuk-heading-l">
+    {% trans 'My account' %}
+  </h2>
   <p data-qa="my-account-paragraph" class="govuk-body">
     {% blocktrans %}
             There are three account types: admin, standard and agent.
         {% endblocktrans %}
   </p>
-  <h2 data-qa="org-profile-header" class="govuk-heading-l">{% trans 'Organisation profile' %}</h2>
-  <h2 data-qa="short-name-header" class="govuk-heading-l">{% trans 'Short name &amp; National Operator Codes' %}</h2>
+  <h2 data-qa="org-profile-header" class="govuk-heading-l">
+    {% trans 'Organisation profile' %}
+  </h2>
+  <h2 data-qa="short-name-header" class="govuk-heading-l">
+    {% trans 'Short name &amp; National Operator Codes' %}
+  </h2>
   <p data-qa="short-name-paragraph" class="govuk-body">
     {% blocktrans %}
             Under organisation profile, users can edit the short name and National Operator
@@ -38,7 +46,9 @@
             <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>.
         {% endblocktrans %}
   </p>
-  <h2 data-qa="user-management-header" class="govuk-heading-l">{% trans 'User management' %}</h2>
+  <h2 data-qa="user-management-header" class="govuk-heading-l">
+    {% trans 'User management' %}
+  </h2>
   <p data-qa="user-management-paragraph-1" class="govuk-body">
     {% blocktrans %}
             Only admin users can add and remove other users from the operator’s organisation.
@@ -69,7 +79,9 @@
             to assigning agents.
         {% endblocktrans %}
   </p>
-  <h3 data-qa="unable-create-header" class="govuk-heading-m">{% trans 'Unable to create a user?' %}</h3>
+  <h3 data-qa="unable-create-header" class="govuk-heading-m">
+    {% trans 'Unable to create a user?' %}
+  </h3>
   <p data-qa="user-management-paragraph-6" class="govuk-body">
     {% blocktrans %}
             If you are having issues inviting a new user to your organisation, please contact

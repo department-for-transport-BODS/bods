@@ -6,6 +6,8 @@
   {{ _("Update data") }}
 </a>
 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
-<h2 class="govuk-heading-l govuk-!-padding-top-5">{{ object.name }}</h2>
+<h2 class="govuk-heading-l govuk-!-padding-top-5">
+  {{ object.name }}
+</h2>
 {% include "publish/snippets/error_summary_table.html" %}
 {% include 'publish/revision_review/delete_component.html' %}

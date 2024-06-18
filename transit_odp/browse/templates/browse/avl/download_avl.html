@@ -14,7 +14,9 @@
   {% trans 'All location data' %}
 {% endblock %}
 {% block secondary.title %}
-  <h3 class="govuk-heading-l">{% trans 'Download file' %}</h3>
+  <h3 class="govuk-heading-l">
+    {% trans 'Download file' %}
+  </h3>
 {% endblock %}
 {% block heading.subtitle %}
   <p class="govuk-body">
@@ -24,7 +26,9 @@
   </p>
   <ul class="govuk-list govuk-!-margin-bottom-3">
     <li>
-      <b>{% trans "Format:" %}</b>
+      <b>
+        {% trans "Format:" %}
+      </b>
       {% trans "SIRI-VM" %}
       {% include "browse/snippets/help_modals/sirivm.html" %}
       {% filter force_escape %}
@@ -33,10 +37,16 @@
       {% include "browse/snippets/help_modals/gtfsrt.html" %}
     </li>
     <li>
-      <b>{% trans "Mode:" %}</b> {% trans "Bus" %}
+      <b>
+        {% trans "Mode:" %}
+      </b>
+      {% trans "Bus" %}
     </li>
     <li>
-      <b>{% trans "File type:" %}</b> {% trans "ZIP file" %}
+      <b>
+        {% trans "File type:" %}
+      </b>
+      {% trans "ZIP file" %}
     </li>
     <li>
       <b>
@@ -97,7 +107,10 @@
 {% block heading.secondary %}
   {% include "browse/snippets/download_secondary_links.html" %}
 {% endblock %}
-{% block inner %}<div class="govuk-grid-row govuk-!-margin-top-9"></div>{% endblock %}
+{% block inner %}
+  <div class="govuk-grid-row govuk-!-margin-top-9">
+  </div>
+{% endblock %}
 {% block scripts %}
   {{ block.super }}
   <script>

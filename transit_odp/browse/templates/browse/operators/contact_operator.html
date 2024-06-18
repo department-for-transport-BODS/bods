@@ -5,12 +5,16 @@
 {% load crispy_forms_tags %}
 {% block title_tag %}
   {% if form.errors %}
-    {% trans 'Error: ' as error %}{{ error | force_escape }}
+    {% trans 'Error: ' as error %}
+    {{ error | force_escape }}
   {% endif %}
-  {% trans 'Provide feedback' as feedback %}{{ feedback | force_escape }}
+  {% trans 'Provide feedback' as feedback %}
+  {{ feedback | force_escape }}
 {% endblock %}
 {# Breadcrumb #}
-{% block breadcrumb %}{# No breadcrumb #}{% endblock %}
+{% block breadcrumb %}
+  {# No breadcrumb #}
+{% endblock %}
 {# Backlink #}
 {% block backlink %}
   {% include 'snippets/backlink.html' with url=back_url %}
@@ -18,9 +22,13 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">{% trans 'Contact ' as contact %}{{ contact | force_escape }}{{ organisation_name }}</h1>
+      <h1 class="govuk-heading-l">
+        {% trans 'Contact ' as contact %}
+        {{ contact | force_escape }}{{ organisation_name }}
+      </h1>
       <p class="govuk-body">
-        {% trans "An email generated from this form will be sent to the data set/data feed owner directly. They will be your point of contact for any potential resolution to your query." as message %}{{ message | force_escape }}
+        {% trans "An email generated from this form will be sent to the data set/data feed owner directly. They will be your point of contact for any potential resolution to your query." as message %}
+        {{ message | force_escape }}
       </p>
     </br />
     {% crispy form %}

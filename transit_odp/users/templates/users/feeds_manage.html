@@ -10,7 +10,11 @@
   {{ block.super }}
   {% breadcrumb_url 'Manage subscriptions' 'users:feeds-manage' host host.name %}
 {% endblock %}
-{% block content_heading %}<h1 class="govuk-heading-xl">Manage subscriptions</h1>{% endblock %}
+{% block content_heading %}
+  <h1 class="govuk-heading-xl">
+    Manage subscriptions
+  </h1>
+{% endblock %}
 {% block inner %}
   {% if object_list.count > 0 %}
     {% render_table table %}
@@ -28,18 +32,24 @@
                      value="True"
                      {% if mute_notifications %}checked{% endif %}
                      onchange="this.form.submit()" />
-              <label class="govuk-label govuk-checkboxes__label" for="mute">{% trans "Mute all subscriptions" %}</label>
+              <label class="govuk-label govuk-checkboxes__label" for="mute">
+                {% trans "Mute all subscriptions" %}
+              </label>
             </div>
           </div>
         </fieldset>
       </div>
     </form>
   {% else %}
-    <div class="govuk-inset-text">{% trans 'Your subscribed data sets will be listed here' %}</div>
+    <div class="govuk-inset-text">
+      {% trans 'Your subscribed data sets will be listed here' %}
+    </div>
   {% endif %}
 {% endblock %}
 {% block inner_secondary %}
-  <h2 class="govuk-heading-m">{% trans "Need help with operator data requirements?" %}</h2>
+  <h2 class="govuk-heading-m">
+    {% trans "Need help with operator data requirements?" %}
+  </h2>
   <ul class="govuk-list app-list--nav govuk-!-font-size-19">
     <li>
       <a class="govuk-link govuk-body" href="{% url 'guidance:support-developer' host hosts.data %}">

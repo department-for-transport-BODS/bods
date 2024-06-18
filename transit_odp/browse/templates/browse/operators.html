@@ -27,7 +27,8 @@
             {% if paginator.count > 1 %}
               <span class="govuk-body">
                 {% filter force_escape %}
-                  {{ paginator.count }} {% trans 'results' %}
+                  {{ paginator.count }}
+                  {% trans 'results' %}
                 {% endfilter %}
               </span>
             {% elif paginator.count == 1 %}
@@ -50,7 +51,8 @@
           <div class="govuk-body-s govuk-grid-row search-pillbox">
             {% if q %}
               <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-                {% trans 'Containing' as tmsg %}{{ tmsg | force_escape }}
+                {% trans 'Containing' as tmsg %}
+                {{ tmsg | force_escape }}
               </span>
               <a href="?ordering={{ ordering }}">
                 <div class="pill-item">
@@ -64,7 +66,9 @@
           </div>
           <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break govuk-!-margin-top-0" />
           <div class="govuk-form-group">
-            <label class="govuk-label" for="ordering">Sort by</label>
+            <label class="govuk-label" for="ordering">
+              Sort by
+            </label>
             <select class="govuk-select" id="ordering" name="ordering" aria-label="Sort by" onchange="this.form.submit()">
               <option value="name" {% if ordering == "name" %}selected{% endif %}>
                 {% filter force_escape %}

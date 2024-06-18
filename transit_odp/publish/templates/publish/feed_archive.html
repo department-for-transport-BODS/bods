@@ -8,14 +8,17 @@
   {% endif %}
   {% trans 'Deactivate data set' %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block backlink %}
   {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-xl">{% trans 'Would you like to deactivate this data set?' %}</h1>
+      <h1 class="govuk-heading-xl">
+        {% trans 'Would you like to deactivate this data set?' %}
+      </h1>
       <p class="govuk-body">
         {% blocktrans %}
       Deactivating this data set means that this data set is no longer active. Inactive data sets can
@@ -28,5 +31,6 @@
   {% block inner %}
     {% crispy form %}
   {% endblock %}
-  {% block inner_secondary %}{% endblock %}
+  {% block inner_secondary %}
+  {% endblock %}
 {% endblock %}

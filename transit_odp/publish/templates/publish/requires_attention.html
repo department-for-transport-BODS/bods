@@ -17,7 +17,9 @@
     <div class="govuk-width-container">
       <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds">
-          <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Service codes requiring attention' %}</h1>
+          <h1 class="govuk-heading-xl app-masthead__title">
+            {% trans 'Service codes requiring attention' %}
+          </h1>
           <p class="app-masthead__description">
             {% filter force_escape %}
               {% blocktrans %}
@@ -88,21 +90,31 @@
           </h2>
           <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
           <p class="govuk-body">
-            <b>{% trans "Having trouble finding what you want?" %}</b>
+            <b>
+              {% trans "Having trouble finding what you want?" %}
+            </b>
           </p>
           <ul class="govuk-list govuk-list--bullet">
-            <li>Check your spelling and try again</li>
-            <li>Use another search term</li>
+            <li>
+              Check your spelling and try again
+            </li>
+            <li>
+              Use another search term
+            </li>
           </ul>
         </div>
       {% else %}
         <div class="govuk-width-container">
-          <div class="govuk-grid-column-full custom_govuk_table_border">{% render_table table %}</div>
+          <div class="govuk-grid-column-full custom_govuk_table_border">
+            {% render_table table %}
+          </div>
         </div>
       {% endif %}
     </div>
     <div class="govuk-grid-row govuk-!-margin-top-5">
-      <p class="govuk-body-s">{% trans 'Use the link below to download and view the entire list of service codes' %}</p>
+      <p class="govuk-body-s">
+        {% trans 'Use the link below to download and view the entire list of service codes' %}
+      </p>
       <p class="govuk-body-s">
         <a class="govuk-link" href={% url 'service-codes' pk1=org_id host hosts.publish %}>
           {% trans 'Download detailed export' %}

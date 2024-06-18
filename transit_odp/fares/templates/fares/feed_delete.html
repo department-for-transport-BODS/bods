@@ -5,7 +5,8 @@
 {% block title_tag %}
   {% trans 'Delete data set' %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block backlink %}
   {% if object.live_revision %}
     {% url 'fares:feed-detail' pk1=view.kwargs.pk1 pk=object.id host hosts.publish as backlink %}
@@ -48,5 +49,6 @@
   {% block inner %}
     {% crispy form %}
   {% endblock %}
-  {% block inner_secondary %}{% endblock %}
+  {% block inner_secondary %}
+  {% endblock %}
 {% endblock %}

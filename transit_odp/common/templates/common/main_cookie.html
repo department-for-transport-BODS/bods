@@ -5,34 +5,43 @@
 {% block title_tag %}
   {% trans 'Cookies' %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% if display_cookie_confirm %}
         <div class="cookie-banner govuk-!-margin-bottom-5" style="border: 2px solid #005ea5">
           <section class="govuk-accordion__section-summary" style="padding: 20px">
-            <h2 class="govuk-heading-m">{% trans 'Your cookie settings were saved' %}</h2>
+            <h2 class="govuk-heading-m">
+              {% trans 'Your cookie settings were saved' %}
+            </h2>
             <p class="govuk-body-m">
               {% trans 'Government services may set additional cookies and, if so, will have their own cookie policy and banner.' %}
             </p>
           </section>
         </div>
       {% endif %}
-      <h1 class="govuk-heading-l">{% trans 'Cookies on Bus Open Data Service' %}</h1>
+      <h1 class="govuk-heading-l">
+        {% trans 'Cookies on Bus Open Data Service' %}
+      </h1>
       <p class="govuk-body-m">
         {% trans 'Cookies are files saved on your phone, tablet or computer when you visit a website.' %}
       </p>
       <p class="govuk-body-m">
         {% trans 'We use cookies to store information about how you use this website, such as the pages you visit.' %}
       </p>
-      <h2 class="govuk-heading-m">{% trans 'Cookie settings' %}</h2>
+      <h2 class="govuk-heading-m">
+        {% trans 'Cookie settings' %}
+      </h2>
       <p class="govuk-body-m">
         {% blocktrans %}
           We use 2 types of cookies. You can choose which cookies you are happy for us to use.
         {% endblocktrans %}
       </p>
-      <h2 class="govuk-heading-m">{% trans 'Cookies that measure website use' %}</h2>
+      <h2 class="govuk-heading-m">
+        {% trans 'Cookies that measure website use' %}
+      </h2>
       <p class="govuk-body-m">
         {% blocktrans %}
           We use Google Analytics to measure how you use the website so we can improve the service based
@@ -40,7 +49,9 @@
         {% endblocktrans %}
       </p>
       <ul class="govuk-list--bullet">
-        <li style="font-size: 1.185rem; font-family:nta, Arial, sans-serif ">{% trans 'how you got to the site' %}</li>
+        <li style="font-size: 1.185rem; font-family:nta, Arial, sans-serif ">
+          {% trans 'how you got to the site' %}
+        </li>
         <li style="font-size: 1.185rem; font-family:nta, Arial, sans-serif ">
           {% trans 'the pages you visit and how long you spend on each page' %}
         </li>
@@ -50,7 +61,9 @@
           {% endblocktrans %}
         </li>
       </ul>
-      <p class="govuk-body-m">{% trans 'We do not allow Google to use or share the data about how you use this site.' %}</p>
+      <p class="govuk-body-m">
+        {% trans 'We do not allow Google to use or share the data about how you use this site.' %}
+      </p>
       <form>
         <div class="govuk-form-group">
           <fieldset class="govuk-fieldset" aria-describedby="changed-name-hint">
@@ -62,7 +75,9 @@
                        type="radio"
                        value="True"
                        {% if is_accept == 'True' %}checked{% endif %} />
-                <label class="govuk-label govuk-radios__label" for="cookie-accept-1">Use cookies that measure my website use</label>
+                <label class="govuk-label govuk-radios__label" for="cookie-accept-1">
+                  Use cookies that measure my website use
+                </label>
               </div>
               <div class="govuk-radios__item">
                 <input class="govuk-radios__input"
@@ -78,8 +93,12 @@
             </div>
           </fieldset>
         </div>
-        <h2 class="govuk-heading-m">{% trans 'Strictly necessary cookies' %}</h2>
-        <p class="govuk-body-m">{% trans 'These essential cookies do things like:' %}</p>
+        <h2 class="govuk-heading-m">
+          {% trans 'Strictly necessary cookies' %}
+        </h2>
+        <p class="govuk-body-m">
+          {% trans 'These essential cookies do things like:' %}
+        </p>
         <ul class="govuk-list--bullet">
           <li style="font-size: 1.185rem; font-family:nta, Arial, sans-serif ">
             {% blocktrans %}
@@ -87,9 +106,13 @@
           {% endblocktrans %}
           </li>
         </ul>
-        <p class="govuk-body-m">{% trans 'They always need to be on.' %}</p>
         <p class="govuk-body-m">
-          <a class="govuk-link" href="{% url 'cookie-detail' host hosts.root %}">{% trans 'Find out more about cookies on Bus Open Data Service' %}</a>
+          {% trans 'They always need to be on.' %}
+        </p>
+        <p class="govuk-body-m">
+          <a class="govuk-link" href="{% url 'cookie-detail' host hosts.root %}">
+            {% trans 'Find out more about cookies on Bus Open Data Service' %}
+          </a>
         </p>
         <button class="govuk-button" type="submit" onClick="BODSFrontend.createCookie('CookielawBanner', '{{ parent_host }}')">
           {% trans 'Save changes' %}

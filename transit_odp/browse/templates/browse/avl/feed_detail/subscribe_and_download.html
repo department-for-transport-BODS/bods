@@ -1,5 +1,7 @@
 {% load i18n %}
-<h2 class="govuk-heading-m govuk-!-margin-top-5">{% trans "Subscribe" %}</h2>
+<h2 class="govuk-heading-m govuk-!-margin-top-5">
+  {% trans "Subscribe" %}
+</h2>
 <ul class="govuk-list app-list--nav govuk-!-font-size-19">
   <li>
     <a class="govuk-link" href="{% url "avl-feed-subscription" pk=object.id host hosts.data %}">

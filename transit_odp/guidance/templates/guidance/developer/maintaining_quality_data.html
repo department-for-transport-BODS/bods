@@ -1,7 +1,9 @@
 {% extends "guidance/developer/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="api-ref-header" class="govuk-heading-l">{% trans 'Maintaining quality data' %}</h1>
+  <h1 data-qa="api-ref-header" class="govuk-heading-l">
+    {% trans 'Maintaining quality data' %}
+  </h1>
   <p class="govuk-body">
     {% blocktrans %}
             The Bus Open Data Service is committed to ensuring the most
@@ -10,8 +12,12 @@
             through various ways as outlined below.
         {% endblocktrans %}
   </p>
-  <h2 data-qa="all-data-header" class="govuk-heading-l">{% trans 'Timetables data' %}</h2>
-  <h3 data-qa="all-data-header" class="govuk-heading-m">{% trans 'BODS Compliant data' %}</h3>
+  <h2 data-qa="all-data-header" class="govuk-heading-l">
+    {% trans 'Timetables data' %}
+  </h2>
+  <h3 data-qa="all-data-header" class="govuk-heading-m">
+    {% trans 'BODS Compliant data' %}
+  </h3>
   <p class="govuk-body">
     {% filter force_escape %}
       {% blocktrans %}
@@ -38,7 +44,9 @@
             Download all, Data Catalogue and the API).
         {% endblocktrans %}
   </p>
-  <h3 data-qa="all-data-header" class="govuk-heading-m">{% trans 'Data Quality reports and scoring' %}</h3>
+  <h3 data-qa="all-data-header" class="govuk-heading-m">
+    {% trans 'Data Quality reports and scoring' %}
+  </h3>
   <p class="govuk-body">
     {% blocktrans %}
             Additionally, beyond the BODS Compliant tagging, BODS also does
@@ -46,7 +54,9 @@
             that would adversely impact the passenger experience, if
             unaddressed. The full list of checks can be found
         {% endblocktrans %}
-    <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-definitions' host hosts.publish %}">{% trans 'here' %}</a>.
+    <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-definitions' host hosts.publish %}">
+      {% trans 'here' %}
+    </a>.
   </p>
   <p class="govuk-body">
     {% blocktrans %}
@@ -56,9 +66,13 @@
             Catalogue, and the API). The mechanism which the BODS algorithm
             uses to generate a data quality score can be found
         {% endblocktrans %}
-    <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-score-description' host hosts.publish %}">{% trans 'here' %}</a>.
+    <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-score-description' host hosts.publish %}">
+      {% trans 'here' %}
+    </a>.
   </p>
-  <h2 data-qa="all-data-header" class="govuk-heading-l">{% trans 'Fares data' %}</h2>
+  <h2 data-qa="all-data-header" class="govuk-heading-l">
+    {% trans 'Fares data' %}
+  </h2>
   <p class="govuk-body">
     {% filter force_escape %}
       {% blocktrans %}
@@ -79,7 +93,9 @@
             {% endblocktrans %}
     {% endfilter %}
   </p>
-  <h2 data-qa="all-data-header" class="govuk-heading-l">{% trans 'Bus location data' %}</h2>
+  <h2 data-qa="all-data-header" class="govuk-heading-l">
+    {% trans 'Bus location data' %}
+  </h2>
   <p class="govuk-body">
     {% filter force_escape %}
       {% blocktrans %}

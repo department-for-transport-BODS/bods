@@ -2,7 +2,9 @@
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-{% block title_tag %}Data set details{% endblock %}
+{% block title_tag %}
+  Data set details
+{% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
@@ -26,7 +28,9 @@
         {% include 'browse/fares/feed_detail/success_content.html' %}
       {% endif %}
     </div>
-    <div class="govuk-grid-column-one-third">{% include 'browse/fares/feed_detail/related_links.html' %}</div>
+    <div class="govuk-grid-column-one-third">
+      {% include 'browse/fares/feed_detail/related_links.html' %}
+    </div>
   </div>
 {% endblock %}
 {% block scripts %}

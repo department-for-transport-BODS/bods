@@ -35,7 +35,9 @@
                 </a>
               </li>
             {% elif item == "..." %}
-              <li class="govuk-pagination__item govuk-pagination__item--ellipses">&ctdot;</li>
+              <li class="govuk-pagination__item govuk-pagination__item--ellipses">
+                &ctdot;
+              </li>
             {% else %}
               <li class="govuk-pagination__item">
                 <a class="govuk-link govuk-pagination__link" href="{% relative_url item prefixed_page_field params %}" aria-label="Page 1">

@@ -23,7 +23,9 @@
     <div class="govuk-width-container">
       <div class=govuk-grid-row">
         <div class="govuk-!-margin-top-5">
-          <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Seasonal service operating dates' %}</h1>
+          <h1 class="govuk-heading-xl app-masthead__title">
+            {% trans 'Seasonal service operating dates' %}
+          </h1>
           <p class="app-masthead__description">
             {% filter force_escape %}
               {% blocktrans %}
@@ -54,7 +56,9 @@
               <div>
                 <span class="review-stat__top">{{ seasonal_services_counter }}</span>
               </div>
-              <p class="review-stat__description">{% trans 'Seasonal services' %}</p>
+              <p class="review-stat__description">
+                {% trans 'Seasonal services' %}
+              </p>
             </div>
           </div>
         </div>

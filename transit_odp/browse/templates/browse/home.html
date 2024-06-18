@@ -10,7 +10,9 @@
     <div class="govuk-width-container">
       <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-          <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Find bus open data' %}</h1>
+          <h1 class="govuk-heading-xl app-masthead__title">
+            {% trans 'Find bus open data' %}
+          </h1>
           <p class="app-masthead__description">
             The Bus Open Data Service provides bus timetable, vehicle location and fares data for every local bus service in England.
           </p>
@@ -27,7 +29,8 @@
                  viewBox="0 0 33 40"
                  aria-hidden="true"
                  focusable="false">
-              <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"></path>
+              <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z">
+              </path>
             </svg>
           </a>
         </div>
@@ -40,7 +43,9 @@
     <p class="govuk-body">
       <a class="govuk-link-bold" href="{% url 'select-data' host hosts.data %}">{% trans 'Browse data' %}</a>
     </p>
-    <p class="govuk-body">{% trans 'View and download open data published by operators of local bus services.' %}</p>
+    <p class="govuk-body">
+      {% trans 'View and download open data published by operators of local bus services.' %}
+    </p>
     <hr class="govuk-section-break govuk-section-break--xl" />
     <p class="govuk-body">
       <a class="govuk-link-bold" href="{% url 'api-select' host hosts.data %}">{% trans 'Try API service' %}</a>
@@ -84,7 +89,9 @@
 {% endblock %}
 {% block heading.secondary %}
   <div class="govuk-grid-column-one-third">
-    <h2 class="govuk-heading-m">{% trans 'Need further help?' %}</h2>
+    <h2 class="govuk-heading-m">
+      {% trans 'Need further help?' %}
+    </h2>
     <ul class="govuk-list app-list--nav govuk-!-font-size-19">
       <li>
         <a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}?section=datacatalogue">

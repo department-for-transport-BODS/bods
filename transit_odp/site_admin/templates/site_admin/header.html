@@ -6,7 +6,8 @@
     <li class="govuk-header__navigation-item">
       <a class="govuk-header__link" href="{% url 'home' host hosts.admin %}">{% trans 'Home' %}</a>
     </li>
-    <li class="flexfill"></li>
+    <li class="flexfill">
+    </li>
     {% if user.is_authenticated %}
       <li class="govuk-header__navigation-item dropdown bods-dropdown">
         <a href="#" class="govuk-header__link">

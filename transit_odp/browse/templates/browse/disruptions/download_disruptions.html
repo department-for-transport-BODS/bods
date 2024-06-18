@@ -14,7 +14,9 @@
   {% trans 'All disruption data' %}
 {% endblock %}
 {% block secondary.title %}
-  <h3 class="govuk-heading-l">{% trans 'Download file' %}</h3>
+  <h3 class="govuk-heading-l">
+    {% trans 'Download file' %}
+  </h3>
   <p class="govuk-body">
     {%  blocktrans %}
             Download a snapshot of all live and upcoming disruptions within England
@@ -22,22 +24,34 @@
   </p>
   <ul class="govuk-list">
     <li>
-      <b>{% trans 'Format' %}:</b>
+      <b>
+        {% trans 'Format' %}
+      :</b>
       {% trans 'SIRI-SX' %}
       {% include "browse/snippets/help_modals/sirisx.html" %}
     </li>
     <li>
-      <b>{% trans 'Mode' %}:</b> {% trans 'Bus, Ferry, Light Rail' %}
+      <b>
+        {% trans 'Mode' %}
+      :</b>
+      {% trans 'Bus, Ferry, Light Rail' %}
     </li>
     <li>
-      <b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}
+      <b>
+        {% trans 'File type' %}
+      :</b>
+      {% trans 'ZIP file' %}
     </li>
     <li>
-      <b>{% trans 'Update frequency' %}:</b>
+      <b>
+        {% trans 'Update frequency' %}
+      :</b>
       {% trans 'Every minute' %}
     </li>
     <li>
-      <b>{% trans 'Source' %}:</b>
+      <b>
+        {% trans 'Source' %}
+      :</b>
       {% trans 'Local authorities' %}
     </li>
   </ul>
@@ -58,7 +72,10 @@
 {% block heading.secondary %}
   {% include "browse/snippets/download_secondary_links.html" %}
 {% endblock %}
-{% block inner %}<div class="govuk-grid-row govuk-!-margin-top-9"></div>{% endblock %}
+{% block inner %}
+  <div class="govuk-grid-row govuk-!-margin-top-9">
+  </div>
+{% endblock %}
 {% block scripts %}
   {{ block.super }}
   <script>

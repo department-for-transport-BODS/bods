@@ -2,19 +2,33 @@
 <table class="govuk-table dataset-property-table">
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
-      <td class="govuk-table__cell govuk-!-padding-3 dont-break-out">{% trans properties.name %}</td>
+      <th scope="row" class="govuk-table__header">
+        {% trans 'Name' %}
+      </th>
+      <td class="govuk-table__cell govuk-!-padding-3 dont-break-out">
+        {% trans properties.name %}
+      </td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Data feed ID' %}</th>
-      <td class="govuk-table__cell govuk-!-padding-3 dont-break-out">{{ properties.dataset_id }}</td>
+      <th scope="row" class="govuk-table__header">
+        {% trans 'Data feed ID' %}
+      </th>
+      <td class="govuk-table__cell govuk-!-padding-3 dont-break-out">
+        {{ properties.dataset_id }}
+      </td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'URL link' %}</th>
-      <td class="govuk-table__cell govuk-!-padding-3 dont-break-out">{% trans properties.url_link %}</td>
+      <th scope="row" class="govuk-table__header">
+        {% trans 'URL link' %}
+      </th>
+      <td class="govuk-table__cell govuk-!-padding-3 dont-break-out">
+        {% trans properties.url_link %}
+      </td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Description' %}</th>
+      <th scope="row" class="govuk-table__header">
+        {% trans 'Description' %}
+      </th>
       <td class="govuk-table__cell govuk-!-padding-3">
         <div class="flex-between">
           <span class="dont-break-out">{% trans properties.description %}</span>
@@ -29,7 +43,9 @@
       </td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Short description' %}</th>
+      <th scope="row" class="govuk-table__header">
+        {% trans 'Short description' %}
+      </th>
       <td class="govuk-table__cell govuk-!-padding-3 dont-break-out">
         <div class="flex-between">
           {% trans properties.short_description %}
@@ -42,7 +58,9 @@
       </td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Status' %}</th>
+      <th scope="row" class="govuk-table__header">
+        {% trans 'Status' %}
+      </th>
       <td class="govuk-table__cell govuk-!-padding-3">
         <div class="flex-between">
           {% include 'organisation/snippets/status_indicator.html' with status=properties.status record=object %}
@@ -55,23 +73,36 @@
         {% include 'publish/snippets/help_modals/AVL_timetables_feed_matching.html' %}
       </th>
       <td class="govuk-table__cell govuk-!-padding-3">
-        <div class="stacked">{% include 'avl/snippets/avl_timetable_matching.html' %}</div>
+        <div class="stacked">
+          {% include 'avl/snippets/avl_timetable_matching.html' %}
+        </div>
       </td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
-      <td class="govuk-table__cell govuk-!-padding-3">{% trans properties.organisation_name %}</td>
+      <th scope="row" class="govuk-table__header">
+        {% trans 'Owner' %}
+      </th>
+      <td class="govuk-table__cell govuk-!-padding-3">
+        {% trans properties.organisation_name %}
+      </td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'SIRI-VM version' %}</th>
-      <td class="govuk-table__cell govuk-!-padding-3">{{ properties.siri_version }}</td>
+      <th scope="row" class="govuk-table__header">
+        {% trans 'SIRI-VM version' %}
+      </th>
+      <td class="govuk-table__cell govuk-!-padding-3">
+        {{ properties.siri_version }}
+      </td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Feed details last updated' %}</th>
+      <th scope="row" class="govuk-table__header">
+        {% trans 'Feed details last updated' %}
+      </th>
       <td class="govuk-table__cell govuk-!-padding-3">
         <div class="flex-between">
           <span>
-            {{ properties.published_at|date:"j M Y H:i" }} {% trans 'by ' %}
+            {{ properties.published_at|date:"j M Y H:i" }}
+            {% trans 'by ' %}
             {% if properties.published_by != None %}
               {{ properties.published_by }}
             {% else %}
@@ -80,15 +111,21 @@
           </span>
           <span style="text-align: right">
             {% block inner.last_updated.changelog_link %}
-              <a class="govuk-link" href="{% url 'avl:feed-changelog' pk1=pk1 pk=object.id host host.name %}">{% trans 'View change log' %}</a>
+              <a class="govuk-link" href="{% url 'avl:feed-changelog' pk1=pk1 pk=object.id host host.name %}">
+                {% trans 'View change log' %}
+              </a>
             {% endblock %}
           </span>
         </div>
       </td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans 'Last automated update' %}</th>
-      <td class="govuk-table__cell govuk-!-padding-3">{{ properties.last_server_update }}</td>
+      <th scope="row" class="govuk-table__header">
+        {% trans 'Last automated update' %}
+      </th>
+      <td class="govuk-table__cell govuk-!-padding-3">
+        {{ properties.last_server_update }}
+      </td>
     </tr>
   </tbody>
 </table>

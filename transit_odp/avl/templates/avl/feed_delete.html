@@ -5,7 +5,8 @@
 {% block title_tag %}
   {% trans 'Delete data feed' %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block backlink %}
   {% url 'avl:revision-publish' pk1=pk1 pk=object.id host hosts.publish as backlink %}
   {% include 'snippets/backlink.html' with url=backlink %}
@@ -44,5 +45,6 @@
   {% block inner %}
     {% crispy form %}
   {% endblock %}
-  {% block inner_secondary %}{% endblock %}
+  {% block inner_secondary %}
+  {% endblock %}
 {% endblock %}
