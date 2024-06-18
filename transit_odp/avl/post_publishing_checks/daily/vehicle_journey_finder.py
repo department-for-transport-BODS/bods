@@ -762,7 +762,9 @@ class VehicleJourneyFinder:
         journey_code_operating_profile_service_org = []
 
         for vj in reversed(vehicle_journeys):
-            service_org_ref, _, _, _ = self.get_service_org_ref_and_days_of_operation(vj)
+            service_org_ref, _, _, _ = self.get_service_org_ref_and_days_of_operation(
+                vj
+            )
             operating_profile_xml_string = (
                 self.get_operating_profile_xml_tag_for_journey(vj)
             )
