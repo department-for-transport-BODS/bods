@@ -659,8 +659,9 @@ class VehicleJourneyFinder:
         )
 
     def get_service_orgs_working_days_start_end_date(
-        self, org, result: ValidationResult, recorded_at_time
+        self, org, result: ValidationResult, recorded_at_time: datetime.date
     ):
+
         working_days = self.get_working_days(org)
         for date_range in working_days:
             start_date = date_range.get_text_or_default("StartDate")
