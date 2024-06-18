@@ -367,15 +367,15 @@ class VehicleJourneyFinder:
         journey_code_operating_profile = []
 
         for vj in vehicle_journeys:
+            operating_profile_xml_string = (
+                self.get_operating_profile_xml_tag_for_journey(vj)
+            )
+            journey_code_operating_profile.append(operating_profile_xml_string)
             if (
                 vj.vehicle_journey.get_element("LineRef")
                 and vj.vehicle_journey.get_element("LineRef").text.split(":")[3]
                 == published_line_name
-            ):
-                operating_profile_xml_string = (
-                    self.get_operating_profile_xml_tag_for_journey(vj)
-                )
-                journey_code_operating_profile.append(operating_profile_xml_string)
+            ):  # add to required_vj only if published_line_name matches the last part of line ref in transxchange file
                 required_vjs.append(vj)
 
         result.set_transxchange_attribute(
@@ -614,37 +614,6 @@ class VehicleJourneyFinder:
             return []
         return working_days
 
-    def get_service_org_xml_string(
-        self, vehicle_journey: TxcVehicleJourney
-    ) -> Optional[str]:
-        """
-        Retrieves the XML string for the service organization of a given vehicle journey.
-
-        Args:
-            vehicle_journey: The vehicle journey for which the service organization XML string is to be retrieved.
-
-        Returns:
-            str: The XML string for the service organization of the vehicle journey.
-        """
-        service_org_xml_str = None
-        service_org_from_vj = self.service_org_day_type(vehicle_journey)
-        if service_org_from_vj:
-            service_org_xml_str = etree.tostring(
-                service_org_from_vj._element, pretty_print=True
-            ).decode()
-        else:
-            service_org_from_service = self.get_service_org_day_type_from_service(
-                vehicle_journey
-            )
-            service_org_xml_str = (
-                etree.tostring(
-                    service_org_from_service._element, pretty_print=True
-                ).decode()
-                if service_org_from_service
-                else None
-            )
-        return service_org_xml_str
-
     def get_service_org_ref_and_days_of_operation(
         self, vehicle_journey: TxcVehicleJourney
     ) -> Tuple[Optional[str], Optional[TransXChangeElement]]:
@@ -793,17 +762,17 @@ class VehicleJourneyFinder:
         journey_code_operating_profile_service_org = []
 
         for vj in reversed(vehicle_journeys):
-            service_org_ref, _, _, _ = self.get_service_org_ref_and_days_of_operation(
-                vj
+            service_org_ref, _, _, _ = self.get_service_org_ref_and_days_of_operation(vj)
+            operating_profile_xml_string = (
+                self.get_operating_profile_xml_tag_for_journey(vj)
             )
-            get_service_org_xml_string = self.get_service_org_xml_string(vj)
             journey_code = vj.vehicle_journey.get_element(
                 ["Operational", "TicketMachine", "JourneyCode"]
             )
             journey_code_text = journey_code.text if journey_code else journey_code
             journey_code_operating_profile_service_org.append(
                 {
-                    "operating_profile_xml_string": get_service_org_xml_string,
+                    "operating_profile_xml_string": operating_profile_xml_string,
                     "service_organisation_xml_str": service_org_ref,
                     "service_organisation_day_operating": service_org_ref,
                     "journey_code": journey_code_text,
