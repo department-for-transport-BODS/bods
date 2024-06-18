@@ -6,10 +6,16 @@
   {% else %}
     <table class="govuk-table govuk-table--small-text-until-tablet">
     {% endif %}
-    <caption class="govuk-table__caption govuk-table__caption--m">{% trans timetable_details.journey_name %}</caption>
+    <caption class="govuk-table__caption govuk-table__caption--m">
+      {% trans timetable_details.journey_name %}
+    </caption>
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        {% for col in timetable_details.df.columns %}<th scope="col" class="govuk-table__header ">{{ col }}</th>{% endfor %}
+        {% for col in timetable_details.df.columns %}
+          <th scope="col" class="govuk-table__header ">
+            {{ col }}
+          </th>
+        {% endfor %}
       </tr>
     </thead>
     <tbody class="govuk-table__body">
@@ -34,7 +40,9 @@
                               class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
                               id="closeToolTip-{{ direction }}-{{ idx }}"
                               onclick="BODSFrontend.hideTooltip(event);"
-                              data-module="govuk-button">Close</button>
+                              data-module="govuk-button">
+                        Close
+                      </button>
                     </p>
                   </a>
                 {% endwith %}
@@ -61,13 +69,13 @@
     </div>
     {% if timetable_details.total_page > 0 %}
       <div class="govuk-grid-column-one-half govuk-!-text-align-right">
-        <nav class=" govuk-pagination govuk-!-width-full govuk-!-text-align-right"
+        <nav class="govuk-pagination govuk-!-width-full govuk-!-text-align-right"
              style="justify-content: end"
              role="navigation"
              aria-label="Pagination">
           {% if timetable_details.curr_page != 1 %}
             <div class="govuk-pagination__prev">
-              <a class=" govuk-link govuk-pagination__link"
+              <a class="govuk-link govuk-pagination__link"
                  rel="prev"
                  href="{% query_transform_kv timetable_details.page_param timetable_details.curr_page|add:'-1' %}">
                 <svg class="govuk-pagination__icon govuk-pagination__icon--prev"

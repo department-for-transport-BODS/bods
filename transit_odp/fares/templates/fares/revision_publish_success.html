@@ -9,7 +9,8 @@
     {% trans 'Data set published' %}
   {% endif %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -26,7 +27,9 @@
           {% endif %}
         </h1>
       </div>
-      <p class="govuk-body-m">{% trans 'We have sent you a confirmation email.' %}</p>
+      <p class="govuk-body-m">
+        {% trans 'We have sent you a confirmation email.' %}
+      </p>
       {% flag "is_fares_validator_active" %}
       {% if validator_error %}
         <p class="govuk-body-m">
@@ -37,12 +40,16 @@
         </p>
       {% endif %}
     {% endflag %}
-    <h2 class="govuk-heading-m">{% trans 'What happens next?' %}</h2>
+    <h2 class="govuk-heading-m">
+      {% trans 'What happens next?' %}
+    </h2>
     <p class="govuk-body-m">
       {% blocktrans %}
                     You can view the data set on
                 {% endblocktrans %}
-      <a class="govuk-link" href={% url 'fares:feed-list' pk1=pk1 host hosts.publish %}>{% trans 'your fares data sets' %}</a>
+      <a class="govuk-link" href={% url 'fares:feed-list' pk1=pk1 host hosts.publish %}>
+        {% trans 'your fares data sets' %}
+      </a>
       {% blocktrans %}
                     or by clicking the button below. The data will now be live for everyone else to see.
                 {% endblocktrans %}
@@ -53,6 +60,7 @@
     </a>
     <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
   </div>
-  <div class="govuk-!-width-one-third"></div>
+  <div class="govuk-!-width-one-third">
+  </div>
 </div>
 {% endblock %}

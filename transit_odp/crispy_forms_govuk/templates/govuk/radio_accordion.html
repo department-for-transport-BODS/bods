@@ -7,14 +7,18 @@
     {% if legend_text %}
       <legend class="govuk-fieldset__legend {{ legend_classes }}">
         {% if use_legend_as_heading %}
-          <h1 class="govuk-heading-xl">{{ legend_text }}</h1>
+          <h1 class="govuk-heading-xl">
+            {{ legend_text }}
+          </h1>
         {% else %}
           {{ legend_text }}
         {% endif %}
       </legend>
     {% endif %}
     {# Render hint #}
-    {% if hint %}<span id="{{ accordion.css_id }}-hint" class="govuk-hint">{{ hint }}</span>{% endif %}
+    {% if hint %}
+      <span id="{{ accordion.css_id }}-hint" class="govuk-hint">{{ hint }}</span>
+    {% endif %}
     {# Render errors #}
     {% if errors %}
       {% for error in errors %}

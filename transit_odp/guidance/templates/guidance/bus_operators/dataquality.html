@@ -2,45 +2,83 @@
 {% load i18n %}
 {% load filters %}
 {% block extra_content %}
-  <h1 data-qa="data-quality-header" class="govuk-heading-l">{% trans 'Data quality' %}</h1>
+  <h1 data-qa="data-quality-header" class="govuk-heading-l">
+    {% trans 'Data quality' %}
+  </h1>
   <table data-qa="requirements-table" class="govuk-table">
     <thead data-qa="requirements-table-header" class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">Data required</th>
-        <th scope="col" class="govuk-table__header">Data format required</th>
-        <th scope="col" class="govuk-table__header">Method</th>
+        <th scope="col" class="govuk-table__header">
+          Data required
+        </th>
+        <th scope="col" class="govuk-table__header">
+          Data format required
+        </th>
+        <th scope="col" class="govuk-table__header">
+          Method
+        </th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr data-qa="timetable-row" class="govuk-table__row">
-        <td class="govuk-table__cell">Timetable</td>
-        <td class="govuk-table__cell">TransXChange Version 2.4 profile v1.1a</td>
         <td class="govuk-table__cell">
-          <p class="govuk-body">Validation against TxC-PTI 1.1a profile</p>
-          <p class="govuk-body">Data Quality report</p>
+          Timetable
+        </td>
+        <td class="govuk-table__cell">
+          TransXChange Version 2.4 profile v1.1a
+        </td>
+        <td class="govuk-table__cell">
+          <p class="govuk-body">
+            Validation against TxC-PTI 1.1a profile
+          </p>
+          <p class="govuk-body">
+            Data Quality report
+          </p>
         </td>
       </tr>
       <tr data-qa="bus-location-row" class="govuk-table__row">
-        <td class="govuk-table__cell">Bus location</td>
-        <td class="govuk-table__cell">DfT BODS SIRI-VM profile</td>
-        <td class="govuk-table__cell">Validation against DfT BODS SIRI-VM profile</td>
+        <td class="govuk-table__cell">
+          Bus location
+        </td>
+        <td class="govuk-table__cell">
+          DfT BODS SIRI-VM profile
+        </td>
+        <td class="govuk-table__cell">
+          Validation against DfT BODS SIRI-VM profile
+        </td>
       </tr>
       <tr data-qa="basic-fares-row" class="govuk-table__row">
-        <td class="govuk-table__cell">Basic fares</td>
-        <td class="govuk-table__cell">UK NeTEx 1.10</td>
-        <td class="govuk-table__cell">Validation against schema</td>
+        <td class="govuk-table__cell">
+          Basic fares
+        </td>
+        <td class="govuk-table__cell">
+          UK NeTEx 1.10
+        </td>
+        <td class="govuk-table__cell">
+          Validation against schema
+        </td>
       </tr>
       <tr data-qa="complex-fares-row" class="govuk-table__row">
-        <td class="govuk-table__cell">Complex fares</td>
-        <td class="govuk-table__cell">UK NeTEx 1.10</td>
-        <td class="govuk-table__cell">Validation against schema</td>
+        <td class="govuk-table__cell">
+          Complex fares
+        </td>
+        <td class="govuk-table__cell">
+          UK NeTEx 1.10
+        </td>
+        <td class="govuk-table__cell">
+          Validation against schema
+        </td>
       </tr>
       <tr data-qa="complex-fares-row" class="govuk-table__row">
-        <td class="govuk-table__cell">Matching bus Location to timetables data</td>
+        <td class="govuk-table__cell">
+          Matching bus Location to timetables data
+        </td>
         <td class="govuk-table__cell">
           DfT BODS SIRI-VM profile and its corresponding TransXChange Version 2.4 TxC-PTI 1.1.a data
         </td>
-        <td class="govuk-table__cell">Validation against SIRI-VM PTI and data matching v1.1</td>
+        <td class="govuk-table__cell">
+          Validation against SIRI-VM PTI and data matching v1.1
+        </td>
       </tr>
     </tbody>
   </table>
@@ -49,7 +87,9 @@
             Data quality checks are provided on the data supplied to the service to provide feedback on the data to help operators identify and understand issues within their data. The issues identified may prevent a data consumer using and sharing their data with passengers. High data quality is expected for all data published on the service. It reduces the barriers to entry for innovators and consumers when using bus open data. High quality data enables trust to be created between passengers and the public transport network.
         {% endblocktrans %}
   </p>
-  <h2 class="govuk-heading-m">Timetables data</h2>
+  <h2 class="govuk-heading-m">
+    Timetables data
+  </h2>
   <p class="govuk-body">
     {% blocktrans %}
             TransXChange data undergoes two sets of checks. In the first validation stage,
@@ -76,7 +116,9 @@
             The feedback as a result of the validation check in the first step of upload is provided to the user which is to be shared with their respective software suppliers to enable them to provide robust data that fits the profile. In the second review step, a further data quality check is conducted which produces a report for operators. The report provides observations about operator's data, highlighting common errors. Some observations are critical, meaning there is definitely an error within the data and the operator is expected to rectify the issue. Other observations are advisory as they may be false positives, as a result of the data structure. Operators should use these reports as suggested improvements in their timetables data.
         {% endblocktrans %}
   </p>
-  <h2 class="govuk-heading-m">Bus location data</h2>
+  <h2 class="govuk-heading-m">
+    Bus location data
+  </h2>
   <p class="govuk-body">
     {% filter force_escape %}
       {% blocktrans trimmed %}
@@ -125,22 +167,54 @@
     {% endblocktrans %}
   </p>
   <ul class="govuk-list govuk-list--bullet">
-    <li>Bearing</li>
-    <li>LineRef</li>
-    <li>OperatorRef</li>
-    <li>RecordedAtTime</li>
-    <li>ResponseTimestamp</li>
-    <li>VehicleJourneyRef</li>
-    <li>VehicleLocation (Lat, Long)</li>
-    <li>ProducerRef</li>
-    <li>DirectionRef</li>
-    <li>BlockRef</li>
-    <li>PublishedLineName</li>
-    <li>ValidUntilTime</li>
-    <li>DestinationRef</li>
-    <li>OriginName</li>
-    <li>OriginRef</li>
-    <li>VehicleRef</li>
+    <li>
+      Bearing
+    </li>
+    <li>
+      LineRef
+    </li>
+    <li>
+      OperatorRef
+    </li>
+    <li>
+      RecordedAtTime
+    </li>
+    <li>
+      ResponseTimestamp
+    </li>
+    <li>
+      VehicleJourneyRef
+    </li>
+    <li>
+      VehicleLocation (Lat, Long)
+    </li>
+    <li>
+      ProducerRef
+    </li>
+    <li>
+      DirectionRef
+    </li>
+    <li>
+      BlockRef
+    </li>
+    <li>
+      PublishedLineName
+    </li>
+    <li>
+      ValidUntilTime
+    </li>
+    <li>
+      DestinationRef
+    </li>
+    <li>
+      OriginName
+    </li>
+    <li>
+      OriginRef
+    </li>
+    <li>
+      VehicleRef
+    </li>
   </ul>
   <p class="govuk-body">
     {% blocktrans trimmed %}
@@ -150,11 +224,21 @@
     {% endblocktrans %}
   </p>
   <ul class="govuk-list govuk-list--bullet">
-    <li>BlockRef</li>
-    <li>PublishedLineName</li>
-    <li>DestinationRef</li>
-    <li>OriginName</li>
-    <li>OriginRef</li>
+    <li>
+      BlockRef
+    </li>
+    <li>
+      PublishedLineName
+    </li>
+    <li>
+      DestinationRef
+    </li>
+    <li>
+      OriginName
+    </li>
+    <li>
+      OriginRef
+    </li>
   </ul>
   <p class="govuk-body">
     {% blocktrans trimmed with threshold=siri_vm_lower_threshold|percentage %}
@@ -167,19 +251,43 @@
     {% endblocktrans %}
   </p>
   <ul class="govuk-list govuk-list--bullet">
-    <li>Bearing</li>
-    <li>LineRef</li>
-    <li>OperatorRef</li>
-    <li>RecordedAtTime</li>
-    <li>ResponseTimestamp</li>
-    <li>VehicleJourneyRef</li>
-    <li>VehicleLocation (Lat, Long)</li>
-    <li>ProducerRef</li>
-    <li>DirectionRef</li>
-    <li>VehicleRef</li>
-    <li>ValidUntilTime</li>
+    <li>
+      Bearing
+    </li>
+    <li>
+      LineRef
+    </li>
+    <li>
+      OperatorRef
+    </li>
+    <li>
+      RecordedAtTime
+    </li>
+    <li>
+      ResponseTimestamp
+    </li>
+    <li>
+      VehicleJourneyRef
+    </li>
+    <li>
+      VehicleLocation (Lat, Long)
+    </li>
+    <li>
+      ProducerRef
+    </li>
+    <li>
+      DirectionRef
+    </li>
+    <li>
+      VehicleRef
+    </li>
+    <li>
+      ValidUntilTime
+    </li>
   </ul>
-  <p class="govuk-body">{% trans "Other compliance statuses:" %}</p>
+  <p class="govuk-body">
+    {% trans "Other compliance statuses:" %}
+  </p>
   <ul class="govuk-list govuk-list--bullet">
     <li>
       {% blocktrans trimmed %}
@@ -207,7 +315,9 @@
     </li>
   </ul>
   <p class="govuk-body">
-    <b>{% trans "New feed validation process:" %}</b>
+    <b>
+      {% trans "New feed validation process:" %}
+    </b>
   </p>
   <p id="new-feed-v-process"class="govuk-body">
     {% blocktrans trimmed %}
@@ -235,7 +345,9 @@
     </li>
   </ol>
   <p class="govuk-body">
-    <b>{% trans "Automated feed validation process:" %}</b>
+    <b>
+      {% trans "Automated feed validation process:" %}
+    </b>
   </p>
   <ol class="govuk-list govuk-list--number">
     <li class="govuk-!-padding-bottom-1">
@@ -273,13 +385,17 @@
       {% endblocktrans %}
     </li>
   </ol>
-  <h2 class="govuk-heading-m">{% trans 'AVL to timetables matching' %}</h2>
+  <h2 class="govuk-heading-m">
+    {% trans 'AVL to timetables matching' %}
+  </h2>
   <p class="govuk-body">
     {% blocktrans trimmed %}
       Validation of data against the SIRI-VM-PTI profile takes place in three stages:
       the first two stages are the data schema and SIRI-VM-PTI compliant stages as described
     {% endblocktrans %}
-    <a href="#new-feed-v-process" class="govuk-link">{% trans "above" %}.</a>
+    <a href="#new-feed-v-process" class="govuk-link">
+      {% trans "above" %}
+    .</a>
   </p>
   <p class="govuk-body">
     {% blocktrans trimmed %}
@@ -319,7 +435,9 @@
     <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf"
        class="govuk-link"
        rel="noreferrer noopener"
-       target="_blank">{% trans "SIRI VM & Data Matching profile" %}.</a>
+       target="_blank">
+      {% trans "SIRI VM & Data Matching profile" %}
+    .</a>
   </p>
   <p class="govuk-body">
     {% blocktrans trimmed %}
@@ -334,47 +452,85 @@
   <table class="govuk-table">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">{% trans "SIRI Field" %}</th>
-        <th scope="col" class="govuk-table__header">{% trans "TXC PTI Match" %}</th>
+        <th scope="col" class="govuk-table__header">
+          {% trans "SIRI Field" %}
+        </th>
+        <th scope="col" class="govuk-table__header">
+          {% trans "TXC PTI Match" %}
+        </th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">LineRef</td>
-        <td class="govuk-table__cell">LineName</td>
+        <td class="govuk-table__cell">
+          LineRef
+        </td>
+        <td class="govuk-table__cell">
+          LineName
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">OperatorRef</td>
-        <td class="govuk-table__cell">NationalOperatorCode</td>
+        <td class="govuk-table__cell">
+          OperatorRef
+        </td>
+        <td class="govuk-table__cell">
+          NationalOperatorCode
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">DatedVehicleJourneyRef</td>
-        <td class="govuk-table__cell">TicketMachine/JourneyCode</td>
+        <td class="govuk-table__cell">
+          DatedVehicleJourneyRef
+        </td>
+        <td class="govuk-table__cell">
+          TicketMachine/JourneyCode
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">DirectionRef</td>
-        <td class="govuk-table__cell">JourneyPattern/Direction</td>
+        <td class="govuk-table__cell">
+          DirectionRef
+        </td>
+        <td class="govuk-table__cell">
+          JourneyPattern/Direction
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">BlockRef</td>
-        <td class="govuk-table__cell">BlockNumber</td>
+        <td class="govuk-table__cell">
+          BlockRef
+        </td>
+        <td class="govuk-table__cell">
+          BlockNumber
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">PublishedLineName</td>
-        <td class="govuk-table__cell">LineName</td>
+        <td class="govuk-table__cell">
+          PublishedLineName
+        </td>
+        <td class="govuk-table__cell">
+          LineName
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">DestinationRef</td>
-        <td class="govuk-table__cell">JourneyPatternTimingLink/To/StopPointRef</td>
+        <td class="govuk-table__cell">
+          DestinationRef
+        </td>
+        <td class="govuk-table__cell">
+          JourneyPatternTimingLink/To/StopPointRef
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">OriginRef</td>
-        <td class="govuk-table__cell">JourneyPatternTimingLink/From/StopPointRef</td>
+        <td class="govuk-table__cell">
+          OriginRef
+        </td>
+        <td class="govuk-table__cell">
+          JourneyPatternTimingLink/From/StopPointRef
+        </td>
       </tr>
     </tbody>
   </table>
   <p class="govuk-body">
-    <b>{% trans 'Automated matching process and report' %}</b>
+    <b>
+      {% trans 'Automated matching process and report' %}
+    </b>
   </p>
   <p class="govuk-body">
     {% blocktrans trimmed %}
@@ -421,10 +577,14 @@
     <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf"
        class="govuk-link"
        rel="noreferrer noopener"
-       target="_blank">{% trans "here" %}.</a>
+       target="_blank">
+      {% trans "here" %}
+    .</a>
   </p>
   <p class="govuk-body">
-    <b>{% trans 'Single journey matching logic' %}</b>
+    <b>
+      {% trans 'Single journey matching logic' %}
+    </b>
   </p>
   <p class="govuk-body">
     {% blocktrans trimmed %}
@@ -435,10 +595,14 @@
     <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf"
        class="govuk-link"
        rel="noreferrer noopener"
-       target="_blank">{% trans "here" %}.</a>
+       target="_blank">
+      {% trans "here" %}
+    .</a>
   </p>
   <p class="govuk-body">
-    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 1" %}</p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% trans "Step 1" %}
+    </p>
     <p class="govuk-body govuk-!-margin-bottom-0">
       {% blocktrans trimmed %}
         1.1: Using OperatorRef and LineRef from the SIRI data locate the TxC files that contain data for the operator and line.
@@ -459,7 +623,9 @@
         <li class="govuk-body govuk-!-padding-left-5">
           {% trans "If files are found in more than one dataset then stop processing." %}
         </li>
-        <li class="govuk-body govuk-!-padding-left-5">{% trans "If file(s) found, continue to step 2." %}</li>
+        <li class="govuk-body govuk-!-padding-left-5">
+          {% trans "If file(s) found, continue to step 2." %}
+        </li>
         <li class="govuk-body govuk-!-padding-left-5">
           {% trans "If no file found then mark the vehicle journey as failed to be analysed." %}
           <ul class="govuk-list govuk-list--alpha">
@@ -472,7 +638,9 @@
                 <li class="govuk-body govuk-!-padding-left-5">
                   1.2: “No timetables found with VehicleActivity date in OperatingPeriod”
                 </li>
-                <li class="govuk-body govuk-!-padding-left-5">1.3: "Matched OperatorRef and LineRef in more than one dataset"</li>
+                <li class="govuk-body govuk-!-padding-left-5">
+                  1.3: "Matched OperatorRef and LineRef in more than one dataset"
+                </li>
               </ul>
             </li>
           </ul>
@@ -481,7 +649,9 @@
     </p>
   </p>
   <p class="govuk-body">
-    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 2" %}</p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% trans "Step 2" %}
+    </p>
     <p class="govuk-body govuk-!-margin-bottom-0">
       {% blocktrans trimmed %}
         2.1: From the Step 1 subset of TxC files search each file for any that contain a JourneyCode that matches with the
@@ -508,7 +678,9 @@
     </p>
   </p>
   <p class="govuk-body">
-    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 3" %}</p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% trans "Step 3" %}
+    </p>
     <p class="govuk-body govuk-!-margin-bottom-0">
       {% blocktrans trimmed %}
         3.1: From the Step 2 subset of TxC files search each file for an OperatingProfile that is appropriate
@@ -535,7 +707,9 @@
     </p>
   </p>
   <p class="govuk-body">
-    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 4" %}</p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% trans "Step 4" %}
+    </p>
     <p class="govuk-body govuk-!-margin-bottom-0">
       {% blocktrans trimmed %}
         From the Step 3 subset of TxC files use the file with the highest RevisionNumber that is valid for the date
@@ -552,7 +726,9 @@
     </p>
   </p>
   <p class="govuk-body">
-    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 5" %}</p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% trans "Step 5" %}
+    </p>
     <p class="govuk-body">
       {% blocktrans trimmed %}
         There may be more than one matching JourneyCode within a TxC
@@ -583,7 +759,9 @@
         5.3: If there is no serviced organisation data for the JourneyCode with an appropriate operating profile, there should be only one JourneyCode.
       {% endblocktrans %}
       <ul class="govuk-list govuk-list--number">
-        <li class="govuk-body govuk-!-padding-left-5">{% trans "If a single JourneyCode is identified, move to step 6." %}</li>
+        <li class="govuk-body govuk-!-padding-left-5">
+          {% trans "If a single JourneyCode is identified, move to step 6." %}
+        </li>
         <li class="govuk-body govuk-!-padding-left-5">
           {% trans "If there is more than one valid JourneyCode found, and" %}
           <ul class="govuk-list govuk-list--alpha">
@@ -608,7 +786,9 @@
               then do not include this in the score for the operator. (i.e. remove this AVL message from the count of ‘Total vehicleActivities analysed’
               messages and the uncountedvehicles.csv)
               <ul class="govuk-list govuk-list--bullet">
-                <li>No errors for this step: The row for this will be removed from uncountedvehicleactivities.csv.</li>
+                <li>
+                  No errors for this step: The row for this will be removed from uncountedvehicleactivities.csv.
+                </li>
               </ul>
             </li>
           </ul>
@@ -617,7 +797,9 @@
     </p>
   </p>
   <p class="govuk-body">
-    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 6" %}</p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% trans "Step 6" %}
+    </p>
     <p class="govuk-body">
       {% blocktrans trimmed %}
         Once a single JourneyCode with an appropriate OperatingPeriod and OperatingProfile is identified testing
@@ -632,7 +814,9 @@
     </p>
   </p>
   <p class="govuk-body">
-    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 7" %}</p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% trans "Step 7" %}
+    </p>
     <p class="govuk-body">
       {% trans "It will be necessary to identify the correct direction, destination and origin information for the full journey details being tested." %}
     </p>
@@ -662,7 +846,9 @@
       {% endblocktrans %}
     </p>
   </p>
-  <h2 class="govuk-heading-m">Fares data</h2>
+  <h2 class="govuk-heading-m">
+    Fares data
+  </h2>
   <p class="govuk-body">
     {% blocktrans %}
             NeTEx data is validated against their respective schemas, to check if it is in the expected format. As this format is new to the UK, more data quality checks may be enabled over time.

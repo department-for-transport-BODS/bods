@@ -19,12 +19,17 @@
   <div class="app-masthead">
     <div class="govuk-width-container">
       <div class="govuk-!-margin-top-5">
-        <h1 class="govuk-heading-xl app-masthead__title">{% trans page_title %}</h1>
-        <p class="app-masthead__description">{% trans 'Publish, preview and manage your open data sets' %}</p>
+        <h1 class="govuk-heading-xl app-masthead__title">
+          {% trans page_title %}
+        </h1>
+        <p class="app-masthead__description">
+          {% trans 'Publish, preview and manage your open data sets' %}
+        </p>
         <div class="govuk-grid-row govuk-!-margin-top-6">
           <div class="govuk-grid-column-full">
             <div class="review-banner">
-              {% block review_banner %}{% endblock %}
+              {% block review_banner %}
+              {% endblock %}
             </div>
           </div>
         </div>
@@ -40,7 +45,9 @@
   </div>
   <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
   <div class="govuk-tabs app-!-mb-1">
-    <h2 class="govuk-tabs__title">{% trans 'Contents' %}</h2>
+    <h2 class="govuk-tabs__title">
+      {% trans 'Contents' %}
+    </h2>
     <ul class="govuk-tabs__list">
       {% for section, title in sections %}
         <li class="govuk-tabs__list-item {% if tab == section %}govuk-tabs__list-item--selected{% endif %}">
@@ -57,7 +64,9 @@
         {% if active_feeds_table.data %}
           {% render_table active_feeds_table %}
         {% else %}
-          <p class="govuk-body-m">{% trans 'No data sets found' %}</p>
+          <p class="govuk-body-m">
+            {% trans 'No data sets found' %}
+          </p>
         {% endif %}
       </div>
     </section>
@@ -110,5 +119,7 @@
 {% block scripts %}
   {{ block.super }}
   <script>BODSFrontend.initDatasetListLoaders()</script>
-  {% if focus == tab %}<script>BODSFrontend.autoFocusToClass("govuk-tabs__list-item--selected")</script>{% endif %}
+  {% if focus == tab %}
+    <script>BODSFrontend.autoFocusToClass("govuk-tabs__list-item--selected")</script>
+  {% endif %}
 {% endblock %}

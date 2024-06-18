@@ -1,7 +1,9 @@
 {% extends "guidance/local_authorities/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="overview-header" class="govuk-heading-l">{% trans 'Overview' %}</h1>
+  <h1 data-qa="overview-header" class="govuk-heading-l">
+    {% trans 'Overview' %}
+  </h1>
   <p class="govuk-body">
     {% blocktrans %}
             The Bus Open Data Service (BODS) is the central service for publishing high quality information for all local bus

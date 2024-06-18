@@ -25,7 +25,9 @@
                     {% endif %}
                     <span class="order-up fas fa-caret-up"></span>
                     <span class="order-down fas fa-caret-down"></span>
-                    {% if column.attrs.annotation %}{{ column.attrs.annotation }}{% endif %}
+                    {% if column.attrs.annotation %}
+                      {{ column.attrs.annotation }}
+                    {% endif %}
                   </th>
                 {% endfor %}
               </tr>
@@ -70,7 +72,9 @@
               {% if table.empty_text %}
                 {% block table.tbody.empty_text %}
                   <tr class="govuk-table__row">
-                    <td class="govuk-table__cell" colspan="{{ table.columns|length }}">{{ table.empty_text }}</td>
+                    <td class="govuk-table__cell" colspan="{{ table.columns|length }}">
+                      {{ table.empty_text }}
+                    </td>
                   </tr>
                 {% endblock table.tbody.empty_text %}
               {% endif %}
@@ -82,7 +86,9 @@
             <tfoot {{ table.attrs.tfoot.as_html }}>
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
-                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">{{ column.footer }}</td>
+                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
+                    {{ column.footer }}
+                  </td>
                 {% endfor %}
               </tr>
             </tfoot>

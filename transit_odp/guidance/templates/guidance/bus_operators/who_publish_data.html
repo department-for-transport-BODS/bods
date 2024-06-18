@@ -1,7 +1,9 @@
 {% extends "guidance/bus_operators/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="who-publish-heading" class="govuk-heading-l">{% trans 'Who must publish open data?' %}</h1>
+  <h1 data-qa="who-publish-heading" class="govuk-heading-l">
+    {% trans 'Who must publish open data?' %}
+  </h1>
   <p data-qa="who-publish-paragraph" class="govuk-body">
     {% blocktrans %}
             All operators who run public bus services in England must publish their data from

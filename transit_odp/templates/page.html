@@ -23,14 +23,17 @@
           </ol>
         </div>
       {% endblock %}
-      {% block backlink %}{% endblock %}
+      {% block backlink %}
+      {% endblock %}
     </div>
     <main id="main-content" role="main">
-      {% block full_width_content %}{% endblock %}
+      {% block full_width_content %}
+      {% endblock %}
       <div class="govuk-width-container">
         <div class="govuk-main-wrapper app-main-class">
           {% include 'snippets/timeout_warning_modal.html' %}
-          {% block content %}{% endblock %}
+          {% block content %}
+          {% endblock %}
         </div>
       </div>
     </main>

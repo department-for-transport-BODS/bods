@@ -26,10 +26,14 @@
         {% include 'browse/timetables/dataset_detail/success_content.html' %}
       {% endif %}
     </div>
-    <div class="govuk-grid-column-one-third">{% include 'browse/timetables/dataset_detail/related_links.html' %}</div>
+    <div class="govuk-grid-column-one-third">
+      {% include 'browse/timetables/dataset_detail/related_links.html' %}
+    </div>
   </div>
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  {% if not error %}<script>BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }});</script>{% endif %}
+  {% if not error %}
+    <script>BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }});</script>
+  {% endif %}
 {% endblock %}

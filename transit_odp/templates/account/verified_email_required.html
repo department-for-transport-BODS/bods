@@ -10,9 +10,13 @@
   {% trans 'Verify Your E-mail Address' %}
 {% endblock %}
 {% block inner %}
-  <h1 class="govuk-heading-l">{% trans "Verify Your E-mail Address" %}</h1>
+  <h1 class="govuk-heading-l">
+    {% trans "Verify Your E-mail Address" %}
+  </h1>
   {% url 'account_email' host host.name as email_url %}
-  <p class="govuk-heading">{% trans "We are sorry, but the sign up is currently closed." %}</p>
+  <p class="govuk-heading">
+    {% trans "We are sorry, but the sign up is currently closed." %}
+  </p>
   <p class="govuk-heading">
     {% blocktrans %}
       This part of the site requires us to verify that you are who you claim to be. For this purpose, we require that
@@ -31,4 +35,5 @@
     {% endblocktrans %}
   </p>
 {% endblock %}
-{% block inner_secondary %}{% endblock %}
+{% block inner_secondary %}
+{% endblock %}

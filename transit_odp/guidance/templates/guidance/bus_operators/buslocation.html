@@ -1,7 +1,9 @@
 {% extends "guidance/bus_operators/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="bus-loc-header" class="govuk-heading-l">{% trans 'Bus location data' %}</h1>
+  <h1 data-qa="bus-loc-header" class="govuk-heading-l">
+    {% trans 'Bus location data' %}
+  </h1>
   <p class="govuk-body">
     {% blocktrans %}
             Bus location data is also known as Automated Vehicle Location (AVL) and gives
@@ -9,7 +11,9 @@
             must be in the SIRI-VM Version 2.0 or 2.0Q format.
         {% endblocktrans %}
   </p>
-  <h2 data-qa="what-siri-header" class="govuk-heading-l">{% trans 'What is SIRI-VM?' %}</h2>
+  <h2 data-qa="what-siri-header" class="govuk-heading-l">
+    {% trans 'What is SIRI-VM?' %}
+  </h2>
   <p class="govuk-body">
     {% blocktrans %}
             The Service Interface for Real Time Information (SIRI) specifies a European
@@ -33,7 +37,9 @@
             <a class="govuk-link" href="http://siri.org.uk/">http://siri.org.uk/</a>
         {% endblocktrans %}
   </p>
-  <h2 data-qa="how-siri-header" class="govuk-heading-l">{% trans 'How can I produce SIRI-VM?' %}</h2>
+  <h2 data-qa="how-siri-header" class="govuk-heading-l">
+    {% trans 'How can I produce SIRI-VM?' %}
+  </h2>
   <p class="govuk-body">
     {% blocktrans %}
             Operators with electronic ticket machine (ETM), location system or real time
@@ -47,7 +53,9 @@
             discuss solutions, such as hardware lease agreements, and guidance they can offer.
         {% endblocktrans %}
   </p>
-  <h2 data-qa="crowdedness-header" class="govuk-heading-l">{% trans 'Crowdedness data' %}</h2>
+  <h2 data-qa="crowdedness-header" class="govuk-heading-l">
+    {% trans 'Crowdedness data' %}
+  </h2>
   <p class="govuk-body">
     {% blocktrans %}
             Information about the crowdedness of public transport options has become a key metric in passengers and their modal
@@ -86,78 +94,142 @@
   <table class="govuk-table">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">Mandatory</th>
-        <th scope="col" class="govuk-table__header">Optional</th>
+        <th scope="col" class="govuk-table__header">
+          Mandatory
+        </th>
+        <th scope="col" class="govuk-table__header">
+          Optional
+        </th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">Bearing</td>
-        <td class="govuk-table__cell">Departure Boarding Activity</td>
+        <td class="govuk-table__cell">
+          Bearing
+        </td>
+        <td class="govuk-table__cell">
+          Departure Boarding Activity
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">BlockRef</td>
-        <td class="govuk-table__cell">DestinationAimedArrivalTime</td>
+        <td class="govuk-table__cell">
+          BlockRef
+        </td>
+        <td class="govuk-table__cell">
+          DestinationAimedArrivalTime
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">DestinationRef</td>
-        <td class="govuk-table__cell">DestinationName</td>
+        <td class="govuk-table__cell">
+          DestinationRef
+        </td>
+        <td class="govuk-table__cell">
+          DestinationName
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">DirectionRef</td>
-        <td class="govuk-table__cell">ItemIdentifier</td>
+        <td class="govuk-table__cell">
+          DirectionRef
+        </td>
+        <td class="govuk-table__cell">
+          ItemIdentifier
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">LineRef</td>
-        <td class="govuk-table__cell">MonitoredCall (Departure Boarding Activity)</td>
+        <td class="govuk-table__cell">
+          LineRef
+        </td>
+        <td class="govuk-table__cell">
+          MonitoredCall (Departure Boarding Activity)
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">MonitoredVehicleJourney</td>
-        <td class="govuk-table__cell">Occupancy</td>
+        <td class="govuk-table__cell">
+          MonitoredVehicleJourney
+        </td>
+        <td class="govuk-table__cell">
+          Occupancy
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">OperatorRef</td>
-        <td class="govuk-table__cell">OriginAimedDepartureTime</td>
+        <td class="govuk-table__cell">
+          OperatorRef
+        </td>
+        <td class="govuk-table__cell">
+          OriginAimedDepartureTime
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">OriginName</td>
-        <td class="govuk-table__cell">VehicleActivity</td>
+        <td class="govuk-table__cell">
+          OriginName
+        </td>
+        <td class="govuk-table__cell">
+          VehicleActivity
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">OriginRef</td>
-        <td class="govuk-table__cell">Velocity</td>
+        <td class="govuk-table__cell">
+          OriginRef
+        </td>
+        <td class="govuk-table__cell">
+          Velocity
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">ProducerRef</td>
-        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell">
+          ProducerRef
+        </td>
+        <td class="govuk-table__cell">
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">PublishedLineName</td>
-        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell">
+          PublishedLineName
+        </td>
+        <td class="govuk-table__cell">
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">RecordedAtTime</td>
-        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell">
+          RecordedAtTime
+        </td>
+        <td class="govuk-table__cell">
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">ResponseTimestamp</td>
-        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell">
+          ResponseTimestamp
+        </td>
+        <td class="govuk-table__cell">
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">ValidUntilTime</td>
-        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell">
+          ValidUntilTime
+        </td>
+        <td class="govuk-table__cell">
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">VehicleJourneyRef</td>
-        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell">
+          VehicleJourneyRef
+        </td>
+        <td class="govuk-table__cell">
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">VehicleLocation (Logitude, Latitude)</td>
-        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell">
+          VehicleLocation (Logitude, Latitude)
+        </td>
+        <td class="govuk-table__cell">
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">VehicleMonitoringDelivery (Vehicle Activity)</td>
-        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell">
+          VehicleMonitoringDelivery (Vehicle Activity)
+        </td>
+        <td class="govuk-table__cell">
+        </td>
       </tr>
     </tbody>
   </table>

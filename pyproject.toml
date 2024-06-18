@@ -112,4 +112,6 @@ max_attribute_length = 120
 max_line_length = 120
 use_gitignore = true
 format_js = false
-custom_blocks = "element,setvar,slot"
+format_attribute_template_tags=false
+line_break_after_multiline_tag=true
+no_set_formatting=true

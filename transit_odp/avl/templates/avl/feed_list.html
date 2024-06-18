@@ -5,9 +5,13 @@
     <div>
       <span class="review-stat__top">{{ organisation.stats.weekly_downloads|add:organisation.stats.weekly_api_hits|add:organisation.total_subscriptions }}</span>
     </div>
-    <p class="review-stat__description">{% trans 'Total consumer interactions with your data' %}</p>
+    <p class="review-stat__description">
+      {% trans 'Total consumer interactions with your data' %}
+    </p>
     <i class="fas fa-play govuk-!-margin-right-1"></i>
-    <a class="review-stat__link" href={{ data_activity_url }}>{% trans 'More details' %}</a>
+    <a class="review-stat__link" href={{ data_activity_url }}>
+      {% trans 'More details' %}
+    </a>
   </div>
   {% if overall_ppc_score is not None %}
     <div class="review-stat">
@@ -18,7 +22,9 @@
           </b>
         </span>
       </div>
-      <p class="review-stat__description">{% trans 'Weekly overall AVL to Timetables matching score' %}</p>
+      <p class="review-stat__description">
+        {% trans 'Weekly overall AVL to Timetables matching score' %}
+      </p>
       <i class="fas fa-play govuk-!-margin-right-1"></i>
       <a class="review-stat__link" href={% url 'ppc-archive' pk1=pk1 host hosts.publish %}>
         {% trans 'Download all archived matching reports' %}
@@ -34,7 +40,9 @@
           </b>
         </span>
       </div>
-      <p class="review-stat__description">{% trans 'Weekly overall AVL to Timetables matching score' %}</p>
+      <p class="review-stat__description">
+        {% trans 'Weekly overall AVL to Timetables matching score' %}
+      </p>
     </div>
   {% endif %}
 {% endblock %}

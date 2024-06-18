@@ -12,7 +12,9 @@
 {% block datatype_content %}
   {% flag "is_fares_validator_active" %}
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'BODS Compliant data' %}</th>
+    <th scope="row" class="govuk-table__header">
+      {% trans 'BODS Compliant data' %}
+    </th>
     {% if is_compliant_error %}
       <td colspan="2" class="govuk-table__cell">
         <div class="govuk-warning-text stacked govuk-!-margin-bottom-0">
@@ -37,12 +39,20 @@
   </tr>
 {% endflag %}
 <tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans 'NeTEx Version ' %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.schema_version }}</td>
+  <th scope="row" class="govuk-table__header">
+    {% trans 'NeTEx Version ' %}
+  </th>
+  <td class="govuk-table__cell" colspan="2">
+    {{ metadata.schema_version }}
+  </td>
 </tr>
 <tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans 'Last updated' %}</th>
-  <td class="govuk-table__cell dont-break-out">{{ object.published_at|localtime|date:"j M Y H:i" }}</td>
+  <th scope="row" class="govuk-table__header">
+    {% trans 'Last updated' %}
+  </th>
+  <td class="govuk-table__cell dont-break-out">
+    {{ object.published_at|localtime|date:"j M Y H:i" }}
+  </td>
   <td class="govuk-table__cell">
     <a class="govuk-link" href="{% url 'fares-feed-changelog' pk=object.id host host.name %}">
       {% trans 'View change log' %}
@@ -50,31 +60,59 @@
   </td>
 </tr>
 <tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans 'Number of fare zones' %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.num_of_fare_zones }}</td>
+  <th scope="row" class="govuk-table__header">
+    {% trans 'Number of fare zones' %}
+  </th>
+  <td class="govuk-table__cell" colspan="2">
+    {{ metadata.num_of_fare_zones }}
+  </td>
 </tr>
 <tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans 'Number of lines' %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.num_of_lines }}</td>
+  <th scope="row" class="govuk-table__header">
+    {% trans 'Number of lines' %}
+  </th>
+  <td class="govuk-table__cell" colspan="2">
+    {{ metadata.num_of_lines }}
+  </td>
 </tr>
 <tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans 'Number of sales offer packages ' %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.num_of_sales_offer_packages }}</td>
+  <th scope="row" class="govuk-table__header">
+    {% trans 'Number of sales offer packages ' %}
+  </th>
+  <td class="govuk-table__cell" colspan="2">
+    {{ metadata.num_of_sales_offer_packages }}
+  </td>
 </tr>
 <tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans 'Number of fare products' %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.num_of_fare_products }}</td>
+  <th scope="row" class="govuk-table__header">
+    {% trans 'Number of fare products' %}
+  </th>
+  <td class="govuk-table__cell" colspan="2">
+    {{ metadata.num_of_fare_products }}
+  </td>
 </tr>
 <tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans 'Number of user types' %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.num_of_user_profiles }}</td>
+  <th scope="row" class="govuk-table__header">
+    {% trans 'Number of user types' %}
+  </th>
+  <td class="govuk-table__cell" colspan="2">
+    {{ metadata.num_of_user_profiles }}
+  </td>
 </tr>
 <tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans 'Earliest start date' %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.valid_from }}</td>
+  <th scope="row" class="govuk-table__header">
+    {% trans 'Earliest start date' %}
+  </th>
+  <td class="govuk-table__cell" colspan="2">
+    {{ metadata.valid_from }}
+  </td>
 </tr>
 <tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans 'Earliest end date' %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.valid_to }}</td>
+  <th scope="row" class="govuk-table__header">
+    {% trans 'Earliest end date' %}
+  </th>
+  <td class="govuk-table__cell" colspan="2">
+    {{ metadata.valid_to }}
+  </td>
 </tr>
 {% endblock %}

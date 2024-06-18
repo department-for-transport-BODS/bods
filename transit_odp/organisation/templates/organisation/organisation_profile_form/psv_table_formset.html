@@ -1,12 +1,20 @@
 {% extends "organisation/organisation_profile_form/formset_base.html" %}
 {% block error_message %}
-  {% if formset.has_error %}<p class="govuk-error-message">{{ formset.validation_error_hint }}</p>{% endif %}
+  {% if formset.has_error %}
+    <p class="govuk-error-message">
+      {{ formset.validation_error_hint }}
+    </p>
+  {% endif %}
 {% endblock %}
-{% block caption %}PSV Licence Number{% endblock %}
+{% block caption %}
+  PSV Licence Number
+{% endblock %}
 {% block add_button %}
   <button type="button"
           id="id_{{ formset.prefix }}-ADD"
           name="{{ formset.prefix }}-ADD"
           class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0"
-          {% if formset.instance.licence_not_required %}disabled{% endif %}>Add new PSV Licence Number</button>
+          {% if formset.instance.licence_not_required %}disabled{% endif %}>
+    Add new PSV Licence Number
+  </button>
 {% endblock %}

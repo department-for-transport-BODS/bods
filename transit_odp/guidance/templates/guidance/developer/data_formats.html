@@ -1,8 +1,12 @@
 {% extends "guidance/developer/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="formats-header" class="govuk-heading-l">{% trans 'Data formats' %}</h1>
-  <h1 data-qa="timetables-header"class="govuk-heading-l">{% trans 'Timetables' %}</h1>
+  <h1 data-qa="formats-header" class="govuk-heading-l">
+    {% trans 'Data formats' %}
+  </h1>
+  <h1 data-qa="timetables-header"class="govuk-heading-l">
+    {% trans 'Timetables' %}
+  </h1>
   <p class="govuk-body">
     {% blocktrans %}
             Timetables data is available in the TransXChange format. This is an XML standard used for
@@ -10,7 +14,8 @@
             be found on the TransXChange website
         {% endblocktrans %}
     <a class="govuk-link dont-break-out" href="https://www.gov.uk/government/collections/transxchange" target="_blank">
-    {% trans 'https://www.gov.uk/government/collections/transxchange.' %}</a>
+      {% trans 'https://www.gov.uk/government/collections/transxchange.' %}
+    </a>
   </p>
   <p class="govuk-body">
     {% blocktrans %}
@@ -35,7 +40,9 @@
       {% endfilter %}
     </a>.
   </p>
-  <h1 data-qa="fares-header"class="govuk-heading-l">{% trans 'Fares data' %}</h1>
+  <h1 data-qa="fares-header"class="govuk-heading-l">
+    {% trans 'Fares data' %}
+  </h1>
   <p class="govuk-body">
     {% blocktrans %}
             Fares data is available in the NeTEx format. This is an XML standard developed during 2019 by industry standard leads to provide an interoperable format for the publication of fares data within the UK bus industry. NeTEx is a CEN standard that can be used to represent many aspects of a multi-modal transport network. The UK profile includes the elements related to fares for buses, for more information on the schema and profile use the following links:
@@ -48,7 +55,9 @@
     <a class="govuk-link dont-break-out" href="http://www.transmodel-cen.eu/standards/netex/" target="_blank">
     http://www.transmodel-cen.eu/standards/netex/</a>
   </p>
-  <h1 data-qa="bus-header"class="govuk-heading-l">{% trans 'Bus location data' %}</h1>
+  <h1 data-qa="bus-header"class="govuk-heading-l">
+    {% trans 'Bus location data' %}
+  </h1>
   <p class="govuk-body">
     {% blocktrans with link="https://www.gov.uk/government/publications/technical-guidance-publishing-location-data-using-the-bus-open-data-service-siri-vm"%}
             Bus location data is available using the SIRI-VM profile shown in the table below.
@@ -60,135 +69,279 @@
   <table class="govuk-table govuk-!-margin-bottom-9">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header" style="width: 20%">{% trans 'SIRI-VM profile' %}</th>
-        <th scope="col" class="govuk-table__header">{% trans 'Type' %}</th>
-        <th scope="col" class="govuk-table__header">{% trans 'Mandatory in Profile' %}</th>
-        <th scope="col" class="govuk-table__header">{% trans 'Description' %}</th>
+        <th scope="col" class="govuk-table__header" style="width: 20%">
+          {% trans 'SIRI-VM profile' %}
+        </th>
+        <th scope="col" class="govuk-table__header">
+          {% trans 'Type' %}
+        </th>
+        <th scope="col" class="govuk-table__header">
+          {% trans 'Mandatory in Profile' %}
+        </th>
+        <th scope="col" class="govuk-table__header">
+          {% trans 'Description' %}
+        </th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Produce ref' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd: NMTOKEN ref' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans 'Codespace for dataset producer.' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Produce ref' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd: NMTOKEN ref' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Codespace for dataset producer.' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Vehicle Ref' %}</td>
-        <td class="govuk-table__cell">{% trans 'String' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans 'Reference to the Vehicle.' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Vehicle Ref' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'String' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Reference to the Vehicle.' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'VehicleJourneyRef' %}</td>
-        <td class="govuk-table__cell"></td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans 'Reference to the Vehicle journey.' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'VehicleJourneyRef' %}
+        </td>
+        <td class="govuk-table__cell">
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Reference to the Vehicle journey.' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Operator ref' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd:NMTOKEN' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Operator ref' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd:NMTOKEN' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
         <td class="govuk-table__cell">
           {% trans 'Reference to Operator in question (ID to the corresponding company in the timetable data).' %}
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Published line name' %}</td>
-        <td class="govuk-table__cell">{% trans 'Int' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans 'Published line name for the line the vehicle is running on.' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Published line name' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Int' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Published line name for the line the vehicle is running on.' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Line Ref' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd:NMTOKEN' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Line Ref' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd:NMTOKEN' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
         <td class="govuk-table__cell">
           {% trans 'Reference to the Line in question (ID to the corresponding object in the timetable data).' %}
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Direction Ref' %}</td>
-        <td class="govuk-table__cell">{% trans 'String' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans 'Direction of the trip.' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Direction Ref' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'String' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Direction of the trip.' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Origin ref' %}</td>
-        <td class="govuk-table__cell"></td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans 'Reference to the first stop on the vehicle’s trip.' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Origin ref' %}
+        </td>
+        <td class="govuk-table__cell">
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Reference to the first stop on the vehicle’s trip.' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Origin name' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd:string' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Origin name' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd:string' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
         <td class="govuk-table__cell">
           {% trans 'Reference to origin Quay in question (ID to the corresponding Quay in the timetable data and national stop place registry).' %}
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Aimed departure time' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd:dateTime' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans ' The schedule time of departure from the origin stop.' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Aimed departure time' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd:dateTime' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans ' The schedule time of departure from the origin stop.' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Destination ref' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd:NMTOKEN' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Destination ref' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd:NMTOKEN' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
         <td class="govuk-table__cell">
           {% trans ' Reference to destination Quay in question (ID to the corresponding Quay in the timetable data and national stop place registry) NAPTAN stop.' %}
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Destination name' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd:string' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans 'Name describing the destination of the departure.' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Destination name' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd:string' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Name describing the destination of the departure.' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Aimed arrival time' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd:dateTime' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans 'The scheduled time of arrival at the destination stop.' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Aimed arrival time' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd:dateTime' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'The scheduled time of arrival at the destination stop.' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Vehicle Location-Longitude' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd:decimal' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans 'Longitude (-180 to 180).' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Vehicle Location-Longitude' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd:decimal' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Longitude (-180 to 180).' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Vehicle Location-Latitude' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd:decimal' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans 'Latitude (-90 to 90).' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Vehicle Location-Latitude' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd:decimal' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Latitude (-90 to 90).' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Recorded at (/GPS timestamp)' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd:dateTime' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Recorded at (/GPS timestamp)' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd:dateTime' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
         <td class="govuk-table__cell">
           {% trans 'Timestamp for when the dataset was created/published i.e. 2004-12-17T09:30:47-05:00.' %}
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Speed' %}</td>
-        <td class="govuk-table__cell"></td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
-        <td class="govuk-table__cell">{% trans 'Speed of the vehicle in question.' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Speed' %}
+        </td>
+        <td class="govuk-table__cell">
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Speed of the vehicle in question.' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Bearing' %}</td>
-        <td class="govuk-table__cell">{% trans 'xsd:float' %}</td>
-        <td class="govuk-table__cell"></td>
-        <td class="govuk-table__cell">{% trans 'Current compass bearing (direction of VehicleJourney).' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Bearing' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'xsd:float' %}
+        </td>
+        <td class="govuk-table__cell">
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Current compass bearing (direction of VehicleJourney).' %}
+        </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans 'Block ref' %}</td>
-        <td class="govuk-table__cell">{% trans 'String' %}</td>
-        <td class="govuk-table__cell">{% trans 'Yes' %}</td>
+        <td class="govuk-table__cell">
+          {% trans 'Block ref' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'String' %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans 'Yes' %}
+        </td>
         <td class="govuk-table__cell">
           {% trans 'Reference to the block of the vehicle running as defined by the running boards.' %}
         </td>

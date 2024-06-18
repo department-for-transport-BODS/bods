@@ -11,7 +11,9 @@
 {% include "publish/snippets/dqs_review_panel.html" %}
 {# Preview Section #}
 <div id="preview-section">
-  <h2 class="govuk-heading-l dont-break-out">{{ object.name }}</h2>
+  <h2 class="govuk-heading-l dont-break-out">
+    {{ object.name }}
+  </h2>
   {% include 'publish/snippets/dataset_map.html' %}
   {% include 'publish/revision_review/property_table.html' %}
   {% include 'publish/revision_review/review_service_codes.html' %}

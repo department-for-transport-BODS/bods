@@ -8,7 +8,8 @@
     {% trans 'Data set published' %}
   {% endif %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -42,13 +43,16 @@
         {% endif %}
       </p>
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
-      <h2 class="govuk-heading-m">{% trans 'What happens next?' %}</h2>
+      <h2 class="govuk-heading-m">
+        {% trans 'What happens next?' %}
+      </h2>
       <p class="govuk-body-m">
         {% blocktrans %}
           You can view the data set on your
         {% endblocktrans %}
         <a class="govuk-link" href={% url 'feed-list' pk1=view.kwargs.pk1 host hosts.publish %}>
-        {% trans 'data sets page.' %}</a>
+          {% trans 'data sets page.' %}
+        </a>
         {% blocktrans %}
           or by clicking the button below. The data will now be live for everyone else to see.
         {% endblocktrans %}
@@ -61,6 +65,7 @@
       </a>
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
     </div>
-    <div class="govuk-!-width-one-third"></div>
+    <div class="govuk-!-width-one-third">
+    </div>
   </div>
 {% endblock %}

@@ -1,7 +1,9 @@
 {% load i18n %}
 {% load static %}
 {% if properties.avl_compliance_status_cached == "Awaiting publisher review" %}
-  <p class="govuk-body">{{ properties.avl_compliance_status_cached }}</p>
+  <p class="govuk-body">
+    {{ properties.avl_compliance_status_cached }}
+  </p>
   <a href="{% url 'avl:validation-report-download' pk1=view.kwargs.pk1 pk=view.kwargs.pk %}" class="govuk-link">Download validation report</a>
   <div class="govuk-warning-text">
     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -24,7 +26,9 @@
     </strong>
   </div>
 {% elif properties.avl_compliance_status_cached == "Partially compliant" %}
-  <p class="govuk-body govuk-!-margin-bottom-1">{{ properties.avl_compliance_status_cached }}</p>
+  <p class="govuk-body govuk-!-margin-bottom-1">
+    {{ properties.avl_compliance_status_cached }}
+  </p>
   <a href="{% url 'avl:validation-report-download' pk1=view.kwargs.pk1 pk=view.kwargs.pk %}" class="govuk-link">Download validation report</a>
   <div class="govuk-warning-text">
     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -38,7 +42,9 @@
     </strong>
   </div>
 {% elif properties.avl_compliance_status_cached == "Non-compliant" %}
-  <p class="govuk-body">{{ properties.avl_compliance_status_cached }}</p>
+  <p class="govuk-body">
+    {{ properties.avl_compliance_status_cached }}
+  </p>
   <a href="{% url 'avl:validation-report-download' pk1=view.kwargs.pk1 pk=view.kwargs.pk %}" class="govuk-link">Download validation report</a>
   <div class="govuk-warning-text">
     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>

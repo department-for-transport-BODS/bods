@@ -1,9 +1,15 @@
 {% load static %}
 {% load i18n %}
-<h2 class="govuk-heading-m">Timetable</h2>
-<h2 class="govuk-heading-m">Filter by</h2>
+<h2 class="govuk-heading-m">
+  Timetable
+</h2>
+<h2 class="govuk-heading-m">
+  Filter by
+</h2>
 <div class="govuk-form-group govuk-!-width-one-quarter govuk-!-padding-0">
-  <label class="govuk-label" for="timetable_date">Date</label>
+  <label class="govuk-label" for="timetable_date">
+    Date
+  </label>
   <span id="timetable_date_hint" class="govuk-hint">For example: 21/11/2014</span>
   <input type="text"
          id="timetable_date"
@@ -25,5 +31,7 @@
   <button type="submit"
           class="govuk-button govuk-!-margin-top-2"
           data-module="govuk-button"
-          onclick="BODSFrontend.changeTargetDate('timetable_date');">Apply Filter</button>
+          onclick="BODSFrontend.changeTargetDate('timetable_date');">
+    Apply Filter
+  </button>
 </div>

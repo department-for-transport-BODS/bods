@@ -4,12 +4,17 @@
 {% block title_tag %}
   {% trans 'Contact us' %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-      <h1 class="govuk-heading-l">{% trans 'Contact the Bus Open Data Service' %}</h1>
-      <h2 class="govuk-heading-s">{% trans 'Feedback and support' %}</h2>
+      <h1 class="govuk-heading-l">
+        {% trans 'Contact the Bus Open Data Service' %}
+      </h1>
+      <h2 class="govuk-heading-s">
+        {% trans 'Feedback and support' %}
+      </h2>
       <div>
         <p class="govuk-body-m">
           {% blocktrans %}
@@ -29,7 +34,10 @@
           {% endblocktrans %}
         </p>
         <ul class="govuk-list">
-          <li>{% trans 'Telephone: ' %} +44 (0) 800 028 0930</li>
+          <li>
+            {% trans 'Telephone: ' %}
+            +44 (0) 800 028 0930
+          </li>
           <li>
             {% trans 'Email: ' %}
             <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>
@@ -38,7 +46,9 @@
       </div>
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
       <div>
-        <h2 class="govuk-heading-s">{% trans 'Share your stories' %}</h2>
+        <h2 class="govuk-heading-s">
+          {% trans 'Share your stories' %}
+        </h2>
         <ul class="govuk-list">
           <li>
             {% trans 'Please share your bus open data stories via Twitter, using the ' %}
@@ -51,7 +61,9 @@
       </div>
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
       <div>
-        <h2 class="govuk-heading-s">{% trans 'Media enquiries' %}</h2>
+        <h2 class="govuk-heading-s">
+          {% trans 'Media enquiries' %}
+        </h2>
         <p class="govuk-body">
           <a class="govuk-link"
              target="_blank"
@@ -66,7 +78,9 @@
     </div>
     <div class="govuk-grid-column-one-third">
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible" />
-      <h2 class="govuk-heading-m">{% trans 'Bus Open Data Service' %}</h2>
+      <h2 class="govuk-heading-m">
+        {% trans 'Bus Open Data Service' %}
+      </h2>
       <div>
         <p class="govuk-body-m">
           {% blocktrans %}
@@ -82,12 +96,15 @@
           </li>
           <li>
             <a class="govuk-link" href="https://www.gov.uk/government/organisations/department-for-transport" target="_blank">
-            {% trans 'Department for Transport' %}</a>
+              {% trans 'Department for Transport' %}
+            </a>
           </li>
         </ul>
       </div>
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
-      <h2 class="govuk-heading-s">{% trans 'Follow us' %}</h2>
+      <h2 class="govuk-heading-s">
+        {% trans 'Follow us' %}
+      </h2>
       <div>
         <p class="govuk-body-m">
           <a href="https://twitter.com/busopendata?ref_src=twsrc%5Etfw" class="govuk-link" target="_blank">
@@ -96,7 +113,8 @@
                  alt="twitter icon"
                  style="width: 26px;
                         height: 26px" />
-          {% trans 'Bus open data service Twitter' %}</a>
+            {% trans 'Bus open data service Twitter' %}
+          </a>
         </p>
       </div>
     </div>

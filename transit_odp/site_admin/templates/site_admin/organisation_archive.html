@@ -11,7 +11,8 @@
     {% trans 'Activate organisation' %}
   {% endif %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+{% block breadcrumb.content %}
+{% endblock %}
 {% block backlink %}
   {% url 'users:organisation-detail' pk=object.id host hosts.admin as backlink %}
   {% include 'snippets/backlink.html' with url=backlink %}
@@ -28,9 +29,11 @@
       </h1>
       <p class="govuk-body">
         {% if object.is_active %}
-          {% trans 'Would you like to deactivate' %} {{ object.name }}?
+          {% trans 'Would you like to deactivate' %}
+          {{ object.name }}?
         {% else %}
-          {% trans 'Would you like to activate' %} {{ object.name }}?
+          {% trans 'Would you like to activate' %}
+          {{ object.name }}?
         {% endif %}
       </p>
       {% crispy form %}

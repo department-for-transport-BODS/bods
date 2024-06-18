@@ -13,20 +13,30 @@
 {% block breadcrumb.content %}
   <div class="govuk-breadcrumbs">
     <ol class="publish-stepper govuk-breadcrumbs__list">
-      <li class="publish-stepper__item publish-stepper__item--selected">{% trans "1. Organisation detail" %}</li>
-      <li class="publish-stepper__item publish-stepper__item--next">{% trans "2. Service code exemptions" %}</li>
+      <li class="publish-stepper__item publish-stepper__item--selected">
+        {% trans "1. Organisation detail" %}
+      </li>
+      <li class="publish-stepper__item publish-stepper__item--next">
+        {% trans "2. Service code exemptions" %}
+      </li>
     </ol>
   </div>
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">{% trans 'Edit organisation detail' %}</h1>
+      <h1 class="govuk-heading-xl">
+        {% trans 'Edit organisation detail' %}
+      </h1>
     </div>
   </div>
   {# Main Section #}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">{% crispy form %}</div>
-    <div class="govuk-grid-column-one-third">{% include "common/snippets/organisation_helpful_links.html" %}</div>
+    <div class="govuk-grid-column-two-thirds">
+      {% crispy form %}
+    </div>
+    <div class="govuk-grid-column-one-third">
+      {% include "common/snippets/organisation_helpful_links.html" %}
+    </div>
   </div>
 {% endblock %}

@@ -1,7 +1,9 @@
 {% extends "guidance/local_authorities/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="naptan-header" class="govuk-heading-l">{% trans 'NaPTAN stop data' %}</h1>
+  <h1 data-qa="naptan-header" class="govuk-heading-l">
+    {% trans 'NaPTAN stop data' %}
+  </h1>
   <p class="govuk-body">
     {% blocktrans %}
             The Bus Open Data Regulations include a statutory requirement for local
@@ -24,7 +26,9 @@
             any data quality issues, before the requirements come into effect next year.
         {% endblocktrans %}
   </p>
-  <h2 data-qa="dft-header" class="govuk-heading-l">{% trans 'DfT support' %}</h2>
+  <h2 data-qa="dft-header" class="govuk-heading-l">
+    {% trans 'DfT support' %}
+  </h2>
   <p class="govuk-body">
     {% blocktrans %}
             In preparation of the statutory requirements that will be coming into action next

@@ -15,59 +15,91 @@
         <table class="govuk-table consumer-property-table">
           <tbody class="govuk-table__body">
             <tr class="govuk-table__row">
-              <th scope="row" class="govuk-table__header">{% trans 'Consequence Type' %}</th>
-              <td class="govuk-table__cell" colspan="2">{{ consequence.consequenceType|capfirst }}</td>
+              <th scope="row" class="govuk-table__header">
+                {% trans 'Consequence Type' %}
+              </th>
+              <td class="govuk-table__cell" colspan="2">
+                {{ consequence.consequenceType|capfirst }}
+              </td>
             </tr>
             <tr class="govuk-table__row">
-              <th scope="row" class="govuk-table__header">{% trans 'Mode of transport' %}</th>
-              <td class="govuk-table__cell" colspan="2">{{ consequence.vehicleMode|capfirst }}</td>
+              <th scope="row" class="govuk-table__header">
+                {% trans 'Mode of transport' %}
+              </th>
+              <td class="govuk-table__cell" colspan="2">
+                {{ consequence.vehicleMode|capfirst }}
+              </td>
             </tr>
             {% if consequence.consequenceType == "Services" %}
               <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header">{% trans 'Service(s)' %}</th>
+                <th scope="row" class="govuk-table__header">
+                  {% trans 'Service(s)' %}
+                </th>
                 <td class="govuk-table__cell" colspan="2">
                   {% for service in consequence.services %}
                     {{ service.lineName }} - {{ service.origin }} - {{ service.destination }} ({{ service.operatorShortName }})
-                    {% if not forloop.last %},{% endif %}
+                    {% if not forloop.last %}
+                      ,
+                    {% endif %}
                   {% endfor %}
                 </td>
               </tr>
             {% endif %}
             {% if consequence.consequenceType == "Services" or consequence.consequenceType == "Stops" %}
               <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header">{% trans 'Stops affected' %}</th>
+                <th scope="row" class="govuk-table__header">
+                  {% trans 'Stops affected' %}
+                </th>
                 <td class="govuk-table__cell" colspan="2">
                   {% for stop in consequence.stops %}
                     {{ stop.commonName|capfirst }} {{ stop.indicator }} {{ stop.atcoCode }}
-                    {% if not forloop.last %},{% endif %}
+                    {% if not forloop.last %}
+                      ,
+                    {% endif %}
                   {% endfor %}
                 </td>
               </tr>
             {% endif %}
             {% if consequence.consequenceType == "Operator Wide" %}
               <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header">{% trans 'Operator(s) affected' %}</th>
+                <th scope="row" class="govuk-table__header">
+                  {% trans 'Operator(s) affected' %}
+                </th>
                 <td class="govuk-table__cell" colspan="2">
                   {% for operator in consequence.consequenceOperators %}
                     {{ operator.operatorNoc }}
-                    {% if not forloop.last %},{% endif %}
+                    {% if not forloop.last %}
+                      ,
+                    {% endif %}
                   {% endfor %}
                 </td>
               </tr>
             {% endif %}
             <tr class="govuk-table__row">
-              <th scope="row" class="govuk-table__header">{% trans 'Advice to display' %}</th>
-              <td class="govuk-table__cell" colspan="2">{{ consequence.description|capfirst }}</td>
+              <th scope="row" class="govuk-table__header">
+                {% trans 'Advice to display' %}
+              </th>
+              <td class="govuk-table__cell" colspan="2">
+                {{ consequence.description|capfirst }}
+              </td>
             </tr>
             <tr class="govuk-table__row">
-              <th scope="row" class="govuk-table__header">{% trans 'Remove from journey planner' %}</th>
-              <td class="govuk-table__cell" colspan="2">{{ consequence.removeFromJourneyPlanners|capfirst }}</td>
+              <th scope="row" class="govuk-table__header">
+                {% trans 'Remove from journey planner' %}
+              </th>
+              <td class="govuk-table__cell" colspan="2">
+                {{ consequence.removeFromJourneyPlanners|capfirst }}
+              </td>
             </tr>
             <tr class="govuk-table__row">
-              <th scope="row" class="govuk-table__header">{% trans 'Disruption delay' %}</th>
+              <th scope="row" class="govuk-table__header">
+                {% trans 'Disruption delay' %}
+              </th>
               <td class="govuk-table__cell" colspan="2">
                 {{ consequence.disruptionDelay|default:"N/A" }}
-                {% if consequence.disruptionDelay %}minutes{% endif %}
+                {% if consequence.disruptionDelay %}
+                  minutes
+                {% endif %}
               </td>
             </tr>
           </tbody>

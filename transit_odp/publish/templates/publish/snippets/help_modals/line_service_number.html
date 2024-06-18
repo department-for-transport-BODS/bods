@@ -1,7 +1,8 @@
 {% extends "snippets/help_modal_base.html" %}
 {% load i18n %}
 {% block help_heading %}
-  {% trans "Line" as tmsg %}{{ tmsg | force_escape }}
+  {% trans "Line" as tmsg %}
+  {{ tmsg | force_escape }}
 {% endblock %}
 {% block help_content %}
   <p class="govuk-body">

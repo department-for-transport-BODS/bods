@@ -35,7 +35,9 @@
               role="button"
               class="govuk-header__menu-button govuk-js-header-toggle"
               aria-controls="navigation"
-              aria-label="Show or hide Top Level Navigation">{% trans 'Menu' %}</button>
+              aria-label="Show or hide Top Level Navigation">
+        {% trans 'Menu' %}
+      </button>
       <nav>
         {% block menu %}
           <ul id="navigation" class="govuk-header__navigation " aria-label="Top Level Navigation">
@@ -51,4 +53,5 @@
   </div>
 </div>
 </header>
-{% block scripts %}{% endblock %}
+{% block scripts %}
+{% endblock %}

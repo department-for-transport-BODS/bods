@@ -30,7 +30,9 @@
 {% endblock %}
 {% block heading.secondary %}
   <div class="govuk-grid-column-one-third">
-    <h3 class="govuk-heading-m">{% trans 'Need further help?' %}</h3>
+    <h3 class="govuk-heading-m">
+      {% trans 'Need further help?' %}
+    </h3>
     <ul class="govuk-list">
       <li class="govuk-!-margin-bottom-3">
         <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">{% trans 'Guide me' %}</a>
@@ -58,23 +60,36 @@
       </p>
       <ul class="govuk-list">
         <li>
-          <b>{% trans 'Format' %}:</b>
+          <b>
+            {% trans 'Format' %}
+          :</b>
           {% trans 'TransXChange' %}
           {% include "browse/snippets/help_modals/txc.html" %}
           {% trans 'GTFS' %}
           {% include "browse/snippets/help_modals/gtfs.html" %}
         </li>
         <li>
-          <b>{% trans 'TXC profile' %}:</b> {% trans 'TXC 2.4 PTI v1.1' %}
+          <b>
+            {% trans 'TXC profile' %}
+          :</b>
+          {% trans 'TXC 2.4 PTI v1.1' %}
         </li>
         <li>
-          <b>{% trans 'Mode' %}:</b> {% trans 'Bus' %}
+          <b>
+            {% trans 'Mode' %}
+          :</b>
+          {% trans 'Bus' %}
         </li>
         <li>
-          <b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}
+          <b>
+            {% trans 'File type' %}
+          :</b>
+          {% trans 'ZIP file' %}
         </li>
         <li>
-          <b>{% trans 'Update frequency' %}:</b>
+          <b>
+            {% trans 'Update frequency' %}
+          :</b>
           {% trans 'Daily 6:00 am and 6:00 pm GMT' %}
         </li>
       </ul>
@@ -96,7 +111,9 @@
       </p>
       <ul class="govuk-list">
         <li>
-          <b>{% trans "Format:" %}</b>
+          <b>
+            {% trans "Format:" %}
+          </b>
           {% trans "SIRI-VM" %}
           {% include "browse/snippets/help_modals/sirivm.html" %}
           {% filter force_escape %}
@@ -105,10 +122,16 @@
           {% include "browse/snippets/help_modals/gtfsrt.html" %}
         </li>
         <li>
-          <b>{% trans 'Mode' %}:</b> {% trans 'Bus' %}
+          <b>
+            {% trans 'Mode' %}
+          :</b>
+          {% trans 'Bus' %}
         </li>
         <li>
-          <b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}
+          <b>
+            {% trans 'File type' %}
+          :</b>
+          {% trans 'ZIP file' %}
         </li>
         <li>
           <b>
@@ -137,21 +160,34 @@
       </p>
       <ul class="govuk-list">
         <li>
-          <b>{% trans 'Format' %}:</b>
+          <b>
+            {% trans 'Format' %}
+          :</b>
           {% trans 'NeTEx' %}
           {% include "browse/snippets/help_modals/netex.html" %}
         </li>
         <li>
-          <b>{% trans 'NeTEx profile' %}:</b> {% trans 'v1.1' %}
+          <b>
+            {% trans 'NeTEx profile' %}
+          :</b>
+          {% trans 'v1.1' %}
         </li>
         <li>
-          <b>{% trans 'Mode' %}:</b> {% trans 'Bus' %}
+          <b>
+            {% trans 'Mode' %}
+          :</b>
+          {% trans 'Bus' %}
         </li>
         <li>
-          <b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}
+          <b>
+            {% trans 'File type' %}
+          :</b>
+          {% trans 'ZIP file' %}
         </li>
         <li>
-          <b>{% trans 'Update frequency' %}:</b>
+          <b>
+            {% trans 'Update frequency' %}
+          :</b>
           {% trans 'Daily 6:00 am and 6:00 pm GMT' %}
         </li>
       </ul>
@@ -171,22 +207,34 @@
       </p>
       <ul class="govuk-list">
         <li>
-          <b>{% trans 'Format' %}:</b>
+          <b>
+            {% trans 'Format' %}
+          :</b>
           {% trans 'SIRI-SX' %}
           {% include "browse/snippets/help_modals/sirisx.html" %}
         </li>
         <li>
-          <b>{% trans 'Mode' %}:</b> {% trans 'Bus, Ferry, Light Rail' %}
+          <b>
+            {% trans 'Mode' %}
+          :</b>
+          {% trans 'Bus, Ferry, Light Rail' %}
         </li>
         <li>
-          <b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}
+          <b>
+            {% trans 'File type' %}
+          :</b>
+          {% trans 'ZIP file' %}
         </li>
         <li>
-          <b>{% trans 'Update frequency' %}:</b>
+          <b>
+            {% trans 'Update frequency' %}
+          :</b>
           {% trans 'Every minute' %}
         </li>
         <li>
-          <b>{% trans 'Source' %}:</b>
+          <b>
+            {% trans 'Source' %}
+          :</b>
           {% trans 'Local authorities' %}
         </li>
       </ul>
