@@ -7,7 +7,7 @@
     {{ wizard.form.media }}
     {{ wizard.management_form }}
     <button type="submit" name="wizard_goto_step" value="{{ previous_step }}" class="govuk-button-back-link">
-      {% trans 'Back' %}
+      {% trans "Back" %}
     </button>
   {% endblock %}
   {% block backlink %}
@@ -17,13 +17,13 @@
       <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">
           {% if is_update or is_revision_modify %}
-            {% trans 'Would you like to cancel updating this data feed?' %}
+            {% trans "Would you like to cancel updating this data feed?" %}
           {% else %}
-            {% trans 'Would you like to cancel publishing this data feed?' %}
+            {% trans "Would you like to cancel publishing this data feed?" %}
           {% endif %}
         </h1>
         <p class="govuk-body">
-          {% trans 'Any changes you have made so far will not be saved.' %}
+          {% trans "Any changes you have made so far will not be saved." %}
         </p>
         <div class="btn-group-justified">
           {% if is_update and not is_revision_modify %}
@@ -50,7 +50,7 @@
             </a>
           {% endif %}
           <button type="submit" name="wizard_goto_step" value="{{ previous_step }}" class="govuk-button govuk-button--secondary">
-            {% trans 'Cancel' %}
+            {% trans "Cancel" %}
           </button>
         </div>
       </div>

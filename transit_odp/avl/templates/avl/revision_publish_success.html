@@ -3,9 +3,9 @@
 {% load crispy_forms_tags %}
 {% block title_tag %}
   {% if update %}
-    {% trans 'Data feed updated' %}
+    {% trans "Data feed updated" %}
   {% else %}
-    {% trans 'Data feed published' %}
+    {% trans "Data feed published" %}
   {% endif %}
 {% endblock %}
 {% block breadcrumb.content %}
@@ -26,21 +26,21 @@
         </h1>
       </div>
       <p class="govuk-body-m">
-        {% trans 'We have sent you a confirmation email.' %}
+        {% trans "We have sent you a confirmation email." %}
       </p>
     </div>
   </div>
   <div class="govuk-grid-row govuk-!-padding-top-3">
     <div class="govuk-grid-column-three-quarters">
       <h2 class="govuk-heading-m">
-        {% trans 'What happens next?' %}
+        {% trans "What happens next?" %}
       </h2>
       <p class="govuk-body-m">
         {% blocktrans %}
           You can view the data feed on your
         {% endblocktrans %}
         <a class="govuk-link" href={% url 'avl:feed-list' pk1=view.kwargs.pk1 host hosts.publish %}>
-          {% trans 'data feeds page' %}
+          {% trans "data feeds page" %}
         </a>
         {% blocktrans %}
           or by clicking the button below. The data will now be live for everyone else to see.
@@ -68,7 +68,7 @@
       <a role="button"
          class="govuk-button"
          href="{% url 'avl:feed-detail' pk1=view.kwargs.pk1 pk=view.kwargs.pk host hosts.publish %}">
-        {% trans 'View published data feed' %}
+        {% trans "View published data feed" %}
       </a>
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
     </div>

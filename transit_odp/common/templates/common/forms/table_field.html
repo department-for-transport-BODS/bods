@@ -6,8 +6,8 @@
 {% else %}
   {% if field|is_checkbox %}
     {# A checkbox input has inline label and hint #}
-    {% include 'govuk/snippets/field_errors.html' %}
-    {% include 'govuk/layout/checkbox.html' %}
+    {% include "govuk/snippets/field_errors.html" %}
+    {% include "govuk/layout/checkbox.html" %}
   {% else %}
     {% if field|is_checkboxselectmultiple or field|is_radioselect %}
       {% comment %}
@@ -17,17 +17,17 @@
       <fieldset class="govuk-fieldset">
       {% endif %}
       {# Render form group errors #}
-      {% include 'govuk/snippets/field_errors.html' %}
+      {% include "govuk/snippets/field_errors.html" %}
       {# Render input(s) #}
       {% if field|is_radioselect %}
         {# style standard radio select container #}
-        {% include 'govuk/layout/radioselect.html' %}
+        {% include "govuk/layout/radioselect.html" %}
       {% elif field|is_select %}
         {# style select container #}
-        {% include 'govuk/layout/select.html' %}
+        {% include "govuk/layout/select.html" %}
       {% elif field|is_checkboxselectmultiple %}
         {# style multi checkbox container #}
-        {% include 'govuk/layout/checkboxmultiple.html' %}
+        {% include "govuk/layout/checkboxmultiple.html" %}
       {% else %}
         {# render widget #}
         {% include "govuk/widget.html" %}

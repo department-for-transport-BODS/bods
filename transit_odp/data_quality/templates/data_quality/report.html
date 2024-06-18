@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load filters %}
 {% block title_tag %}
-  {% trans 'Data quality report' %}
+  {% trans "Data quality report" %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
@@ -13,18 +13,18 @@
       </h1>
       <ul class="govuk-list">
         <li>
-          {% trans 'Please find your data quality observations below.' %}
+          {% trans "Please find your data quality observations below." %}
         </li>
         <li>
           <a class="govuk-link" href="{% url 'guidance:dq-definitions' %}" target="_blank">
-            {% trans 'What are the different type of observations?' %}
+            {% trans "What are the different type of observations?" %}
           </a>
         </li>
         <li>
           <a class="govuk-link"
              target="_blank"
              href="{% url 'dq:report-csv' pk1=view.kwargs.pk1 pk=view.kwargs.pk report_id=view.kwargs.report_id %}">
-            {% trans 'Download data quality report.csv' %}
+            {% trans "Download data quality report.csv" %}
           </a>
         </li>
       </ul>
@@ -70,7 +70,7 @@
         </div>
       </div>
     </div>
-    {% include 'data_quality/snippets/report_overview_table.html' %}
+    {% include "data_quality/snippets/report_overview_table.html" %}
   </div>
 </div>
 {% endblock %}

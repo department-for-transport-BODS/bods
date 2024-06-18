@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block extra_content %}
   <h1 class="govuk-heading-xl">
-    {% trans 'Providing an Assisted Digital channel' %}
+    {% trans "Providing an Assisted Digital channel" %}
   </h1>
   <p class="govuk-body">
     {% blocktrans %}
@@ -22,6 +22,6 @@
   {% endblocktrans %}
   </p>
   {% url 'guidance:support-local_authorities' host hosts.publish as url %}
-  {% include '../snippets/previous.html' with url=url prev_page=prev_page %}
-  {% include '../snippets/next.html' with url=url next_page=next_page %}
+  {% include "../snippets/previous.html" with url=url prev_page=prev_page %}
+  {% include "../snippets/next.html" with url=url next_page=next_page %}
 {% endblock %}

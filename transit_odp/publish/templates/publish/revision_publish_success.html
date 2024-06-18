@@ -3,9 +3,9 @@
 {% load crispy_forms_tags %}
 {% block title_tag %}
   {% if update %}
-    {% trans 'Data set updated' %}
+    {% trans "Data set updated" %}
   {% else %}
-    {% trans 'Data set published' %}
+    {% trans "Data set published" %}
   {% endif %}
 {% endblock %}
 {% block breadcrumb.content %}
@@ -44,14 +44,14 @@
       </p>
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
       <h2 class="govuk-heading-m">
-        {% trans 'What happens next?' %}
+        {% trans "What happens next?" %}
       </h2>
       <p class="govuk-body-m">
         {% blocktrans %}
           You can view the data set on your
         {% endblocktrans %}
         <a class="govuk-link" href={% url 'feed-list' pk1=view.kwargs.pk1 host hosts.publish %}>
-          {% trans 'data sets page.' %}
+          {% trans "data sets page." %}
         </a>
         {% blocktrans %}
           or by clicking the button below. The data will now be live for everyone else to see.
@@ -61,7 +61,7 @@
       <a role="button"
          class="govuk-button"
          href="{% url 'feed-detail' pk1=view.kwargs.pk1 pk=view.kwargs.pk host hosts.publish %}">
-        {% trans 'View published data set' %}
+        {% trans "View published data set" %}
       </a>
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
     </div>

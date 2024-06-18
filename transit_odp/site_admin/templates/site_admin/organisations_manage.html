@@ -8,13 +8,13 @@
   {% breadcrumb_url 'Organisation management' 'users:organisation-manage' host hosts.admin %}
 {% endblock %}
 {% block title_text %}
-  {% trans 'Organisation management' %}
+  {% trans "Organisation management" %}
 {% endblock %}
 {% block subtitle %}
 {% endblock %}
 {% block inner %}
   <h2 class="govuk-heading-m">
-    {% trans 'Add new organisation' %}
+    {% trans "Add new organisation" %}
   </h2>
   <p class="govuk-body">
     {% blocktrans %}
@@ -31,10 +31,10 @@
   <div class="govuk-grid-row govuk-!-margin-top-5">
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m">
-        {% trans 'View and manage organisations' %}
+        {% trans "View and manage organisations" %}
       </h2>
       <div class="organisation-table__controls">
-        {% include 'common/snippets/filter.html' %}
+        {% include "common/snippets/filter.html" %}
       </div>
       {% render_table table %}
     </div>

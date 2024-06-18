@@ -7,7 +7,7 @@
 {% block breadcrumb.content %}
 {% endblock %}
 {% block title_tag %}
-  {% trans 'Data consumer revoked' %}
+  {% trans "Data consumer revoked" %}
 {% endblock %}
 {% block content_heading %}
 {% endblock %}
@@ -15,7 +15,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-panel govuk-panel--confirmation">
       <h1 class="govuk-panel__title govuk-!-padding-9">
-        {% trans 'You have successfully revoked API access for' %}
+        {% trans "You have successfully revoked API access for" %}
         {{ user.email }}
       </h1>
     </div>
@@ -25,9 +25,9 @@
           What happens next?
         </h2>
         <p class="govuk-body">
-          {% trans 'You can view the list of data consumers on your' %}
+          {% trans "You can view the list of data consumers on your" %}
           <a class="govuk-link" href="{% url 'users:consumer-list' host host.name %}">data consumers dashboard</a>
-          {% trans 'or by clicking the button below.' %}
+          {% trans "or by clicking the button below." %}
         </p>
       </div>
     </div>

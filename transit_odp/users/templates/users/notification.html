@@ -1,28 +1,28 @@
-{% extends 'page.html' %}
+{% extends "page.html" %}
 {% load static %}
 {% load i18n %}
 {% block breadcrumb.content %}
   {{ block.super }}
   <li class="govuk-breadcrumbs__list-item">
-    <a class="govuk-breadcrumbs__link" href="{% url 'users:settings' host hosts.data %}">{% trans 'Settings' %}</a>
+    <a class="govuk-breadcrumbs__link" href="{% url 'users:settings' host hosts.data %}">{% trans "Settings" %}</a>
   </li>
   <li class="govuk-breadcrumbs__list-item">
     <a class="govuk-breadcrumbs__link" href="{% url 'users:feeds-manage' host hosts.data %}">
-      {% trans 'Manage data sets' %}
+      {% trans "Manage data sets" %}
     </a>
   </li>
   <li class="govuk-breadcrumbs__list-item" aria-current="page">
-    {% trans 'Mute notifications' %}
+    {% trans "Mute notifications" %}
   </li>
 {% endblock %}
 {% block backlink %}
   {% url 'users:feeds-manage' host hosts.data as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <h1 class="govuk-heading-l">
-      {% trans 'Notifications for data sets' %}
+      {% trans "Notifications for data sets" %}
     </h1>
     <div class="govuk-panel app-panel--confirmation-nofill">
       <h1 class="govuk-panel__title">

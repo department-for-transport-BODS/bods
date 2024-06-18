@@ -17,7 +17,7 @@
 {% endblock %}
 {% block backlink %}
   {% url 'feed-detail' pk=object.dataset.id pk1=pk1 host hosts.publish as backlink_url %}
-  {% include 'snippets/backlink.html' with url=backlink_url %}
+  {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
 {% block inner %}
   <form method="post" novalidate>
@@ -34,7 +34,7 @@
         <li class="wizard-list-item">
           <div class="wizard-step-div">
             <h4 class="div__heading">
-              {% trans '1. Describe your data set' %}
+              {% trans "1. Describe your data set" %}
             </h4>
             <p class="wizard-paragraph">
               {{ form.description.value }}
@@ -45,21 +45,21 @@
                     name="wizard_goto_step"
                     value="description"
                     class="govuk-button govuk-button--link align-right govuk-!-font-size-14">
-              {% trans 'Change this' %}
+              {% trans "Change this" %}
             </button>
           </div>
         </li>
         <li class="wizard-list-item">
           <div class="wizard-step-div">
             <h4 class="div__heading">
-              {% trans '2. Choose how you want to publish your data' %}
+              {% trans "2. Choose how you want to publish your data" %}
             </h4>
             <p class="wizard-paragraph">
               {% if form.instance.url_link %}
-                {% trans 'Upload data to Bus Open Data service:<br />' %}
+                {% trans "Upload data to Bus Open Data service:<br />" %}
                 {{ form.instance.url_link }}
               {% elif form.instance.upload_file %}
-                {% trans 'Upload data to Bus Open Data service:<br />' %}
+                {% trans "Upload data to Bus Open Data service:<br />" %}
                 {{ form.instance.upload_file }}
               {% endif %}
             </p>
@@ -69,7 +69,7 @@
                     name="wizard_goto_step"
                     value="upload"
                     class="govuk-button govuk-button--link align-right govuk-!-font-size-14">
-              {% trans 'Change this' %}
+              {% trans "Change this" %}
             </button>
           </div>
         </li>
@@ -79,7 +79,7 @@
         <div class="govuk-grid-column-one-third">
           {% if data_updated %}
             <button type="submit" name="wizard_goto_step" value="final" class="govuk-button">
-              {% trans 'Next step' %}
+              {% trans "Next step" %}
             </button>
             {{ wizard.form }}
           {% endif %}

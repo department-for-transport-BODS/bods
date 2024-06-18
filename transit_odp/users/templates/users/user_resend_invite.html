@@ -4,9 +4,9 @@
 {% load breadcrumbs %}
 {% block title_tag %}
   {% if form.errors %}
-    {% trans 'Error: ' %}
+    {% trans "Error: " %}
   {% endif %}
-  {% trans 'Resend invitation' %}
+  {% trans "Resend invitation" %}
 {% endblock %}
 {% block breadcrumb.content %}
 {% endblock %}
@@ -16,10 +16,10 @@
   {% else %}
     {% url 'users:manage' pk=user.organisation.id host host.name as backlink %}
   {% endif %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block title_text %}
-  {% trans 'Resend invitation' %}
+  {% trans "Resend invitation" %}
 {% endblock %}
 {% block subtitle_text %}
   {% blocktrans %}

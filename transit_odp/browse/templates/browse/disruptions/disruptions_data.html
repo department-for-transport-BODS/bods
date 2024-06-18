@@ -1,11 +1,11 @@
-{% extends 'browse/base.html' %}
+{% extends "browse/base.html" %}
 {% load i18n %}
 {% load static %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Browse Disruption Data' %}
+  {% trans "Browse Disruption Data" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}

@@ -1,9 +1,9 @@
-{% extends 'browse/base.html' %}
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'All location data' %}
+  {% trans "All location data" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -11,11 +11,11 @@
   {% breadcrumb_url 'All Location Data' 'download-avl' host hosts.data %}
 {% endblock %}
 {% block heading.title.text %}
-  {% trans 'All location data' %}
+  {% trans "All location data" %}
 {% endblock %}
 {% block secondary.title %}
   <h3 class="govuk-heading-l">
-    {% trans 'Download file' %}
+    {% trans "Download file" %}
   </h3>
 {% endblock %}
 {% block heading.subtitle %}
@@ -63,7 +63,7 @@
     <li>
       {% if show_bulk_archive_url %}
         <a class="govuk-link" href="{% url 'downloads-avl-bulk' host hosts.data %}" onClick="addGATagEvent()">
-          {% trans 'Download all bus location data in SIRI-VM format' %}
+          {% trans "Download all bus location data in SIRI-VM format" %}
         </a>
       {% else %}
         {% blocktrans %}
@@ -75,7 +75,7 @@
       {% if show_bulk_archive_url %}
         <a class="govuk-link" href="{% url 'download-gtfsrt-bulk' host hosts.data %}" onClick="addGAGTFSRTDownloadEvent()">
           {% filter force_escape %}
-            {% trans 'Download all bus location data in GTFS RT format' %}
+            {% trans "Download all bus location data in GTFS RT format" %}
           {% endfilter %}
         </a>
       {% else %}

@@ -5,11 +5,11 @@
 {% block breadcrumb.content %}
 {% endblock %}
 {% block title_tag %}
-  {% trans 'Remove agent?' %}
+  {% trans "Remove agent?" %}
 {% endblock %}
 {% block backlink %}
   {% url 'users:manage-user-detail' pk=object.agent.id host host.name as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">

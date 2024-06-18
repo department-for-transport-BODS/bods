@@ -5,11 +5,11 @@
   <div class="search-list__heading">
     {% if paginator.count > 0 %}
       <span class="govuk-body">{{ paginator.count }}
-        {% trans 'results' %}
+        {% trans "results" %}
       </span>
     {% else %}
       <h3 class="govuk-heading-m">
-        {% trans 'Sorry, no results found' %}
+        {% trans "Sorry, no results found" %}
         {% if q %}
           {% blocktrans %} for {{ q }}{% endblocktrans %}
         {% endif %}
@@ -20,14 +20,14 @@
     <div class="govuk-body-s govuk-grid-row search-pillbox">
       {% if q %}
         <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-          {% trans 'Containing' as tmsg %}
+          {% trans "Containing" as tmsg %}
           {{ tmsg | force_escape }}
         </span>
         <a href="?ordering={{ ordering }}">
           <div class="pill-item">
             <img class="pill-item__image"
                  src="{% static 'frontend/images/icon-cross.png' %}"
-                 alt="{% trans 'Delete icon' as tmsg %}{{ tmsg | force_escape }}" />
+                 alt="{% trans "Delete icon" as tmsg %}{{ tmsg | force_escape }}" />
             <span class="pill-item__label">{{ q }}</span>
           </div>
         </a>
@@ -38,7 +38,7 @@
       {% for key, value in query_params.items %}
         <a href="{% query_chop key %}">
           <div class="pill-item">
-            <img class="pill-item__image" src="{% static 'frontend/images/icon-cross.png' %}" alt="{% trans 'Delete icon' %}" />
+            <img class="pill-item__image" src="{% static 'frontend/images/icon-cross.png' %}" alt="{% trans "Delete icon" %}" />
             <span class="pill-item__label">{{ value }}</span>
           </div>
         </a>
@@ -52,13 +52,13 @@
     </label>
     <select class="govuk-select" id="ordering" name="ordering" aria-label="Sort by" onchange="this.form.submit()">
       <option value="-modified" {% if ordering == "-modified" %}selected{% endif %}>
-        {% trans 'Recently updated' %}
+        {% trans "Recently updated" %}
       </option>
       <option value="name" {% if ordering == "name" %}selected{% endif %}>
-        {% trans 'Data set name A-Z' %}
+        {% trans "Data set name A-Z" %}
       </option>
       <option value="-name" {% if ordering == "-name" %}selected{% endif %}>
-        {% trans 'Data set name Z-A' %}
+        {% trans "Data set name Z-A" %}
       </option>
     </select>
   </div>
@@ -68,23 +68,23 @@
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
       {% endif %}
       {% if item.dataset_type == 1 %}
-        {% include 'browse/snippets/results/timetables.html' %}
+        {% include "browse/snippets/results/timetables.html" %}
       {% elif item.dataset_type == 2 %}
-        {% include 'browse/snippets/results/avl.html' %}
+        {% include "browse/snippets/results/avl.html" %}
       {% elif item.dataset_type == 3 %}
-        {% include 'browse/snippets/results/fares.html' %}
+        {% include "browse/snippets/results/fares.html" %}
       {% elif item.dataset_type == 4 %}
-        {% include 'browse/snippets/results/disruptions.html' %}
+        {% include "browse/snippets/results/disruptions.html" %}
       {% endif %}
     {% empty %}
       <div>
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
         <h4 class="govuk-heading-s">
-          {% trans 'Having trouble finding what you want?' %}
+          {% trans "Having trouble finding what you want?" %}
         </h4>
         <ul class="govuk-list govuk-list--bullet">
           <li>
-            {% trans 'Check your spelling and try again' %}
+            {% trans "Check your spelling and try again" %}
           </li>
         </ul>
       </div>

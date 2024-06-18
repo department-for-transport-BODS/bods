@@ -4,22 +4,22 @@
 {% load breadcrumbs %}
 {% block title_tag %}
   {% if form.errors %}
-    {% trans 'Error: ' %}
+    {% trans "Error: " %}
   {% endif %}
-  {% trans 'Invite user' %}
+  {% trans "Invite user" %}
 {% endblock %}
 {% block breadcrumb.content %}
 {% endblock %}
 {% block backlink %}
   {% url 'users:org-user-manage' pk=object.id host host.name as backlink_url %}
-  {% include 'snippets/backlink.html' with url=backlink_url %}
+  {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
 {% block title_text %}
-  {% trans 'Invite new user' %}
+  {% trans "Invite new user" %}
 {% endblock %}
 {% block subtitle_text %}
   <p class="govuk-body-m">
-    {% trans 'Send an email invite to a new user so they can publish and update data sets' %}
+    {% trans "Send an email invite to a new user so they can publish and update data sets" %}
   </p>
 {% endblock %}
 {% block inner %}

@@ -1,14 +1,14 @@
-{% extends 'page.html' %}
+{% extends "page.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
 {% block title_tag %}
   {% if form.errors %}
-    {% trans 'Error: ' as error %}
+    {% trans "Error: " as error %}
     {{ error | force_escape }}
   {% endif %}
-  {% trans 'Provide feedback' as feedback %}
+  {% trans "Provide feedback" as feedback %}
   {{ feedback | force_escape }}
 {% endblock %}
 {# Breadcrumb #}
@@ -17,13 +17,13 @@
 {% endblock %}
 {# Backlink #}
 {% block backlink %}
-  {% include 'snippets/backlink.html' with url=back_url %}
+  {% include "snippets/backlink.html" with url=back_url %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">
-        {% trans 'Contact ' as contact %}
+        {% trans "Contact " as contact %}
         {{ contact | force_escape }}{{ organisation_name }}
       </h1>
       <p class="govuk-body">

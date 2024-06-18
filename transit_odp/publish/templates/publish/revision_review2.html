@@ -10,7 +10,7 @@
 {% endblock %}
 {% block heading.title.text %}
   {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
-    {% trans 'Review and publish' %}
+    {% trans "Review and publish" %}
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
   {% endif %}
 {% endblock %}
@@ -43,16 +43,16 @@
   {% if object.status != 'indexing' and object.status != 'processing' and object.status != 'pending' %}
     <div class="govuk-grid-column-one-third">
       <h2 class="govuk-heading-m">
-        {% trans 'Need help with operator data requirements?' %}
+        {% trans "Need help with operator data requirements?" %}
       </h2>
       <ul class="govuk-list app-list--nav govuk-!-font-size-19">
         <li>
           <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
-            {% trans 'View our guidelines here' %}
+            {% trans "View our guidelines here" %}
           </a>
         </li>
         <li>
-          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact support desk' %}</a>
+          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact support desk" %}</a>
         </li>
       </ul>
     </div>
@@ -73,7 +73,7 @@
             {% elif object.status == 'error' %}
               <div class="govuk-panel app-panel--error">
                 <h2 class="govuk-heading-xl" style="color: white">
-                  {% trans 'Supplied data set has failed to upload' %}
+                  {% trans "Supplied data set has failed to upload" %}
                 </h2>
               </div>
               <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
@@ -84,7 +84,7 @@
                    tabindex="-1"
                    data-module="govuk-error-summary">
                 <h2 class="govuk-error-summary__title" id="error-summary-title">
-                  {% trans 'There is a problem' %}
+                  {% trans "There is a problem" %}
                 </h2>
                 <div class="govuk-error-summary__body">
                   <ul class="govuk-list govuk-error-summary__list">
@@ -106,7 +106,7 @@
             {% elif object.status == 'processing' or object.status == 'indexing' or object.status == 'pending' %}
               <div class="govuk-panel govuk-panel--confirmation" style="background-color: #2b8cc4;">
                 <h3 class="govuk-panel__title govuk-!-font-size-36">
-                  {% trans 'Your data is being processed' %}
+                  {% trans "Your data is being processed" %}
                 </h3>
                 <div class="govuk-panel__body govuk-!-font-size-19">
                   <div style="padding-bottom: 1rem">
@@ -139,7 +139,7 @@
         <ul class="info-list">
           <li>
             <h4 class="info-item__title">
-              {% trans 'Name' %}
+              {% trans "Name" %}
             </h4>
             <p class="info-item__description" id="id-publish-review-name">
               {% trans object.name %}
@@ -148,7 +148,7 @@
           {% if object.status != 'error' and object.status != 'indexing' %}
             <li>
               <h4 class="info-item__title">
-                {% trans 'Description' %}
+                {% trans "Description" %}
               </h4>
               <p class="info-item__description" id="id-publish-review-description">
                 {% trans object.description %}
@@ -159,12 +159,12 @@
             {% if object.status != 'error' and object.status != 'indexing' %}
               <li>
                 <h4 class="info-item__title">
-                  {% trans 'Status' %}
+                  {% trans "Status" %}
                 </h4>
                 <div class="info-item__description">
                   <div class="flex-between">
                     {% block inner.status.indicator %}
-                      {% include 'organisation/snippets/status_indicator.html' with status=object.status %}
+                      {% include "organisation/snippets/status_indicator.html" with status=object.status %}
                     {% endblock %}
                   </div>
                 </div>
@@ -173,7 +173,7 @@
           {% endblock %}
           <li>
             <h4 class="info-item__title">
-              {% trans 'Owner' %}
+              {% trans "Owner" %}
             </h4>
             <p class="info-item__description" id="id-publish-review-org-name">
               {% trans object.dataset.organisation.name %}
@@ -183,7 +183,7 @@
             {% block inner.txc_version %}
               <li>
                 <h4 class="info-item__title">
-                  {% trans 'TransXChange version' %}
+                  {% trans "TransXChange version" %}
                 </h4>
                 <div class="info-item__description">
                   <div class="flex-between" id="id-publish-review-trans-version">
@@ -193,9 +193,9 @@
                         {% url 'feed-download' pk=object.dataset_id  host host.name as download_link %}
                         <a class="govuk-link"
                            href=" {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
-                          {% trans 'Download .xml' %}
+                          {% trans "Download .xml" %}
                           <br />
-                          {% trans '(TransXChange format)' %}
+                          {% trans "(TransXChange format)" %}
                         </a>
                       {% endblock %}
                     </span>
@@ -205,7 +205,7 @@
             {% endblock %}
             <li>
               <h4 class="info-item__title">
-                {% trans 'URL link' %}
+                {% trans "URL link" %}
               </h4>
               <div class="info-item__description">
                 <div class="flex-between">
@@ -215,7 +215,7 @@
                     {% url 'feed-download' pk=object.dataset_id host host.name as download_link %}
                     <a class="govuk-link"
                        href=" {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
-                      {% trans 'Publisher URL' %}
+                      {% trans "Publisher URL" %}
                     </a>
                   </span>
                 </div>
@@ -223,7 +223,7 @@
             </li>
             <li>
               <h4 class="info-item__title">
-                {% trans 'Location' %}
+                {% trans "Location" %}
               </h4>
               <p class="info-item__description" id="id-publish-review-admin-areas">
                 {{ admin_areas }}
@@ -231,7 +231,7 @@
             </li>
             <li>
               <h4 class="info-item__title">
-                {% trans 'Bus stops' %}
+                {% trans "Bus stops" %}
               </h4>
               <p class="info-item__description" id="id-publish-review-bus-stops">
                 {{ object.num_of_bus_stops }}
@@ -239,7 +239,7 @@
             </li>
             <li>
               <h4 class="info-item__title">
-                {% trans 'Bus routes' %}
+                {% trans "Bus routes" %}
               </h4>
               <p class="info-item__description" id="id-publish-review-lines">
                 {{ object.num_of_lines }}
@@ -249,18 +249,18 @@
           {% block inner.last_updated %}
             <li>
               <h4 class="info-item__title">
-                {% trans 'Last updated' %}
+                {% trans "Last updated" %}
               </h4>
               <div class="info-item__description">
                 <div class="flex-between" id="id-publish-review-last-updated">
                   {#                  {{ object }}#}
                   <span>{{ object.modified|date:"j M Y H:i" }}
-                    {% trans 'by ' %}
+                    {% trans "by " %}
                   {{ object.last_modified_user.username }}</span>
                   <span style="text-align: right">
                     {% block inner.last_updated.changelog_link %}
                       {#                        <a class="govuk-link"#}
-                      {#                           href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans 'View change log' %}</a>#}
+                      {#                           href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans "View change log" %}</a>#}
                     {% endblock %}
                   </span>
                 </div>
@@ -270,38 +270,38 @@
           {% if object.status != 'expired' and object.status != 'indexing' and object.status != 'error' %}
             <li>
               <h4 class="info-item__title">
-                {% trans 'Start date' %}
+                {% trans "Start date" %}
               </h4>
               <p class="info-item__description">
                 {% if object.first_service_start is not None %}
                   {{ object.first_service_start|date:"j M Y H:i" }}
                 {% else %}
-                  {% trans 'Start date not specified' %}
+                  {% trans "Start date not specified" %}
                 {% endif %}
               </p>
             </li>
           {% endif %}
           <li>
             <h4 class="info-item__title">
-              {% trans 'Start date' %}
+              {% trans "Start date" %}
             </h4>
             <p class="info-item__description" id="id-publish-review-start-date">
               {% if object.first_service_start is not None %}
                 {{ object.first_service_start|date:"j M Y H:i" }}
               {% else %}
-                {% trans 'Start date not specified' %}
+                {% trans "Start date not specified" %}
               {% endif %}
             </p>
           </li>
           <li>
             <h4 class="info-item__title">
-              {% trans 'Expiry date' %}
+              {% trans "Expiry date" %}
             </h4>
             <p class="info-item__description" id="id-publish-review-expiry-date ">
               {% if object.first_expiring_service is not None %}
                 {{ object.first_expiring_service|date:"j M Y H:i" }}
               {% else %}
-                {% trans 'Expiry not specified' %}
+                {% trans "Expiry not specified" %}
               {% endif %}
             </p>
           </li>
@@ -313,7 +313,7 @@
             {% if  object.status == 'error' %}
               <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
               <h2 class="govuk-heading-m">
-                {% trans 'What should I do next?' %}
+                {% trans "What should I do next?" %}
               </h2>
               <p class="govuk-body">
                 {% blocktrans %}
@@ -323,7 +323,7 @@
                       You can delete this data set to stop using the timetables
                     {% endblocktrans %}
               </p>
-              <span class="govuk-caption-m">{% trans 'Accepted file formats include .zip and .xml (TransXChange).' %}</span>
+              <span class="govuk-caption-m">{% trans "Accepted file formats include .zip and .xml (TransXChange)." %}</span>
               <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
               {#    <p class="govuk-body">#}
               {#    <a role="button"
@@ -367,16 +367,16 @@
       {% block inner.secondary %}
         {% if object.status == 'indexing' or object.status == 'processing' or object.status == 'pending' %}
           <h2 class="govuk-heading-m">
-            {% trans 'Need help with operator data requirements?' %}
+            {% trans "Need help with operator data requirements?" %}
           </h2>
           <ul class="govuk-list app-list--nav govuk-!-font-size-19">
             <li>
               <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
-                {% trans 'View our guidelines here' %}
+                {% trans "View our guidelines here" %}
               </a>
             </li>
             <li>
-              <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact support desk' %}</a>
+              <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact support desk" %}</a>
             </li>
           </ul>
         {% endif %}

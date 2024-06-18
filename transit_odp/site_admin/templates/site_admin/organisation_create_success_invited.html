@@ -4,13 +4,13 @@
 {% endblock %}
 {% block backlink %}
   {% url 'users:organisation-manage' host hosts.admin as backlink_url %}
-  {% include 'snippets/backlink.html' with url=backlink_url %}
+  {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
 {% block title_tag %}
-  {% trans 'Organisation invited' %}
+  {% trans "Organisation invited" %}
 {% endblock %}
 {% block title_text %}
-  {% trans 'Invite new organisation' %}
+  {% trans "Invite new organisation" %}
 {% endblock %}
 {% block body_text %}
   {% blocktrans %}
@@ -25,5 +25,5 @@
   {% url 'users:organisation-manage' host hosts.admin %}
 {% endblock %}
 {% block button_text %}
-  {% trans 'Go back to organisation management' %}
+  {% trans "Go back to organisation management" %}
 {% endblock %}

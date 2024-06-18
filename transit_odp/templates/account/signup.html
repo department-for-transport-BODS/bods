@@ -5,9 +5,9 @@
 {% load hosts %}
 {% block title_tag %}
   {% if form.errors %}
-    {% trans 'Error: ' %}
+    {% trans "Error: " %}
   {% endif %}
-  {% trans 'Create account' %}
+  {% trans "Create account" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -15,7 +15,7 @@
   {% breadcrumb_url 'Create account' 'account_signup' %}
 {% endblock %}
 {% block head_title %}
-  {% trans 'Create account' %}
+  {% trans "Create account" %}
 {% endblock %}
 {% block inner %}
   <p class="govuk-body-m">
@@ -28,5 +28,5 @@
   {% crispy form %}
 {% endblock %}
 {% block inner_secondary %}
-  {% include 'account/snippets/already_have_an_account.html' %}
+  {% include "account/snippets/already_have_an_account.html" %}
 {% endblock %}

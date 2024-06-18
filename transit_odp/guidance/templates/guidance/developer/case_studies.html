@@ -4,7 +4,7 @@
 {% block extra_content %}
   <h1 data-qa="case-studies-header" class="govuk-heading-l">
     {% filter force_escape %}
-      {% trans 'Case studies' %}
+      {% trans "Case studies" %}
     {% endfilter %}
   </h1>
   <p class="govuk-body">
@@ -26,17 +26,17 @@
   <ul class="govuk-list govuk-list--bullet">
     <li>
       {% filter force_escape %}
-        {% trans 'Timetables data' %}
+        {% trans "Timetables data" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'Bus location data' %}
+        {% trans "Bus location data" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'Fares data' %}
+        {% trans "Fares data" %}
       {% endfilter %}
     </li>
   </ul>
@@ -51,7 +51,7 @@
   </p>
   <h2 data-qa="setting-up-header" class="govuk-heading-m">
     {% filter force_escape %}
-      {% trans 'Setting up' %}
+      {% trans "Setting up" %}
     {% endfilter %}
   </h2>
   <p class="govuk-body">
@@ -64,18 +64,18 @@
   <ol class="govuk-list govuk-list--number">
     <li>
       {% filter force_escape %}
-        {% trans 'A Postman account' %}
+        {% trans "A Postman account" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'An API key' %}
+        {% trans "An API key" %}
       {% endfilter %}
     </li>
   </ol>
   <h3 data-qa="postman-account-header" class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Postman account' %}
+      {% trans "Postman account" %}
     {% endfilter %}
   </h3>
   <p class="govuk-body">
@@ -86,7 +86,7 @@
     {% endfilter %}
     <a class="govuk-link" href="http://www.postman.com" target="_blank" rel="noopener noreferrer">
       {% filter force_escape %}
-        {% trans 'Postman' %}
+        {% trans "Postman" %}
       {% endfilter %}
     </a>
     {% filter force_escape %}
@@ -97,20 +97,20 @@
   </p>
   <h3 data-qa="api-key-header" class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'API key' %}
+      {% trans "API key" %}
     {% endfilter %}
   </h3>
   <p class="govuk-body">
     {% filter force_escape %}
-      {% trans 'Next you need an' %}
+      {% trans "Next you need an" %}
     {% endfilter %}
     <b>
       {% filter force_escape %}
-        {% trans 'API key' %}
+        {% trans "API key" %}
       {% endfilter %}
     </b>
     {% filter force_escape %}
-      {% trans 'for BODS.' %}
+      {% trans "for BODS." %}
     {% endfilter %}
   </p>
   <p class="govuk-body">
@@ -121,7 +121,7 @@
     {% endfilter %}
     <a class="govuk-link" href="{% url 'account_signup' host hosts.data %}">
       {% filter force_escape %}
-        {% trans 'Create account' %}
+        {% trans "Create account" %}
       {% endfilter %}
     </a>.
   </p>
@@ -133,7 +133,7 @@
     {% endfilter %}
     <a class="govuk-link" href="{% url 'account_login' host hosts.data %}">
       {% filter force_escape %}
-        {% trans 'Sign in' %}
+        {% trans "Sign in" %}
       {% endfilter %}
     </a>.
   </p>
@@ -145,17 +145,17 @@
     {% endfilter %}
     <span class="guidance-text-highlight">
       {% filter force_escape %}
-        {% trans 'My account' %}
+        {% trans "My account" %}
       {% endfilter %}
     </span>
     <span class="govuk-!-padding-1">
       {% filter force_escape %}
-        {% trans '>' %}
+        {% trans ">" %}
       {% endfilter %}
     </span>
     <span class="guidance-text-highlight">
       {% filter force_escape %}
-        {% trans 'Account settings' %}
+        {% trans "Account settings" %}
       {% endfilter %}
     </span>
   </p>
@@ -164,25 +164,25 @@
   </div>
   <p class="govuk-body">
     {% filter force_escape %}
-      {% trans 'Your' %}
+      {% trans "Your" %}
     {% endfilter %}
     <b>
       {% filter force_escape %}
-        {% trans 'API key' %}
+        {% trans "API key" %}
       {% endfilter %}
     </b>
     {% filter force_escape %}
-      {% trans 'is shown in the settings. Make a note of it.' %}
+      {% trans "is shown in the settings. Make a note of it." %}
     {% endfilter %}
   </p>
   <h2 data-qa="download-dataset-header" class="govuk-heading-m">
     {% filter force_escape %}
-      {% trans 'Download dataset' %}
+      {% trans "Download dataset" %}
     {% endfilter %}
   </h2>
   <h3 data-qa="find-bods-datasets-header" class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Find BODS datasets' %}
+      {% trans "Find BODS datasets" %}
     {% endfilter %}
   </h3>
   <p class="govuk-body">
@@ -193,7 +193,7 @@
     {% endfilter %}
     <b>
       {% filter force_escape %}
-        {% trans 'Dataset ID.' %}
+        {% trans "Dataset ID." %}
       {% endfilter %}
     </b>
   </p>
@@ -213,7 +213,7 @@
   </p>
   <p class="govuk-body">
     {% filter force_escape %}
-      {% trans 'Type the URL' %}
+      {% trans "Type the URL" %}
     {% endfilter %}
     <span class="guidance-text-highlight">https://data.bus-data.dft.gov.uk/catalogue/</span>
     {% filter force_escape %}
@@ -224,7 +224,7 @@
     {% endfilter %}
     <span class="guidance-text-highlight">.zip</span>
     {% filter force_escape %}
-      {% trans 'file.' %}
+      {% trans "file." %}
     {% endfilter %}
   </p>
   <div class="govuk-grid-row govuk-!-margin-top-7 govuk-!-margin-bottom-7">
@@ -290,17 +290,17 @@
   <ul class="govuk-list govuk-list--bullet">
     <li>
       {% filter force_escape %}
-        {% trans 'Timetables' %}
+        {% trans "Timetables" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'Automatic Vehicle Locations (i.e. bus location data)' %}
+        {% trans "Automatic Vehicle Locations (i.e. bus location data)" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'Fares' %}
+        {% trans "Fares" %}
       {% endfilter %}
     </li>
   </ul>
@@ -338,7 +338,7 @@
     {% endfilter %}
     <b>
       {% filter force_escape %}
-        {% trans 'Dataset ID' %}
+        {% trans "Dataset ID" %}
       {% endfilter %}
     </b>
     {% filter force_escape %}
@@ -360,7 +360,7 @@
   </div>
   <h3 data-qa="download-header" class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Download' %}
+      {% trans "Download" %}
     {% endfilter %}
   </h3>
   <p class="govuk-body">
@@ -371,7 +371,7 @@
     {% endfilter %}
     <b>
       {% filter force_escape %}
-        {% trans 'Dataset ID' %}
+        {% trans "Dataset ID" %}
       {% endfilter %}
     </b>
     {% filter force_escape %}
@@ -390,13 +390,13 @@
   <ol class="govuk-list govuk-list--number">
     <li>
       {% filter force_escape %}
-        {% trans 'Set the request type to' %}
+        {% trans "Set the request type to" %}
       {% endfilter %}
       <span class="guidance-text-highlight">GET</span>
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'Set the URL according to data type:' %}
+        {% trans "Set the URL according to data type:" %}
       {% endfilter %}
       <ul class="govuk-list govuk-list--bullet">
         <li>
@@ -425,35 +425,35 @@
         </li>
       </ul>
       {% filter force_escape %}
-        {% trans 'where' %}
+        {% trans "where" %}
       {% endfilter %}
       <span class="guidance-text-highlight">{ID}</span>
       {% filter force_escape %}
-        {% trans 'is the' %}
+        {% trans "is the" %}
       {% endfilter %}
       <b>
         {% filter force_escape %}
-          {% trans 'Dataset ID' %}
+          {% trans "Dataset ID" %}
         {% endfilter %}
       </b>
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'Set a param with key' %}
+        {% trans "Set a param with key" %}
       {% endfilter %}
       <span class="guidance-text-highlight">api_key</span>
       {% filter force_escape %}
-        {% trans 'and value equal to your' %}
+        {% trans "and value equal to your" %}
       {% endfilter %}
       <b>
         {% filter force_escape %}
-          {% trans 'API key' %}
+          {% trans "API key" %}
         {% endfilter %}
       </b>
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'Click Send' %}
+        {% trans "Click Send" %}
       {% endfilter %}
     </li>
   </ol>
@@ -472,12 +472,12 @@
   </p>
   <h2 data-qa="setting-up-header" class="govuk-heading-m">
     {% filter force_escape %}
-      {% trans 'Interpreting the response' %}
+      {% trans "Interpreting the response" %}
     {% endfilter %}
   </h2>
   <h3 data-qa="setting-up-header" class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Timetables and fares data' %}
+      {% trans "Timetables and fares data" %}
     {% endfilter %}
   </h3>
   <p class="govuk-body">
@@ -509,60 +509,60 @@
   <ol class="govuk-list govuk-list--number">
     <li>
       {% filter force_escape %}
-        {% trans 'Click on the value of' %}
+        {% trans "Click on the value of" %}
       {% endfilter %}
       <span class="guidance-text-highlight">url</span>
       {% filter force_escape %}
-        {% trans 'in Postman' %}
+        {% trans "in Postman" %}
       {% endfilter %}
       <ul class="govuk-list govuk-list--bullet">
         <li>
           {% filter force_escape %}
-            {% trans 'This creates a new Postman request' %}
+            {% trans "This creates a new Postman request" %}
           {% endfilter %}
         </li>
       </ul>
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'Set the request type to' %}
+        {% trans "Set the request type to" %}
       {% endfilter %}
       <span class="guidance-text-highlight">GET</span>
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'Click "Send and Download" from the "Send" dropdown' %}
+        {% trans "Click "Send and Download" from the "Send" dropdown" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'Save the file to disk' %}
+        {% trans "Save the file to disk" %}
       {% endfilter %}
       <ul class="govuk-list govuk-list--bullet">
         <li>
           {% filter force_escape %}
-            {% trans 'The file will either be a' %}
+            {% trans "The file will either be a" %}
           {% endfilter %}
           <span class="guidance-text-highlight">.zip</span>
           {% filter force_escape %}
-            {% trans 'or a' %}
+            {% trans "or a" %}
           {% endfilter %}
           <span class="guidance-text-highlight">.xml</span>
           {% filter force_escape %}
-            {% trans 'file' %}
+            {% trans "file" %}
           {% endfilter %}
         </li>
       </ul>
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'Open the file with an appropriate application' %}
+        {% trans "Open the file with an appropriate application" %}
       {% endfilter %}
     </li>
   </ol>
   <h3 data-qa="setting-up-header" class="govuk-heading-s">
     {% filter force_escape %}
-      {% trans 'Bus location data' %}
+      {% trans "Bus location data" %}
     {% endfilter %}
   </h3>
   <p class="govuk-body">

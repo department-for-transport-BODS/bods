@@ -6,11 +6,11 @@
       <span class="review-stat__top">{{ organisation.stats.weekly_downloads|add:organisation.stats.weekly_api_hits|add:organisation.total_subscriptions }}</span>
     </div>
     <p class="review-stat__description">
-      {% trans 'Total consumer interactions with your data' %}
+      {% trans "Total consumer interactions with your data" %}
     </p>
     <i class="fas fa-play govuk-!-margin-right-1"></i>
     <a class="review-stat__link" href={{ data_activity_url }}>
-      {% trans 'More details' %}
+      {% trans "More details" %}
     </a>
   </div>
 {% endblock %}

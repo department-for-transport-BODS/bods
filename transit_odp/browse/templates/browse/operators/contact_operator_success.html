@@ -1,10 +1,10 @@
-{% extends 'page.html' %}
+{% extends "page.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
 {% block title_tag %}
-  {% trans 'Feedback sent' as feedsent %}
+  {% trans "Feedback sent" as feedsent %}
   {{ feedsent | force_escape }}
 {% endblock %}
 {# Breadcrumb #}
@@ -13,18 +13,18 @@
 {% endblock %}
 {# Backlink #}
 {% block backlink %}
-  {% include 'snippets/backlink.html' with url=back_url %}
+  {% include "snippets/backlink.html" with url=back_url %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l app-!-mb-4">
-        {% trans 'Your feedback has been submitted' as feedback %}
+        {% trans "Your feedback has been submitted" as feedback %}
         {{ feedback | force_escape }}
       </h1>
       <div class="btn-group-justified">
         <a role="button" class="govuk-button app-!-mr-sm-4" href="{% url 'operators' host hosts.data %}">
-          {% trans 'Go back to operators list' as back %}
+          {% trans "Go back to operators list" as back %}
           {{ back | force_escape }}
         </a>
       </div>

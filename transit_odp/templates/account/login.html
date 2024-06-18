@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Sign in' %}
+  {% trans "Sign in" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -11,25 +11,25 @@
 {% endblock %}
 {% block head_title %}
   {% if verified_email %}
-    {% trans 'Email address confirmed' %}
+    {% trans "Email address confirmed" %}
   {% else %}
-    {% trans 'Sign in' %}
+    {% trans "Sign in" %}
   {% endif %}
 {% endblock %}
 {% block inner %}
   <p class="govuk-body-m">
     {% if verified_email %}
       <p class="govuk-body">
-        {% trans 'Your email address has been confirmed.' %}
+        {% trans "Your email address has been confirmed." %}
       </p>
       <p class="govuk-body">
-        {% trans 'You can now sign in to your account.' %}
+        {% trans "You can now sign in to your account." %}
       </p>
     {% endif %}
   </p>
   {% crispy form %}
 {% endblock %}
 {% block inner_secondary %}
-  {% include 'account/snippets/forgot_your_password.html' %}
-  {% include 'account/snippets/create_an_account.html' %}
+  {% include "account/snippets/forgot_your_password.html" %}
+  {% include "account/snippets/create_an_account.html" %}
 {% endblock %}

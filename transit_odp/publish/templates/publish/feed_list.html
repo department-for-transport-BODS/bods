@@ -7,11 +7,11 @@
       <span class="review-stat__bottom">/{{ applicable_services }}</span>
     </div>
     <p class="review-stat__description">
-      {% trans 'Total service codes that require attention' %}
+      {% trans "Total service codes that require attention" %}
     </p>
     <i class="fas fa-play govuk-!-margin-right-1"></i>
     <a class="review-stat__link" href={% url 'requires-attention' pk1=pk1 host hosts.publish %}>
-      {% trans 'More details' %}
+      {% trans "More details" %}
     </a>
   </div>
   <div class="review-stat">
@@ -19,11 +19,11 @@
       <span class="review-stat__top">{{ feedback_count }}</span>
     </div>
     <p class="review-stat__description">
-      {% trans 'Feedback messages received recently' %}
+      {% trans "Feedback messages received recently" %}
     </p>
     <i class="fas fa-play govuk-!-margin-right-1"></i>
     <a class="review-stat__link" href={{ data_activity_url }}>
-      {% trans 'More details' %}
+      {% trans "More details" %}
     </a>
   </div>
   <div class="review-stat">
@@ -31,9 +31,9 @@
       <span class="review-stat__top">{{ seasonal_services_counter }}</span>
     </div>
     <p class="review-stat__description">
-      {% trans 'Seasonal services' %}
+      {% trans "Seasonal services" %}
     </p>
     <i class="fas fa-play govuk-!-margin-right-1"></i>
-    <a class="review-stat__link" href={% url 'seasonal-service' pk1=pk1 host hosts.publish %}>{% trans 'Manage' %}</a>
+    <a class="review-stat__link" href={% url 'seasonal-service' pk1=pk1 host hosts.publish %}>{% trans "Manage" %}</a>
   </div>
 {% endblock %}

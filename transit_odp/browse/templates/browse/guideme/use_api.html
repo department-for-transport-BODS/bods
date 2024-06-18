@@ -1,6 +1,6 @@
 {% load i18n %}
 <a class="govuk-link govuk-!-font-size-19" href="{% url 'guidance:support-developer' host hosts.data %}?section=api">
-  {% trans 'View developer documentation' %}
+  {% trans "View developer documentation" %}
 </a>
 <p class="govuk-body">
   {% blocktrans %}
@@ -8,7 +8,7 @@
     {% endblocktrans %}
 </p>
 <a class="govuk-link govuk-!-font-size-19" href="{% url 'api-select' host hosts.data %}">
-  {% trans 'Try API service' %}
+  {% trans "Try API service" %}
 </a>
 <p class="govuk-body">
   {% blocktrans %}
@@ -17,7 +17,7 @@
     {% endblocktrans %}
 </p>
 <a class="govuk-link govuk-!-font-size-19" href="{% url 'users:settings' host hosts.data %}">
-  {% trans 'Get my API key' %}
+  {% trans "Get my API key" %}
 </a>
 <p class="govuk-body">
   {% blocktrans %}
@@ -25,7 +25,7 @@
     {% endblocktrans %}
 </p>
 <a class="govuk-link govuk-!-font-size-19"
-   href="{% url 'guidance:support-developer' host hosts.data %}?section=casestudies">{% trans 'Case studies' %}</a>
+   href="{% url 'guidance:support-developer' host hosts.data %}?section=casestudies">{% trans "Case studies" %}</a>
 <p class="govuk-body">
   {% blocktrans %}
         Helpful cases studies are provided to inspire and support your API data journey on BODS.
@@ -34,7 +34,7 @@
 <a class="govuk-link govuk-!-font-size-19"
    target="_blank"
    href="https://github.com/department-for-transport-BODS/bods-data-extractor">
-  {% trans 'BODS Data Extractor Python Package' %}
+  {% trans "BODS Data Extractor Python Package" %}
 </a>
 <p class="govuk-body">
   {% blocktrans %}

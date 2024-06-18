@@ -1,4 +1,4 @@
-{% extends 'site_admin/base.html' %}
+{% extends "site_admin/base.html" %}
 {% load i18n %}
 {% load static %}
 {% load crispy_forms_tags %}
@@ -45,7 +45,7 @@
     <div class="govuk-grid-row govuk-!-margin-top-8">
       <div class="govuk-grid-column-one-third">
         <h2 class="govuk-heading-m">
-          {% trans 'Filter by' %}
+          {% trans "Filter by" %}
         </h2>
         {% crispy filter.form filter.form.helper %}
       </div>
@@ -54,11 +54,11 @@
           <div class="search-list__heading">
             {% if paginator.count > 0 %}
               <span class="govuk-body">{{ paginator.count }}
-                {% trans 'results' %}
+                {% trans "results" %}
               </span>
             {% else %}
               <h3 class="govuk-heading-m">
-                {% trans 'Sorry, no results found' %}
+                {% trans "Sorry, no results found" %}
                 {% if q %}
                   {% blocktrans %} for {{ q }}{% endblocktrans %}
                 {% endif %}
@@ -72,7 +72,7 @@
             {% for key, value in query_params.items %}
               <a href="{% query_chop key %}">
                 <div class="pill-item">
-                  <img class="pill-item__image" src="{% static 'frontend/images/icon-cross.png' %}" alt="{% trans 'Delete icon' %}" />
+                  <img class="pill-item__image" src="{% static 'frontend/images/icon-cross.png' %}" alt="{% trans "Delete icon" %}" />
                   <span class="pill-item__label">{{ value }}</span>
                 </div>
               </a>
@@ -85,13 +85,13 @@
             </label>
             <select class="govuk-select" id="ordering" name="ordering" aria-label="Sort by" onchange="this.form.submit()">
               <option value="-modified" {% if ordering == "-modified" %}selected{% endif %}>
-                {% trans 'Recently updated' %}
+                {% trans "Recently updated" %}
               </option>
               <option value="name" {% if ordering == "name" %}selected{% endif %}>
-                {% trans 'Data set name A-Z' %}
+                {% trans "Data set name A-Z" %}
               </option>
               <option value="-name" {% if ordering == "-name" %}selected{% endif %}>
-                {% trans 'Data set name Z-A' %}
+                {% trans "Data set name Z-A" %}
               </option>
             </select>
           </div>
@@ -101,7 +101,7 @@
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
               {% endif %}
               {% block table %}
-                {% include 'site_admin/organisation_dataset_list/search_result_timetables.html' %}
+                {% include "site_admin/organisation_dataset_list/search_result_timetables.html" %}
               {% endblock %}
             {% endfor %}
           </div>

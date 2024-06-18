@@ -5,7 +5,7 @@
      tabindex="-1"
      data-module="govuk-error-summary">
   <h2 class="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
-    {% trans 'Supplied data feed has failed to upload' %}
+    {% trans "Supplied data feed has failed to upload" %}
   </h2>
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list ">
@@ -30,7 +30,7 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Name' %}
+        {% trans "Name" %}
       </th>
       <td class="govuk-table__cell dont-break-out">
         {% trans properties.name %}
@@ -38,7 +38,7 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Data feed ID' %}
+        {% trans "Data feed ID" %}
       </th>
       <td class="govuk-table__cell dont-break-out">
         {{ object.dataset_id }}
@@ -46,7 +46,7 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'URL link' %}
+        {% trans "URL link" %}
       </th>
       <td class="govuk-table__cell dont-break-out">
         {% trans object.url_link %}
@@ -54,13 +54,13 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Description' %}
+        {% trans "Description" %}
       </th>
       <td class="govuk-table__cell">
         <div class="flex-between">
           <span class="dont-break-out">{% trans properties.description %}</span>
           <span style="text-align: right"><a class="govuk-link" href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
-            {% trans 'Edit' %}
+            {% trans "Edit" %}
           </a>
         </span>
       </div>
@@ -68,30 +68,30 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Short description' %}
+      {% trans "Short description" %}
     </th>
     <td class="govuk-table__cell dont-break-out">
       <div class="flex-between">
         {% trans properties.short_description %}
         <a class="govuk-link" href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
-          {% trans 'Edit' %}
+          {% trans "Edit" %}
         </a>
       </div>
     </td>
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Status' %}
+      {% trans "Status" %}
     </th>
     <td class="govuk-table__cell">
       <div class="flex-between">
-        {% include 'organisation/snippets/status_indicator.html' with status=properties.status %}
+        {% include "organisation/snippets/status_indicator.html" with status=properties.status %}
       </div>
     </td>
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'Owner' %}
+      {% trans "Owner" %}
     </th>
     <td class="govuk-table__cell">
       {% trans properties.owner_name %}
@@ -99,7 +99,7 @@
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
-      {% trans 'SIRI-VM version' %}
+      {% trans "SIRI-VM version" %}
     </th>
     <td class="govuk-table__cell">
       {{ properties.siri_version }}
@@ -108,7 +108,7 @@
 </tbody>
 </table>
 <h3 class="govuk-heading-m">
-  {% trans 'What should I do next?' %}
+  {% trans "What should I do next?" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}

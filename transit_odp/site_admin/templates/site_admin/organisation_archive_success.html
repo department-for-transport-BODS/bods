@@ -4,18 +4,18 @@
 {% load breadcrumbs %}
 {% block title_tag %}
   {% if object.is_active %}
-    {% trans 'Organisation activated' %}
+    {% trans "Organisation activated" %}
   {% else %}
-    {% trans 'Organisation deactivated' %}
+    {% trans "Organisation deactivated" %}
   {% endif %}
 {% endblock %}
 {% block breadcrumb.content %}
 {% endblock %}
 {% block title_text %}
   {% if object.is_active %}
-    {% trans 'Organisation has been activated' %}
+    {% trans "Organisation has been activated" %}
   {% else %}
-    {% trans 'Organisation has been deactivated' %}
+    {% trans "Organisation has been deactivated" %}
   {% endif %}
 {% endblock %}
 {% block body_text %}
@@ -37,5 +37,5 @@
   {% url 'users:organisation-manage' host hosts.admin %}
 {% endblock %}
 {% block button_text %}
-  {% trans 'Go back to Organisation management' %}
+  {% trans "Go back to Organisation management" %}
 {% endblock %}

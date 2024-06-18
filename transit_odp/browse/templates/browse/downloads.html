@@ -1,21 +1,21 @@
-{% extends 'browse/base.html' %}
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Download all data' %}
+  {% trans "Download all data" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
 {% endblock %}
 {% block heading.title.text %}
-  {% trans 'Download all data' %}
+  {% trans "Download all data" %}
 {% endblock %}
 {% block secondary.title %}
   <p class="govuk-body">
     <a class="govuk-link" href="{% url 'download-catalogue' host hosts.data %}">
-      {% trans 'Download the data catalogue' %}
+      {% trans "Download the data catalogue" %}
     </a>
   </p>
 {% endblock %}
@@ -31,14 +31,14 @@
 {% block heading.secondary %}
   <div class="govuk-grid-column-one-third">
     <h3 class="govuk-heading-m">
-      {% trans 'Need further help?' %}
+      {% trans "Need further help?" %}
     </h3>
     <ul class="govuk-list">
       <li class="govuk-!-margin-bottom-3">
-        <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">{% trans 'Guide me' %}</a>
+        <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">{% trans "Guide me" %}</a>
       </li>
       <li class="govuk-!-margin-bottom-3">
-        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact us for technical issues' %}</a>
+        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact us for technical issues" %}</a>
       </li>
     </ul>
   </div>
@@ -48,7 +48,7 @@
     <div class="govuk-grid-column-two-thirds">
       <p class="govuk-body">
         <a class="govuk-link" href="{% url 'download-timetables' host hosts.data %}" onClick="addGATagEvent('timetables')">
-          {% trans 'Timetables data' %}
+          {% trans "Timetables data" %}
         </a>
       </p>
       <p class="govuk-body">
@@ -61,36 +61,36 @@
       <ul class="govuk-list">
         <li>
           <b>
-            {% trans 'Format' %}
+            {% trans "Format" %}
           :</b>
-          {% trans 'TransXChange' %}
+          {% trans "TransXChange" %}
           {% include "browse/snippets/help_modals/txc.html" %}
-          {% trans 'GTFS' %}
+          {% trans "GTFS" %}
           {% include "browse/snippets/help_modals/gtfs.html" %}
         </li>
         <li>
           <b>
-            {% trans 'TXC profile' %}
+            {% trans "TXC profile" %}
           :</b>
-          {% trans 'TXC 2.4 PTI v1.1' %}
+          {% trans "TXC 2.4 PTI v1.1" %}
         </li>
         <li>
           <b>
-            {% trans 'Mode' %}
+            {% trans "Mode" %}
           :</b>
-          {% trans 'Bus' %}
+          {% trans "Bus" %}
         </li>
         <li>
           <b>
-            {% trans 'File type' %}
+            {% trans "File type" %}
           :</b>
-          {% trans 'ZIP file' %}
+          {% trans "ZIP file" %}
         </li>
         <li>
           <b>
-            {% trans 'Update frequency' %}
+            {% trans "Update frequency" %}
           :</b>
-          {% trans 'Daily 6:00 am and 6:00 pm GMT' %}
+          {% trans "Daily 6:00 am and 6:00 pm GMT" %}
         </li>
       </ul>
     </div>
@@ -99,7 +99,7 @@
     <div class="govuk-grid-column-two-thirds">
       <p class="govuk-body">
         <a class="govuk-link" href="{% url 'download-avl' host hosts.data %}" onClick="addGATagEvent('avl')">
-          {% trans 'Location data' %}
+          {% trans "Location data" %}
         </a>
       </p>
       <p class="govuk-body">
@@ -123,24 +123,24 @@
         </li>
         <li>
           <b>
-            {% trans 'Mode' %}
+            {% trans "Mode" %}
           :</b>
-          {% trans 'Bus' %}
+          {% trans "Bus" %}
         </li>
         <li>
           <b>
-            {% trans 'File type' %}
+            {% trans "File type" %}
           :</b>
-          {% trans 'ZIP file' %}
+          {% trans "ZIP file" %}
         </li>
         <li>
           <b>
             {% filter force_escape %}
-              {% trans 'Update frequency' %}
+              {% trans "Update frequency" %}
             {% endfilter %}
           :</b>
           {% filter force_escape %}
-            {% trans 'Every 10 seconds' %}
+            {% trans "Every 10 seconds" %}
           {% endfilter %}
         </li>
       </ul>
@@ -150,7 +150,7 @@
     <div class="govuk-grid-column-two-thirds">
       <p class="govuk-body">
         <a class="govuk-link" href="{% url 'download-fares' host hosts.data %}" onClick="addGATagEvent('fares')">
-          {% trans 'Fares data' %}
+          {% trans "Fares data" %}
         </a>
       </p>
       <p class="govuk-body">
@@ -161,34 +161,34 @@
       <ul class="govuk-list">
         <li>
           <b>
-            {% trans 'Format' %}
+            {% trans "Format" %}
           :</b>
-          {% trans 'NeTEx' %}
+          {% trans "NeTEx" %}
           {% include "browse/snippets/help_modals/netex.html" %}
         </li>
         <li>
           <b>
-            {% trans 'NeTEx profile' %}
+            {% trans "NeTEx profile" %}
           :</b>
-          {% trans 'v1.1' %}
+          {% trans "v1.1" %}
         </li>
         <li>
           <b>
-            {% trans 'Mode' %}
+            {% trans "Mode" %}
           :</b>
-          {% trans 'Bus' %}
+          {% trans "Bus" %}
         </li>
         <li>
           <b>
-            {% trans 'File type' %}
+            {% trans "File type" %}
           :</b>
-          {% trans 'ZIP file' %}
+          {% trans "ZIP file" %}
         </li>
         <li>
           <b>
-            {% trans 'Update frequency' %}
+            {% trans "Update frequency" %}
           :</b>
-          {% trans 'Daily 6:00 am and 6:00 pm GMT' %}
+          {% trans "Daily 6:00 am and 6:00 pm GMT" %}
         </li>
       </ul>
     </div>
@@ -197,7 +197,7 @@
     <div class="govuk-grid-column-two-thirds">
       <p class="govuk-body">
         <a class="govuk-link" href="{% url 'download-disruptions' host hosts.data %}" onClick="addGATagEvent('disruptions')">
-          {% trans 'Disruptions data' %}
+          {% trans "Disruptions data" %}
         </a>
       </p>
       <p class="govuk-body">
@@ -208,34 +208,34 @@
       <ul class="govuk-list">
         <li>
           <b>
-            {% trans 'Format' %}
+            {% trans "Format" %}
           :</b>
-          {% trans 'SIRI-SX' %}
+          {% trans "SIRI-SX" %}
           {% include "browse/snippets/help_modals/sirisx.html" %}
         </li>
         <li>
           <b>
-            {% trans 'Mode' %}
+            {% trans "Mode" %}
           :</b>
-          {% trans 'Bus, Ferry, Light Rail' %}
+          {% trans "Bus, Ferry, Light Rail" %}
         </li>
         <li>
           <b>
-            {% trans 'File type' %}
+            {% trans "File type" %}
           :</b>
-          {% trans 'ZIP file' %}
+          {% trans "ZIP file" %}
         </li>
         <li>
           <b>
-            {% trans 'Update frequency' %}
+            {% trans "Update frequency" %}
           :</b>
-          {% trans 'Every minute' %}
+          {% trans "Every minute" %}
         </li>
         <li>
           <b>
-            {% trans 'Source' %}
+            {% trans "Source" %}
           :</b>
-          {% trans 'Local authorities' %}
+          {% trans "Local authorities" %}
         </li>
       </ul>
     </div>

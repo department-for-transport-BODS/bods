@@ -9,12 +9,12 @@
     <li>
       <span class="item__key">
         {% filter force_escape %}
-          {% trans 'Services requiring attention:' %}
+          {% trans "Services requiring attention:" %}
         {% endfilter %}
       </span>
       <span class="item__value">
         {{ item.services_require_attention_percentage }}
-        {% trans '%' %}
+        {% trans "%" %}
       </span>
     </li>
   </ul>

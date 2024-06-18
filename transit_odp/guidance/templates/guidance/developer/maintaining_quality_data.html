@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block extra_content %}
   <h1 data-qa="api-ref-header" class="govuk-heading-l">
-    {% trans 'Maintaining quality data' %}
+    {% trans "Maintaining quality data" %}
   </h1>
   <p class="govuk-body">
     {% blocktrans %}
@@ -13,10 +13,10 @@
         {% endblocktrans %}
   </p>
   <h2 data-qa="all-data-header" class="govuk-heading-l">
-    {% trans 'Timetables data' %}
+    {% trans "Timetables data" %}
   </h2>
   <h3 data-qa="all-data-header" class="govuk-heading-m">
-    {% trans 'BODS Compliant data' %}
+    {% trans "BODS Compliant data" %}
   </h3>
   <p class="govuk-body">
     {% filter force_escape %}
@@ -45,7 +45,7 @@
         {% endblocktrans %}
   </p>
   <h3 data-qa="all-data-header" class="govuk-heading-m">
-    {% trans 'Data Quality reports and scoring' %}
+    {% trans "Data Quality reports and scoring" %}
   </h3>
   <p class="govuk-body">
     {% blocktrans %}
@@ -55,7 +55,7 @@
             unaddressed. The full list of checks can be found
         {% endblocktrans %}
     <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-definitions' host hosts.publish %}">
-      {% trans 'here' %}
+      {% trans "here" %}
     </a>.
   </p>
   <p class="govuk-body">
@@ -67,11 +67,11 @@
             uses to generate a data quality score can be found
         {% endblocktrans %}
     <a class="govuk-link dont-break-out" href="{% url 'guidance:dq-score-description' host hosts.publish %}">
-      {% trans 'here' %}
+      {% trans "here" %}
     </a>.
   </p>
   <h2 data-qa="all-data-header" class="govuk-heading-l">
-    {% trans 'Fares data' %}
+    {% trans "Fares data" %}
   </h2>
   <p class="govuk-body">
     {% filter force_escape %}
@@ -84,7 +84,7 @@
     {% endfilter %}
     <a class="govuk-link dont-break-out" href="{% url 'contact' %}">
       {% filter force_escape %}
-        {% trans 'contact us' %}
+        {% trans "contact us" %}
       {% endfilter %}
     </a>
     {% filter force_escape %}
@@ -94,7 +94,7 @@
     {% endfilter %}
   </p>
   <h2 data-qa="all-data-header" class="govuk-heading-l">
-    {% trans 'Bus location data' %}
+    {% trans "Bus location data" %}
   </h2>
   <p class="govuk-body">
     {% filter force_escape %}
@@ -120,7 +120,7 @@
        target="_blank"
        rel="noopener noreferrer">
       {% filter force_escape %}
-        {% trans 'DfT BODS profile' %}
+        {% trans "DfT BODS profile" %}
       {% endfilter %}
     </a>.
     {% filter force_escape %}
@@ -159,82 +159,82 @@
   <ul class="govuk-list govuk-list--bullet">
     <li>
       {% filter force_escape %}
-        {% trans 'Bearing' %}
+        {% trans "Bearing" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'LineRef' %}
+        {% trans "LineRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'OperatorRef' %}
+        {% trans "OperatorRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'RecordedAtTime' %}
+        {% trans "RecordedAtTime" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'ResponseTimestamp' %}
+        {% trans "ResponseTimestamp" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'VehicleJourneyRef' %}
+        {% trans "VehicleJourneyRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'VehicleLocation (Lat, Long)' %}
+        {% trans "VehicleLocation (Lat, Long)" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'ProducerRef' %}
+        {% trans "ProducerRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'DirectionRef' %}
+        {% trans "DirectionRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'BlockRef' %}
+        {% trans "BlockRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'PublishedLineName' %}
+        {% trans "PublishedLineName" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'ValidUntilTime' %}
+        {% trans "ValidUntilTime" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'DestinationRef' %}
+        {% trans "DestinationRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'OriginName' %}
+        {% trans "OriginName" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'OriginRef' %}
+        {% trans "OriginRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'VehicleRef' %}
+        {% trans "VehicleRef" %}
       {% endfilter %}
     </li>
   </ul>
@@ -251,27 +251,27 @@
   <ul class="govuk-list govuk-list--bullet">
     <li>
       {% filter force_escape %}
-        {% trans 'BlockRef' %}
+        {% trans "BlockRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'PublishedLineName' %}
+        {% trans "PublishedLineName" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'DestinationRef' %}
+        {% trans "DestinationRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'OriginName' %}
+        {% trans "OriginName" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'OriginRef' %}
+        {% trans "OriginRef" %}
       {% endfilter %}
     </li>
   </ul>
@@ -292,57 +292,57 @@
   <ul class="govuk-list govuk-list--bullet">
     <li>
       {% filter force_escape %}
-        {% trans 'Bearing' %}
+        {% trans "Bearing" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'LineRef' %}
+        {% trans "LineRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'OperatorRef' %}
+        {% trans "OperatorRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'RecordedAtTime' %}
+        {% trans "RecordedAtTime" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'ResponseTimestamp' %}
+        {% trans "ResponseTimestamp" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'VehicleJourneyRef' %}
+        {% trans "VehicleJourneyRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'VehicleLocation (Lat, Long)' %}
+        {% trans "VehicleLocation (Lat, Long)" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'ProducerRef' %}
+        {% trans "ProducerRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'DirectionRef' %}
+        {% trans "DirectionRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'VehicleRef' %}
+        {% trans "VehicleRef" %}
       {% endfilter %}
     </li>
     <li>
       {% filter force_escape %}
-        {% trans 'ValidUntilTime' %}
+        {% trans "ValidUntilTime" %}
       {% endfilter %}
     </li>
   </ul>

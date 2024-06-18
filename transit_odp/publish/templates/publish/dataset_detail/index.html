@@ -3,28 +3,28 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Data set details' %}
+  {% trans "Data set details" %}
 {% endblock %}
 {# Breadcrumb #}
 {% block breadcrumb.content %}
   {{ block.super }}
-  {% include 'publish/dataset_detail/breadcrumb.html' %}
+  {% include "publish/dataset_detail/breadcrumb.html" %}
 {% endblock %}
 {% block content %}
   {# Page Heading Section #}
-  {% include 'publish/dataset_detail/page_heading.html' %}
+  {% include "publish/dataset_detail/page_heading.html" %}
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
   {# Main Section #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% if status == 'error' %}
-        {% include 'publish/dataset_detail/error_panel.html' %}
+        {% include "publish/dataset_detail/error_panel.html" %}
       {% else %}
-        {% include 'publish/dataset_detail/success_content.html' %}
+        {% include "publish/dataset_detail/success_content.html" %}
       {% endif %}
     </div>
     <div class="govuk-grid-column-one-third">
-      {% include 'publish/dataset_detail/related_links.html' %}
+      {% include "publish/dataset_detail/related_links.html" %}
     </div>
   </div>
 {% endblock %}

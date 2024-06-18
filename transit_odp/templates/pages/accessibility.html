@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Accessibility statement' %}
+  {% trans "Accessibility statement" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {% breadcrumb_url root_site.name 'home' host hosts.root %}
@@ -13,7 +13,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">
-        {% trans 'Accessibility statement' %}
+        {% trans "Accessibility statement" %}
       </h1>
       <p class="govuk-body">
         {% filter force_escape %}
@@ -99,7 +99,7 @@
       <section>
         <p class="govuk-heading-m">
           {% filter force_escape %}
-            {% trans 'How accessible this website is' %}
+            {% trans "How accessible this website is" %}
           {% endfilter %}
         </p>
         <p class="govuk-body">
@@ -118,17 +118,17 @@
       <section>
         <h2 class="govuk-heading-m">
           {% filter force_escape %}
-            {% trans 'Feedback and contact information' %}
+            {% trans "Feedback and contact information" %}
           {% endfilter %}
         </h2>
         <p class="govuk-body">
           {% filter force_escape %}
-            {% trans 'If you need information on this website in a different format like accessible PDF, large print, easy read, audio recording or braille:' %}
+            {% trans "If you need information on this website in a different format like accessible PDF, large print, easy read, audio recording or braille:" %}
           {% endfilter %}
           <ul class="govuk-list govuk-list--bullet">
             <li>
               {% filter force_escape %}
-                {% trans 'Email:' %}
+                {% trans "Email:" %}
               {% endfilter %}
               {% blocktrans with link="BusOpenData@dft.gov.uk" %}
                                 <a class="govuk-link" href="mailto:{{ link }}">{{ link }}</a>
@@ -138,13 +138,13 @@
         </p>
         <p class="govuk-body">
           {% filter force_escape %}
-            {% trans 'We’ll consider your request and get back to you in 3 working days.' %}
+            {% trans "We’ll consider your request and get back to you in 3 working days." %}
           {% endfilter %}
         </p>
       </section>
       <section>
         <h2 class="govuk-heading-m">
-          {% trans 'Reporting accessibility problems with this website' %}
+          {% trans "Reporting accessibility problems with this website" %}
         </h2>
         <p class="govuk-body">
           {% filter force_escape %}
@@ -163,7 +163,7 @@
       </section>
       <section>
         <h2 class="govuk-heading-m">
-          {% trans 'Enforcement procedure' %}
+          {% trans "Enforcement procedure" %}
         </h2>
         <p class="govuk-body">
           {% filter force_escape %}
@@ -210,30 +210,30 @@
         </p>
         <p class="govuk-body">
           {% filter force_escape %}
-            {% trans 'This website follows the' %}
+            {% trans "This website follows the" %}
           {% endfilter %}
           {% blocktrans with link="https://www.w3.org/TR/WCAG21/" %}
                         <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">Web Content Accessibility Guidelines version 2.1</a>
                     {% endblocktrans %}
           {% filter force_escape %}
-            {% trans 'AA standard.' %}
+            {% trans "AA standard." %}
           {% endfilter %}
         </p>
       </section>
       <section>
         <h2 class="govuk-heading-m">
           {% filter force_escape %}
-            {% trans 'Non-accessible content' %}
+            {% trans "Non-accessible content" %}
           {% endfilter %}
         </h2>
         <p class="govuk-body govuk-!-font-weight-bold">
           {% filter force_escape %}
-            {% trans 'The content listed below is non-accessible for the following reasons.' %}
+            {% trans "The content listed below is non-accessible for the following reasons." %}
           {% endfilter %}
         </p>
         <p class="govuk-body">
           {% filter force_escape %}
-            {% trans 'Non-compliance with accessibility regulations' %}
+            {% trans "Non-compliance with accessibility regulations" %}
           {% endfilter %}
         </p>
         <p class="govuk-body">
@@ -269,7 +269,7 @@
         <section>
           <h2 class="govuk-heading-m">
             {% filter force_escape %}
-              {% trans 'Preparation of this accessibility statement' %}
+              {% trans "Preparation of this accessibility statement" %}
             {% endfilter %}
           </h2>
           <p class="govuk-body">
@@ -301,7 +301,7 @@
           </p>
           <p class="govuk-body">
             {% filter force_escape %}
-              {% trans 'You can read the' %}
+              {% trans "You can read the" %}
             {% endfilter %}
             {% blocktrans with link="http://digitalaccessibilitycentre.org/index.php/kpmg-publish-bus-open-data"%}
                             <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">full accessibility test report from the Digital
@@ -313,16 +313,16 @@
       <div class="govuk-grid-column-one-third">
         <hr class="govuk-section-break govuk-section-break--l" />
         <h2 class="govuk-heading-m">
-          {% trans 'Bus Open Data Service' %}
+          {% trans "Bus Open Data Service" %}
         </h2>
         <div>
           <p class="govuk-body">
-            <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact us' %}</a>
+            <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact us" %}</a>
           </p>
         </div>
         <hr class="govuk-section-break govuk-section-break--l" />
         <h2 class="govuk-heading-m">
-          {% trans 'Follow us' %}
+          {% trans "Follow us" %}
         </h2>
         <div>
           <p class="govuk-body">
@@ -332,7 +332,7 @@
                    alt="twitter icon"
                    style="width: 26px;
                           height: 26px" />
-              {% trans 'Bus open data service Twitter' %}
+              {% trans "Bus open data service Twitter" %}
             </a>
           </p>
         </div>

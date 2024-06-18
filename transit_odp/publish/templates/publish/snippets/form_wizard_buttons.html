@@ -3,7 +3,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <button type="submit" class="govuk-button">
-        {% trans 'Save' %}
+        {% trans "Save" %}
       </button>
     </div>
   </div>
@@ -14,12 +14,12 @@
               name="wizard_goto_step"
               value="{{ wizard.steps.prev }}"
               class="govuk-button-back-link">
-        {% trans 'Cancel' %}
+        {% trans "Cancel" %}
       </button>
     </div>
   </div>
 {% else %}
   <button type="submit" class="govuk-button" value="Upload">
-    {% trans 'Next step' %}
+    {% trans "Next step" %}
   </button>
 {% endif %}

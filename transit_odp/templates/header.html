@@ -26,7 +26,7 @@
   <div class="govuk-header__content">
     {% block service_name %}
       <a href="{% url 'home' host host.name %}" class="govuk-header__link govuk-header__link--service-name">
-        {#        {% trans 'Bus Open Data Service' %}#}
+        {#        {% trans "Bus Open Data Service" %}#}
         {% trans site.name %}
       </a>
     {% endblock %}
@@ -36,15 +36,15 @@
               class="govuk-header__menu-button govuk-js-header-toggle"
               aria-controls="navigation"
               aria-label="Show or hide Top Level Navigation">
-        {% trans 'Menu' %}
+        {% trans "Menu" %}
       </button>
       <nav>
         {% block menu %}
           <ul id="navigation" class="govuk-header__navigation " aria-label="Top Level Navigation">
             {% if host.name == hosts.data %}
-              {% include 'snippets/navlinks_data.html' %}
+              {% include "snippets/navlinks_data.html" %}
             {% elif host.name == hosts.publish %}
-              {% include 'snippets/navlinks_publish.html' %}
+              {% include "snippets/navlinks_publish.html" %}
             {% endif %}
           </ul>
         {% endblock %}

@@ -5,11 +5,11 @@
     <i class="fas fa-exclamation-circle fa"></i>
   {% endif %}
   {% if not properties.avl_timetables_matching %}
-    {% trans 'Pending' %}
+    {% trans "Pending" %}
   {% else %}
     {{ properties.avl_timetables_matching }}
-    {% trans 'completely matched AVL to Timetables' %}
+    {% trans "completely matched AVL to Timetables" %}
   </p>
   <a href="{% url 'avl:download-matching-report' pk1=pk1 pk=object.id host hosts.publish %}"
-     class="govuk-link govuk-!-margin-left-5 govuk-!-margin-top-1">{% trans 'Download matching report' %}</a>
+     class="govuk-link govuk-!-margin-left-5 govuk-!-margin-top-1">{% trans "Download matching report" %}</a>
 {% endif %}

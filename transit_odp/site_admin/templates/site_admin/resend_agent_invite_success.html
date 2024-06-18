@@ -5,15 +5,15 @@
 {% block breadcrumb.content %}
 {% endblock %}
 {% block title_tag %}
-  {% trans 'Agent invite has been resent' %}
+  {% trans "Agent invite has been resent" %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <h1 class="govuk-heading-xl">
-      {% trans 'Agent invite has been resent' %}
+      {% trans "Agent invite has been resent" %}
     </h1>
     <p class="govuk-body">
-      {% trans 'Agent user invite has been resent to ' %}
+      {% trans "Agent user invite has been resent to " %}
       <b>{{ agentuserinvite.email }}</b>.
     </p>
     <a href="{% url 'users:org-user-manage' pk=agentuserinvite.organisation.id host host.name %}"

@@ -4,7 +4,7 @@
 {% load publish_stepper %}
 {% block title_tag %}
   {% if form.errors %}
-    {% trans 'Error: ' %}
+    {% trans "Error: " %}
   {% endif %}
   {% if title_tag_text %}
     {{ title_tag_text }}
@@ -44,7 +44,7 @@
     {% if not edit_mode %}
       <div class="govuk-grid-column-one-third">
         {% block inner_secondary %}
-          {% include 'publish/revision_review/related_links.html' %}
+          {% include "publish/revision_review/related_links.html" %}
         {% endblock %}
       </div>
     {% endif %}

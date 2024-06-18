@@ -4,22 +4,22 @@
 {% block breadcrumb.content %}
 {% endblock %}
 {% block head_title %}
-  {% trans 'Verify your email' %}
+  {% trans "Verify your email" %}
 {% endblock %}
 {# NOTE - this page should only be displayed after the user signups for the first time. AllAuth would also render #}
 {# this page when the user tries to login with an unverified account. However, we instead capture that as a form #}
 {# error to display on the login page #}
 {% block inner %}
   <p class="govuk-body-m">
-    {% trans 'We have sent an email to ' %}
+    {% trans "We have sent an email to " %}
     {{ verification_email }}
-    {% trans ' to verify your address. Please click the link in the email to continue.' %}
+    {% trans " to verify your address. Please click the link in the email to continue." %}
   </p>
   <p class="govuk-body-m govuk-!-margin-bottom-6">
-    {% trans 'If you cannot find the email then look in your spam or junk email folder.' %}
+    {% trans "If you cannot find the email then look in your spam or junk email folder." %}
   </p>
-  <a href="{% url 'home' host host.name %}" class="govuk-button">{% trans 'Home' %}</a>
+  <a href="{% url 'home' host host.name %}" class="govuk-button">{% trans "Home" %}</a>
 {% endblock %}
 {% block inner_secondary %}
-  {#  {% include 'account/snippets/already_have_an_account.html' %}#}
+  {#  {% include "account/snippets/already_have_an_account.html" %}#}
 {% endblock %}

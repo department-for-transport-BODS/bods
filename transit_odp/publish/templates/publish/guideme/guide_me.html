@@ -1,4 +1,4 @@
-{% extends 'common/guide_me.html' %}
+{% extends "common/guide_me.html" %}
 {% load i18n %}
 {% block heading.subtitle %}
   {{ block.super }}
@@ -13,7 +13,7 @@
 {% block heading.secondary %}
   <div class="govuk-grid-column-one-third">
     <h3 class="govuk-heading-m">
-      {% trans 'Need further help?' %}
+      {% trans "Need further help?" %}
     </h3>
     <ul class="govuk-list app-list--nav govuk-!-font-size-19">
       <li>
@@ -21,20 +21,20 @@
            href="https://www.travelinedata.org.uk/traveline-open-data/transport-operations/about-2/"
            target="_blank"
            rel="noreferrer"
-           rel="noopener">{% trans 'National Operator Code' %}</a>
+           rel="noopener">{% trans "National Operator Code" %}</a>
       </li>
       <li>
-        <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">{% trans 'Service changelog' %}</a>
+        <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">{% trans "Service changelog" %}</a>
       </li>
       <li>
         <a class="govuk-link"
            href="https://www.gov.uk/government/publications/bus-open-data-implementation-guide/bus-open-data-implementation-guide#glossary-of-terms"
            target="_blank"
            rel="noreferrer"
-           rel="noopener">{% trans 'Glossary of terms' %}</a>
+           rel="noopener">{% trans "Glossary of terms" %}</a>
       </li>
       <li>
-        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans 'Contact us for technical issues' %}</a>
+        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact us for technical issues" %}</a>
       </li>
     </ul>
   </div>

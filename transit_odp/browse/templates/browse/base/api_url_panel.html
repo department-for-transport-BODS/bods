@@ -2,9 +2,9 @@
 {% if feed_api %}
   <h2 class="govuk-heading-m">
     {% if object.dataset_type == 2 %}
-      {% trans 'Use this data feed in your code' %}
+      {% trans "Use this data feed in your code" %}
     {% else %}
-      {% trans 'Use this data set in your code' %}
+      {% trans "Use this data set in your code" %}
     {% endif %}
   </h2>
   <div class="api-url-panel">
@@ -12,7 +12,7 @@
     <button class="govuk-button govuk-button--link"
             aria-label="Copy Code snippet to clipboard"
             onclick="BODSFrontend.copyToClipboard(document.getElementById('code-snippet-url').innerText)">
-      {% trans 'Copy' %}
+      {% trans "Copy" %}
     </button>
   </div>
 {% endif %}

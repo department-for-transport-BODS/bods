@@ -2,10 +2,10 @@
 {% load i18n %}
 {% block extra_content %}
   <h1 data-qa="quick-start-header" class="govuk-heading-l">
-    {% trans 'Quick start' %}
+    {% trans "Quick start" %}
   </h1>
   <h2 data-qa="apis-header" class="govuk-heading-m">
-    {% trans 'APIs' %}
+    {% trans "APIs" %}
   </h2>
   <p class="govuk-body">
     {% blocktrans %}
@@ -30,71 +30,71 @@
         {% endblocktrans %}
   </p>
   <h2 data-qa="download-all-header" class="govuk-heading-m">
-    {% trans 'Download all data' %}
+    {% trans "Download all data" %}
   </h2>
   <p class="govuk-body">
-    <a class="govuk-link" href="{% url 'downloads' host hosts.data %}">{% trans 'Download all data' %}</a>
+    <a class="govuk-link" href="{% url 'downloads' host hosts.data %}">{% trans "Download all data" %}</a>
     {% blocktrans %}
             will give you all data cached by the service for your chosen data type.
             All data set statuses are included in the download all, including: Published and Inactive.
         {% endblocktrans %}
   </p>
   <h2 data-qa="data-service-header" class="govuk-heading-m">
-    {% trans 'Data provided to service' %}
+    {% trans "Data provided to service" %}
   </h2>
   <p class="govuk-body">
     <a class="govuk-link" href="{% url 'select-data' host hosts.data %}">Browse for specific data</a> to:
     <ul class="govuk-list govuk-list--bullet">
       <li>
-        {% trans 'Look for examples of data published to the service' %}
+        {% trans "Look for examples of data published to the service" %}
       </li>
       <li>
-        {% trans 'Find a data set’s detail page' %}
+        {% trans "Find a data set’s detail page" %}
       </li>
       <li>
-        {% trans 'View a data set’s metadata' %}
+        {% trans "View a data set’s metadata" %}
       </li>
       <li>
-        {% trans 'Find a data set’s ID' %}
+        {% trans "Find a data set’s ID" %}
       </li>
       <li>
-        {% trans 'Download a data set' %}
+        {% trans "Download a data set" %}
       </li>
       <li>
-        <strong>{% trans 'Provide feedback to data publishers about a certain data set' %}</strong>
+        <strong>{% trans "Provide feedback to data publishers about a certain data set" %}</strong>
       </li>
     </ul>
   </p>
   <h2 data-qa="data-updates-header" class="govuk-heading-m">
-    {% trans 'Data updates' %}
+    {% trans "Data updates" %}
   </h2>
   {% include "../snippets/data_updates_table.html" %}
   <h2 data-qa="status-header" class="govuk-heading-m">
-    {% trans 'Status' %}
+    {% trans "Status" %}
   </h2>
   <table class="govuk-table">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header">
-          {% trans 'Data set status' %}
+          {% trans "Data set status" %}
         </th>
         <th scope="col" class="govuk-table__header">
-          {% trans 'Explanation' %}
+          {% trans "Explanation" %}
         </th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'Published' %}
+          {% trans "Published" %}
         </td>
         <td class="govuk-table__cell">
-          {% trans 'Data that has been published' %}
+          {% trans "Data that has been published" %}
         </td>
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'Inactive' %}
+          {% trans "Inactive" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -105,7 +105,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'Error' %}
+          {% trans "Error" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -120,25 +120,25 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header">
-          {% trans 'Data feed status' %}
+          {% trans "Data feed status" %}
         </th>
         <th scope="col" class="govuk-table__header">
-          {% trans 'Explanation' %}
+          {% trans "Explanation" %}
         </th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'Published' %}
+          {% trans "Published" %}
         </td>
         <td class="govuk-table__cell">
-          {% trans 'Data that has been published' %}
+          {% trans "Data that has been published" %}
         </td>
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'No vehicle activity' %}
+          {% trans "No vehicle activity" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -147,17 +147,17 @@
                     {% endblocktrans %}
           <ol class="govuk-list govuk-list--number">
             <li>
-              {% trans 'Feeds are unable to make a connection' %}
+              {% trans "Feeds are unable to make a connection" %}
             </li>
             <li>
-              {% trans 'No data has been provided for over 5 minutes during the day' %}
+              {% trans "No data has been provided for over 5 minutes during the day" %}
             </li>
           </ol>
         </td>
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'Inactive' %}
+          {% trans "Inactive" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -169,7 +169,7 @@
     </tbody>
   </table>
   <h2 data-qa="what-is-header" class="govuk-heading-m">
-    {% trans 'What is a data set/feed?' %}
+    {% trans "What is a data set/feed?" %}
   </h2>
   <p class="govuk-body">
     {% blocktrans %}
@@ -181,19 +181,19 @@
   </p>
   <ul class="govuk-list govuk-list--bullet">
     <li>
-      {% trans 'Operating companies' %}
+      {% trans "Operating companies" %}
     </li>
     <li>
-      {% trans 'Regions of operation' %}
+      {% trans "Regions of operation" %}
     </li>
     <li>
-      {% trans 'Underlying scheduler' %}
+      {% trans "Underlying scheduler" %}
     </li>
     <li>
-      {% trans 'Route or line' %}
+      {% trans "Route or line" %}
     </li>
     <li>
-      {% trans 'Data source / system supplying data' %}
+      {% trans "Data source / system supplying data" %}
     </li>
   </ul>
 {% endblock %}

@@ -8,9 +8,9 @@
     {% trans "Validating data set" %}
   {% else %}
     {% if error %}
-      {% trans 'Error: ' %}
+      {% trans "Error: " %}
     {% endif %}
-    {% trans 'Review and publish' %}
+    {% trans "Review and publish" %}
   {% endif %}
 {% endblock %}
 {% block breadcrumb %}
@@ -20,27 +20,27 @@
 {% endblock %}
 {% block content %}
   {% if not loading %}
-    {% include 'publish/revision_review/page_heading.html' %}
+    {% include "publish/revision_review/page_heading.html" %}
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
   {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% if loading %}
-        {% include 'publish/revision_review/loading.html' %}
+        {% include "publish/revision_review/loading.html" %}
       {% elif object.error_code == "SCHEMA_ERROR" %}
-        {% include 'publish/revision_review/schema_error.html' %}
+        {% include "publish/revision_review/schema_error.html" %}
       {% elif object.error_code == "POST_SCHEMA_ERROR" %}
-        {% include 'publish/revision_review/post_schema_error.html' %}
+        {% include "publish/revision_review/post_schema_error.html" %}
       {% elif pti_deadline_passed and has_pti_observations %}
-        {% include 'publish/revision_review/pti_hard_fail.html' %}
+        {% include "publish/revision_review/pti_hard_fail.html" %}
       {% elif error %}
-        {% include 'publish/revision_review/error_panel.html' %}
+        {% include "publish/revision_review/error_panel.html" %}
       {% else %}
-        {% include 'publish/revision_review/success_content.html' %}
+        {% include "publish/revision_review/success_content.html" %}
       {% endif %}
     </div>
     <div class="govuk-grid-column-one-third">
-      {% include 'publish/revision_review/related_links.html' %}
+      {% include "publish/revision_review/related_links.html" %}
     </div>
   </div>
 {% endblock %}

@@ -39,7 +39,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <h2 class="govuk-heading-m">
-          {% trans 'Add new organisation' %}
+          {% trans "Add new organisation" %}
         </h2>
         <p class="govuk-body">
           {% blocktrans %}
@@ -85,7 +85,7 @@
             {% else %}
               <h3 class="govuk-heading-m">
                 {% filter force_escape %}
-                  {% trans 'Sorry, no results found' %}
+                  {% trans "Sorry, no results found" %}
                   {% if q %}
                     {% blocktrans %} for {{ q }}{% endblocktrans %}
                   {% endif %}
@@ -96,27 +96,27 @@
           <div class="govuk-body-s govuk-grid-row search-pillbox">
             {% if q %}
               <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-                {% trans 'Beginning' as tmsg %}
+                {% trans "Beginning" as tmsg %}
                 {{ tmsg | force_escape }}
               </span>
               <a href="?q=">
                 <div class="pill-item">
                   <img class="pill-item__image"
                        src="{% static 'frontend/images/icon-cross.png' %}"
-                       alt="{% trans 'Delete icon' as tmsg %}{{ tmsg | force_escape }}" />
+                       alt="{% trans "Delete icon" as tmsg %}{{ tmsg | force_escape }}" />
                   <span class="pill-item__label">{{ q }}</span>
                 </div>
               </a>
             {% elif letters %}
               <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-                {% trans 'Beginning' as tmsg %}
+                {% trans "Beginning" as tmsg %}
                 {{ tmsg | force_escape }}
               </span>
               <a href="?q=">
                 <div class="pill-item">
                   <img class="pill-item__image"
                        src="{% static 'frontend/images/icon-cross.png' %}"
-                       alt="{% trans 'Delete icon' as tmsg %}{{ tmsg | force_escape }}" />
+                       alt="{% trans "Delete icon" as tmsg %}{{ tmsg | force_escape }}" />
                   <span class="pill-item__label">{{ letters|join:' ' }}</span>
                 </div>
               </a>
@@ -135,16 +135,16 @@
               <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
               <h4 class="govuk-heading-s">
                 {% filter force_escape %}
-                  {% trans 'Having trouble finding what you want?' %}
+                  {% trans "Having trouble finding what you want?" %}
                 {% endfilter %}
               </h4>
               <ul class="govuk-list govuk-list--bullet">
                 <li>
                   {% filter force_escape %}
                     {% if q %}
-                      {% trans 'Check your spelling and try again' %}
+                      {% trans "Check your spelling and try again" %}
                     {% else %}
-                      {% trans 'Please try another filter' %}
+                      {% trans "Please try another filter" %}
                     {% endif %}
                   {% endfilter %}
                 </li>

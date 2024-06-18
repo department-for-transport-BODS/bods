@@ -1,9 +1,9 @@
-{% extends 'browse/base.html' %}
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Browse' %}
+  {% trans "Browse" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -15,7 +15,7 @@
       <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0 govuk-!-padding-right-9">
           <h1 class="govuk-heading-xl app-masthead__title">
-            {% trans 'Browse bus open data' %}
+            {% trans "Browse bus open data" %}
           </h1>
           <p class="app-masthead__description">
             {% blocktrans %}
@@ -39,7 +39,7 @@
   <div class="govuk-!-padding-right-9 ">
     <div class="govuk-grid-row">
       <a class="govuk-link-bold govuk-body" href="{% url 'search' host hosts.data %}?status=live">
-        {% trans 'Timetables data' %}
+        {% trans "Timetables data" %}
       </a>
       <p class="govuk-body govuk-!-padding-top-3">
         {% blocktrans %}
@@ -49,34 +49,34 @@
       <ul class="govuk-list">
         <li>
           <b>
-            {% trans 'Format' %}
+            {% trans "Format" %}
           :</b>
-          {% trans 'TXC 2.4 PTI 1.1.A' %}
+          {% trans "TXC 2.4 PTI 1.1.A" %}
           {% include "browse/snippets/help_modals/txc.html" %}
         </li>
         <li>
           <b>
-            {% trans 'File type' %}
+            {% trans "File type" %}
           :</b>
-          {% trans 'XML file' %}
+          {% trans "XML file" %}
         </li>
         <li>
           <b>
-            {% trans 'Data type' %}
+            {% trans "Data type" %}
           :</b>
-          {% trans 'Static' %}
+          {% trans "Static" %}
         </li>
         <li>
           <b>
-            {% trans 'Data source' %}
+            {% trans "Data source" %}
           :</b>
-          {% trans 'BODS' %}
+          {% trans "BODS" %}
         </li>
       </ul>
     </div>
     <div class="govuk-grid-row govuk-!-margin-top-7">
       <a class="govuk-link-bold govuk-body" href="{% url 'avl-search' host hosts.data %}?status=live">
-        {% trans 'Location data' %}
+        {% trans "Location data" %}
       </a>
       <p class="govuk-body govuk-!-padding-top-3">
         {% blocktrans %}
@@ -86,34 +86,34 @@
       <ul class="govuk-list">
         <li>
           <b>
-            {% trans 'Format' %}
+            {% trans "Format" %}
           :</b>
-          {% trans 'SIRI-VM' %}
+          {% trans "SIRI-VM" %}
           {% include "browse/snippets/help_modals/sirivm.html" %}
         </li>
         <li>
           <b>
-            {% trans 'File type' %}
+            {% trans "File type" %}
           :</b>
-          {% trans 'XML file' %}
+          {% trans "XML file" %}
         </li>
         <li>
           <b>
-            {% trans 'Data type' %}
+            {% trans "Data type" %}
           :</b>
-          {% trans 'Real-time' %}
+          {% trans "Real-time" %}
         </li>
         <li>
           <b>
-            {% trans 'Data source' %}
+            {% trans "Data source" %}
           :</b>
-          {% trans 'BODS' %}
+          {% trans "BODS" %}
         </li>
       </ul>
     </div>
     <div class="govuk-grid-row govuk-!-margin-top-7">
       <a class="govuk-link-bold govuk-body" href="{% url 'search-fares' host hosts.data %}?status=live">
-        {% trans 'Fares data' %}
+        {% trans "Fares data" %}
       </a>
       <p class="govuk-body govuk-!-padding-top-3">
         {% blocktrans %}
@@ -123,34 +123,34 @@
       <ul class="govuk-list">
         <li>
           <b>
-            {% trans 'Format' %}
+            {% trans "Format" %}
           :</b>
-          {% trans 'NeTEx' %}
+          {% trans "NeTEx" %}
           {% include "browse/snippets/help_modals/netex.html" %}
         </li>
         <li>
           <b>
-            {% trans 'File type' %}
+            {% trans "File type" %}
           :</b>
-          {% trans 'XML file' %}
+          {% trans "XML file" %}
         </li>
         <li>
           <b>
-            {% trans 'Data type' %}
+            {% trans "Data type" %}
           :</b>
-          {% trans 'Static' %}
+          {% trans "Static" %}
         </li>
         <li>
           <b>
-            {% trans 'Data source' %}
+            {% trans "Data source" %}
           :</b>
-          {% trans 'BODS' %}
+          {% trans "BODS" %}
         </li>
       </ul>
     </div>
     <div class="govuk-grid-row govuk-!-margin-top-7">
       <a class="govuk-link-bold govuk-body" href="{% url 'disruptions-data' host hosts.data %}">
-        {% trans 'Disruption data' %}
+        {% trans "Disruption data" %}
       </a>
       <p class="govuk-body govuk-!-padding-top-3">
         {% blocktrans %}
@@ -160,28 +160,28 @@
       <ul class="govuk-list">
         <li>
           <b>
-            {% trans 'Format' %}
+            {% trans "Format" %}
           :</b>
-          {% trans 'SIRI-SX' %}
+          {% trans "SIRI-SX" %}
           {% include "browse/snippets/help_modals/sirisx.html" %}
         </li>
         <li>
           <b>
-            {% trans 'File type' %}
+            {% trans "File type" %}
           :</b>
-          {% trans 'XML file' %}
+          {% trans "XML file" %}
         </li>
         <li>
           <b>
-            {% trans 'Data type' %}
+            {% trans "Data type" %}
           :</b>
-          {% trans 'Real-time' %}
+          {% trans "Real-time" %}
         </li>
         <li>
           <b>
-            {% trans 'Data source' %}
+            {% trans "Data source" %}
           :</b>
-          {% trans 'Local authorities' %}
+          {% trans "Local authorities" %}
         </li>
       </ul>
     </div>

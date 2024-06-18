@@ -6,26 +6,26 @@
 {% endblock %}
 {% block dataset_result_content %}
   <li>
-    <span class="item__key">{% trans 'Data type:' %}</span>
-    <span class="item__value">{% trans 'Fares data' %}</span>
+    <span class="item__key">{% trans "Data type:" %}</span>
+    <span class="item__value">{% trans "Fares data" %}</span>
   </li>
   <li>
-    <span class="item__key">{% trans 'Data set ID:' %}</span>
+    <span class="item__key">{% trans "Data set ID:" %}</span>
     <span class="item__value">{{ item.id }}</span>
   </li>
   <li>
-    <span class="item__key">{% trans 'Publisher:' %}</span>
+    <span class="item__key">{% trans "Publisher:" %}</span>
     <span class="item__value">{{ item.organisation_name }}</span>
   </li>
   <li>
-    <span class="item__key">{% trans 'Last updated:' %}</span>
+    <span class="item__key">{% trans "Last updated:" %}</span>
     <span class="item__value">{{ item.modified|date:"j M Y G:i:s" }}</span>
   </li>
   {% flag "is_fares_validator_active" %}
   <li>
-    <span class="item__key">{% trans 'BODS compliant data:' %}</span>
+    <span class="item__key">{% trans "BODS compliant data:" %}</span>
     {% if item.is_fares_compliant %}
-      <span class="item__value">{% trans 'Compliant' %}</span>
+      <span class="item__value">{% trans "Compliant" %}</span>
     {% else %}
       <div class="govuk-warning-text item__value govuk-!-margin-bottom-0" style="padding: 0px;">
         <span class="govuk-warning-text__icon"
@@ -35,7 +35,7 @@
                      font-size: 15px;
                      line-height: 15px;
                      top: 7px">!</span>
-        <span class="govuk-warning-text__text" style="padding-left: 30px;">{% trans 'Non compliant' %}</span>
+        <span class="govuk-warning-text__text" style="padding-left: 30px;">{% trans "Non compliant" %}</span>
       </div>
     {% endif %}
   </li>

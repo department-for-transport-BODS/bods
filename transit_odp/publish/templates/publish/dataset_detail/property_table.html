@@ -6,7 +6,7 @@
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header govuk-!-width-one-quarter">
         {% filter force_escape %}
-          {% trans 'Name' %}
+          {% trans "Name" %}
         {% endfilter %}
       </th>
       <td class="govuk-table__cell dont-break-out">
@@ -18,7 +18,7 @@
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
         {% filter force_escape %}
-          {% trans 'Data set ID' %}
+          {% trans "Data set ID" %}
         {% endfilter %}
       </th>
       <td class="govuk-table__cell dont-break-out">
@@ -28,7 +28,7 @@
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
         {% filter force_escape %}
-          {% trans 'URL link' %}
+          {% trans "URL link" %}
         {% endfilter %}
       </th>
       <td class="govuk-table__cell">
@@ -37,7 +37,7 @@
           <a class="govuk-link"
              href="{% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=false{% endif %}">
             {% filter force_escape %}
-              {% trans 'Publisher URL' %}
+              {% trans "Publisher URL" %}
             {% endfilter %}
           </a>
         </span>
@@ -46,7 +46,7 @@
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
         {% filter force_escape %}
-          {% trans 'Description' %}
+          {% trans "Description" %}
         {% endfilter %}
       </th>
       <td class="govuk-table__cell">
@@ -56,7 +56,7 @@
           {% endfilter %}
           <span style="text-align: right"><a class="govuk-link" href="{% url 'dataset-edit' pk=object.id pk1=pk1 host hosts.publish %}">
             {% filter force_escape %}
-              {% trans 'Edit' %}
+              {% trans "Edit" %}
             {% endfilter %}
           </a>
         </span>
@@ -66,7 +66,7 @@
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
       {% filter force_escape %}
-        {% trans 'Short description' %}
+        {% trans "Short description" %}
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
@@ -76,7 +76,7 @@
         {% endfilter %}
         <a class="govuk-link" href="{% url 'dataset-edit' pk=object.id pk1=pk1 host hosts.publish %}">
           {% filter force_escape %}
-            {% trans 'Edit' %}
+            {% trans "Edit" %}
           {% endfilter %}
         </a>
       </div>
@@ -85,15 +85,15 @@
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
       {% filter force_escape %}
-        {% trans 'Status' %}
+        {% trans "Status" %}
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
       <div class="flex-between">
-        {% include 'organisation/snippets/status_indicator.html' with status=object.status %}
+        {% include "organisation/snippets/status_indicator.html" with status=object.status %}
         <a class="govuk-link" href="{% url 'feed-detail' pk=object.id host hosts.data %}">
           {% filter force_escape %}
-            {% trans 'Preview developer view' %}
+            {% trans "Preview developer view" %}
           {% endfilter %}
         </a>
       </div>
@@ -102,7 +102,7 @@
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
       {% filter force_escape %}
-        {% trans 'Data quality report' %}
+        {% trans "Data quality report" %}
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
@@ -113,12 +113,12 @@
              rel="noopener noreferrer"
              href="{% url 'dq:overview' pk1=pk1 pk=object.id report_id=report_id host hosts.publish %}">
             {% filter force_escape %}
-              {% trans 'View data quality report' %}
+              {% trans "View data quality report" %}
             {% endfilter %}
           </a>
         {% else %}
           {% filter force_escape %}
-            {% trans 'Generating...' %}
+            {% trans "Generating..." %}
           {% endfilter %}
         {% endif %}
       </span>
@@ -133,7 +133,7 @@
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
         {% filter force_escape %}
-          {% trans 'TransXChange Validation Report' %}
+          {% trans "TransXChange Validation Report" %}
         {% endfilter %}
       </th>
       <td class="govuk-table__cell">
@@ -171,7 +171,7 @@
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
       {% filter force_escape %}
-        {% trans 'Owner' %}
+        {% trans "Owner" %}
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
@@ -183,7 +183,7 @@
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
       {% filter force_escape %}
-        {% trans 'TransXChange version' %}
+        {% trans "TransXChange version" %}
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
@@ -193,14 +193,14 @@
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
       {% filter force_escape %}
-        {% trans 'Download TransXChange' %}
+        {% trans "Download TransXChange" %}
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
       {% url 'feed-download' pk=object.id pk1=pk1 host host.name as download_link %}
       <a class="govuk-link" href="{% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}{% endif %}">
         {% filter force_escape %}
-          {% trans 'Download .xml (TxC)' %}
+          {% trans "Download .xml (TxC)" %}
         {% endfilter %}
       </a>
     </td>
@@ -208,7 +208,7 @@
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">
       {% filter force_escape %}
-        {% trans 'Last updated' %}
+        {% trans "Last updated" %}
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
@@ -216,13 +216,13 @@
         <span>
           {{ object.published_at|localtime|date:"j M Y H:i" }}
           {% filter force_escape %}
-            {% trans 'by ' %}
+            {% trans "by " %}
           {% endfilter %}
           {% if object.live_revision.published_by %}
             {{ object.live_revision.published_by.username }}
           {% else %}
             {% filter force_escape %}
-              {% trans 'System' %}
+              {% trans "System" %}
             {% endfilter %}
           {% endif %}
         </span>
@@ -230,7 +230,7 @@
           {% block inner.last_updated.changelog_link %}
             <a class="govuk-link" href="{% url 'feed-changelog' pk1=pk1 pk=object.id host host.name %}">
               {% filter force_escape %}
-                {% trans 'View change log' %}
+                {% trans "View change log" %}
               {% endfilter %}
             </a>
           {% endblock %}

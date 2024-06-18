@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Sign out' %}
+  {% trans "Sign out" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -10,11 +10,11 @@
   {% breadcrumb_url 'Sign out' 'account_logout' host host.name %}
 {% endblock %}
 {% block head_title %}
-  {% trans 'Sign out' %}
+  {% trans "Sign out" %}
 {% endblock %}
 {% block inner %}
   <p class="govuk-body">
-    {% trans 'Are you sure you want to sign out?' %}
+    {% trans "Are you sure you want to sign out?" %}
   </p>
   <form method="post" action="{% url 'account_logout' host host.name %}">
     {% csrf_token %}
@@ -22,7 +22,7 @@
       <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
     {% endif %}
     <button class="govuk-button" type="submit">
-      {% trans 'Sign out' %}
+      {% trans "Sign out" %}
     </button>
   </form>
 {% endblock %}

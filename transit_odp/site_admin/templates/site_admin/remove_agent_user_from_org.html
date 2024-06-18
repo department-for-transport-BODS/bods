@@ -5,17 +5,17 @@
 {% block breadcrumb.content %}
 {% endblock %}
 {% block title_tag %}
-  {% trans 'Remove agent user' %}
+  {% trans "Remove agent user" %}
 {% endblock %}
 {% block backlink %}
   {% url 'users:manage-user-detail' pk=object.organisation.id pk1=object.agent.id host host.name as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
       <h1 class="govuk-heading-xl">
-        {% trans 'Remove agent user' %}
+        {% trans "Remove agent user" %}
       </h1>
       <p class="govuk-body-m govuk-!-margin-bottom-6">
         {% blocktrans %}

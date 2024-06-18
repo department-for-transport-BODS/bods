@@ -1,10 +1,10 @@
-{% extends 'snippets/sidebar_related_links.html' %}
+{% extends "snippets/sidebar_related_links.html" %}
 {% load i18n %}
 {% block heading %}
   {% trans "Already have an account?" %}
 {% endblock %}
 {% block links %}
   <li>
-    <a class="govuk-link" href="{% url 'account_login' host host.name %}">{% trans 'Sign in' %}</a>
+    <a class="govuk-link" href="{% url 'account_login' host host.name %}">{% trans "Sign in" %}</a>
   </li>
 {% endblock %}

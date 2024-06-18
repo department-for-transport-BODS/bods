@@ -5,22 +5,22 @@
 {% load crispy_forms_tags %}
 {% block title_tag %}
   {% if form.errors %}
-    {% trans 'Error: ' %}
+    {% trans "Error: " %}
   {% endif %}
-  {% trans 'Edit organisation details' %}
+  {% trans "Edit organisation details" %}
 {% endblock %}
 {# Breadcrumb #}
 {% block breadcrumb.content %}
 {% endblock %}
 {% block backlink %}
   {% url 'users:organisation-profile' pk=user.organisation.id host hosts.publish as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">
-        {% trans 'Edit organisation detail' %}
+        {% trans "Edit organisation detail" %}
       </h1>
     </div>
   </div>

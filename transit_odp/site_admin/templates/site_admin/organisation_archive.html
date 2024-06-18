@@ -6,33 +6,33 @@
 {% load crispy_forms_tags %}
 {% block title_tag %}
   {% if object.is_active %}
-    {% trans 'Deactivate organisation' %}
+    {% trans "Deactivate organisation" %}
   {% else %}
-    {% trans 'Activate organisation' %}
+    {% trans "Activate organisation" %}
   {% endif %}
 {% endblock %}
 {% block breadcrumb.content %}
 {% endblock %}
 {% block backlink %}
   {% url 'users:organisation-detail' pk=object.id host hosts.admin as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">
         {% if object.is_active %}
-          {% trans 'Deactivate organisation' %}
+          {% trans "Deactivate organisation" %}
         {% else %}
-          {% trans 'Activate organisation' %}
+          {% trans "Activate organisation" %}
         {% endif %}
       </h1>
       <p class="govuk-body">
         {% if object.is_active %}
-          {% trans 'Would you like to deactivate' %}
+          {% trans "Would you like to deactivate" %}
           {{ object.name }}?
         {% else %}
-          {% trans 'Would you like to activate' %}
+          {% trans "Would you like to activate" %}
           {{ object.name }}?
         {% endif %}
       </p>

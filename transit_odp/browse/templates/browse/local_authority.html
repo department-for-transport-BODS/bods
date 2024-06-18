@@ -1,4 +1,4 @@
-{% extends 'browse/base.html' %}
+{% extends "browse/base.html" %}
 {% load breadcrumbs %}
 {% load i18n %}
 {% load query_transform %}
@@ -6,7 +6,7 @@
 {% load filters %}
 {% block title_tag %}
   {% filter force_escape %}
-    {% trans 'Local Transport Authority' %}
+    {% trans "Local Transport Authority" %}
   {% endfilter %}
 {% endblock %}
 {% block breadcrumb.content %}
@@ -29,19 +29,19 @@
               <span class="govuk-body">
                 {% filter force_escape %}
                   {{ updated_result }}
-                  {% trans 'results' %}
+                  {% trans "results" %}
                 {% endfilter %}
               </span>
             {% elif updated_result == 1 %}
               <span class="govuk-body">
                 {% filter force_escape %}
-                  {% trans '1 result' %}
+                  {% trans "1 result" %}
                 {% endfilter %}
               </span>
             {% else %}
               <h3 class="govuk-heading-m">
                 {% filter force_escape %}
-                  {% trans 'Sorry, no results found' %}
+                  {% trans "Sorry, no results found" %}
                   {% if q %}
                     {% blocktrans %} for {{ q }}{% endblocktrans %}
                   {% endif %}
@@ -52,14 +52,14 @@
           <div class="govuk-body-s govuk-grid-row search-pillbox">
             {% if q %}
               <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-                {% trans 'Containing' as tmsg %}
+                {% trans "Containing" as tmsg %}
                 {{ tmsg | force_escape }}
               </span>
               <a href="?ordering={{ ordering }}">
                 <div class="pill-item">
                   <img class="pill-item__image"
                        src="{% static 'frontend/images/icon-cross.png' %}"
-                       alt="{% trans 'Delete icon' as tmsg %}{{ tmsg | force_escape }}" />
+                       alt="{% trans "Delete icon" as tmsg %}{{ tmsg | force_escape }}" />
                   <span class="pill-item__label">{{ q }}</span>
                 </div>
               </a>
@@ -73,12 +73,12 @@
             <select class="govuk-select" id="ordering" name="ordering" aria-label="Sort by" onchange="this.form.submit()">
               <option value="ui_lta_name_trimmed" {% if ordering == "ui_lta_name_trimmed" %}selected{% endif %}>
                 {% filter force_escape %}
-                  {% trans 'Name A-Z' %}
+                  {% trans "Name A-Z" %}
                 {% endfilter %}
               </option>
               <option value="-ui_lta_name_trimmed" {% if ordering == "-ui_lta_name_trimmed" %}selected{% endif %}>
                 {% filter force_escape %}
-                  {% trans 'Name Z-A' %}
+                  {% trans "Name Z-A" %}
                 {% endfilter %}
               </option>
             </select>
@@ -88,19 +88,19 @@
               {% if not forloop.first %}
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
               {% endif %}
-              {% include 'browse/snippets/results/local_authority.html' with item=item host=host hosts_data=hosts.data %}
+              {% include "browse/snippets/results/local_authority.html" with item=item host=host hosts_data=hosts.data %}
             {% empty %}
               <div>
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
                 <h4 class="govuk-heading-s">
                   {% filter force_escape %}
-                    {% trans 'Having trouble finding what you want?' %}
+                    {% trans "Having trouble finding what you want?" %}
                   {% endfilter %}
                 </h4>
                 <ul class="govuk-list govuk-list--bullet">
                   <li>
                     {% filter force_escape %}
-                      {% trans 'Check your spelling and try again' %}
+                      {% trans "Check your spelling and try again" %}
                     {% endfilter %}
                   </li>
                 </ul>

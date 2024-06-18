@@ -2,36 +2,36 @@
 {% load i18n %}
 {% block extra_content %}
   <h1 data-qa="api-ref-header" class="govuk-heading-l">
-    {% trans 'API reference' %}
+    {% trans "API reference" %}
   </h1>
   <p class="govuk-body">
     {% blocktrans %}
             The API reference contains details of API calls, query parameters and error codes. You can try out API
             calls in an interactive sandbox,
         {% endblocktrans %}
-    <a class="govuk-link-bold" href="{% url 'api-select' host hosts.data %}">{% trans 'Access interactive API.' %}</a>
+    <a class="govuk-link-bold" href="{% url 'api-select' host hosts.data %}">{% trans "Access interactive API." %}</a>
   </p>
   <h3 data-qa="all-data-header" class="govuk-heading-m">
-    {% trans 'All data API reference' %}
+    {% trans "All data API reference" %}
   </h3>
   <p class="govuk-body">
-    {% trans 'You can use the call all data APIs in your code. This will provide all data currently available.' %}
+    {% trans "You can use the call all data APIs in your code. This will provide all data currently available." %}
   </p>
   <table class="govuk-table govuk-!-margin-bottom-9">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header" style="width: 40%">
-          {% trans 'Data' %}
+          {% trans "Data" %}
         </th>
         <th scope="col" class="govuk-table__header">
-          {% trans 'Call all data APIs' %}
+          {% trans "Call all data APIs" %}
         </th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'Timetables' %}
+          {% trans "Timetables" %}
         </td>
         <td class="govuk-table__cell">
           {{ api_base }}dataset/?api_key=[API_KEY]
@@ -39,7 +39,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'Bus location' %}
+          {% trans "Bus location" %}
         </td>
         <td class="govuk-table__cell">
           {{ api_base }}datafeed/?api_key=[API_KEY]
@@ -47,7 +47,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'Fares' %}
+          {% trans "Fares" %}
         </td>
         <td class="govuk-table__cell">
           {{ api_base }}fares/dataset/?api_key=[API_KEY]
@@ -56,7 +56,7 @@
     </tbody>
   </table>
   <h3 data-qa="timetable-header" class="govuk-heading-m">
-    {% trans 'Timetables data API parameters' %}
+    {% trans "Timetables data API parameters" %}
   </h3>
   <p class="govuk-body">
     {% blocktrans %}
@@ -68,17 +68,17 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header" style="width: 30%">
-          {% trans 'Name' %}
+          {% trans "Name" %}
         </th>
         <th scope="col" class="govuk-table__header">
-          {% trans 'Description' %}
+          {% trans "Description" %}
         </th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'adminArea' %}
+          {% trans "adminArea" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -93,39 +93,39 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'endDateStart' %}
+          {% trans "endDateStart" %}
         </td>
         <td class="govuk-table__cell">
-          {% trans 'Limit results to data sets with services with end dates after this date. String formatted as YYYY-MM-DDTHH:MM:SS.' %}
-        </td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans 'endDateEnd' %}
-        </td>
-        <td class="govuk-table__cell">
-          {% trans 'Limit results to data sets with services with end dates before this date. String formatted as YYYY-MM-DDTHH:MM:SS.' %}
+          {% trans "Limit results to data sets with services with end dates after this date. String formatted as YYYY-MM-DDTHH:MM:SS." %}
         </td>
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'limit' %}
+          {% trans "endDateEnd" %}
         </td>
         <td class="govuk-table__cell">
-          {% trans 'The maximum number of records to return.' %}
-        </td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans 'modifiedDate' %}
-        </td>
-        <td class="govuk-table__cell">
-          {% trans 'Limit results to data sets that have been created/updated since the specified date. String formatted as YYYY-MM-DDTHH:MM:SS.' %}
+          {% trans "Limit results to data sets with services with end dates before this date. String formatted as YYYY-MM-DDTHH:MM:SS." %}
         </td>
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'noc' %}
+          {% trans "limit" %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans "The maximum number of records to return." %}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">
+          {% trans "modifiedDate" %}
+        </td>
+        <td class="govuk-table__cell">
+          {% trans "Limit results to data sets that have been created/updated since the specified date. String formatted as YYYY-MM-DDTHH:MM:SS." %}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">
+          {% trans "noc" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -143,7 +143,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'offset' %}
+          {% trans "offset" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -154,7 +154,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'search' %}
+          {% trans "search" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -165,7 +165,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'status' as status %}
+          {% trans "status" as status %}
           {{ status | force_escape }}
         </td>
         <td class="govuk-table__cell">
@@ -179,7 +179,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'startDateStart' %}
+          {% trans "startDateStart" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -190,7 +190,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'startDateEnd' %}
+          {% trans "startDateEnd" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -201,7 +201,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'datasetID' %}
+          {% trans "datasetID" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -211,7 +211,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'dqRag' as dq_rag %}
+          {% trans "dqRag" as dq_rag %}
           {{ dq_rag | force_escape }}
         </td>
         <td class="govuk-table__cell">
@@ -224,7 +224,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'bodsCompliance' as bods_compliance %}
+          {% trans "bodsCompliance" as bods_compliance %}
           {{ bods_compliance | force_escape }}
         </td>
         <td class="govuk-table__cell">
@@ -238,7 +238,7 @@
     </tbody>
   </table>
   <h3 data-qa="fares-header" class="govuk-heading-m">
-    {% trans 'Fares data API parameters' %}
+    {% trans "Fares data API parameters" %}
   </h3>
   <p class="govuk-body">
     {% blocktrans %}
@@ -251,17 +251,17 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header" style="width: 30%">
-          {% trans 'Name' %}
+          {% trans "Name" %}
         </th>
         <th scope="col" class="govuk-table__header">
-          {% trans 'Description' %}
+          {% trans "Description" %}
         </th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'noc' %}
+          {% trans "noc" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -283,7 +283,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'status' %}
+          {% trans "status" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -293,7 +293,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'boundingBox' %}
+          {% trans "boundingBox" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -303,15 +303,15 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'limit' %}
+          {% trans "limit" %}
         </td>
         <td class="govuk-table__cell">
-          {% trans 'The maximum number of records to return.' %}
+          {% trans "The maximum number of records to return." %}
         </td>
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'offset' %}
+          {% trans "offset" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -323,7 +323,7 @@
     </tbody>
   </table>
   <h3 data-qa="bus-header" class="govuk-heading-m">
-    {% trans 'Bus location data API parameters' %}
+    {% trans "Bus location data API parameters" %}
   </h3>
   <p class="govuk-body">
     {% filter force_escape %}
@@ -338,10 +338,10 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header" style="width: 30%">
-          {% trans 'Name' %}
+          {% trans "Name" %}
         </th>
         <th scope="col" class="govuk-table__header">
-          {% trans 'Description' %}
+          {% trans "Description" %}
         </th>
       </tr>
     </thead>
@@ -349,7 +349,7 @@
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
           {% filter force_escape %}
-            {% trans 'boundingBox' %}
+            {% trans "boundingBox" %}
           {% endfilter %}
         </td>
         <td class="govuk-table__cell">
@@ -363,7 +363,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'operatorRef' %}
+          {% trans "operatorRef" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -377,7 +377,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'lineRef' %}
+          {% trans "lineRef" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -387,7 +387,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'producerRef' %}
+          {% trans "producerRef" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -397,7 +397,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'originRef' %}
+          {% trans "originRef" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -413,7 +413,7 @@
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
-          {% trans 'destinationRef' %}
+          {% trans "destinationRef" %}
         </td>
         <td class="govuk-table__cell">
           {% blocktrans %}
@@ -430,7 +430,7 @@
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
           {% filter force_escape %}
-            {% trans 'vehicleRef' %}
+            {% trans "vehicleRef" %}
           {% endfilter %}
         </td>
         <td class="govuk-table__cell">
@@ -448,7 +448,7 @@
   </table>
   <h3 data-qa="bus-header" class="govuk-heading-m">
     {% filter force_escape %}
-      {% trans 'GTFS RT-specific API parameters:' %}
+      {% trans "GTFS RT-specific API parameters:" %}
     {% endfilter %}
   </h3>
   <table class="govuk-table govuk-!-margin-bottom-9">
@@ -456,12 +456,12 @@
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header" style="width: 30%">
           {% filter force_escape %}
-            {% trans 'Name' %}
+            {% trans "Name" %}
           {% endfilter %}
         </th>
         <th scope="col" class="govuk-table__header">
           {% filter force_escape %}
-            {% trans 'Description' %}
+            {% trans "Description" %}
           {% endfilter %}
         </th>
       </tr>
@@ -470,7 +470,7 @@
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
           {% filter force_escape %}
-            {% trans 'routeId' %}
+            {% trans "routeId" %}
           {% endfilter %}
         </td>
         <td class="govuk-table__cell">
@@ -484,7 +484,7 @@
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
           {% filter force_escape %}
-            {% trans 'startTimeAfter' %}
+            {% trans "startTimeAfter" %}
           {% endfilter %}
         </td>
         <td class="govuk-table__cell">
@@ -498,7 +498,7 @@
       <tr class="govuk-table__row">
         <td class="govuk-table__cell">
           {% filter force_escape %}
-            {% trans 'startTimeBefore' %}
+            {% trans "startTimeBefore" %}
           {% endfilter %}
         </td>
         <td class="govuk-table__cell">

@@ -4,7 +4,7 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Name' %}
+        {% trans "Name" %}
       </th>
       <td colspan="2" class="govuk-table__cell dont-break-out">
         {% trans property.name %}
@@ -12,7 +12,7 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Data type' %}
+        {% trans "Data type" %}
       </th>
       <td colspan="2" class="govuk-table__cell dont-break-out">
         {% block dataset_type %}
@@ -23,9 +23,9 @@
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
         {% if property.dataset_type == 2 %}
-          {% trans 'Data feed ID' %}
+          {% trans "Data feed ID" %}
         {% else %}
-          {% trans 'Data set ID' %}
+          {% trans "Data set ID" %}
         {% endif %}
       </th>
       <td colspan="2" class="govuk-table__cell dont-break-out">
@@ -34,7 +34,7 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Description' %}
+        {% trans "Description" %}
       </th>
       <td colspan="2" class="govuk-table__cell dont-break-out">
         {% trans property.description %}
@@ -42,7 +42,7 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Owner' %}
+        {% trans "Owner" %}
       </th>
       <td colspan="2" class="govuk-table__cell dont-break-out">
         <div class="stacked">
@@ -55,11 +55,11 @@
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
-        {% trans 'Status' %}
+        {% trans "Status" %}
       </th>
       <td colspan="2" class="govuk-table__cell">
         <div class="flex-between">
-          {% include 'organisation/snippets/status_indicator.html' with status=property.status record=property %}
+          {% include "organisation/snippets/status_indicator.html" with status=property.status record=property %}
         </div>
       </td>
     </tr>

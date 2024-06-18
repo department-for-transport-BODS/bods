@@ -8,7 +8,7 @@
   {% endif %}
 {% endblock %}
 {% block title_tag %}
-  {% trans 'My organisation details' %}
+  {% trans "My organisation details" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
@@ -31,7 +31,7 @@
     {% include "organisation/snippets/organisation_profile_table.html" %}
     <a role="button"
        class="govuk-button govuk-button--secondary"
-       href="{% url 'users:edit-org-profile' pk=organisation.id host hosts.publish %}">{% trans 'Edit' %}</a>
+       href="{% url 'users:edit-org-profile' pk=organisation.id host hosts.publish %}">{% trans "Edit" %}</a>
   {% endif %}
 {% endblock %}
 {% block inner_secondary %}

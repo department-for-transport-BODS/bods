@@ -3,26 +3,26 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans 'Existing draft' %}
+  {% trans "Existing draft" %}
 {% endblock %}
 {% block breadcrumb.content %}
 {% endblock %}
 {% block backlink %}
   {% url 'feed-detail' pk=pk pk1=pk1 as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block title_text %}
-  {% trans 'You already have a draft for this data set.' %}
+  {% trans "You already have a draft for this data set." %}
 {% endblock %}
 {% block body_section %}
 {% endblock %}
 {% block done_button %}
   <div class="button-holder">
     <a role="button" class="govuk-button" href="{% url 'revision-update-publish' pk1=pk1 pk=pk %}">
-      {% trans 'View draft' %}
+      {% trans "View draft" %}
     </a>
     <a role="button" class="govuk-button govuk-button--secondary" href="{% url 'feed-detail' pk=pk pk1=pk1 %}">
-      {% trans 'Cancel' %}
+      {% trans "Cancel" %}
     </a>
   </div>
 {% endblock %}

@@ -5,15 +5,15 @@
 {% load breadcrumbs %}
 {% block title_tag %}
   {% if not is_subscribed %}
-    {% trans 'Subscribe to data feed' %}
+    {% trans "Subscribe to data feed" %}
   {% else %}
-    {% trans 'Unsubscribe from data feed' %}
+    {% trans "Unsubscribe from data feed" %}
   {% endif %}
 {% endblock %}
 {% block breadcrumb.content %}
 {% endblock %}
 {% block backlink %}
-  {% include 'snippets/backlink.html' with url=backlink_url %}
+  {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
 {% block content %}
   <form action="{{ form_url }}" method="post" enctype="multipart/form-data" novalidate>
@@ -21,20 +21,20 @@
     <div class="govuk-grid-row">
       <h1 class="govuk-heading-xl">
         {% if not is_subscribed %}
-          {% trans 'Subscribe to data feed' %}
+          {% trans "Subscribe to data feed" %}
         {% else %}
-          {% trans 'Unsubscribe from data feed' %}
+          {% trans "Unsubscribe from data feed" %}
         {% endif %}
       </h1>
       <p class="govuk-body">
         {% if not is_subscribed %}
-          {% trans 'Would you like to subscribe to ' %}
+          {% trans "Would you like to subscribe to " %}
           {% trans object.name %}
-          {% trans ' data feed?' %}
+          {% trans " data feed?" %}
         {% else %}
-          {% trans 'Would you like to unsubscribe from ' %}
+          {% trans "Would you like to unsubscribe from " %}
           {% trans object.name %}
-          {% trans ' data feed?' %}
+          {% trans " data feed?" %}
         {% endif %}
       </p>
       {% crispy form %}
