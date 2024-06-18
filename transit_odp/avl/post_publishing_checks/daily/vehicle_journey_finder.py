@@ -661,6 +661,7 @@ class VehicleJourneyFinder:
         service_org_ref = None
         days_of_non_operation = None
         days_of_operation = None
+        service_org_ref_dict = {"days_of_operation": [], "days_of_non_operation": []}
 
         service_org_day_type = self.service_org_day_type(
             vehicle_journey
@@ -672,14 +673,54 @@ class VehicleJourneyFinder:
             )
             if days_of_non_operation is not None:
                 service_org_ref = self.get_service_org_ref(days_of_non_operation)
+                service_org_ref_dict["days_of_non_operation"].append(service_org_ref)
 
             days_of_operation: TransXChangeElement = (
                 service_org_day_type.get_element_or_none("DaysOfOperation")
             )
             if days_of_operation is not None:
                 service_org_ref = self.get_service_org_ref(days_of_operation)
+                service_org_ref_dict["days_of_operation"].append(service_org_ref)
 
-        return service_org_ref, days_of_non_operation, days_of_operation
+        return (
+            service_org_ref,
+            days_of_non_operation,
+            days_of_operation,
+            service_org_ref_dict,
+        )
+
+    def get_service_orgs_working_days_start_end_date(
+        self, org, result: ValidationResult
+    ):
+        working_days = self.get_working_days(org)
+        for date_range in working_days:
+            start_date = date_range.get_text_or_default("StartDate")
+            if not start_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as Serviced organisation has no Start date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                return False, False
+
+            end_date = date_range.get_text_or_default("EndDate")
+            if not end_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as Serviced organisation has no End date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                return False, False
+
+            start_date_formatted = datetime.datetime.strptime(
+                start_date, "%Y-%m-%d"
+            ).date()
+            end_date_formatted = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
+        return start_date_formatted, end_date_formatted
 
     def filter_by_days_of_operation(
         self,
@@ -688,69 +729,47 @@ class VehicleJourneyFinder:
         result: ValidationResult,
     ):
         for vj in reversed(vehicle_journeys):
-            days_of_non_operation = None
-            days_of_operation = None
-            inside_operating_range = False
-            error_msg = None
 
             (
                 service_org_ref,
                 days_of_non_operation,
                 days_of_operation,
+                service_org_ref_dict,
             ) = self.get_service_org_ref_and_days_of_operation(vj)
             service_orgs = self.get_serviced_organisations(vj)
-            for org in service_orgs:
-                org_code = org.get_text_or_default("OrganisationCode")
-                if org_code == service_org_ref:
-                    working_days = self.get_working_days(org)
-                    for date_range in working_days:
-                        start_date = date_range.get_text_or_default("StartDate")
-                        if not start_date:
-                            vehicle_journey_seq_no = vj.vehicle_journey[
-                                "SequenceNumber"
-                            ]
-                            error_msg = (
-                                f"Ignoring vehicle journey with sequence number "
-                                f"{vehicle_journey_seq_no}, as Serviced organisation has no Start date"
-                            )
-                            result.add_error(ErrorCategory.GENERAL, error_msg)
-                            logger.info(error_msg)
-                            break
 
-                        end_date = date_range.get_text_or_default("EndDate")
-                        if not end_date:
-                            vehicle_journey_seq_no = vj.vehicle_journey[
-                                "SequenceNumber"
-                            ]
-                            error_msg = (
-                                f"Ignoring vehicle journey with sequence number "
-                                f"{vehicle_journey_seq_no}, as Serviced organisation has no End date"
-                            )
-                            result.add_error(ErrorCategory.GENERAL, error_msg)
-                            logger.info(error_msg)
-                            break
+            service_orgs_dict = {
+                org.get_text_or_default("OrganisationCode"): org for org in service_orgs
+            }
 
-                        start_date_formatted = datetime.datetime.strptime(
-                            start_date, "%Y-%m-%d"
-                        ).date()
-                        end_date_formatted = datetime.datetime.strptime(
-                            end_date, "%Y-%m-%d"
-                        ).date()
+            if len(service_org_ref_dict["days_of_non_operation"]):
+                for service_org_ref in service_org_ref_dict["days_of_non_operation"]:
+                    if service_org_ref not in service_org_ref_dict:
+                        continue
+                    org = service_orgs_dict[service_org_ref]
+                    (
+                        start_date_formatted,
+                        end_date_formatted,
+                    ) = self.get_service_orgs_working_days_start_end_date(org, result)
+                    if not start_date_formatted or not end_date_formatted:
+                        break
+                    if start_date_formatted <= recorded_at_time <= end_date_formatted:
+                        vehicle_journeys.remove(vj)
 
-                        if (
-                            start_date_formatted
-                            <= recorded_at_time
-                            <= end_date_formatted
-                        ):
-                            inside_operating_range = True
+            elif len(service_org_ref_dict["days_of_operation"]):
+                for service_org_ref in service_org_ref_dict["days_of_non_operation"]:
+                    if service_org_ref not in service_org_ref_dict:
+                        continue
+                    org = service_orgs_dict[service_org_ref]
+                    (
+                        start_date_formatted,
+                        end_date_formatted,
+                    ) = self.get_service_orgs_working_days_start_end_date(org, result)
 
-                    if error_msg is None:
-                        if days_of_non_operation is not None and inside_operating_range:
-                            vehicle_journeys.remove(vj)
-                        elif (
-                            days_of_operation is not None and not inside_operating_range
-                        ):
-                            vehicle_journeys.remove(vj)
+                    if not (
+                        start_date_formatted <= recorded_at_time <= end_date_formatted
+                    ):
+                        vehicle_journeys.remove(vj)
 
         if len(vehicle_journeys) == 0:
             result.add_error(
