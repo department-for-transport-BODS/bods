@@ -8,6 +8,7 @@ from transit_odp.data_quality.csv import ObservationCSV
 from transit_odp.data_quality.models import DataQualityReport
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.users.views.mixins import OrgUserViewMixin
+from transit_odp.browse.report_summary import ReportSummary
 
 from ..report_summary import Summary
 from .mixins import WithDraftRevision
@@ -51,10 +52,14 @@ class ReportOverviewView(DetailView):
         return result 
 
     def get_context_data(self, **kwargs):
+        print("kwargs: ",kwargs)
         context = super().get_context_data(**kwargs)
         report = self.get_object()
         print(report)
+        print("report id: ", report.id)
         summary = Summary.from_report_summary(report.summary)
+        report_summary = ReportSummary(report.id)
+
         rag = get_data_quality_rag(report)
         context.update(
             {
@@ -62,6 +67,7 @@ class ReportOverviewView(DetailView):
                 "warning_data": summary.data,
                 "total_warnings": summary.count,
                 "dq_score": rag,
+                "report_summary": report_summary.get_summary(),
             }
         )
         print(context)

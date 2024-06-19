@@ -14,7 +14,17 @@
       <h1 class="govuk-heading-xl">
         {{ title }}
       </h1>
-
+      <h1>
+        {{report_summary}}
+      </h1>
+      <h3>
+        {{report_summary.observation}}
+      </h3>
+      {% for observation in report_summary.observation %}
+        <h3>
+          {{observation}}
+        </h3>
+      {% endfor %}
       <ul class="govuk-list">
         <li>
           {% trans 'Please find your data quality observations below.' %}
