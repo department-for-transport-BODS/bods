@@ -27,6 +27,8 @@ def get_s3_bucket_storage() -> object:
 
 
 class SQSClientWrapper:
+    """Initialize SQS client, get queue names and send messages to the queues"""
+
     def __init__(self) -> object:
         """
         Initialize and return an SQS client.
@@ -56,7 +58,6 @@ class SQSClientWrapper:
         """
         Send messages to SQS queues based on the provided payload.
         """
-
         try:
             response = self.sqs_client.list_queues()
             if "QueueUrls" in response:
@@ -70,19 +71,24 @@ class SQSClientWrapper:
                 for queue_name, messages in queues_payload.items():
                     if queue_name in queue_url_map:
                         queue_url = queue_url_map[queue_name]
-                        for message in messages:
-                            try:
-                                response_send = self.sqs_client.send_message(
-                                    QueueUrl=queue_url, MessageBody=json.dumps(message)
-                                )
+                        try:
+                            response_send_messages = self.sqs_client.send_message_batch(
+                                QueueUrl=queue_url, Entries=messages
+                            )
+
+                            for success in response_send_messages.get("Successful", []):
                                 logger.info(
-                                    f"Message sent to {queue_name}: {response_send['MessageId']}"
+                                    f"Message sent to {queue_url}: {success['MessageId']}"
                                 )
-                            except Exception as e:
-                                logger.error(
-                                    f"Error sending message to {queue_name}: {e}"
+
+                            for error in response_send_messages.get("Failed", []):
+                                logger.info(
+                                    f"Failed to send message to {queue_url}: {error['MessageId'] if 'MessageId' in error else error['Id']} - {error['Message']}"
                                 )
-                                raise
+
+                        except Exception as e:
+                            logger.error(f"Error sending message to {queue_name}: {e}")
+                            raise
                     else:
                         logger.info(f"Queue {queue_name} not found in SQS queues.")
             else:

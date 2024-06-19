@@ -1,8 +1,6 @@
 import logging
-import csv
-from io import StringIO
+import json
 import pandas as pd
-import numpy as np
 from transit_odp.pipelines.constants import SchemaCategory
 from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
@@ -499,21 +497,21 @@ def get_updated_columns(df: pd.DataFrame) -> pd.Series:
     return ["-" if "-missing_journey_code" in col else col for col in df.columns]
 
 
-def create_queue_payload(pending_checks: list) -> list:
+def create_queue_payload(pending_checks: list) -> dict:
     """
-    Create JSON payload as queue items for remote queues for lambdas
+    Create JSON payload as queue items for remote queues for lambdas.
     """
     queue_payload = {}
-    for check in pending_checks:
-        payload_item = QueuePayloadItem(
-            file_id=check.transmodel_txcfileattributes.id,
-            check_id=check.checks.id,
-            result_id=check.id,
-            queue_name=check.queue_name,
-        )
-        queue_name = payload_item.queue_name
+    for index, check in enumerate(pending_checks):
+        payload_item = {
+            "file_id": check.transmodel_txcfileattributes.id,
+            "check_id": check.checks.id,
+            "result_id": check.id,
+        }
+        queue_name = check.queue_name
         if queue_name not in queue_payload:
             queue_payload[queue_name] = []
-        queue_payload[queue_name].append(payload_item.to_dict())
+        message = {"Id": f"message-{index}", "MessageBody": json.dumps(payload_item)}
+        queue_payload[queue_name].append(message)
 
     return queue_payload
