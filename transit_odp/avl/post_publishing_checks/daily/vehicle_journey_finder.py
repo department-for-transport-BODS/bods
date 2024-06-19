@@ -659,8 +659,23 @@ class VehicleJourneyFinder:
         )
 
     def get_service_orgs_working_days_start_end_date(
-        self, org, result: ValidationResult, recorded_at_time: datetime.date
-    ):
+        self,
+        org: TransXChangeElement,
+        result: ValidationResult,
+        recorded_at: datetime.date,
+        vj: TxcVehicleJourney,
+    ) -> bool:
+        """Method to find out the recorded_at_time is present in the start date or end date
+        Provided in the service organisation of TXC file
+
+        Args:
+            org (TransXChangeElement): _description_
+            result (ValidationResult): validation results class for error collection
+            recorded_at (datetime.date): date on which vehicle activity was recorded
+
+        Returns:
+            bool: True means recorded_at is between the dates given in service organisation
+        """
 
         working_days = self.get_working_days(org)
         for date_range in working_days:
@@ -690,16 +705,33 @@ class VehicleJourneyFinder:
                 start_date, "%Y-%m-%d"
             ).date()
             end_date_formatted = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
-            if start_date_formatted <= recorded_at_time <= end_date_formatted:
+            if start_date_formatted <= recorded_at <= end_date_formatted:
                 return True
         return False
 
     def filter_by_days_of_operation(
         self,
-        recorded_at_time,
+        recorded_at_time: datetime.date,
         vehicle_journeys: List[TxcVehicleJourney],
         result: ValidationResult,
-    ):
+    ) -> bool:
+        """Filter vehicle journies based on days of operation in ServicedOrganisations
+        DaysOfNonOperations gets priority over DaysOfOperation in cased both elements are present in
+        Operating profile
+        if DaysOfNonOperation is present and recorded_at_time is BETWEEN start date and end date for
+        ServicedOrganisation, VehicleJourney will be removed from the list
+
+        if DaysOfOperation is present and recorded_at_time is OUTSIDE start date and end date for
+        ServicedOrganisation, VehicleJourney will be removed from the list
+
+        Args:
+            recorded_at_time (datetime.date): vehicle movement recorded date
+            vehicle_journeys (List[TxcVehicleJourney]): list of vehicle journeys
+            result (ValidationResult): result class for recording errors
+
+        Returns:
+            bool:
+        """
         for vj in reversed(vehicle_journeys):
 
             (
@@ -720,7 +752,7 @@ class VehicleJourneyFinder:
                         continue
                     org = service_orgs_dict[service_org_ref]
                     if self.get_service_orgs_working_days_start_end_date(
-                        org, result, recorded_at_time
+                        org, result, recorded_at_time, vj
                     ):
                         vehicle_journeys.remove(vj)
 
@@ -731,7 +763,7 @@ class VehicleJourneyFinder:
                     org = service_orgs_dict[service_org_ref]
 
                     if not self.get_service_orgs_working_days_start_end_date(
-                        org, result, recorded_at_time
+                        org, result, recorded_at_time, vj
                     ):
                         vehicle_journeys.remove(vj)
 
