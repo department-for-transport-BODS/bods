@@ -51,7 +51,17 @@ USE_TZ = True
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {"default": env.db("DATABASE_URL")}
+# DATABASES = {"default": env.db("DATABASE_URL")}
+DATABASES = {
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": "transit_odp",
+        "USER": "transit_odp",
+        "PASSWORD": "transit_odp",
+        "HOST": "postgres",
+        "PORT": "5432",
+    }
+}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # URLS
@@ -612,6 +622,10 @@ EP_AUTH_URL = env(
 # ------------------------------------------------------------------------------
 DISRUPTIONS_API_BASE_URL = env("DISRUPTIONS_API_BASE_URL", default="")
 DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
+
+# GTFS API
+# ------------------------------------------------------------------------------
+GTFS_API_BASE_URL = env("GTFS_API_BASE_URL", default="")
 
 # SQS QUEUE
 # ------------------------------------------------------------------------------
