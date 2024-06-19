@@ -253,7 +253,7 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
                 and service.service_type_description,
                 "registration_operator_name": (service and service.operator)
                 and service.operator.operator_name,
-                "expiry_date": service and service.licence.granted_date,
+                "expiry_date": service and service.licence.expiry_date,
                 "effective_date": service and service.effective_date,
                 "received_date": service and service.received_date,
             }

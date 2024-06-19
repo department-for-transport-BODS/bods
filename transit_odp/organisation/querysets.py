@@ -27,7 +27,7 @@ from django.db.models import (
     Value,
     When,
 )
-from django.db.models.expressions import Exists
+from django.db.models.expressions import Exists, RawSQL
 from django.db.models.functions import (
     Cast,
     Coalesce,
@@ -60,7 +60,6 @@ from transit_odp.organisation.constants import (
 )
 from transit_odp.organisation.view_models import GlobalFeedStats
 from transit_odp.users.constants import AccountType
-from django.db.models.expressions import RawSQL
 
 User = get_user_model()
 ANONYMOUS = "Anonymous"
@@ -1155,6 +1154,22 @@ class DatasetRevisionQuerySet(models.QuerySet):
             .add_latest_task_progress()
             .filter(
                 dataset__dataset_type=TimetableType,
+                latest_task_progress__lt=100,
+                created__lt=yesterday,
+            )
+            .exclude(
+                latest_task_status__in=["FAILURE", "SUCCESS"],
+            )
+        )
+
+    def get_fares_stuck_revisions(self):
+        now = timezone.now()
+        yesterday = now - timedelta(days=1)
+        return (
+            self.add_latest_task_status()
+            .add_latest_task_progress()
+            .filter(
+                dataset__dataset_type=FaresType,
                 latest_task_progress__lt=100,
                 created__lt=yesterday,
             )
