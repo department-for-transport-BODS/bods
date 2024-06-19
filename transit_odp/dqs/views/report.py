@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.views.generic import DetailView
 from waffle import flag_is_active
 from transit_odp.dqs.models import Report
