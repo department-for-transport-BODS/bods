@@ -9,6 +9,7 @@ import pandas as pd
 from django.db.models import F
 from waffle import flag_is_active
 from transit_odp.dqs.constants import BUS_SERVICES_AFFECTED_SUBSET, ReportStatus
+
 CRITICAL_INTRO = (
     "These observations are considered critical in terms of data quality. "
     "An operator should aim to have zero critical observations in their data."

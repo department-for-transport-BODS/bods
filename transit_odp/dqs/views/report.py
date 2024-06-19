@@ -3,6 +3,7 @@ from waffle import flag_is_active
 from transit_odp.dqs.models import Report
 from transit_odp.data_quality.report_summary import Summary
 from transit_odp.dqs.constants import ReportStatus
+
 # Create your views here.
 
 
@@ -10,7 +11,8 @@ from transit_odp.dqs.constants import ReportStatus
 class ReportOverviewView(DetailView):
     template_name = "data_quality/report.html"
     pk_url_kwarg = "report_id"
-    model = Report 
+    model = Report
+
     def get_queryset(self):
         dataset_id = self.kwargs["pk"]
         result = (

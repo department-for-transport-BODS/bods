@@ -16,7 +16,6 @@ from transit_odp.dqs.models import Report
 from transit_odp.dqs.constants import ReportStatus
 
 
-
 class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision):
     permanent = False
     query_string = False
@@ -37,7 +36,6 @@ class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision)
         return super().get_redirect_url(*args, **kwargs)
 
 
-
 # TODO: DQSMIGRATION: REMOVE
 class ReportOverviewView(DetailView):
     template_name = "data_quality/report.html"
@@ -45,16 +43,18 @@ class ReportOverviewView(DetailView):
 
     def get_queryset(self):
         dataset_id = self.kwargs["pk"]
-        is_new_data_quality_service_active = flag_is_active("", "is_new_data_quality_service_active")
+        is_new_data_quality_service_active = flag_is_active(
+            "", "is_new_data_quality_service_active"
+        )
         if is_new_data_quality_service_active:
             self.model = Report
             result = (
-            super()
-            .get_queryset()
-            .filter(revision__dataset_id=dataset_id)
-            .filter(id=self.kwargs["report_id"])
-            .filter(status=ReportStatus.PIPELINE_SUCCEEDED.value)
-            .select_related("revision")
+                super()
+                .get_queryset()
+                .filter(revision__dataset_id=dataset_id)
+                .filter(id=self.kwargs["report_id"])
+                .filter(status=ReportStatus.PIPELINE_SUCCEEDED.value)
+                .select_related("revision")
             )
         else:
             self.model = DataQualityReport
@@ -72,10 +72,16 @@ class ReportOverviewView(DetailView):
         if kwargs.get("object"):
             revision_id = kwargs.get("object").revision_id
         report = self.get_object()
-        is_new_data_quality_service_active = flag_is_active("", "is_new_data_quality_service_active")
+        is_new_data_quality_service_active = flag_is_active(
+            "", "is_new_data_quality_service_active"
+        )
         if is_new_data_quality_service_active:
             report_id = report.id if report else None
-            context.update({"is_new_data_quality_service_active": is_new_data_quality_service_active})
+            context.update(
+                {
+                    "is_new_data_quality_service_active": is_new_data_quality_service_active
+                }
+            )
         else:
             report_id = report.summary.report_id
             rag = get_data_quality_rag(report)
