@@ -1,5 +1,4 @@
 from itertools import chain
-
 from django.views.generic import TemplateView
 from django_hosts import reverse
 from django_tables2 import MultiTableMixin, SingleTableView
