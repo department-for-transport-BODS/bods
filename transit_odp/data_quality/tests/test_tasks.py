@@ -12,7 +12,11 @@ from transit_odp.pipelines.factories import (
     DataQualityTaskFactory,
     DatasetETLTaskResultFactory,
 )
-from transit_odp.pipelines.models import DataQualityTask, DatasetETLTaskResult
+from transit_odp.pipelines.models import (
+    DataQualityTask,
+    DatasetETLTaskResult,
+    DataQualityTask,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -88,3 +92,22 @@ def test_download_dqs_file(create_report):
     create_report.assert_called_once_with(task.task_id)
     assert task.report is not None
     assert task.report.file.name == f"dqs_report_{task.task_id}.json"
+
+
+@patch("transit_odp.data_quality.tasks.upload_file_to_dqs")
+def test_task_upload_file_multiple_times(upload):
+    uuid = str(uuid4())
+    upload.return_value = uuid
+
+    revision = DatasetRevisionFactory()
+    task = DatasetETLTaskResultFactory(revision=revision)
+    dq_task = upload_dataset_to_dqs(task.id)
+
+    task = DatasetETLTaskResultFactory(revision=revision)
+    dq_task = upload_dataset_to_dqs(task.id)
+
+    assert dq_task.task_id == uuid
+    assert dq_task.status == DataQualityTask.RECEIVED
+
+    data_quality_task_records = DataQualityTask.objects.all()
+    assert len(data_quality_task_records) == 1
