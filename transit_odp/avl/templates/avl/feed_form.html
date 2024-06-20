@@ -21,7 +21,7 @@
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds" style="padding-left: 15px">
+    <div class="govuk-grid-column-two-thirds indented-text" >
       {% block inner %}
         <form method="post" enctype="multipart/form-data" novalidate>
           {% csrf_token %}
@@ -48,10 +48,10 @@
             {% trans "Need help with operator data requirements?" %}
           </h2>
           <p class="govuk-body">
-            <a class="govuk-link" style="font-size: 18px" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{{ _("View our guidelines here") }}</a>
+            <a class="large-font govuk-link"  href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{{ _("View our guidelines here") }}</a>
           </p>
           <p class="govuk-body">
-            <a class="govuk-link" style="font-size: 18px" href="{% url 'contact' host hosts.root %}">{{ _("Contact support desk") }}</a>
+            <a class="large-font govuk-link"  href="{% url 'contact' host hosts.root %}">{{ _("Contact support desk") }}</a>
           </p>
         {% endblock %}
       </div>

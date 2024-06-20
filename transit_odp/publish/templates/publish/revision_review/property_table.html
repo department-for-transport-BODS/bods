@@ -25,7 +25,7 @@
           {% filter force_escape %}
             {% trans object.description|safe %}
           {% endfilter %}
-          <span style="text-align: right"><a class="govuk-link" href="{% url 'revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
+          <span ><a class="right-justify govuk-link" href="{% url 'revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
             {% filter force_escape %}
               {% trans "Edit" %}
             {% endfilter %}
@@ -72,7 +72,7 @@
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
-      <span class="no-wrap" id="id-publish-review-quality-report" style="text-align: right">
+      <span class="no-wrap right-justify" id="id-publish-review-quality-report" >
         {% if dq_status == "SUCCESS" %}
           <a class="govuk-link"
              target="_blank"
@@ -116,7 +116,7 @@
     <td class="govuk-table__cell">
       <div class="flex-between">
         <span>{{ object.transxchange_version }}</span>
-        <span class="no-wrap" style="text-align: right">
+        <span class="no-wrap right-justify" >
           {% url 'feed-download' pk1=pk1 pk=object.dataset_id host host.name as download_link %}
           <a class="govuk-link"
              href=" {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
@@ -168,7 +168,7 @@
             {% endfilter %}
           {% endif %}
         </span>
-        {#        <span style="text-align: right">#}
+        {#        <span class="right-justify" >#}
         {#          {% block inner.last_updated.changelog_link %}#}
         {#            <a class="govuk-link"#}
         {#               href="{% url 'feed-changelog' pk=object.dataset_id host host.name %}">{% filter force_escape %}{% trans "View change log" %}{% endfilter %}</a>#}

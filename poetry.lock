@@ -747,6 +747,24 @@ jsbeautifier = "*"
 six = ">=1.13.0"
 
 [[package]]
+name = "cssutils"
+version = "2.11.1"
+description = "A CSS Cascading Style Sheets library for Python"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "cssutils-2.11.1-py3-none-any.whl", hash = "sha256:a67bfdfdff4f3867fab43698ec4897c1a828eca5973f4073321b3bccaf1199b1"},
+    {file = "cssutils-2.11.1.tar.gz", hash = "sha256:0563a76513b6af6eebbe788c3bf3d01c920e46b3f90c8416738c5cfc773ff8e2"},
+]
+
+[package.dependencies]
+more-itertools = "*"
+
+[package.extras]
+doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
+test = ["cssselect", "importlib-resources", "jaraco.test (>=5.1)", "lxml", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
+
+[[package]]
 name = "ddsketch"
 version = "2.0.4"
 description = "Distributed quantile sketches"
@@ -2227,6 +2245,17 @@ urllib3 = ">=1.25.3"
 pook = ["pook (>=0.2.1)"]
 speedups = ["xxhash", "xxhash-cffi"]
 test = ["aiohttp", "asgiref", "build", "fastapi", "flake8 (>5)", "gevent", "httpx", "pipfile", "pook", "pre-commit", "pytest", "pytest-asyncio", "pytest-cov", "redis", "requests", "sure", "twine", "wait-for-it", "xxhash"]
+
+[[package]]
+name = "more-itertools"
+version = "10.3.0"
+description = "More routines for operating on iterables, beyond itertools"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "more-itertools-10.3.0.tar.gz", hash = "sha256:e5d93ef411224fbcef366a6e8ddc4c5781bc6359d43412a65dd5964e46111463"},
+    {file = "more_itertools-10.3.0-py3-none-any.whl", hash = "sha256:ea6a02e24a9161e51faad17a8782b92a0df82c12c1c8886fec7f0c3fa1a1b320"},
+]
 
 [[package]]
 name = "mypy-extensions"
@@ -4050,4 +4079,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "5181b73b7edae284881fe8b47ed1f5ad191fc98a8e2c2f1ce317600ffbbe312c"
+content-hash = "a287f84121e5e1aee1c7b48ae3666edb0938a221836b9b35dd038cdf5aa6bc17"

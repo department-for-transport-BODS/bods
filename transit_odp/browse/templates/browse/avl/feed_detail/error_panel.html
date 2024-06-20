@@ -37,7 +37,7 @@
               {% trans "System" %}
             {% endif %}
           </span>
-          <span style="text-align: right">
+          <span class="right-justify" >
             {% block inner.last_updated.changelog_link %}
               <a class="govuk-link" href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans "View change log" %}</a>
             {% endblock %}
@@ -59,13 +59,13 @@
 </p>
 <table class="govuk-table">
   <tr class="govuk-table__row">
-    <td class="govuk-table__cell" style="border: 0">
+    <td class="govuk-table__cell govuk-summary-list__row--no-border" >
       {% trans "TransXChange version" %}
     </td>
-    <td class="govuk-table__cell" style="border: 0">
+    <td class="govuk-table__cell govuk-summary-list__row--no-border" >
       <div class="flex-between">
         <span>{{ object.transxchange_version }}</span>
-        <span class="no-wrap" style="text-align: right">
+        <span class="right-justify no-wrap" >
           {% if object.status == 'expired' or object.status == 'inactive' %}
             {% url 'feed-download' pk=object.id host host.name as download_link %}
           {% elif object.status == 'error' %}

@@ -27,15 +27,11 @@
     {% if item.is_fares_compliant %}
       <span class="item__value">{% trans "Compliant" %}</span>
     {% else %}
-      <div class="govuk-warning-text item__value govuk-!-margin-bottom-0" style="padding: 0px;">
-        <span class="govuk-warning-text__icon"
+      <div class="item__value govuk-warning-text pa0-l govuk-!-margin-bottom-0" >
+        <span class="icon-container govuk-warning-text__icon"
               aria-hidden="true"
-              style="min-width: 20px;
-                     min-height: 20px;
-                     font-size: 15px;
-                     line-height: 15px;
-                     top: 7px">!</span>
-        <span class="govuk-warning-text__text" style="padding-left: 30px;">{% trans "Non compliant" %}</span>
+              >!</span>
+        <span class="app-step-nav-related app-task-list__items" >{% trans "Non compliant" %}</span>
       </div>
     {% endif %}
   </li>

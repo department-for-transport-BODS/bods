@@ -33,7 +33,7 @@
         <div class="flex-between">
           <span class="dont-break-out">{% trans properties.description %}</span>
           {% if not properties.is_dummy %}
-            <span style="text-align: right">
+            <span class="right-justify" >
               <a class="govuk-link" href="{% url 'avl:dataset-edit' pk=properties.dataset_id pk1=pk1 host hosts.publish %}">
                 {% trans "Edit" %}
               </a>
@@ -109,7 +109,7 @@
               {% trans "System" %}
             {% endif %}
           </span>
-          <span style="text-align: right">
+          <span class="right-justify" >
             {% block inner.last_updated.changelog_link %}
               <a class="govuk-link" href="{% url 'avl:feed-changelog' pk1=pk1 pk=object.id host host.name %}">
                 {% trans "View change log" %}

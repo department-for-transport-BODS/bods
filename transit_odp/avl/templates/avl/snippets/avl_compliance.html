@@ -7,7 +7,7 @@
   <a href="{% url 'avl:validation-report-download' pk1=view.kwargs.pk1 pk=view.kwargs.pk %}" class="govuk-link">Download validation report</a>
   <div class="govuk-warning-text">
     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-    <strong class="govuk-warning-text__text">
+    <strong class="app-step-nav-related">
       <span class="govuk-warning-text__assistive">Warning</span>
       {% blocktrans %}
                 Your data is currently being published but contains potential issues.
@@ -32,7 +32,7 @@
   <a href="{% url 'avl:validation-report-download' pk1=view.kwargs.pk1 pk=view.kwargs.pk %}" class="govuk-link">Download validation report</a>
   <div class="govuk-warning-text">
     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-    <strong class="govuk-warning-text__text">
+    <strong class="app-step-nav-related">
       <span class="govuk-warning-text__assistive">Warning</span>
       {% blocktrans %}
                 The AVL data feed is only partially compliant.
@@ -48,7 +48,7 @@
   <a href="{% url 'avl:validation-report-download' pk1=view.kwargs.pk1 pk=view.kwargs.pk %}" class="govuk-link">Download validation report</a>
   <div class="govuk-warning-text">
     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-    <strong class="govuk-warning-text__text">
+    <strong class="app-step-nav-related">
       <span class="govuk-warning-text__assistive">Warning</span>
       {% blocktrans %}
                 The AVL data feed is non-compliant. To pass the validation please address all

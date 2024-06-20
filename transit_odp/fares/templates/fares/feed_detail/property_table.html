@@ -25,7 +25,7 @@
       <td class="govuk-table__cell">
         <div class="flex-between">
           {% trans properties.description %}
-          <span style="text-align: right"><a class="govuk-link" href="{% url 'fares:dataset-edit' pk=object.id pk1=pk1 host hosts.publish %}">
+          <span ><a class="right-justify govuk-link" href="{% url 'fares:dataset-edit' pk=object.id pk1=pk1 host hosts.publish %}">
             {% trans "Edit" %}
           </a>
         </span>
@@ -63,14 +63,10 @@
     {% if is_compliant_error %}
       <td colspan="2" class="govuk-table__cell">
         <div class="govuk-warning-text stacked govuk-!-margin-bottom-0">
-          <span class="govuk-warning-text__icon"
+          <span class="govuk-warning-text__icon content-box"
                 aria-hidden="true"
-                style="min-width: 20px;
-                       min-height: 20px;
-                       font-size: 15px;
-                       line-height: 15px;
-                       top: 16px">!</span>
-          <span class="govuk-warning-text__text" style="padding-left: 30px;">{% trans "Non compliant" %}</span>
+                >!</span>
+          <span class="app-step-nav-related app-task-list__items" >{% trans "Non compliant" %}</span>
           {% if show_report_link %}
             <a class="govuk-link govuk-!-margin-left-6" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
           {% endif %}
@@ -104,7 +100,7 @@
     {% trans "URL link" %}
   </th>
   <td class="govuk-table__cell">
-    <span class="no-wrap" style="text-align: right" id="id-publish-review-url-link">
+    <span class="right-justify no-wrap"  id="id-publish-review-url-link">
       <a class="govuk-link"
          href=" {% if properties.url_link %}{{ properties.url_link }}{% else %}{{ properties.download_url }}?is_review=false{% endif %}">
         {% trans "Publisher URL" %}
@@ -117,7 +113,7 @@
     {% trans "Download NeTEx" %}
   </th>
   <td class="govuk-table__cell">
-    <span class="no-wrap" style="text-align: right">
+    <span class="right-justify no-wrap" >
       <a class="govuk-link" href="{{ properties.download_url }}?is_review=true">{% trans "Download .xml" %}</a>
     </span>
   </td>
@@ -134,7 +130,7 @@
         {% trans "by " %}
         {{ properties.last_modified_user|default_if_none:'System' }}
       </span>
-      <span style="text-align: right">
+      <span class="right-justify" >
         {% block inner.last_updated.changelog_link %}
           <a class="govuk-link" href= "{% url 'fares:feed-changelog' pk=object.id pk1=pk1 host host.name %}">
             {% trans "View change log" %}

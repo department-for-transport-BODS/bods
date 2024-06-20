@@ -72,12 +72,12 @@
           {# National operator Code #}
           {% for noc in properties.nocs %}
             <tr class="govuk-table__row">
-              <td class="govuk-table__cell manage-users-table__key" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+              <td class="govuk-table__cell no-border manage-users-table__key" {% if not forloop.last %}{% endif %}>
                 {% if forloop.first %}
                   {% trans "National operator Code" %}
                 {% endif %}
               </td>
-              <td colspan="2" class="govuk-table__cell" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+              <td colspan="2" class="govuk-table__cell no-border" {% if not forloop.last %}{% endif %}>
                 {{ noc }}
               </td>
             </tr>
@@ -85,12 +85,12 @@
           {# PSV Licence Number #}
           {% for licence in properties.licences %}
             <tr class="govuk-table__row">
-              <td class="govuk-table__cell manage-users-table__key" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+              <td class="govuk-table__cell no-border manage-users-table__key" {% if not forloop.last %}{% endif %}>
                 {% if forloop.first %}
                   {% trans "PSV Licence Number" %}
                 {% endif %}
               </td>
-              <td colspan="2" class="govuk-table__cell" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+              <td colspan="2" class="govuk-table__cell no-border" {% if not forloop.last %}{% endif %}>
                 {{ licence.number }}
               </td>
             </tr>
@@ -116,15 +116,15 @@
           {% endif %}
           {% for exempt_code in properties.service_code_exemptions %}
             <tr class="govuk-table__row">
-              <td class="govuk-table__cell manage-users-table__key" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+              <td class="govuk-table__cell no-border manage-users-table__key" {% if not forloop.last %}{% endif %}>
                 {% if forloop.first %}
                   {% trans "Service codes exempt" %}
                 {% endif %}
               </td>
-              <td class="govuk-table__cell" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+              <td class="govuk-table__cell no-border" {% if not forloop.last %}{% endif %}>
                 {{ exempt_code.registration_number }}
               </td>
-              <td class="govuk-table__cell" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+              <td class="govuk-table__cell no-border" {% if not forloop.last %}{% endif %}>
                 {{ exempt_code.justification }}
               </td>
             </tr>
@@ -150,15 +150,15 @@
           {# Agents #}
           {% for agent in properties.agents %}
             <tr class="govuk-table__row">
-              <td class="govuk-table__cell manage-users-table__key" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+              <td class="govuk-table__cell no-border manage-users-table__key" {% if not forloop.last %}{% endif %}>
                 {% if forloop.first %}
                   {% trans "Agents" %}
                 {% endif %}
               </td>
-              <td class="govuk-table__cell" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+              <td class="govuk-table__cell no-border" {% if not forloop.last %}{% endif %}>
                 {{ agent.email }}
               </td>
-              <td class="govuk-table__cell" {% if not forloop.last %}style="border-bottom: none"{% endif %}>
+              <td class="govuk-table__cell no-border" {% if not forloop.last %}{% endif %}>
                 <a class="govuk-link" href="{% url 'users:agent-detail' pk=agent.id host hosts.admin %}">View details</a>
               </td>
             </tr>
