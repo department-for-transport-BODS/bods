@@ -105,9 +105,9 @@
     lru-cache "^5.1.1"
     semver "^6.3.1"
 
-"@babel/helper-create-class-features-plugin@^7.24.7":
+"@babel/helper-create-bods-features-plugin@^7.24.7":
   version "7.24.7"
-  resolved "https://registry.yarnpkg.com/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.24.7.tgz#2eaed36b3a1c11c53bdf80d53838b293c52f5b3b"
+  resolved "https://registry.yarnpkg.com/@babel/helper-create-bods-features-plugin/-/helper-create-bods-features-plugin-7.24.7.tgz#2eaed36b3a1c11c53bdf80d53838b293c52f5b3b"
   integrity sha512-kTkaDl7c9vO80zeX1rJxnuRpEsD5tA81yh11X1gQo+PhSti3JS+7qeZo9U4RHobKRiFPKaGK3svUAeb8D0Q7eg==
   dependencies:
     "@babel/helper-annotate-as-pure" "^7.24.7"
@@ -290,9 +290,9 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.24.7.tgz#9a5226f92f0c5c8ead550b750f5608e766c8ce85"
   integrity sha512-9uUYRm6OqQrCqQdG1iCBwBPZgN8ciDBro2nIOFaiRz1/BCxaI7CNvQbDHvsArAC7Tw9Hda/B3U+6ui9u4HWXPw==
 
-"@babel/plugin-bugfix-firefox-class-in-computed-class-key@^7.24.7":
+"@babel/plugin-bugfix-firefox-bods-in-computed-bods-key@^7.24.7":
   version "7.24.7"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-bugfix-firefox-class-in-computed-class-key/-/plugin-bugfix-firefox-class-in-computed-class-key-7.24.7.tgz#fd059fd27b184ea2b4c7e646868a9a381bbc3055"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-bugfix-firefox-bods-in-computed-bods-key/-/plugin-bugfix-firefox-bods-in-computed-bods-key-7.24.7.tgz#fd059fd27b184ea2b4c7e646868a9a381bbc3055"
   integrity sha512-TiT1ss81W80eQsN+722OaeQMY/G4yTb4G9JrqeiDADs3N8lbPMGldWi9x8tyqCW5NLx1Jh2AvkE6r6QvEltMMQ==
   dependencies:
     "@babel/helper-environment-visitor" "^7.24.7"
@@ -314,9 +314,9 @@
     "@babel/helper-skip-transparent-expression-wrappers" "^7.24.7"
     "@babel/plugin-transform-optional-chaining" "^7.24.7"
 
-"@babel/plugin-bugfix-v8-static-class-fields-redefine-readonly@^7.24.7":
+"@babel/plugin-bugfix-v8-static-bods-fields-redefine-readonly@^7.24.7":
   version "7.24.7"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-bugfix-v8-static-class-fields-redefine-readonly/-/plugin-bugfix-v8-static-class-fields-redefine-readonly-7.24.7.tgz#71b21bb0286d5810e63a1538aa901c58e87375ec"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-bugfix-v8-static-bods-fields-redefine-readonly/-/plugin-bugfix-v8-static-bods-fields-redefine-readonly-7.24.7.tgz#71b21bb0286d5810e63a1538aa901c58e87375ec"
   integrity sha512-utA4HuR6F4Vvcr+o4DnjL8fCOlgRFGbeeBEGNg3ZTrLFw6VWG5XmUrvcQ0FjIYMU2ST4XcR2Wsp7t9qOAPnxMg==
   dependencies:
     "@babel/helper-environment-visitor" "^7.24.7"
@@ -334,16 +334,16 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.8.0"
 
-"@babel/plugin-syntax-class-properties@^7.12.13":
+"@babel/plugin-syntax-bods-properties@^7.12.13":
   version "7.12.13"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-class-properties/-/plugin-syntax-class-properties-7.12.13.tgz#b5c987274c4a3a82b89714796931a6b53544ae10"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-bods-properties/-/plugin-syntax-bods-properties-7.12.13.tgz#b5c987274c4a3a82b89714796931a6b53544ae10"
   integrity sha512-fm4idjKla0YahUNgFNLCB0qySdsoPiZP3iQE3rky0mBUtMZ23yDJ9SJdg6dXTSDnulOVqiF3Hgr9nbXvXTQZYA==
   dependencies:
     "@babel/helper-plugin-utils" "^7.12.13"
 
-"@babel/plugin-syntax-class-static-block@^7.14.5":
+"@babel/plugin-syntax-bods-static-block@^7.14.5":
   version "7.14.5"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-class-static-block/-/plugin-syntax-class-static-block-7.14.5.tgz#195df89b146b4b78b3bf897fd7a257c84659d406"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-bods-static-block/-/plugin-syntax-bods-static-block-7.14.5.tgz#195df89b146b4b78b3bf897fd7a257c84659d406"
   integrity sha512-b+YyPmr6ldyNnM6sqYeMWE+bgJcJpO6yS4QD7ymxgH34GBPNDM/THBh8iunyvKIZztiwLH4CJZ0RxTk9emgpjw==
   dependencies:
     "@babel/helper-plugin-utils" "^7.14.5"
@@ -494,22 +494,22 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.24.7"
 
-"@babel/plugin-transform-class-properties@^7.24.7":
+"@babel/plugin-transform-bods-properties@^7.24.7":
   version "7.24.7"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-class-properties/-/plugin-transform-class-properties-7.24.7.tgz#256879467b57b0b68c7ddfc5b76584f398cd6834"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-bods-properties/-/plugin-transform-bods-properties-7.24.7.tgz#256879467b57b0b68c7ddfc5b76584f398cd6834"
   integrity sha512-vKbfawVYayKcSeSR5YYzzyXvsDFWU2mD8U5TFeXtbCPLFUqe7GyCgvO6XDHzje862ODrOwy6WCPmKeWHbCFJ4w==
   dependencies:
-    "@babel/helper-create-class-features-plugin" "^7.24.7"
+    "@babel/helper-create-bods-features-plugin" "^7.24.7"
     "@babel/helper-plugin-utils" "^7.24.7"
 
-"@babel/plugin-transform-class-static-block@^7.24.7":
+"@babel/plugin-transform-bods-static-block@^7.24.7":
   version "7.24.7"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-class-static-block/-/plugin-transform-class-static-block-7.24.7.tgz#c82027ebb7010bc33c116d4b5044fbbf8c05484d"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-bods-static-block/-/plugin-transform-bods-static-block-7.24.7.tgz#c82027ebb7010bc33c116d4b5044fbbf8c05484d"
   integrity sha512-HMXK3WbBPpZQufbMG4B46A90PkuuhN9vBCb5T8+VAHqvAqvcLi+2cKoukcpmUYkszLhScU3l1iudhrks3DggRQ==
   dependencies:
-    "@babel/helper-create-class-features-plugin" "^7.24.7"
+    "@babel/helper-create-bods-features-plugin" "^7.24.7"
     "@babel/helper-plugin-utils" "^7.24.7"
-    "@babel/plugin-syntax-class-static-block" "^7.14.5"
+    "@babel/plugin-syntax-bods-static-block" "^7.14.5"
 
 "@babel/plugin-transform-classes@^7.24.7":
   version "7.24.7"
@@ -739,7 +739,7 @@
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-private-methods/-/plugin-transform-private-methods-7.24.7.tgz#e6318746b2ae70a59d023d5cc1344a2ba7a75f5e"
   integrity sha512-COTCOkG2hn4JKGEKBADkA8WNb35TGkkRbI5iT845dB+NyqgO8Hn+ajPbSnIQznneJTa3d30scb6iz/DhH8GsJQ==
   dependencies:
-    "@babel/helper-create-class-features-plugin" "^7.24.7"
+    "@babel/helper-create-bods-features-plugin" "^7.24.7"
     "@babel/helper-plugin-utils" "^7.24.7"
 
 "@babel/plugin-transform-private-property-in-object@^7.24.7":
@@ -748,7 +748,7 @@
   integrity sha512-9z76mxwnwFxMyxZWEgdgECQglF2Q7cFLm0kMf8pGwt+GSJsY0cONKj/UuO4bOH0w/uAel3ekS4ra5CEAyJRmDA==
   dependencies:
     "@babel/helper-annotate-as-pure" "^7.24.7"
-    "@babel/helper-create-class-features-plugin" "^7.24.7"
+    "@babel/helper-create-bods-features-plugin" "^7.24.7"
     "@babel/helper-plugin-utils" "^7.24.7"
     "@babel/plugin-syntax-private-property-in-object" "^7.14.5"
 
@@ -850,14 +850,14 @@
     "@babel/helper-compilation-targets" "^7.24.7"
     "@babel/helper-plugin-utils" "^7.24.7"
     "@babel/helper-validator-option" "^7.24.7"
-    "@babel/plugin-bugfix-firefox-class-in-computed-class-key" "^7.24.7"
+    "@babel/plugin-bugfix-firefox-bods-in-computed-bods-key" "^7.24.7"
     "@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression" "^7.24.7"
     "@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining" "^7.24.7"
-    "@babel/plugin-bugfix-v8-static-class-fields-redefine-readonly" "^7.24.7"
+    "@babel/plugin-bugfix-v8-static-bods-fields-redefine-readonly" "^7.24.7"
     "@babel/plugin-proposal-private-property-in-object" "7.21.0-placeholder-for-preset-env.2"
     "@babel/plugin-syntax-async-generators" "^7.8.4"
-    "@babel/plugin-syntax-class-properties" "^7.12.13"
-    "@babel/plugin-syntax-class-static-block" "^7.14.5"
+    "@babel/plugin-syntax-bods-properties" "^7.12.13"
+    "@babel/plugin-syntax-bods-static-block" "^7.14.5"
     "@babel/plugin-syntax-dynamic-import" "^7.8.3"
     "@babel/plugin-syntax-export-namespace-from" "^7.8.3"
     "@babel/plugin-syntax-import-assertions" "^7.24.7"
@@ -878,8 +878,8 @@
     "@babel/plugin-transform-async-to-generator" "^7.24.7"
     "@babel/plugin-transform-block-scoped-functions" "^7.24.7"
     "@babel/plugin-transform-block-scoping" "^7.24.7"
-    "@babel/plugin-transform-class-properties" "^7.24.7"
-    "@babel/plugin-transform-class-static-block" "^7.24.7"
+    "@babel/plugin-transform-bods-properties" "^7.24.7"
+    "@babel/plugin-transform-bods-static-block" "^7.24.7"
     "@babel/plugin-transform-classes" "^7.24.7"
     "@babel/plugin-transform-computed-properties" "^7.24.7"
     "@babel/plugin-transform-destructuring" "^7.24.7"

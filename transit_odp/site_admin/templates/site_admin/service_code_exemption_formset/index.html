@@ -17,11 +17,10 @@
             {{ fields.registration_code.label }}
           </th>
           <th scope="col"
-              class="govuk-table__header {% if formset.field_has_error.justification %} error-message-colour {% else %} govuk-!-font-weight-regular {% endif %}"
-              style="white-space:nowrap">
+              class="govuk-table__header cf {% if formset.field_has_error.justification %} error-message-colour {% else %} govuk-!-font-weight-regular {% endif %}">
             {{ fields.justification.label }}
           </th>
-          <th scope="col" class="govuk-table__header" style="display:none;">
+          <th scope="col" class="govuk-table__header js-hidden">
             Delete
           </th>
         {% endwith %}
@@ -46,7 +45,7 @@
     </tfoot>
   </table>
 </div>
-<div id="id_{{ formset.prefix }}-EMPTY_FORM" style="display:none">
+<div class="js-hidden" id="id_{{ formset.prefix }}-EMPTY_FORM">
   {# Would be nice to use HTML 5's template element here but not supported by IE11 #}
   <table>
     <tbody>

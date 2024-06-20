@@ -6,7 +6,7 @@
 {% with prefixed_page_field=prefixed_page_field|default:"page" %}
   {% with params=request.GET.urlencode %}
     {% block pagination %}
-      <nav class="govuk-pagination" role="navigation" aria-label="Pagination" style="justify-content: center;">
+      <nav class="justify-center-l govuk-pagination" role="navigation" aria-label="Pagination" >
         {% if page.has_previous %}
           <div class="govuk-pagination__prev">
             <a class="govuk-link govuk-pagination__link"

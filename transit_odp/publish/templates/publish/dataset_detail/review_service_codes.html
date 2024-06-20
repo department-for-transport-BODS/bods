@@ -6,7 +6,7 @@
     {% for licence_number, nocs_dict in distinct_attributes.items %}
       <div class="govuk-accordion__section">
         <div class="govuk-accordion__section-header">
-          <h2 class="govuk-accordion__section-heading">
+          <h2 class="pa0-l">
             <span class="govuk-accordion__section-button" id="accordion-default-heading-{{ forloop.counter }}">
               {{ licence_number }}
             </span>
@@ -18,7 +18,7 @@
                aria-labelledby="sub-accordion-heading-{{ forloop.parentloop.counter }}">
             <div class="govuk-accordion__section govuk-!-padding-left-7">
               <div class="govuk-accordion__section-header">
-                <h2 class="govuk-accordion__section-heading">
+                <h2 class="pa0-l">
                   <span class="govuk-accordion__section-button" id="sub-accordion-heading-{{ forloop.counter }}">{{ noc }}</span>
                 </h2>
               </div>

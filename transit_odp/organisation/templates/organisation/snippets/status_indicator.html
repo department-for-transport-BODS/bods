@@ -36,7 +36,7 @@
   {#{% endif %}#}
 {% elif status == 'indexing' or status == 'pending' %}
   {# Note - we also display 'pending' indexing tasks as 'Processing' #}
-  {#  <div class="progress-centre complete" style="display: none">#}
+  {#  <div class="progress-centre js-hidden complete" >#}
   <div class="progress-centre">
     <div id="{{ record.id }}" class="pie-progress">
       <svg width="18" height="18">

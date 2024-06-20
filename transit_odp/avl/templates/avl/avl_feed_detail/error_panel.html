@@ -53,7 +53,7 @@
               {% trans "System" %}
             {% endif %}
           </span>
-          <span style="text-align: right">
+          <span class="right-justify" >
             {% block inner.last_updated.changelog_link %}
               <a class="govuk-link" href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans "View change log" %}</a>
             {% endblock %}
