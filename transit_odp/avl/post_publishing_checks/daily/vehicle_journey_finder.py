@@ -757,7 +757,7 @@ class VehicleJourneyFinder:
                         vehicle_journeys.remove(vj)
 
             elif len(service_org_ref_dict["days_of_operation"]) > 0:
-                for service_org_ref in service_org_ref_dict["days_of_non_operation"]:
+                for service_org_ref in service_org_ref_dict["days_of_operation"]:
                     if service_org_ref not in service_org_ref_dict:
                         continue
                     org = service_orgs_dict[service_org_ref]
