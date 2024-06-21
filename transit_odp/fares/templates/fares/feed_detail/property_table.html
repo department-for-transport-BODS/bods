@@ -25,7 +25,7 @@
       <td class="govuk-table__cell">
         <div class="flex-between">
           {% trans properties.description %}
-          <span ><a class="right-justify govuk-link" href="{% url 'fares:dataset-edit' pk=object.id pk1=pk1 host hosts.publish %}">
+          <span><a class="right-justify govuk-link" href="{% url 'fares:dataset-edit' pk=object.id pk1=pk1 host hosts.publish %}">
             {% trans "Edit" %}
           </a>
         </span>
@@ -63,10 +63,8 @@
     {% if is_compliant_error %}
       <td colspan="2" class="govuk-table__cell">
         <div class="govuk-warning-text stacked govuk-!-margin-bottom-0">
-          <span class="govuk-warning-text__icon content-box"
-                aria-hidden="true"
-                >!</span>
-          <span class="app-step-nav-related app-task-list__items" >{% trans "Non compliant" %}</span>
+          <span class="govuk-warning-text__icon content-box" aria-hidden="true">!</span>
+          <span class="app-step-nav-related app-task-list__items">{% trans "Non compliant" %}</span>
           {% if show_report_link %}
             <a class="govuk-link govuk-!-margin-left-6" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
           {% endif %}
@@ -113,7 +111,7 @@
     {% trans "Download NeTEx" %}
   </th>
   <td class="govuk-table__cell">
-    <span class="right-justify no-wrap" >
+    <span class="right-justify no-wrap">
       <a class="govuk-link" href="{{ properties.download_url }}?is_review=true">{% trans "Download .xml" %}</a>
     </span>
   </td>
@@ -130,7 +128,7 @@
         {% trans "by " %}
         {{ properties.last_modified_user|default_if_none:'System' }}
       </span>
-      <span class="right-justify" >
+      <span class="right-justify">
         {% block inner.last_updated.changelog_link %}
           <a class="govuk-link" href= "{% url 'fares:feed-changelog' pk=object.id pk1=pk1 host host.name %}">
             {% trans "View change log" %}

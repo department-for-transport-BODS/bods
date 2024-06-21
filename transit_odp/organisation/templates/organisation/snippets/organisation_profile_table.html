@@ -8,7 +8,7 @@
       <th scope="col" class="govuk-table__header">
         {% trans "Short name" %}
       </th>
-      <th scope="col" class="normal-weight govuk-table__header" >
+      <th scope="col" class="normal-weight govuk-table__header">
         {{ organisation.short_name }}
       </th>
     </tr>
@@ -16,10 +16,10 @@
   <tbody class="govuk-table__body">
     {% if organisation.nocs.count %}
       <tr class="govuk-table__row">
-        <th scope="row" class="govuk-summary-list__row--no-border manage-users-table__key govuk-table__header" >
+        <th scope="row" class="govuk-summary-list__row--no-border manage-users-table__key govuk-table__header">
           {% trans "National Operator Code" %}
         </th>
-        <td class="govuk-summary-list__row--no-border govuk-table__cell" >
+        <td class="govuk-summary-list__row--no-border govuk-table__cell">
           {{ organisation.nocs.first.noc }}
         </td>
       </tr>
@@ -30,7 +30,8 @@
                 class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__header"
                 {% if not forloop.last %}  {% else %}  {% endif %}>
             </th>
-            <td class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__cell" {% if not forloop.last %}{% else %}{% endif %}>
+            <td class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__cell"
+                {% if not forloop.last %}{% else %}{% endif %}>
               {{ noc.noc }}
             </td>
           </tr>
@@ -39,10 +40,10 @@
     {% endif %}
     {% if organisation.licences.count %}
       <tr class="govuk-table__row">
-        <th scope="row" class="govuk-summary-list__row--no-border manage-users-table__key govuk-table__header" >
+        <th scope="row" class="govuk-summary-list__row--no-border manage-users-table__key govuk-table__header">
           {% trans "PSV Licence number" %}
         </th>
-        <td class="govuk-summary-list__row--no-border govuk-table__cell" >
+        <td class="govuk-summary-list__row--no-border govuk-table__cell">
           {{ organisation.licences.first.number }}
         </td>
       </tr>
@@ -53,7 +54,8 @@
                 class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__header"
                 {% if not forloop.last %}  {% else %}  {% endif %}>
             </th>
-            <td class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__cell" {% if not forloop.last %}{% else %}{% endif %}>
+            <td class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__cell"
+                {% if not forloop.last %}{% else %}{% endif %}>
               {{ licence.number }}
             </td>
           </tr>
@@ -62,11 +64,11 @@
     {% endif %}
     {% if service_code_exemptions %}
       <tr class="govuk-table__row">
-        <th scope="row" class="govuk-summary-list__row--no-border manage-users-table__key govuk-table__header" >
+        <th scope="row" class="govuk-summary-list__row--no-border manage-users-table__key govuk-table__header">
           {% trans "Service codes exempt from reporting" %}
           {% include "publish/snippets/help_modals/service_code_exemption.html" %}
         </th>
-        <td class="govuk-summary-list__row--no-border govuk-table__cell" >
+        <td class="govuk-summary-list__row--no-border govuk-table__cell">
           {{ service_code_exemptions.first.registration_number }}
         </td>
       </tr>
@@ -77,7 +79,8 @@
                 class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__header"
                 {% if not forloop.last %}  {% else %}  {% endif %}>
             </th>
-            <td class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__cell" {% if not forloop.last %}{% else %}{% endif %}>
+            <td class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__cell"
+                {% if not forloop.last %}{% else %}{% endif %}>
               {{ service_code_exemption.registration_number }}
             </td>
           </tr>
