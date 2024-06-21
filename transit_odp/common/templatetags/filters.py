@@ -40,3 +40,8 @@ def unique_by_property(lta_objects, property_name):
             unique_values.append(getattr(lta_object, property_name))
             unique_items.append(lta_object)
     return unique_items
+
+
+@register.filter(name='replace_spaces')
+def replace_spaces(value):
+    return value.replace(' ', '-')
