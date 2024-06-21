@@ -23,7 +23,7 @@ class OperatorCodeInline(admin.TabularInline):
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
-    list_display = ["name"]
+    list_display = ["name", "is_abods_global_viewer"]
     search_fields = ["name"]
 
     inlines = [OperatorCodeInline]
@@ -98,7 +98,6 @@ class DatasetAdmin(admin.ModelAdmin):
 
 @admin.register(DatasetRevision)
 class DatasetRevisionAdmin(admin.ModelAdmin):
-
     actions = ["publish_revisions"]
     ordering = ("id", "name")
     search_fields = ["dataset__id", "id", "name"]
@@ -188,6 +187,11 @@ class StuckRevision(DatasetRevision):
         proxy = True
 
 
+class FaresStuckRevision(DatasetRevision):
+    class Meta:
+        proxy = True
+
+
 @admin.register(StuckRevision)
 class StuckRevisionAdmin(admin.ModelAdmin):
     search_fields = ["dataset__id"]
@@ -226,6 +230,57 @@ class StuckRevisionAdmin(admin.ModelAdmin):
 
     def latest_task_status(self, instance):
         return instance.latest_task_status
+
+    def has_delete_permission(self, request, instance=None):
+        return False
+
+    def has_add_permission(self, request, instance=None):
+        return False
+
+
+@admin.register(FaresStuckRevision)
+class FaresStuckRevisionAdmin(admin.ModelAdmin):
+    """
+    Class for the Fares stuck revision view, where admin users
+    are able to set stuck revisions to an error state.
+    """
+
+    search_fields = ["dataset__id"]
+    list_display = (
+        "name",
+        "dataset_id",
+        "latest_task_status",
+        "latest_task_progress",
+        "status",
+        "modified",
+        "created",
+    )
+    readonly_fields = ("dataset_id",)
+    fields = ("name",)
+    actions = ["action_set_to_error"]
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request=request)
+            .get_fares_stuck_revisions()
+            .order_by("created")
+        )
+
+    def latest_task_progress(self, instance):
+        return instance.latest_task_progress
+
+    def latest_task_status(self, instance):
+        return instance.latest_task_status
+
+    def action_set_to_error(self, request, revisions):
+        for revision in revisions:
+            task = revision.etl_results.order_by("id").last()
+            task.to_error("dataset_validate", DatasetETLTaskResult.SYSTEM_ERROR)
+            task.additional_info = "Put into error state by Admin."
+            task.save()
+
+    action_set_to_error.short_description = "Set revision to error state"
 
     def has_delete_permission(self, request, instance=None):
         return False

@@ -27,7 +27,7 @@ from django.db.models import (
     Value,
     When,
 )
-from django.db.models.expressions import Exists
+from django.db.models.expressions import Exists, RawSQL
 from django.db.models.functions import (
     Cast,
     Coalesce,
@@ -60,7 +60,6 @@ from transit_odp.organisation.constants import (
 )
 from transit_odp.organisation.view_models import GlobalFeedStats
 from transit_odp.users.constants import AccountType
-from django.db.models.expressions import RawSQL
 
 User = get_user_model()
 ANONYMOUS = "Anonymous"
@@ -1163,6 +1162,22 @@ class DatasetRevisionQuerySet(models.QuerySet):
             )
         )
 
+    def get_fares_stuck_revisions(self):
+        now = timezone.now()
+        yesterday = now - timedelta(days=1)
+        return (
+            self.add_latest_task_status()
+            .add_latest_task_progress()
+            .filter(
+                dataset__dataset_type=FaresType,
+                latest_task_progress__lt=100,
+                created__lt=yesterday,
+            )
+            .exclude(
+                latest_task_status__in=["FAILURE", "SUCCESS"],
+            )
+        )
+
 
 class TXCFileAttributesQuerySet(models.QuerySet):
     def get_active_revisions(self):
@@ -1290,6 +1305,27 @@ class TXCFileAttributesQuerySet(models.QuerySet):
                 "-filename",
             )
             .distinct("service_code")
+        )
+
+    def get_active_txc_files_line_level(self):
+        return (
+            self.get_active_live_revisions()
+            .add_bods_compliant()
+            .add_dq_score()
+            .add_revision_details()
+            .add_organisation_name()
+            .add_string_lines()
+            .add_split_linenames()
+            .order_by(
+                "service_code",
+                "line_name_unnested",
+                "-revision__published_at",
+                "-revision_number",
+                "-modification_datetime",
+                "-operating_period_start_date",
+                "-filename",
+            )
+            .distinct("service_code", "line_name_unnested")
         )
 
     def get_overall_data_catalogue(self):
