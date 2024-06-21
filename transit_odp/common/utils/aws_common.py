@@ -58,8 +58,23 @@ class SQSClientWrapper:
         """
         Send messages to SQS queues based on the provided payload.
         """
+        response = {}
         try:
             response = self.sqs_client.list_queues()
+
+        except self.sqs_client.exceptions.RequestThrottled as ERequestThrottled:
+            logger.info(f"RequestThrottled Error: {ERequestThrottled}")
+
+        except self.sqs_client.exceptions.InvalidSecurity as EInvalidSecurity:
+            logger.info(f"InvalidSecurity Error: {EInvalidSecurity}")
+
+        except self.sqs_client.exceptions.InvalidAddress as EInvalidAddress:
+            logger.info(f"InvalidAddress Error: {EInvalidAddress}")
+
+        except self.sqs_client.exceptions.UnsupportedOperation as EUnsupportedOperation:
+            logger.info(f"UnsupportedOperation Error: {EUnsupportedOperation}")
+
+        try:
             if "QueueUrls" in response:
                 queue_urls = response["QueueUrls"]
                 # Create a mapping from queue name to URL
