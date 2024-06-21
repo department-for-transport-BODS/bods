@@ -27,11 +27,9 @@
     {% if item.is_fares_compliant %}
       <span class="item__value">{% trans "Compliant" %}</span>
     {% else %}
-      <div class="item__value govuk-warning-text pa0-l govuk-!-margin-bottom-0" >
-        <span class="icon-container govuk-warning-text__icon"
-              aria-hidden="true"
-              >!</span>
-        <span class="app-step-nav-related app-task-list__items" >{% trans "Non compliant" %}</span>
+      <div class="item__value govuk-warning-text pa0-l govuk-!-margin-bottom-0">
+        <span class="icon-container govuk-warning-text__icon" aria-hidden="true">!</span>
+        <span class="app-step-nav-related app-task-list__items">{% trans "Non compliant" %}</span>
       </div>
     {% endif %}
   </li>

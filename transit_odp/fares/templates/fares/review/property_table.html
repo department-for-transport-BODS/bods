@@ -34,7 +34,7 @@
       <td class="govuk-table__cell">
         <div class="flex-between">
           {% trans properties.description %}
-          <span ><a class="right-justify govuk-link" href="{% url 'fares:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
+          <span><a class="right-justify govuk-link" href="{% url 'fares:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
             {% trans "Edit" %}
           </a>
         </span>
@@ -85,7 +85,7 @@
       {% trans "Download NeTEx" %}
     </th>
     <td class="govuk-table__cell">
-      <span class="no-wrap right-justify" >
+      <span class="no-wrap right-justify">
         {% url 'feed-download' pk1=pk1 pk=object.dataset_id host host.name as download_link %}
         <a class="govuk-link"
            href="  {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">

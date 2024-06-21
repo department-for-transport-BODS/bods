@@ -6,7 +6,7 @@
 {% with prefixed_page_field=prefixed_page_field|default:"page" %}
   {% with params=request.GET.urlencode %}
     {% block pagination %}
-      <nav class="justify-center-l govuk-pagination" role="navigation" aria-label="Pagination" >
+      <nav class="justify-center-l govuk-pagination" role="navigation" aria-label="Pagination">
         {% if page.has_previous %}
           <div class="govuk-pagination__prev">
             <a class="govuk-link govuk-pagination__link"
@@ -36,7 +36,7 @@
               </li>
             {% elif item == "..." %}
               <li class="govuk-pagination__item govuk-pagination__item--ellipses">
-                &ctdot;
+                ⋯
               </li>
             {% else %}
               <li class="govuk-pagination__item">

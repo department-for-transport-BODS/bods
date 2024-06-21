@@ -9,7 +9,7 @@
   </h2>
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list ">
-      <li class="no-underline-l app-error-summary__item" >
+      <li class="no-underline-l app-error-summary__item">
         {{ error.description | safe }}
       </li>
     </ul>
@@ -59,7 +59,7 @@
       <td class="govuk-table__cell">
         <div class="flex-between">
           <span class="dont-break-out">{% trans properties.description %}</span>
-          <span ><a class="govuk-link right-justify" href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
+          <span><a class="govuk-link right-justify" href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
             {% trans "Edit" %}
           </a>
         </span>
@@ -115,7 +115,7 @@
         You can refer to the documentation or contact support to help you fix this.
     {% endblocktrans %}
 </p>
-<p class="govuk-!-font-size-19 checkbox-filter__annotation govuk-body" >
+<p class="govuk-!-font-size-19 checkbox-filter__annotation govuk-body">
   {% blocktrans %}
         Accepted formats include SIRI-VM
     {% endblocktrans %}

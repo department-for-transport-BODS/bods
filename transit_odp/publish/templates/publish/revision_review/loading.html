@@ -1,10 +1,10 @@
 {% load i18n %}
-<div class="govuk-panel govuk-panel--confirmation bods-bg-blue-light" >
+<div class="govuk-panel govuk-panel--confirmation bods-bg-blue-light">
   <h1 class="govuk-panel__title govuk-!-font-size-36">
     {% trans "Validating data sets" %}
   </h1>
   <div class="govuk-panel__body govuk-!-font-size-19">
-    <div class="pb3-l" >
+    <div class="pb3-l">
       {% blocktrans %} Once successfully processed, the data set will be
       published, <br />
       and you will be able to view the details here.
@@ -13,10 +13,11 @@
       Please expect a temporary delay in processing time as we work to
       <br /> bring you new and enhanced features. {% endblocktrans %}
     </div>
-    <div class="progress-bar-outer" id="progressOuterDiv" >
+    <div class="progress-bar-outer" id="progressOuterDiv">
       <div class=loading-white" id="progressInnerDiv">
       </div>
     </div>
-    <span class=loading-white-lg" id="progressSpan"></span>
+    <span class=loading-white-lg" id="progressSpan">
+    </span>
   </div>
 </div>
