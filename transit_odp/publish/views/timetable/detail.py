@@ -28,7 +28,7 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
     model = Dataset
 
     def get_queryset(self):
-        query =  (
+        query = (
             super()
             .get_queryset()
             .filter(
@@ -79,7 +79,6 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
         )
         kwargs["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
 
-
         kwargs["report_id"] = report.id if summary else None
         kwargs["dq_score"] = get_data_quality_rag(report) if summary else None
         kwargs["distinct_attributes"] = get_distinct_dataset_txc_attributes(
@@ -113,7 +112,6 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
     def get_direction_timetable(
         self, df_timetable: pd.DataFrame, direction: str = "outbound"
     ) -> Dict:
-
         """
         Get the timetable details like the total, current page and the dataframe
         based on the timetable dataframe and the direction.

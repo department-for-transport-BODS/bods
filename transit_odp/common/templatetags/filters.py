@@ -42,6 +42,6 @@ def unique_by_property(lta_objects, property_name):
     return unique_items
 
 
-@register.filter(name='replace_spaces')
+@register.filter(name="replace_spaces")
 def replace_spaces(value):
-    return value.replace(' ', '-')
+    return value.replace(" ", "-")

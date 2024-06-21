@@ -47,16 +47,16 @@ class ReportOverviewView(DetailView):
             .filter(revision__dataset_id=dataset_id)
             .select_related("summary")
         )
-        return result 
+        return result
 
     def get_context_data(self, **kwargs):
         revision_id = None
         context = super().get_context_data(**kwargs)
         report = self.get_object()
         if kwargs.get("object"):
-            revision_id = kwargs.get("object").revision_id 
-        
-        summary = Summary.get_report(report.summary,revision_id)
+            revision_id = kwargs.get("object").revision_id
+
+        summary = Summary.get_report(report.summary, revision_id)
         rag = get_data_quality_rag(report)
         context.update(
             {
