@@ -56,11 +56,12 @@ class Summary(BaseModel):
         return cls(data=warning_data, count=total_warnings)
 
     @classmethod
-    def get_dataframe_report(cls, report_id):
+    def get_dataframe_report(cls, report_id, revision_id):
         columns = ["importance","category", "observation","service_code", "details", "line_name", "vehicle_journey_id"]
         data = (
             ObservationResults.objects.filter(
-            taskresults__dataquality_report_id=report_id
+            taskresults__dataquality_report_id=report_id,
+            taskresults__dataquality_report__revision_id=revision_id
             )
             .annotate(
             details_annotation=F("details"),
@@ -76,13 +77,14 @@ class Summary(BaseModel):
         return pd.DataFrame(data) 
 
     @classmethod 
-    def get_report(cls, report_summary: DataQualityReportSummary):
+    def get_report(cls, report_summary: DataQualityReportSummary,revision_id):
+        if revision_id is None:
+            return cls(data=cls.initialize_warning_data(),count=0)
         warning_data = {}
         try:
-            # df = cls.get_dataframe_report(report_summary.report_id)
-            df = cls.get_dataframe_report(19)
+            df = cls.get_dataframe_report(report_summary.report_id, revision_id)
             if df.empty:
-               return cls(data=cls.initialize_warning_data, count=0) 
+               return cls(data=cls.initialize_warning_data(), count=0) 
             bus_services_affected = cls.qet_service_code_line_name_unique_combinations(df)
             df = df[["importance", "category", "observation","vehicle_journey_id"]]
             count = len(df)

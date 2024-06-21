@@ -50,9 +50,13 @@ class ReportOverviewView(DetailView):
         return result 
 
     def get_context_data(self, **kwargs):
+        revision_id = None
         context = super().get_context_data(**kwargs)
         report = self.get_object()
-        summary = Summary.get_report(report.summary)
+        if kwargs.get("object"):
+            revision_id = kwargs.get("object").revision_id 
+        
+        summary = Summary.get_report(report.summary,revision_id)
         rag = get_data_quality_rag(report)
         context.update(
             {
