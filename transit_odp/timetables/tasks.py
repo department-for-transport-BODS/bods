@@ -449,7 +449,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         task.update_progress(95)
         report = Report.initialise_dqs_task(revision)
         adapter.info(
-            "Report is initialised for {revision} with status PIPELINE_PENDING"
+            f"Report is initialised for {revision} with status PIPELINE_PENDING"
         )
         checks = Checks.get_all_checks()
         txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
@@ -457,7 +457,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         )
         combinations = itertools.product(txc_file_attributes_objects, checks)
         TaskResults.initialize_task_results(report, combinations)
-        adapter.info("TaskResults is initialised for {revision} with status PENDING")
+        adapter.info(f"TaskResults is initialised for {revision} with status PENDING")
         pending_checks = TaskResults.objects.get_pending_objects(
             txc_file_attributes_objects
         )
