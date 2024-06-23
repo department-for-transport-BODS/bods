@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load waffle_tags %}
 {% block dataset_detail_link %}
-  <a class='govuk-link' href="{% url 'org-detail' orgId=item.id host hosts.data %}">{{ item.name }}</a>
+  <a class="govuk-link" href="{% url 'org-detail' orgId=item.id host hosts.data %}">{{ item.name }}</a>
 {% endblock %}
 {% block dataset_result_content %}
   <li>

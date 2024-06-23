@@ -16,7 +16,7 @@
             {{ field.label|safe }}
           </span>
         {% else %}
-          <label for="{{ field.id_for_label }}" class="govuk-label govuk-checkboxes__label{% if field.errors %} invite-error"{% else %}"{% endif %}>
+          <label for="{{ field.id_for_label }}" class="govuk-label govuk-checkboxes__label{% if field.errors %} invite-error{% endif %}">
             <span class="app-step-nav-related">{{ field.label|safe }}</span>
           </label>
         {% endif %}

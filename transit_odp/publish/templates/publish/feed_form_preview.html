@@ -74,25 +74,26 @@
           </div>
         </li>
       </ul>
-      <div class="govuk-grid-row">
-        <hr class="govuk-section-break govuk-section-break--s govuk-section-break" />
-        <div class="govuk-grid-column-one-third">
-          {% if data_updated %}
-            <button type="submit" name="wizard_goto_step" value="final" class="govuk-button">
-              {% trans "Next step" %}
-            </button>
-            {{ wizard.form }}
-          {% endif %}
-          {% if object.status != "expired" %}
-            <a class="govuk-button govuk-button--link" href="{% url 'feed-archive' pk=object.dataset.id host hosts.publish %}">
-              {{ _("Archive this data set") }}
-            </a>
-          {% endif %}
-          <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
-        </div>
-        <a class="govuk-button govuk-button--link" href="{% url 'feed-archive' pk=object.dataset.id host hosts.publish %}">
-        </div>
-      </form>
-      {% block inner_secondary %}
-      {% endblock %}
-    {% endblock %}
+    </div>
+    <div class="govuk-grid-row">
+      <hr class="govuk-section-break govuk-section-break--s govuk-section-break" />
+      <div class="govuk-grid-column-one-third">
+        {% if data_updated %}
+          <button type="submit" name="wizard_goto_step" value="final" class="govuk-button">
+            {% trans "Next step" %}
+          </button>
+          {{ wizard.form }}
+        {% endif %}
+        {% if object.status != "expired" %}
+          <a class="govuk-button govuk-button--link" href="{% url 'feed-archive' pk=object.dataset.id host hosts.publish %}">
+            {{ _("Archive this data set") }}
+          </a>
+        {% endif %}
+        <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
+      </div>
+      <a class="govuk-button govuk-button--link" href="{% url 'feed-archive' pk=object.dataset.id host hosts.publish %}"></a>
+    </div>
+  </form>
+  {% block inner_secondary %}
+  {% endblock %}
+{% endblock %}

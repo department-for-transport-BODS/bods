@@ -11,7 +11,11 @@
     {% if user.is_authenticated %}
       <li class="govuk-header__navigation-item dropdown bods-dropdown">
         <a href="#" class="govuk-header__link">
-          <img class="account-menu__icon" src="{% static 'frontend/images/np-person-781585-ffffff.png' %}" alt="" />
+          <img alt="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
+               class="account-menu__icon"
+               src="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
+               height="auto"
+               width="auto" />
           {% trans "My account" %}
         </a>
         <div class="dropdown-content">
@@ -22,7 +26,11 @@
     {% else %}
       <li class="govuk-header__navigation-item">
         <a class="govuk-header__link" href="{% url 'account_login' host hosts.admin %}">
-          <img class="account-menu__icon" src="{% static 'frontend/images/np-person-781585-ffffff.png' %}" alt="person-icon" />
+          <img class="account-menu__icon"
+               src="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
+               alt="person-icon"
+               height="auto"
+               width="auto" />
           {% trans "Sign in" %}
         </a>
       </li>

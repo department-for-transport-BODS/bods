@@ -27,7 +27,7 @@
   {% endif %}
 {% endblock %}
 {% block inner.extra %}
-  {% if  object.status == 'error' and object.is_published == False %}
+  {% if object.status == 'error' and object.is_published == False %}
     <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
     <h2 class="govuk-heading-m">
       {% trans "What happens next?" %}

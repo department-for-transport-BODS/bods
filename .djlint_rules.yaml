@@ -3,7 +3,7 @@
     message: Accessability image should have alt attribute.
     flags: re.DOTALL
     patterns:
-      - <img[^>]*?alt=["'][^"']*["'][^>]*>
+      - <img:not([alt])>
 - rule:
     name: AS02
     message: Accessability validate whether a video tag has closed captioning.

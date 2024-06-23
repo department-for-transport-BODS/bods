@@ -130,7 +130,7 @@
       </span>
       <span class="right-justify">
         {% block inner.last_updated.changelog_link %}
-          <a class="govuk-link" href= "{% url 'fares:feed-changelog' pk=object.id pk1=pk1 host host.name %}">
+          <a class="govuk-link" href="{% url 'fares:feed-changelog' pk=object.id pk1=pk1 host host.name %}">
             {% trans "View change log" %}
           </a>
         {% endblock %}
