@@ -116,3 +116,5 @@ format_js = false
 format_attribute_template_tags=false
 line_break_after_multiline_tag=true
 no_set_formatting=true
+ignore = "T003,H022"
+custom_tags = "blocktrans"

@@ -85,7 +85,7 @@
         // The invalid form will be rerendered with the previous state. We need to reset the DELETE inputs since
         // there is no way for the user to untick the input once checked
         {% for form in formset %}
-          {% if forloop.counter <= formset.initial_forms|length  or form.cleaned_data %}
+          {% if forloop.counter <= formset.initial_forms|length or form.cleaned_data %}
             document.getElementById('id_{{form.prefix}}-DELETE').value = null;
           {% endif %}
         {% endfor %}

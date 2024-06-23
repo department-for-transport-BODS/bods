@@ -68,7 +68,7 @@
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
             {% if object.status == 'success' %}
-              <div id='map' style='width: 100%; height: 25rem;'>
+              <div id="map" class="disruptions-width">
               </div>
             {% elif object.status == 'error' %}
               <div class="govuk-panel app-panel--error">
@@ -186,7 +186,7 @@
                     <span>{{ object.transxchange_version }}</span>
                     <span class="no-wrap right-justify">
                       {% block inner.txc_version.download %}
-                        {% url 'feed-download' pk=object.dataset_id  host host.name as download_link %}
+                        {% url "feed-download" pk=object.dataset_id host host.name as download_link %}
                         <a class="govuk-link"
                            href=" {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
                           {% trans "Download .xml" %}
@@ -205,8 +205,8 @@
               </h4>
               <div class="info-item__description">
                 <div class="flex-between">
-                  <span></span>
-                  <span class="no-wrap right-justify"  id="id-publish-review-url-link">
+                  <span>&nbsp;</span>
+                  <span class="no-wrap right-justify" id="id-publish-review-url-link">
                     {{ url_link }}
                     {% url 'feed-download' pk=object.dataset_id host host.name as download_link %}
                     <a class="govuk-link"
@@ -306,7 +306,7 @@
           {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
           {% endif %}
           {% block inner.extra %}
-            {% if  object.status == 'error' %}
+            {% if object.status == 'error' %}
               <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
               <h2 class="govuk-heading-m">
                 {% trans "What should I do next?" %}
@@ -383,7 +383,7 @@
 {% block scripts %}
   {{ block.super }}
   {% if object.status == 'success' %}
-    <script>BODSFrontend.initMap("{{ api_root }}", {{  object.id }});</script>
+    <script>BODSFrontend.initMap("{{ api_root }}", {{ object.id }});</script>
   {% endif %}
   {% if object.status == 'processing' or object.status == 'indexing' or object.status == 'pending' %}
     <script>new BODSFrontend.ProgressIndicator({{ object.dataset_id }});</script>

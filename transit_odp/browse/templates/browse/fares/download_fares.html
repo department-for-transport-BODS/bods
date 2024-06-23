@@ -56,7 +56,7 @@
   <p class="govuk-body govuk-!-margin-bottom-0">
     {% if show_bulk_archive_url %}
       <a class="govuk-link" href="{% url 'downloads-fares-bulk' host hosts.data %}" onClick="addGATagEvent()">
-        {% trans "Download all fares data  " %}
+        {% trans "Download all fares data " %}
       </a>
     {% else %}
       {% blocktrans %}

@@ -18,9 +18,9 @@
     {% trans "Download file" %}
   </h3>
   <p class="govuk-body">
-    {%  blocktrans %}
+    {% blocktrans %}
             Download a snapshot of all live and upcoming disruptions within England
-        {%  endblocktrans %}
+        {% endblocktrans %}
   </p>
   <ul class="govuk-list">
     <li>
@@ -60,7 +60,7 @@
   <p class="govuk-body govuk-!-margin-bottom-0">
     {% if show_bulk_archive_url %}
       <a class="govuk-link" href="{% url 'downloads-disruptions-bulk' host hosts.data %}" onClick="addGATagEvent()">
-        {% trans "Download all disruption data  " %}
+        {% trans "Download all disruption data " %}
       </a>
     {% else %}
       {% blocktrans %}
