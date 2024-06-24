@@ -449,7 +449,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         task.update_progress(95)
         report = Report.initialise_dqs_task(revision)
         adapter.info(
-            f"Report is initialised for {revision} with status PIPELINE_PENDING"
+            f"Report is initialised for with status PIPELINE_PENDING for {revision}"
         )
         checks = Checks.get_all_checks()
         txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
@@ -457,14 +457,17 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         )
         combinations = itertools.product(txc_file_attributes_objects, checks)
         TaskResults.initialize_task_results(report, combinations)
-        adapter.info(f"TaskResults is initialised for {revision} with status PENDING")
+        adapter.info(
+            f"TaskResults is initialised for with status PENDING for {revision}"
+        )
         pending_checks = TaskResults.objects.get_pending_objects(
             txc_file_attributes_objects
         )
-        adapter.info("DQS-SQS:Pending check items created ", pending_checks)
+        adapter.info(f"DQS-SQS:The pending checks query is {pending_checks.query}")
+        adapter.info(f"DQS-SQS:Pending check items created {pending_checks}")
         adapter.info("DQS-SQS:Creating SQS queues payload")
         queues_payload = create_queue_payload(pending_checks)
-        adapter.info("DQS-SQS:SQS queues payload created with ", queues_payload)
+        adapter.info(f"DQS-SQS:SQS queues payload created with {queues_payload}")
         sqs_queue_client = SQSClientWrapper()
         adapter.info("DQS-SQS:Boto3 SQS client initialised")
         sqs_queue_client.send_message_to_queue(queues_payload)
