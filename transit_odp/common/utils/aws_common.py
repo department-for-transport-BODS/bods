@@ -33,20 +33,33 @@ class SQSClientWrapper:
         """
         Initialize and return an SQS client.
         """
-        self.endpoint_url = settings.SQS_QUEUE_ENDPOINT_URL
-        if settings.AWS_ENVIRONMENT == "LOCAL":
-            self.sqs_client = boto3.client(
-                "sqs",
-                endpoint_url=self.endpoint_url,
-                region_name=settings.AWS_REGION_NAME,
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        try:
+            logger.info(
+                f"DQS-SQS:Initialising SQS client wrapper for environment: {settings.AWS_ENVIRONMENT}"
             )
-        else:
-            self.sqs_client = boto3.client(
-                "sqs",
-                endpoint_url=self.endpoint_url,
+            self.endpoint_url = settings.SQS_QUEUE_ENDPOINT_URL
+            logger.info(f"DQS-SQS:Endpoint URL is :: {self.endpoint_url}")
+
+            if settings.AWS_ENVIRONMENT == "LOCAL":
+                logger.info(f"DQS-SQS:Initialising local SQS client")
+                self.sqs_client = boto3.client(
+                    "sqs",
+                    endpoint_url=self.endpoint_url,
+                    region_name=settings.AWS_REGION_NAME,
+                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                )
+            else:
+                logger.info(f"DQS-SQS:Inside non-local boto3 client initialisation")
+                self.sqs_client = boto3.client(
+                    "sqs",
+                    endpoint_url=self.endpoint_url,
+                )
+        except Exception as e:
+            logger.info(
+                f"DQS-SQS:General exception when initialising SQS client wrapper: {e} with {e.__class__.__name__}"
             )
+            raise
 
     def get_queue_name_from_url(self, queue_url: str) -> str:
         """
@@ -58,24 +71,15 @@ class SQSClientWrapper:
         """
         Send messages to SQS queues based on the provided payload.
         """
-        response = {}
         try:
             response = self.sqs_client.list_queues()
 
-        except self.sqs_client.exceptions.RequestThrottled as ERequestThrottled:
-            logger.info(f"RequestThrottled Error: {ERequestThrottled}")
-
-        except self.sqs_client.exceptions.InvalidSecurity as EInvalidSecurity:
-            logger.info(f"InvalidSecurity Error: {EInvalidSecurity}")
-
-        except self.sqs_client.exceptions.InvalidAddress as EInvalidAddress:
-            logger.info(f"InvalidAddress Error: {EInvalidAddress}")
-
-        except self.sqs_client.exceptions.UnsupportedOperation as EUnsupportedOperation:
-            logger.info(f"UnsupportedOperation Error: {EUnsupportedOperation}")
+        except Exception as e:
+            logger.info(f"DQS-SQS:General exception when listing queues: {e}")
 
         try:
             if "QueueUrls" in response:
+                logger.info(f"DQS-SQS:Queue URLS received in response")
                 queue_urls = response["QueueUrls"]
                 # Create a mapping from queue name to URL
                 queue_url_map = {
@@ -93,21 +97,25 @@ class SQSClientWrapper:
 
                             for success in response_send_messages.get("Successful", []):
                                 logger.info(
-                                    f"Message sent to {queue_url}: {success['MessageId']}"
+                                    f"DQS-SQS:Message sent to {queue_url}: {success['MessageId']}"
                                 )
 
                             for error in response_send_messages.get("Failed", []):
                                 logger.info(
-                                    f"Failed to send message to {queue_url}: {error['MessageId'] if 'MessageId' in error else error['Id']} - {error['Message']}"
+                                    f"DQS-SQS:Failed to send message to {queue_url}: {error['MessageId'] if 'MessageId' in error else error['Id']} - {error['Message']}"
                                 )
 
                         except Exception as e:
-                            logger.error(f"Error sending message to {queue_name}: {e}")
+                            logger.error(
+                                f"DQS-SQS:Error sending message to {queue_name}: {e}"
+                            )
                             raise
                     else:
-                        logger.info(f"Queue {queue_name} not found in SQS queues.")
+                        logger.info(
+                            f"DQS-SQS:Queue {queue_name} not found in SQS queues."
+                        )
             else:
-                raise ValueError("No SQS queues found")
+                raise ValueError("DQS-SQS:No SQS queues found")
         except Exception as e:
-            logger.error(f"Error when trying to access the queues: {e}")
+            logger.error(f"DQS-SQS:Error when trying to access the queues: {e}")
             raise
