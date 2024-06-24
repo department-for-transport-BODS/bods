@@ -453,7 +453,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         )
         checks = Checks.get_all_checks()
         txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
-            revision_id
+            revision.id
         )
         adapter.info(
             f"txc_file_attributes_objects query {txc_file_attributes_objects.query}"
