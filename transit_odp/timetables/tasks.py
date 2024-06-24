@@ -461,12 +461,13 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         pending_checks = TaskResults.objects.get_pending_objects(
             txc_file_attributes_objects
         )
-        adapter.info("Creating SQS queues payload")
+        adapter.info("DQS-SQS:Creating SQS queues payload")
         queues_payload = create_queue_payload(pending_checks)
+        adapter.info("DQS-SQS:SQS queues payload created with ", queues_payload)
         sqs_queue_client = SQSClientWrapper()
-        adapter.info("Boto3 SQS client initialised")
+        adapter.info("DQS-SQS:Boto3 SQS client initialised")
         sqs_queue_client.send_message_to_queue(queues_payload)
-        adapter.info("SQS queue messsages sent successfully.")
+        adapter.info("DQS-SQS:SQS queue messsages sent successfully.")
 
     except (DatabaseError, IntegrityError) as db_exc:
         task.handle_general_pipeline_exception(
