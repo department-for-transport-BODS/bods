@@ -49,6 +49,7 @@ from transit_odp.data_quality.pti.models import Observation, Schema, Violation
 from transit_odp.data_quality.pti.models.txcmodels import Line, VehicleJourney
 from transit_odp.naptan.models import StopPoint
 from transit_odp.otc.models import Service
+from transit_odp.timetables.transxchange import TransXChangeElement
 
 logger = getLogger(__name__)
 
@@ -168,7 +169,17 @@ class BaseValidator:
         """
         return [vj for vj in self.vehicle_journeys if vj.journey_pattern_ref == ref]
 
-    def get_service_by_vehicle_journey(self, service_ref: str):
+    def get_service_by_vehicle_journey(
+        self, service_ref: str
+    ) -> Optional[TransXChangeElement]:
+        """Find service for vehicle journey based on service ref
+
+        Args:
+            service_ref (str): Service ref from vehicle journey
+
+        Returns:
+            Optional[TransXChangeElement]: service element
+        """
         for service in self.services:
             service_code = service.xpath(
                 "string(x:ServiceCode)", namespaces=self.namespaces
@@ -446,7 +457,15 @@ class StopPointValidator(BaseValidator):
         less_than_2_months = end_date <= start_date + relativedelta(months=2)
         return less_than_2_months
 
-    def has_coach_as_service_mode(self, service):
+    def has_coach_as_service_mode(self, service: TransXChangeElement) -> bool:
+        """Check weather service mode is coach or not
+
+        Args:
+            service (TransXChangeElement): service element of vj
+
+        Returns:
+            bool: True if service mode matches
+        """
         mode = service.xpath("string(x:Mode)", namespaces=self.namespaces)
         if mode is not None and mode == MODE_COACH:
             return True
