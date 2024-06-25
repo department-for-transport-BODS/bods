@@ -520,7 +520,7 @@ GOOGLE_ANALYTICS_KEY = env("GOOGLE_ANALYTICS_KEY", default="")
 # Central AVL Service
 # ------------------------------------------------------------------------------
 CAVL_URL = env("CAVL_URL")
-CAVL_API_BASE_URL = env("CAVL_API_BASE_URL")
+CAVL_API_BASE_URL = env("CAVL_API_BASE_URL", default="")
 CAVL_CONSUMER_URL = env("CAVL_CONSUMER_URL")
 CAVL_VALIDATION_URL = env("CAVL_VALIDATION_URL")
 AVL_LOWER_THRESHOLD = env("AVL_LOWER_THRESHOLD", cast=float, default=0.45)
