@@ -110,7 +110,7 @@ test-dev:
     - echo '127.0.0.1 www.bods.local data.bods.local publish.bods.local admin.bods.local' >> /etc/hosts
     - docker pull $CURRENT_IMAGE
     - export DB_ENVS="-e POSTGRES_HOST -e POSTGRES_PORT -e POSTGRES_DB -e POSTGRES_USER -e POSTGRES_PASSWORD"
-    - export RUN_ENVS="-e REDIS_URL -e GOV_NOTIFY_API_KEY -e API_SITE_URL -e DJANGO_SETTINGS_MODULE -e USE_DOCKER -e DJANGO_PARENT_HOST -e DQS_URL -e CAVL_URL -e CAVL_CONSUMER_URL -e CAVL_API_BASE_URL"
+    - export RUN_ENVS="-e REDIS_URL -e GOV_NOTIFY_API_KEY -e API_SITE_URL -e DJANGO_SETTINGS_MODULE -e USE_DOCKER -e DJANGO_PARENT_HOST -e DQS_URL -e CAVL_URL -e CAVL_CONSUMER_URL -e CAVL_API_BASE_URL -e"
     - docker run -d --rm --name postgres $DB_ENVS mdillon/postgis:10
     #    - docker run --rm --link=postgres $DB_ENVS $RUN_ENVS $CURRENT_IMAGE bash -c "coverage run -m pytest && coverage report -m"
     - docker run --rm --link=postgres $DB_ENVS $RUN_ENVS $CURRENT_IMAGE bash -c "pytest --cov=transit_odp --numprocesses=4 --durations=100 ."
