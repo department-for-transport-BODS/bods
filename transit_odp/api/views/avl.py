@@ -42,7 +42,7 @@ class AVLApiView(views.APIView):
 
     def get(self, request, format=None):
         """Get SIRI VM response from consumer API."""
-        url = f"{settings.CAVL_CONSUMER_URL}/datafeed"
+        url = f"{settings.CAVL_API_BASE_URL}/siri-vm"
         content, status_code = _get_consumer_api_response(url, request.query_params)
         return Response(content, status=status_code, content_type="text/xml")
 
@@ -55,7 +55,7 @@ class AVLDetailApiView(views.APIView):
 
     def get(self, request, pk=-1, format=None):
         """Get SIRI VM response from consumer API."""
-        url = f"{settings.CAVL_CONSUMER_URL}/datafeed/{pk}/"
+        url = f"{settings.CAVL_API_BASE_URL}/siri-vm?subscriptionId={pk}/"
         try:
             Dataset.objects.get(pk=pk, dataset_type=DatasetType.AVL)
         except Dataset.DoesNotExist:

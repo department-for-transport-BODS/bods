@@ -153,6 +153,7 @@ build-dev:
       -e DJANGO_PARENT_HOST
       -e DQS_URL
       -e CAVL_URL
+      -e CAVL_API_BASE_URL
       -e CAVL_CONSUMER_URL
       -e CAVL_VALIDATION_URL
       -e POSTGRES_HOST
