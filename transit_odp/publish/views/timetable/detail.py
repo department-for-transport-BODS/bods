@@ -84,8 +84,6 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
         kwargs["distinct_attributes"] = get_distinct_dataset_txc_attributes(
             live_revision.id
         )
-        print("after adding report_id")
-        print(kwargs)
 
         return kwargs
 
