@@ -1,28 +1,28 @@
 @import "variables";
+$fa-font-path: "./fonts";
 
-$fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
+// @import "@fortawesome/fontawesome-free/scss/_variables.scss";
+$fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 @import "@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "@fortawesome/fontawesome-free/scss/solid.scss";
 
-$govuk-fonts-path: "~govuk-frontend/govuk/assets/fonts/";
-$govuk-images-path: "~govuk-frontend/govuk/assets/images/";
-@import "govuk-frontend/govuk/all";
-@import "govuk-frontend/govuk/helpers/spacing";
+$govuk-fonts-path: "../fonts/";
+$govuk-images-path: "../images/";
+@import "~govuk-frontend/dist/govuk/index";
+@import "~govuk-frontend/dist/govuk/helpers/spacing";
 
 @import "normalize.css/normalize.css";
 @import "mapbox-gl/dist/mapbox-gl.css";
 @import "swagger-ui/dist/swagger-ui.css";
-
 @import "overrides/all";
 @import "core/all";
 @import "objects/all";
 @import "components/all";
 @import "patterns/all";
-
 .key-value-list {
   list-style: none;
   padding: 0;
-  font-family: "nta", Arial, sans-serif;
+  // font-family: "nta", Arial, sans-serif;
   font-size: 1.125rem;
   margin: govuk-spacing(3) 0 0 0;
 
@@ -73,9 +73,9 @@ $govuk-images-path: "~govuk-frontend/govuk/assets/images/";
   hyphens: auto;
 }
 
-.operator-heading {
-  color: $govuk-link-colour;
-}
+// .operator-heading {
+//   color: $govuk-link-colour;
+// }
 
 .govuk-\!-font-size-24__custom {
   font-size: 20px !important;
@@ -140,9 +140,9 @@ fieldset {
   overflow: hidden;
 }
 
-.border-bottom-custom {
-  border-bottom: $govuk-accordion-bottom-border-width solid $govuk-border-colour;
-}
+// .border-bottom-custom {
+//   border-bottom: $govuk-accordion-bottom-border-width solid $govuk-border-colour;
+// }
 
 .govuk-accordion__section-content[hidden] {
   display: none !important;

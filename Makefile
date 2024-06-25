@@ -54,6 +54,9 @@ djlint:
 static:
 	webpack --config webpack/dev.js | sed 's/^/[$@]\t/'
 
+esbuild:
+	node --experimental-modules esbuild.mjs --source transit_odp/frontend/assets/ --outdir transit_odp/static --debug
+
 django:
 	python -m manage runserver 0.0.0.0:8001 | sed 's/^/[$@]\t/'
 
@@ -78,4 +81,4 @@ migrate:
 test:
 	pytest -vv --junitxml=junit_report.xml || [ $? = 1 ] | sed 's/^/[$@]\t/'
 
-serve: redis mailhog migrate django beat flower worker static
+serve: redis mailhog migrate django beat flower worker esbuild

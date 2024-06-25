@@ -3,15 +3,15 @@
   <h1 class="govuk-heading-xl app-masthead__title">
     {% filter force_escape %}
       {% blocktrans %}
-                {{ title }}
-            {% endblocktrans %}
+        {{ title }}
+      {% endblocktrans %}
     {% endfilter %}
   </h1>
-  <p id="search-description" class="app-masthead__description">
+  <p id="search-description" class="govuk-body ">
     {% filter force_escape %}
       {% blocktrans %}
-                {{ description }}
-            {% endblocktrans %}
+        {{ description }}
+      {% endblocktrans %}
     {% endfilter %}
   </p>
   <div class="searchbox autocomplete">
