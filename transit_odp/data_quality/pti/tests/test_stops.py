@@ -52,6 +52,9 @@ def test_non_naptan_stop_points(filename, expected):
         ("stop_point_missing_mode.xml", False),
         ("stop_point_w_bus_mode.xml", False),
         ("stop_point_w_coach_mode.xml", True),
+        ("stop_point_w_bus_mode_success.xml", True),
+        ("stop_point_w_bus_mode_blank_enddate.xml", True),
+        ("stop_point_w_bus_mode_wo_operating_profile.xml", True),
     ],
 )
 def test_check_stop_point_two_months(values, expected):
