@@ -577,30 +577,31 @@ def task_delete_datasets(*args):
     else:
         try:
             csv_file_name = "delete_datasets.csv"
-            dataset_ids = read_datasets_file_from_s3(csv_file_name)
-            if not dataset_ids:
-                logger.info("No valid dataset IDs found in the file.")
+            dataset_ids, dataset_revision_ids, type = read_datasets_file_from_s3(csv_file_name)
+            if not dataset_ids and not dataset_revision_ids:
+                logger.info("No valid dataset IDs or revision IDs found in the file.")
                 return
             logger.info(
                 f"Total number of datasets to be deleted is: {len(dataset_ids)}"
             )
-            datasets = Dataset.objects.filter(id__in=dataset_ids)
-            deleted_count = 0
-            failed_deletion_ids = []
+            if type == "dataset_ids":
+                datasets = Dataset.objects.filter(id__in=dataset_ids)
+                deleted_count = 0
+                failed_deletion_ids = []
 
-            for dataset in datasets:
-                try:
-                    dataset.delete()
-                    deleted_count += 1
-                except IntegrityError as e:
-                    logger.error(f"Error deleting dataset {dataset.id}: {str(e)}")
-                    failed_deletion_ids.append(dataset.id)
+                for dataset in datasets:
+                    try:
+                        dataset.delete()
+                        deleted_count += 1
+                    except IntegrityError as e:
+                        logger.error(f"Error deleting dataset {dataset.id}: {str(e)}")
+                        failed_deletion_ids.append(dataset.id)
 
-            logger.info(f"Total number of datasets deleted is: {deleted_count}")
-            if failed_deletion_ids:
-                logger.error(
-                    f"Failed to delete datasets with IDs: {failed_deletion_ids}"
-                )
+                logger.info(f"Total number of datasets deleted is: {deleted_count}")
+                if failed_deletion_ids:
+                    logger.error(
+                        f"Failed to delete datasets with IDs: {failed_deletion_ids}"
+                    )
         except Exception as e:
             logger.warning(
                 f"Error reading or processing the delete datasets file: {str(e)}"
@@ -627,12 +628,18 @@ def task_rerun_timetables_etl_specific_datasets():
     provided in a csv file available in AWS S3 bucket
     """
     csv_file_name = "rerun_timetables_etl.csv"
-    dataset_ids = read_datasets_file_from_s3(csv_file_name)
-    if not dataset_ids:
-        logger.info("No valid dataset IDs found in the file.")
+    dataset_ids, dataset_revision_ids, type = read_datasets_file_from_s3(csv_file_name)
+    if not dataset_ids and not dataset_revision_ids:
+        logger.info("No valid dataset IDs or dataset revision IDs found in the file.")
         return
-    logger.info(f"Total number of datasets to be processed: {len(dataset_ids)}")
-    timetables_datasets = Dataset.objects.filter(id__in=dataset_ids).get_active()
+    
+    if type == "dataset_ids":
+        logger.info(f"Total number of datasets to be processed: {len(dataset_ids)}")
+        timetables_datasets = Dataset.objects.filter(id__in=dataset_ids).get_active()
+
+    if type == "dataset_revision_ids":
+        logger.info(f"Total number of dataset revisions to be processed: {len(dataset_revision_ids)}")
+        timetables_datasets = dataset_revision_ids
 
     if not timetables_datasets:
         logger.info(f"No active datasets found in BODS with these dataset IDs")
@@ -645,39 +652,54 @@ def task_rerun_timetables_etl_specific_datasets():
     total_count = timetables_datasets.count()
     for timetables_dataset in timetables_datasets:
         try:
-            logger.info(
-                f"Running Timetables ETL pipeline for dataset id {timetables_dataset.id}"
-            )
-            revision = timetables_dataset.live_revision
-            if revision:
-                revision_id = revision.id
+            if type == "dataset_ids":
+                logger.info(
+                    f"Running Timetables ETL pipeline for dataset id {timetables_dataset.id}"
+                )
+                revision = timetables_dataset.live_revision
+                if revision:
+                    revision_id = revision.id
+                    try:
+                        revision = DatasetRevision.objects.get(
+                            pk=revision_id, dataset__dataset_type=TimetableType
+                        )
+                    except DatasetRevision.DoesNotExist as exc:
+                        message = f"DatasetRevision {revision_id} does not exist."
+                        failed_datasets.append(timetables_dataset.id)
+                        logger.exception(message, exc_info=True)
+                        raise PipelineException(message) from exc
+                    
+            if type == "dataset_revision_ids":
+                logger.info(
+                    f"Running Timetables ETL pipeline for revision id {timetables_dataset}"
+                )
                 try:
                     revision = DatasetRevision.objects.get(
-                        pk=revision_id, dataset__dataset_type=TimetableType
+                        pk=timetables_dataset, dataset__dataset_type=TimetableType
                     )
                 except DatasetRevision.DoesNotExist as exc:
-                    message = f"DatasetRevision {revision_id} does not exist."
-                    failed_datasets.append(timetables_dataset.id)
+                    message = f"DatasetRevision {timetables_dataset} does not exist."
+                    failed_datasets.append(timetables_dataset)
                     logger.exception(message, exc_info=True)
                     raise PipelineException(message) from exc
+                
+            task_id = uuid.uuid4()
+            task = DatasetETLTaskResult.objects.create(
+                revision=revision,
+                status=DatasetETLTaskResult.STARTED,
+                task_id=task_id,
+            )
 
-                task_id = uuid.uuid4()
-                task = DatasetETLTaskResult.objects.create(
-                    revision=revision,
-                    status=DatasetETLTaskResult.STARTED,
-                    task_id=task_id,
-                )
+            task_dataset_download(revision_id, task.id)
+            task_dataset_etl(revision_id, task.id)
 
-                task_dataset_download(revision_id, task.id)
-                task_dataset_etl(revision_id, task.id)
-
-                task.update_progress(100)
-                task.to_success()
-                successfully_processed_ids.append(timetables_dataset.id)
-                processed_count += 1
-                logger.info(
-                    f"The task completed for {processed_count} of {total_count}"
-                )
+            task.update_progress(100)
+            task.to_success()
+            successfully_processed_ids.append(timetables_dataset.id)
+            processed_count += 1
+            logger.info(
+                f"The task completed for {processed_count} of {total_count}"
+            )
 
         except Exception as exc:
             failed_datasets.append(timetables_dataset.id)
