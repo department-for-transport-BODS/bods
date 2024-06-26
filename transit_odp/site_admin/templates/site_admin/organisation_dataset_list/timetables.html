@@ -72,7 +72,11 @@
             {% for key, value in query_params.items %}
               <a href="{% query_chop key %}">
                 <div class="pill-item">
-                  <img class="pill-item__image" src="{% static 'frontend/images/icon-cross.png' %}" alt="{% trans "Delete icon" %}" />
+                  <img class="pill-item__image"
+                       src="{% static 'frontend/images/icon-cross.png' %}"
+                       alt="{% trans "Delete icon" %}"
+                       height="auto"
+                       width="auto" />
                   <span class="pill-item__label">{{ value }}</span>
                 </div>
               </a>

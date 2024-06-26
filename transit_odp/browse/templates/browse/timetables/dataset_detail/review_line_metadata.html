@@ -133,19 +133,20 @@
           {% endfor %}
         {% endif %}
       </div>
-    {% endif %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        {% include "browse/base/feedback.html" with feedback_url_name="feed-feedback" %}
-      </div>
     </div>
-  {% endblock %}
-  {% block scripts %}
-    {{ block.super }}
-    <script>
+  {% endif %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% include "browse/base/feedback.html" with feedback_url_name="feed-feedback" %}
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  {{ block.super }}
+  <script>
         BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_code}}");
         {% if is_timetable_visualiser_active %}
             BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");
         {% endif %}
-    </script>
-  {% endblock %}
+  </script>
+{% endblock %}

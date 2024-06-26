@@ -18,10 +18,8 @@
     {% if is_compliant_error %}
       <td colspan="2" class="govuk-table__cell">
         <div class="govuk-warning-text stacked govuk-!-margin-bottom-0">
-          <span class="govuk-warning-text__icon content-box"
-                aria-hidden="true"
-                >!</span>
-          <span class="app-task-list__items app-step-nav-related" >{% trans "Non compliant" %}</span>
+          <span class="govuk-warning-text__icon content-box" aria-hidden="true">!</span>
+          <span class="app-task-list__items app-step-nav-related">{% trans "Non compliant" %}</span>
           {% if show_report_link %}
             <a class="govuk-link govuk-!-margin-left-6" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
           {% endif %}

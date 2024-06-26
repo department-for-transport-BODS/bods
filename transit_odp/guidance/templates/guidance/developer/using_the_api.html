@@ -36,28 +36,26 @@
   <p class="govuk-body">
     {% trans "To access the metadata associated with an individual data set, use the following API call:" %}
   </p>
-  <div class="dont-break-out bods-bg-light-p-font-lg"
-       >
+  <div class="dont-break-out bods-bg-light-p-font-lg">
     {{ api_base }}dataset/[DATASET_ID]/?api_key=[API_KEY]
   </div>
   <p class="govuk-body govuk-!-margin-top-4">
     {% trans "where DATASET_ID is the id of the data set and API_KEY is your personal API key." %}
-    <p>
-      <p class="govuk-body">
-        {% trans "To search for data sets using the API, use the following API call:" %}
-      </p>
-      <div class="dont-break-out bods-bg-light-p-font-lg"
-           >
-        {{ api_base }}dataset/?[QUERY_PARAMS]&api_key=[API_KEY]
-      </div>
-      <p class="govuk-body govuk-!-margin-top-4">
-        {% trans "where QUERY_PARAMS are the query parameters as defined in the API reference and API_KEY is your personal API key." %}
-      </p>
-      <p class="govuk-body">
-        {% trans "Results are returned as JSON. For example," %}
-      </p>
-      <div class=bg-light-p-font-lg" >
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% trans "To search for data sets using the API, use the following API call:" %}
+  </p>
+  <div class="dont-break-out bods-bg-light-p-font-lg">
+    {{ api_base }}dataset/?[QUERY_PARAMS]&api_key=[API_KEY]
+  </div>
+  <p class="govuk-body govuk-!-margin-top-4">
+    {% trans "where QUERY_PARAMS are the query parameters as defined in the API reference and API_KEY is your personal API key." %}
+  </p>
+  <p class="govuk-body">
+    {% trans "Results are returned as JSON. For example," %}
+  </p>
+  <div class="bg-light-p-font-lg">
+    {% blocktrans %}
       <br />{<br /><br />&emsp;
       "id": 649,<br /><br />&emsp;
       "created": "2019-11-19T15:23:22.334498Z",<br /><br />&emsp;
@@ -93,10 +91,10 @@
         }]<br /><br />
       }
     {% endblocktrans %}
-      </div>
-      <p class="govuk-body govuk-!-margin-top-4 govuk-!-padding-bottom-5">
-        {% blocktrans %}
+  </div>
+  <p class="govuk-body govuk-!-margin-top-4 govuk-!-padding-bottom-5">
+    {% blocktrans %}
       The url parameter provides a link to the published data.
     {% endblocktrans %}
-      </p>
-    {% endblock %}
+  </p>
+{% endblock %}

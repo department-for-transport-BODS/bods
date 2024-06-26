@@ -177,7 +177,7 @@
                             how we respond to your complaint,
                         {% endblocktrans %}
           {% endfilter %}
-          {% blocktrans with link="https://www.equalityadvisoryservice.com/"%}
+          {% blocktrans with link="https://www.equalityadvisoryservice.com/" %}
                         <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">
                             contact the Equality Advisory and Support
                             Service (EASS).
@@ -265,76 +265,78 @@
               {% endfilter %}
             </li>
           </ul>
-        </section>
-        <section>
-          <h2 class="govuk-heading-m">
-            {% filter force_escape %}
-              {% trans "Preparation of this accessibility statement" %}
-            {% endfilter %}
-          </h2>
-          <p class="govuk-body">
-            {% filter force_escape %}
-              {% blocktrans %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">
+          {% filter force_escape %}
+            {% trans "Preparation of this accessibility statement" %}
+          {% endfilter %}
+        </h2>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% blocktrans %}
                                 This statement was prepared on 17 December
                                 2019. It was last reviewed on 1 March
                                 2022.
                             {% endblocktrans %}
-            {% endfilter %}
-          </p>
-          <p class="govuk-body">
-            {% filter force_escape %}
-              {% blocktrans %}
+          {% endfilter %}
+        </p>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% blocktrans %}
                                 This website was last tested on 20 October
                                 2020. The test was carried out by Digital
                                 Accessibility Centre.
                             {% endblocktrans %}
-            {% endfilter %}
-          </p>
-          <p class="govuk-body">
-            {% filter force_escape %}
-              {% blocktrans %}
+          {% endfilter %}
+        </p>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% blocktrans %}
                                 We used this approach to decide on a
                                 sample of pages to test the analysis of
                                 key user journeys on the platform.
                             {% endblocktrans %}
-            {% endfilter %}
-          </p>
-          <p class="govuk-body">
-            {% filter force_escape %}
-              {% trans "You can read the" %}
-            {% endfilter %}
-            {% blocktrans with link="http://digitalaccessibilitycentre.org/index.php/kpmg-publish-bus-open-data"%}
+          {% endfilter %}
+        </p>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% trans "You can read the" %}
+          {% endfilter %}
+          {% blocktrans with link="http://digitalaccessibilitycentre.org/index.php/kpmg-publish-bus-open-data" %}
                             <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">full accessibility test report from the Digital
                                 Accessibility Centre</a>.
                         {% endblocktrans %}
-          </p>
-        </section>
+        </p>
+      </section>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <hr class="govuk-section-break govuk-section-break--l" />
+      <h2 class="govuk-heading-m">
+        {% trans "Bus Open Data Service" %}
+      </h2>
+      <div>
+        <p class="govuk-body">
+          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact us" %}</a>
+        </p>
       </div>
-      <div class="govuk-grid-column-one-third">
-        <hr class="govuk-section-break govuk-section-break--l" />
-        <h2 class="govuk-heading-m">
-          {% trans "Bus Open Data Service" %}
-        </h2>
-        <div>
-          <p class="govuk-body">
-            <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact us" %}</a>
-          </p>
-        </div>
-        <hr class="govuk-section-break govuk-section-break--l" />
-        <h2 class="govuk-heading-m">
-          {% trans "Follow us" %}
-        </h2>
-        <div>
-          <p class="govuk-body">
-            <a href="https://twitter.com/busopendata" class="govuk-link" target="_blank">
-              <img class="govuk-!-margin-right-3 image-frame account-menu__icon"
-                   src="{% static 'frontend/images/twitter_icon.png' %}"
-                   alt="twitter icon"
-                    />
-              {% trans "Bus open data service Twitter" %}
-            </a>
-          </p>
-        </div>
+      <hr class="govuk-section-break govuk-section-break--l" />
+      <h2 class="govuk-heading-m">
+        {% trans "Follow us" %}
+      </h2>
+      <div>
+        <p class="govuk-body">
+          <a href="https://twitter.com/busopendata" class="govuk-link" target="_blank">
+            <img class="govuk-!-margin-right-3 image-frame account-menu__icon"
+                 src="{% static 'frontend/images/twitter_icon.png' %}"
+                 alt="twitter icon"
+                 height="auto"
+                 width="auto" />
+            {% trans "Bus open data service Twitter" %}
+          </a>
+        </p>
       </div>
     </div>
-  {% endblock %}
+  </div>
+{% endblock %}

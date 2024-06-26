@@ -22,7 +22,7 @@
       </h1>
       <ul class="govuk-list">
         <li class="govuk-!-margin-bottom-3">
-          <a class='govuk-link' href="{% url 'contact-operator' object.id host hosts.data %}">
+          <a class="govuk-link" href="{% url 'contact-operator' object.id host hosts.data %}">
             {% filter force_escape %}
               {% trans "Contact " %}
             {% endfilter %}
@@ -30,14 +30,14 @@
           </a>
         </li>
         <li class="govuk-!-margin-bottom-3">
-          <a class='govuk-link' href="{% url 'downloads' host hosts.data %}">
+          <a class="govuk-link" href="{% url 'downloads' host hosts.data %}">
             {% filter force_escape %}
               {% trans "Download all data" %}
             {% endfilter %}
           </a>
         </li>
         <li class="govuk-!-margin-bottom-5">
-          <a class='govuk-link' href={{ data_activity_url }}>
+          <a class="govuk-link" href={{ data_activity_url }}>
             {% filter force_escape %}
               {% trans "Consumer activity" %}
             {% endfilter %}
@@ -113,9 +113,9 @@
           {% trans "Timetables data" %}
         {% endfilter %}
         {% if services_require_attention_percentage == 0 %}
-          <span class="govuk-tag--green govuk-tag bods-4a5288c641-0" >{% trans "Compliant" %}</span>
+          <span class="govuk-tag--green govuk-tag bods-4a5288c641-0">{% trans "Compliant" %}</span>
         {% else %}
-          <span class="govuk-tag--red govuk-tag bods-4a5288c641-0" >{% trans "Not Compliant" %}</span>
+          <span class="govuk-tag--red govuk-tag bods-4a5288c641-0">{% trans "Not Compliant" %}</span>
         {% endif %}
       </h3>
       <p class="govuk-body">

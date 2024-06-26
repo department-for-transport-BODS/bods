@@ -2,7 +2,7 @@
 <div class="search-result">
   <div class="search-result__heading">
     {% if item.status != "success" %}
-      <a class='govuk-link' href="{% url 'feed-detail' pk=item.id host hosts.data %}">{{ item.name }}</a>
+      <a class="govuk-link" href="{% url 'feed-detail' pk=item.id host hosts.data %}">{{ item.name }}</a>
     {% else %}
       <p class="govuk-body">
         {{ item.name }}

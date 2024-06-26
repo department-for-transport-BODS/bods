@@ -1,7 +1,7 @@
 {% extends "browse/snippets/results/base.html" %}
 {% load i18n %}
 {% block dataset_detail_link %}
-  <a class='govuk-link' href="{% url 'avl-feed-detail' pk=item.id host hosts.data %}">{{ item.name }}</a>
+  <a class="govuk-link" href="{% url 'avl-feed-detail' pk=item.id host hosts.data %}">{{ item.name }}</a>
 {% endblock %}
 {% block dataset_result_content %}
   <li>

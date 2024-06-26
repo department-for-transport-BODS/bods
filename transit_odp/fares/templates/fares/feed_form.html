@@ -21,7 +21,7 @@
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds indented-text" >
+    <div class="govuk-grid-column-two-thirds indented-text">
       {% block inner %}
         <form method="post" enctype="multipart/form-data" novalidate>
           {% csrf_token %}
@@ -32,9 +32,7 @@
         {% if edit_mode %}
           {% if step_title == 'Keep track of the changes you made (optional)' %}
             <p class="govuk-body">
-              <a class="govuk-link" href=#
-                {#                            "{% url 'feed-archive' pk=object.dataset.id host hosts.publish %}"#}
-                >
+              <a class="govuk-link" href="#">
                 {{ _("Archive this data set") }}
               </a>
             </p>

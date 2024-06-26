@@ -5,16 +5,16 @@
 </h2>
 <p class="govuk-body">
   {% trans "Visit the " %}
-  <a class=font-18 govuk-link"  href="{% url 'contact' host hosts.root %}">{{ _("Contact us") }}</a>
-  {% trans "page." %}
+  <a class="font-18 govuk-link"  href="{% url 'contact' host hosts.root %}">{{ _("Contact us") }}</a> {% trans "page." %}
 </p>
 <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
 <div>
   <a href="https://twitter.com/busopendata?ref_src=twsrc%5Etfw" class="govuk-link" target="_blank">
-    <img class=w-h-2 account-menu__icon"
+    <img class="w-h-2 account-menu__icon"
          src="{% static 'frontend/images/twitter_icon.png' %}"
          alt="twitter icon"
-          />
+         height="auto"
+         width="auto" />
     {% trans "Bus open data service Twitter" %}
   </a>
 </div>

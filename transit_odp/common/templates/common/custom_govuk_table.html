@@ -12,7 +12,7 @@
             <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:"" }}">
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
-                  <th {% if 'asc ' in column.attrs.th.class %} aria-sort="ascending" {% elif 'desc ' in column.attrs.th.class %} aria-sort="descending" {% else %} aria-sort="none" {% endif %} role="columnheader" scope="col" {{ column.attrs.th.as_html |default_if_none:"" }}>
+                  <th aria-sort="{% if 'asc ' in column.attrs.th.class %}ascending{% elif 'desc ' in column.attrs.th.class %}descending{% else %}none{% endif %}" role="columnheader" scope="col" {{ column.attrs.th.as_html |default_if_none:"" }}>
                     {% if column.orderable %}
                       <a class="column-header-link"
                          role="button"
