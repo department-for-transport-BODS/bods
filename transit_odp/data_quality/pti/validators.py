@@ -467,7 +467,7 @@ class StopPointValidator(BaseValidator):
             bool: True if service mode matches
         """
         mode = service.xpath("string(x:Mode)", namespaces=self.namespaces)
-        if mode is not None and mode == MODE_COACH:
+        if mode is not None and mode.lower() == MODE_COACH.lower():
             return True
         return False
 
