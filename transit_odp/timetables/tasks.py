@@ -463,10 +463,11 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         pending_checks = TaskResults.objects.get_pending_objects(
             txc_file_attributes_objects
         )
-        adapter.info("DQS-SQS:Creating SQS queues payload")
+        adapter.info(
+            f"DQS-SQS:The number of pending check items is: {len(pending_checks)}"
+        )
         queues_payload = create_queue_payload(pending_checks)
         sqs_queue_client = SQSClientWrapper()
-        adapter.info("DQS-SQS:Boto3 SQS client initialised")
         sqs_queue_client.send_message_to_queue(queues_payload)
         adapter.info("DQS-SQS:SQS queue messsages sent successfully.")
 

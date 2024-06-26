@@ -34,9 +34,6 @@ class SQSClientWrapper:
         Initialize and return an SQS client.
         """
         try:
-            logger.info(
-                f"DQS-SQS:Initialising SQS client wrapper for environment: {settings.AWS_ENVIRONMENT}"
-            )
             self.endpoint_url = settings.SQS_QUEUE_ENDPOINT_URL
 
             if settings.AWS_ENVIRONMENT == "LOCAL":
