@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django_hosts.resolvers import reverse
+from django.conf import settings
 
 import config.hosts
 from transit_odp.common.constants import DEFAULT_ERROR_SUMMARY
@@ -23,9 +24,7 @@ from transit_odp.publish.forms.constants import (
 User = get_user_model()
 
 
-ALLOW_LIST_IP_ADDRESSES = ", ".join(
-    ["18.132.153.243", "18.132.217.119", "52.56.174.34"]
-)
+ALLOW_LIST_IP_ADDRESSES = settings.CAVL_IP_ADDRESS_LIST 
 COMMENT_HELP = _(
     "Please add a comment to describe the data feed. Providers may want to "
     "include the following information:\ntime & date of feed connection, reason "
