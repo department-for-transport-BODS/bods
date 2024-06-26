@@ -140,9 +140,9 @@
 {% block scripts %}
   {{ block.super }}
   <script>
-        BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_code}}");
-        {% if is_timetable_visualiser_active %}
-            BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");
-        {% endif %}
+    BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_code}}");
+    {% if is_timetable_visualiser_active %}
+        BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");
+    {% endif %}
   </script>
 {% endblock %}

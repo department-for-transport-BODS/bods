@@ -1,7 +1,10 @@
 {% load i18n %}
 {% load query_transform %}
 {% load parse_dictionary %}
-<table class="govuk-table govuk-table--small-text-until-tablet {% if timetable_details.df.columns|length <= 5 %} timetables_govuk_table{% endif %}">
+<table class="govuk-table govuk-table--small-text-until-tablet
+              {% if timetable_details.df.columns|length <= 5 %}
+                timetables_govuk_table
+              {% endif %}">
   <caption class="govuk-table__caption govuk-table__caption--m">
     {% trans timetable_details.journey_name %}
   </caption>

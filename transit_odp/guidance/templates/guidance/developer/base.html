@@ -19,7 +19,11 @@
       <ul class="govuk-body dashed">
         {% for section in sections %}
           <li class="govuk-!-padding-bottom-1">
-            <a class="{% if section == current_section %}link-dark govuk-link {% else %} link-dark govuk-link {% endif %}"
+            <a class="{% if section == current_section %}
+                        link-dark govuk-link
+                      {% else %}
+                        link-dark govuk-link
+                      {% endif %}"
                href="{{ base_url }}?section={{ section.name }}">{% trans section.title %}</a>
           </li>
         {% endfor %}

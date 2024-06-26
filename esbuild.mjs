@@ -67,13 +67,31 @@ const copyStaticFiles = (options = {}) => {
         }
     }
 }
+const copyFilesFromNodeModule = (options = {}) => {
+    return {
+        name: 'copyFilesFromNodeModule',
+        setup(build) {
+            let src = options.src
+            let dest = options.dest
+            build.onStart(() => {
+                console.info(`Copying file from "${src}" to "${dest}"`)
+                cpSync(src, dest, {
+                    dereference: true,
+                    errorOnExist: false,
+                    force: true,
+                    preserveTimestamps: true,
+                    recursive: true,
+                })
+            })
+        }
+    }
+}
 
 
 const getEntryPoints = (directoryPath) => {
     console.log(`Reading folder...${directoryPath}`)
     let files=globSync(directoryPath + `**/*.{${config.supportedExtensions}}`, { ignore: 'node_modules/**' });
     files.push(resolve(directoryPath, 'sass/project.scss'))
-    // console.log(`Files found: ${files}`)
     return files
 }
 
@@ -86,6 +104,14 @@ const esConfig = {
     outdir: cliArgs.outdir,
     plugins: [
         cleanOutputDirPlugin(),
+        copyFilesFromNodeModule({
+            src: join(config.node_modules_path, 'govuk-frontend/dist/govuk/assets/fonts'),
+            dest: join(cliArgs.source, 'fonts')
+        }),
+        copyFilesFromNodeModule({
+            src: join(config.node_modules_path, 'govuk-frontend/dist/govuk/assets/images'),
+            dest: join(cliArgs.source, 'images')
+        }),
         sassPlugin({
             sourceMap: true,
             style: 'expanded',
@@ -100,6 +126,7 @@ const esConfig = {
             src: join(cliArgs.source, 'images'),
             dest: join(cliArgs.outdir, 'images')
         }),
+
         copyStaticFiles({
             src: join(cliArgs.source, 'fonts'),
             dest: join(cliArgs.outdir, 'fonts')

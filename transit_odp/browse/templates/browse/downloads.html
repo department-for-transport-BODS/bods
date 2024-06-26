@@ -244,12 +244,12 @@
 {% block scripts %}
   {{ block.super }}
   <script>
-        function addGATagEvent(obj) {
-            gtag('event', 'Download all events', {
-                'event_category': 'link',
-                'event_label': 'Download all ' + obj,
-                'event_action': 'click'
-            });
-        };
+    function addGATagEvent(obj) {
+        gtag('event', 'Download all events', {
+            'event_category': 'link',
+            'event_label': 'Download all ' + obj,
+            'event_action': 'click'
+        });
+    };
   </script>
 {% endblock %}

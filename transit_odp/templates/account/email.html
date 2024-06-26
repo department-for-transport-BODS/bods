@@ -21,7 +21,9 @@
               <input id="email_radio_{{ forloop.counter }}"
                      type="radio"
                      name="email"
-                     {% if emailaddress.primary or user.emailaddress_set.count == 1 %}checked="checked"{% endif %}
+                     {% if emailaddress.primary or user.emailaddress_set.count == 1 %}
+                       checked="checked"
+                     {% endif %}
                      value="{{ emailaddress.email }}" />
               {{ emailaddress.email }}
               {% if emailaddress.verified %}
@@ -68,18 +70,19 @@
 {% block javascript %}
   {{ block.super }}
   <script type="text/javascript">
-(function() {
-  var message = "{% trans "Do you really want to remove the selected email address?" %}";
-  var actions = document.getElementsByName('action_remove');
-  if (actions.length) {
-    actions[0].addEventListener("click", function(e) {
-      if (! confirm(message)) {
-        e.preventDefault();
-      }
-    });
-  }
-})();
+      (function() {
+          var message = "{% trans "
+          Do you really want to remove the selected email address ? " %}";
+          var actions = document.getElementsByName('action_remove');
+          if (actions.length) {
+              actions[0].addEventListener("click", function(e) {
+                  if (!confirm(message)) {
+                      e.preventDefault();
+                  }
+              });
+          }
+      })();
 
-$('.form-group').removeClass('row');
+      $('.form-group').removeClass('row');
   </script>
 {% endblock %}

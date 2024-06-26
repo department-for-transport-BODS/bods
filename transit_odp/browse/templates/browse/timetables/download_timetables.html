@@ -160,20 +160,20 @@
 {% block scripts %}
   {{ block.super }}
   <script>
-        function addGATagEvent(obj) {
-            gtag('event', 'Download all event', {
-                'event_category': 'link',
-                'event_label': 'bulk download ' + obj,
-                'event_action': 'download'
-            });
+    function addGATagEvent(obj) {
+        gtag('event', 'Download all event', {
+            'event_category': 'link',
+            'event_label': 'bulk download ' + obj,
+            'event_action': 'download'
+        });
+    };
+    function sendStaticGTFSEvent(region) {
+        var data = {
+            'event_category': 'link',
+            'event_label': 'download',
+            'event_action': region.toLowerCase() + ' download gtfs'
         };
-        function sendStaticGTFSEvent(region) {
-            var data = {
-                'event_category': 'link',
-                'event_label': 'download',
-                'event_action': region.toLowerCase() + ' download gtfs'
-            };
-            gtag('event', 'Download gtfs event', data);
-        };
+        gtag('event', 'Download gtfs event', data);
+    };
   </script>
 {% endblock %}

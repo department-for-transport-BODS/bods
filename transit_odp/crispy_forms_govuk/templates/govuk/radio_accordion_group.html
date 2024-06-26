@@ -14,7 +14,10 @@
     </label>
   </div>
   <div id="{{ div.css_id }}"
-       class="govuk-radios__conditional {% if not div.active %}govuk-radios__conditional--hidden{% endif %}">
+       class="govuk-radios__conditional
+              {% if not div.active %}
+                govuk-radios__conditional--hidden
+              {% endif %}">
     {#  {% if div.has_errors %}govuk-radios__conditional--error{% endif %}">#}
     {{ fields|safe }}
   </div>

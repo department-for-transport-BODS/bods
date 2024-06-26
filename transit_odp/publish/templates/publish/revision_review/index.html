@@ -58,6 +58,6 @@
   {% if loading %}
     <script>new BODSFrontend.ProgressIndicator({{ object.dataset_id }});</script>
   {% elif not error %}
-    <script>BODSFrontend.initMap("{{ api_root }}", {{ object.id }});</script>
+    <script>BODSFrontend.initMap("{{ api_root }}", {{  object.id }});</script>
   {% endif %}
 {% endblock %}

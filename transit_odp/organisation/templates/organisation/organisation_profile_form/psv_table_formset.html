@@ -14,7 +14,9 @@
           id="id_{{ formset.prefix }}-ADD"
           name="{{ formset.prefix }}-ADD"
           class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0"
-          {% if formset.instance.licence_not_required %}disabled{% endif %}>
+          {% if formset.instance.licence_not_required %}
+            disabled
+          {% endif %}>
     Add new PSV Licence Number
   </button>
 {% endblock %}

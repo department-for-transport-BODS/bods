@@ -1,6 +1,9 @@
 {% load static %}
 <div id="{{ accordion.css_id }}"
-     class="govuk-form-group {% if has_errors %}govuk-form-group--error{% endif %}"
+     class="govuk-form-group
+            {% if has_errors %}
+              govuk-form-group--error
+            {% endif %}"
      data-module="app-radio-accordion">
   <fieldset class="govuk-fieldset" aria-describedby="{% if hint %}{{ accordion.css_id }}-hint{% endif %}">
     {# Render legend #}

@@ -163,7 +163,7 @@
 {% block scripts %}
   {{ block.super }}
   <script>
-        const operators = JSON.parse(document.getElementById("operator-data").textContent);
-        new BODSFrontend.AutoCompleteSearch("search", operators["names"]);
+      const operators = JSON.parse(document.getElementById("operator-data").textContent);
+      new BODSFrontend.AutoCompleteSearch("search", operators["names"]);
   </script>
 {% endblock %}

@@ -30,7 +30,9 @@
                      name="mute_notifications"
                      type="checkbox"
                      value="True"
-                     {% if mute_notifications %}checked{% endif %}
+                     {% if mute_notifications %}
+                       checked
+                     {% endif %}
                      onchange="this.form.submit()" />
               <label class="govuk-label govuk-checkboxes__label" for="mute">
                 {% trans "Mute all subscriptions" %}

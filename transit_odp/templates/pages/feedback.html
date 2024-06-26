@@ -25,5 +25,7 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script>new BODSFrontend.CounterCharactersInTextBox("id_comment", "comment_char_count");</script>
+  <script>
+      new BODSFrontend.CounterCharactersInTextBox("id_comment", "comment_char_count");
+  </script>
 {% endblock %}

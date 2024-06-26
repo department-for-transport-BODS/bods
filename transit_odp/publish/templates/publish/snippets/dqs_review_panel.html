@@ -92,7 +92,11 @@
       {% if show_update or dq_status == "FAILURE" %}
         <a role="button"
            class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0"
-           {% if is_update %} href="{% url 'update-modify' pk1=pk1 pk=object.dataset_id host hosts.publish %}" {% else %} href="{% url 'upload-modify' pk1=pk1 pk=object.dataset_id host hosts.publish %}" {% endif %}>{% trans "Update data" %}</a>
+           {% if is_update %}
+             href="{% url 'update-modify' pk1=pk1 pk=object.dataset_id host hosts.publish %}"
+           {% else %}
+             href="{% url 'upload-modify' pk1=pk1 pk=object.dataset_id host hosts.publish %}"
+           {% endif %}>{% trans "Update data" %}</a>
       {% endif %}
     </div>
   </div>

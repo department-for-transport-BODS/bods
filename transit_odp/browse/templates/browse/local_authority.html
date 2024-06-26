@@ -121,7 +121,7 @@
 {% block scripts %}
   {{ block.super }}
   <script>
-        const ltas = JSON.parse(document.getElementById("lta-data").textContent);
-        new BODSFrontend.AutoCompleteSearch("search", ltas["names"]);
+    const ltas = JSON.parse(document.getElementById("lta-data").textContent);
+    new BODSFrontend.AutoCompleteSearch("search", ltas["names"]);
   </script>
 {% endblock %}

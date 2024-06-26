@@ -79,12 +79,12 @@
 {% block scripts %}
   {{ block.super }}
   <script>
-        function addGATagEvent() {
-            gtag('event', 'Download all event', {
-                'event_category': 'link',
-                'event_label': 'bulk download disruptions',
-                'event_action': 'download'
-            });
-        }
+    function addGATagEvent() {
+        gtag('event', 'Download all event', {
+            'event_category': 'link',
+            'event_label': 'bulk download disruptions',
+            'event_action': 'download'
+        });
+    }
   </script>
 {% endblock %}

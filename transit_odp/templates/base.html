@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html lang="en" class="govuk-template">
   <head>
-    <link rel="shortcut icon" sizes="16x16 32x32 48x48" type="image/x-icon" href="{% static 'frontend/images/favicon.ico' %}" />
+    <link rel="shortcut icon" sizes="16x16 32x32 48x48" type="image/x-icon" href="{% static 'images/favicon.ico' %}" />
     <meta charset="utf-8" />
     {% cookielaw_banner %}
     <title>
@@ -13,27 +13,28 @@
         {% trans "Bus Open Data Service" %}
       {% endblock %}
     </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0b0c0c" />
     <meta name="description" content="BODS" />
     <meta name="keywords" content="BODS" />
-    <link rel="mask-icon" href="{% static 'frontend/images/govuk-mask-icon.svg' %}" color="#0b0c0c" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'frontend/images/govuk-apple-touch-icon-180x180.png' %}" />
-    <link rel="apple-touch-icon" sizes="167x167" href="{% static 'frontend/images/govuk-apple-touch-icon-167x167.png' %}" />
-    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'frontend/images/govuk-apple-touch-icon-152x152.png' %}" />
-    <link rel="apple-touch-icon" href="{% static 'frontend/images/govuk-apple-touch-icon.png' %}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="icon" sizes="any" href="{% static 'images/favicon.svg' %}" type="image/svg+xml" />
+    <link rel="mask-icon" href="{% static 'images/govuk-mask-icon.svg' %}" color="#0b0c0c" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/govuk-apple-touch-icon-180x180.png' %}" />
+    <link rel="apple-touch-icon" sizes="167x167" href="{% static 'images/govuk-apple-touch-icon-167x167.png' %}" />
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/govuk-apple-touch-icon-152x152.png' %}" />
+    <link rel="apple-touch-icon" href="{% static 'images/govuk-apple-touch-icon.png' %}" />
     {% block styles %}
-      {% comment %} <link href="{% static 'frontend/css/vendor.css' %}" rel="stylesheet" /> {% endcomment %}
+      {% comment %} <link href="{% static 'css/vendor.css' %}" rel="stylesheet" /> {% endcomment %}
       <link href="{% static 'sass/project.css' %}" rel="stylesheet" />
     {% endblock %}
-    <meta property="og:image" content="{% static 'frontend/images/govuk-opengraph-image.png' %}" />
+    <meta property="og:image" content="{% static 'images/govuk-opengraph-image.png' %}" />
     {% block extra_head %}
     {% endblock %}
   </head>
   {% block body %}
     <body class="govuk-template__body">
       <script>
-        document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');
+          document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');
       </script>
       {% block skiplink %}
         <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
@@ -46,25 +47,25 @@
         <script src="{% static 'frontend/vendor.bundle.js' %}"></script>
         <script src="{% static 'frontend/main.bundle.js' %}"></script>
         <script>
-          new BODSFrontend.MyAccountMenu();
-          BODSFrontend.initAll();
+                  new BODSFrontend.MyAccountMenu();
+                  BODSFrontend.initAll();
         </script>
         {% if not request.COOKIES.keys|is_value_in_dict:'cookie_policy' %}
           <!-- Global site tag (gtag.js) - Google Analytics -->
           <script async src="https://www.googletagmanager.com/gtag/js?id={{GOOGLE_ANALYTICS_KEY}}"></script>
           <script>
-            const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag('js', new Date());
-            gtag('config', gaToken);
+                      const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
+                      window.dataLayer = window.dataLayer || [];
+                      function gtag() {
+                          dataLayer.push(arguments);
+                      }
+                      gtag('js', new Date());
+                      gtag('config', gaToken);
           </script>
         {% else %}
           <script>
-            const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
-            window['ga-disable-' + gaToken] = true;
+                      const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
+                      window['ga-disable-' + gaToken] = true;
           </script>
         {% endif %}
       {% endblock %}

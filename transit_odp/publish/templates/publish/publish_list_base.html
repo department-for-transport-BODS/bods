@@ -118,8 +118,12 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script>BODSFrontend.initDatasetListLoaders()</script>
+  <script>
+      BODSFrontend.initDatasetListLoaders()
+  </script>
   {% if focus == tab %}
-    <script>BODSFrontend.autoFocusToClass("govuk-tabs__list-item--selected")</script>
+    <script>
+        BODSFrontend.autoFocusToClass("govuk-tabs__list-item--selected")
+    </script>
   {% endif %}
 {% endblock %}

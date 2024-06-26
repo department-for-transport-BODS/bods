@@ -114,27 +114,27 @@
 {% block scripts %}
   {{ block.super }}
   <script>
-        function addGATagEvent() {
-            gtag('event', 'Download all event', {
-                'event_category': 'link',
-                'event_label': 'bulk download avl',
-                'event_action': 'download'
-            });
-        };
-        function addGAGTFSRTDownloadEvent() {
-            var clickEvent = {
-                'event_category': 'link',
-                'event_label': 'bulk download avlgtfs',
-                'event_action': 'download'
-            }
-            gtag('event', 'Download gtfs all event', clickEvent);
+    function addGATagEvent() {
+        gtag('event', 'Download all event', {
+            'event_category': 'link',
+            'event_label': 'bulk download avl',
+            'event_action': 'download'
+        });
+    };
+    function addGAGTFSRTDownloadEvent() {
+        var clickEvent = {
+            'event_category': 'link',
+            'event_label': 'bulk download avlgtfs',
+            'event_action': 'download'
         }
-        function addGATflTagEvent() {
-            gtag('event', 'Download TfL event', {
-                'event_category': 'link',
-                'event_label': 'bulk download avl tfl',
-                'event_action': 'download'
-            });
-        };
+        gtag('event', 'Download gtfs all event', clickEvent);
+    }
+    function addGATflTagEvent() {
+        gtag('event', 'Download TfL event', {
+            'event_category': 'link',
+            'event_label': 'bulk download avl tfl',
+            'event_action': 'download'
+        });
+    };
   </script>
 {% endblock %}
