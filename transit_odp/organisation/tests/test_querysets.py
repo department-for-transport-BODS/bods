@@ -82,7 +82,7 @@ class TestOrganisationQuerySet:
         org1.admin_areas.add(admin_areas[1])
         org1.admin_areas.add(admin_areas[2])
         organisation_data = Organisation.objects.all().first()
-        assert len(organisation_data.admin_areas.count()) == len(admin_areas)
+        assert organisation_data.admin_areas.count() == len(admin_areas)
 
     def test_is_abods_organisation(self):
         abods_organisation = OrganisationFactory(
