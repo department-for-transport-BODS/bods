@@ -3,6 +3,7 @@ from unittest import skip
 from unittest.mock import MagicMock, patch
 from transit_odp.common.utils.aws_common import SQSClientWrapper
 
+
 @skip("This test will be enabled when DQS feature is enabled")
 class TestSQSClientWrapper(unittest.TestCase):
     @patch("transit_odp.common.utils.aws_common.boto3.client")
