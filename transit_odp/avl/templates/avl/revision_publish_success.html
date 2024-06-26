@@ -39,7 +39,7 @@
         {% blocktrans %}
           You can view the data feed on your
         {% endblocktrans %}
-        <a class="govuk-link" href={% url 'avl:feed-list' pk1=view.kwargs.pk1 host hosts.publish %}>
+        <a class="govuk-link" href="{% url 'avl:feed-list' pk1=view.kwargs.pk1 host hosts.publish %}">
           {% trans "data feeds page" %}
         </a>
         {% blocktrans %}
