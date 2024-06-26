@@ -1,3 +1,5 @@
+import "../sass/project.scss";
+
 const GOVUKFrontend = require("govuk-frontend");
 
 import { CrispyFormsGovUK } from "./crispyforms";

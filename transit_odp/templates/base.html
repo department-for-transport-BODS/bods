@@ -24,8 +24,8 @@
     <link rel="apple-touch-icon" sizes="152x152" href="{% static 'images/govuk-apple-touch-icon-152x152.png' %}" />
     <link rel="apple-touch-icon" href="{% static 'images/govuk-apple-touch-icon.png' %}" />
     {% block styles %}
-      {% comment %} <link href="{% static 'css/vendor.css' %}" rel="stylesheet" /> {% endcomment %}
-      <link href="{% static 'sass/project.css' %}" rel="stylesheet" />
+      <link href="{% static 'frontend/css/vendor.css' %}" rel="stylesheet" />
+      <link href="{% static 'frontend/css/main.css' %}" rel="stylesheet" />
     {% endblock %}
     <meta property="og:image" content="{% static 'images/govuk-opengraph-image.png' %}" />
     {% block extra_head %}
@@ -47,25 +47,25 @@
         <script src="{% static 'frontend/vendor.bundle.js' %}"></script>
         <script src="{% static 'frontend/main.bundle.js' %}"></script>
         <script>
-                  new BODSFrontend.MyAccountMenu();
-                  BODSFrontend.initAll();
+                    new BODSFrontend.MyAccountMenu();
+                    BODSFrontend.initAll();
         </script>
         {% if not request.COOKIES.keys|is_value_in_dict:'cookie_policy' %}
           <!-- Global site tag (gtag.js) - Google Analytics -->
           <script async src="https://www.googletagmanager.com/gtag/js?id={{GOOGLE_ANALYTICS_KEY}}"></script>
           <script>
-                      const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
-                      window.dataLayer = window.dataLayer || [];
-                      function gtag() {
-                          dataLayer.push(arguments);
-                      }
-                      gtag('js', new Date());
-                      gtag('config', gaToken);
+                        const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag() {
+                            dataLayer.push(arguments);
+                        }
+                        gtag('js', new Date());
+                        gtag('config', gaToken);
           </script>
         {% else %}
           <script>
-                      const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
-                      window['ga-disable-' + gaToken] = true;
+                        const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
+                        window['ga-disable-' + gaToken] = true;
           </script>
         {% endif %}
       {% endblock %}
