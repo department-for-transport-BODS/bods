@@ -19,6 +19,7 @@ from transit_odp.organisation.managers import (
 )
 from transit_odp.organisation.models import Dataset
 from transit_odp.users.models import User
+from transit_odp.naptan.models import AdminArea
 
 
 class Organisation(TimeStampedModel):
@@ -45,6 +46,7 @@ class Organisation(TimeStampedModel):
     licence_required = models.BooleanField(
         _("Whether an organisation requires a PSV licence"), null=True, default=None
     )
+    admin_areas = models.ManyToManyField(AdminArea, related_name="organisation_atco")
 
     objects = OrganisationManager()
 
