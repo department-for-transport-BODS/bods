@@ -67,7 +67,7 @@ setuptools="~=69.0.3"
 beautifulsoup4 = "^4.12.2"
 isodate = "^0.6.1"
 cssutils = "^2.11.1"
-djlint = {url = "https://github.com/brahmaduttau/djLint/archive/refs/tags/v1.35.11.zip"}
+djlint = "^1.34.1"
 
 [tool.poetry.dev-dependencies]
 black = {version = "22.3.0", extras = ["colorama"]}
