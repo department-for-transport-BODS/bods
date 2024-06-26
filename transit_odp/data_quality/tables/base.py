@@ -131,7 +131,7 @@ class VehicleJourneyTable(GovUkTable):
 
 class WarningListBaseTable(GovUkTable):
     class Meta:
-        template_name = "data_quality/snippets/dq_custom_table.html"
+        template_name = "data_quality/snippets/dqs_custom_table.html"
         attrs = {
             "th": {"class": "govuk-table__header"},
         }

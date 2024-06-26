@@ -1,0 +1,72 @@
+{% load django_tables2 %}
+{% load i18n %}
+{% load parse_dictionary %}
+{% block table-wrapper %}
+  <div>
+    {% block table %}
+      <table class="custom_govuk_table" {% render_attrs table.attrs %}>
+        {% if table.caption %}
+          <caption
+                  class="govuk-table__caption {{ table.attrs.caption.class |default_if_none:"" }}">{{ table.caption }}</caption>
+        {% endif %}
+        {% block table.thead %}
+          {% if table.show_header %}
+            <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:"" }}">
+            <tr class="govuk-table__row">
+              {% for column in table.columns %}
+                <th scope="col" {{ column.attrs.th.as_html |default_if_none:"" }}>                  
+                    Service - {{table.paginated_rows|length }}
+                </th>
+                <th scope="col" {{ column.attrs.th.as_html |default_if_none:"" }}>                  
+                  Details                  
+              </th>
+              {% endfor %}
+            </tr>
+            </thead>
+          {% endif %}
+        {% endblock table.thead %}
+        {% block table.tbody %}
+          <tbody class="govuk-table__body {{ table.attrs.tbody.class |default_if_none:"" }}">
+          {% for row in table.paginated_rows %}
+            {% block table.tbody.row %}    
+              <tr class="govuk-table__row {{ row.attrs.class }}">                            
+                <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
+                  <a href="http://publish.localhost:8000/org/1/dataset/timetable/20/detail/?line=6&service=PB0001746:15">
+                    {{ row.cells.message}} --           {{table.paginated_rows.count }} -- 
+                  </a>
+                  </td>
+                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">First
+                    {{ row.cells.dqs_details}}</td>                
+              </tr>
+            {% endblock table.tbody.row %}
+          {% empty %}
+            {% if table.empty_text %}
+              {% block table.tbody.empty_text %}
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell" colspan="{{ table.columns|length }}">{{ table.empty_text }}</td>
+                </tr>
+              {% endblock table.tbody.empty_text %}
+            {% endif %}
+          {% endfor %}
+          </tbody>
+        {% endblock table.tbody %}
+        {% block table.tfoot %}
+          {% if table.has_footer %}
+            <tfoot {{ table.attrs.tfoot.as_html }}>
+            <tr class="govuk-table__row">
+              {% for column in table.columns %}
+                <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">{{ column.footer }}</td>
+              {% endfor %}
+            </tr>
+            </tfoot>
+          {% endif %}
+        {% endblock table.tfoot %}
+      </table>
+    {% endblock table %}
+    {% block pagination.bottom %}
+      {% if table.pagination_bottom %}
+        {% include "snippets/pagination.html" with paginator=table.paginator prefixed_page_field=table.prefixed_page_field page=table.page  %}
+      {% endif %}
+    {% endblock %}
+  </div>
+{% endblock table-wrapper %}
