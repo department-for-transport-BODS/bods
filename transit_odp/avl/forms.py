@@ -24,7 +24,7 @@ from transit_odp.publish.forms.constants import (
 User = get_user_model()
 
 
-ALLOW_LIST_IP_ADDRESSES = settings.CAVL_IP_ADDRESS_LIST 
+ALLOW_LIST_IP_ADDRESSES = settings.CAVL_IP_ADDRESS_LIST
 COMMENT_HELP = _(
     "Please add a comment to describe the data feed. Providers may want to "
     "include the following information:\ntime & date of feed connection, reason "
