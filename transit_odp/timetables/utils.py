@@ -502,9 +502,7 @@ def create_queue_payload(pending_checks: list) -> dict:
     Create JSON payload as queue items for remote queues for lambdas.
     """
     queue_payload = {}
-    logger.info(f"DQS-SQS:The count of pending checks in: {len(pending_checks)}")
     for index, check in enumerate(pending_checks):
-        logger.info(f"DQS-SQS:Quepayload item created for check {check} for {index}")
         payload_item = {
             "file_id": check.transmodel_txcfileattributes.id,
             "check_id": check.checks.id,
@@ -514,9 +512,6 @@ def create_queue_payload(pending_checks: list) -> dict:
         if queue_name not in queue_payload:
             queue_payload[queue_name] = []
         message = {"Id": f"message-{index}", "MessageBody": json.dumps(payload_item)}
-        logger.info(
-            f"DQS-SQS:Adding queue_name to queue payload: {message} for queue {queue_name}"
-        )
         queue_payload[queue_name].append(message)
 
     return queue_payload
