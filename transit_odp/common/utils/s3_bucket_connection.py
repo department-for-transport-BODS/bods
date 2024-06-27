@@ -44,18 +44,15 @@ def get_s3_bodds_bucket_storage():
 def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
     """Read csv from S3 bucket and return a list of dataset ids and dataset revision ids"""
     try:
-        s3_client, bucket_name = get_s3_bucket_storage()
+        storage = get_s3_bucket_storage()
 
-        # Check if the file exists in the S3 bucket
-        try:
-            s3_client.head_object(Bucket=bucket_name, Key=csv_file_name)
-        except s3_client.exceptions.ClientError:
+        if not storage.exists(csv_file_name):
             logger.warning(f"{csv_file_name} does not exist in the S3 bucket.")
             return [], [], "none"
 
-        # Read the file from S3
-        response = s3_client.get_object(Bucket=bucket_name, Key=csv_file_name)
-        content = response["Body"].read().decode()
+        file = storage._open(csv_file_name)
+        content = file.read().decode()
+        file.close()
 
         # Remove BOM character if present
         if content.startswith("\ufeff"):
