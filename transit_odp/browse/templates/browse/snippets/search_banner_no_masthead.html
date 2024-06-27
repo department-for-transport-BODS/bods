@@ -21,11 +21,7 @@
            aria-labelledby="search-description"
            type="search"
            value="{{ q|default_if_none:'' }}"
-           placeholder="{% filter force_escape %}
-                          {% blocktrans %}
-                            {{ placeholder }}
-                          {% endblocktrans %}
-                        {% endfilter %}"
+           placeholder="{% trans placeholder|force_escape %}"
            {% if hint %}
              aria-describedby="searchbar-hint"
            {% endif %} />
