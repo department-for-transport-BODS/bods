@@ -51,6 +51,9 @@ local-db-restore:
 djlint:
 	djlint ./transit_odp --reformat | sed 's/^/[$@]\t/'
 
+black:
+	black --config .black.toml . | sed 's/^/[$@]\t/'
+
 static:
 	webpack --config webpack/dev.js | sed 's/^/[$@]\t/'
 
@@ -79,3 +82,5 @@ test:
 	pytest -vv --junitxml=junit_report.xml || [ $? = 1 ] | sed 's/^/[$@]\t/'
 
 serve: redis mailhog migrate django beat flower worker static
+
+clean: black djlint
