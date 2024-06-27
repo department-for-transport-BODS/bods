@@ -8,8 +8,7 @@
     {% trans "Data set published" %}
   {% endif %}
 {% endblock %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -43,9 +42,7 @@
         {% endif %}
       </p>
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
-      <h2 class="govuk-heading-m">
-        {% trans "What happens next?" %}
-      </h2>
+      <h2 class="govuk-heading-m">{% trans "What happens next?" %}</h2>
       <p class="govuk-body-m">
         {% blocktrans %}
           You can view the data set on your
@@ -65,7 +62,6 @@
       </a>
       <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
     </div>
-    <div class="govuk-!-width-one-third">
-    </div>
+    <div class="govuk-!-width-one-third"></div>
   </div>
 {% endblock %}

@@ -14,9 +14,7 @@
   {% trans "All fares data" %}
 {% endblock %}
 {% block secondary.title %}
-  <h3 class="govuk-heading-l">
-    {% trans "Download file" %}
-  </h3>
+  <h3 class="govuk-heading-l">{% trans "Download file" %}</h3>
   <p class="govuk-body">
     {% blocktrans %}
             You can download all the active fares data cached on the service
@@ -68,19 +66,16 @@
 {% block heading.secondary %}
   {% include "browse/snippets/download_secondary_links.html" %}
 {% endblock %}
-{% block inner %}
-  <div class="govuk-grid-row govuk-!-margin-top-9">
-  </div>
-{% endblock %}
+{% block inner %}<div class="govuk-grid-row govuk-!-margin-top-9"></div>{% endblock %}
 {% block scripts %}
   {{ block.super }}
   <script>
-        function addGATagEvent() {
-            gtag('event', 'Download all event', {
-                'event_category': 'link',
-                'event_label': 'bulk download fares',
-                'event_action': 'download'
-            });
-        }
+    function addGATagEvent() {
+        gtag('event', 'Download all event', {
+            'event_category': 'link',
+            'event_label': 'bulk download fares',
+            'event_action': 'download'
+        });
+    }
   </script>
 {% endblock %}

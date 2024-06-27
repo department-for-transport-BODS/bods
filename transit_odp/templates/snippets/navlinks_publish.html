@@ -9,8 +9,7 @@
     <a class="govuk-header__link {% active_url 'guide-me' css_class='govuk-link--active' host=hosts.publish exact=True %}"
        href="{% url 'guide-me' host hosts.publish %}">{% trans "Guide me" %}</a>
   </li>
-  <li class="flexfill">
-  </li>
+  <li class="flexfill"></li>
   {% if request.user.is_authenticated %}
     <li class="govuk-header__navigation-item dropdown bods-dropdown">
       <a href="#" class="govuk-header__link {% active_url 'users:home' css_class='govuk-link--active' host='publish' %}">

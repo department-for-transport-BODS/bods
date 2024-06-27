@@ -13,9 +13,7 @@
   {% url 'guidance:support-bus_operators' host hosts.publish as base_url %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">
-        {% trans "Bus operator requirements" %}
-      </h1>
+      <h1 class="govuk-heading-xl">{% trans "Bus operator requirements" %}</h1>
       <p class="govuk-body-l">
         {% blocktrans %}
                     What you need to know to get started. Find guidance and support
@@ -25,7 +23,7 @@
       <ul class="govuk-body dashed">
         {% for section in sections %}
           <li class="govuk-!-padding-bottom-1">
-            <a class="{% if section == current_section %} govuk-link bods-link-dark  {% else %} govuk-link bods-link-dark {% endif %}"
+            <a class="{% if section == current_section %} govuk-link bods-link-dark {% else %} govuk-link bods-link-dark {% endif %}"
                href="{{ base_url }}?section={{ section.name }}">{% trans section.title %}</a>
           </li>
         {% endfor %}
@@ -35,15 +33,12 @@
   <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {% block extra_content %}
-      {% endblock %}
+      {% block extra_content %}{% endblock %}
       {% include "../snippets/previous_section.html" with url=base_url section=prev_section %}
       {% include "../snippets/next_section.html" with url=base_url section=next_section %}
     </div>
     <div class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-s">
-        {% trans "Related content" %}
-      </h2>
+      <h2 class="govuk-heading-s">{% trans "Related content" %}</h2>
       <ul class="govuk-list app-list--nav govuk-!-font-size-19">
         <li>
           <a class="govuk-link" href="{% url 'guidance:support-local_authorities' host hosts.publish %}">

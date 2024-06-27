@@ -15,26 +15,16 @@
       {% include "publish/snippets/help_modals/AVL_timetables_feed_matching.html" %}
     </th>
     <td class="govuk-table__cell" colspan="2">
-      <div class="stacked">
-        {% include "avl/snippets/avl_timetable_matching.html" %}
-      </div>
+      <div class="stacked">{% include "avl/snippets/avl_timetable_matching.html" %}</div>
     </td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "SIRI-VM version" %}
-    </th>
-    <td class="govuk-table__cell" colspan="2">
-      {{ property.live_revision.metadata.schema_version }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "SIRI-VM version" %}</th>
+    <td class="govuk-table__cell" colspan="2">{{ property.live_revision.metadata.schema_version }}</td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Feed details last updated" %}
-    </th>
-    <td class="govuk-table__cell dont-break-out">
-      {{ property.published_at|localtime|date:"j M Y H:i" }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Feed details last updated" %}</th>
+    <td class="govuk-table__cell dont-break-out">{{ property.published_at|localtime|date:"j M Y H:i" }}</td>
     <td class="govuk-table__cell">
       <a class="govuk-link" href="{% url 'avl-feed-changelog' pk=property.id host host.name %}">
         {% trans "View change log" %}
@@ -42,11 +32,7 @@
     </td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Last automated update" %}
-    </th>
-    <td class="govuk-table__cell" colspan="2">
-      {{ property.avl_feed_last_checked|date:"j M Y H:i" }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Last automated update" %}</th>
+    <td class="govuk-table__cell" colspan="2">{{ property.avl_feed_last_checked|date:"j M Y H:i" }}</td>
   </tr>
 {% endblock %}

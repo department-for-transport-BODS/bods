@@ -9,9 +9,7 @@
     onclick="CrispyFormsGovUK.onRadioSelect('{{ div.data_parent }}-content', '{{ div.css_id }}')"
     {% if div.active %}checked{% endif %}
     data-aria-controls="{{ div.css_id }}">
-    <label class="govuk-label govuk-radios__label" for="{{ div.css_id }}-radio">
-      {{ div.name }}
-    </label>
+    <label class="govuk-label govuk-radios__label" for="{{ div.css_id }}-radio">{{ div.name }}</label>
   </div>
   <div id="{{ div.css_id }}"
        class="govuk-radios__conditional {% if not div.active %}govuk-radios__conditional--hidden{% endif %}">

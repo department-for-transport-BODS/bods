@@ -68,9 +68,7 @@
           </div>
           <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break govuk-!-margin-top-0" />
           <div class="govuk-form-group">
-            <label class="govuk-label" for="ordering">
-              Sort by
-            </label>
+            <label class="govuk-label" for="ordering">Sort by</label>
             <select class="govuk-select" id="ordering" name="ordering" aria-label="Sort by" onchange="this.form.submit()">
               <option value="name" {% if ordering == "name" %}selected{% endif %}>
                 {% filter force_escape %}
@@ -94,7 +92,7 @@
               </option>
             </select>
           </div>
-          <div class="search-result__list">
+          <div class="search-result__list govuk-body">
             {% for item in object_list %}
               {% if not forloop.first %}
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
@@ -130,7 +128,7 @@
 {% block scripts %}
   {{ block.super }}
   <script>
-        const operators = JSON.parse(document.getElementById("operator-data").textContent);
-        new BODSFrontend.AutoCompleteSearch("search", operators["names"]);
+    const operators = JSON.parse(document.getElementById("operator-data").textContent);
+    new BODSFrontend.AutoCompleteSearch("search", operators["names"]);
   </script>
 {% endblock %}

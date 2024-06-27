@@ -1,7 +1,5 @@
 {% load i18n %}
-<h2 class="govuk-heading-l govuk-!-padding-top-5">
-  {{ object.name }}
-</h2>
+<h2 class="govuk-heading-l govuk-!-padding-top-5">{{ object.name }}</h2>
 <div class="govuk-error-summary govuk-!-margin-bottom-0"
      aria-labelledby="error-summary-title"
      role="alert"
@@ -12,9 +10,7 @@
   </h2>
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list ">
-      <li class="app-error-summary__item dont-break-out no-underline-l">
-        {{ error.description | safe }}
-      </li>
+      <li class="app-error-summary__item dont-break-out no-underline-l">{{ error.description | safe }}</li>
     </ul>
   </div>
 </div>
@@ -28,25 +24,15 @@
 <table class="govuk-table dataset-property-table">
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Name" %}
-      </th>
-      <td class="govuk-table__cell dont-break-out">
-        {% trans properties.name %}
-      </td>
+      <th scope="row" class="govuk-table__header">{% trans "Name" %}</th>
+      <td class="govuk-table__cell dont-break-out">{% trans properties.name %}</td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Owner" %}
-      </th>
-      <td class="govuk-table__cell">
-        {% trans properties.owner_name %}
-      </td>
+      <th scope="row" class="govuk-table__header">{% trans "Owner" %}</th>
+      <td class="govuk-table__cell">{% trans properties.owner_name %}</td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Last updated" %}
-      </th>
+      <th scope="row" class="govuk-table__header">{% trans "Last updated" %}</th>
       <td class="govuk-table__cell">
         <div class="flex-between">
           <span>
@@ -60,9 +46,7 @@
     </tr>
   </tbody>
 </table>
-<h3 class="govuk-heading-m">
-  {% trans "What should I do next?" %}
-</h3>
+<h3 class="govuk-heading-m">{% trans "What should I do next?" %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}
       You can re-upload a different data set file again. Please ensure that your provided data format is correct and

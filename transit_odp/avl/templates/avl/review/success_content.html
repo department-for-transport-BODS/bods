@@ -3,12 +3,8 @@
 {# Preview Section #}
 <div id="preview-section">
   {# Publish form #}
-  <div class="govuk-!-margin-bottom-6">
-    {% crispy form %}
-  </div>
-  <h2 class="govuk-heading-l dont-break-out">
-    {{ object.name }}
-  </h2>
+  <div class="govuk-!-margin-bottom-6">{% crispy form %}</div>
+  <h2 class="govuk-heading-l dont-break-out">{{ object.name }}</h2>
   {% include "avl/review/property_table.html" %}
   <div class="btn-group-justified">
     <a role="button"

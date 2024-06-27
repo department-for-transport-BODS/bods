@@ -60,9 +60,7 @@
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
-      <div class="flex-between">
-        {% include "organisation/snippets/status_indicator.html" with status=object.status %}
-      </div>
+      <div class="flex-between">{% include "organisation/snippets/status_indicator.html" with status=object.status %}</div>
     </td>
   </tr>
   <tr class="govuk-table__row">
@@ -89,9 +87,7 @@
         {% endif %}
       </span>
       {% if dq_score %}
-        <p class="govuk-!-margin-top-3">
-          {% include "snippets/data_quality_row.html" with rag=dq_score %}
-        </p>
+        <p class="govuk-!-margin-top-3">{% include "snippets/data_quality_row.html" with rag=dq_score %}</p>
       {% endif %}
     </td>
   </tr>

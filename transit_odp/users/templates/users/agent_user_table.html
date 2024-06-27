@@ -9,26 +9,17 @@
   <table class="govuk-table manage-users-table">
     <thead class="govuk-table__head govuk-body-m">
       <tr class="govuk-table__row">
-        <th class="govuk-table__header" scope="col">
-          Organisations
-        </th>
-        <th class="govuk-table__header">
-          Actions
-        </th>
-        <th class="govuk-table__header">
-          Status
-        </th>
-        <th class="govuk-table__header">
-        </th>
+        <th class="govuk-table__header" scope="col">Organisations</th>
+        <th class="govuk-table__header">Actions</th>
+        <th class="govuk-table__header">Status</th>
+        <th class="govuk-table__header"></th>
       </tr>
     </thead>
     <tbody class="govuk-table__body govuk-body-m">
       {% for invite in user.agent_invitations.all %}
         {% if invite.is_active %}
           <tr class="govuk-table__row">
-            <td class="govuk-table__cell">
-              {{ invite.organisation.name }}
-            </td>
+            <td class="govuk-table__cell">{{ invite.organisation.name }}</td>
             <td class="govuk-table__cell">
               {% if invite.is_pending %}
                 <a href="{% url 'users:agent-user-response' pk=invite.id %}" class="govuk-link">Respond</a>
@@ -44,8 +35,7 @@
                 <span class="status-indicator status-indicator--unavailable">{% trans invite.get_status_display %}</span>
               {% endif %}
             </td>
-            <td class="govuk-table__cell ">
-            </td>
+            <td class="govuk-table__cell "></td>
           </tr>
         {% endif %}
       {% endfor %}

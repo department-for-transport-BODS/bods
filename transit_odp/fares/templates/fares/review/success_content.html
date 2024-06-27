@@ -9,9 +9,7 @@
     <div class="app-dqs-panel__body">
       <div class="app-dqs-panel__success">
         {% if validator_error %}
-          <h2 class="govuk-heading-m">
-            Validation Check - Failed
-          </h2>
+          <h2 class="govuk-heading-m">Validation Check - Failed</h2>
           <p class="govuk-body">
             {% blocktrans %}
                                 The validation report checks for compliance against the mandated NeTEx Profile.
@@ -31,25 +29,18 @@
                             {% endblocktrans %}
           </p>
         {% else %}
-          <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
-            Validation Check - Passed
-          </h2>
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Validation Check - Passed</h2>
         {% endif %}
       </div>
     </div>
   </div>
 </div>
 {% else %}
-<div id="preview-section">
-</div>
+<div id="preview-section"></div>
 {% endflag %}
 {# Publish form #}
-<div class="govuk-!-margin-bottom-6">
-  {% crispy form %}
-</div>
-<h2 class="govuk-heading-l dont-break-out">
-  {{ object.name }}
-</h2>
+<div class="govuk-!-margin-bottom-6">{% crispy form %}</div>
+<h2 class="govuk-heading-l dont-break-out">{{ object.name }}</h2>
 {% include "publish/snippets/dataset_map.html" %}
 {% include "fares/review/property_table.html" %}
 <div class="btn-group-justified">

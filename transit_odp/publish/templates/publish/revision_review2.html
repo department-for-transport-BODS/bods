@@ -23,28 +23,21 @@
             {% endblocktrans %}
       </div>
     </div>
-    <p class="govuk-body">
-      {% crispy form %}
-    </p>
+    <p class="govuk-body">{% crispy form %}</p>
   {% endif %}
 {% endblock %}
-{% block heading.subtitle %}
-{% endblock %}
-{% block heading.subtitle.text %}
-{% endblock %}
+{% block heading.subtitle %}{% endblock %}
+{% block heading.subtitle.text %}{% endblock %}
 {% block secondary.title.text %}
   {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
     {{ object.name }}
   {% endif %}
 {% endblock %}
-{% block heading.extra %}
-{% endblock %}
+{% block heading.extra %}{% endblock %}
 {% block heading.secondary %}
   {% if object.status != 'indexing' and object.status != 'processing' and object.status != 'pending' %}
     <div class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-m">
-        {% trans "Need help with operator data requirements?" %}
-      </h2>
+      <h2 class="govuk-heading-m">{% trans "Need help with operator data requirements?" %}</h2>
       <ul class="govuk-list app-list--nav govuk-!-font-size-19">
         <li>
           <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
@@ -68,13 +61,10 @@
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
             {% if object.status == 'success' %}
-              <div id="map" class="disruptions-width">
-              </div>
+              <div id="map" class="disruptions-width"></div>
             {% elif object.status == 'error' %}
               <div class="govuk-panel app-panel--error">
-                <h2 class="white govuk-heading-xl">
-                  {% trans "Supplied data set has failed to upload" %}
-                </h2>
+                <h2 class="white govuk-heading-xl">{% trans "Supplied data set has failed to upload" %}</h2>
               </div>
               <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
               <div class="pb0-l govuk-error-summary"
@@ -82,15 +72,11 @@
                    role="alert"
                    tabindex="-1"
                    data-module="govuk-error-summary">
-                <h2 class="govuk-error-summary__title" id="error-summary-title">
-                  {% trans "There is a problem" %}
-                </h2>
+                <h2 class="govuk-error-summary__title" id="error-summary-title">{% trans "There is a problem" %}</h2>
                 <div class="govuk-error-summary__body">
                   <ul class="govuk-list govuk-error-summary__list">
                     {% for error in severe_errors %}
-                      <li class="govuk-!-font-weight-bold govuk-!-font-size-19 invite-error">
-                        {{ error.description }}
-                      </li>
+                      <li class="govuk-!-font-weight-bold govuk-!-font-size-19 invite-error">{{ error.description }}</li>
                     {% endfor %}
                   </ul>
                 </div>
@@ -104,9 +90,7 @@
               </div>
             {% elif object.status == 'processing' or object.status == 'indexing' or object.status == 'pending' %}
               <div class="govuk-panel govuk-panel--confirmation blue-header">
-                <h3 class="govuk-panel__title govuk-!-font-size-36">
-                  {% trans "Your data is being processed" %}
-                </h3>
+                <h3 class="govuk-panel__title govuk-!-font-size-36">{% trans "Your data is being processed" %}</h3>
                 <div class="govuk-panel__body govuk-!-font-size-19">
                   <div class="pb3-l">
                     {% blocktrans %}
@@ -114,17 +98,10 @@
                           and you will be able to view the details here
                         {% endblocktrans %}
                   </div>
-                  <div id="progressOuterDiv"
-                    {#                         class="progress-bar-outer"#}
-                    >
-                    <div id="progressInnerDiv"
-                      {#                              class="progress-bar-inner"#}
-                      >
-                    </div>
+                  <div id="progressOuterDiv" class="progress-bar-outer">
+                    <div id="progressInnerDiv" class="progress-bar-inner"></div>
                   </div>
-                  <span
-                    {#                      class="progress-bar-text"#}
-                  id="progressSpan"></span>
+                  <span class="progress-bar-text" id="progressSpan"></span>
                 </div>
               </div>
             {% endif %}
@@ -134,29 +111,19 @@
       <div class="govuk-grid-row">
         <ul class="info-list">
           <li>
-            <h4 class="info-item__title">
-              {% trans "Name" %}
-            </h4>
-            <p class="info-item__description" id="id-publish-review-name">
-              {% trans object.name %}
-            </p>
+            <h4 class="info-item__title">{% trans "Name" %}</h4>
+            <p class="info-item__description" id="id-publish-review-name">{% trans object.name %}</p>
           </li>
           {% if object.status != 'error' and object.status != 'indexing' %}
             <li>
-              <h4 class="info-item__title">
-                {% trans "Description" %}
-              </h4>
-              <p class="info-item__description" id="id-publish-review-description">
-                {% trans object.description %}
-              </p>
+              <h4 class="info-item__title">{% trans "Description" %}</h4>
+              <p class="info-item__description" id="id-publish-review-description">{% trans object.description %}</p>
             </li>
           {% endif %}
           {% block inner.status %}
             {% if object.status != 'error' and object.status != 'indexing' %}
               <li>
-                <h4 class="info-item__title">
-                  {% trans "Status" %}
-                </h4>
+                <h4 class="info-item__title">{% trans "Status" %}</h4>
                 <div class="info-item__description">
                   <div class="flex-between">
                     {% block inner.status.indicator %}
@@ -168,19 +135,13 @@
             {% endif %}
           {% endblock %}
           <li>
-            <h4 class="info-item__title">
-              {% trans "Owner" %}
-            </h4>
-            <p class="info-item__description" id="id-publish-review-org-name">
-              {% trans object.dataset.organisation.name %}
-            </p>
+            <h4 class="info-item__title">{% trans "Owner" %}</h4>
+            <p class="info-item__description" id="id-publish-review-org-name">{% trans object.dataset.organisation.name %}</p>
           </li>
           {% if object.status != 'error' and object.status != 'indexing' %}
             {% block inner.txc_version %}
               <li>
-                <h4 class="info-item__title">
-                  {% trans "TransXChange version" %}
-                </h4>
+                <h4 class="info-item__title">{% trans "TransXChange version" %}</h4>
                 <div class="info-item__description">
                   <div class="flex-between" id="id-publish-review-trans-version">
                     <span>{{ object.transxchange_version }}</span>
@@ -200,9 +161,7 @@
               </li>
             {% endblock %}
             <li>
-              <h4 class="info-item__title">
-                {% trans "URL link" %}
-              </h4>
+              <h4 class="info-item__title">{% trans "URL link" %}</h4>
               <div class="info-item__description">
                 <div class="flex-between">
                   <span>&nbsp;</span>
@@ -218,35 +177,21 @@
               </div>
             </li>
             <li>
-              <h4 class="info-item__title">
-                {% trans "Location" %}
-              </h4>
-              <p class="info-item__description" id="id-publish-review-admin-areas">
-                {{ admin_areas }}
-              </p>
+              <h4 class="info-item__title">{% trans "Location" %}</h4>
+              <p class="info-item__description" id="id-publish-review-admin-areas">{{ admin_areas }}</p>
             </li>
             <li>
-              <h4 class="info-item__title">
-                {% trans "Bus stops" %}
-              </h4>
-              <p class="info-item__description" id="id-publish-review-bus-stops">
-                {{ object.num_of_bus_stops }}
-              </p>
+              <h4 class="info-item__title">{% trans "Bus stops" %}</h4>
+              <p class="info-item__description" id="id-publish-review-bus-stops">{{ object.num_of_bus_stops }}</p>
             </li>
             <li>
-              <h4 class="info-item__title">
-                {% trans "Bus routes" %}
-              </h4>
-              <p class="info-item__description" id="id-publish-review-lines">
-                {{ object.num_of_lines }}
-              </p>
+              <h4 class="info-item__title">{% trans "Bus routes" %}</h4>
+              <p class="info-item__description" id="id-publish-review-lines">{{ object.num_of_lines }}</p>
             </li>
           {% endif %}
           {% block inner.last_updated %}
             <li>
-              <h4 class="info-item__title">
-                {% trans "Last updated" %}
-              </h4>
+              <h4 class="info-item__title">{% trans "Last updated" %}</h4>
               <div class="info-item__description">
                 <div class="flex-between" id="id-publish-review-last-updated">
                   {#                  {{ object }}#}
@@ -265,9 +210,7 @@
           {% endblock %}
           {% if object.status != 'expired' and object.status != 'indexing' and object.status != 'error' %}
             <li>
-              <h4 class="info-item__title">
-                {% trans "Start date" %}
-              </h4>
+              <h4 class="info-item__title">{% trans "Start date" %}</h4>
               <p class="info-item__description">
                 {% if object.first_service_start is not None %}
                   {{ object.first_service_start|date:"j M Y H:i" }}
@@ -278,9 +221,7 @@
             </li>
           {% endif %}
           <li>
-            <h4 class="info-item__title">
-              {% trans "Start date" %}
-            </h4>
+            <h4 class="info-item__title">{% trans "Start date" %}</h4>
             <p class="info-item__description" id="id-publish-review-start-date">
               {% if object.first_service_start is not None %}
                 {{ object.first_service_start|date:"j M Y H:i" }}
@@ -290,9 +231,7 @@
             </p>
           </li>
           <li>
-            <h4 class="info-item__title">
-              {% trans "Expiry date" %}
-            </h4>
+            <h4 class="info-item__title">{% trans "Expiry date" %}</h4>
             <p class="info-item__description" id="id-publish-review-expiry-date ">
               {% if object.first_expiring_service is not None %}
                 {{ object.first_expiring_service|date:"j M Y H:i" }}
@@ -303,14 +242,11 @@
           </li>
         </ul>
         <div class="govuk-grid-column-full">
-          {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
-          {% endif %}
+          {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}{% endif %}
           {% block inner.extra %}
             {% if object.status == 'error' %}
               <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
-              <h2 class="govuk-heading-m">
-                {% trans "What should I do next?" %}
-              </h2>
+              <h2 class="govuk-heading-m">{% trans "What should I do next?" %}</h2>
               <p class="govuk-body">
                 {% blocktrans %}
                       You can re-upload a different data set file again. Please ensure <br />
@@ -362,9 +298,7 @@
     <div class="govuk-grid-column-one-third">
       {% block inner.secondary %}
         {% if object.status == 'indexing' or object.status == 'processing' or object.status == 'pending' %}
-          <h2 class="govuk-heading-m">
-            {% trans "Need help with operator data requirements?" %}
-          </h2>
+          <h2 class="govuk-heading-m">{% trans "Need help with operator data requirements?" %}</h2>
           <ul class="govuk-list app-list--nav govuk-!-font-size-19">
             <li>
               <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
@@ -383,7 +317,7 @@
 {% block scripts %}
   {{ block.super }}
   {% if object.status == 'success' %}
-    <script>BODSFrontend.initMap("{{ api_root }}", {{ object.id }});</script>
+    <script>BODSFrontend.initMap("{{ api_root }}", {{  object.id }});</script>
   {% endif %}
   {% if object.status == 'processing' or object.status == 'indexing' or object.status == 'pending' %}
     <script>new BODSFrontend.ProgressIndicator({{ object.dataset_id }});</script>

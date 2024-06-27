@@ -105,16 +105,13 @@ build-backend = "poetry.core.masonry.api"
 [tool.djlint]
 profile = "django"
 close_void_tags = true
-exclude = ".venv,.vscode,.idea,node_modules"
 extension = "html"
 indent_size = 2
 indent = 2
 max_attribute_length = 120
 max_line_length = 120
 use_gitignore = true
-format_js = false
 format_attribute_template_tags=false
-line_break_after_multiline_tag=true
+line_break_after_multiline_tag=false
 no_set_formatting=true
 ignore = "T003,H022"
-custom_tags = "blocktrans"

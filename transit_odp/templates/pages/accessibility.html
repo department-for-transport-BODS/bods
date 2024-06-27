@@ -12,9 +12,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">
-        {% trans "Accessibility statement" %}
-      </h1>
+      <h1 class="govuk-heading-xl">{% trans "Accessibility statement" %}</h1>
       <p class="govuk-body">
         {% filter force_escape %}
           {% blocktrans %}
@@ -143,9 +141,7 @@
         </p>
       </section>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "Reporting accessibility problems with this website" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "Reporting accessibility problems with this website" %}</h2>
         <p class="govuk-body">
           {% filter force_escape %}
             {% blocktrans %}
@@ -162,9 +158,7 @@
         </p>
       </section>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "Enforcement procedure" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "Enforcement procedure" %}</h2>
         <p class="govuk-body">
           {% filter force_escape %}
             {% blocktrans %}
@@ -186,9 +180,7 @@
         </p>
       </section>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "Technical information about this website's accessibility" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "Technical information about this website's accessibility" %}</h2>
         <p class="govuk-body">
           {% filter force_escape %}
             {% blocktrans %}
@@ -313,18 +305,14 @@
     </div>
     <div class="govuk-grid-column-one-third">
       <hr class="govuk-section-break govuk-section-break--l" />
-      <h2 class="govuk-heading-m">
-        {% trans "Bus Open Data Service" %}
-      </h2>
+      <h2 class="govuk-heading-m">{% trans "Bus Open Data Service" %}</h2>
       <div>
         <p class="govuk-body">
           <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact us" %}</a>
         </p>
       </div>
       <hr class="govuk-section-break govuk-section-break--l" />
-      <h2 class="govuk-heading-m">
-        {% trans "Follow us" %}
-      </h2>
+      <h2 class="govuk-heading-m">{% trans "Follow us" %}</h2>
       <div>
         <p class="govuk-body">
           <a href="https://twitter.com/busopendata" class="govuk-link" target="_blank">

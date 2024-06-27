@@ -5,16 +5,12 @@
 {% block title_tag %}
   {% trans "Data feed deleted" %}
 {% endblock %}
-{% block breadcrumb.content %}
-{% endblock %}
-{% block backlink %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
+{% block backlink %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-xl">
-        {% trans "Data feed has been deleted" %}
-      </h1>
+      <h1 class="govuk-heading-xl">{% trans "Data feed has been deleted" %}</h1>
       <p class="govuk-body-l">
         {% blocktrans %}
           Data feed has been deleted.

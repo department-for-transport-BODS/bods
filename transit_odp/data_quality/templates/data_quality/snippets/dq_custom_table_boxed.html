@@ -2,15 +2,9 @@
 {% load django_tables2 %}
 <div class="timing_pattern_boxed">
   <div class="timing_pattern_boxed__group">
-    <p class="red_warning_text">
-      {{ table.warning_message }}
-    </p>
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-2">
-      {{ table.title }}
-    </h2>
-    <p class="govuk-caption-m govuk-!-margin-top-1">
-      {{ table.extra_info }}
-    </p>
+    <p class="red_warning_text">{{ table.warning_message }}</p>
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-2">{{ table.title }}</h2>
+    <p class="govuk-caption-m govuk-!-margin-top-1">{{ table.extra_info }}</p>
     {% include "data_quality/snippets/dq_custom_table.html" with page=table.page paginator=table.paginator %}
   </div>
 </div>

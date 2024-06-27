@@ -13,21 +13,15 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-xl">
-        You are now acting as an agent on behalf of {{ object.organisation.name }}
-      </h1>
+      <h1 class="govuk-heading-xl">You are now acting as an agent on behalf of {{ object.organisation.name }}</h1>
       <p class="govuk-body-m govuk-!-margin-bottom-6">
         {% blocktrans %}
                     You can now do the following on their behalf:
                 {% endblocktrans %}
       </p>
       <ul class="govuk-list govuk-list--bullet">
-        <li>
-          {% trans "Publish all 3 types of data (if you choose to)" %}
-        </li>
-        <li>
-          {% trans "Amend their National Operator Code (NOC) on BODS" %}
-        </li>
+        <li>{% trans "Publish all 3 types of data (if you choose to)" %}</li>
+        <li>{% trans "Amend their National Operator Code (NOC) on BODS" %}</li>
       </ul>
       <p class="govuk-body-m govuk-!-margin-bottom-6">
         {% blocktrans %}

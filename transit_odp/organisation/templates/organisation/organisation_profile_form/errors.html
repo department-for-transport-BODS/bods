@@ -6,18 +6,12 @@
        tabindex="-1"
        data-module="govuk-error-summary">
     {% if form_error_title %}
-      <h2 class="govuk-error-summary__title" id="error-summary-title">
-        {{ form_error_title }}
-      </h2>
+      <h2 class="govuk-error-summary__title" id="error-summary-title">{{ form_error_title }}</h2>
     {% endif %}
     <div class="govuk-error-summary__body">
       <ul class="govuk-list govuk-error-summary__list">
         {# Non-field errors parent form #}
-        {% for error in form.non_field_errors %}
-          <li>
-            {{ error }}
-          </li>
-        {% endfor %}
+        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
         {# Non-FORM errors of noc formset #}
         {% for error in nested_noc.non_form_errors %}
           <li>
@@ -25,26 +19,14 @@
           </li>
         {% endfor %}
         {# Non-FORM errors of psv formset #}
-        {% for error in nested_psv.non_form_errors %}
-          <li>
-            {{ error }}
-          </li>
-        {% endfor %}
+        {% for error in nested_psv.non_form_errors %}<li>{{ error }}</li>{% endfor %}
         {# Non-field errors of each form in noc formset #}
         {% for form in nested_noc %}
-          {% for error in form.non_field_errors %}
-            <li>
-              {{ error }}
-            </li>
-          {% endfor %}
+          {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
         {% endfor %}
         {# Non-field errors of each form in psv formset #}
         {% for form in nested_psv %}
-          {% for error in form.non_field_errors %}
-            <li>
-              {{ error }}
-            </li>
-          {% endfor %}
+          {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
         {% endfor %}
         {# Field errors of parent form #}
         {% for field in form %}

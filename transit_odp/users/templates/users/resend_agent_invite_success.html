@@ -2,16 +2,13 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block title_tag %}
   {% trans "Agent invite has been resent" %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-    <h1 class="govuk-heading-xl">
-      {% trans "Agent invite has been resent" %}
-    </h1>
+    <h1 class="govuk-heading-xl">{% trans "Agent invite has been resent" %}</h1>
     <p class="govuk-body">
       {% trans "Agent user invite has been resent to " %}
       <b>{{ object.email }}</b>.

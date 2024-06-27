@@ -1,17 +1,14 @@
 {% load i18n %}
 <div id="CookielawBanner" class="cookie-banner">
   <div class="govuk-width-container">
-    <p class="cookie-banner-message">
-      {% trans "GOV.UK uses cookies to make the site simpler." %}
-    </p>
+    <p class="cookie-banner-message">{% trans "GOV.UK uses cookies to make the site simpler." %}</p>
     <div class="cookie-banner-buttons-group">
       <div class="cookie-banner-button-accept">
         <a class="govuk-button cookie-button"
            role="button"
            draggable="false"
-           href="javascript:BODSFrontend.createCookie('CookielawBanner', '{{ parent_host }}')">
-          {% trans "Accept cookies" %}
-        </a>
+           onclick="BODSFrontend.createCookie('CookielawBanner', '{{ parent_host }}')"
+           href="#">{% trans "Accept cookies" %}</a>
       </div>
       <div class="cookie-banner-button-settings">
         <a class="govuk-button cookie-button" role="button" draggable="false" href="{% url 'cookie' host hosts.root %}">

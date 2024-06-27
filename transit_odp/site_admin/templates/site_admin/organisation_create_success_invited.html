@@ -1,7 +1,6 @@
 {% extends "base_success.html" %}
 {% load i18n %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% url 'users:organisation-manage' host hosts.admin as backlink_url %}
   {% include "snippets/backlink.html" with url=backlink_url %}

@@ -1,9 +1,7 @@
 {% extends "guidance/local_authorities/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="timetables-support-header" class="govuk-heading-l">
-    {% trans "Timetables data support" %}
-  </h1>
+  <h1 data-qa="timetables-support-header" class="govuk-heading-l">{% trans "Timetables data support" %}</h1>
   <p class="govuk-body">
     {% blocktrans %}
             Local transport authorities may support operators by sending them the digitised
@@ -42,9 +40,7 @@
             Please ensure the timetables data provided aligns with TransXChange version 2.4.
         {% endblocktrans %}
   </p>
-  <h2 data-qa="bus-location-support-header" class="govuk-heading-l">
-    {% trans "Bus location data support" %}
-  </h2>
+  <h2 data-qa="bus-location-support-header" class="govuk-heading-l">{% trans "Bus location data support" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
             A limited number of operators still do not have ETMs that can provide SIRI-VM
@@ -62,9 +58,7 @@
             Once a supplier has been procured, operators may require support getting set up.
         {% endblocktrans %}
   </p>
-  <h2 data-qa="fares-support-header" class="govuk-heading-l">
-    {% trans "Fares data support" %}
-  </h2>
+  <h2 data-qa="fares-support-header" class="govuk-heading-l">{% trans "Fares data support" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
             Operators who have ETM suppliers can talk with them about hosted NeTEx solutions.

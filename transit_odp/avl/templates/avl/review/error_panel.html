@@ -9,9 +9,7 @@
   </h2>
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list ">
-      <li class="no-underline-l app-error-summary__item">
-        {{ error.description | safe }}
-      </li>
+      <li class="no-underline-l app-error-summary__item">{{ error.description | safe }}</li>
     </ul>
   </div>
 </div>
@@ -23,39 +21,23 @@
   </a>
 </div>
 {% load i18n %}
-<h2 class="govuk-heading-l govuk-!-padding-top-5">
-  {{ object.name }}
-</h2>
+<h2 class="govuk-heading-l govuk-!-padding-top-5">{{ object.name }}</h2>
 <table class="govuk-table dataset-property-table">
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Name" %}
-      </th>
-      <td class="govuk-table__cell dont-break-out">
-        {% trans properties.name %}
-      </td>
+      <th scope="row" class="govuk-table__header">{% trans "Name" %}</th>
+      <td class="govuk-table__cell dont-break-out">{% trans properties.name %}</td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Data feed ID" %}
-      </th>
-      <td class="govuk-table__cell dont-break-out">
-        {{ object.dataset_id }}
-      </td>
+      <th scope="row" class="govuk-table__header">{% trans "Data feed ID" %}</th>
+      <td class="govuk-table__cell dont-break-out">{{ object.dataset_id }}</td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "URL link" %}
-      </th>
-      <td class="govuk-table__cell dont-break-out">
-        {% trans object.url_link %}
-      </td>
+      <th scope="row" class="govuk-table__header">{% trans "URL link" %}</th>
+      <td class="govuk-table__cell dont-break-out">{% trans object.url_link %}</td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Description" %}
-      </th>
+      <th scope="row" class="govuk-table__header">{% trans "Description" %}</th>
       <td class="govuk-table__cell">
         <div class="flex-between">
           <span class="dont-break-out">{% trans properties.description %}</span>
@@ -67,9 +49,7 @@
     </td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Short description" %}
-    </th>
+    <th scope="row" class="govuk-table__header">{% trans "Short description" %}</th>
     <td class="govuk-table__cell dont-break-out">
       <div class="flex-between">
         {% trans properties.short_description %}
@@ -80,9 +60,7 @@
     </td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Status" %}
-    </th>
+    <th scope="row" class="govuk-table__header">{% trans "Status" %}</th>
     <td class="govuk-table__cell">
       <div class="flex-between">
         {% include "organisation/snippets/status_indicator.html" with status=properties.status %}
@@ -90,26 +68,16 @@
     </td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Owner" %}
-    </th>
-    <td class="govuk-table__cell">
-      {% trans properties.owner_name %}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Owner" %}</th>
+    <td class="govuk-table__cell">{% trans properties.owner_name %}</td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "SIRI-VM version" %}
-    </th>
-    <td class="govuk-table__cell">
-      {{ properties.siri_version }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "SIRI-VM version" %}</th>
+    <td class="govuk-table__cell">{{ properties.siri_version }}</td>
   </tr>
 </tbody>
 </table>
-<h3 class="govuk-heading-m">
-  {% trans "What should I do next?" %}
-</h3>
+<h3 class="govuk-heading-m">{% trans "What should I do next?" %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}
         You can refer to the documentation or contact support to help you fix this.

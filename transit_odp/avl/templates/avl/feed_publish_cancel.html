@@ -1,9 +1,7 @@
 {% extends "publish/base.html" %}
 {% load i18n %}
 {% load static %}
-{% block title_tag %}
-  {{ title_tag_text }}
-{% endblock %}
+{% block title_tag %}{{ title_tag_text }}{% endblock %}
 {% block breadcrumb.content %}
   <form method="post" novalidate>
     {% csrf_token %}
@@ -13,8 +11,7 @@
       {% trans "Back" %}
     </button>
   {% endblock %}
-  {% block backlink %}
-  {% endblock %}
+  {% block backlink %}{% endblock %}
   {% block content %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
@@ -25,9 +22,7 @@
             {% trans "Would you like to cancel publishing this data feed?" %}
           {% endif %}
         </h1>
-        <p class="govuk-body">
-          {% trans "Any changes you have made so far will not be saved." %}
-        </p>
+        <p class="govuk-body">{% trans "Any changes you have made so far will not be saved." %}</p>
         <div class="btn-group-justified">
           {% if is_update and not is_revision_modify %}
             <a role="button"
