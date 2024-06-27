@@ -31,25 +31,15 @@
   <table class="govuk-table consumer-property-table">
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header">
-          {% trans "LTA name" %}
-        </th>
-        <td class="govuk-table__cell" colspan="2">
-          {{ object.name }}
-        </td>
+        <th scope="row" class="govuk-table__header">{% trans "LTA name" %}</th>
+        <td class="govuk-table__cell" colspan="2">{{ object.name }}</td>
       </tr>
       <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header">
-          {% trans "SIRI SX version" %}
-        </th>
-        <td class="govuk-table__cell" colspan="2">
-          {% trans "Version 1.1" %}
-        </td>
+        <th scope="row" class="govuk-table__header">{% trans "SIRI SX version" %}</th>
+        <td class="govuk-table__cell" colspan="2">{% trans "Version 1.1" %}</td>
       </tr>
       <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header">
-          {% trans "Data catalogue" %}
-        </th>
+        <th scope="row" class="govuk-table__header">{% trans "Data catalogue" %}</th>
         <td class="govuk-table__cell" colspan="2">
           <a class="govuk-link" target="_blank" rel="noopener" rel="noreferrer" href="{% url 'download-catalogue' %}">
             {% trans "Link to catalogue" %}
@@ -57,9 +47,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <th scope="row" class="govuk-table__header">
-          {% trans "Last updated" %}
-        </th>
+        <th scope="row" class="govuk-table__header">{% trans "Last updated" %}</th>
         <td class="govuk-table__cell" colspan="2">
           <div class="flex-between">
             {% if object.stats.lastUpdated %}

@@ -1,7 +1,5 @@
 {% load i18n %}
-<h2 class="govuk-heading-m govuk-!-margin-bottom-3">
-  {{ category.type }}
-</h2>
+<h2 class="govuk-heading-m govuk-!-margin-bottom-3">{{ category.type }}</h2>
 <div class="govuk-accordion"
      data-module="govuk-accordion"
      id="accordion-default-{{ category.type|lower|slugify }}-{{ type }}">
@@ -19,19 +17,13 @@
       <div id="accordion-default-content-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}"
            class="govuk-accordion__section-content govuk-!-margin-right-9 govuk-!-padding-right-9"
            aria-labelledby="accordion-default-heading-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}">
-        <p class="govuk-body">
-          {{ warning.text | safe }}
-        </p>
+        <p class="govuk-body">{{ warning.text | safe }}</p>
         {% if warning.extra_info %}
           {% include "data_quality/snippets/incorrect_stop_types.html" with info=warning.extra_info %}
         {% endif %}
         {% if warning.impacts %}
-          <h3 class="govuk-heading-s">
-            Impacts
-          </h3>
-          <p class="govuk-body">
-            {{ warning.impacts | safe }}
-          </p>
+          <h3 class="govuk-heading-s">Impacts</h3>
+          <p class="govuk-body">{{ warning.impacts | safe }}</p>
         {% endif %}
       </div>
     </div>

@@ -2,25 +2,15 @@
 <table class="govuk-table dataset-property-table">
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Name" %}
-      </th>
-      <td class="govuk-table__cell dont-break-out">
-        {% trans properties.name %}
-      </td>
+      <th scope="row" class="govuk-table__header">{% trans "Name" %}</th>
+      <td class="govuk-table__cell dont-break-out">{% trans properties.name %}</td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Data set ID" %}
-      </th>
-      <td class="govuk-table__cell dont-break-out">
-        {{ object.dataset_id }}
-      </td>
+      <th scope="row" class="govuk-table__header">{% trans "Data set ID" %}</th>
+      <td class="govuk-table__cell dont-break-out">{{ object.dataset_id }}</td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "URL link" %}
-      </th>
+      <th scope="row" class="govuk-table__header">{% trans "URL link" %}</th>
       <td class="govuk-table__cell">
         <span class="no-wrap" id="id-publish-review-url-link">
           <a class="govuk-link" href="{{ object.url_link }}">{% trans "Publisher URL" %}</a>
@@ -28,9 +18,7 @@
       </td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Description" %}
-      </th>
+      <th scope="row" class="govuk-table__header">{% trans "Description" %}</th>
       <td class="govuk-table__cell">
         <div class="flex-between">
           {% trans properties.description %}
@@ -42,9 +30,7 @@
     </td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Short description" %}
-    </th>
+    <th scope="row" class="govuk-table__header">{% trans "Short description" %}</th>
     <td class="govuk-table__cell dont-break-out">
       <div class="flex-between">
         {% trans properties.short_description %}
@@ -55,9 +41,7 @@
     </td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Status" %}
-    </th>
+    <th scope="row" class="govuk-table__header">{% trans "Status" %}</th>
     <td class="govuk-table__cell">
       <div class="flex-between">
         {% include "organisation/snippets/status_indicator.html" with status=properties.status %}
@@ -65,25 +49,15 @@
     </td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Owner" %}
-    </th>
-    <td class="govuk-table__cell">
-      {% trans properties.owner_name %}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Owner" %}</th>
+    <td class="govuk-table__cell">{% trans properties.owner_name %}</td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "NeTEx Version " %}
-    </th>
-    <td class="govuk-table__cell">
-      {{ metadata.schema_version }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "NeTEx Version " %}</th>
+    <td class="govuk-table__cell">{{ metadata.schema_version }}</td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Download NeTEx" %}
-    </th>
+    <th scope="row" class="govuk-table__header">{% trans "Download NeTEx" %}</th>
     <td class="govuk-table__cell">
       <span class="no-wrap right-justify">
         {% url 'feed-download' pk1=pk1 pk=object.dataset_id host host.name as download_link %}
@@ -95,9 +69,7 @@
     </td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Last updated" %}
-    </th>
+    <th scope="row" class="govuk-table__header">{% trans "Last updated" %}</th>
     <td class="govuk-table__cell">
       <div class="flex-between">
         <span>
@@ -110,60 +82,32 @@
     </td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Number of fare zones" %}
-    </th>
-    <td class="govuk-table__cell">
-      {{ metadata.num_of_fare_zones }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Number of fare zones" %}</th>
+    <td class="govuk-table__cell">{{ metadata.num_of_fare_zones }}</td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Number of lines" %}
-    </th>
-    <td class="govuk-table__cell">
-      {{ metadata.num_of_lines }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Number of lines" %}</th>
+    <td class="govuk-table__cell">{{ metadata.num_of_lines }}</td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Number of sales offer packages " %}
-    </th>
-    <td class="govuk-table__cell">
-      {{ metadata.num_of_sales_offer_packages }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Number of sales offer packages " %}</th>
+    <td class="govuk-table__cell">{{ metadata.num_of_sales_offer_packages }}</td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Number of fare products" %}
-    </th>
-    <td class="govuk-table__cell">
-      {{ metadata.num_of_fare_products }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Number of fare products" %}</th>
+    <td class="govuk-table__cell">{{ metadata.num_of_fare_products }}</td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Number of user types" %}
-    </th>
-    <td class="govuk-table__cell">
-      {{ metadata.num_of_user_profiles }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Number of user types" %}</th>
+    <td class="govuk-table__cell">{{ metadata.num_of_user_profiles }}</td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Earliest start date" %}
-    </th>
-    <td class="govuk-table__cell">
-      {{ metadata.valid_from }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Earliest start date" %}</th>
+    <td class="govuk-table__cell">{{ metadata.valid_from }}</td>
   </tr>
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Earliest end date" %}
-    </th>
-    <td class="govuk-table__cell">
-      {{ metadata.valid_to }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Earliest end date" %}</th>
+    <td class="govuk-table__cell">{{ metadata.valid_to }}</td>
   </tr>
 </tbody>
 </table>

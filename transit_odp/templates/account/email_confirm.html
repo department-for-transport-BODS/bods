@@ -16,9 +16,7 @@
          role="alert"
          tabindex="-1"
          data-module="govuk-error-summary">
-      <h2 class="govuk-error-summary__title" id="error-summary-title">
-        {% trans "Your account is already verified." %}
-      </h2>
+      <h2 class="govuk-error-summary__title" id="error-summary-title">{% trans "Your account is already verified." %}</h2>
       <div class="govuk-error-summary__body">
         <p class="govuk-body">
           {% url 'account_login' host host.name as login_url %}
@@ -38,9 +36,7 @@
     </p>
     <form method="post" action="{% url 'account_confirm_email' key=confirmation.key host host.name %}">
       {% csrf_token %}
-      <button class="govuk-button" type="submit">
-        {% trans "Confirm" %}
-      </button>
+      <button class="govuk-button" type="submit">{% trans "Confirm" %}</button>
     </form>
   {% else %}
     <div class="govuk-error-summary"
@@ -63,5 +59,4 @@
     </div>
   {% endif %}
 {% endblock %}
-{% block inner_secondary %}
-{% endblock %}
+{% block inner_secondary %}{% endblock %}

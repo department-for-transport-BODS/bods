@@ -1,8 +1,6 @@
 {% load i18n %}
 {% load static %}
-<h2 class="govuk-heading-m">
-  {% trans "Need help?" %}
-</h2>
+<h2 class="govuk-heading-m">{% trans "Need help?" %}</h2>
 <p class="govuk-body">
   {% trans "Visit the " %}
   <a class="font-18 govuk-link"  href="{% url 'contact' host hosts.root %}">{{ _("Contact us") }}</a> {% trans "page." %}

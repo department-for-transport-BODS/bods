@@ -28,8 +28,7 @@
       <link href="{% static 'frontend/css/main.css' %}" rel="stylesheet" />
     {% endblock %}
     <meta property="og:image" content="{% static 'images/govuk-opengraph-image.png' %}" />
-    {% block extra_head %}
-    {% endblock %}
+    {% block extra_head %}{% endblock %}
   </head>
   {% block body %}
     <body class="govuk-template__body govuk-body">
@@ -39,8 +38,7 @@
       {% block skiplink %}
         <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
       {% endblock %}
-      {% block page %}
-      {% endblock %}
+      {% block page %}{% endblock %}
       {% block scripts %}
         {{ GOOGLE_ANALYTICS_KEY | json_script:"ga-data" }}
         <script>var mapboxKey = '{{MAPBOX_KEY}}'</script>

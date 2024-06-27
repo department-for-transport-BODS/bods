@@ -8,8 +8,7 @@
   {% endif %}
   {% trans "Deactivate data feed" %}
 {% endblock %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% url 'avl:feed-detail' pk1=pk1 pk=object.id host host.name as backlink %}
   {% include "snippets/backlink.html" with url=backlink %}
@@ -17,14 +16,11 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-xl">
-        {% trans "Would you like to deactivate this data feed?" %}
-      </h1>
+      <h1 class="govuk-heading-xl">{% trans "Would you like to deactivate this data feed?" %}</h1>
     </div>
   </div>
   {% block inner %}
     {% crispy form %}
   {% endblock %}
-  {% block inner_secondary %}
-  {% endblock %}
+  {% block inner_secondary %}{% endblock %}
 {% endblock %}

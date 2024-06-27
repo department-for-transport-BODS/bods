@@ -1,9 +1,7 @@
 {% extends "guidance/bus_operators/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h2 data-qa="agents-header" class="govuk-heading-l">
-    {% trans "Agents" %}
-  </h2>
+  <h2 data-qa="agents-header" class="govuk-heading-l">{% trans "Agents" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
   Agents are defined as people outside the operator’s organisation that can publish
@@ -13,9 +11,7 @@
   this service.
   {% endblocktrans %}
   </p>
-  <h2 data-qa="removing-agents-header" class="govuk-heading-l">
-    {% trans "Allocating and removing agents" %}
-  </h2>
+  <h2 data-qa="removing-agents-header" class="govuk-heading-l">{% trans "Allocating and removing agents" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
   Please ensure operators and agents have support agreements and contracts in place
@@ -28,9 +24,7 @@
   going to my account and selecting user management.
   {% endblocktrans %}
   </p>
-  <h2 class="govuk-heading-l">
-    {% trans "Agent users" %}
-  </h2>
+  <h2 class="govuk-heading-l">{% trans "Agent users" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
   Please ensure the operator invites all the agent users to be agents for their
@@ -46,9 +40,7 @@
   by going to my account and selecting user management.
   {% endblocktrans %}
   </p>
-  <h2 class="govuk-heading-l">
-    {% trans "Agents can" %}
-  </h2>
+  <h2 class="govuk-heading-l">{% trans "Agents can" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
   Publish all types of data
@@ -64,9 +56,7 @@
   Remove themselves as an agent for an operator
   {% endblocktrans %}
   </p>
-  <h2 class="govuk-heading-l">
-    {% trans "Agents cannot" %}
-  </h2>
+  <h2 class="govuk-heading-l">{% trans "Agents cannot" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
   Take over the legal obligation to provide data to BODS; they can only publish data
@@ -77,9 +67,7 @@
   Agent cannot add users to an operator’s organisation
   {% endblocktrans %}
   </p>
-  <h2 class="govuk-heading-l">
-    {% trans "Notification emails" %}
-  </h2>
+  <h2 class="govuk-heading-l">{% trans "Notification emails" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
   Notification emails will be sent to both the admin user and agent when:

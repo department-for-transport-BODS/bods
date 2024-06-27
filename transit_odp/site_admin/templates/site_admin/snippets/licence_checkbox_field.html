@@ -1,13 +1,6 @@
 {% load crispy_forms_field %}
 {% load crispy_forms_govuk_tags %}
-<div class="{% if wrapper_class %}
-              {{ wrapper_class }}
-            {% else %}
-              govuk-form-group
-            {% endif %}
-            {% if field.errors and not suppress_form_group_error %}
-              govuk-form-group--error
-            {% endif %}">
+<div class="{% if wrapper_class %} {{ wrapper_class }} {% else %} govuk-form-group {% endif %} {% if field.errors and not suppress_form_group_error %}govuk-form-group--error{% endif %}">
   <div class="govuk-checkboxes{% if small_boxes %} govuk-checkboxes--small{% endif %}">
     <div class="govuk-checkboxes__item">
       {% if field.help_text %}

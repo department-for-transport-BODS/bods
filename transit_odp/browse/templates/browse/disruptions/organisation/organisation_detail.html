@@ -26,7 +26,5 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  {% if not error %}
-    <script>BODSFrontend.initOrgMap("{{ api_root }}", "{{ org_id }}");</script>
-  {% endif %}
+  {% if not error %}<script>BODSFrontend.initOrgMap("{{ api_root }}", "{{ org_id }}");</script>{% endif %}
 {% endblock %}

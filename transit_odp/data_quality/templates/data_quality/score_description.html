@@ -14,12 +14,8 @@
     <main class="govuk-main-wrapper">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-          <h1 class="govuk-heading-xl">
-            {% trans "Data Quality Score" %}
-          </h1>
-          <h2 class="govuk-heading-m">
-            {% trans "Data Quality" %}
-          </h2>
+          <h1 class="govuk-heading-xl">{% trans "Data Quality Score" %}</h1>
+          <h2 class="govuk-heading-m">{% trans "Data Quality" %}</h2>
           <p class="govuk-body">
             {% blocktrans %}
               Passengers rely on high-quality information being provided to the Bus
@@ -27,9 +23,7 @@
               for Transport as an indicator for timetables data quality.
             {% endblocktrans %}
           </p>
-          <h2 class="govuk-heading-m">
-            {% trans "Critical observations" %}
-          </h2>
+          <h2 class="govuk-heading-m">{% trans "Critical observations" %}</h2>
           <p class="govuk-body">
             {% blocktrans %}
                 Data quality observations are divided into critical and advisory
@@ -40,9 +34,7 @@
                 operator can suppress the observation.
             {% endblocktrans %}
           </p>
-          <h2 class="govuk-heading-m">
-            {% trans "Methods for measurement" %}
-          </h2>
+          <h2 class="govuk-heading-m">{% trans "Methods for measurement" %}</h2>
           <p class="govuk-body">
             {% blocktrans %}
                 Only critical observations are included in the data quality measurement.
@@ -54,31 +46,21 @@
           <table class="govuk-table">
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">
-                  %
-                </th>
-                <th scope="col" class="govuk-table__header">
-                  Observation
-                </th>
+                <th scope="col" class="govuk-table__header">%</th>
+                <th scope="col" class="govuk-table__header">Observation</th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">
               {% for o in observations %}
                 <tr class="govuk-table__row">
                   {% widthratio o.weighting 1 100 as percentage %}
-                  <td class="govuk-table__cell">
-                    {{ percentage }}%
-                  </td>
-                  <td class="govuk-table__cell">
-                    {{ o.title }}
-                  </td>
+                  <td class="govuk-table__cell">{{ percentage }}%</td>
+                  <td class="govuk-table__cell">{{ o.title }}</td>
                 </tr>
               {% endfor %}
             </tbody>
           </table>
-          <h2 class="govuk-heading-m">
-            {% trans "Example" %}
-          </h2>
+          <h2 class="govuk-heading-m">{% trans "Example" %}</h2>
           <p class="govuk-body">
             {% blocktrans %}
                 If you have two services in a data set, and one of them has a
@@ -89,9 +71,7 @@
                 These contribution are summed to give the final data quality score.
             {% endblocktrans %}
           </p>
-          <h2 class="govuk-heading-m">
-            {% trans "Thresholds" %}
-          </h2>
+          <h2 class="govuk-heading-m">{% trans "Thresholds" %}</h2>
           <p class="govuk-body">
             {% blocktrans %}
                 The service expects operators to be meeting the Green data quality standard for all
@@ -103,10 +83,8 @@
           <table class="govuk-table">
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">
-                </th>
-                <th scope="col" class="govuk-table__header govuk-!-width-full">
-                </th>
+                <th scope="col" class="govuk-table__header"></th>
+                <th scope="col" class="govuk-table__header govuk-!-width-full"></th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">
@@ -114,25 +92,19 @@
                 <td class="govuk-table__cell">
                   <span class="status-indicator status-indicator--error"></span>
                 </td>
-                <td class="govuk-table__cell">
-                  RED ≤ 90%
-                </td>
+                <td class="govuk-table__cell">RED ≤ 90%</td>
               </tr>
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
                   <span class="status-indicator status-indicator--warning"></span>
                 </td>
-                <td class="govuk-table__cell">
-                  AMBER &gt; 90%
-                </td>
+                <td class="govuk-table__cell">AMBER &gt; 90%</td>
               </tr>
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
                   <span class="status-indicator status-indicator--success"></span>
                 </td>
-                <td class="govuk-table__cell">
-                  GREEN = 100%
-                </td>
+                <td class="govuk-table__cell">GREEN = 100%</td>
               </tr>
             </tbody>
           </table>

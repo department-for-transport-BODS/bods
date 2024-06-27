@@ -10,12 +10,8 @@
 {% endblock %}
 {% block datatype_content %}
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "TransXChange version" %}
-    </th>
-    <td class="govuk-table__cell" colspan="2">
-      {{ object.transxchange_version }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "TransXChange version" %}</th>
+    <td class="govuk-table__cell" colspan="2">{{ object.transxchange_version }}</td>
   </tr>
   <tr class="govuk-table__row">
     {# This will probably go away soon because all non compliant datasets will be    #}
@@ -66,12 +62,8 @@
     </tr>
   {% endif %}
   <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">
-      {% trans "Last updated" %}
-    </th>
-    <td class="govuk-table__cell dont-break-out">
-      {{ object.published_at|localtime|date:"j M Y H:i" }}
-    </td>
+    <th scope="row" class="govuk-table__header">{% trans "Last updated" %}</th>
+    <td class="govuk-table__cell dont-break-out">{{ object.published_at|localtime|date:"j M Y H:i" }}</td>
     <td class="govuk-table__cell">
       <a class="govuk-link" href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans "View change log" %}</a>
     </td>

@@ -1,18 +1,14 @@
 {% extends "guidance/developer/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="using-api-header" class="govuk-heading-l">
-    {% trans "Using the APIs" %}
-  </h1>
+  <h1 data-qa="using-api-header" class="govuk-heading-l">{% trans "Using the APIs" %}</h1>
   <p class="govuk-body">
     {% blocktrans %}
   All data within the Bus Open Data Service can be queried and accessed via API calls.
   A different API call is required for each type of data (timetables, bus location).
   {% endblocktrans %}
   </p>
-  <h1 data-qa="api-key-header" class="govuk-heading-l">
-    {% trans "API Key" %}
-  </h1>
+  <h1 data-qa="api-key-header" class="govuk-heading-l">{% trans "API Key" %}</h1>
   <p class="govuk-body">
     {% trans "Use of the APIs requires an API key which can be obtained from " %}
     <a class="govuk-link" href="{% url 'users:settings' host hosts.data %}">{% trans "Account Settings." %}</a>
@@ -20,9 +16,7 @@
     <a class="govuk-link" href="{% url 'account_signup' host hosts.data %}">{% trans "register" %}</a>
     {% trans "before you can access your API key." %}
   </p>
-  <h1 class="govuk-heading-l">
-    {% trans "Data updates" %}
-  </h1>
+  <h1 class="govuk-heading-l">{% trans "Data updates" %}</h1>
   <p class="govuk-body">
     {% blocktrans %}
     Data is updated and cached on the service. This is what is provided using the
@@ -30,30 +24,20 @@
     {% endblocktrans %}
   </p>
   {% include "../snippets/data_updates_table.html" %}
-  <h3 class="govuk-heading-m">
-    {% trans "Timetables data" %}
-  </h3>
+  <h3 class="govuk-heading-m">{% trans "Timetables data" %}</h3>
   <p class="govuk-body">
     {% trans "To access the metadata associated with an individual data set, use the following API call:" %}
   </p>
-  <div class="dont-break-out bods-bg-light-p-font-lg">
-    {{ api_base }}dataset/[DATASET_ID]/?api_key=[API_KEY]
-  </div>
+  <div class="dont-break-out bods-bg-light-p-font-lg">{{ api_base }}dataset/[DATASET_ID]/?api_key=[API_KEY]</div>
   <p class="govuk-body govuk-!-margin-top-4">
     {% trans "where DATASET_ID is the id of the data set and API_KEY is your personal API key." %}
   </p>
-  <p class="govuk-body">
-    {% trans "To search for data sets using the API, use the following API call:" %}
-  </p>
-  <div class="dont-break-out bods-bg-light-p-font-lg">
-    {{ api_base }}dataset/?[QUERY_PARAMS]&api_key=[API_KEY]
-  </div>
+  <p class="govuk-body">{% trans "To search for data sets using the API, use the following API call:" %}</p>
+  <div class="dont-break-out bods-bg-light-p-font-lg">{{ api_base }}dataset/?[QUERY_PARAMS]&api_key=[API_KEY]</div>
   <p class="govuk-body govuk-!-margin-top-4">
     {% trans "where QUERY_PARAMS are the query parameters as defined in the API reference and API_KEY is your personal API key." %}
   </p>
-  <p class="govuk-body">
-    {% trans "Results are returned as JSON. For example," %}
-  </p>
+  <p class="govuk-body">{% trans "Results are returned as JSON. For example," %}</p>
   <div class="bg-light-p-font-lg">
     {% blocktrans %}
       <br />{<br /><br />&emsp;

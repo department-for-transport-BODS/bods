@@ -1,9 +1,7 @@
 {% extends "guidance/developer/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="api-ref-header" class="govuk-heading-l">
-    {% trans "API reference" %}
-  </h1>
+  <h1 data-qa="api-ref-header" class="govuk-heading-l">{% trans "API reference" %}</h1>
   <p class="govuk-body">
     {% blocktrans %}
             The API reference contains details of API calls, query parameters and error codes. You can try out API
@@ -11,53 +9,33 @@
         {% endblocktrans %}
     <a class="govuk-link-bold" href="{% url 'api-select' host hosts.data %}">{% trans "Access interactive API." %}</a>
   </p>
-  <h3 data-qa="all-data-header" class="govuk-heading-m">
-    {% trans "All data API reference" %}
-  </h3>
+  <h3 data-qa="all-data-header" class="govuk-heading-m">{% trans "All data API reference" %}</h3>
   <p class="govuk-body">
     {% trans "You can use the call all data APIs in your code. This will provide all data currently available." %}
   </p>
   <table class="govuk-table govuk-!-margin-bottom-9">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="w-40-l govuk-table__header">
-          {% trans "Data" %}
-        </th>
-        <th scope="col" class="govuk-table__header">
-          {% trans "Call all data APIs" %}
-        </th>
+        <th scope="col" class="w-40-l govuk-table__header">{% trans "Data" %}</th>
+        <th scope="col" class="govuk-table__header">{% trans "Call all data APIs" %}</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "Timetables" %}
-        </td>
-        <td class="govuk-table__cell">
-          {{ api_base }}dataset/?api_key=[API_KEY]
-        </td>
+        <td class="govuk-table__cell">{% trans "Timetables" %}</td>
+        <td class="govuk-table__cell">{{ api_base }}dataset/?api_key=[API_KEY]</td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "Bus location" %}
-        </td>
-        <td class="govuk-table__cell">
-          {{ api_base }}datafeed/?api_key=[API_KEY]
-        </td>
+        <td class="govuk-table__cell">{% trans "Bus location" %}</td>
+        <td class="govuk-table__cell">{{ api_base }}datafeed/?api_key=[API_KEY]</td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "Fares" %}
-        </td>
-        <td class="govuk-table__cell">
-          {{ api_base }}fares/dataset/?api_key=[API_KEY]
-        </td>
+        <td class="govuk-table__cell">{% trans "Fares" %}</td>
+        <td class="govuk-table__cell">{{ api_base }}fares/dataset/?api_key=[API_KEY]</td>
       </tr>
     </tbody>
   </table>
-  <h3 data-qa="timetable-header" class="govuk-heading-m">
-    {% trans "Timetables data API parameters" %}
-  </h3>
+  <h3 data-qa="timetable-header" class="govuk-heading-m">{% trans "Timetables data API parameters" %}</h3>
   <p class="govuk-body">
     {% blocktrans %}
             Data sets provided may contain multiple TransXChange files. Therefore, query parameters will
@@ -67,19 +45,13 @@
   <table class="govuk-table govuk-!-margin-bottom-9">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="w-30-l govuk-table__header">
-          {% trans "Name" %}
-        </th>
-        <th scope="col" class="govuk-table__header">
-          {% trans "Description" %}
-        </th>
+        <th scope="col" class="w-30-l govuk-table__header">{% trans "Name" %}</th>
+        <th scope="col" class="govuk-table__header">{% trans "Description" %}</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "adminArea" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "adminArea" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         adminArea is a field within the data, and therefore if any of the TransXChange files within a
@@ -92,41 +64,29 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "endDateStart" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "endDateStart" %}</td>
         <td class="govuk-table__cell">
           {% trans "Limit results to data sets with services with end dates after this date. String formatted as YYYY-MM-DDTHH:MM:SS." %}
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "endDateEnd" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "endDateEnd" %}</td>
         <td class="govuk-table__cell">
           {% trans "Limit results to data sets with services with end dates before this date. String formatted as YYYY-MM-DDTHH:MM:SS." %}
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "limit" %}
-        </td>
-        <td class="govuk-table__cell">
-          {% trans "The maximum number of records to return." %}
-        </td>
+        <td class="govuk-table__cell">{% trans "limit" %}</td>
+        <td class="govuk-table__cell">{% trans "The maximum number of records to return." %}</td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "modifiedDate" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "modifiedDate" %}</td>
         <td class="govuk-table__cell">
           {% trans "Limit results to data sets that have been created/updated since the specified date. String formatted as YYYY-MM-DDTHH:MM:SS." %}
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "noc" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "noc" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Input a comma separated list of National Operator Codes to limit results to data sets of the
@@ -142,9 +102,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "offset" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "offset" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Return results that match the query starting from the specified offset. e.g. &offset=10&limit=25
@@ -153,9 +111,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "search" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "search" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Return data sets where the data set name, data set description, organisation name, or
@@ -178,9 +134,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "startDateStart" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "startDateStart" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Limit results to data sets with services with start dates after
@@ -189,9 +143,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "startDateEnd" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "startDateEnd" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Limit results to data sets with services with start dates before
@@ -200,9 +152,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "datasetID" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "datasetID" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Limit results to a specific data set of a publisher using the data set ID.
@@ -237,9 +187,7 @@
       </tr>
     </tbody>
   </table>
-  <h3 data-qa="fares-header" class="govuk-heading-m">
-    {% trans "Fares data API parameters" %}
-  </h3>
+  <h3 data-qa="fares-header" class="govuk-heading-m">{% trans "Fares data API parameters" %}</h3>
   <p class="govuk-body">
     {% blocktrans %}
             Data sets provided may contain multiple NeTEx files. Therefore, query
@@ -250,19 +198,13 @@
   <table class="govuk-table govuk-!-margin-bottom-9">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="w-30-l govuk-table__header">
-          {% trans "Name" %}
-        </th>
-        <th scope="col" class="govuk-table__header">
-          {% trans "Description" %}
-        </th>
+        <th scope="col" class="w-30-l govuk-table__header">{% trans "Name" %}</th>
+        <th scope="col" class="govuk-table__header">{% trans "Description" %}</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "noc" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "noc" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Input a comma separated list of National Operator Codes to limit results
@@ -282,9 +224,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "status" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "status" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Limit results to data sets with the specified status. Accepted values are: published and inactive.
@@ -292,9 +232,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "boundingBox" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "boundingBox" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Limit results to fares data sets that contain information for the area within the rectangular boundingBox you set using co-ordinates: minLongitude, minLatitude, maxLongitude, maxLatitude.
@@ -302,17 +240,11 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "limit" %}
-        </td>
-        <td class="govuk-table__cell">
-          {% trans "The maximum number of records to return." %}
-        </td>
+        <td class="govuk-table__cell">{% trans "limit" %}</td>
+        <td class="govuk-table__cell">{% trans "The maximum number of records to return." %}</td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "offset" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "offset" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Return results that match the query starting from the specified offset. e.g. &offset=10&limit=25
@@ -322,9 +254,7 @@
       </tr>
     </tbody>
   </table>
-  <h3 data-qa="bus-header" class="govuk-heading-m">
-    {% trans "Bus location data API parameters" %}
-  </h3>
+  <h3 data-qa="bus-header" class="govuk-heading-m">{% trans "Bus location data API parameters" %}</h3>
   <p class="govuk-body">
     {% filter force_escape %}
       {% blocktrans %}
@@ -337,12 +267,8 @@
   <table class="govuk-table govuk-!-margin-bottom-9">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="w-30-l govuk-table__header">
-          {% trans "Name" %}
-        </th>
-        <th scope="col" class="govuk-table__header">
-          {% trans "Description" %}
-        </th>
+        <th scope="col" class="w-30-l govuk-table__header">{% trans "Name" %}</th>
+        <th scope="col" class="govuk-table__header">{% trans "Description" %}</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
@@ -362,9 +288,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "operatorRef" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "operatorRef" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Limit results to data feeds with the operatorRef. The National Operator Code is often used by
@@ -376,9 +300,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "lineRef" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "lineRef" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Limit results to bus location data with the specified Line Ref.
@@ -386,9 +308,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "producerRef" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "producerRef" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Limit results to bus location data with the specified Producer Ref.
@@ -396,9 +316,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "originRef" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "originRef" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Limit results to bus location data with the specified Origin Ref. Inputs for Origin Ref
@@ -412,9 +330,7 @@
         </td>
       </tr>
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">
-          {% trans "destinationRef" %}
-        </td>
+        <td class="govuk-table__cell">{% trans "destinationRef" %}</td>
         <td class="govuk-table__cell">
           {% blocktrans %}
                         Limit results to bus location data with the specified Destination Ref. Inputs for

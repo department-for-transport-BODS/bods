@@ -2,18 +2,14 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block title_tag %}
   {% trans "Agent has been removed" %}
 {% endblock %}
-{% block backlink %}
-{% endblock %}
+{% block backlink %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-    <h1 class="govuk-heading-xl">
-      {% trans "Agent has been removed" %}
-    </h1>
+    <h1 class="govuk-heading-xl">{% trans "Agent has been removed" %}</h1>
     <p class="govuk-body">
       {% trans "Agent user" %}
       <b>{{ object.agent.email }}</b>

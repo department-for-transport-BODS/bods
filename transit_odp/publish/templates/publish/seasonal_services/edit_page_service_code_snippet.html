@@ -1,18 +1,10 @@
 {% load i18n %}
 <div class="heading-container">
-  <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
-    {% trans "PSV Licence Number" %}
-  </h2>
+  <h2 class="govuk-heading-s govuk-!-margin-bottom-2">{% trans "PSV Licence Number" %}</h2>
 </div>
-<p class="govuk-body">
-  {{ form.instance.licence.number }}
-</p>
+<p class="govuk-body">{{ form.instance.licence.number }}</p>
 <div class="heading-container">
-  <h2 class="govuk-heading-s govuk-!-margin-bottom-2">
-    {% trans "Service code" %}
-  </h2>
+  <h2 class="govuk-heading-s govuk-!-margin-bottom-2">{% trans "Service code" %}</h2>
 </div>
-<p class="govuk-body">
-  {{ form.instance.licence.number }}/{{ form.instance.registration_code }}
-</p>
+<p class="govuk-body">{{ form.instance.licence.number }}/{{ form.instance.registration_code }}</p>
 <hr class="govuk-section-break govuk-section-break--xs govuk-section-break--visible govuk-!-margin-bottom-8 govuk-!-margin-top-8" />
