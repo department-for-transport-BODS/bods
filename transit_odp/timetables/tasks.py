@@ -1,13 +1,17 @@
+import uuid
+
 from logging import getLogger
 from pathlib import Path
 from urllib.parse import unquote
 
 import celery
+import itertools
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.db import IntegrityError, transaction
+from django.db import DatabaseError, IntegrityError, transaction
 from django.utils import timezone
+from waffle import flag_is_active
 
 from transit_odp.common.loggers import (
     MonitoringLoggerContext,
@@ -34,8 +38,10 @@ from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 from transit_odp.timetables.utils import (
     get_bank_holidays,
     get_holidays_records_to_insert,
-    read_delete_datasets_file_from_s3,
+    create_queue_payload,
 )
+from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
+from transit_odp.organisation.constants import TimetableType
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     PostSchemaValidator,
@@ -43,12 +49,14 @@ from transit_odp.timetables.validate import (
     TXCRevisionValidator,
 )
 from transit_odp.transmodel.models import BankHolidays
+from transit_odp.dqs.models import Report, Checks, TaskResults
 from transit_odp.validate import (
     DataDownloader,
     DownloadException,
     FileScanner,
     ValidationException,
 )
+from transit_odp.common.utils.aws_common import SQSClientWrapper
 
 logger = getLogger(__name__)
 
@@ -57,6 +65,10 @@ BATCH_SIZE = 2000
 
 @shared_task(bind=True)
 def task_dataset_pipeline(self, revision_id: int, do_publish=False):
+    is_new_data_quality_service_active = flag_is_active(
+        "", "is_new_data_quality_service_active"
+    )
+
     try:
         revision = DatasetRevision.objects.get(id=revision_id)
     except DatasetRevision.DoesNotExist as e:
@@ -75,6 +87,7 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
 
         adapter.info(f"Dataset {revision.dataset_id} - task {task.id}")
         args = (task.id,)
+
         jobs = [
             task_dataset_download.signature(args),
             task_scan_timetables.signature(args),
@@ -85,8 +98,13 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_pti_validation.signature(args),
             task_dqs_upload.signature(args),
             task_dataset_etl.signature(args),
-            task_dataset_etl_finalise.signature(args),
         ]
+
+        if is_new_data_quality_service_active:
+            jobs.append(task_data_quality_service.signature(args))
+
+        # Adding the final step for ETL
+        jobs.append(task_dataset_etl_finalise.signature(args))
 
         if do_publish:
             jobs.append(task_publish_revision.signature((revision_id,), immutable=True))
@@ -418,6 +436,57 @@ def task_dqs_upload(revision_id: int, task_id: int):
     N.B. this is just a proxy to `upload_dataset_to_dqs` as part of a refactor.
     """
     upload_dataset_to_dqs(task_id)
+
+
+@shared_task()
+def task_data_quality_service(revision_id: int, task_id: int) -> int:
+    """A task that runs the DQS checks on TxC file(s)."""
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = task.revision
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Starting DQS checks initiation task.")
+    try:
+        task.update_progress(95)
+        report = Report.initialise_dqs_task(revision)
+        adapter.info(
+            f"Report is initialised for with status PIPELINE_PENDING for {revision}"
+        )
+        checks = Checks.get_all_checks()
+        txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
+            revision.id
+        )
+        combinations = itertools.product(txc_file_attributes_objects, checks)
+        TaskResults.initialize_task_results(report, combinations)
+        adapter.info(
+            f"TaskResults is initialised for with status PENDING for {revision}"
+        )
+        pending_checks = TaskResults.objects.get_pending_objects(
+            txc_file_attributes_objects
+        )
+        adapter.info(
+            f"DQS-SQS:The number of pending check items is: {len(pending_checks)}"
+        )
+        queues_payload = create_queue_payload(pending_checks)
+        sqs_queue_client = SQSClientWrapper()
+        sqs_queue_client.send_message_to_queue(queues_payload)
+        adapter.info("DQS-SQS:SQS queue messsages sent successfully.")
+
+    except (DatabaseError, IntegrityError) as db_exc:
+        task.handle_general_pipeline_exception(
+            db_exc,
+            adapter,
+            message="Database error occurred:",
+            task_name="dataset_etl",
+        )
+
+    except Exception as exc:
+        task.handle_general_pipeline_exception(
+            exc,
+            adapter,
+            message="Unknown timetable pipeline error in DQS.",
+            task_name="dataset_etl",
+        )
+    adapter.info("Timetable DQS initiation task completed.")
     return revision_id
 
 
@@ -502,7 +571,8 @@ def task_delete_datasets(*args):
             logger.warning(f"Dataset with ID {dataset_id} does not exist.")
     else:
         try:
-            dataset_ids = read_delete_datasets_file_from_s3()
+            csv_file_name = "delete_datasets.csv"
+            dataset_ids = read_datasets_file_from_s3(csv_file_name)
             if not dataset_ids:
                 logger.info("No valid dataset IDs found in the file.")
                 return
@@ -544,3 +614,74 @@ def task_load_bank_holidays():
         BankHolidays.objects.all().delete()
         BankHolidays.objects.bulk_create(bank_holidays_to_insert, BATCH_SIZE)
         logger.info("completed process to load bank holidays from api successfully")
+
+
+@shared_task(ignore_errors=True)
+def task_rerun_timetables_etl_specific_datasets():
+    """This is a one-off task to rerun the timetables ETL for a list of datasets
+    provided in a csv file available in AWS S3 bucket
+    """
+    csv_file_name = "rerun_timetables_etl.csv"
+    dataset_ids = read_datasets_file_from_s3(csv_file_name)
+    if not dataset_ids:
+        logger.info("No valid dataset IDs found in the file.")
+        return
+    logger.info(f"Total number of datasets to be processed: {len(dataset_ids)}")
+    timetables_datasets = Dataset.objects.filter(id__in=dataset_ids).get_active()
+
+    if not timetables_datasets:
+        logger.info(f"No active datasets found in BODS with these dataset IDs")
+        return
+
+    processed_count = 0
+    successfully_processed_ids = []
+    failed_datasets = []
+
+    total_count = timetables_datasets.count()
+    for timetables_dataset in timetables_datasets:
+        try:
+            logger.info(
+                f"Running Timetables ETL pipeline for dataset id {timetables_dataset.id}"
+            )
+            revision = timetables_dataset.live_revision
+            if revision:
+                revision_id = revision.id
+                try:
+                    revision = DatasetRevision.objects.get(
+                        pk=revision_id, dataset__dataset_type=TimetableType
+                    )
+                except DatasetRevision.DoesNotExist as exc:
+                    message = f"DatasetRevision {revision_id} does not exist."
+                    failed_datasets.append(timetables_dataset.id)
+                    logger.exception(message, exc_info=True)
+                    raise PipelineException(message) from exc
+
+                task_id = uuid.uuid4()
+                task = DatasetETLTaskResult.objects.create(
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=task_id,
+                )
+
+                task_dataset_download(revision_id, task.id)
+                task_dataset_etl(revision_id, task.id)
+
+                task.update_progress(100)
+                task.to_success()
+                successfully_processed_ids.append(timetables_dataset.id)
+                processed_count += 1
+                logger.info(
+                    f"The task completed for {processed_count} of {total_count}"
+                )
+
+        except Exception as exc:
+            failed_datasets.append(timetables_dataset.id)
+            message = f"Error processing dataset id {timetables_dataset.id}: {exc}"
+            logger.exception(message, exc_info=True)
+
+    logger.info(
+        f"Total number of datasets processed successfully is {len(successfully_processed_ids)} out of {total_count}"
+    )
+    logger.info(
+        f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
+    )
