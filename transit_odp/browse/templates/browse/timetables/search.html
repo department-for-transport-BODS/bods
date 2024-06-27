@@ -14,7 +14,9 @@
   </li>
 {% endblock %}
 {% block full_width_content %}
-  {% with title="Timetables data" description="Search for specific operator or location" placeholder="Search by NOC, Location, Operator or Description" %}
-    {% include "browse/snippets/search_banner.html" %}
-  {% endwith %}
+  <form>
+    {% with title="Timetables data" description="Search for specific operator or location" placeholder="Search by NOC, Location, Operator or Description" %}
+      {% include "browse/snippets/search_banner.html" %}
+    {% endwith %}
+  </form>
 {% endblock %}

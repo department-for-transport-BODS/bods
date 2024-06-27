@@ -11,8 +11,10 @@
     {% with title="title" description="description" placeholder="placeholder" %}
       {% include "browse/snippets/search_banner.html" %}
     {% endwith %}
-  {% endblock %}
-  {% block content %}
+  </form>
+{% endblock %}
+{% block content %}
+  <form>
     <div class="govuk-grid-row govuk-!-margin-top-8">
       <div class="govuk-grid-column-one-third">
         <h2 class="govuk-heading-m">{% trans "Filter by" %}</h2>
