@@ -3,16 +3,12 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block breadcrumb.content %}
-  {% with account_base_no_link=True %}
-    {{ block.super }}
-  {% endwith %}
+  {% with account_base_no_link=True %}{{ block.super }}{% endwith %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">
-        {% trans "Access Open Bus Data" %}
-      </h1>
+      <h1 class="govuk-heading-l">{% trans "Access Open Bus Data" %}</h1>
       <p class="govuk-body">
         {% blocktrans %}
           You can preview available data without an account but to publish or use open bus data you need to create

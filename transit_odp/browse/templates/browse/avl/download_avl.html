@@ -14,9 +14,7 @@
   {% trans "All location data" %}
 {% endblock %}
 {% block secondary.title %}
-  <h3 class="govuk-heading-l">
-    {% trans "Download file" %}
-  </h3>
+  <h3 class="govuk-heading-l">{% trans "Download file" %}</h3>
 {% endblock %}
 {% block heading.subtitle %}
   <p class="govuk-body">
@@ -107,34 +105,31 @@
 {% block heading.secondary %}
   {% include "browse/snippets/download_secondary_links.html" %}
 {% endblock %}
-{% block inner %}
-  <div class="govuk-grid-row govuk-!-margin-top-9">
-  </div>
-{% endblock %}
+{% block inner %}<div class="govuk-grid-row govuk-!-margin-top-9"></div>{% endblock %}
 {% block scripts %}
   {{ block.super }}
   <script>
-        function addGATagEvent() {
-            gtag('event', 'Download all event', {
-                'event_category': 'link',
-                'event_label': 'bulk download avl',
-                'event_action': 'download'
-            });
-        };
-        function addGAGTFSRTDownloadEvent() {
-            var clickEvent = {
-                'event_category': 'link',
-                'event_label': 'bulk download avlgtfs',
-                'event_action': 'download'
-            }
-            gtag('event', 'Download gtfs all event', clickEvent);
+    function addGATagEvent() {
+        gtag('event', 'Download all event', {
+            'event_category': 'link',
+            'event_label': 'bulk download avl',
+            'event_action': 'download'
+        });
+    };
+    function addGAGTFSRTDownloadEvent() {
+        var clickEvent = {
+            'event_category': 'link',
+            'event_label': 'bulk download avlgtfs',
+            'event_action': 'download'
         }
-        function addGATflTagEvent() {
-            gtag('event', 'Download TfL event', {
-                'event_category': 'link',
-                'event_label': 'bulk download avl tfl',
-                'event_action': 'download'
-            });
-        };
+        gtag('event', 'Download gtfs all event', clickEvent);
+    }
+    function addGATflTagEvent() {
+        gtag('event', 'Download TfL event', {
+            'event_category': 'link',
+            'event_label': 'bulk download avl tfl',
+            'event_action': 'download'
+        });
+    };
   </script>
 {% endblock %}

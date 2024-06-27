@@ -20,9 +20,7 @@
               class="govuk-table__header cf {% if formset.field_has_error.justification %} error-message-colour {% else %} govuk-!-font-weight-regular {% endif %}">
             {{ fields.justification.label }}
           </th>
-          <th scope="col" class="govuk-table__header js-hidden">
-            Delete
-          </th>
+          <th scope="col" class="govuk-table__header js-hidden">Delete</th>
         {% endwith %}
       </tr>
     </thead>
@@ -54,8 +52,8 @@
   </table>
 </div>
 <script>
-    window.addEventListener("load", function () {
-        const form = document.getElementById("table-formset");
-        new BODSFrontend.FormSet(form);
-    })
+  window.addEventListener("load", function () {
+      const form = document.getElementById("table-formset");
+      new BODSFrontend.FormSet(form);
+  })
 </script>

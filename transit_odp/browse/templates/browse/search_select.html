@@ -14,10 +14,8 @@
     <div class="govuk-width-container">
       <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0 govuk-!-padding-right-9">
-          <h1 class="govuk-heading-xl app-masthead__title">
-            {% trans "Browse bus open data" %}
-          </h1>
-          <p class="app-masthead__description">
+          <h1 class="govuk-heading-xl app-masthead__title">{% trans "Browse bus open data" %}</h1>
+          <p class="govuk-body">
             {% blocktrans %}
                             You can browse the individual data sets or data feeds provided by
                             the publishers. By clicking on a data set or data feed you can see
@@ -31,10 +29,8 @@
     </div>
   </div>
 {% endblock %}
-{% block heading.title %}
-{% endblock %}
-{% block secondary.title %}
-{% endblock %}
+{% block heading.title %}{% endblock %}
+{% block secondary.title %}{% endblock %}
 {% block heading.subtitle %}
   <div class="govuk-!-padding-right-9 ">
     <div class="govuk-grid-row">

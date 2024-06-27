@@ -9,11 +9,7 @@
     <tr class="govuk-table__row govuk-table__row--error">
       <td colspan="4" class="govuk-table__cell">
         <ul class="govuk-list {% if row.record.status == 'error' %}govuk-list--error {% else %} govuk-list--warning{% endif %}">
-          {% for error in row.record.errors.all %}
-            <li>
-              {{ error.description }}
-            </li>
-          {% endfor %}
+          {% for error in row.record.errors.all %}<li>{{ error.description }}</li>{% endfor %}
         </ul>
       </td>
     </tr>

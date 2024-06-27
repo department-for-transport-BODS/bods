@@ -4,21 +4,14 @@
 {% block title_tag %}
   {% trans "Privacy" %}
 {% endblock %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">
-        {% trans "Privacy" %}
-      </h1>
-      <p class="govuk-body">
-        {% trans "Last updated: 5th December, 2022" %}
-      </p>
+      <h1 class="govuk-heading-xl">{% trans "Privacy" %}</h1>
+      <p class="govuk-body">{% trans "Last updated: 5th December, 2022" %}</p>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "Who we are" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "Who we are" %}</h2>
         <p class="govuk-body">
           {% blocktrans %}
                         The Bus Open Data Service (BODS) is a service for bus operators across England,
@@ -31,9 +24,7 @@
         </p>
       </section>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "What data we collect from you" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "What data we collect from you" %}</h2>
         <p class="govuk-body">
           {% blocktrans %}
                         Our main purpose is ensuring data about local bus services across England is in
@@ -42,9 +33,7 @@
                         has signed up to use the service.
                     {% endblocktrans %}
         </p>
-        <p class="govuk-body">
-          {% trans "The personal data we collect from you includes:" %}
-        </p>
+        <p class="govuk-body">{% trans "The personal data we collect from you includes:" %}</p>
         <ul class="govuk-list govuk-list--bullet">
           <li>
             {% blocktrans %}
@@ -57,24 +46,14 @@
                             your sign up information when registering with the service
                         {% endblocktrans %}
           </li>
-          <li>
-            {% trans "your email address and subscription preferences when you sign up to our email alerts" %}
-          </li>
-          <li>
-            {% trans "how you use our emails - for example whether you open them and which links you click on" %}
-          </li>
-          <li>
-            {% trans "your Internet Protocol (IP) address, and web browser version" %}
-          </li>
-          <li>
-            {% trans "information on how you use the site, using cookies and page tagging" %}
-          </li>
+          <li>{% trans "your email address and subscription preferences when you sign up to our email alerts" %}</li>
+          <li>{% trans "how you use our emails - for example whether you open them and which links you click on" %}</li>
+          <li>{% trans "your Internet Protocol (IP) address, and web browser version" %}</li>
+          <li>{% trans "information on how you use the site, using cookies and page tagging" %}</li>
         </ul>
       </section>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "Why we need your data" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "Why we need your data" %}</h2>
         <p class="govuk-body">
           {% blocktrans %}
                         We want to build an accurate database for local bus services across England.
@@ -82,25 +61,13 @@
                         over time.
                     {% endblocktrans %}
         </p>
-        <p class="govuk-body">
-          {% trans "We also collect data in order to:" %}
-        </p>
+        <p class="govuk-body">{% trans "We also collect data in order to:" %}</p>
         <ul class="govuk-list govuk-list--bullet">
-          <li>
-            {% trans "reply to any feedback you send us, if you’ve asked us to" %}
-          </li>
-          <li>
-            {% trans "send email alerts to users who request them" %}
-          </li>
-          <li>
-            {% trans "allow you to access government services and make transactions" %}
-          </li>
-          <li>
-            {% trans "provide you with information about local services" %}
-          </li>
-          <li>
-            {% trans "monitor use of the site to identify security threats" %}
-          </li>
+          <li>{% trans "reply to any feedback you send us, if you’ve asked us to" %}</li>
+          <li>{% trans "send email alerts to users who request them" %}</li>
+          <li>{% trans "allow you to access government services and make transactions" %}</li>
+          <li>{% trans "provide you with information about local services" %}</li>
+          <li>{% trans "monitor use of the site to identify security threats" %}</li>
           <li>
             {% blocktrans %}
                             communicate service messages aimed at keeping users informed of the
@@ -116,24 +83,16 @@
         </ul>
       </section>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "What we do with your data" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "What we do with your data" %}</h2>
         <p class="govuk-body">
           {% blocktrans %}
                         We use your data to occasionally check your activity when using the service.
                     {% endblocktrans %}
         </p>
-        <p class="govuk-body">
-          {% trans "We will not:" %}
-        </p>
+        <p class="govuk-body">{% trans "We will not:" %}</p>
         <ul class="govuk-list govuk-list--bullet">
-          <li>
-            {% trans "sell or rent your data to third parties" %}
-          </li>
-          <li>
-            {% trans "share your data with third parties for marketing purposes" %}
-          </li>
+          <li>{% trans "sell or rent your data to third parties" %}</li>
+          <li>{% trans "share your data with third parties for marketing purposes" %}</li>
         </ul>
         <p class="govuk-body">
           {% blocktrans %}
@@ -157,18 +116,10 @@
                     {% endblocktrans %}
         </p>
         <ul class="govuk-list govuk-list--bullet">
-          <li>
-            {% trans "the pages you visit on GOV.UK" %}
-          </li>
-          <li>
-            {% trans "how long you spend on each GOV.UK page" %}
-          </li>
-          <li>
-            {% trans "how you got to the site" %}
-          </li>
-          <li>
-            {% trans "what you click on while you’re visiting the site" %}
-          </li>
+          <li>{% trans "the pages you visit on GOV.UK" %}</li>
+          <li>{% trans "how long you spend on each GOV.UK page" %}</li>
+          <li>{% trans "how you got to the site" %}</li>
+          <li>{% trans "what you click on while you’re visiting the site" %}</li>
         </ul>
         <p class="govuk-body">
           {% blocktrans %}
@@ -189,9 +140,7 @@
         </p>
       </section>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "How long we keep your data for" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "How long we keep your data for" %}</h2>
         <p class="govuk-body">
           {% blocktrans %}
                         We will retain your data for as long as you have a BODS account. However, if you use an institutional
@@ -201,9 +150,7 @@
         </p>
       </section>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "Where your data is processed and stored" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "Where your data is processed and stored" %}</h2>
         <p class="govuk-body">
           {% blocktrans %}
                         We design, build and run our systems to make sure that your data is as safe as possible at any stage,
@@ -217,9 +164,7 @@
         </p>
       </section>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "How we protect your data and keep it secure" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "How we protect your data and keep it secure" %}</h2>
         <p class="govuk-body">
           {% blocktrans %}
                         We are committed to doing all that we can to keep your data secure. To prevent unauthorised access
@@ -231,9 +176,7 @@
         </p>
       </section>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "Children’s privacy protection" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "Children’s privacy protection" %}</h2>
         <p class="govuk-body">
           {% blocktrans %}
                         We understand the importance of protecting children’s privacy online. Our services are not designed
@@ -243,39 +186,23 @@
         </p>
       </section>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "What are your rights" %}
-        </h2>
-        <p class="govuk-body">
-          {% trans "You have the right to request:" %}
-        </p>
+        <h2 class="govuk-heading-m">{% trans "What are your rights" %}</h2>
+        <p class="govuk-body">{% trans "You have the right to request:" %}</p>
         <ul class="govuk-list govuk-list--bullet">
-          <li>
-            {% trans "information about how your personal data is processed" %}
-          </li>
+          <li>{% trans "information about how your personal data is processed" %}</li>
           <li>
             {% blocktrans %}
                             a copy of that personal data - this copy will be provided in a structured, commonly used and
                             machine-readable format
                         {% endblocktrans %}
           </li>
-          <li>
-            {% trans "that anything inaccurate in your personal data is corrected immediately" %}
-          </li>
+          <li>{% trans "that anything inaccurate in your personal data is corrected immediately" %}</li>
         </ul>
-        <p class="govuk-body">
-          {% trans "You can also:" %}
-        </p>
+        <p class="govuk-body">{% trans "You can also:" %}</p>
         <ul class="govuk-list govuk-list--bullet">
-          <li>
-            {% trans "raise an objection about how your personal data is processed" %}
-          </li>
-          <li>
-            {% trans "request that your personal data is erased if there is no longer justification for it" %}
-          </li>
-          <li>
-            {% trans "ask that the processing of your personal data is restricted in certain circumstances" %}
-          </li>
+          <li>{% trans "raise an objection about how your personal data is processed" %}</li>
+          <li>{% trans "request that your personal data is erased if there is no longer justification for it" %}</li>
+          <li>{% trans "ask that the processing of your personal data is restricted in certain circumstances" %}</li>
         </ul>
         <p class="govuk-body">
           {% blocktrans %}
@@ -284,9 +211,7 @@
                     {% endblocktrans %}
         </p>
       </section>
-      <h2 class="govuk-heading-m">
-        {% trans "Changes to this notice" %}
-      </h2>
+      <h2 class="govuk-heading-m">{% trans "Changes to this notice" %}</h2>
       <p class="govuk-body">
         {% blocktrans %}
                     We may modify or amend this privacy notice at our discretion at any time. When we make changes to this
@@ -296,44 +221,22 @@
                 {% endblocktrans %}
       </p>
       <section>
-        <h2 class="govuk-heading-m">
-          {% trans "Contact us or make a complaint" %}
-        </h2>
-        <p class="govuk-body">
-          {% trans "Contact the DfT Data Protection Officer if you either:" %}
-        </p>
+        <h2 class="govuk-heading-m">{% trans "Contact us or make a complaint" %}</h2>
+        <p class="govuk-body">{% trans "Contact the DfT Data Protection Officer if you either:" %}</p>
         <ul class="govuk-list govuk-list--bullet">
-          <li>
-            {% trans "have any questions about anything in this document" %}
-          </li>
-          <li>
-            {% trans "think your personal data has been misused or mishandled" %}
-          </li>
+          <li>{% trans "have any questions about anything in this document" %}</li>
+          <li>{% trans "think your personal data has been misused or mishandled" %}</li>
         </ul>
         <div>
-          <p class="govuk-body govuk-!-margin-bottom-0">
-            Data Protection Officer
-          </p>
+          <p class="govuk-body govuk-!-margin-bottom-0">Data Protection Officer</p>
         </div>
         <div>
-          <p class="govuk-body govuk-!-margin-bottom-0">
-            Department for Transport
-          </p>
-          <p class="govuk-body govuk-!-margin-bottom-0">
-            3rd Floor
-          </p>
-          <p class="govuk-body govuk-!-margin-bottom-0">
-            One Priory Square
-          </p>
-          <p class="govuk-body govuk-!-margin-bottom-0">
-            Hastings
-          </p>
-          <p class="govuk-body govuk-!-margin-bottom-0">
-            East Sussex
-          </p>
-          <p class="govuk-body govuk-!-margin-bottom-0">
-            TN34 1EA
-          </p>
+          <p class="govuk-body govuk-!-margin-bottom-0">Department for Transport</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">3rd Floor</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">One Priory Square</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">Hastings</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">East Sussex</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">TN34 1EA</p>
           <p class="govuk-body">
             {% trans "Email:" %}
             <a class="govuk-link" href="mailto:DataProtectionOfficer@dft.gov.uk">DataProtectionOfficer@dft.gov.uk</a>

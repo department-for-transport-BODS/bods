@@ -1,9 +1,7 @@
 {% extends "guidance/developer/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="browse-header" class="govuk-heading-l">
-    {% trans "Browse for specific data" %}
-  </h1>
+  <h1 data-qa="browse-header" class="govuk-heading-l">{% trans "Browse for specific data" %}</h1>
   <p class="govuk-body">
     {% blocktrans %}
       Publishers supply data sets and data feeds to the Bus Open Data Service. You can view, download
@@ -14,55 +12,35 @@
   and click on the data to find its detail page.
   {% endblocktrans %}
   </p>
-  <h2 data-qa="data-detail-header" class="govuk-heading-l">
-    {% trans "Data detail page" %}
-  </h2>
+  <h2 data-qa="data-detail-header" class="govuk-heading-l">{% trans "Data detail page" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
     Each data set/feed supplied to the service has a detail page, where you can view:
     {% endblocktrans %}
   </p>
   <ul class="govuk-list govuk-list--bullet">
-    <li>
-      Metadata
-    </li>
-    <li>
-      Changelog
-    </li>
-    <li>
-      API call with that data set ID
-    </li>
-    <li>
-      Feedback box
-    </li>
-    <li>
-      Subscription options
-    </li>
-    <li>
-      Link to underlying data for static data types
-    </li>
+    <li>Metadata</li>
+    <li>Changelog</li>
+    <li>API call with that data set ID</li>
+    <li>Feedback box</li>
+    <li>Subscription options</li>
+    <li>Link to underlying data for static data types</li>
   </ul>
-  <h2 data-qa="feedback-header" class="govuk-heading-l">
-    {% trans "Feedback" %}
-  </h2>
+  <h2 data-qa="feedback-header" class="govuk-heading-l">{% trans "Feedback" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
     Feedback will be sent via email to the data publisher, enhancing the feedback
     loop between developers and publishers, in turn improving the overall data quality.
     {% endblocktrans %}
   </p>
-  <h2 data-qa="subscribe-header" class="govuk-heading-l">
-    {% trans "Subscribe" %}
-  </h2>
+  <h2 data-qa="subscribe-header" class="govuk-heading-l">{% trans "Subscribe" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
     In the detail page you can subscribe to data sets/feeds so you will receive
     email notifications if the publisher makes any changes.
     {% endblocktrans %}
   </p>
-  <h2 data-qa="search-header" class="govuk-heading-l">
-    {% trans "Search bar functionality" %}
-  </h2>
+  <h2 data-qa="search-header" class="govuk-heading-l">{% trans "Search bar functionality" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
     The search bar matches terms entered against metadata such as the title,

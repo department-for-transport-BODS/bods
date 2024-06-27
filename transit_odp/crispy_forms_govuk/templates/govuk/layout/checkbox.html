@@ -14,9 +14,7 @@
           {{ field.label|safe }}
         </span>
       {% else %}
-        <label for="{{ field.id_for_label }}" class="govuk-label govuk-checkboxes__label">
-          {{ field.label|safe }}
-        </label>
+        <label for="{{ field.id_for_label }}" class="govuk-label govuk-checkboxes__label">{{ field.label|safe }}</label>
       {% endif %}
     {% endif %}
     {% include "govuk/snippets/field_hint.html" with extra_hint_classes="govuk-checkboxes__hint" %}

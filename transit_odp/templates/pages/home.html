@@ -5,20 +5,17 @@
 {% block title_tag %}
   {% trans "Bus Open Data Service" %}
 {% endblock %}
-{% block breadcrumb %}
-{% endblock %}
+{% block breadcrumb %}{% endblock %}
 {% block full_width_content %}
   <div class="app-masthead">
     <div class="govuk-width-container">
       <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-          <h1 class="govuk-heading-xl app-masthead__title">
-            {% trans "Bus Open Data Service" %}
-          </h1>
-          <p class="app-masthead__description">
+          <h1 class="govuk-heading-xl app-masthead__title">{% trans "Bus Open Data Service" %}</h1>
+          <p class="govuk-body">
             The Bus Open Data Service provides bus timetable, vehicle location and fares data for every local bus service in England.
           </p>
-          <p class="app-masthead__description">
+          <p class="govuk-body">
             {% trans "Follow us on Twitter " %}
             <a class="app-a--inverted" href="https://twitter.com/busopendata" target="_blank">{% trans "@busopendata" %}</a>
           </p>
@@ -31,12 +28,8 @@
   <div class="govuk-grid-row govuk-!-margin-top-5">
     <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
       <div>
-        <h2 class="govuk-heading-m">
-          {% trans "Publish bus open data" %}
-        </h2>
-        <p class="govuk-body">
-          {% trans "This service is for operators of local bus services in England." %}
-        </p>
+        <h2 class="govuk-heading-m">{% trans "Publish bus open data" %}</h2>
+        <p class="govuk-body">{% trans "This service is for operators of local bus services in England." %}</p>
         <ul class="govuk-list">
           <li class="govuk-!-margin-bottom-4">
             <a href="{% url 'home' host hosts.publish %}" class="govuk-link-bold">
@@ -65,9 +58,7 @@
         </ul>
       </div>
       <div class="govuk-!-margin-top-8">
-        <h2 class="govuk-heading-m">
-          {% trans "Find bus open data" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "Find bus open data" %}</h2>
         <p class="govuk-body">
           {% filter force_escape %}
             {% blocktrans %}
@@ -93,9 +84,7 @@
       </div>
     </div>
     <div class="govuk-grid-column-one-third govuk-!-padding-top-5">
-      <h2 class="govuk-heading-m">
-        {% trans "Public information" %}
-      </h2>
+      <h2 class="govuk-heading-m">{% trans "Public information" %}</h2>
       <ul class="govuk-list app-list--nav govuk-!-font-size-19">
         <li>
           <a class="govuk-link"

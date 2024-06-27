@@ -8,14 +8,11 @@
   {% endif %}
   {% trans "Data set deactivated" %}
 {% endblock %}
-{% block breadcrumb %}
-{% endblock %}
+{% block breadcrumb %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row govuk-!-margin-top-6 govuk-!-margin-bottom-9">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-xl">
-        {% trans "Data set has been deactivated" %}
-      </h1>
+      <h1 class="govuk-heading-xl">{% trans "Data set has been deactivated" %}</h1>
       <p class="govuk-body">
         {% trans "Data set" %}
         {{ object.name }}

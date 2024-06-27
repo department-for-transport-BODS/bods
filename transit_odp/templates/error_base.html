@@ -1,7 +1,6 @@
 {% extends "page.html" %}
 {% load i18n %}
-{% block breadcrumb %}
-{% endblock %}
+{% block breadcrumb %}{% endblock %}
 {% block title_tag %}
   {% trans "There was an error" %}
 {% endblock %}
@@ -9,11 +8,9 @@
   <div class="govuk-grid-row govuk-!-margin-top-9 govuk-!-margin-bottom-9">
     <div class="govuk-grid-column-two-thirds">
       <h2 class="govuk-heading-l">
-        {% block content_heading %}
-        {% endblock %}
+        {% block content_heading %}{% endblock %}
       </h2>
-      {% block content_body %}
-      {% endblock %}
+      {% block content_body %}{% endblock %}
     </div>
   </div>
 {% endblock content %}

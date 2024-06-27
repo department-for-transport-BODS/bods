@@ -21,9 +21,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">
-        {{ object.ui_lta_name }}
-      </h1>
+      <h1 class="govuk-heading-l">{{ object.ui_lta_name }}</h1>
       <h3 class="govuk-heading-m govuk-!-margin-top-3">
         {% filter force_escape %}
           {% trans "Timetables data" %}
@@ -82,9 +80,7 @@
       </ul>
     </div>
     <div class="govuk-grid-column-one-third">
-      <h3 class="govuk-heading-m">
-        {% trans "Need further help?" %}
-      </h3>
+      <h3 class="govuk-heading-m">{% trans "Need further help?" %}</h3>
       <ul class="govuk-list">
         <li class="govuk-!-margin-bottom-3">
           <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact the service desk" %}</a>

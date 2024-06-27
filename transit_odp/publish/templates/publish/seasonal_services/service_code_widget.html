@@ -5,9 +5,7 @@
   {# Render form group errors #}
   {% include "govuk/snippets/field_errors.html" %}
   <div class="service-code-widget{% if field.errors %} govuk-input--error{% endif %}">
-    <p>
-      {{ form.licence.number }}/
-    </p>
+    <p>{{ form.licence.number }}/</p>
     {% crispy_field field %}
   </div>
 </div>

@@ -263,3 +263,4 @@ db_backup.sql
 .ruff_cache/
 .yarnrc.yml
 *.rdb
+transit_odp/static/**/*

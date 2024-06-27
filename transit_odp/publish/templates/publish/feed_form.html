@@ -14,9 +14,7 @@
 {% endblock %}
 {% block breadcrumb %}
   <div class="govuk-breadcrumbs">
-    <div class="govuk-breadcrumbs">
-      {% stepper %}
-    </div>
+    <div class="govuk-breadcrumbs">{% stepper %}</div>
   </div>
 {% endblock %}
 {% block content %}
@@ -49,18 +47,17 @@
       </div>
     {% endif %}
   </div>
-  {% block extra_content %}
-  {% endblock %}
+  {% block extra_content %}{% endblock %}
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
   <script>
-   var input = document.getElementById("id_upload_file");
-   var select_message = document.getElementById("file-select-success");
-   if (input) {
-       input.onchange = function () {
-           select_message.style.display = "block";
-       };
-   }
+    var input = document.getElementById("id_upload_file");
+    var select_message = document.getElementById("file-select-success");
+    if (input) {
+        input.onchange = function () {
+            select_message.style.display = "block";
+        };
+    }
   </script>
 {% endblock %}

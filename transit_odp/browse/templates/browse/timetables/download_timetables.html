@@ -15,9 +15,7 @@
 {% endblock %}
 {% block heading.subtitle.text %}
   <div class="govuk-!-margin-top-0">
-    <h3 class="govuk-heading-m">
-      {% trans "Download file in TransXChange format" %}
-    </h3>
+    <h3 class="govuk-heading-m">{% trans "Download file in TransXChange format" %}</h3>
     <p class="govuk-body">
       {% blocktrans %}
                 You can download all the active timetables data cached on the service
@@ -91,9 +89,7 @@
     {% endif %}
   </div>
   <div class="govuk-!-margin-top-8">
-    <h3 class="govuk-heading-m">
-      {% trans "Download regional and national data sets in GTFS format" %}
-    </h3>
+    <h3 class="govuk-heading-m">{% trans "Download regional and national data sets in GTFS format" %}</h3>
     {% if is_new_gtfs_api_active %}
       <p class="govuk-body">
         {% blocktrans %}
@@ -160,20 +156,20 @@
 {% block scripts %}
   {{ block.super }}
   <script>
-        function addGATagEvent(obj) {
-            gtag('event', 'Download all event', {
-                'event_category': 'link',
-                'event_label': 'bulk download ' + obj,
-                'event_action': 'download'
-            });
+    function addGATagEvent(obj) {
+        gtag('event', 'Download all event', {
+            'event_category': 'link',
+            'event_label': 'bulk download ' + obj,
+            'event_action': 'download'
+        });
+    };
+    function sendStaticGTFSEvent(region) {
+        var data = {
+            'event_category': 'link',
+            'event_label': 'download',
+            'event_action': region.toLowerCase() + ' download gtfs'
         };
-        function sendStaticGTFSEvent(region) {
-            var data = {
-                'event_category': 'link',
-                'event_label': 'download',
-                'event_action': region.toLowerCase() + ' download gtfs'
-            };
-            gtag('event', 'Download gtfs event', data);
-        };
+        gtag('event', 'Download gtfs event', data);
+    };
   </script>
 {% endblock %}

@@ -5,12 +5,8 @@
   </caption>
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header">
-        {% trans "Short name" %}
-      </th>
-      <th scope="col" class="normal-weight govuk-table__header">
-        {{ organisation.short_name }}
-      </th>
+      <th scope="col" class="govuk-table__header">{% trans "Short name" %}</th>
+      <th scope="col" class="normal-weight govuk-table__header">{{ organisation.short_name }}</th>
     </tr>
   </thead>
   <tbody class="govuk-table__body">
@@ -19,21 +15,16 @@
         <th scope="row" class="govuk-summary-list__row--no-border manage-users-table__key govuk-table__header">
           {% trans "National Operator Code" %}
         </th>
-        <td class="govuk-summary-list__row--no-border govuk-table__cell">
-          {{ organisation.nocs.first.noc }}
-        </td>
+        <td class="govuk-summary-list__row--no-border govuk-table__cell">{{ organisation.nocs.first.noc }}</td>
       </tr>
       {% for noc in organisation.nocs.all %}
         {% if forloop.counter0 >= 1 %}
           <tr class="govuk-table__row">
             <th scope="row"
                 class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__header"
-                {% if not forloop.last %}  {% else %}  {% endif %}>
-            </th>
+                {% if not forloop.last %} {% else %} {% endif %}></th>
             <td class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__cell"
-                {% if not forloop.last %}{% else %}{% endif %}>
-              {{ noc.noc }}
-            </td>
+                {% if not forloop.last %} {% else %} {% endif %}>{{ noc.noc }}</td>
           </tr>
         {% endif %}
       {% endfor %}
@@ -43,21 +34,16 @@
         <th scope="row" class="govuk-summary-list__row--no-border manage-users-table__key govuk-table__header">
           {% trans "PSV Licence number" %}
         </th>
-        <td class="govuk-summary-list__row--no-border govuk-table__cell">
-          {{ organisation.licences.first.number }}
-        </td>
+        <td class="govuk-summary-list__row--no-border govuk-table__cell">{{ organisation.licences.first.number }}</td>
       </tr>
       {% for licence in organisation.licences.all %}
         {% if forloop.counter0 >= 1 %}
           <tr class="govuk-table__row">
             <th scope="row"
                 class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__header"
-                {% if not forloop.last %}  {% else %}  {% endif %}>
-            </th>
+                {% if not forloop.last %} {% else %} {% endif %}></th>
             <td class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__cell"
-                {% if not forloop.last %}{% else %}{% endif %}>
-              {{ licence.number }}
-            </td>
+                {% if not forloop.last %} {% else %} {% endif %}>{{ licence.number }}</td>
           </tr>
         {% endif %}
       {% endfor %}
@@ -77,12 +63,9 @@
           <tr class="govuk-table__row">
             <th scope="row"
                 class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__header"
-                {% if not forloop.last %}  {% else %}  {% endif %}>
-            </th>
+                {% if not forloop.last %} {% else %} {% endif %}></th>
             <td class="govuk-summary-list__row--no-border app-step-nav__list govuk-table__cell"
-                {% if not forloop.last %}{% else %}{% endif %}>
-              {{ service_code_exemption.registration_number }}
-            </td>
+                {% if not forloop.last %} {% else %} {% endif %}>{{ service_code_exemption.registration_number }}</td>
           </tr>
         {% endif %}
       {% endfor %}

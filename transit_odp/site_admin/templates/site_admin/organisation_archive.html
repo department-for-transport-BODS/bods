@@ -11,8 +11,7 @@
     {% trans "Activate organisation" %}
   {% endif %}
 {% endblock %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% url 'users:organisation-detail' pk=object.id host hosts.admin as backlink %}
   {% include "snippets/backlink.html" with url=backlink %}

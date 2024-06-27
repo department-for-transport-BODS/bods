@@ -8,8 +8,7 @@
     {% trans "Data feed published" %}
   {% endif %}
 {% endblock %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -25,21 +24,17 @@
           {% endif %}
         </h1>
       </div>
-      <p class="govuk-body-m">
-        {% trans "We have sent you a confirmation email." %}
-      </p>
+      <p class="govuk-body-m">{% trans "We have sent you a confirmation email." %}</p>
     </div>
   </div>
   <div class="govuk-grid-row govuk-!-padding-top-3">
     <div class="govuk-grid-column-three-quarters">
-      <h2 class="govuk-heading-m">
-        {% trans "What happens next?" %}
-      </h2>
+      <h2 class="govuk-heading-m">{% trans "What happens next?" %}</h2>
       <p class="govuk-body-m">
         {% blocktrans %}
           You can view the data feed on your
         {% endblocktrans %}
-        <a class="govuk-link" href={% url 'avl:feed-list' pk1=view.kwargs.pk1 host hosts.publish %}>
+        <a class="govuk-link" href="{% url 'avl:feed-list' pk1=view.kwargs.pk1 host hosts.publish %}">
           {% trans "data feeds page" %}
         </a>
         {% blocktrans %}

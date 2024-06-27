@@ -1,12 +1,8 @@
 {% extends "organisation/organisation_profile_form/formset_base.html" %}
-{% block caption %}
-  National operator code
-{% endblock %}
+{% block caption %}National operator code{% endblock %}
 {% block add_button %}
   <button type="button"
           id="id_{{ formset.prefix }}-ADD"
           name="{{ formset.prefix }}-ADD"
-          class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0">
-    Add new National operator code
-  </button>
+          class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0">Add new National operator code</button>
 {% endblock %}

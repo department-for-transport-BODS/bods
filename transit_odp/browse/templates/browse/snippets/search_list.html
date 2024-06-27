@@ -53,22 +53,14 @@
   {% endif %}
   <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break" />
   <div class="govuk-form-group">
-    <label class="govuk-label" for="ordering">
-      Sort by
-    </label>
+    <label class="govuk-label" for="ordering">Sort by</label>
     <select class="govuk-select" id="ordering" name="ordering" aria-label="Sort by" onchange="this.form.submit()">
-      <option value="-modified" {% if ordering == "-modified" %}selected{% endif %}>
-        {% trans "Recently updated" %}
-      </option>
-      <option value="name" {% if ordering == "name" %}selected{% endif %}>
-        {% trans "Data set name A-Z" %}
-      </option>
-      <option value="-name" {% if ordering == "-name" %}selected{% endif %}>
-        {% trans "Data set name Z-A" %}
-      </option>
+      <option value="-modified" {% if ordering == "-modified" %}selected{% endif %}>{% trans "Recently updated" %}</option>
+      <option value="name" {% if ordering == "name" %}selected{% endif %}>{% trans "Data set name A-Z" %}</option>
+      <option value="-name" {% if ordering == "-name" %}selected{% endif %}>{% trans "Data set name Z-A" %}</option>
     </select>
   </div>
-  <div class="search-result__list">
+  <div class="search-result__list govuk-body">
     {% for item in items %}
       {% if not forloop.first %}
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
@@ -85,13 +77,9 @@
     {% empty %}
       <div>
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
-        <h4 class="govuk-heading-s">
-          {% trans "Having trouble finding what you want?" %}
-        </h4>
+        <h4 class="govuk-heading-s">{% trans "Having trouble finding what you want?" %}</h4>
         <ul class="govuk-list govuk-list--bullet">
-          <li>
-            {% trans "Check your spelling and try again" %}
-          </li>
+          <li>{% trans "Check your spelling and try again" %}</li>
         </ul>
       </div>
     {% endfor %}
