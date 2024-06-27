@@ -367,15 +367,15 @@ class VehicleJourneyFinder:
         journey_code_operating_profile = []
 
         for vj in vehicle_journeys:
+            operating_profile_xml_string = (
+                self.get_operating_profile_xml_tag_for_journey(vj)
+            )
+            journey_code_operating_profile.append(operating_profile_xml_string)
             if (
                 vj.vehicle_journey.get_element("LineRef")
                 and vj.vehicle_journey.get_element("LineRef").text.split(":")[3]
                 == published_line_name
-            ):
-                operating_profile_xml_string = (
-                    self.get_operating_profile_xml_tag_for_journey(vj)
-                )
-                journey_code_operating_profile.append(operating_profile_xml_string)
+            ):  # add to required_vj only if published_line_name matches the last part of line ref in transxchange file
                 required_vjs.append(vj)
 
         result.set_transxchange_attribute(
@@ -614,37 +614,6 @@ class VehicleJourneyFinder:
             return []
         return working_days
 
-    def get_service_org_xml_string(
-        self, vehicle_journey: TxcVehicleJourney
-    ) -> Optional[str]:
-        """
-        Retrieves the XML string for the service organization of a given vehicle journey.
-
-        Args:
-            vehicle_journey: The vehicle journey for which the service organization XML string is to be retrieved.
-
-        Returns:
-            str: The XML string for the service organization of the vehicle journey.
-        """
-        service_org_xml_str = None
-        service_org_from_vj = self.service_org_day_type(vehicle_journey)
-        if service_org_from_vj:
-            service_org_xml_str = etree.tostring(
-                service_org_from_vj._element, pretty_print=True
-            ).decode()
-        else:
-            service_org_from_service = self.get_service_org_day_type_from_service(
-                vehicle_journey
-            )
-            service_org_xml_str = (
-                etree.tostring(
-                    service_org_from_service._element, pretty_print=True
-                ).decode()
-                if service_org_from_service
-                else None
-            )
-        return service_org_xml_str
-
     def get_service_org_ref_and_days_of_operation(
         self, vehicle_journey: TxcVehicleJourney
     ) -> Tuple[Optional[str], Optional[TransXChangeElement]]:
@@ -661,6 +630,7 @@ class VehicleJourneyFinder:
         service_org_ref = None
         days_of_non_operation = None
         days_of_operation = None
+        service_org_ref_dict = {"days_of_operation": [], "days_of_non_operation": []}
 
         service_org_day_type = self.service_org_day_type(
             vehicle_journey
@@ -672,85 +642,130 @@ class VehicleJourneyFinder:
             )
             if days_of_non_operation is not None:
                 service_org_ref = self.get_service_org_ref(days_of_non_operation)
+                service_org_ref_dict["days_of_non_operation"].append(service_org_ref)
 
             days_of_operation: TransXChangeElement = (
                 service_org_day_type.get_element_or_none("DaysOfOperation")
             )
             if days_of_operation is not None:
                 service_org_ref = self.get_service_org_ref(days_of_operation)
+                service_org_ref_dict["days_of_operation"].append(service_org_ref)
 
-        return service_org_ref, days_of_non_operation, days_of_operation
+        return (
+            service_org_ref,
+            days_of_non_operation,
+            days_of_operation,
+            service_org_ref_dict,
+        )
+
+    def get_service_orgs_working_days_start_end_date(
+        self,
+        org: TransXChangeElement,
+        result: ValidationResult,
+        recorded_at: datetime.date,
+        vj: TxcVehicleJourney,
+    ) -> bool:
+        """Method to find out the recorded_at_time is present in the start date or end date
+        Provided in the service organisation of TXC file
+
+        Args:
+            org (TransXChangeElement): _description_
+            result (ValidationResult): validation results class for error collection
+            recorded_at (datetime.date): date on which vehicle activity was recorded
+
+        Returns:
+            bool: True means recorded_at is between the dates given in service organisation
+        """
+
+        working_days = self.get_working_days(org)
+        for date_range in working_days:
+            start_date = date_range.get_text_or_default("StartDate")
+            if not start_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as Serviced organisation has no Start date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                break
+
+            end_date = date_range.get_text_or_default("EndDate")
+            if not end_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as Serviced organisation has no End date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                break
+
+            start_date_formatted = datetime.datetime.strptime(
+                start_date, "%Y-%m-%d"
+            ).date()
+            end_date_formatted = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
+            if start_date_formatted <= recorded_at <= end_date_formatted:
+                return True
+        return False
 
     def filter_by_days_of_operation(
         self,
-        recorded_at_time,
+        recorded_at_time: datetime.date,
         vehicle_journeys: List[TxcVehicleJourney],
         result: ValidationResult,
-    ):
+    ) -> bool:
+        """Filter vehicle journies based on days of operation in ServicedOrganisations
+        DaysOfNonOperations gets priority over DaysOfOperation in cased both elements are present in
+        Operating profile
+        if DaysOfNonOperation is present and recorded_at_time is BETWEEN start date and end date for
+        ServicedOrganisation, VehicleJourney will be removed from the list
+
+        if DaysOfOperation is present and recorded_at_time is OUTSIDE start date and end date for
+        ServicedOrganisation, VehicleJourney will be removed from the list
+
+        Args:
+            recorded_at_time (datetime.date): vehicle movement recorded date
+            vehicle_journeys (List[TxcVehicleJourney]): list of vehicle journeys
+            result (ValidationResult): result class for recording errors
+
+        Returns:
+            bool:
+        """
         for vj in reversed(vehicle_journeys):
-            days_of_non_operation = None
-            days_of_operation = None
-            inside_operating_range = False
-            error_msg = None
 
             (
                 service_org_ref,
                 days_of_non_operation,
                 days_of_operation,
+                service_org_ref_dict,
             ) = self.get_service_org_ref_and_days_of_operation(vj)
             service_orgs = self.get_serviced_organisations(vj)
-            for org in service_orgs:
-                org_code = org.get_text_or_default("OrganisationCode")
-                if org_code == service_org_ref:
-                    working_days = self.get_working_days(org)
-                    for date_range in working_days:
-                        start_date = date_range.get_text_or_default("StartDate")
-                        if not start_date:
-                            vehicle_journey_seq_no = vj.vehicle_journey[
-                                "SequenceNumber"
-                            ]
-                            error_msg = (
-                                f"Ignoring vehicle journey with sequence number "
-                                f"{vehicle_journey_seq_no}, as Serviced organisation has no Start date"
-                            )
-                            result.add_error(ErrorCategory.GENERAL, error_msg)
-                            logger.info(error_msg)
-                            break
 
-                        end_date = date_range.get_text_or_default("EndDate")
-                        if not end_date:
-                            vehicle_journey_seq_no = vj.vehicle_journey[
-                                "SequenceNumber"
-                            ]
-                            error_msg = (
-                                f"Ignoring vehicle journey with sequence number "
-                                f"{vehicle_journey_seq_no}, as Serviced organisation has no End date"
-                            )
-                            result.add_error(ErrorCategory.GENERAL, error_msg)
-                            logger.info(error_msg)
-                            break
+            service_orgs_dict = {
+                org.get_text_or_default("OrganisationCode"): org for org in service_orgs
+            }
 
-                        start_date_formatted = datetime.datetime.strptime(
-                            start_date, "%Y-%m-%d"
-                        ).date()
-                        end_date_formatted = datetime.datetime.strptime(
-                            end_date, "%Y-%m-%d"
-                        ).date()
+            if len(service_org_ref_dict["days_of_non_operation"]) > 0:
+                for service_org_ref in service_org_ref_dict["days_of_non_operation"]:
+                    if service_org_ref not in service_orgs_dict:
+                        continue
+                    org = service_orgs_dict[service_org_ref]
+                    if self.get_service_orgs_working_days_start_end_date(
+                        org, result, recorded_at_time, vj
+                    ):
+                        vehicle_journeys.remove(vj)
 
-                        if (
-                            start_date_formatted
-                            <= recorded_at_time
-                            <= end_date_formatted
-                        ):
-                            inside_operating_range = True
+            elif len(service_org_ref_dict["days_of_operation"]) > 0:
+                for service_org_ref in service_org_ref_dict["days_of_operation"]:
+                    if service_org_ref not in service_orgs_dict:
+                        continue
+                    org = service_orgs_dict[service_org_ref]
 
-                    if error_msg is None:
-                        if days_of_non_operation is not None and inside_operating_range:
-                            vehicle_journeys.remove(vj)
-                        elif (
-                            days_of_operation is not None and not inside_operating_range
-                        ):
-                            vehicle_journeys.remove(vj)
+                    if not self.get_service_orgs_working_days_start_end_date(
+                        org, result, recorded_at_time, vj
+                    ):
+                        vehicle_journeys.remove(vj)
 
         if len(vehicle_journeys) == 0:
             result.add_error(
@@ -780,15 +795,19 @@ class VehicleJourneyFinder:
         journey_code_operating_profile_service_org = []
 
         for vj in reversed(vehicle_journeys):
-            service_org_ref, _, _ = self.get_service_org_ref_and_days_of_operation(vj)
-            get_service_org_xml_string = self.get_service_org_xml_string(vj)
+            service_org_ref, _, _, _ = self.get_service_org_ref_and_days_of_operation(
+                vj
+            )
+            operating_profile_xml_string = (
+                self.get_operating_profile_xml_tag_for_journey(vj)
+            )
             journey_code = vj.vehicle_journey.get_element(
                 ["Operational", "TicketMachine", "JourneyCode"]
             )
             journey_code_text = journey_code.text if journey_code else journey_code
             journey_code_operating_profile_service_org.append(
                 {
-                    "operating_profile_xml_string": get_service_org_xml_string,
+                    "operating_profile_xml_string": operating_profile_xml_string,
                     "service_organisation_xml_str": service_org_ref,
                     "service_organisation_day_operating": service_org_ref,
                     "journey_code": journey_code_text,
