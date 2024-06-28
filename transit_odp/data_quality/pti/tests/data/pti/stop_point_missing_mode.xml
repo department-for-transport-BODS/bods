@@ -1,0 +1,542 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2024-06-07T15:46:36" ModificationDateTime="2024-06-07T15:56:36" Modification="revise" RevisionNumber="1" FileName="NATX-National_Express-565-London-Hull.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+  <StopPoints>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>900082032</AtcoCode>
+      <Descriptor>
+        <CommonName>Hull</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0055009</NptgLocalityRef>
+        <LocalityName>HULL (City Centre)</LocalityName>
+        <Suburb>KuHull</Suburb>
+        <Location>
+          <Translation>
+            <Easting>509243</Easting>
+            <Northing>428868</Northing>
+            <Longitude>-000.345007</Longitude>
+            <Latitude>53.744749</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <AnnotatedStopPointRef>
+      <StopPointRef>2290YHA01583</StopPointRef>
+      <CommonName>Hull Interchange</CommonName>
+      <Indicator>Bay A</Indicator>
+      <LocalityName>Hull</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>2290YHA00182</StopPointRef>
+      <CommonName>Costello Fields</CommonName>
+      <Indicator>opp</Indicator>
+      <LocalityName>Anlaby Park</LocalityName>
+      <LocalityQualifier>Hull</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>2200YEA00927</StopPointRef>
+      <CommonName>Hessle Boothferry Road</CommonName>
+      <Indicator>22000927</Indicator>
+      <LocalityName>Hessle</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>370010267</StopPointRef>
+      <CommonName>Doncaster Frenchgate Interchange/C7</CommonName>
+      <Indicator>C7</Indicator>
+      <LocalityName>Doncaster Town Centre</LocalityName>
+      <LocalityQualifier>Doncaster</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>370010217</StopPointRef>
+      <CommonName>Sheffield Interchange/E2</CommonName>
+      <Indicator>E2</Indicator>
+      <LocalityName>Sheffield Centre</LocalityName>
+      <LocalityQualifier>Sheffield</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>049000000804</StopPointRef>
+      <CommonName>Milton Keynes Coachway</CommonName>
+      <Indicator>Bay 4</Indicator>
+      <LocalityName>Brook Furlong</LocalityName>
+      <LocalityQualifier>Milton Keynes</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>49000144CSZ</StopPointRef>
+      <CommonName>Marble Arch</CommonName>
+      <Indicator>-&gt;S</Indicator>
+      <LocalityName>Marble Arch</LocalityName>
+      <LocalityQualifier>London</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>490016736W</StopPointRef>
+      <CommonName>London Victoria Coach Station Arrivals</CommonName>
+      <Indicator>-&gt;W</Indicator>
+      <LocalityName>Victoria</LocalityName>
+      <LocalityQualifier>London</LocalityQualifier>
+    </AnnotatedStopPointRef>
+  </StopPoints>
+  <RouteSections>
+    <RouteSection id="RS1">
+      <RouteLink id="RL1">
+        <From>
+          <StopPointRef>2290YHA01583</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>2290YHA00182</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL2">
+        <From>
+          <StopPointRef>2290YHA00182</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>2200YEA00927</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL3">
+        <From>
+          <StopPointRef>2200YEA00927</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010267</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL4">
+        <From>
+          <StopPointRef>370010267</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010217</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL5">
+        <From>
+          <StopPointRef>370010217</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>049000000804</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL6">
+        <From>
+          <StopPointRef>049000000804</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL7">
+        <From>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490016736W</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS2">
+      <RouteLink id="RL8">
+        <From>
+          <StopPointRef>490016736W</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>049000000804</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL9">
+        <From>
+          <StopPointRef>049000000804</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010217</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL10">
+        <From>
+          <StopPointRef>370010217</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010267</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL11">
+        <From>
+          <StopPointRef>370010267</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>2200YEA00927</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL12">
+        <From>
+          <StopPointRef>2200YEA00927</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>2290YHA00182</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL13">
+        <From>
+          <StopPointRef>2290YHA00182</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>900082032</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+  </RouteSections>
+  <Routes>
+    <Route id="R1">
+      <Description>Hull - Victoria, London</Description>
+      <RouteSectionRef>RS1</RouteSectionRef>
+    </Route>
+    <Route id="R2">
+      <Description>Victoria, London - Hull</Description>
+      <RouteSectionRef>RS2</RouteSectionRef>
+    </Route>
+  </Routes>
+  <JourneyPatternSections>
+    <JourneyPatternSection id="JPS1">
+      <JourneyPatternTimingLink id="JPTL2">
+        <From id="JPSU1" SequenceNumber="9">
+          <Activity>pickUp</Activity>
+          <StopPointRef>2290YHA01583</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU2" SequenceNumber="7">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>2290YHA00182</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL1</RouteLinkRef>
+        <RunTime>PT0H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL3">
+        <From id="JPSU3" SequenceNumber="7">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>2290YHA00182</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU4" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>2200YEA00927</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL2</RouteLinkRef>
+        <RunTime>PT0H3M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL4">
+        <From id="JPSU5" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>2200YEA00927</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU6" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010267</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL3</RouteLinkRef>
+        <RunTime>PT0H52M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL5">
+        <From id="JPSU7" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010267</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU8" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL4</RouteLinkRef>
+        <RunTime>PT0H50M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL6">
+        <From id="JPSU9" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU10" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL5</RouteLinkRef>
+        <RunTime>PT2H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL7">
+        <From id="JPSU11" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU12" SequenceNumber="2">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL6</RouteLinkRef>
+        <RunTime>PT1H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL8">
+        <From id="JPSU13" SequenceNumber="2">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU14" SequenceNumber="1">
+          <Activity>setDown</Activity>
+          <StopPointRef>490016736W</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL7</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS2">
+      <JourneyPatternTimingLink id="JPTL9">
+        <From id="JPSU15" SequenceNumber="1">
+          <Activity>pickUp</Activity>
+          <StopPointRef>490016736W</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU16" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL8</RouteLinkRef>
+        <RunTime>PT1H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL10">
+        <From id="JPSU17" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU18" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL9</RouteLinkRef>
+        <RunTime>PT2H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL11">
+        <From id="JPSU19" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU20" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010267</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL10</RouteLinkRef>
+        <RunTime>PT0H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL12">
+        <From id="JPSU21" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010267</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU22" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>2200YEA00927</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL11</RouteLinkRef>
+        <RunTime>PT0H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL13">
+        <From id="JPSU23" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>2200YEA00927</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU24" SequenceNumber="7">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>2290YHA00182</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL12</RouteLinkRef>
+        <RunTime>PT0H4M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL14">
+        <From id="JPSU25" SequenceNumber="7">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>2290YHA00182</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU26" SequenceNumber="8">
+          <Activity>setDown</Activity>
+          <StopPointRef>900082032</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL13</RouteLinkRef>
+        <RunTime>PT0H11M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+  </JourneyPatternSections>
+  <Operators>
+    <Operator id="NATX" Modification="new" RevisionNumber="0">
+      <NationalOperatorCode>NATX</NationalOperatorCode>
+      <OperatorShortName>National Express</OperatorShortName>
+      <TradingName>National Express</TradingName>
+      <LicenceNumber>PD0000738</LicenceNumber>
+      <PrimaryMode>coach</PrimaryMode>
+    </Operator>
+  </Operators>
+  <Services>
+    <Service RevisionNumber="0">
+      <ServiceCode>UZ000NATX:565</ServiceCode>
+      <PrivateCode>565</PrivateCode>
+      <Lines>
+        <Line id="NATX:UZ000NATX:565:565">
+          <LineName>565</LineName>
+          <OutboundDescription>
+            <Origin>London</Origin>
+            <Destination>Hull</Destination>
+            <Description>London - Hull</Description>
+          </OutboundDescription>
+          <InboundDescription>
+            <Origin>Hull</Origin>
+            <Destination>London</Destination>
+            <Description>Hull - London</Description>
+          </InboundDescription>
+        </Line>
+      </Lines>
+      <OperatingPeriod>
+        <StartDate>2023-12-26</StartDate>
+        <EndDate>2024-10-20</EndDate>
+      </OperatingPeriod>
+      <RegisteredOperatorRef>NATX</RegisteredOperatorRef>
+      <PublicUse>true</PublicUse>
+      <StandardService>
+        <Origin>London</Origin>
+        <Destination>Hull</Destination>
+        <JourneyPattern id="JP1">
+          <DestinationDisplay>Hull - Victoria, London</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Hull - Victoria, London</Description>
+          <RouteRef>R1</RouteRef>
+          <JourneyPatternSectionRefs>JPS1</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP2">
+          <DestinationDisplay>Victoria, London - Hull</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>outbound</Direction>
+          <Description>Victoria, London - Hull</Description>
+          <RouteRef>R2</RouteRef>
+          <JourneyPatternSectionRefs>JPS2</JourneyPatternSectionRefs>
+        </JourneyPattern>
+      </StandardService>
+    </Service>
+  </Services>
+  <VehicleJourneys>
+    <VehicleJourney>
+      <PrivateCode>AA-I-VJ1</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>1</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2023-12-26</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Tuesday 2023-12-26 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+        <BankHolidayOperation>
+          <DaysOfOperation>
+            <BoxingDay/>
+          </DaysOfOperation>
+          <DaysOfNonOperation>
+            <ChristmasDay/>
+            <GoodFriday/>
+            <NewYearsDay/>
+            <Jan2ndScotland/>
+            <StAndrewsDay/>
+            <LateSummerBankHolidayNotScotland/>
+            <MayDay/>
+            <EasterMonday/>
+            <SpringBank/>
+            <AugustBankHolidayScotland/>
+            <ChristmasDayHoliday/>
+            <BoxingDayHoliday/>
+            <NewYearsDayHoliday/>
+            <Jan2ndScotlandHoliday/>
+            <StAndrewsDayHoliday/>
+            <ChristmasEve/>
+            <NewYearsEve/>
+          </DaysOfNonOperation>
+        </BankHolidayOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ1</VehicleJourneyCode>
+      <ServiceRef>UZ000NATX:565</ServiceRef>
+      <LineRef>NATX:UZ000NATX:565:565</LineRef>
+      <JourneyPatternRef>JP1</JourneyPatternRef>
+      <DepartureTime>09:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>AE-O-VJ2</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>2</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-07</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Tuesday 2024-05-07 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ2</VehicleJourneyCode>
+      <ServiceRef>UZ000NATX:565</ServiceRef>
+      <LineRef>NATX:UZ000NATX:565:565</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>16:00:00</DepartureTime>
+    </VehicleJourney>
+  </VehicleJourneys>
+</TransXChange>

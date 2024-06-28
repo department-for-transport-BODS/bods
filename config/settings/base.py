@@ -169,6 +169,7 @@ LOCAL_APPS = [
     "transit_odp.fares_validator.apps.FaresValidatorConfig",
     "transit_odp.disruptions.apps.DisruptionsConfig",
     "transit_odp.crispy_forms_govuk.apps.CrispyFormsGovukConfig",
+    "transit_odp.dqs.apps.DQSConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -615,6 +616,16 @@ DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
 # GTFS API
 # ------------------------------------------------------------------------------
 GTFS_API_BASE_URL = env("GTFS_API_BASE_URL", default="")
+
+# SQS QUEUE
+# ------------------------------------------------------------------------------
+SQS_QUEUE_ENDPOINT_URL = env(
+    "SQS_QUEUE_ENDPOINT_URL", default="http://localstack-main:4566"
+)
+AWS_REGION_NAME = env("AWS_REGION_NAME", default="eu-west-2")
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
+AWS_ENVIRONMENT = env("AWS_ENVIRONMENT", default="LOCAL")
 
 # Crispy forms
 # ------------------------------------------------------------------------------
