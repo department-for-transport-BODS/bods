@@ -172,6 +172,37 @@
             </ul>
         </div>
     </div>
+    <div class="govuk-grid-row govuk-!-margin-top-5">
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body">
+                <a class="govuk-link" href="{% url 'download-disruptions' host hosts.data %}"
+                    onClick="addGATagEvent('disruptions')">
+                    {% trans 'Coach data' %}
+                </a>
+            </p>
+            <p class="govuk-body">
+                {%  blocktrans %}
+                    Download disruptions data for selected regions in SIRI-SX format.
+                {%  endblocktrans %}
+            </p>
+            <ul class="govuk-list">
+                <li>
+                    <b>{% trans 'Format' %}:</b>
+                    {% trans 'TxC2.4/ATCO.cif' %}
+                </li>
+                <li><b>{% trans 'Mode' %}:</b> {% trans 'Coach' %}</li>
+                <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
+                <li>
+                    <b>{% trans 'Update frequency' %}:</b>
+                    {% trans 'Daily 6:00 am GMT' %}
+                </li>
+                <li>
+                    <b>{% trans 'Source' %}:</b>
+                    {% trans 'Local Authority' %}
+                </li>
+            </ul>
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
