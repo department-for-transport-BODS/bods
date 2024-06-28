@@ -116,7 +116,7 @@ def task_validate_avl_feed(task_id: str):
 
 @shared_task(bind=True)
 def task_create_sirivm_zipfile(self):
-    URL = f"{settings.CAVL_CONSUMER_URL}/datafeed"
+    URL = f"{settings.CAVL_API_BASE_URL}/siri-vm"
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     start = time.time()
     try:
@@ -176,7 +176,7 @@ def task_create_gtfsrt_zipfile():
 def task_create_sirivm_tfl_zipfile(self):
     start = time.time()
     logger.info(f"Starting to create sirivm_tfl_zipfile with url")
-    url = f"{settings.CAVL_CONSUMER_URL}/datafeed"
+    url = f"{settings.CAVL_CONSUMER_URL}/siri-vm?downloadTfl=true"
     params = {"operatorRef": "TFLO"}
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     try:
