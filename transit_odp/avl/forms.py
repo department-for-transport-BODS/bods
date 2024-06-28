@@ -236,13 +236,17 @@ class AvlFeedUploadForm(GOVUKModelForm):
                 )
             cancel_button = CANCEL_PUBLISH_BUTTON
 
-        ip_text = HTML(
+        ip_text = (
+            HTML(
                 '<span class="govuk-hint">If you require your SIRI-VM feed to be '
                 "restricted to particular IP addresses, "
                 "please allow-list these IP addresses: "
                 f"{ALLOW_LIST_IP_ADDRESSES}"
                 "</span>"
-            ) if ALLOW_LIST_IP_ADDRESSES else ""
+            )
+            if ALLOW_LIST_IP_ADDRESSES
+            else ""
+        )
 
         return Layout(
             "url_link",
