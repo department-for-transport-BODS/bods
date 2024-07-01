@@ -107,10 +107,12 @@ class ObservationResults(models.Model):
         VehicleJourney,
         on_delete=models.CASCADE,
         related_name="dqs_observationresult_vehicle_journey",
+        null=True,
     )
 
     service_pattern_stop = models.ForeignKey(
         ServicePatternStop,
         on_delete=models.CASCADE,
         related_name="dqs_observationresult_service_pattern_stop",
+        null=True,
     )

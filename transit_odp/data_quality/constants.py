@@ -16,6 +16,7 @@ _TRAVEL_LINE_ANCHOR = _ANCHOR.format(
 _TRANSXCHANGE_ANCHOR: Final = _ANCHOR.format(
     "https://www.gov.uk/government/collections/transxchange"
 )
+_LINE_BREAK = "<br/><br/>"
 
 
 @unique
@@ -40,6 +41,11 @@ class CheckBasis(Enum):
     data_set = "data_set"
 
 
+class Checks(Enum):
+    IncorrectNoc = "Incorrect NOC"
+    FirstStopIsSetDown = "First stop is set down only"
+
+
 @dataclass
 class Observation:
     level: Level
@@ -52,6 +58,7 @@ class Observation:
     impacts: str = None
     weighting: float = None
     check_basis: CheckBasis = None
+    resolve: str = None
 
     @property
     def type(self):
@@ -60,18 +67,27 @@ class Observation:
 
 IncorrectNocObservation = Observation(
     title="Incorrect NOC code",
-    text=(
-        "Operators can find their organisation’s NOC by browsing the Traveline NOC "
+    text="",
+    impacts=(
+        "This observation identifies where the National Operator Code (NOC) used in the data is not registered to the your Organisation profile."
+        + _LINE_BREAK
+        + "NOCs are used by data consumers to know which operator is running the service, and to match the data with bus location and fares data. This ability improves the quality of information available to passengers."
         "database here:"
-        "</br></br>" + _TRAVEL_LINE_ANCHOR + "</br></br>"
-        "Operators can assign a NOC to their account on this service by going to My "
+        + _LINE_BREAK
+        + _TRAVEL_LINE_ANCHOR
+        + _LINE_BREAK
+        + "Operators can assign a NOC to their account on this service by going to My "
         "account (in the top right-hand side of the dashboard) and choosing "
         "Organisation profile. "
     ),
-    impacts=(
-        "The NOC is used by consumers to know which operator is running the service, "
-        "and to match their data across data types. This ability improves "
-        "the quality of information available to passengers."
+    resolve=(
+        "Please check the NOC(s) on your data is correct for your organisation and is assigned to your Organisation profile."
+        + _LINE_BREAK
+        + "Operators can find their organisation’s NOC by browsing the Traveline NOC database here:"
+        + _LINE_BREAK
+        + "https://www.travelinedata.org.uk/traveline-open-data/transport-operations/browse/"
+        + _LINE_BREAK
+        + "Operators can assign a NOC to their account by going to My account (in the top right-hand side of the dashboard) and choosing Organisation profile."
     ),
     model=models.IncorrectNOCWarning,
     list_url_name="dq:incorrect-noc-list",
