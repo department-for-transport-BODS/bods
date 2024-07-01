@@ -3,7 +3,7 @@ from django.test import RequestFactory
 from transit_odp.common.views import CoachDownloadView
 
 
-def test_download_coach_data_view(self, request_factory: RequestFactory):
+def test_download_coach_data_view(request_factory: RequestFactory):
     """Test the coach download view and see if view is loaded with 200 status code
     as well as the template name is correct or not
 
