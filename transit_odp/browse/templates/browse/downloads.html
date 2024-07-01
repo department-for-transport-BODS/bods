@@ -175,14 +175,14 @@
     <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body">
-                <a class="govuk-link" href="{% url 'download-disruptions' host hosts.data %}"
-                    onClick="addGATagEvent('disruptions')">
+                <a class="govuk-link" href="{% url 'coach-download' host hosts.data %}"
+                    onClick="addGATagEvent('coach')">
                     {% trans 'Coach data' %}
                 </a>
             </p>
             <p class="govuk-body">
                 {%  blocktrans %}
-                    Download disruptions data for selected regions in SIRI-SX format.
+                    Download coach data in ATCO.cif or TxC2.4 format.
                 {%  endblocktrans %}
             </p>
             <ul class="govuk-list">
