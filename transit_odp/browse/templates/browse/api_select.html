@@ -16,17 +16,17 @@
   <div class="govuk-!-padding-right-9">
     <p class="govuk-body govuk-!-padding-bottom-3">
       {% blocktrans %}
-                You can experiment with our interactive API services, to familiarise yourself
-                with the data supplied. Please append your API_Key from your
-            {% endblocktrans %}
+        You can experiment with our interactive API services, to familiarise yourself
+        with the data supplied. Please append your API_Key from your
+      {% endblocktrans %}
       <a href="{% url 'users:settings' host hosts.data %}">
         {% filter force_escape %}
           {% trans "Account Settings" %}
         {% endfilter %}
       </a>
       {% blocktrans %}
-                page and query parameters to your API requests.
-            {% endblocktrans %}
+        page and query parameters to your API requests.
+      {% endblocktrans %}
     </p>
     <ul class="govuk-list app-list--nav govuk-!-font-size-19">
       <li class="govuk-!-margin-bottom-4">
