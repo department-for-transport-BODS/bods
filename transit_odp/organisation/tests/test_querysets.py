@@ -65,6 +65,25 @@ class TestOrganisationQuerySet:
     # TODO - test add_org_admin_count
     # TODO - test add_org_staff_count
 
+    def test_get_organisation_admin_areas(self):
+        admin_areas = [
+            AdminAreaFactory(
+                name=admin_area_details["admin_area_name"],
+                atco_code=admin_area_details["atco_code"],
+            )
+            for admin_area_details in [
+                {"admin_area_name": "Angus", "atco_code": 649},
+                {"admin_area_name": "National - National Air", "atco_code": 920},
+                {"admin_area_name": "Dundee", "atco_code": 640},
+            ]
+        ]
+        org1 = OrganisationFactory(name="KPMGAdmin")
+        org1.admin_areas.add(admin_areas[0])
+        org1.admin_areas.add(admin_areas[1])
+        org1.admin_areas.add(admin_areas[2])
+        organisation_data = Organisation.objects.all().first()
+        assert organisation_data.admin_areas.count() == len(admin_areas)
+
     def test_is_abods_organisation(self):
         abods_organisation = OrganisationFactory(
             is_abods_global_viewer=True, name="dummy_aboads_org", short_name="dummy org"
