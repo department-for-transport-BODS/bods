@@ -91,9 +91,9 @@
       </p>
       <p class="govuk-body">
         {% blocktrans %}
-        Location data provides the most recent real time vehicle<br />
-        position cached on the service. You can download all current<br />
-        bus location data.
+          Location data provides the most recent real time vehicle<br />
+          position cached on the service. You can download all current<br />
+          bus location data.
       {% endblocktrans %}
       </p>
       <ul class="govuk-list">
@@ -134,8 +134,8 @@
       </p>
       <p class="govuk-body">
         {% blocktrans %}
-        You can download all fares data cached on the service.
-      {% endblocktrans %}
+          You can download all fares data cached on the service.
+        {% endblocktrans %}
       </p>
       <ul class="govuk-list">
         <li>
@@ -168,8 +168,8 @@
       </p>
       <p class="govuk-body">
         {% blocktrans %}
-        Download disruptions data for selected regions in SIRI-SX format.
-      {% endblocktrans %}
+          Download disruptions data for selected regions in SIRI-SX format.
+        {% endblocktrans %}
       </p>
       <ul class="govuk-list">
         <li>
@@ -203,8 +203,8 @@
       </p>
       <p class="govuk-body">
         {% blocktrans %}
-        Download coach data in ATCO.cif or TxC2.4 format.
-      {% endblocktrans %}
+          Download coach data in ATCO.cif or TxC2.4 format.
+        {% endblocktrans %}
       </p>
       <ul class="govuk-list">
         <li>
@@ -228,40 +228,43 @@
       </ul>
     </div>
     <div class="govuk-grid-row govuk-!-margin-top-5">
-        <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body">
-                <a class="govuk-link" href="{% url 'coach-download' host hosts.data %}"
-                    onClick="addGATagEvent('coach')">
-                    {% trans 'Coach data' %}
-                </a>
-            </p>
-            <p class="govuk-body">
-                {%  blocktrans %}
-                    Download coach data in ATCO.cif or TxC2.4 format.
-                {%  endblocktrans %}
-            </p>
-            <ul class="govuk-list">
-                <li>
-                    <b>{% trans 'Format' %}:</b>
-                    {% trans 'TxC2.4/ATCO.cif' %}
-                </li>
-                <li><b>{% trans 'Mode' %}:</b> {% trans 'Coach' %}</li>
-                <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
-                <li>
-                    <b>{% trans 'Update frequency' %}:</b>
-                    {% trans 'Daily 6:00 am GMT' %}
-                </li>
-                <li>
-                    <b>{% trans 'Source' %}:</b>
-                    {% trans 'Local Authority' %}
-                </li>
-            </ul>
-        </div>
+      <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body">
+          <a class="govuk-link" href="{% url 'coach-download' host hosts.data %}" onClick="addGATagEvent('coach')">
+            {% trans "Coach data" %}
+          </a>
+        </p>
+        <p class="govuk-body">
+          {% blocktrans %}
+            Download coach data in ATCO.cif or TxC2.4 format.
+          {% endblocktrans %}
+        </p>
+        <ul class="govuk-list">
+          <li>
+            <b>{% trans "Format" %}:</b>
+            {% trans "TxC2.4/ATCO.cif" %}
+          </li>
+          <li>
+            <b>{% trans "Mode" %}:</b> {% trans "Coach" %}
+          </li>
+          <li>
+            <b>{% trans "File type" %}:</b> {% trans "ZIP file" %}
+          </li>
+          <li>
+            <b>{% trans "Update frequency" %}:</b>
+            {% trans "Daily 6:00 am GMT" %}
+          </li>
+          <li>
+            <b>{% trans "Source" %}:</b>
+            {% trans "Local Authority" %}
+          </li>
+        </ul>
+      </div>
     </div>
-{% endblock %}
-{% block scripts %}
-  {{ block.super }}
-  <script>
+  {% endblock %}
+  {% block scripts %}
+    {{ block.super }}
+    <script>
         function addGATagEvent(obj) {
             gtag('event', 'Download all events', {
                 'event_category': 'link',
@@ -269,5 +272,5 @@
                 'event_action': 'click'
             });
         };
-  </script>
-{% endblock %}
+    </script>
+  {% endblock %}
