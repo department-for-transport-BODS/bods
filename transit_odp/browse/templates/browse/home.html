@@ -40,7 +40,9 @@
     <p class="govuk-body">
       <a class="govuk-link-bold" href="{% url 'select-data' host hosts.data %}">{% trans "Browse data" %}</a>
     </p>
-    <p class="govuk-body">{% trans "View and download open data published by operators of local bus services." %}</p>
+    <p class="govuk-body">
+      {% trans "View and download open data published by operators of local bus and coach services." %}
+    </p>
     <hr class="govuk-section-break govuk-section-break--xl" />
     <p class="govuk-body">
       <a class="govuk-link-bold" href="{% url 'api-select' host hosts.data %}">{% trans "Try API service" %}</a>
