@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load filters %}
 
 <div class="govuk-tabs" data-module="govuk-tabs">
   <h2 class="govuk-tabs__title">
@@ -18,6 +19,30 @@
 <div class="govuk-tabs__panel" id={{ level_title }}>
   <h2 class="govuk-heading-l">{{ level_title }} observations ({{ level_data.count }})</h2>
   <p class="govuk-body">{{level_data.intro}}</p>
+  {% for category, df in level_data.df.items  %}
+  <table class="govuk-table">
+    <caption class="govuk-table__caption govuk-table__caption--s govuk-!-font-weight-regular govuk-!-font-size-24">{{category}} ({{df.number_of_services_affected.sum}})</caption>
+    <thead class="govuk-table__head govuk-!-font-weight-regular">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header govuk-!-font-weight-regular ">Number of services affected</th>
+        <th scope="col" class="govuk-table__header govuk-!-font-weight-regular">Observation category</th> 
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+  {% for idx, row in df.iterrows %}
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header govuk-!-font-weight-regular ">{{row.number_of_services_affected}}</th>
+            <td class="govuk-table__cell">
+              <a href="{% url 'dq:overview' pk1=view.kwargs.pk1 pk=view.kwargs.pk report_id=view.kwargs.report_id host hosts.publish %}{{row.observation|lower|replace_spaces}}">
+                {{row.observation}}
+              </a>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  {% endfor %}
+  {% endfor %}
 {% for category_title, category_data in level_data.categories.items %}
   {% if category_data.count %}
   <table class="govuk-table">

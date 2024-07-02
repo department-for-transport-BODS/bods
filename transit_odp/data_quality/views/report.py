@@ -40,18 +40,23 @@ class ReportOverviewView(DetailView):
 
     def get_queryset(self):
         dataset_id = self.kwargs["pk"]
-        return (
+        result = (
             super()
             .get_queryset()
             .add_number_of_lines()
             .filter(revision__dataset_id=dataset_id)
             .select_related("summary")
         )
+        return result
 
     def get_context_data(self, **kwargs):
+        revision_id = None
         context = super().get_context_data(**kwargs)
         report = self.get_object()
-        summary = Summary.from_report_summary(report.summary)
+        if kwargs.get("object"):
+            revision_id = kwargs.get("object").revision_id
+
+        summary = Summary.get_report(report.summary, revision_id)
         rag = get_data_quality_rag(report)
         context.update(
             {
@@ -59,6 +64,7 @@ class ReportOverviewView(DetailView):
                 "warning_data": summary.data,
                 "total_warnings": summary.count,
                 "dq_score": rag,
+                "bus_services_affected": summary.bus_services_affected,
             }
         )
         return context

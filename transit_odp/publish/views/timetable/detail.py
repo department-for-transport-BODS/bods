@@ -28,7 +28,7 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
     model = Dataset
 
     def get_queryset(self):
-        return (
+        query = (
             super()
             .get_queryset()
             .filter(
@@ -41,17 +41,23 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
             .add_is_live_pti_compliant()
             .select_related("live_revision")
         )
+        print(query.query)
+        return query
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
+        print("before adding report_id")
+        print(kwargs)
 
         dataset = self.object
+        print("dataset ", dataset)
         live_revision = dataset.live_revision
         report = live_revision.report.order_by("-created").first()
+        print("report ", report)
         summary = getattr(report, "summary", None)
 
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-        kwargs["admin_areas"] = self.object.admin_area_names
+        # kwargs["admin_areas"] = self.object.admin_area_names
         kwargs["pk"] = dataset.id
         kwargs["pk1"] = self.kwargs["pk1"]
 
@@ -104,7 +110,6 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
     def get_direction_timetable(
         self, df_timetable: pd.DataFrame, direction: str = "outbound"
     ) -> Dict:
-
         """
         Get the timetable details like the total, current page and the dataframe
         based on the timetable dataframe and the direction.
