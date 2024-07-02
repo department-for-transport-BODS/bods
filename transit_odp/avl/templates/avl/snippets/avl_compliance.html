@@ -8,19 +8,19 @@
     <strong class="app-step-nav-related">
       <span class="govuk-warning-text__assistive">Warning</span>
       {% blocktrans %}
-                Your data is currently being published but contains potential issues.
-                Please correct these as per the email sent on
-            {% endblocktrans %}
+        Your data is currently being published but contains potential issues.
+        Please correct these as per the email sent on
+      {% endblocktrans %}
       {{ properties.first_error_date }}
       {% blocktrans %}
-                and update the data feed.
-                If no corrections are made your feed will go in to 'partial/non-compliant'
-                status in
-            {% endblocktrans %}
+        and update the data feed.
+        If no corrections are made your feed will go in to 'partial/non-compliant'
+        status in
+      {% endblocktrans %}
       {{ properties.days_to_go }}
       {% blocktrans %}
-                days
-            {% endblocktrans %}
+        days
+      {% endblocktrans %}
     </strong>
   </div>
 {% elif properties.avl_compliance_status_cached == "Partially compliant" %}
@@ -31,10 +31,10 @@
     <strong class="app-step-nav-related">
       <span class="govuk-warning-text__assistive">Warning</span>
       {% blocktrans %}
-                The AVL data feed is only partially compliant.
-                To fully pass validation please address all outstanding issues in the
-                validation report and update the data feed
-            {% endblocktrans %}
+        The AVL data feed is only partially compliant.
+        To fully pass validation please address all outstanding issues in the
+        validation report and update the data feed
+      {% endblocktrans %}
     </strong>
   </div>
 {% elif properties.avl_compliance_status_cached == "Non-compliant" %}
@@ -45,9 +45,9 @@
     <strong class="app-step-nav-related">
       <span class="govuk-warning-text__assistive">Warning</span>
       {% blocktrans %}
-                The AVL data feed is non-compliant. To pass the validation please address all
-                outstanding issues in the validation report and update the data feed
-            {% endblocktrans %}
+        The AVL data feed is non-compliant. To pass the validation please address all
+        outstanding issues in the validation report and update the data feed
+      {% endblocktrans %}
     </strong>
   </div>
 {% else %}

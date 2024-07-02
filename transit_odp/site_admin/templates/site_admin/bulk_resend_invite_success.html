@@ -16,8 +16,8 @@
 {% block body_text %}
   {% filter force_escape %}
     {% blocktrans %}
-            An email invite has been sent to
-        {% endblocktrans %}
+      An email invite has been sent to
+    {% endblocktrans %}
   {% endfilter %}
   {% for email in resend_emails %}
     {{ email }}

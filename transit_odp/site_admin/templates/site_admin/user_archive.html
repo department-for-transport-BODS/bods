@@ -30,17 +30,17 @@
           Would you like to deactivate
         {% endblocktrans %}
           {{ object.username }}?
-          {% blocktrans %}
+        {% blocktrans %}
            Deactivating user(s) will suspend them from accessing the Bus Open Data Service.
         {% endblocktrans %}
         {% else %}
           {% blocktrans %}
-          Would you like to activate
-        {% endblocktrans %}
-          {{ object.username }}?
+            Would you like to activate
+          {% endblocktrans %}
+            {{ object.username }}?
           {% blocktrans %}
-           Activating user(s) will give access to the Bus Open Data Service.
-        {% endblocktrans %}
+            Activating user(s) will give access to the Bus Open Data Service.
+          {% endblocktrans %}
         {% endif %}
       </p>
       {% crispy form %}
