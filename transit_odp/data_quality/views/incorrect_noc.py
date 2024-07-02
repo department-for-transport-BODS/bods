@@ -69,10 +69,13 @@ class IncorrectNOCListView(WarningListBaseView):
         return qs2
 
     def get_table_kwargs(self):
-        # kwargs = super().get_table_kwargs()
+
         kwargs = {}
-        kwargs.update({"message_col_verbose_name": "Summary", "count": self.row_count})
-        print(f"kwargs: {kwargs}")
+        if self.is_new_data_quality_service_active:
+            kwargs = super().get_table_kwargs()
+            kwargs.update(
+                {"message_col_verbose_name": "Summary", "count": self.row_count}
+            )
         return kwargs
 
     def get_context_data(self, **kwargs):
