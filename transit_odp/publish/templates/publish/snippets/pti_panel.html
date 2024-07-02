@@ -1,5 +1,4 @@
 {% load i18n %}
-
 <section>
   <div class="app-dqs-panel">
     <div class="app-dqs-panel__body">
@@ -15,39 +14,36 @@
           <p class="govuk-body">
             <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download validation report</a>
           </p>
-
           {% if object.error_code == "SCHEMA_ERROR" %}
-           <p class="govuk-body">
-            {% blocktrans %}
+            <p class="govuk-body">
+              {% blocktrans %}
               The timetables data supplied is non-compliant and cannot be submitted to
               BODS as per the
             {% endblocktrans %}
-            <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality"
-               class="govuk-link">
-              {% trans "guidance." %}
-            </a>
-            {% blocktrans %}
+              <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
+                {% trans "guidance." %}
+              </a>
+              {% blocktrans %}
               To pass the validation please address all outstanding issues in the
               validation report.
             {% endblocktrans %}
-          </p>
+            </p>
           {% else %}
-          <p class="govuk-body">
-            {% blocktrans %}
+            <p class="govuk-body">
+              {% blocktrans %}
               The timetables data supplied is non-compliant. It does not meet
               the data format required as specified in the
             {% endblocktrans %}
-            <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality"
-               class="govuk-link">
-              {% trans "guidance" %}
-            </a>
+              <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
+                {% trans "guidance" %}
+              </a>
               {% trans "and from" %}
               {{ pti_enforced_date|date:"jS F Y" }}
-            {% blocktrans %}
+              {% blocktrans %}
               it will be rejected from BODS. To pass the validation please address all
               outstanding issues in the validation report.
             {% endblocktrans %}
-          </p>
+            </p>
           {% endif %}
         {% else %}
           <h2 class="govuk-heading-m govuk-!-margin-bottom-0">3a Validation check - Passed</h2>

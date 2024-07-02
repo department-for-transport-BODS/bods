@@ -1,11 +1,9 @@
 {% load i18n %}
-
 <a class="govuk-link govuk-!-font-size-19" href="{% url 'account_signup' host hosts.data %}">
-    {% trans 'Register your account' %}
+  {% trans "Register your account" %}
 </a>
-
 <p class="govuk-body">
-    {% blocktrans %}
+  {% blocktrans %}
     A BODS account is required to download data or use the API.
-    {% endblocktrans %}
+  {% endblocktrans %}
 </p>

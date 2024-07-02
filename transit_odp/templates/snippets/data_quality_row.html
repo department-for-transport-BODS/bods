@@ -1,5 +1,5 @@
 {% load filters %}
 <p class="govuk-body govuk-!-margin-bottom-0">
-  {{rag.score | percentage:0}}
-  <span class="status-indicator status-indicator--{{rag.css_indicator}} govuk-!-font-weight-bold">{{rag.rag_level | upper}}</span>
+  {{ rag.score | percentage:0 }}
+  <span class="status-indicator status-indicator--{{ rag.css_indicator }} govuk-!-font-weight-bold">{{ rag.rag_level | upper }}</span>
 </p>

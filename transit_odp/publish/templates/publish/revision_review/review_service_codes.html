@@ -1,41 +1,41 @@
 <div>
-    <h2 class="govuk-heading-l">
-        Review Service Numbers
-    </h2>
-
-    <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
-        {% for licence_number, nocs_dict in distinct_attributes.items %}
-            <div class="govuk-accordion__section">
-                <div class="govuk-accordion__section-header">
-                    <h2 class="govuk-accordion__section-heading">
-                        <span class="govuk-accordion__section-button" id="accordion-default-heading-{{ forloop.counter }}">
-                            {{ licence_number }}
-                        </span>
-                    </h2>
-                </div>
-                {% for noc, line_names_dict in nocs_dict.items %}
-                    <div id="sub-accordion-content-{{ forloop.parentloop.counter }}" class="govuk-accordion__section-content" aria-labelledby="sub-accordion-heading-{{ forloop.parentloop.counter }}">
-                        <div class="govuk-accordion__section govuk-!-padding-left-7">
-                            <div class="govuk-accordion__section-header">
-                                <h2 class="govuk-accordion__section-heading">
-                                    <span class="govuk-accordion__section-button" id="sub-accordion-heading-{{ forloop.counter }}">
-                                        {{ noc }}
-                                    </span>
-                                </h2>
-                            </div>
-                            <div id="sub-accordion-content-{{ forloop.counter }}" class="govuk-accordion__section-content" aria-labelledby="sub-accordion-heading-{{ forloop.counter }}">
-                                {% for line_name, service_codes in line_names_dict.items %}
-                                    {% for service_code in service_codes %}
-                                        <p class="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom">
-                                            <a class="govuk-link" href="{% url 'revision-line-detail' pk1=pk1 pk=pk host hosts.publish %}?line={{ line_name }}&revision_id={{ object.id }}&service={{ service_code }}">{{ line_name }} - {{ service_code }}</a>
-                                        </p>
-                                    {% endfor %}
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
+  <h2 class="govuk-heading-l">Review Service Numbers</h2>
+  <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
+    {% for licence_number, nocs_dict in distinct_attributes.items %}
+      <div class="govuk-accordion__section">
+        <div class="govuk-accordion__section-header">
+          <h2 class="govuk-accordion__section-heading">
+            <span class="govuk-accordion__section-button" id="accordion-default-heading-{{ forloop.counter }}">
+              {{ licence_number }}
+            </span>
+          </h2>
+        </div>
+        {% for noc, line_names_dict in nocs_dict.items %}
+          <div id="sub-accordion-content-{{ forloop.parentloop.counter }}"
+               class="govuk-accordion__section-content"
+               aria-labelledby="sub-accordion-heading-{{ forloop.parentloop.counter }}">
+            <div class="govuk-accordion__section govuk-!-padding-left-7">
+              <div class="govuk-accordion__section-header">
+                <h2 class="govuk-accordion__section-heading">
+                  <span class="govuk-accordion__section-button" id="sub-accordion-heading-{{ forloop.counter }}">{{ noc }}</span>
+                </h2>
+              </div>
+              <div id="sub-accordion-content-{{ forloop.counter }}"
+                   class="govuk-accordion__section-content"
+                   aria-labelledby="sub-accordion-heading-{{ forloop.counter }}">
+                {% for line_name, service_codes in line_names_dict.items %}
+                  {% for service_code in service_codes %}
+                    <p class="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom">
+                      <a class="govuk-link"
+                         href="{% url 'revision-line-detail' pk1=pk1 pk=pk host hosts.publish %}?line={{ line_name }}&revision_id={{ object.id }}&service={{ service_code }}">{{ line_name }} - {{ service_code }}</a>
+                    </p>
+                  {% endfor %}
                 {% endfor %}
+              </div>
             </div>
+          </div>
         {% endfor %}
-    </div>
+      </div>
+    {% endfor %}
+  </div>
 </div>

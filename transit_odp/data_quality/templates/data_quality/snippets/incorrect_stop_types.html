@@ -1,16 +1,10 @@
-
 <table class="govuk-table">
   <tbody class="govuk-table__body">
     {% for key, value in info.items %}
-    <tr class="govuk-table__row">
-      <td class="govuk-table__cell govuk-!-font-weight-bold">
-        {{key}}
-      </td>
-      <td class="govuk-table__cell">
-        {{value}}
-      </td>
-    </tr>
-    <div>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell govuk-!-font-weight-bold">{{ key }}</td>
+        <td class="govuk-table__cell">{{ value }}</td>
+      </tr>
     {% endfor %}
   </tbody>
 </table>

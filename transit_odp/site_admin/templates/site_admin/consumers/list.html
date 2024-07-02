@@ -1,118 +1,116 @@
 {% extends "site_admin/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
-
 {% block title_tag %}
-    {% trans 'Data consumers' %}
+  {% trans "Data consumers" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Data consumers' 'users:consumer-list' host hosts.admin %}
+  {{ block.super }}
+  {% breadcrumb_url 'Data consumers' 'users:consumer-list' host hosts.admin %}
 {% endblock %}
-
 {% block full_width_content %}
-    <form>
-        {% with title="Data consumers" description="Search for specific data consumer" placeholder="Search by data consumer email" %}
-            {% include "browse/snippets/search_banner.html" %}
-        {% endwith %}
-    </form>
+  <form>
+    {% with title="Data consumers" description="Search for specific data consumer" placeholder="Search by data consumer email" %}
+      {% include "browse/snippets/search_banner.html" %}
+    {% endwith %}
+  </form>
 {% endblock %}
-
 {% block content %}
-    <div class="govuk-width-container">
-        <div class="govuk-grid-row">
-            <h2 class="govuk-heading-m govuk-!-padding-left-3">
-                {% filter force_escape %}
-                    {% trans 'View and manage data consumers' %}
-                {% endfilter %}
-            </h2>
-            <div class="govuk-grid-column-one-quarter">
-                <h2 class="govuk-heading-m">Filter by</h2>
-                {% crispy filter.form filter.form.helper %}
-            </div>
-            <div class="govuk-grid-column-three-quarters">
-                <div class="search-list__heading">
-                    {% if paginator.count > 0 %}
-                        <span class="govuk-body">
-                            {% filter force_escape %}
-                                {% blocktrans count counter=paginator.count %}
-                                    1 result
-                                {% plural %}
-                                    {{ counter }} results
-                                {% endblocktrans %}
-                            {% endfilter %}
-                        </span>
-                    {% else %}
-                        <h3 class="govuk-heading-m">
-                            {% filter force_escape %}
-                                {% trans 'Sorry, no results found' %}
-                                {% if q %}
-                                    {% blocktrans %} for {{ q }}{% endblocktrans %}
-                                {% endif %}
-                            {% endfilter %}
-                        </h3>
-                    {% endif %}
-                </div>
-
-                <div class="govuk-body-s govuk-grid-row search-pillbox">
-                    {% if q %}
-                        <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-                            {% trans 'Beginning' as tmsg %}{{tmsg | force_escape}}
-                        </span>
-                        <a href="?q=">
-                            <div class="pill-item">
-                                <img class="pill-item__image"
-                                    src="{% static 'frontend/images/icon-cross.png' %}"
-                                    alt="{% trans 'Delete icon' as tmsg %}{{tmsg | force_escape}}">
-                                <span class="pill-item__label">{{ q }}</span>
-                            </div>
-                        </a>
-                    {% elif letters %}
-                        <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-                            {% trans 'Beginning' as tmsg %}{{tmsg | force_escape}}
-                        </span>
-                        <a href="?q=">
-                            <div class="pill-item">
-                                <img class="pill-item__image"
-                                    src="{% static 'frontend/images/icon-cross.png' %}"
-                                    alt="{% trans 'Delete icon' as tmsg %}{{tmsg | force_escape}}">
-                                <span class="pill-item__label">{{ letters|join:' ' }}</span>
-                            </div>
-                        </a>
-                    {% endif %}
-                </div>
-
-                <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break govuk-!-margin-top-0">
-
-                {% if paginator.count > 0 %}
-                    {% render_table table %}
-                {% else %}
-                    <div>
-                        <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
-                        <h4 class="govuk-heading-s">
-                            {% filter force_escape %}
-                                {% trans 'Having trouble finding what you want?' %}
-                            {% endfilter %}
-                        </h4>
-                        <ul class="govuk-list govuk-list--bullet">
-                            <li>
-                                {% filter force_escape %}
-                                    {% if q %}
-                                        {% trans 'Check your spelling and try again' %}
-                                    {% else %}
-                                        {% trans 'Please try another filter' %}
-                                    {% endif %}
-                                {% endfilter %}
-                            </li>
-                        </ul>
-                    </div>
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <h2 class="govuk-heading-m govuk-!-padding-left-3">
+        {% filter force_escape %}
+          {% trans "View and manage data consumers" %}
+        {% endfilter %}
+      </h2>
+      <div class="govuk-grid-column-one-quarter">
+        <h2 class="govuk-heading-m">Filter by</h2>
+        {% crispy filter.form filter.form.helper %}
+      </div>
+      <div class="govuk-grid-column-three-quarters">
+        <div class="search-list__heading">
+          {% if paginator.count > 0 %}
+            <span class="govuk-body">
+              {% filter force_escape %}
+                {% blocktrans count counter=paginator.count %}
+                  1 result
+                {% plural %}
+                  {{ counter }} results
+                {% endblocktrans %}
+              {% endfilter %}
+            </span>
+          {% else %}
+            <h3 class="govuk-heading-m">
+              {% filter force_escape %}
+                {% trans "Sorry, no results found" %}
+                {% if q %}
+                  {% blocktrans %} for {{ q }}{% endblocktrans %}
                 {% endif %}
-            </div>
+              {% endfilter %}
+            </h3>
+          {% endif %}
         </div>
+        <div class="govuk-body-s govuk-grid-row search-pillbox">
+          {% if q %}
+            <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
+              {% trans "Beginning" as tmsg %}
+              {{ tmsg | force_escape }}
+            </span>
+            <a href="?q=">
+              <div class="pill-item">
+                <img class="pill-item__image"
+                     src="{% static 'frontend/images/icon-cross.png' %}"
+                     alt="{% trans "Delete icon" as tmsg %}{{ tmsg | force_escape }}"
+                     height="auto"
+                     width="auto" />
+                <span class="pill-item__label">{{ q }}</span>
+              </div>
+            </a>
+          {% elif letters %}
+            <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
+              {% trans "Beginning" as tmsg %}
+              {{ tmsg | force_escape }}
+            </span>
+            <a href="?q=">
+              <div class="pill-item">
+                <img class="pill-item__image"
+                     src="{% static 'frontend/images/icon-cross.png' %}"
+                     alt="{% trans "Delete icon" as tmsg %}{{ tmsg | force_escape }}"
+                     height="auto"
+                     width="auto" />
+                <span class="pill-item__label">{{ letters|join:' ' }}</span>
+              </div>
+            </a>
+          {% endif %}
+        </div>
+        <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break govuk-!-margin-top-0" />
+        {% if paginator.count > 0 %}
+          {% render_table table %}
+        {% else %}
+          <div>
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
+            <h4 class="govuk-heading-s">
+              {% filter force_escape %}
+                {% trans "Having trouble finding what you want?" %}
+              {% endfilter %}
+            </h4>
+            <ul class="govuk-list govuk-list--bullet">
+              <li>
+                {% filter force_escape %}
+                  {% if q %}
+                    {% trans "Check your spelling and try again" %}
+                  {% else %}
+                    {% trans "Please try another filter" %}
+                  {% endif %}
+                {% endfilter %}
+              </li>
+            </ul>
+          </div>
+        {% endif %}
+      </div>
     </div>
+  </div>
 {% endblock %}

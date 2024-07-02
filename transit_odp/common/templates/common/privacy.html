@@ -1,24 +1,19 @@
 {% extends "page.html" %}
 {% load i18n %}
 {% load static %}
-
 {% block title_tag %}
-    {% trans 'Privacy' %}
+  {% trans "Privacy" %}
 {% endblock %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-xl">{% trans 'Privacy' %}</h1>
-            <p class="govuk-body">{% trans 'Last updated: 5th December, 2022' %}</p>
-
-            <section>
-                <h2 class="govuk-heading-m">{% trans 'Who we are' %}</h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{% trans "Privacy" %}</h1>
+      <p class="govuk-body">{% trans "Last updated: 5th December, 2022" %}</p>
+      <section>
+        <h2 class="govuk-heading-m">{% trans "Who we are" %}</h2>
+        <p class="govuk-body">
+          {% blocktrans %}
                         The Bus Open Data Service (BODS) is a service for bus operators across England,
                         and local transport authorities or agents working with operators, to publish
                         data about local bus services. It is a legal requirement for bus operators
@@ -26,299 +21,235 @@
                         data consumers can use this data without restrictions in their applications,
                         products and research. The service is provided by the Department for Transport.
                     {% endblocktrans %}
-                </p>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">{% trans 'What data we collect from you' %}</h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">{% trans "What data we collect from you" %}</h2>
+        <p class="govuk-body">
+          {% blocktrans %}
                         Our main purpose is ensuring data about local bus services across England is in
                         the public domain and utilised responsibly. This data is provided by users,
                         including bus operators, Local Authorities, agents, consumers, or anyone who
                         has signed up to use the service.
                     {% endblocktrans %}
-                </p>
-                <p class="govuk-body">
-                    {% trans 'The personal data we collect from you includes:' %}
-                </p>
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>
-                        {% blocktrans %}
+        </p>
+        <p class="govuk-body">{% trans "The personal data we collect from you includes:" %}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>
+            {% blocktrans %}
                             your questions, queries or feedback and email address if you contact the
                             Bus Open Data service, supporting mailboxes or team members
                         {% endblocktrans %}
-                    </li>
-                    <li>
-                        {% blocktrans %}
+          </li>
+          <li>
+            {% blocktrans %}
                             your sign up information when registering with the service
                         {% endblocktrans %}
-                    </li>
-                    <li>
-                        {% trans 'your email address and subscription preferences when you sign up to our email alerts' %}
-                    </li>
-                    <li>
-                        {% trans 'how you use our emails - for example whether you open them and which links you click on' %}
-                    </li>
-                    <li>
-                        {% trans 'your Internet Protocol (IP) address, and web browser version' %}
-                    </li>
-                    <li>
-                        {% trans 'information on how you use the site, using cookies and page tagging' %}
-                    </li>
-                </ul>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">{% trans 'Why we need your data' %}</h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
+          </li>
+          <li>{% trans "your email address and subscription preferences when you sign up to our email alerts" %}</li>
+          <li>{% trans "how you use our emails - for example whether you open them and which links you click on" %}</li>
+          <li>{% trans "your Internet Protocol (IP) address, and web browser version" %}</li>
+          <li>{% trans "information on how you use the site, using cookies and page tagging" %}</li>
+        </ul>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">{% trans "Why we need your data" %}</h2>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We want to build an accurate database for local bus services across England.
                         So, we require the ability to monitor how the data is being provided and used
                         over time.
                     {% endblocktrans %}
-                </p>
-                <p class="govuk-body">
-                    {% trans 'We also collect data in order to:' %}
-                </p>
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>
-                        {% trans 'reply to any feedback you send us, if you’ve asked us to' %}
-                    </li>
-                    <li>
-                        {% trans 'send email alerts to users who request them' %}
-                    </li>
-                    <li>
-                        {% trans 'allow you to access government services and make transactions' %}
-                    </li>
-                    <li>
-                        {% trans 'provide you with information about local services' %}
-                    </li>
-                    <li>
-                        {% trans 'monitor use of the site to identify security threats' %}
-                    </li>
-                    <li>
-                        {% blocktrans %}
+        </p>
+        <p class="govuk-body">{% trans "We also collect data in order to:" %}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>{% trans "reply to any feedback you send us, if you’ve asked us to" %}</li>
+          <li>{% trans "send email alerts to users who request them" %}</li>
+          <li>{% trans "allow you to access government services and make transactions" %}</li>
+          <li>{% trans "provide you with information about local services" %}</li>
+          <li>{% trans "monitor use of the site to identify security threats" %}</li>
+          <li>
+            {% blocktrans %}
                             communicate service messages aimed at keeping users informed of the
                             service provided, which includes service updates and support that is
                             provided as part of the overall service.
                         {% endblocktrans %}
-                    </li>
-                    <li>
-                        {% blocktrans %}
+          </li>
+          <li>
+            {% blocktrans %}
                             spot check the level of service usage for both data publishers and consumers
                         {% endblocktrans %}
-                    </li>
-
-                </ul>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">{% trans 'What we do with your data' %}</h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">{% trans "What we do with your data" %}</h2>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We use your data to occasionally check your activity when using the service.
                     {% endblocktrans %}
-                </p>
-                <p class="govuk-body">
-                    {% trans 'We will not:' %}
-                </p>
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>
-                        {% trans 'sell or rent your data to third parties' %}
-                    </li>
-                    <li>
-                        {% trans 'share your data with third parties for marketing purposes' %}
-                    </li>
-                </ul>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </p>
+        <p class="govuk-body">{% trans "We will not:" %}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>{% trans "sell or rent your data to third parties" %}</li>
+          <li>{% trans "share your data with third parties for marketing purposes" %}</li>
+        </ul>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We will share your data if we are required to do so by law – for example, by court order, or to
                         prevent fraud or other crime.
                     {% endblocktrans %}
-                </p>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </p>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We use your data to calculate performance metrics to support continuous improvement of the service.
                         When you sign up, you can also opt in to be contacted to participate in user research. If you change
                         your mind later about this, please let us know by emailing
                     {% endblocktrans %}
-                    <a class="govuk-link" href="mailto:BusOpenData@dft.gov.uk">BusOpenData@dft.gov.uk.</a>
-                </p>
-                <p class="govuk-body">
-                    {% blocktrans %}
+          <a class="govuk-link" href="mailto:BusOpenData@dft.gov.uk">BusOpenData@dft.gov.uk.</a>
+        </p>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We use Google Analytics software to collect information about how you use GOV.UK. This includes
                         IP addresses. The data is anonymised before being used for analytics processing. Google Analytics
                         processes anonymised information about:
                     {% endblocktrans %}
-                </p>
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>
-                        {% trans 'the pages you visit on GOV.UK' %}
-                    </li>
-                    <li>
-                        {% trans 'how long you spend on each GOV.UK page' %}
-                    </li>
-                    <li>
-                        {% trans 'how you got to the site' %}
-                    </li>
-                    <li>
-                        {% trans 'what you click on while you’re visiting the site' %}
-                    </li>
-                </ul>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>{% trans "the pages you visit on GOV.UK" %}</li>
+          <li>{% trans "how long you spend on each GOV.UK page" %}</li>
+          <li>{% trans "how you got to the site" %}</li>
+          <li>{% trans "what you click on while you’re visiting the site" %}</li>
+        </ul>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We do not store your personal information through Google Analytics (for example your name or address).
                     {% endblocktrans %}
-                </p>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </p>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We will not identify you through analytics information, and we will not combine analytics information
                         with other data sets in a way that would identify who you are.
                     {% endblocktrans %}
-                </p>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </p>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We continuously test and monitor our data protection controls to make sure they’re effective and to
                         detect any weaknesses.
                     {% endblocktrans %}
-                </p>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">{% trans 'How long we keep your data for' %}</h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">{% trans "How long we keep your data for" %}</h2>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We will retain your data for as long as you have a BODS account. However, if you use an institutional
                         email account and depending on what you choose for your account name, this may not include any personally
                         identifiable information.
                     {% endblocktrans %}
-                </p>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">{% trans 'Where your data is processed and stored' %}</h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">{% trans "Where your data is processed and stored" %}</h2>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We design, build and run our systems to make sure that your data is as safe as possible at any stage,
                         both while it’s processed and when it’s stored.
                     {% endblocktrans %}
-                </p>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </p>
+        <p class="govuk-body">
+          {% blocktrans %}
                         Your personal data will not be transferred outside of the European Economic Area (EEA).
                     {% endblocktrans %}
-                </p>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">{% trans 'How we protect your data and keep it secure' %}</h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">{% trans "How we protect your data and keep it secure" %}</h2>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We are committed to doing all that we can to keep your data secure. To prevent unauthorised access
                         or disclosure we have put in place technical and organisational procedures to secure the data we
                         collect about you – for example, we protect your data using varying levels of encryption. We also
                         make sure that any third parties that we deal with have an obligation to keep all personal data they
                         process on our behalf secure.
                     {% endblocktrans %}
-                </p>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">{% trans "Children’s privacy protection" %}</h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">{% trans "Children’s privacy protection" %}</h2>
+        <p class="govuk-body">
+          {% blocktrans %}
                         We understand the importance of protecting children’s privacy online. Our services are not designed
                         for, or intentionally targeted at, children 13 years of age or younger. It is not our policy to
                         intentionally collect or maintain data about anyone under the age of 13.
                     {% endblocktrans %}
-                </p>
-            </section>
-
-            <section>
-                <h2 class="govuk-heading-m">{% trans 'What are your rights' %}</h2>
-                <p class="govuk-body">{% trans 'You have the right to request:' %}</p>
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>
-                        {% trans 'information about how your personal data is processed' %}
-                    </li>
-                    <li>
-                        {% blocktrans %}
+        </p>
+      </section>
+      <section>
+        <h2 class="govuk-heading-m">{% trans "What are your rights" %}</h2>
+        <p class="govuk-body">{% trans "You have the right to request:" %}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>{% trans "information about how your personal data is processed" %}</li>
+          <li>
+            {% blocktrans %}
                             a copy of that personal data - this copy will be provided in a structured, commonly used and
                             machine-readable format
                         {% endblocktrans %}
-                    </li>
-                    <li>
-                        {% trans 'that anything inaccurate in your personal data is corrected immediately' %}
-                    </li>
-                </ul>
-                <p class="govuk-body">{% trans 'You can also:' %}</p>
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>
-                        {% trans 'raise an objection about how your personal data is processed' %}
-                    </li>
-                    <li>
-                        {% trans 'request that your personal data is erased if there is no longer justification for it' %}
-                    </li>
-                    <li>
-                        {% trans 'ask that the processing of your personal data is restricted in certain circumstances' %}
-                    </li>
-                </ul>
-                <p class="govuk-body">
-                    {% blocktrans %}
+          </li>
+          <li>{% trans "that anything inaccurate in your personal data is corrected immediately" %}</li>
+        </ul>
+        <p class="govuk-body">{% trans "You can also:" %}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>{% trans "raise an objection about how your personal data is processed" %}</li>
+          <li>{% trans "request that your personal data is erased if there is no longer justification for it" %}</li>
+          <li>{% trans "ask that the processing of your personal data is restricted in certain circumstances" %}</li>
+        </ul>
+        <p class="govuk-body">
+          {% blocktrans %}
                         If you have any of these requests, get in contact with our Data Protection Officer - you can find their
                         contact details below.
                     {% endblocktrans %}
-                </p>
-            </section>
-
-            <h2 class="govuk-heading-m">{% trans 'Changes to this notice' %}</h2>
-            <p class="govuk-body">
-                {% blocktrans %}
+        </p>
+      </section>
+      <h2 class="govuk-heading-m">{% trans "Changes to this notice" %}</h2>
+      <p class="govuk-body">
+        {% blocktrans %}
                     We may modify or amend this privacy notice at our discretion at any time. When we make changes to this
                     notice, we will amend the last modified date at the top of this page. Any modification or amendment to
                     this privacy notice will be applied to you and your data as of that revision date. We encourage you to
                     periodically review this privacy notice to be informed about how we are protecting your data.
                 {% endblocktrans %}
-            </p>
-
-            <section>
-                <h2 class="govuk-heading-m">{% trans 'Contact us or make a complaint' %}</h2>
-                <p class="govuk-body">
-                    {% trans 'Contact the DfT Data Protection Officer if you either:' %}
-                </p>
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>
-                        {% trans 'have any questions about anything in this document' %}
-                    </li>
-                    <li>
-                        {% trans 'think your personal data has been misused or mishandled' %}
-                    </li>
-                </ul>
-                <div>
-                    <p class="govuk-body govuk-!-margin-bottom-0">Data Protection Officer</p>
-                </div>
-                <div>
-                    <p class="govuk-body govuk-!-margin-bottom-0">Department for Transport</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">3rd Floor</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">One Priory Square</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">Hastings</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">East Sussex</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">TN34 1EA</p>
-                    <p class="govuk-body">
-                        {% trans 'Email:' %}
-                        <a class="govuk-link" href="mailto:DataProtectionOfficer@dft.gov.uk">DataProtectionOfficer@dft.gov.uk</a>
-                    </p>
-                </div>
-                <p class="govuk-body">
-                    {% trans 'Our Personal Information Charter, can be found here:' %}
-                    <a class="govuk-link"
-                        href="https://urldefense.com/v3/__https:/www.gov.uk/government/organisations/department-for-transport/about/personal-information-charter__;!!E1R1dd1bLLODlQ4!BfGHSVC8RSOKq-6FZ8UIi_Djr0aqnzQuAsxoViR2iNwVkPrYJvDom4xHsGhd9UBJdpVxJGoHcAf4y65sI2dHnBl_DIfkR5jvRflJ$">
-                        Personal information charter - Department for Transport - GOV.UK (www.gov.uk)
-                    </a>
-                </p>
-            </section>
-
+      </p>
+      <section>
+        <h2 class="govuk-heading-m">{% trans "Contact us or make a complaint" %}</h2>
+        <p class="govuk-body">{% trans "Contact the DfT Data Protection Officer if you either:" %}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>{% trans "have any questions about anything in this document" %}</li>
+          <li>{% trans "think your personal data has been misused or mishandled" %}</li>
+        </ul>
+        <div>
+          <p class="govuk-body govuk-!-margin-bottom-0">Data Protection Officer</p>
         </div>
+        <div>
+          <p class="govuk-body govuk-!-margin-bottom-0">Department for Transport</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">3rd Floor</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">One Priory Square</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">Hastings</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">East Sussex</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">TN34 1EA</p>
+          <p class="govuk-body">
+            {% trans "Email:" %}
+            <a class="govuk-link" href="mailto:DataProtectionOfficer@dft.gov.uk">DataProtectionOfficer@dft.gov.uk</a>
+          </p>
+        </div>
+        <p class="govuk-body">
+          {% trans "Our Personal Information Charter, can be found here:" %}
+          <a class="govuk-link"
+             href="https://urldefense.com/v3/__https:/www.gov.uk/government/organisations/department-for-transport/about/personal-information-charter__;!!E1R1dd1bLLODlQ4!BfGHSVC8RSOKq-6FZ8UIi_Djr0aqnzQuAsxoViR2iNwVkPrYJvDom4xHsGhd9UBJdpVxJGoHcAf4y65sI2dHnBl_DIfkR5jvRflJ$">
+            Personal information charter - Department for Transport - GOV.UK (www.gov.uk)
+          </a>
+        </p>
+      </section>
     </div>
+  </div>
 {% endblock %}

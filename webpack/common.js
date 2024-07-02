@@ -86,7 +86,7 @@ module.exports = {
       patterns: [
         { from: "transit_odp/frontend/assets/images", to: "images" },
         {
-          from: "node_modules/govuk-frontend/govuk/assets/images",
+          from: "node_modules/govuk-frontend/dist/govuk/assets/images",
           to: "images",
         },
       ],
