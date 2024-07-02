@@ -48,3 +48,4 @@ NO_REF = "Please refer to the BODS PTI profile v1.1 document: "
 
 FLEXIBLE_SERVICE = "FlexibleService"
 STANDARD_SERVICE = "StandardService"
+MODE_COACH = "coach"
