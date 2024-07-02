@@ -376,7 +376,6 @@ CELERYD_TASK_SOFT_TIME_LIMIT = 3600
 # In kilobytes
 CELERYD_MAX_MEMORY_PER_CHILD = 500000
 
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 # USER ACCOUNTS
 # ------------------------------------------------------------------------------
 
