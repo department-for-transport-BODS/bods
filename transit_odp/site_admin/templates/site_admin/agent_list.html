@@ -32,10 +32,10 @@
             <span class="govuk-body">
               {% filter force_escape %}
                 {% blocktrans count counter=paginator.count %}
-                                    1 result
-                                {% plural %}
-                                    {{ counter }} results
-                                {% endblocktrans %}
+                  1 result
+                {% plural %}
+                  {{ counter }} results
+                {% endblocktrans %}
               {% endfilter %}
             </span>
           {% else %}

@@ -19,8 +19,8 @@
 {% block heading.subtitle %}
   <p class="govuk-body">
     {% blocktrans %}
-            Download a snapshot of all live bus locations at a point in time.
-        {% endblocktrans %}
+      Download a snapshot of all live bus locations at a point in time.
+    {% endblocktrans %}
   </p>
   <ul class="govuk-list govuk-!-margin-bottom-3">
     <li>
@@ -65,8 +65,8 @@
         </a>
       {% else %}
         {% blocktrans %}
-                    Bulk download is not yet available. Please check back later.
-                {% endblocktrans %}
+          Bulk download is not yet available. Please check back later.
+        {% endblocktrans %}
       {% endif %}
     </li>
     <li>
@@ -78,8 +78,8 @@
         </a>
       {% else %}
         {% blocktrans %}
-                    Bulk download is not yet available. Please check back later.
-                {% endblocktrans %}
+          Bulk download is not yet available. Please check back later.
+        {% endblocktrans %}
       {% endif %}
     </li>
     <li>
@@ -87,16 +87,16 @@
         <a class="govuk-link" href="{% url 'downloads-avl-bulk-tfl' host hosts.data %}" onClick="addGATflTagEvent()">
           {% filter force_escape %}
             {% blocktrans %}
-                            Download all bus location data from Transport for London (TfL) only in
-                            SIRI-VM format
-                        {% endblocktrans %}
+              Download all bus location data from Transport for London (TfL) only in
+              SIRI-VM format
+            {% endblocktrans %}
           {% endfilter %}
         </a>
       {% else %}
         {% filter force_escape %}
           {% blocktrans %}
-                        Bulk download is not yet available. Please check back later.
-                    {% endblocktrans %}
+            Bulk download is not yet available. Please check back later.
+          {% endblocktrans %}
         {% endfilter %}
       {% endif %}
     </li>

@@ -17,37 +17,37 @@
       <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">
           {% blocktrans %}
-                        Download all monitoring metrics
-                    {% endblocktrans %}
+            Download all monitoring metrics
+          {% endblocktrans %}
         </h1>
         <h2 class="govuk-heading-m">
           {% blocktrans %}
-                        Publisher metrics
-                    {% endblocktrans %}
+            Publisher metrics
+          {% endblocktrans %}
         </h2>
         <p class="govuk-body">
           {% blocktrans %}
-                        The monitoring data is cached on the service and will be provided in CSV
-                        format within a compressed ZIP file.
-                    {% endblocktrans %}
+            The monitoring data is cached on the service and will be provided in CSV
+            format within a compressed ZIP file.
+          {% endblocktrans %}
         </p>
         <p class="govuk-body">
           <a class="govuk-link" href="{% url 'operational-metrics' host host.name %}">
             {% blocktrans %}
-                            Download all publisher monitoring metrics
-                        {% endblocktrans %}
+              Download all publisher monitoring metrics
+            {% endblocktrans %}
           </a>
         </p>
         <h2 class="govuk-heading-m">
           {% blocktrans %}
-                        API consumer metrics
-                    {% endblocktrans %}
+            API consumer metrics
+          {% endblocktrans %}
         </h2>
         <p class="govuk-body">
           {% blocktrans %}
-                        The monitoring data is cached on the service and will be provided in CSV
-                        format within a compressed ZIP file.
-                    {% endblocktrans %}
+            The monitoring data is cached on the service and will be provided in CSV
+            format within a compressed ZIP file.
+          {% endblocktrans %}
         </p>
         <div class="govuk-body">
           <ul class="govuk-list">
@@ -55,8 +55,8 @@
               <li>
                 <a class="govuk-link" href="{% url 'download-metrics-detail' pk=metrics_archive.id %}">
                   {% blocktrans %}
-                                        Download API consumer metrics for
-                                    {% endblocktrans %}
+                    Download API consumer metrics for
+                  {% endblocktrans %}
                   {{ metrics_archive.end|date:"F Y" }}
                 </a>
               </li>

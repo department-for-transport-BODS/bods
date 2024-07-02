@@ -15,48 +15,48 @@
       <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">
           {% blocktrans %}
-                        Data monitoring
-                    {% endblocktrans %}
+            Data monitoring
+          {% endblocktrans %}
         </h1>
         <h2 class="govuk-heading-m">
           {% blocktrans %}
-                        View monitoring metrics
-                    {% endblocktrans %}
+            View monitoring metrics
+          {% endblocktrans %}
         </h2>
         <p class="govuk-body">
           {% blocktrans %}
-                        This page provides a visualisation for some of
-                        the key metrics used to track the different
-                        operational level and data consumer metrics
-                        used on BODS.
-                    {% endblocktrans %}
+            This page provides a visualisation for some of
+            the key metrics used to track the different
+            operational level and data consumer metrics
+            used on BODS.
+          {% endblocktrans %}
         </p>
         <p class="govuk-body">
           <a class="govuk-link" href="{% url 'overview-metrics' host host.name %}">
             {% blocktrans %}
-                            View monitoring metrics
-                        {% endblocktrans %}
+              View monitoring metrics
+            {% endblocktrans %}
           </a>
         </p>
         <h2 class="govuk-heading-m">
           {% blocktrans %}
-                        Download all monitoring metrics
-                    {% endblocktrans %}
+            Download all monitoring metrics
+          {% endblocktrans %}
         </h2>
         <p class="govuk-body">
           {% blocktrans %}
-                        This download provides data on the different
-                        operational level and data consumer metrics
-                        used to track on BODS including details on
-                        operators and their data uploads, data quality
-                        and data consumer metrics.
-                    {% endblocktrans %}
+            This download provides data on the different
+            operational level and data consumer metrics
+            used to track on BODS including details on
+            operators and their data uploads, data quality
+            and data consumer metrics.
+          {% endblocktrans %}
         </p>
         <p class="govuk-body">
           <a class="govuk-link" href="{% url 'download-metrics' host host.name %}">
             {% blocktrans %}
-                            Select monitoring metrics to download
-                        {% endblocktrans %}
+              Select monitoring metrics to download
+            {% endblocktrans %}
           </a>
         </p>
       </div>
