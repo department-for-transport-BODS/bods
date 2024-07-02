@@ -1,0 +1,4493 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TransXChange xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2024-06-07T15:46:36" ModificationDateTime="2024-06-07T15:56:36" Modification="revise" RevisionNumber="1" FileName="NATX-National_Express-564-London-Halifax.xml" SchemaVersion="2.4" RegistrationDocument="false" xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+  <StopPoints>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>900022032</AtcoCode>
+      <Descriptor>
+        <CommonName>Halifax lay-by Winding Rd (Charles St) Woolsh</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>N0077015</NptgLocalityRef>
+        <LocalityName>Halifax</LocalityName>
+        <Suburb>Calder</Suburb>
+        <Location>
+          <Translation>
+            <Easting>409606</Easting>
+            <Northing>425197</Northing>
+            <Longitude>-001.855906</Longitude>
+            <Latitude>53.723094</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <AnnotatedStopPointRef>
+      <StopPointRef>450018409</StopPointRef>
+      <CommonName>Cathedral Retail Pk</CommonName>
+      <Indicator>at</Indicator>
+      <LocalityName>Wakefield City Centre</LocalityName>
+      <LocalityQualifier>Wakefield</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>370070009</StopPointRef>
+      <CommonName>Meadowhall Interchange</CommonName>
+      <Indicator>at</Indicator>
+      <LocalityName>Meadowhall</LocalityName>
+      <LocalityQualifier>Sheffield</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>370010217</StopPointRef>
+      <CommonName>Sheffield Interchange/E2</CommonName>
+      <Indicator>E2</Indicator>
+      <LocalityName>Sheffield Centre</LocalityName>
+      <LocalityQualifier>Sheffield</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>049000000804</StopPointRef>
+      <CommonName>Milton Keynes Coachway</CommonName>
+      <Indicator>Bay 4</Indicator>
+      <LocalityName>Brook Furlong</LocalityName>
+      <LocalityQualifier>Milton Keynes</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>49000144CSZ</StopPointRef>
+      <CommonName>Marble Arch</CommonName>
+      <Indicator>-&gt;S</Indicator>
+      <LocalityName>Marble Arch</LocalityName>
+      <LocalityQualifier>London</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>490016736W</StopPointRef>
+      <CommonName>London Victoria Coach Station Arrivals</CommonName>
+      <Indicator>-&gt;W</Indicator>
+      <LocalityName>Victoria</LocalityName>
+      <LocalityQualifier>London</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>370010290</StopPointRef>
+      <CommonName>Barnsley Interchange/A23</CommonName>
+      <Indicator>A23</Indicator>
+      <LocalityName>Barnsley Town Centre</LocalityName>
+      <LocalityQualifier>Barnsley</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>450030143</StopPointRef>
+      <CommonName>Bus Station</CommonName>
+      <Indicator>Stand B</Indicator>
+      <LocalityName>Huddersfield Town Centre</LocalityName>
+      <LocalityQualifier>Huddersfield</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>450015148</StopPointRef>
+      <CommonName>Ings Grove Park</CommonName>
+      <LocalityName>Mirfield</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>450030126</StopPointRef>
+      <CommonName>Bus Station stand 17</CommonName>
+      <Indicator>Stand 17</Indicator>
+      <LocalityName>Dewsbury</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>370022050</StopPointRef>
+      <CommonName>Chesterfield Road South/Bochum Parkway</CommonName>
+      <Indicator>adj</Indicator>
+      <LocalityName>Meadowhead</LocalityName>
+      <LocalityQualifier>Sheffield</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>1000DCBSB267</StopPointRef>
+      <CommonName>Coach Station</CommonName>
+      <Indicator>Bay A</Indicator>
+      <LocalityName>Chesterfield</LocalityName>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>490000087GE</StopPointRef>
+      <CommonName>Golders Green Station</CommonName>
+      <Indicator>Stop GE</Indicator>
+      <LocalityName>Golders Green</LocalityName>
+      <LocalityQualifier>London</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>490014051VC</StopPointRef>
+      <CommonName>Victoria Coach Station</CommonName>
+      <Indicator>-&gt;NE</Indicator>
+      <LocalityName>Belgravia</LocalityName>
+      <LocalityQualifier>Victoria</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>450015147</StopPointRef>
+      <CommonName>Ings Grove Park</CommonName>
+      <LocalityName>Mirfield</LocalityName>
+    </AnnotatedStopPointRef>
+  </StopPoints>
+  <RouteSections>
+    <RouteSection id="RS1">
+      <RouteLink id="RL1">
+        <From>
+          <StopPointRef>450018409</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370070009</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL2">
+        <From>
+          <StopPointRef>370070009</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010217</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL3">
+        <From>
+          <StopPointRef>370010217</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>049000000804</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL4">
+        <From>
+          <StopPointRef>049000000804</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL5">
+        <From>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490016736W</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS2">
+      <RouteLink id="RL6">
+        <From>
+          <StopPointRef>370010290</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370070009</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL7">
+        <From>
+          <StopPointRef>370070009</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>049000000804</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL8">
+        <From>
+          <StopPointRef>049000000804</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL9">
+        <From>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490016736W</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS3">
+      <RouteLink id="RL10">
+        <From>
+          <StopPointRef>900022032</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030143</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL11">
+        <From>
+          <StopPointRef>450030143</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450015148</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL12">
+        <From>
+          <StopPointRef>450015148</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030126</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL13">
+        <From>
+          <StopPointRef>450030126</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450018409</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL14">
+        <From>
+          <StopPointRef>450018409</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010290</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL15">
+        <From>
+          <StopPointRef>370010290</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370070009</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL16">
+        <From>
+          <StopPointRef>370070009</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010217</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL17">
+        <From>
+          <StopPointRef>370010217</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>049000000804</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL18">
+        <From>
+          <StopPointRef>049000000804</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL19">
+        <From>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490016736W</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS4">
+      <RouteLink id="RL20">
+        <From>
+          <StopPointRef>370070009</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370022050</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL21">
+        <From>
+          <StopPointRef>370022050</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>1000DCBSB267</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL22">
+        <From>
+          <StopPointRef>1000DCBSB267</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490000087GE</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL23">
+        <From>
+          <StopPointRef>490000087GE</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL24">
+        <From>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490016736W</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS5">
+      <RouteLink id="RL25">
+        <From>
+          <StopPointRef>450030143</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450015148</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL26">
+        <From>
+          <StopPointRef>450015148</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030126</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL27">
+        <From>
+          <StopPointRef>450030126</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370070009</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL28">
+        <From>
+          <StopPointRef>370070009</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010217</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL29">
+        <From>
+          <StopPointRef>370010217</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370022050</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL30">
+        <From>
+          <StopPointRef>370022050</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>1000DCBSB267</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL31">
+        <From>
+          <StopPointRef>1000DCBSB267</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490000087GE</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL32">
+        <From>
+          <StopPointRef>490000087GE</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL33">
+        <From>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490016736W</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS6">
+      <RouteLink id="RL34">
+        <From>
+          <StopPointRef>370070009</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>049000000804</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL35">
+        <From>
+          <StopPointRef>049000000804</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL36">
+        <From>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490016736W</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS7">
+      <RouteLink id="RL37">
+        <From>
+          <StopPointRef>900022032</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030143</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL38">
+        <From>
+          <StopPointRef>450030143</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450015148</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL39">
+        <From>
+          <StopPointRef>450015148</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030126</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL40">
+        <From>
+          <StopPointRef>450030126</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450018409</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL41">
+        <From>
+          <StopPointRef>450018409</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370070009</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL42">
+        <From>
+          <StopPointRef>370070009</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010217</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL43">
+        <From>
+          <StopPointRef>370010217</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>049000000804</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL44">
+        <From>
+          <StopPointRef>049000000804</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL45">
+        <From>
+          <StopPointRef>49000144CSZ</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490016736W</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS8">
+      <RouteLink id="RL46">
+        <From>
+          <StopPointRef>490014051VC</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>049000000804</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL47">
+        <From>
+          <StopPointRef>049000000804</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010217</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL48">
+        <From>
+          <StopPointRef>370010217</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370070009</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL49">
+        <From>
+          <StopPointRef>370070009</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450018409</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL50">
+        <From>
+          <StopPointRef>450018409</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030126</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL51">
+        <From>
+          <StopPointRef>450030126</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450015147</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL52">
+        <From>
+          <StopPointRef>450015147</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030143</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL53">
+        <From>
+          <StopPointRef>450030143</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>900022032</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS9">
+      <RouteLink id="RL54">
+        <From>
+          <StopPointRef>370010217</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370070009</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL55">
+        <From>
+          <StopPointRef>370070009</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450018409</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL56">
+        <From>
+          <StopPointRef>450018409</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030126</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL57">
+        <From>
+          <StopPointRef>450030126</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450015147</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL58">
+        <From>
+          <StopPointRef>450015147</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030143</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL59">
+        <From>
+          <StopPointRef>450030143</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>900022032</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS10">
+      <RouteLink id="RL60">
+        <From>
+          <StopPointRef>370010290</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450018409</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL61">
+        <From>
+          <StopPointRef>450018409</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030126</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL62">
+        <From>
+          <StopPointRef>450030126</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450015147</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL63">
+        <From>
+          <StopPointRef>450015147</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030143</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL64">
+        <From>
+          <StopPointRef>450030143</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>900022032</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS11">
+      <RouteLink id="RL65">
+        <From>
+          <StopPointRef>490014051VC</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>049000000804</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL66">
+        <From>
+          <StopPointRef>049000000804</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010217</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL67">
+        <From>
+          <StopPointRef>370010217</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370070009</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL68">
+        <From>
+          <StopPointRef>370070009</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>370010290</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL69">
+        <From>
+          <StopPointRef>370010290</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450018409</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL70">
+        <From>
+          <StopPointRef>450018409</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030126</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL71">
+        <From>
+          <StopPointRef>450030126</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450015147</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL72">
+        <From>
+          <StopPointRef>450015147</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>450030143</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL73">
+        <From>
+          <StopPointRef>450030143</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>900022032</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+  </RouteSections>
+  <Routes>
+    <Route id="R1">
+      <Description>Wakefield City Centre, Wakefield - Victoria, London</Description>
+      <RouteSectionRef>RS1</RouteSectionRef>
+    </Route>
+    <Route id="R2">
+      <Description>Barnsley Town Centre, Barnsley - Victoria, London</Description>
+      <RouteSectionRef>RS2</RouteSectionRef>
+    </Route>
+    <Route id="R3">
+      <Description>Halifax lay-by Winding Rd (Charles St) Woolsh - Victoria, London</Description>
+      <RouteSectionRef>RS3</RouteSectionRef>
+    </Route>
+    <Route id="R4">
+      <Description>Meadowhall, Sheffield - Victoria, London</Description>
+      <RouteSectionRef>RS4</RouteSectionRef>
+    </Route>
+    <Route id="R5">
+      <Description>Huddersfield Town Centre, Huddersfield - Victoria, London</Description>
+      <RouteSectionRef>RS5</RouteSectionRef>
+    </Route>
+    <Route id="R6">
+      <Description>Meadowhall, Sheffield - Victoria, London</Description>
+      <RouteSectionRef>RS6</RouteSectionRef>
+    </Route>
+    <Route id="R7">
+      <Description>Halifax lay-by Winding Rd (Charles St) Woolsh - Victoria, London</Description>
+      <RouteSectionRef>RS7</RouteSectionRef>
+    </Route>
+    <Route id="R8">
+      <Description>Belgravia, Victoria - Halifax lay-by Winding Rd (Charles St) Woolsh</Description>
+      <RouteSectionRef>RS8</RouteSectionRef>
+    </Route>
+    <Route id="R9">
+      <Description>Sheffield Centre, Sheffield - Halifax lay-by Winding Rd (Charles St) Woolsh</Description>
+      <RouteSectionRef>RS9</RouteSectionRef>
+    </Route>
+    <Route id="R10">
+      <Description>Barnsley Town Centre, Barnsley - Halifax lay-by Winding Rd (Charles St) Woolsh</Description>
+      <RouteSectionRef>RS10</RouteSectionRef>
+    </Route>
+    <Route id="R11">
+      <Description>Belgravia, Victoria - Halifax lay-by Winding Rd (Charles St) Woolsh</Description>
+      <RouteSectionRef>RS11</RouteSectionRef>
+    </Route>
+  </Routes>
+  <JourneyPatternSections>
+    <JourneyPatternSection id="JPS1">
+      <JourneyPatternTimingLink id="JPTL2">
+        <From id="JPSU1" SequenceNumber="11">
+          <Activity>pickUp</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU2" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL1</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL3">
+        <From id="JPSU3" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU4" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL2</RouteLinkRef>
+        <RunTime>PT0H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL4">
+        <From id="JPSU5" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU6" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL3</RouteLinkRef>
+        <RunTime>PT2H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL5">
+        <From id="JPSU7" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU8" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL4</RouteLinkRef>
+        <RunTime>PT1H20M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL6">
+        <From id="JPSU9" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU10" SequenceNumber="2">
+          <Activity>setDown</Activity>
+          <StopPointRef>490016736W</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL5</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS2">
+      <JourneyPatternTimingLink id="JPTL7">
+        <From id="JPSU11" SequenceNumber="5">
+          <Activity>pickUp</Activity>
+          <StopPointRef>370010290</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU12" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL6</RouteLinkRef>
+        <RunTime>PT0H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL8">
+        <From id="JPSU13" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU14" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL7</RouteLinkRef>
+        <RunTime>PT2H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL9">
+        <From id="JPSU15" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU16" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL8</RouteLinkRef>
+        <RunTime>PT1H20M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL10">
+        <From id="JPSU17" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU18" SequenceNumber="2">
+          <Activity>setDown</Activity>
+          <StopPointRef>490016736W</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL9</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS3">
+      <JourneyPatternTimingLink id="JPTL11">
+        <From id="JPSU19" SequenceNumber="16">
+          <Activity>pickUp</Activity>
+          <StopPointRef>900022032</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU20" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL10</RouteLinkRef>
+        <RunTime>PT0H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL12">
+        <From id="JPSU21" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU22" SequenceNumber="14">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015148</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL11</RouteLinkRef>
+        <RunTime>PT0H20M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL13">
+        <From id="JPSU23" SequenceNumber="14">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015148</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU24" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL12</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL14">
+        <From id="JPSU25" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU26" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL13</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL15">
+        <From id="JPSU27" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU28" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010290</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL14</RouteLinkRef>
+        <RunTime>PT0H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL16">
+        <From id="JPSU29" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010290</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU30" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL15</RouteLinkRef>
+        <RunTime>PT0H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL17">
+        <From id="JPSU31" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU32" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL16</RouteLinkRef>
+        <RunTime>PT0H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL18">
+        <From id="JPSU33" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU34" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL17</RouteLinkRef>
+        <RunTime>PT2H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL19">
+        <From id="JPSU35" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU36" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL18</RouteLinkRef>
+        <RunTime>PT1H20M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL20">
+        <From id="JPSU37" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU38" SequenceNumber="2">
+          <Activity>setDown</Activity>
+          <StopPointRef>490016736W</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL19</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS4">
+      <JourneyPatternTimingLink id="JPTL21">
+        <From id="JPSU39" SequenceNumber="10">
+          <Activity>pickUp</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU40" SequenceNumber="9">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370022050</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL20</RouteLinkRef>
+        <RunTime>PT0H50M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL22">
+        <From id="JPSU41" SequenceNumber="9">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370022050</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU42" SequenceNumber="8">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>1000DCBSB267</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL21</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL23">
+        <From id="JPSU43" SequenceNumber="8">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>1000DCBSB267</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU44" SequenceNumber="7">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490000087GE</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL22</RouteLinkRef>
+        <RunTime>PT3H5M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL24">
+        <From id="JPSU45" SequenceNumber="7">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490000087GE</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU46" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL23</RouteLinkRef>
+        <RunTime>PT0H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL25">
+        <From id="JPSU47" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU48" SequenceNumber="2">
+          <Activity>setDown</Activity>
+          <StopPointRef>490016736W</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL24</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS5">
+      <JourneyPatternTimingLink id="JPTL26">
+        <From id="JPSU49" SequenceNumber="15">
+          <Activity>pickUp</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU50" SequenceNumber="14">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015148</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL25</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL27">
+        <From id="JPSU51" SequenceNumber="14">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015148</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU52" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL26</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL28">
+        <From id="JPSU53" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU54" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL27</RouteLinkRef>
+        <RunTime>PT0H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL29">
+        <From id="JPSU55" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU56" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL28</RouteLinkRef>
+        <RunTime>PT0H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL30">
+        <From id="JPSU57" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU58" SequenceNumber="9">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370022050</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL29</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL31">
+        <From id="JPSU59" SequenceNumber="9">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370022050</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU60" SequenceNumber="8">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>1000DCBSB267</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL30</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL32">
+        <From id="JPSU61" SequenceNumber="8">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>1000DCBSB267</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU62" SequenceNumber="7">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490000087GE</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL31</RouteLinkRef>
+        <RunTime>PT3H5M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL33">
+        <From id="JPSU63" SequenceNumber="7">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490000087GE</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU64" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL32</RouteLinkRef>
+        <RunTime>PT0H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL34">
+        <From id="JPSU65" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU66" SequenceNumber="2">
+          <Activity>setDown</Activity>
+          <StopPointRef>490016736W</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL33</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS6">
+      <JourneyPatternTimingLink id="JPTL35">
+        <From id="JPSU67" SequenceNumber="10">
+          <Activity>pickUp</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU68" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL34</RouteLinkRef>
+        <RunTime>PT3H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL36">
+        <From id="JPSU69" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU70" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL35</RouteLinkRef>
+        <RunTime>PT1H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL37">
+        <From id="JPSU71" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU72" SequenceNumber="2">
+          <Activity>setDown</Activity>
+          <StopPointRef>490016736W</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL36</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS7">
+      <JourneyPatternTimingLink id="JPTL38">
+        <From id="JPSU73" SequenceNumber="16">
+          <Activity>pickUp</Activity>
+          <StopPointRef>900022032</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU74" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL37</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL39">
+        <From id="JPSU75" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU76" SequenceNumber="14">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015148</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL38</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL40">
+        <From id="JPSU77" SequenceNumber="14">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015148</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU78" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL39</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL41">
+        <From id="JPSU79" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU80" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL40</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL42">
+        <From id="JPSU81" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU82" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL41</RouteLinkRef>
+        <RunTime>PT0H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL43">
+        <From id="JPSU83" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU84" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL42</RouteLinkRef>
+        <RunTime>PT0H40M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL44">
+        <From id="JPSU85" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU86" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL43</RouteLinkRef>
+        <RunTime>PT2H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL45">
+        <From id="JPSU87" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU88" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL44</RouteLinkRef>
+        <RunTime>PT1H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL46">
+        <From id="JPSU89" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>49000144CSZ</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU90" SequenceNumber="2">
+          <Activity>setDown</Activity>
+          <StopPointRef>490016736W</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL45</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS8">
+      <JourneyPatternTimingLink id="JPTL47">
+        <From id="JPSU91" SequenceNumber="1">
+          <Activity>pickUp</Activity>
+          <StopPointRef>490014051VC</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU92" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL46</RouteLinkRef>
+        <RunTime>PT1H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL48">
+        <From id="JPSU93" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU94" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL47</RouteLinkRef>
+        <RunTime>PT2H40M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL49">
+        <From id="JPSU95" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU96" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL48</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL50">
+        <From id="JPSU97" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU98" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL49</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL51">
+        <From id="JPSU99" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU100" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL50</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL52">
+        <From id="JPSU101" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU102" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015147</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL51</RouteLinkRef>
+        <RunTime>PT0H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL53">
+        <From id="JPSU103" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015147</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU104" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL52</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL54">
+        <From id="JPSU105" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU106" SequenceNumber="16">
+          <Activity>setDown</Activity>
+          <StopPointRef>900022032</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL53</RouteLinkRef>
+        <RunTime>PT0H20M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS9">
+      <JourneyPatternTimingLink id="JPTL55">
+        <From id="JPSU107" SequenceNumber="4">
+          <Activity>pickUp</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU108" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL54</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL56">
+        <From id="JPSU109" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU110" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL55</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL57">
+        <From id="JPSU111" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU112" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL56</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL58">
+        <From id="JPSU113" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU114" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015147</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL57</RouteLinkRef>
+        <RunTime>PT0H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL59">
+        <From id="JPSU115" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015147</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU116" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL58</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL60">
+        <From id="JPSU117" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU118" SequenceNumber="16">
+          <Activity>setDown</Activity>
+          <StopPointRef>900022032</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL59</RouteLinkRef>
+        <RunTime>PT0H20M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS10">
+      <JourneyPatternTimingLink id="JPTL61">
+        <From id="JPSU119" SequenceNumber="5">
+          <Activity>pickUp</Activity>
+          <StopPointRef>370010290</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU120" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL60</RouteLinkRef>
+        <RunTime>PT0H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL62">
+        <From id="JPSU121" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU122" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL61</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL63">
+        <From id="JPSU123" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU124" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015147</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL62</RouteLinkRef>
+        <RunTime>PT0H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL64">
+        <From id="JPSU125" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015147</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU126" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL63</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL65">
+        <From id="JPSU127" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU128" SequenceNumber="16">
+          <Activity>setDown</Activity>
+          <StopPointRef>900022032</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL64</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS11">
+      <JourneyPatternTimingLink id="JPTL66">
+        <From id="JPSU129" SequenceNumber="1">
+          <Activity>pickUp</Activity>
+          <StopPointRef>490014051VC</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU130" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL65</RouteLinkRef>
+        <RunTime>PT1H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL67">
+        <From id="JPSU131" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>049000000804</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU132" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL66</RouteLinkRef>
+        <RunTime>PT2H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL68">
+        <From id="JPSU133" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010217</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU134" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL67</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL69">
+        <From id="JPSU135" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370070009</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU136" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010290</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL68</RouteLinkRef>
+        <RunTime>PT0H20M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL70">
+        <From id="JPSU137" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>370010290</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU138" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL69</RouteLinkRef>
+        <RunTime>PT0H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL71">
+        <From id="JPSU139" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450018409</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU140" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL70</RouteLinkRef>
+        <RunTime>PT0H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL72">
+        <From id="JPSU141" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030126</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU142" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015147</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL71</RouteLinkRef>
+        <RunTime>PT0H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL73">
+        <From id="JPSU143" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450015147</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU144" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL72</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL74">
+        <From id="JPSU145" SequenceNumber="15">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>450030143</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU146" SequenceNumber="16">
+          <Activity>setDown</Activity>
+          <StopPointRef>900022032</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL73</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+  </JourneyPatternSections>
+  <Operators>
+    <Operator id="NATX" Modification="new" RevisionNumber="0">
+      <NationalOperatorCode>NATX</NationalOperatorCode>
+      <OperatorShortName>National Express</OperatorShortName>
+      <TradingName>National Express</TradingName>
+      <LicenceNumber>PD0000738</LicenceNumber>
+      <PrimaryMode>coach</PrimaryMode>
+    </Operator>
+  </Operators>
+  <Services>
+    <Service RevisionNumber="0">
+      <ServiceCode>PD0000738:362</ServiceCode>
+      <PrivateCode>564</PrivateCode>
+      <Lines>
+        <Line id="NATX:PD0000738:362:564">
+          <LineName>564</LineName>
+          <OutboundDescription>
+            <Origin>London</Origin>
+            <Destination>Halifax</Destination>
+            <Description>London - Halifax</Description>
+          </OutboundDescription>
+          <InboundDescription>
+            <Origin>Halifax</Origin>
+            <Destination>London</Destination>
+            <Description>Halifax - London</Description>
+          </InboundDescription>
+        </Line>
+      </Lines>
+      <OperatingPeriod>
+        <StartDate>2023-12-27</StartDate>
+        <EndDate>2024-10-20</EndDate>
+      </OperatingPeriod>
+      <RegisteredOperatorRef>NATX</RegisteredOperatorRef>
+      <Mode>coach</Mode>
+      <PublicUse>true</PublicUse>
+      <StandardService>
+        <Origin>London</Origin>
+        <Destination>Halifax</Destination>
+        <JourneyPattern id="JP1">
+          <DestinationDisplay>Wakefield City Centre, Wakefield - Victoria, London</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Wakefield City Centre, Wakefield - Victoria, London</Description>
+          <RouteRef>R1</RouteRef>
+          <JourneyPatternSectionRefs>JPS1</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP2">
+          <DestinationDisplay>Barnsley Town Centre, Barnsley - Victoria, London</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Barnsley Town Centre, Barnsley - Victoria, London</Description>
+          <RouteRef>R2</RouteRef>
+          <JourneyPatternSectionRefs>JPS2</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP3">
+          <DestinationDisplay>Halifax lay-by Winding Rd (Charles St) Woolsh - Victoria, London</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Halifax lay-by Winding Rd (Charles St) Woolsh - Victoria, London</Description>
+          <RouteRef>R3</RouteRef>
+          <JourneyPatternSectionRefs>JPS3</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP4">
+          <DestinationDisplay>Meadowhall, Sheffield - Victoria, London</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Meadowhall, Sheffield - Victoria, London</Description>
+          <RouteRef>R4</RouteRef>
+          <JourneyPatternSectionRefs>JPS4</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP5">
+          <DestinationDisplay>Huddersfield Town Centre, Huddersfield - Victoria, London</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Huddersfield Town Centre, Huddersfield - Victoria, London</Description>
+          <RouteRef>R5</RouteRef>
+          <JourneyPatternSectionRefs>JPS5</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP6">
+          <DestinationDisplay>Meadowhall, Sheffield - Victoria, London</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Meadowhall, Sheffield - Victoria, London</Description>
+          <RouteRef>R6</RouteRef>
+          <JourneyPatternSectionRefs>JPS6</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP7">
+          <DestinationDisplay>Halifax lay-by Winding Rd (Charles St) Woolsh - Victoria, London</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Halifax lay-by Winding Rd (Charles St) Woolsh - Victoria, London</Description>
+          <RouteRef>R7</RouteRef>
+          <JourneyPatternSectionRefs>JPS7</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP8">
+          <DestinationDisplay>Belgravia, Victoria - Halifax lay-by Winding Rd (Charles St) Woolsh</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>outbound</Direction>
+          <Description>Belgravia, Victoria - Halifax lay-by Winding Rd (Charles St) Woolsh</Description>
+          <RouteRef>R8</RouteRef>
+          <JourneyPatternSectionRefs>JPS8</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP9">
+          <DestinationDisplay>Sheffield Centre, Sheffield - Halifax lay-by Winding Rd (Charles St) Woolsh</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>outbound</Direction>
+          <Description>Sheffield Centre, Sheffield - Halifax lay-by Winding Rd (Charles St) Woolsh</Description>
+          <RouteRef>R9</RouteRef>
+          <JourneyPatternSectionRefs>JPS9</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP10">
+          <DestinationDisplay>Barnsley Town Centre, Barnsley - Halifax lay-by Winding Rd (Charles St) Woolsh</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>outbound</Direction>
+          <Description>Barnsley Town Centre, Barnsley - Halifax lay-by Winding Rd (Charles St) Woolsh</Description>
+          <RouteRef>R10</RouteRef>
+          <JourneyPatternSectionRefs>JPS10</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP11">
+          <DestinationDisplay>Belgravia, Victoria - Halifax lay-by Winding Rd (Charles St) Woolsh</DestinationDisplay>
+          <OperatorRef>NATX</OperatorRef>
+          <Direction>outbound</Direction>
+          <Description>Belgravia, Victoria - Halifax lay-by Winding Rd (Charles St) Woolsh</Description>
+          <RouteRef>R11</RouteRef>
+          <JourneyPatternSectionRefs>JPS11</JourneyPatternSectionRefs>
+        </JourneyPattern>
+      </StandardService>
+    </Service>
+  </Services>
+  <VehicleJourneys>
+    <VehicleJourney>
+      <PrivateCode>BH-I-VJ1</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>1</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-07</StartDate>
+              <EndDate>2024-05-10</EndDate>
+              <Note>Tuesday 2024-05-07 - Friday 2024-05-10</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-13</StartDate>
+              <EndDate>2024-05-17</EndDate>
+              <Note>Monday 2024-05-13 - Friday 2024-05-17</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-20</StartDate>
+              <EndDate>2024-05-24</EndDate>
+              <Note>Monday 2024-05-20 - Friday 2024-05-24</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-28</StartDate>
+              <EndDate>2024-05-31</EndDate>
+              <Note>Tuesday 2024-05-28 - Friday 2024-05-31</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-03</StartDate>
+              <EndDate>2024-06-07</EndDate>
+              <Note>Monday 2024-06-03 - Friday 2024-06-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-10</StartDate>
+              <EndDate>2024-06-14</EndDate>
+              <Note>Monday 2024-06-10 - Friday 2024-06-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-17</StartDate>
+              <EndDate>2024-06-21</EndDate>
+              <Note>Monday 2024-06-17 - Friday 2024-06-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-24</StartDate>
+              <EndDate>2024-06-28</EndDate>
+              <Note>Monday 2024-06-24 - Friday 2024-06-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-01</StartDate>
+              <EndDate>2024-07-05</EndDate>
+              <Note>Monday 2024-07-01 - Friday 2024-07-05</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-08</StartDate>
+              <EndDate>2024-07-12</EndDate>
+              <Note>Monday 2024-07-08 - Friday 2024-07-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-15</StartDate>
+              <EndDate>2024-07-19</EndDate>
+              <Note>Monday 2024-07-15 - Friday 2024-07-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-22</StartDate>
+              <EndDate>2024-07-26</EndDate>
+              <Note>Monday 2024-07-22 - Friday 2024-07-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-29</StartDate>
+              <EndDate>2024-08-02</EndDate>
+              <Note>Monday 2024-07-29 - Friday 2024-08-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-05</StartDate>
+              <EndDate>2024-08-09</EndDate>
+              <Note>Monday 2024-08-05 - Friday 2024-08-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-12</StartDate>
+              <EndDate>2024-08-16</EndDate>
+              <Note>Monday 2024-08-12 - Friday 2024-08-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-19</StartDate>
+              <EndDate>2024-08-23</EndDate>
+              <Note>Monday 2024-08-19 - Friday 2024-08-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-27</StartDate>
+              <EndDate>2024-08-30</EndDate>
+              <Note>Tuesday 2024-08-27 - Friday 2024-08-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-02</StartDate>
+              <EndDate>2024-09-06</EndDate>
+              <Note>Monday 2024-09-02 - Friday 2024-09-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-09</StartDate>
+              <EndDate>2024-09-13</EndDate>
+              <Note>Monday 2024-09-09 - Friday 2024-09-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-16</StartDate>
+              <EndDate>2024-09-20</EndDate>
+              <Note>Monday 2024-09-16 - Friday 2024-09-20</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-23</StartDate>
+              <EndDate>2024-09-27</EndDate>
+              <Note>Monday 2024-09-23 - Friday 2024-09-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-30</StartDate>
+              <EndDate>2024-10-04</EndDate>
+              <Note>Monday 2024-09-30 - Friday 2024-10-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-07</StartDate>
+              <EndDate>2024-10-11</EndDate>
+              <Note>Monday 2024-10-07 - Friday 2024-10-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-14</StartDate>
+              <EndDate>2024-10-18</EndDate>
+              <Note>Monday 2024-10-14 - Friday 2024-10-18</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+        <BankHolidayOperation>
+          <DaysOfOperation>
+            <LateSummerBankHolidayNotScotland/>
+          </DaysOfOperation>
+          <DaysOfNonOperation>
+            <ChristmasDay/>
+            <BoxingDay/>
+            <GoodFriday/>
+            <NewYearsDay/>
+            <Jan2ndScotland/>
+            <StAndrewsDay/>
+            <MayDay/>
+            <EasterMonday/>
+            <SpringBank/>
+            <AugustBankHolidayScotland/>
+            <ChristmasDayHoliday/>
+            <BoxingDayHoliday/>
+            <NewYearsDayHoliday/>
+            <Jan2ndScotlandHoliday/>
+            <StAndrewsDayHoliday/>
+            <ChristmasEve/>
+            <NewYearsEve/>
+          </DaysOfNonOperation>
+        </BankHolidayOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ1</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP1</JourneyPatternRef>
+      <DepartureTime>17:30:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BH-I-VJ2</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>2</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-07</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Tuesday 2024-05-07 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ2</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>18:00:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BH-I-VJ3</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>3</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-07</StartDate>
+              <EndDate>2024-05-10</EndDate>
+              <Note>Tuesday 2024-05-07 - Friday 2024-05-10</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-13</StartDate>
+              <EndDate>2024-05-17</EndDate>
+              <Note>Monday 2024-05-13 - Friday 2024-05-17</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-20</StartDate>
+              <EndDate>2024-05-24</EndDate>
+              <Note>Monday 2024-05-20 - Friday 2024-05-24</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-28</StartDate>
+              <EndDate>2024-05-31</EndDate>
+              <Note>Tuesday 2024-05-28 - Friday 2024-05-31</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-03</StartDate>
+              <EndDate>2024-06-07</EndDate>
+              <Note>Monday 2024-06-03 - Friday 2024-06-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-10</StartDate>
+              <EndDate>2024-06-14</EndDate>
+              <Note>Monday 2024-06-10 - Friday 2024-06-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-17</StartDate>
+              <EndDate>2024-06-21</EndDate>
+              <Note>Monday 2024-06-17 - Friday 2024-06-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-24</StartDate>
+              <EndDate>2024-06-28</EndDate>
+              <Note>Monday 2024-06-24 - Friday 2024-06-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-01</StartDate>
+              <EndDate>2024-07-05</EndDate>
+              <Note>Monday 2024-07-01 - Friday 2024-07-05</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-08</StartDate>
+              <EndDate>2024-07-12</EndDate>
+              <Note>Monday 2024-07-08 - Friday 2024-07-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-15</StartDate>
+              <EndDate>2024-07-19</EndDate>
+              <Note>Monday 2024-07-15 - Friday 2024-07-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-22</StartDate>
+              <EndDate>2024-07-26</EndDate>
+              <Note>Monday 2024-07-22 - Friday 2024-07-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-29</StartDate>
+              <EndDate>2024-08-02</EndDate>
+              <Note>Monday 2024-07-29 - Friday 2024-08-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-05</StartDate>
+              <EndDate>2024-08-09</EndDate>
+              <Note>Monday 2024-08-05 - Friday 2024-08-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-12</StartDate>
+              <EndDate>2024-08-16</EndDate>
+              <Note>Monday 2024-08-12 - Friday 2024-08-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-19</StartDate>
+              <EndDate>2024-08-23</EndDate>
+              <Note>Monday 2024-08-19 - Friday 2024-08-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-27</StartDate>
+              <EndDate>2024-08-30</EndDate>
+              <Note>Tuesday 2024-08-27 - Friday 2024-08-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-02</StartDate>
+              <EndDate>2024-09-06</EndDate>
+              <Note>Monday 2024-09-02 - Friday 2024-09-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-09</StartDate>
+              <EndDate>2024-09-13</EndDate>
+              <Note>Monday 2024-09-09 - Friday 2024-09-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-16</StartDate>
+              <EndDate>2024-09-20</EndDate>
+              <Note>Monday 2024-09-16 - Friday 2024-09-20</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-23</StartDate>
+              <EndDate>2024-09-27</EndDate>
+              <Note>Monday 2024-09-23 - Friday 2024-09-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-30</StartDate>
+              <EndDate>2024-10-04</EndDate>
+              <Note>Monday 2024-09-30 - Friday 2024-10-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-07</StartDate>
+              <EndDate>2024-10-11</EndDate>
+              <Note>Monday 2024-10-07 - Friday 2024-10-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-14</StartDate>
+              <EndDate>2024-10-18</EndDate>
+              <Note>Monday 2024-10-14 - Friday 2024-10-18</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+        <BankHolidayOperation>
+          <DaysOfOperation>
+            <LateSummerBankHolidayNotScotland/>
+          </DaysOfOperation>
+          <DaysOfNonOperation>
+            <ChristmasDay/>
+            <BoxingDay/>
+            <GoodFriday/>
+            <NewYearsDay/>
+            <Jan2ndScotland/>
+            <StAndrewsDay/>
+            <MayDay/>
+            <EasterMonday/>
+            <SpringBank/>
+            <AugustBankHolidayScotland/>
+            <ChristmasDayHoliday/>
+            <BoxingDayHoliday/>
+            <NewYearsDayHoliday/>
+            <Jan2ndScotlandHoliday/>
+            <StAndrewsDayHoliday/>
+            <ChristmasEve/>
+            <NewYearsEve/>
+          </DaysOfNonOperation>
+        </BankHolidayOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ3</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP3</JourneyPatternRef>
+      <DepartureTime>16:00:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BI-I-VJ4</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>4</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-11</StartDate>
+              <EndDate>2024-05-12</EndDate>
+              <Note>Saturday 2024-05-11 - Sunday 2024-05-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-18</StartDate>
+              <EndDate>2024-05-19</EndDate>
+              <Note>Saturday 2024-05-18 - Sunday 2024-05-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-25</StartDate>
+              <EndDate>2024-05-27</EndDate>
+              <Note>Saturday 2024-05-25 - Monday 2024-05-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-01</StartDate>
+              <EndDate>2024-06-02</EndDate>
+              <Note>Saturday 2024-06-01 - Sunday 2024-06-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-08</StartDate>
+              <EndDate>2024-06-09</EndDate>
+              <Note>Saturday 2024-06-08 - Sunday 2024-06-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-15</StartDate>
+              <EndDate>2024-06-16</EndDate>
+              <Note>Saturday 2024-06-15 - Sunday 2024-06-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-22</StartDate>
+              <EndDate>2024-06-23</EndDate>
+              <Note>Saturday 2024-06-22 - Sunday 2024-06-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-29</StartDate>
+              <EndDate>2024-06-30</EndDate>
+              <Note>Saturday 2024-06-29 - Sunday 2024-06-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-06</StartDate>
+              <EndDate>2024-07-07</EndDate>
+              <Note>Saturday 2024-07-06 - Sunday 2024-07-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-13</StartDate>
+              <EndDate>2024-07-14</EndDate>
+              <Note>Saturday 2024-07-13 - Sunday 2024-07-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-20</StartDate>
+              <EndDate>2024-07-21</EndDate>
+              <Note>Saturday 2024-07-20 - Sunday 2024-07-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-27</StartDate>
+              <EndDate>2024-07-28</EndDate>
+              <Note>Saturday 2024-07-27 - Sunday 2024-07-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-03</StartDate>
+              <EndDate>2024-08-04</EndDate>
+              <Note>Saturday 2024-08-03 - Sunday 2024-08-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-10</StartDate>
+              <EndDate>2024-08-11</EndDate>
+              <Note>Saturday 2024-08-10 - Sunday 2024-08-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-17</StartDate>
+              <EndDate>2024-08-18</EndDate>
+              <Note>Saturday 2024-08-17 - Sunday 2024-08-18</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-24</StartDate>
+              <EndDate>2024-08-26</EndDate>
+              <Note>Saturday 2024-08-24 - Monday 2024-08-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-31</StartDate>
+              <EndDate>2024-09-01</EndDate>
+              <Note>Saturday 2024-08-31 - Sunday 2024-09-01</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-07</StartDate>
+              <EndDate>2024-09-08</EndDate>
+              <Note>Saturday 2024-09-07 - Sunday 2024-09-08</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-14</StartDate>
+              <EndDate>2024-09-15</EndDate>
+              <Note>Saturday 2024-09-14 - Sunday 2024-09-15</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-21</StartDate>
+              <EndDate>2024-09-22</EndDate>
+              <Note>Saturday 2024-09-21 - Sunday 2024-09-22</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-28</StartDate>
+              <EndDate>2024-09-29</EndDate>
+              <Note>Saturday 2024-09-28 - Sunday 2024-09-29</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-05</StartDate>
+              <EndDate>2024-10-06</EndDate>
+              <Note>Saturday 2024-10-05 - Sunday 2024-10-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-12</StartDate>
+              <EndDate>2024-10-13</EndDate>
+              <Note>Saturday 2024-10-12 - Sunday 2024-10-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-19</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Saturday 2024-10-19 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ4</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP1</JourneyPatternRef>
+      <DepartureTime>17:35:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BI-I-VJ5</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>5</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-11</StartDate>
+              <EndDate>2024-05-12</EndDate>
+              <Note>Saturday 2024-05-11 - Sunday 2024-05-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-18</StartDate>
+              <EndDate>2024-05-19</EndDate>
+              <Note>Saturday 2024-05-18 - Sunday 2024-05-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-25</StartDate>
+              <EndDate>2024-05-27</EndDate>
+              <Note>Saturday 2024-05-25 - Monday 2024-05-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-01</StartDate>
+              <EndDate>2024-06-02</EndDate>
+              <Note>Saturday 2024-06-01 - Sunday 2024-06-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-08</StartDate>
+              <EndDate>2024-06-09</EndDate>
+              <Note>Saturday 2024-06-08 - Sunday 2024-06-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-15</StartDate>
+              <EndDate>2024-06-16</EndDate>
+              <Note>Saturday 2024-06-15 - Sunday 2024-06-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-22</StartDate>
+              <EndDate>2024-06-23</EndDate>
+              <Note>Saturday 2024-06-22 - Sunday 2024-06-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-29</StartDate>
+              <EndDate>2024-06-30</EndDate>
+              <Note>Saturday 2024-06-29 - Sunday 2024-06-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-06</StartDate>
+              <EndDate>2024-07-07</EndDate>
+              <Note>Saturday 2024-07-06 - Sunday 2024-07-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-13</StartDate>
+              <EndDate>2024-07-14</EndDate>
+              <Note>Saturday 2024-07-13 - Sunday 2024-07-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-20</StartDate>
+              <EndDate>2024-07-21</EndDate>
+              <Note>Saturday 2024-07-20 - Sunday 2024-07-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-27</StartDate>
+              <EndDate>2024-07-28</EndDate>
+              <Note>Saturday 2024-07-27 - Sunday 2024-07-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-03</StartDate>
+              <EndDate>2024-08-04</EndDate>
+              <Note>Saturday 2024-08-03 - Sunday 2024-08-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-10</StartDate>
+              <EndDate>2024-08-11</EndDate>
+              <Note>Saturday 2024-08-10 - Sunday 2024-08-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-17</StartDate>
+              <EndDate>2024-08-18</EndDate>
+              <Note>Saturday 2024-08-17 - Sunday 2024-08-18</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-24</StartDate>
+              <EndDate>2024-08-26</EndDate>
+              <Note>Saturday 2024-08-24 - Monday 2024-08-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-31</StartDate>
+              <EndDate>2024-09-01</EndDate>
+              <Note>Saturday 2024-08-31 - Sunday 2024-09-01</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-07</StartDate>
+              <EndDate>2024-09-08</EndDate>
+              <Note>Saturday 2024-09-07 - Sunday 2024-09-08</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-14</StartDate>
+              <EndDate>2024-09-15</EndDate>
+              <Note>Saturday 2024-09-14 - Sunday 2024-09-15</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-21</StartDate>
+              <EndDate>2024-09-22</EndDate>
+              <Note>Saturday 2024-09-21 - Sunday 2024-09-22</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-28</StartDate>
+              <EndDate>2024-09-29</EndDate>
+              <Note>Saturday 2024-09-28 - Sunday 2024-09-29</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-05</StartDate>
+              <EndDate>2024-10-06</EndDate>
+              <Note>Saturday 2024-10-05 - Sunday 2024-10-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-12</StartDate>
+              <EndDate>2024-10-13</EndDate>
+              <Note>Saturday 2024-10-12 - Sunday 2024-10-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-19</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Saturday 2024-10-19 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ5</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP3</JourneyPatternRef>
+      <DepartureTime>16:20:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BJ-I-VJ6</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>6</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-07</StartDate>
+              <EndDate>2024-05-10</EndDate>
+              <Note>Tuesday 2024-05-07 - Friday 2024-05-10</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-13</StartDate>
+              <EndDate>2024-05-17</EndDate>
+              <Note>Monday 2024-05-13 - Friday 2024-05-17</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-20</StartDate>
+              <EndDate>2024-05-24</EndDate>
+              <Note>Monday 2024-05-20 - Friday 2024-05-24</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-28</StartDate>
+              <EndDate>2024-05-31</EndDate>
+              <Note>Tuesday 2024-05-28 - Friday 2024-05-31</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-03</StartDate>
+              <EndDate>2024-06-07</EndDate>
+              <Note>Monday 2024-06-03 - Friday 2024-06-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-10</StartDate>
+              <EndDate>2024-06-14</EndDate>
+              <Note>Monday 2024-06-10 - Friday 2024-06-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-17</StartDate>
+              <EndDate>2024-06-21</EndDate>
+              <Note>Monday 2024-06-17 - Friday 2024-06-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-24</StartDate>
+              <EndDate>2024-06-28</EndDate>
+              <Note>Monday 2024-06-24 - Friday 2024-06-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-01</StartDate>
+              <EndDate>2024-07-05</EndDate>
+              <Note>Monday 2024-07-01 - Friday 2024-07-05</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-08</StartDate>
+              <EndDate>2024-07-12</EndDate>
+              <Note>Monday 2024-07-08 - Friday 2024-07-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-15</StartDate>
+              <EndDate>2024-07-19</EndDate>
+              <Note>Monday 2024-07-15 - Friday 2024-07-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-22</StartDate>
+              <EndDate>2024-07-26</EndDate>
+              <Note>Monday 2024-07-22 - Friday 2024-07-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-29</StartDate>
+              <EndDate>2024-08-02</EndDate>
+              <Note>Monday 2024-07-29 - Friday 2024-08-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-05</StartDate>
+              <EndDate>2024-08-09</EndDate>
+              <Note>Monday 2024-08-05 - Friday 2024-08-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-12</StartDate>
+              <EndDate>2024-08-16</EndDate>
+              <Note>Monday 2024-08-12 - Friday 2024-08-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-19</StartDate>
+              <EndDate>2024-08-23</EndDate>
+              <Note>Monday 2024-08-19 - Friday 2024-08-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-27</StartDate>
+              <EndDate>2024-08-30</EndDate>
+              <Note>Tuesday 2024-08-27 - Friday 2024-08-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-02</StartDate>
+              <EndDate>2024-09-06</EndDate>
+              <Note>Monday 2024-09-02 - Friday 2024-09-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-09</StartDate>
+              <EndDate>2024-09-13</EndDate>
+              <Note>Monday 2024-09-09 - Friday 2024-09-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-16</StartDate>
+              <EndDate>2024-09-20</EndDate>
+              <Note>Monday 2024-09-16 - Friday 2024-09-20</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-23</StartDate>
+              <EndDate>2024-09-27</EndDate>
+              <Note>Monday 2024-09-23 - Friday 2024-09-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-30</StartDate>
+              <EndDate>2024-10-04</EndDate>
+              <Note>Monday 2024-09-30 - Friday 2024-10-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-07</StartDate>
+              <EndDate>2024-10-11</EndDate>
+              <Note>Monday 2024-10-07 - Friday 2024-10-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-14</StartDate>
+              <EndDate>2024-10-18</EndDate>
+              <Note>Monday 2024-10-14 - Friday 2024-10-18</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+        <BankHolidayOperation>
+          <DaysOfOperation>
+            <LateSummerBankHolidayNotScotland/>
+          </DaysOfOperation>
+          <DaysOfNonOperation>
+            <ChristmasDay/>
+            <BoxingDay/>
+            <GoodFriday/>
+            <NewYearsDay/>
+            <Jan2ndScotland/>
+            <StAndrewsDay/>
+            <MayDay/>
+            <EasterMonday/>
+            <SpringBank/>
+            <AugustBankHolidayScotland/>
+            <ChristmasDayHoliday/>
+            <BoxingDayHoliday/>
+            <NewYearsDayHoliday/>
+            <Jan2ndScotlandHoliday/>
+            <StAndrewsDayHoliday/>
+            <ChristmasEve/>
+            <NewYearsEve/>
+          </DaysOfNonOperation>
+        </BankHolidayOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ6</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP4</JourneyPatternRef>
+      <DepartureTime>07:10:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BJ-I-VJ7</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>7</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-07</StartDate>
+              <EndDate>2024-05-10</EndDate>
+              <Note>Tuesday 2024-05-07 - Friday 2024-05-10</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-13</StartDate>
+              <EndDate>2024-05-17</EndDate>
+              <Note>Monday 2024-05-13 - Friday 2024-05-17</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-20</StartDate>
+              <EndDate>2024-05-24</EndDate>
+              <Note>Monday 2024-05-20 - Friday 2024-05-24</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-28</StartDate>
+              <EndDate>2024-05-31</EndDate>
+              <Note>Tuesday 2024-05-28 - Friday 2024-05-31</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-03</StartDate>
+              <EndDate>2024-06-07</EndDate>
+              <Note>Monday 2024-06-03 - Friday 2024-06-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-10</StartDate>
+              <EndDate>2024-06-14</EndDate>
+              <Note>Monday 2024-06-10 - Friday 2024-06-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-17</StartDate>
+              <EndDate>2024-06-21</EndDate>
+              <Note>Monday 2024-06-17 - Friday 2024-06-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-24</StartDate>
+              <EndDate>2024-06-28</EndDate>
+              <Note>Monday 2024-06-24 - Friday 2024-06-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-01</StartDate>
+              <EndDate>2024-07-05</EndDate>
+              <Note>Monday 2024-07-01 - Friday 2024-07-05</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-08</StartDate>
+              <EndDate>2024-07-12</EndDate>
+              <Note>Monday 2024-07-08 - Friday 2024-07-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-15</StartDate>
+              <EndDate>2024-07-19</EndDate>
+              <Note>Monday 2024-07-15 - Friday 2024-07-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-22</StartDate>
+              <EndDate>2024-07-26</EndDate>
+              <Note>Monday 2024-07-22 - Friday 2024-07-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-29</StartDate>
+              <EndDate>2024-08-02</EndDate>
+              <Note>Monday 2024-07-29 - Friday 2024-08-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-05</StartDate>
+              <EndDate>2024-08-09</EndDate>
+              <Note>Monday 2024-08-05 - Friday 2024-08-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-12</StartDate>
+              <EndDate>2024-08-16</EndDate>
+              <Note>Monday 2024-08-12 - Friday 2024-08-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-19</StartDate>
+              <EndDate>2024-08-23</EndDate>
+              <Note>Monday 2024-08-19 - Friday 2024-08-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-27</StartDate>
+              <EndDate>2024-08-30</EndDate>
+              <Note>Tuesday 2024-08-27 - Friday 2024-08-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-02</StartDate>
+              <EndDate>2024-09-06</EndDate>
+              <Note>Monday 2024-09-02 - Friday 2024-09-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-09</StartDate>
+              <EndDate>2024-09-13</EndDate>
+              <Note>Monday 2024-09-09 - Friday 2024-09-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-16</StartDate>
+              <EndDate>2024-09-20</EndDate>
+              <Note>Monday 2024-09-16 - Friday 2024-09-20</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-23</StartDate>
+              <EndDate>2024-09-27</EndDate>
+              <Note>Monday 2024-09-23 - Friday 2024-09-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-30</StartDate>
+              <EndDate>2024-10-04</EndDate>
+              <Note>Monday 2024-09-30 - Friday 2024-10-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-07</StartDate>
+              <EndDate>2024-10-11</EndDate>
+              <Note>Monday 2024-10-07 - Friday 2024-10-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-14</StartDate>
+              <EndDate>2024-10-18</EndDate>
+              <Note>Monday 2024-10-14 - Friday 2024-10-18</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+        <BankHolidayOperation>
+          <DaysOfOperation>
+            <LateSummerBankHolidayNotScotland/>
+          </DaysOfOperation>
+          <DaysOfNonOperation>
+            <ChristmasDay/>
+            <BoxingDay/>
+            <GoodFriday/>
+            <NewYearsDay/>
+            <Jan2ndScotland/>
+            <StAndrewsDay/>
+            <MayDay/>
+            <EasterMonday/>
+            <SpringBank/>
+            <AugustBankHolidayScotland/>
+            <ChristmasDayHoliday/>
+            <BoxingDayHoliday/>
+            <NewYearsDayHoliday/>
+            <Jan2ndScotlandHoliday/>
+            <StAndrewsDayHoliday/>
+            <ChristmasEve/>
+            <NewYearsEve/>
+          </DaysOfNonOperation>
+        </BankHolidayOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ7</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP5</JourneyPatternRef>
+      <DepartureTime>06:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BK-I-VJ8</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>8</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-11</StartDate>
+              <EndDate>2024-05-12</EndDate>
+              <Note>Saturday 2024-05-11 - Sunday 2024-05-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-18</StartDate>
+              <EndDate>2024-05-19</EndDate>
+              <Note>Saturday 2024-05-18 - Sunday 2024-05-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-25</StartDate>
+              <EndDate>2024-05-27</EndDate>
+              <Note>Saturday 2024-05-25 - Monday 2024-05-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-01</StartDate>
+              <EndDate>2024-06-02</EndDate>
+              <Note>Saturday 2024-06-01 - Sunday 2024-06-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-08</StartDate>
+              <EndDate>2024-06-09</EndDate>
+              <Note>Saturday 2024-06-08 - Sunday 2024-06-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-15</StartDate>
+              <EndDate>2024-06-16</EndDate>
+              <Note>Saturday 2024-06-15 - Sunday 2024-06-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-22</StartDate>
+              <EndDate>2024-06-23</EndDate>
+              <Note>Saturday 2024-06-22 - Sunday 2024-06-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-29</StartDate>
+              <EndDate>2024-06-30</EndDate>
+              <Note>Saturday 2024-06-29 - Sunday 2024-06-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-06</StartDate>
+              <EndDate>2024-07-07</EndDate>
+              <Note>Saturday 2024-07-06 - Sunday 2024-07-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-13</StartDate>
+              <EndDate>2024-07-14</EndDate>
+              <Note>Saturday 2024-07-13 - Sunday 2024-07-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-20</StartDate>
+              <EndDate>2024-07-21</EndDate>
+              <Note>Saturday 2024-07-20 - Sunday 2024-07-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-27</StartDate>
+              <EndDate>2024-07-28</EndDate>
+              <Note>Saturday 2024-07-27 - Sunday 2024-07-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-03</StartDate>
+              <EndDate>2024-08-04</EndDate>
+              <Note>Saturday 2024-08-03 - Sunday 2024-08-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-10</StartDate>
+              <EndDate>2024-08-11</EndDate>
+              <Note>Saturday 2024-08-10 - Sunday 2024-08-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-17</StartDate>
+              <EndDate>2024-08-18</EndDate>
+              <Note>Saturday 2024-08-17 - Sunday 2024-08-18</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-24</StartDate>
+              <EndDate>2024-08-26</EndDate>
+              <Note>Saturday 2024-08-24 - Monday 2024-08-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-31</StartDate>
+              <EndDate>2024-09-01</EndDate>
+              <Note>Saturday 2024-08-31 - Sunday 2024-09-01</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-07</StartDate>
+              <EndDate>2024-09-08</EndDate>
+              <Note>Saturday 2024-09-07 - Sunday 2024-09-08</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-14</StartDate>
+              <EndDate>2024-09-15</EndDate>
+              <Note>Saturday 2024-09-14 - Sunday 2024-09-15</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-21</StartDate>
+              <EndDate>2024-09-22</EndDate>
+              <Note>Saturday 2024-09-21 - Sunday 2024-09-22</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-28</StartDate>
+              <EndDate>2024-09-29</EndDate>
+              <Note>Saturday 2024-09-28 - Sunday 2024-09-29</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-05</StartDate>
+              <EndDate>2024-10-06</EndDate>
+              <Note>Saturday 2024-10-05 - Sunday 2024-10-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-12</StartDate>
+              <EndDate>2024-10-13</EndDate>
+              <Note>Saturday 2024-10-12 - Sunday 2024-10-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-19</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Saturday 2024-10-19 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ8</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP4</JourneyPatternRef>
+      <DepartureTime>07:30:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BK-I-VJ9</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>9</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-11</StartDate>
+              <EndDate>2024-05-12</EndDate>
+              <Note>Saturday 2024-05-11 - Sunday 2024-05-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-18</StartDate>
+              <EndDate>2024-05-19</EndDate>
+              <Note>Saturday 2024-05-18 - Sunday 2024-05-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-25</StartDate>
+              <EndDate>2024-05-27</EndDate>
+              <Note>Saturday 2024-05-25 - Monday 2024-05-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-01</StartDate>
+              <EndDate>2024-06-02</EndDate>
+              <Note>Saturday 2024-06-01 - Sunday 2024-06-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-08</StartDate>
+              <EndDate>2024-06-09</EndDate>
+              <Note>Saturday 2024-06-08 - Sunday 2024-06-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-15</StartDate>
+              <EndDate>2024-06-16</EndDate>
+              <Note>Saturday 2024-06-15 - Sunday 2024-06-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-22</StartDate>
+              <EndDate>2024-06-23</EndDate>
+              <Note>Saturday 2024-06-22 - Sunday 2024-06-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-29</StartDate>
+              <EndDate>2024-06-30</EndDate>
+              <Note>Saturday 2024-06-29 - Sunday 2024-06-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-06</StartDate>
+              <EndDate>2024-07-07</EndDate>
+              <Note>Saturday 2024-07-06 - Sunday 2024-07-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-13</StartDate>
+              <EndDate>2024-07-14</EndDate>
+              <Note>Saturday 2024-07-13 - Sunday 2024-07-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-20</StartDate>
+              <EndDate>2024-07-21</EndDate>
+              <Note>Saturday 2024-07-20 - Sunday 2024-07-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-27</StartDate>
+              <EndDate>2024-07-28</EndDate>
+              <Note>Saturday 2024-07-27 - Sunday 2024-07-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-03</StartDate>
+              <EndDate>2024-08-04</EndDate>
+              <Note>Saturday 2024-08-03 - Sunday 2024-08-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-10</StartDate>
+              <EndDate>2024-08-11</EndDate>
+              <Note>Saturday 2024-08-10 - Sunday 2024-08-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-17</StartDate>
+              <EndDate>2024-08-18</EndDate>
+              <Note>Saturday 2024-08-17 - Sunday 2024-08-18</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-24</StartDate>
+              <EndDate>2024-08-26</EndDate>
+              <Note>Saturday 2024-08-24 - Monday 2024-08-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-31</StartDate>
+              <EndDate>2024-09-01</EndDate>
+              <Note>Saturday 2024-08-31 - Sunday 2024-09-01</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-07</StartDate>
+              <EndDate>2024-09-08</EndDate>
+              <Note>Saturday 2024-09-07 - Sunday 2024-09-08</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-14</StartDate>
+              <EndDate>2024-09-15</EndDate>
+              <Note>Saturday 2024-09-14 - Sunday 2024-09-15</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-21</StartDate>
+              <EndDate>2024-09-22</EndDate>
+              <Note>Saturday 2024-09-21 - Sunday 2024-09-22</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-28</StartDate>
+              <EndDate>2024-09-29</EndDate>
+              <Note>Saturday 2024-09-28 - Sunday 2024-09-29</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-05</StartDate>
+              <EndDate>2024-10-06</EndDate>
+              <Note>Saturday 2024-10-05 - Sunday 2024-10-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-12</StartDate>
+              <EndDate>2024-10-13</EndDate>
+              <Note>Saturday 2024-10-12 - Sunday 2024-10-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-19</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Saturday 2024-10-19 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ9</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP5</JourneyPatternRef>
+      <DepartureTime>06:25:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BL-I-VJ10</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>10</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-07</StartDate>
+              <EndDate>2024-05-10</EndDate>
+              <Note>Tuesday 2024-05-07 - Friday 2024-05-10</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-13</StartDate>
+              <EndDate>2024-05-17</EndDate>
+              <Note>Monday 2024-05-13 - Friday 2024-05-17</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-20</StartDate>
+              <EndDate>2024-05-24</EndDate>
+              <Note>Monday 2024-05-20 - Friday 2024-05-24</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-28</StartDate>
+              <EndDate>2024-05-31</EndDate>
+              <Note>Tuesday 2024-05-28 - Friday 2024-05-31</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-03</StartDate>
+              <EndDate>2024-06-07</EndDate>
+              <Note>Monday 2024-06-03 - Friday 2024-06-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-10</StartDate>
+              <EndDate>2024-06-14</EndDate>
+              <Note>Monday 2024-06-10 - Friday 2024-06-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-17</StartDate>
+              <EndDate>2024-06-21</EndDate>
+              <Note>Monday 2024-06-17 - Friday 2024-06-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-24</StartDate>
+              <EndDate>2024-06-28</EndDate>
+              <Note>Monday 2024-06-24 - Friday 2024-06-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-01</StartDate>
+              <EndDate>2024-07-05</EndDate>
+              <Note>Monday 2024-07-01 - Friday 2024-07-05</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-08</StartDate>
+              <EndDate>2024-07-12</EndDate>
+              <Note>Monday 2024-07-08 - Friday 2024-07-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-15</StartDate>
+              <EndDate>2024-07-19</EndDate>
+              <Note>Monday 2024-07-15 - Friday 2024-07-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-22</StartDate>
+              <EndDate>2024-07-26</EndDate>
+              <Note>Monday 2024-07-22 - Friday 2024-07-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-29</StartDate>
+              <EndDate>2024-08-02</EndDate>
+              <Note>Monday 2024-07-29 - Friday 2024-08-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-05</StartDate>
+              <EndDate>2024-08-09</EndDate>
+              <Note>Monday 2024-08-05 - Friday 2024-08-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-12</StartDate>
+              <EndDate>2024-08-16</EndDate>
+              <Note>Monday 2024-08-12 - Friday 2024-08-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-19</StartDate>
+              <EndDate>2024-08-23</EndDate>
+              <Note>Monday 2024-08-19 - Friday 2024-08-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-27</StartDate>
+              <EndDate>2024-08-30</EndDate>
+              <Note>Tuesday 2024-08-27 - Friday 2024-08-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-02</StartDate>
+              <EndDate>2024-09-06</EndDate>
+              <Note>Monday 2024-09-02 - Friday 2024-09-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-09</StartDate>
+              <EndDate>2024-09-13</EndDate>
+              <Note>Monday 2024-09-09 - Friday 2024-09-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-16</StartDate>
+              <EndDate>2024-09-20</EndDate>
+              <Note>Monday 2024-09-16 - Friday 2024-09-20</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-23</StartDate>
+              <EndDate>2024-09-27</EndDate>
+              <Note>Monday 2024-09-23 - Friday 2024-09-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-30</StartDate>
+              <EndDate>2024-10-04</EndDate>
+              <Note>Monday 2024-09-30 - Friday 2024-10-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-07</StartDate>
+              <EndDate>2024-10-11</EndDate>
+              <Note>Monday 2024-10-07 - Friday 2024-10-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-14</StartDate>
+              <EndDate>2024-10-18</EndDate>
+              <Note>Monday 2024-10-14 - Friday 2024-10-18</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+        <BankHolidayOperation>
+          <DaysOfOperation>
+            <LateSummerBankHolidayNotScotland/>
+          </DaysOfOperation>
+          <DaysOfNonOperation>
+            <ChristmasDay/>
+            <BoxingDay/>
+            <GoodFriday/>
+            <NewYearsDay/>
+            <Jan2ndScotland/>
+            <StAndrewsDay/>
+            <MayDay/>
+            <EasterMonday/>
+            <SpringBank/>
+            <AugustBankHolidayScotland/>
+            <ChristmasDayHoliday/>
+            <BoxingDayHoliday/>
+            <NewYearsDayHoliday/>
+            <Jan2ndScotlandHoliday/>
+            <StAndrewsDayHoliday/>
+            <ChristmasEve/>
+            <NewYearsEve/>
+          </DaysOfNonOperation>
+        </BankHolidayOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ10</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP6</JourneyPatternRef>
+      <DepartureTime>08:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BL-I-VJ11</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>11</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-07</StartDate>
+              <EndDate>2024-05-10</EndDate>
+              <Note>Tuesday 2024-05-07 - Friday 2024-05-10</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-13</StartDate>
+              <EndDate>2024-05-17</EndDate>
+              <Note>Monday 2024-05-13 - Friday 2024-05-17</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-20</StartDate>
+              <EndDate>2024-05-24</EndDate>
+              <Note>Monday 2024-05-20 - Friday 2024-05-24</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-28</StartDate>
+              <EndDate>2024-05-31</EndDate>
+              <Note>Tuesday 2024-05-28 - Friday 2024-05-31</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-03</StartDate>
+              <EndDate>2024-06-07</EndDate>
+              <Note>Monday 2024-06-03 - Friday 2024-06-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-10</StartDate>
+              <EndDate>2024-06-14</EndDate>
+              <Note>Monday 2024-06-10 - Friday 2024-06-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-17</StartDate>
+              <EndDate>2024-06-21</EndDate>
+              <Note>Monday 2024-06-17 - Friday 2024-06-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-24</StartDate>
+              <EndDate>2024-06-28</EndDate>
+              <Note>Monday 2024-06-24 - Friday 2024-06-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-01</StartDate>
+              <EndDate>2024-07-05</EndDate>
+              <Note>Monday 2024-07-01 - Friday 2024-07-05</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-08</StartDate>
+              <EndDate>2024-07-12</EndDate>
+              <Note>Monday 2024-07-08 - Friday 2024-07-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-15</StartDate>
+              <EndDate>2024-07-19</EndDate>
+              <Note>Monday 2024-07-15 - Friday 2024-07-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-22</StartDate>
+              <EndDate>2024-07-26</EndDate>
+              <Note>Monday 2024-07-22 - Friday 2024-07-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-29</StartDate>
+              <EndDate>2024-08-02</EndDate>
+              <Note>Monday 2024-07-29 - Friday 2024-08-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-05</StartDate>
+              <EndDate>2024-08-09</EndDate>
+              <Note>Monday 2024-08-05 - Friday 2024-08-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-12</StartDate>
+              <EndDate>2024-08-16</EndDate>
+              <Note>Monday 2024-08-12 - Friday 2024-08-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-19</StartDate>
+              <EndDate>2024-08-23</EndDate>
+              <Note>Monday 2024-08-19 - Friday 2024-08-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-27</StartDate>
+              <EndDate>2024-08-30</EndDate>
+              <Note>Tuesday 2024-08-27 - Friday 2024-08-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-02</StartDate>
+              <EndDate>2024-09-06</EndDate>
+              <Note>Monday 2024-09-02 - Friday 2024-09-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-09</StartDate>
+              <EndDate>2024-09-13</EndDate>
+              <Note>Monday 2024-09-09 - Friday 2024-09-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-16</StartDate>
+              <EndDate>2024-09-20</EndDate>
+              <Note>Monday 2024-09-16 - Friday 2024-09-20</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-23</StartDate>
+              <EndDate>2024-09-27</EndDate>
+              <Note>Monday 2024-09-23 - Friday 2024-09-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-30</StartDate>
+              <EndDate>2024-10-04</EndDate>
+              <Note>Monday 2024-09-30 - Friday 2024-10-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-07</StartDate>
+              <EndDate>2024-10-11</EndDate>
+              <Note>Monday 2024-10-07 - Friday 2024-10-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-14</StartDate>
+              <EndDate>2024-10-18</EndDate>
+              <Note>Monday 2024-10-14 - Friday 2024-10-18</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+        <BankHolidayOperation>
+          <DaysOfOperation>
+            <LateSummerBankHolidayNotScotland/>
+          </DaysOfOperation>
+          <DaysOfNonOperation>
+            <ChristmasDay/>
+            <BoxingDay/>
+            <GoodFriday/>
+            <NewYearsDay/>
+            <Jan2ndScotland/>
+            <StAndrewsDay/>
+            <MayDay/>
+            <EasterMonday/>
+            <SpringBank/>
+            <AugustBankHolidayScotland/>
+            <ChristmasDayHoliday/>
+            <BoxingDayHoliday/>
+            <NewYearsDayHoliday/>
+            <Jan2ndScotlandHoliday/>
+            <StAndrewsDayHoliday/>
+            <ChristmasEve/>
+            <NewYearsEve/>
+          </DaysOfNonOperation>
+        </BankHolidayOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ11</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP7</JourneyPatternRef>
+      <DepartureTime>06:55:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BM-I-VJ12</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>12</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-11</StartDate>
+              <EndDate>2024-05-12</EndDate>
+              <Note>Saturday 2024-05-11 - Sunday 2024-05-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-18</StartDate>
+              <EndDate>2024-05-19</EndDate>
+              <Note>Saturday 2024-05-18 - Sunday 2024-05-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-25</StartDate>
+              <EndDate>2024-05-27</EndDate>
+              <Note>Saturday 2024-05-25 - Monday 2024-05-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-01</StartDate>
+              <EndDate>2024-06-02</EndDate>
+              <Note>Saturday 2024-06-01 - Sunday 2024-06-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-08</StartDate>
+              <EndDate>2024-06-09</EndDate>
+              <Note>Saturday 2024-06-08 - Sunday 2024-06-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-15</StartDate>
+              <EndDate>2024-06-16</EndDate>
+              <Note>Saturday 2024-06-15 - Sunday 2024-06-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-22</StartDate>
+              <EndDate>2024-06-23</EndDate>
+              <Note>Saturday 2024-06-22 - Sunday 2024-06-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-29</StartDate>
+              <EndDate>2024-06-30</EndDate>
+              <Note>Saturday 2024-06-29 - Sunday 2024-06-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-06</StartDate>
+              <EndDate>2024-07-07</EndDate>
+              <Note>Saturday 2024-07-06 - Sunday 2024-07-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-13</StartDate>
+              <EndDate>2024-07-14</EndDate>
+              <Note>Saturday 2024-07-13 - Sunday 2024-07-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-20</StartDate>
+              <EndDate>2024-07-21</EndDate>
+              <Note>Saturday 2024-07-20 - Sunday 2024-07-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-27</StartDate>
+              <EndDate>2024-07-28</EndDate>
+              <Note>Saturday 2024-07-27 - Sunday 2024-07-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-03</StartDate>
+              <EndDate>2024-08-04</EndDate>
+              <Note>Saturday 2024-08-03 - Sunday 2024-08-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-10</StartDate>
+              <EndDate>2024-08-11</EndDate>
+              <Note>Saturday 2024-08-10 - Sunday 2024-08-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-17</StartDate>
+              <EndDate>2024-08-18</EndDate>
+              <Note>Saturday 2024-08-17 - Sunday 2024-08-18</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-24</StartDate>
+              <EndDate>2024-08-26</EndDate>
+              <Note>Saturday 2024-08-24 - Monday 2024-08-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-31</StartDate>
+              <EndDate>2024-09-01</EndDate>
+              <Note>Saturday 2024-08-31 - Sunday 2024-09-01</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-07</StartDate>
+              <EndDate>2024-09-08</EndDate>
+              <Note>Saturday 2024-09-07 - Sunday 2024-09-08</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-14</StartDate>
+              <EndDate>2024-09-15</EndDate>
+              <Note>Saturday 2024-09-14 - Sunday 2024-09-15</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-21</StartDate>
+              <EndDate>2024-09-22</EndDate>
+              <Note>Saturday 2024-09-21 - Sunday 2024-09-22</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-28</StartDate>
+              <EndDate>2024-09-29</EndDate>
+              <Note>Saturday 2024-09-28 - Sunday 2024-09-29</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-05</StartDate>
+              <EndDate>2024-10-06</EndDate>
+              <Note>Saturday 2024-10-05 - Sunday 2024-10-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-12</StartDate>
+              <EndDate>2024-10-13</EndDate>
+              <Note>Saturday 2024-10-12 - Sunday 2024-10-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-19</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Saturday 2024-10-19 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ12</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP6</JourneyPatternRef>
+      <DepartureTime>09:00:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BM-I-VJ13</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>13</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-11</StartDate>
+              <EndDate>2024-05-12</EndDate>
+              <Note>Saturday 2024-05-11 - Sunday 2024-05-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-18</StartDate>
+              <EndDate>2024-05-19</EndDate>
+              <Note>Saturday 2024-05-18 - Sunday 2024-05-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-25</StartDate>
+              <EndDate>2024-05-27</EndDate>
+              <Note>Saturday 2024-05-25 - Monday 2024-05-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-01</StartDate>
+              <EndDate>2024-06-02</EndDate>
+              <Note>Saturday 2024-06-01 - Sunday 2024-06-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-08</StartDate>
+              <EndDate>2024-06-09</EndDate>
+              <Note>Saturday 2024-06-08 - Sunday 2024-06-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-15</StartDate>
+              <EndDate>2024-06-16</EndDate>
+              <Note>Saturday 2024-06-15 - Sunday 2024-06-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-22</StartDate>
+              <EndDate>2024-06-23</EndDate>
+              <Note>Saturday 2024-06-22 - Sunday 2024-06-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-29</StartDate>
+              <EndDate>2024-06-30</EndDate>
+              <Note>Saturday 2024-06-29 - Sunday 2024-06-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-06</StartDate>
+              <EndDate>2024-07-07</EndDate>
+              <Note>Saturday 2024-07-06 - Sunday 2024-07-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-13</StartDate>
+              <EndDate>2024-07-14</EndDate>
+              <Note>Saturday 2024-07-13 - Sunday 2024-07-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-20</StartDate>
+              <EndDate>2024-07-21</EndDate>
+              <Note>Saturday 2024-07-20 - Sunday 2024-07-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-27</StartDate>
+              <EndDate>2024-07-28</EndDate>
+              <Note>Saturday 2024-07-27 - Sunday 2024-07-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-03</StartDate>
+              <EndDate>2024-08-04</EndDate>
+              <Note>Saturday 2024-08-03 - Sunday 2024-08-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-10</StartDate>
+              <EndDate>2024-08-11</EndDate>
+              <Note>Saturday 2024-08-10 - Sunday 2024-08-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-17</StartDate>
+              <EndDate>2024-08-18</EndDate>
+              <Note>Saturday 2024-08-17 - Sunday 2024-08-18</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-24</StartDate>
+              <EndDate>2024-08-26</EndDate>
+              <Note>Saturday 2024-08-24 - Monday 2024-08-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-31</StartDate>
+              <EndDate>2024-09-01</EndDate>
+              <Note>Saturday 2024-08-31 - Sunday 2024-09-01</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-07</StartDate>
+              <EndDate>2024-09-08</EndDate>
+              <Note>Saturday 2024-09-07 - Sunday 2024-09-08</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-14</StartDate>
+              <EndDate>2024-09-15</EndDate>
+              <Note>Saturday 2024-09-14 - Sunday 2024-09-15</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-21</StartDate>
+              <EndDate>2024-09-22</EndDate>
+              <Note>Saturday 2024-09-21 - Sunday 2024-09-22</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-28</StartDate>
+              <EndDate>2024-09-29</EndDate>
+              <Note>Saturday 2024-09-28 - Sunday 2024-09-29</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-05</StartDate>
+              <EndDate>2024-10-06</EndDate>
+              <Note>Saturday 2024-10-05 - Sunday 2024-10-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-12</StartDate>
+              <EndDate>2024-10-13</EndDate>
+              <Note>Saturday 2024-10-12 - Sunday 2024-10-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-19</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Saturday 2024-10-19 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ13</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP7</JourneyPatternRef>
+      <DepartureTime>07:20:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BL-O-VJ14</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>14</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-04-05</StartDate>
+              <EndDate>2024-04-05</EndDate>
+              <Note>Friday 2024-04-05 - Friday 2024-04-05</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-04-12</StartDate>
+              <EndDate>2024-04-12</EndDate>
+              <Note>Friday 2024-04-12 - Friday 2024-04-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-04-19</StartDate>
+              <EndDate>2024-04-19</EndDate>
+              <Note>Friday 2024-04-19 - Friday 2024-04-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-04-26</StartDate>
+              <EndDate>2024-04-26</EndDate>
+              <Note>Friday 2024-04-26 - Friday 2024-04-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-03</StartDate>
+              <EndDate>2024-05-03</EndDate>
+              <Note>Friday 2024-05-03 - Friday 2024-05-03</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-07</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Tuesday 2024-05-07 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ14</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP8</JourneyPatternRef>
+      <DepartureTime>13:30:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BJ-O-VJ15</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>15</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-11</StartDate>
+              <EndDate>2024-05-12</EndDate>
+              <Note>Saturday 2024-05-11 - Sunday 2024-05-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-18</StartDate>
+              <EndDate>2024-05-19</EndDate>
+              <Note>Saturday 2024-05-18 - Sunday 2024-05-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-25</StartDate>
+              <EndDate>2024-05-27</EndDate>
+              <Note>Saturday 2024-05-25 - Monday 2024-05-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-01</StartDate>
+              <EndDate>2024-06-02</EndDate>
+              <Note>Saturday 2024-06-01 - Sunday 2024-06-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-08</StartDate>
+              <EndDate>2024-06-09</EndDate>
+              <Note>Saturday 2024-06-08 - Sunday 2024-06-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-15</StartDate>
+              <EndDate>2024-06-16</EndDate>
+              <Note>Saturday 2024-06-15 - Sunday 2024-06-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-22</StartDate>
+              <EndDate>2024-06-23</EndDate>
+              <Note>Saturday 2024-06-22 - Sunday 2024-06-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-29</StartDate>
+              <EndDate>2024-06-30</EndDate>
+              <Note>Saturday 2024-06-29 - Sunday 2024-06-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-06</StartDate>
+              <EndDate>2024-07-07</EndDate>
+              <Note>Saturday 2024-07-06 - Sunday 2024-07-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-13</StartDate>
+              <EndDate>2024-07-14</EndDate>
+              <Note>Saturday 2024-07-13 - Sunday 2024-07-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-20</StartDate>
+              <EndDate>2024-07-21</EndDate>
+              <Note>Saturday 2024-07-20 - Sunday 2024-07-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-27</StartDate>
+              <EndDate>2024-07-28</EndDate>
+              <Note>Saturday 2024-07-27 - Sunday 2024-07-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-03</StartDate>
+              <EndDate>2024-08-04</EndDate>
+              <Note>Saturday 2024-08-03 - Sunday 2024-08-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-10</StartDate>
+              <EndDate>2024-08-11</EndDate>
+              <Note>Saturday 2024-08-10 - Sunday 2024-08-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-17</StartDate>
+              <EndDate>2024-08-18</EndDate>
+              <Note>Saturday 2024-08-17 - Sunday 2024-08-18</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-24</StartDate>
+              <EndDate>2024-08-26</EndDate>
+              <Note>Saturday 2024-08-24 - Monday 2024-08-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-31</StartDate>
+              <EndDate>2024-09-01</EndDate>
+              <Note>Saturday 2024-08-31 - Sunday 2024-09-01</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-07</StartDate>
+              <EndDate>2024-09-08</EndDate>
+              <Note>Saturday 2024-09-07 - Sunday 2024-09-08</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-14</StartDate>
+              <EndDate>2024-09-15</EndDate>
+              <Note>Saturday 2024-09-14 - Sunday 2024-09-15</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-21</StartDate>
+              <EndDate>2024-09-22</EndDate>
+              <Note>Saturday 2024-09-21 - Sunday 2024-09-22</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-28</StartDate>
+              <EndDate>2024-09-29</EndDate>
+              <Note>Saturday 2024-09-28 - Sunday 2024-09-29</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-05</StartDate>
+              <EndDate>2024-10-06</EndDate>
+              <Note>Saturday 2024-10-05 - Sunday 2024-10-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-12</StartDate>
+              <EndDate>2024-10-13</EndDate>
+              <Note>Saturday 2024-10-12 - Sunday 2024-10-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-19</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Saturday 2024-10-19 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ15</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>17:45:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BK-O-VJ16</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>16</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-05-07</StartDate>
+              <EndDate>2024-05-09</EndDate>
+              <Note>Tuesday 2024-05-07 - Thursday 2024-05-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-13</StartDate>
+              <EndDate>2024-05-16</EndDate>
+              <Note>Monday 2024-05-13 - Thursday 2024-05-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-20</StartDate>
+              <EndDate>2024-05-23</EndDate>
+              <Note>Monday 2024-05-20 - Thursday 2024-05-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-28</StartDate>
+              <EndDate>2024-05-30</EndDate>
+              <Note>Tuesday 2024-05-28 - Thursday 2024-05-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-03</StartDate>
+              <EndDate>2024-06-06</EndDate>
+              <Note>Monday 2024-06-03 - Thursday 2024-06-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-10</StartDate>
+              <EndDate>2024-06-13</EndDate>
+              <Note>Monday 2024-06-10 - Thursday 2024-06-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-17</StartDate>
+              <EndDate>2024-06-20</EndDate>
+              <Note>Monday 2024-06-17 - Thursday 2024-06-20</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-24</StartDate>
+              <EndDate>2024-06-27</EndDate>
+              <Note>Monday 2024-06-24 - Thursday 2024-06-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-01</StartDate>
+              <EndDate>2024-07-04</EndDate>
+              <Note>Monday 2024-07-01 - Thursday 2024-07-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-08</StartDate>
+              <EndDate>2024-07-11</EndDate>
+              <Note>Monday 2024-07-08 - Thursday 2024-07-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-15</StartDate>
+              <EndDate>2024-07-18</EndDate>
+              <Note>Monday 2024-07-15 - Thursday 2024-07-18</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-22</StartDate>
+              <EndDate>2024-07-25</EndDate>
+              <Note>Monday 2024-07-22 - Thursday 2024-07-25</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-29</StartDate>
+              <EndDate>2024-08-01</EndDate>
+              <Note>Monday 2024-07-29 - Thursday 2024-08-01</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-05</StartDate>
+              <EndDate>2024-08-08</EndDate>
+              <Note>Monday 2024-08-05 - Thursday 2024-08-08</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-12</StartDate>
+              <EndDate>2024-08-15</EndDate>
+              <Note>Monday 2024-08-12 - Thursday 2024-08-15</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-19</StartDate>
+              <EndDate>2024-08-22</EndDate>
+              <Note>Monday 2024-08-19 - Thursday 2024-08-22</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-27</StartDate>
+              <EndDate>2024-08-29</EndDate>
+              <Note>Tuesday 2024-08-27 - Thursday 2024-08-29</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-02</StartDate>
+              <EndDate>2024-09-05</EndDate>
+              <Note>Monday 2024-09-02 - Thursday 2024-09-05</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-09</StartDate>
+              <EndDate>2024-09-12</EndDate>
+              <Note>Monday 2024-09-09 - Thursday 2024-09-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-16</StartDate>
+              <EndDate>2024-09-19</EndDate>
+              <Note>Monday 2024-09-16 - Thursday 2024-09-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-23</StartDate>
+              <EndDate>2024-09-26</EndDate>
+              <Note>Monday 2024-09-23 - Thursday 2024-09-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-30</StartDate>
+              <EndDate>2024-10-03</EndDate>
+              <Note>Monday 2024-09-30 - Thursday 2024-10-03</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-07</StartDate>
+              <EndDate>2024-10-10</EndDate>
+              <Note>Monday 2024-10-07 - Thursday 2024-10-10</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-14</StartDate>
+              <EndDate>2024-10-17</EndDate>
+              <Note>Monday 2024-10-14 - Thursday 2024-10-17</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+        <BankHolidayOperation>
+          <DaysOfOperation>
+            <LateSummerBankHolidayNotScotland/>
+          </DaysOfOperation>
+          <DaysOfNonOperation>
+            <ChristmasDay/>
+            <BoxingDay/>
+            <GoodFriday/>
+            <NewYearsDay/>
+            <Jan2ndScotland/>
+            <StAndrewsDay/>
+            <MayDay/>
+            <EasterMonday/>
+            <SpringBank/>
+            <AugustBankHolidayScotland/>
+            <ChristmasDayHoliday/>
+            <BoxingDayHoliday/>
+            <NewYearsDayHoliday/>
+            <Jan2ndScotlandHoliday/>
+            <StAndrewsDayHoliday/>
+            <ChristmasEve/>
+            <NewYearsEve/>
+          </DaysOfNonOperation>
+        </BankHolidayOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ16</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>17:55:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>BL-O-VJ17</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>17</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2024-04-05</StartDate>
+              <EndDate>2024-04-05</EndDate>
+              <Note>Friday 2024-04-05 - Friday 2024-04-05</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-04-12</StartDate>
+              <EndDate>2024-04-12</EndDate>
+              <Note>Friday 2024-04-12 - Friday 2024-04-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-04-19</StartDate>
+              <EndDate>2024-04-19</EndDate>
+              <Note>Friday 2024-04-19 - Friday 2024-04-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-04-26</StartDate>
+              <EndDate>2024-04-26</EndDate>
+              <Note>Friday 2024-04-26 - Friday 2024-04-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-03</StartDate>
+              <EndDate>2024-05-03</EndDate>
+              <Note>Friday 2024-05-03 - Friday 2024-05-03</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-10</StartDate>
+              <EndDate>2024-05-10</EndDate>
+              <Note>Friday 2024-05-10 - Friday 2024-05-10</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-17</StartDate>
+              <EndDate>2024-05-17</EndDate>
+              <Note>Friday 2024-05-17 - Friday 2024-05-17</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-24</StartDate>
+              <EndDate>2024-05-24</EndDate>
+              <Note>Friday 2024-05-24 - Friday 2024-05-24</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-05-31</StartDate>
+              <EndDate>2024-05-31</EndDate>
+              <Note>Friday 2024-05-31 - Friday 2024-05-31</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-07</StartDate>
+              <EndDate>2024-06-07</EndDate>
+              <Note>Friday 2024-06-07 - Friday 2024-06-07</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-14</StartDate>
+              <EndDate>2024-06-14</EndDate>
+              <Note>Friday 2024-06-14 - Friday 2024-06-14</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-21</StartDate>
+              <EndDate>2024-06-21</EndDate>
+              <Note>Friday 2024-06-21 - Friday 2024-06-21</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-06-28</StartDate>
+              <EndDate>2024-06-28</EndDate>
+              <Note>Friday 2024-06-28 - Friday 2024-06-28</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-05</StartDate>
+              <EndDate>2024-07-05</EndDate>
+              <Note>Friday 2024-07-05 - Friday 2024-07-05</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-12</StartDate>
+              <EndDate>2024-07-12</EndDate>
+              <Note>Friday 2024-07-12 - Friday 2024-07-12</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-19</StartDate>
+              <EndDate>2024-07-19</EndDate>
+              <Note>Friday 2024-07-19 - Friday 2024-07-19</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-07-26</StartDate>
+              <EndDate>2024-07-26</EndDate>
+              <Note>Friday 2024-07-26 - Friday 2024-07-26</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-02</StartDate>
+              <EndDate>2024-08-02</EndDate>
+              <Note>Friday 2024-08-02 - Friday 2024-08-02</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-09</StartDate>
+              <EndDate>2024-08-09</EndDate>
+              <Note>Friday 2024-08-09 - Friday 2024-08-09</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-16</StartDate>
+              <EndDate>2024-08-16</EndDate>
+              <Note>Friday 2024-08-16 - Friday 2024-08-16</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-23</StartDate>
+              <EndDate>2024-08-23</EndDate>
+              <Note>Friday 2024-08-23 - Friday 2024-08-23</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-08-30</StartDate>
+              <EndDate>2024-08-30</EndDate>
+              <Note>Friday 2024-08-30 - Friday 2024-08-30</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-06</StartDate>
+              <EndDate>2024-09-06</EndDate>
+              <Note>Friday 2024-09-06 - Friday 2024-09-06</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-13</StartDate>
+              <EndDate>2024-09-13</EndDate>
+              <Note>Friday 2024-09-13 - Friday 2024-09-13</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-20</StartDate>
+              <EndDate>2024-09-20</EndDate>
+              <Note>Friday 2024-09-20 - Friday 2024-09-20</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-09-27</StartDate>
+              <EndDate>2024-09-27</EndDate>
+              <Note>Friday 2024-09-27 - Friday 2024-09-27</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-04</StartDate>
+              <EndDate>2024-10-04</EndDate>
+              <Note>Friday 2024-10-04 - Friday 2024-10-04</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-11</StartDate>
+              <EndDate>2024-10-11</EndDate>
+              <Note>Friday 2024-10-11 - Friday 2024-10-11</Note>
+            </DateRange>
+            <DateRange>
+              <StartDate>2024-10-18</StartDate>
+              <EndDate>2024-10-18</EndDate>
+              <Note>Friday 2024-10-18 - Friday 2024-10-18</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ17</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>18:25:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>MQ-O-VJ18</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>18</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2023-12-27</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Wednesday 2023-12-27 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ18</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP10</JourneyPatternRef>
+      <DepartureTime>13:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>MQ-O-VJ19</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>19</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2023-12-27</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Wednesday 2023-12-27 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ19</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP11</JourneyPatternRef>
+      <DepartureTime>08:30:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>MQ-O-VJ20</PrivateCode>
+      <OperatorRef>NATX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>20</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <HolidaysOnly/>
+        </RegularDayType>
+        <SpecialDaysOperation>
+          <DaysOfOperation>
+            <DateRange>
+              <StartDate>2023-12-27</StartDate>
+              <EndDate>2024-10-20</EndDate>
+              <Note>Wednesday 2023-12-27 - Sunday 2024-10-20</Note>
+            </DateRange>
+          </DaysOfOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ20</VehicleJourneyCode>
+      <ServiceRef>PD0000738:362</ServiceRef>
+      <LineRef>NATX:PD0000738:362:564</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>12:30:00</DepartureTime>
+    </VehicleJourney>
+  </VehicleJourneys>
+</TransXChange>

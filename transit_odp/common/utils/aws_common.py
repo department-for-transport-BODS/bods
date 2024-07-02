@@ -79,13 +79,16 @@ class SQSClientWrapper:
                     self.get_queue_name_from_url(queue_url): queue_url
                     for queue_url in queue_urls
                 }
-
+                batch_size = 10
                 for queue_name, messages in queues_payload.items():
                     if queue_name in queue_url_map:
                         queue_url = queue_url_map[queue_name]
                         try:
+                            # Max allowed batch size by SQS is 10
+                            for i in range(0, len(messages), batch_size):
+                                batch = messages[i : i + batch_size]
                             response_send_messages = self.sqs_client.send_message_batch(
-                                QueueUrl=queue_url, Entries=messages
+                                QueueUrl=queue_url, Entries=batch
                             )
 
                             for success in response_send_messages.get("Successful", []):

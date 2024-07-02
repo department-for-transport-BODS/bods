@@ -13,7 +13,11 @@ from django.db.models.functions import Replace
 from lxml import etree
 
 from transit_odp.common.types import JSONFile, XMLFile
-from transit_odp.data_quality.pti.constants import FLEXIBLE_SERVICE, STANDARD_SERVICE
+from transit_odp.data_quality.pti.constants import (
+    FLEXIBLE_SERVICE,
+    MODE_COACH,
+    STANDARD_SERVICE,
+)
 from transit_odp.data_quality.pti.functions import (
     cast_to_bool,
     cast_to_date,
@@ -45,6 +49,7 @@ from transit_odp.data_quality.pti.models import Observation, Schema, Violation
 from transit_odp.data_quality.pti.models.txcmodels import Line, VehicleJourney
 from transit_odp.naptan.models import StopPoint
 from transit_odp.otc.models import Service
+from transit_odp.timetables.transxchange import TransXChangeElement
 
 logger = getLogger(__name__)
 
@@ -86,6 +91,7 @@ class BaseValidator:
         self._vehicle_journeys = None
         self._lines = None
         self._journey_patterns = None
+        self._services = None
 
     @property
     def lines(self):
@@ -103,6 +109,14 @@ class BaseValidator:
         journeys = self.root.xpath(xpath, namespaces=self.namespaces)
         self._vehicle_journeys = [VehicleJourney.from_xml(vj) for vj in journeys]
         return self._vehicle_journeys
+
+    @property
+    def services(self):
+        if self._services is not None:
+            return self._services
+        xpath = "//x:Services/x:Service"
+        self._services = self.root.xpath(xpath, namespaces=self.namespaces)
+        return self._services
 
     @property
     def journey_patterns(self):
@@ -154,6 +168,25 @@ class BaseValidator:
         Get all the VehicleJourneys that JourneyPatternRef equal to ref.
         """
         return [vj for vj in self.vehicle_journeys if vj.journey_pattern_ref == ref]
+
+    def get_service_by_vehicle_journey(
+        self, service_ref: str
+    ) -> Optional[TransXChangeElement]:
+        """Find service for vehicle journey based on service ref
+
+        Args:
+            service_ref (str): Service ref from vehicle journey
+
+        Returns:
+            Optional[TransXChangeElement]: service element
+        """
+        for service in self.services:
+            service_code = service.xpath(
+                "string(x:ServiceCode)", namespaces=self.namespaces
+            )
+            if service_code is not None and service_ref == service_code:
+                return service
+        return None
 
     def get_vehicle_journey_by_code(self, code) -> List[VehicleJourney]:
         """
@@ -424,6 +457,20 @@ class StopPointValidator(BaseValidator):
         less_than_2_months = end_date <= start_date + relativedelta(months=2)
         return less_than_2_months
 
+    def has_coach_as_service_mode(self, service: TransXChangeElement) -> bool:
+        """Check weather service mode is coach or not
+
+        Args:
+            service (TransXChangeElement): service element of vj
+
+        Returns:
+            bool: True if service mode matches
+        """
+        mode = service.xpath("string(x:Mode)", namespaces=self.namespaces)
+        if mode is not None and mode.lower() == MODE_COACH.lower():
+            return True
+        return False
+
     def validate(self):
         route_link_refs = self.get_route_section_by_stop_point_ref(self.stop_point_ref)
         all_vj = []
@@ -437,7 +484,19 @@ class StopPointValidator(BaseValidator):
                     section_ref
                 )
                 for jp_ref in jp_refs:
-                    all_vj += self.get_vehicle_journey_by_pattern_journey_ref(jp_ref)
+                    jp_vjs = []
+                    vehicle_journies = self.get_vehicle_journey_by_pattern_journey_ref(
+                        jp_ref
+                    )
+                    for vj in vehicle_journies:
+                        service = self.get_service_by_vehicle_journey(vj.service_ref)
+                        if not (
+                            service is not None
+                            and self.has_coach_as_service_mode(service)
+                        ):
+                            jp_vjs.append(vj)
+
+                    all_vj += jp_vjs
 
         for journey in all_vj:
             if not self.has_valid_operating_profile(journey.code):
