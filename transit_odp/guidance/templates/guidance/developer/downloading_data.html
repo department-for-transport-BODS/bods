@@ -1,41 +1,26 @@
 {% extends "guidance/developer/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-  <h1 data-qa="downloading-header" class="govuk-heading-l">
-    {% trans 'Downloading a data set' %}
-  </h1>
-
+  <h1 data-qa="downloading-header" class="govuk-heading-l">{% trans "Downloading a data set" %}</h1>
   <p class="govuk-body">
     {% blocktrans %}
     A link to individual timetable and fares data sets can be found on their detail page when you
     {% endblocktrans %}
-    <a class="govuk-link"
-       href="{% url 'search' host hosts.data %}">
-      {% trans 'Browse for specific data' %}
-    </a>.
+    <a class="govuk-link" href="{% url 'search' host hosts.data %}">{% trans "Browse for specific data" %}</a>.
     {% blocktrans %}
     The link connects to the data hosted by the publishers. This link can be used
     to retrieve the latest version of the data.
     {% endblocktrans %}
   </p>
-
-  <h1 data-qa="download-all-header" class="govuk-heading-l">
-    {% trans 'Downloading all' %}
-  </h1>
+  <h1 data-qa="download-all-header" class="govuk-heading-l">{% trans "Downloading all" %}</h1>
   <p class="govuk-body">
     {% blocktrans %}
     The Bus Open Data Service also caches data so that you can
     {% endblocktrans %}
-    <a class="govuk-link"
-         href="{% url 'downloads' host hosts.data %}">
-      {% trans 'Download all data ' %}
-    </a>
+    <a class="govuk-link" href="{% url 'downloads' host hosts.data %}">{% trans "Download all data " %}</a>
     {% blocktrans %}
       directly from this service in a compressed Zip file. Historical real time data
       is not currently provided by the service.
     {% endblocktrans %}
   </p>
-
 {% endblock %}

@@ -1,11 +1,7 @@
 {% extends "guidance/bus_operators/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-  <h1 data-qa="publish-data-header" class="govuk-heading-l">
-    {% trans 'Publishing data' %}
-  </h1>
+  <h1 data-qa="publish-data-header" class="govuk-heading-l">{% trans "Publishing data" %}</h1>
   <p class="govuk-body">
     {% blocktrans %}
     Operators are expected to have the people, processes and technology needed to
@@ -17,10 +13,7 @@
     {% endblocktrans %}
   </p>
   {% include "../snippets/requirements_table.html" %}
-
-  <h2 data-qa="maintaining-data-header" class="govuk-heading-l">
-    {% trans 'Maintaining data' %}
-  </h2>
+  <h2 data-qa="maintaining-data-header" class="govuk-heading-l">{% trans "Maintaining data" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
     Operators are expected to have timely, complete and accurate information
@@ -31,10 +24,7 @@
     choosing to have a data set per operating company, certain regions, lines or the underlying scheduler.
     {% endblocktrans %}
   </p>
-
-  <h2 data-qa="dataset-naming-header" class="govuk-heading-l">
-    {% trans 'Data set naming' %}
-  </h2>
+  <h2 data-qa="dataset-naming-header" class="govuk-heading-l">{% trans "Data set naming" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
     The service will automatically name data provided, using an internal naming
@@ -42,10 +32,7 @@
     data set is given by the data set ID or data feed ID.
     {% endblocktrans %}
   </p>
-
-  <h2 data-qa="timetable-fare-header" class="govuk-heading-l">
-    {% trans 'Publishing timetables and fares data' %}
-  </h2>
+  <h2 data-qa="timetable-fare-header" class="govuk-heading-l">{% trans "Publishing timetables and fares data" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
     Most operators must host their own timetables and fares data and publish it by
@@ -55,10 +42,7 @@
     operators.
     {% endblocktrans %}
   </p>
-
-  <h2 data-qa="providing-url-header" class="govuk-heading-l">
-    {% trans 'Providing a URL link' %}
-  </h2>
+  <h2 data-qa="providing-url-header" class="govuk-heading-l">{% trans "Providing a URL link" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
     Bus operators should provide a URL link to their hosted data. The data exposed
@@ -72,10 +56,7 @@
     daily, around 6:00 UCT.
     {% endblocktrans %}
   </p>
-
-  <h2 data-qa="uploading-a-file-header" class="govuk-heading-l">
-    {% trans 'Uploading a file' %}
-  </h2>
+  <h2 data-qa="uploading-a-file-header" class="govuk-heading-l">{% trans "Uploading a file" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
     Small operators may choose to upload a single XML file or zip containing
@@ -83,13 +64,8 @@
     data set published on the service.
     {% endblocktrans %}
   </p>
-
-  <h2 data-qa="publish-bus-data-header" class="govuk-heading-l">
-    {% trans 'Publishing bus location data' %}
-  </h2>
-  <h2 data-qa="publish-feed-header" class="govuk-heading-l">
-    {% trans 'Providing a feed' %}
-  </h2>
+  <h2 data-qa="publish-bus-data-header" class="govuk-heading-l">{% trans "Publishing bus location data" %}</h2>
+  <h2 data-qa="publish-feed-header" class="govuk-heading-l">{% trans "Providing a feed" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
     Automatic vehicle location data will need to be provided using a SIRI-VM data

@@ -1,57 +1,40 @@
 {% extends "page.html" %}
-
 {% load i18n %}
 {% load static %}
 {% load breadcrumbs %}
-
 {% block content %}
-    {% block heading %}
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            {% block heading.primary %}
-              {% block heading.caption %}
-                <span class="govuk-caption-xl">
-                {% block heading.caption.text %}
-                {% endblock %}
-                </span>
-                {% endblock %}
-                {% block heading.title %}
-                  <h1 class="govuk-heading-xl dont-break-out">
-                      {% block heading.title.text %}
-                      {% endblock %}
-                  </h1>
-                {% endblock %}
-
-                {% block primary.extra %}
-                {% endblock %}
-                {% block secondary.title %}
-                  <h2 class="govuk-heading-l dont-break-out">
-                      {% block secondary.title.text %}
-                      {% endblock %}
-                  </h2>
-                {% endblock %}
-
-                {% block heading.subtitle %}
-                  <p class="govuk-body-l">
-                      {% block heading.subtitle.text %}
-                      {% endblock %}
-                  </p>
-                {% endblock %}
-            {% endblock %}
-            {% block heading.primary.extra %}
-                {# Extra stuff #}
-            {% endblock %}
-        </div>
-          {% block heading.secondary %}
+  {% block heading %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        {% block heading.primary %}
+          {% block heading.caption %}
+            <span class="govuk-caption-xl">
+              {% block heading.caption.text %}{% endblock %}
+            </span>
           {% endblock %}
-      </div>
-
-        {% block heading.extra %}
+          {% block heading.title %}
+            <h1 class="govuk-heading-xl dont-break-out">
+              {% block heading.title.text %}{% endblock %}
+            </h1>
+          {% endblock %}
+          {% block primary.extra %}{% endblock %}
+          {% block secondary.title %}
+            <h2 class="govuk-heading-l dont-break-out">
+              {% block secondary.title.text %}{% endblock %}
+            </h2>
+          {% endblock %}
+          {% block heading.subtitle %}
+            <p class="govuk-body-l">
+              {% block heading.subtitle.text %}{% endblock %}
+            </p>
+          {% endblock %}
         {% endblock %}
-    {% endblock heading %}
-
-    {% block inner %}{% endblock %}
-
-    {% block content.extra %}
-    {% endblock %}
+        {% block heading.primary.extra %}{# Extra stuff #}{% endblock %}
+      </div>
+      {% block heading.secondary %}{% endblock %}
+    </div>
+    {% block heading.extra %}{% endblock %}
+  {% endblock heading %}
+  {% block inner %}{% endblock %}
+  {% block content.extra %}{% endblock %}
 {% endblock %}

@@ -1,180 +1,175 @@
-{% extends 'browse/base.html' %}
-
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'All timetables data' %}
+  {% trans "All timetables data" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
-    {% breadcrumb_url 'All Timetables Data' 'download-timetables' host hosts.data %}
+  {{ block.super }}
+  {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
+  {% breadcrumb_url 'All Timetables Data' 'download-timetables' host hosts.data %}
 {% endblock %}
-
-{% block heading.title.text %}{% trans 'All timetables data' %}{% endblock %}
-
+{% block heading.title.text %}
+  {% trans "All timetables data" %}
+{% endblock %}
 {% block heading.subtitle.text %}
-    <div class="govuk-!-margin-top-0">
-        <h3 class="govuk-heading-m">{% trans 'Download file in TransXChange format' %}</h3>
-        <p class="govuk-body">
-            {% blocktrans %}
-                You can download all the active timetables data cached on the service
-                as of today by clicking the link below. Timetables data is
-                provided in a TransXChange format within a compressed ZIP file.
-            {% endblocktrans %}
-        </p>
-
-        <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-            {% if show_bulk_archive_url %}
-                <li>
-                    <a class="govuk-link" href="{% url 'downloads-bulk' host hosts.data %}"
-                        onClick="addGATagEvent('All - timetables in txc format')">
-                        {% filter force_escape %}
-                            {% trans 'All - Download timetables data in TransXChange format' %}
-                        {% endfilter %}
-                    </a>
-                </li>
-            {% else %}
-                {% blocktrans %}
-                    Bulk download is not yet available. Please check back later.
-                {% endblocktrans %}
-            {% endif %}
-
-            {% for file in show_bulk_traveline_regions %}
-                {% if file.exists and not file.region_code == "ALL" %}
-                    <li>
-                        <a class="govuk-link"
-                            href="{% url 'downloads-bulk-region' region_code=file.region_code host hosts.data %}"
-                            onClick="addGATagEvent('{{ file.pretty_name_region_code }} - timetables in txc format')">
-                            {{ file.pretty_name_region_code }}
-                            {% filter force_escape %}
-                                {% trans ' - Download timetables data in TransXChange format' %}
-                            {% endfilter %}
-                        </a>
-                    </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-    </div>
-
-    <div class="govuk-!-margin-top-8">
-        <h3 class="govuk-heading-m">{% filter force_escape %}{% trans 'Download data set updates in TransXChange format' %}{% endfilter %}</h3>
-        <p class="govuk-body">
-            {% blocktrans %}
-                The following links enable you to download the last 7 days of data at specific intervals.
-            {% endblocktrans %}
-        </p>
-        {% if change_archives %}
-            <ul class="govuk-list download-list">
-                {% for archive in change_archives %}
-                    <li>
-                        <a class="govuk-link"
-                            href="{% url 'downloads-change' published_at=archive.published_at host hosts.data %}"
-                            onClick="addGATagEvent('All dataset from {{archive.published_at|date:'l j F'}}')">
-                            {% trans 'All data set updates from ' %}{{ archive.published_at | date:"l j F " }} 00:00:00 -
-                            23:59:59
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p class="govuk-body">
-                {% blocktrans %}
-                    There have been no updates in the last 7 days. Please check back later.
-                {% endblocktrans %}
-            </p>
+  <div class="govuk-!-margin-top-0">
+    <h3 class="govuk-heading-m">{% trans "Download file in TransXChange format" %}</h3>
+    <p class="govuk-body">
+      {% blocktrans %}
+        You can download all the active timetables data cached on the service
+        as of today by clicking the link below. Timetables data is
+        provided in a TransXChange format within a compressed ZIP file.
+      {% endblocktrans %}
+    </p>
+    <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+      {% if show_bulk_archive_url %}
+        <li>
+          <a class="govuk-link"
+             href="{% url 'downloads-bulk' host hosts.data %}"
+             onClick="addGATagEvent('All - timetables in txc format')">
+            {% filter force_escape %}
+              {% trans "All - Download timetables data in TransXChange format" %}
+            {% endfilter %}
+          </a>
+        </li>
+      {% else %}
+        {% blocktrans %}
+          Bulk download is not yet available. Please check back later.
+        {% endblocktrans %}
+      {% endif %}
+      {% for file in show_bulk_traveline_regions %}
+        {% if file.exists and not file.region_code == "ALL" %}
+          <li>
+            <a class="govuk-link"
+               href="{% url 'downloads-bulk-region' region_code=file.region_code host hosts.data %}"
+               onClick="addGATagEvent('{{ file.pretty_name_region_code }} - timetables in txc format')">
+              {{ file.pretty_name_region_code }}
+              {% filter force_escape %}
+                {% trans " - Download timetables data in TransXChange format" %}
+              {% endfilter %}
+            </a>
+          </li>
         {% endif %}
-    </div>
-
-    <div class="govuk-!-margin-top-8">
-        <h3 class="govuk-heading-m">
-            {% trans 'Download regional and national data sets in GTFS format' %}
-        </h3>
-        {% if is_new_gtfs_api_active %}
-          <p class="govuk-body">
-              {% blocktrans %}
-                  You can download timetables data in GTFS format for the
-                  whole of GB, or filter for specific regions. This dataset
-                  is created using compliant data published to the Bus Open
-                  Data Service. Where data is not yet published on Bus Open
-                  Data, or is published but not compliant, this data is
-                  supplemented with
-                  <a class="govuk-link" rel="noopener noreferrer" href="https://data.gov.uk/dataset/0447f8d9-8f1b-4a68-bbc8-246981d02256/traveline-national-dataset" target="_blank">Traveline National Dataset (TNDS)</a>.
-              {% endblocktrans %}
-          </p>
-        {% else %}
-          <p class="govuk-body">
-              {% blocktrans %}
-                  You can download timetables data in GTFS format for the
-                  whole of GB, or filter for specific regions. This dataset
-                  is created using compliant data published to the Bus Open
-                  Data Service. Where data is not yet published on Bus Open
-                  Data, or is published but not compliant, this data is
-                  supplemented with
-                  <a class="govuk-link" rel="noopener noreferrer" href="https://data.gov.uk/dataset/0447f8d9-8f1b-4a68-bbc8-246981d02256/traveline-national-dataset" target="_blank">Traveline National Dataset (TNDS)</a>.
-              {% endblocktrans %}
-          </p>
-        {% endif %}
-        {% if gtfs_regions or gtfs_regions|length %}
-            <ul class="govuk-list download-list">
-                {% for region in gtfs_regions %}
-                    <li>
-                        <a class="govuk-link"
-                            href="{% url 'gtfs-file-download' id=region.regionName host hosts.data %}"
-                            onClick="sendStaticGTFSEvent('{{region.regionDisplayName}}')">
-                            {{region.regionDisplayName}}
-                            {% trans '- Download timetables data in GTFS format' %}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% elif gtfs_static_files or gtfs_static_files|length %}
-            <ul class="govuk-list download-list">
-              {% for file in gtfs_static_files %}
-                  <li>
-                      <a class="govuk-link"
-                          href="{% url 'gtfs-file-download' id=file.id host hosts.data %}"
-                          onClick="sendStaticGTFSEvent('{{file.pretty_name}}')">
-                          {{file.pretty_name}}
-                          {% trans '- Download timetables data in GTFS format' %}
-                      </a>
-                  </li>
-              {% endfor %}
-            </ul>
-        {% else %}
-            <p class="govuk-body">
-                {% blocktrans %}
-                    There are no GTFS files currently available. Please check back later.
-                {% endblocktrans %}
-            </p>
-        {% endif %}
-    </div>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="govuk-!-margin-top-8">
+    <h3 class="govuk-heading-m">
+      {% filter force_escape %}
+        {% trans "Download data set updates in TransXChange format" %}
+      {% endfilter %}
+    </h3>
+    <p class="govuk-body">
+      {% blocktrans %}
+        The following links enable you to download the last 7 days of data at specific intervals.
+      {% endblocktrans %}
+    </p>
+    {% if change_archives %}
+      <ul class="govuk-list download-list">
+        {% for archive in change_archives %}
+          <li>
+            <a class="govuk-link"
+               href="{% url 'downloads-change' published_at=archive.published_at host hosts.data %}"
+               onClick="addGATagEvent('All dataset from {{ archive.published_at|date:'l j F' }}')">
+              {% trans "All data set updates from " %}
+              {{ archive.published_at | date:"l j F " }} 00:00:00 -
+              23:59:59
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="govuk-body">
+        {% blocktrans %}
+          There have been no updates in the last 7 days. Please check back later.
+        {% endblocktrans %}
+      </p>
+    {% endif %}
+  </div>
+  <div class="govuk-!-margin-top-8">
+    <h3 class="govuk-heading-m">{% trans "Download regional and national data sets in GTFS format" %}</h3>
+    {% if is_new_gtfs_api_active %}
+      <p class="govuk-body">
+        {% blocktrans %}
+          You can download timetables data in GTFS format for the
+          whole of GB, or filter for specific regions. This dataset
+          is created using compliant data published to the Bus Open
+          Data Service. Where data is not yet published on Bus Open
+          Data, or is published but not compliant, this data is
+          supplemented with
+          <a class="govuk-link" rel="noopener noreferrer" href="https://data.gov.uk/dataset/0447f8d9-8f1b-4a68-bbc8-246981d02256/traveline-national-dataset" target="_blank">Traveline National Dataset (TNDS)</a>.
+        {% endblocktrans %}
+      </p>
+    {% else %}
+      <p class="govuk-body">
+        {% blocktrans %}
+          You can download timetables data in GTFS format for the
+          whole of GB, or filter for specific regions. This dataset
+          is created using compliant data published to the Bus Open
+          Data Service. Where data is not yet published on Bus Open
+          Data, or is published but not compliant, this data is
+          supplemented with
+          <a class="govuk-link" rel="noopener noreferrer" href="https://data.gov.uk/dataset/0447f8d9-8f1b-4a68-bbc8-246981d02256/traveline-national-dataset" target="_blank">Traveline National Dataset (TNDS)</a>.
+        {% endblocktrans %}
+      </p>
+    {% endif %}
+    {% if gtfs_regions or gtfs_regions|length %}
+      <ul class="govuk-list download-list">
+        {% for region in gtfs_regions %}
+          <li>
+            <a class="govuk-link"
+               href="{% url 'gtfs-file-download' id=region.regionName host hosts.data %}"
+               onClick="sendStaticGTFSEvent('{{ region.regionDisplayName }}')">
+              {{ region.regionDisplayName }}
+              {% trans "- Download timetables data in GTFS format" %}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% elif gtfs_static_files or gtfs_static_files|length %}
+      <ul class="govuk-list download-list">
+        {% for file in gtfs_static_files %}
+          <li>
+            <a class="govuk-link"
+               href="{% url 'gtfs-file-download' id=file.id host hosts.data %}"
+               onClick="sendStaticGTFSEvent('{{ file.pretty_name }}')">
+              {{ file.pretty_name }}
+              {% trans "- Download timetables data in GTFS format" %}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="govuk-body">
+        {% blocktrans %}
+          There are no GTFS files currently available. Please check back later.
+        {% endblocktrans %}
+      </p>
+    {% endif %}
+  </div>
 {% endblock %}
-
 {% block heading.secondary %}
-    {% include "browse/snippets/download_secondary_links.html" %}
+  {% include "browse/snippets/download_secondary_links.html" %}
 {% endblock %}
-
 {% block scripts %}
-    {{ block.super }}
-    <script>
-        function addGATagEvent(obj) {
-            gtag('event', 'Download all event', {
-                'event_category': 'link',
-                'event_label': 'bulk download ' + obj,
-                'event_action': 'download'
-            });
+  {{ block.super }}
+  <script>
+    function addGATagEvent(obj) {
+        gtag('event', 'Download all event', {
+            'event_category': 'link',
+            'event_label': 'bulk download ' + obj,
+            'event_action': 'download'
+        });
+    };
+    function sendStaticGTFSEvent(region) {
+        var data = {
+            'event_category': 'link',
+            'event_label': 'download',
+            'event_action': region.toLowerCase() + ' download gtfs'
         };
-        function sendStaticGTFSEvent(region) {
-            var data = {
-                'event_category': 'link',
-                'event_label': 'download',
-                'event_action': region.toLowerCase() + ' download gtfs'
-            };
-            gtag('event', 'Download gtfs event', data);
-        };
-    </script>
+        gtag('event', 'Download gtfs event', data);
+    };
+  </script>
 {% endblock %}

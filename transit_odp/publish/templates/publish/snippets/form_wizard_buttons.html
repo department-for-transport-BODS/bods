@@ -1,23 +1,19 @@
 {% load i18n %}
-
 {% if edit_mode %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <button type="submit" class="govuk-button">
-        {% trans 'Save' %}
-      </button>
+      <button type="submit" class="govuk-button">{% trans "Save" %}</button>
     </div>
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <button type="submit" formnovalidate="formnovalidate" name="wizard_goto_step" value="{{ wizard.steps.prev }}"
-              class="govuk-button-back-link">
-        {% trans 'Cancel' %}
-      </button>
+      <button type="submit"
+              formnovalidate="formnovalidate"
+              name="wizard_goto_step"
+              value="{{ wizard.steps.prev }}"
+              class="govuk-button-back-link">{% trans "Cancel" %}</button>
     </div>
   </div>
 {% else %}
-  <button type="submit" class="govuk-button" value="Upload">
-    {% trans 'Next step' %}
-  </button>
+  <button type="submit" class="govuk-button" value="Upload">{% trans "Next step" %}</button>
 {% endif %}

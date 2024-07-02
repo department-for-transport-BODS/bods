@@ -1,33 +1,24 @@
-
 {% extends "users/base.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block title_tag %}
-  {% trans 'Remove agent?' %}
+  {% trans "Remove agent?" %}
 {% endblock %}
-
 {% block backlink %}
   {% url 'users:manage-user-detail' pk=object.agent.id host host.name as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-xl">
-        Remove Agent
-      </h1>
+      <h1 class="govuk-heading-xl">Remove Agent</h1>
       <p class="govuk-body-m govuk-!-margin-bottom-6">
         {% blocktrans %}
           Would you like to remove
         {% endblocktrans %}
-        <b>{{object.agent.email}}</b>?
+        <b>{{ object.agent.email }}</b>?
         {% blocktrans %}
           Removing this agent will stop them from acting as agent for your organisation.
         {% endblocktrans %}

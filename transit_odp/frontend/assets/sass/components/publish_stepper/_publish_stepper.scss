@@ -1,6 +1,3 @@
-@import "../../variables";
-@import "govuk-frontend/govuk/all";
-
 .publish-stepper {
   @include govuk-font($size: 19);
   @include govuk-text-colour;

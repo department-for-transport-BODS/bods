@@ -1,6 +1,3 @@
-@import "govuk-frontend/govuk/components/table/table";
-@import "../../variables";
-
 tr.effected {
   color: map-get($govuk-colours, "red");
 }

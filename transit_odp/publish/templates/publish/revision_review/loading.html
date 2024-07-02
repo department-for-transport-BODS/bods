@@ -1,49 +1,19 @@
 {% load i18n %}
-
-<div
-  class="govuk-panel govuk-panel--confirmation"
-  style="background-color: #2b8cc4"
->
-  <h1 class="govuk-panel__title govuk-!-font-size-36">
-    {% trans 'Validating data sets' %}
-  </h1>
+<div class="govuk-panel govuk-panel--confirmation bods-bg-blue-light">
+  <h1 class="govuk-panel__title govuk-!-font-size-36">{% trans "Validating data sets" %}</h1>
   <div class="govuk-panel__body govuk-!-font-size-19">
-    <div style="padding-bottom: 1rem">
+    <div class="pb3-l">
       {% blocktrans %} Once successfully processed, the data set will be
       published, <br />
-      and you will be able to view the details here. 
+      and you will be able to view the details here.
       <br />
       <br />
-      Please expect a temporary delay in processing time as we work to 
+      Please expect a temporary delay in processing time as we work to
       <br /> bring you new and enhanced features. {% endblocktrans %}
     </div>
-    <div
-      id="progressOuterDiv"
-      style="width: 100%; background-color: #005ea5"
-    >
-      <div
-        id="progressInnerDiv"
-        style="
-          width: 0%;
-          height: 30px;
-          background-color: #ffffff;
-          text-align: center;
-          line-height: 30px;
-          color: white;
-        "
-      ></div>
+    <div class="progress-bar-outer" id="progressOuterDiv">
+      <div class="loading-white" id="progressInnerDiv"></div>
     </div>
-    <span
-      style="
-        width: 70px;
-        height: 41px;
-        font-size: 36px;
-        font-weight: bold;
-        color: #ffffff;
-        align-content: center;
-      "
-      id="progressSpan"
-    >
-    </span>
+    <span class="loading-white-lg" id="progressSpan"></span>
   </div>
 </div>
