@@ -18,6 +18,9 @@ class AdminArea(models.Model):
     def __repr__(self):
         return nice_repr(self)
 
+    def __str__(self) -> str:
+        return f"Name: {self.name}, Atco Code: {self.atco_code}"
+
     name = models.CharField(max_length=255)
     traveline_region_id = models.CharField(max_length=255)
     atco_code = models.CharField(max_length=255, unique=True)
