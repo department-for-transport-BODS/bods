@@ -9,7 +9,7 @@ from transit_odp.data_quality.models.transmodel import (
     ServicePatternStop,
     VehicleJourney,
 )
-
+from waffle import flag_is_active
 
 class BaseStopNameTimingPatternTable(GovUkTable):
     class Meta(GovUkTable.Meta):
@@ -130,8 +130,17 @@ class VehicleJourneyTable(GovUkTable):
 
 
 class WarningListBaseTable(GovUkTable):
+
     class Meta:
-        template_name = "data_quality/snippets/dqs_custom_table.html"
+
+        is_new_data_quality_service_active = flag_is_active(
+            "", "is_new_data_quality_service_active"
+        )
+        template_name = (
+            "data_quality/snippets/dqs_custom_table.html"
+            if is_new_data_quality_service_active
+            else "data_quality/snippets/dq_custom_table.html"
+        )
         attrs = {
             "th": {"class": "govuk-table__header"},
         }
