@@ -382,8 +382,8 @@ def task_rerun_fares_validation_specific_datasets():
     provided in a csv file available in AWS S3 bucket
     """
     csv_file_name = "rerun_fares_validator.csv"
-    dataset_ids = read_datasets_file_from_s3(csv_file_name)
-    if not dataset_ids:
+    dataset_ids, dataset_revision_ids, type = read_datasets_file_from_s3(csv_file_name)
+    if not dataset_ids and not type == "dataset_ids":
         logger.info("No valid dataset IDs found in the file.")
         return
     logger.info(f"Total number of datasets to be processed: {len(dataset_ids)}")
