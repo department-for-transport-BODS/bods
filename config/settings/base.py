@@ -608,8 +608,8 @@ EP_AUTH_URL = env(
     default="https://dev-pdbrd.auth.eu-west-2.amazoncognito.com/oauth2/token",
 )
 
-COACH_ATCO_FILE_S3_URL = env("COACH_ATCO_FILE_S3_URL", default="COACH_ATCO_FILE_S3_URL")
-COACH_TXC_FILE_S3_URL = env("COACH_TXC_FILE_S3_URL", default="COACH_TXC_FILE_S3_URL")
+COACH_ATCO_FILE_S3_URL = env("COACH_ATCO_FILE_S3_URL", default="#")
+COACH_TXC_FILE_S3_URL = env("COACH_TXC_FILE_S3_URL", default="#")
 
 # Disruptions API
 # ------------------------------------------------------------------------------
