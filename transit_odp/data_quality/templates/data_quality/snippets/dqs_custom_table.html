@@ -12,15 +12,13 @@
         {% block table.thead %}
           {% if table.show_header %}
             <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:"" }}">
-            <tr class="govuk-table__row">
-              {% for column in table.columns %}
-                <th scope="col" {{ column.attrs.th.as_html |default_if_none:"" }}>                  
-                    Service - {{table.paginated_rows|length }}
+            <tr class="govuk-table__row">              
+                <th scope="col" class="govuk-table__header">
+                    Service ({{table.paginated_rows|length }})
                 </th>
-                <th scope="col" {{ column.attrs.th.as_html |default_if_none:"" }}>                  
+                <th scope="col" class="govuk-table__header" >                  
                   Details                  
-              </th>
-              {% endfor %}
+              </th>              
             </tr>
             </thead>
           {% endif %}
@@ -31,11 +29,11 @@
             {% block table.tbody.row %}    
               <tr class="govuk-table__row {{ row.attrs.class }}">                            
                 <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
-                  <a href="http://publish.localhost:8000/org/1/dataset/timetable/20/detail/?line=6&service=PB0001746:15">
-                    {{ row.cells.message}} --           {{table.paginated_rows.count }} -- 
+                  <a href="http://publish.localhost:8000/org/1/dataset/timetable/20/detail/?line=6&service={{row.cells.service_code}}">
+                    {{row.cells.line_name}} - {{row.cells.service_code}}
                   </a>
                   </td>
-                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">First
+                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
                     {{ row.cells.dqs_details}}</td>                
               </tr>
             {% endblock table.tbody.row %}
