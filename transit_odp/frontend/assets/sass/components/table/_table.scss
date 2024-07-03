@@ -1,6 +1,3 @@
-@import "../../variables";
-@import "govuk-frontend/govuk/components/table/table";
-
 $govuk-table-border: 1px solid $govuk-border-colour;
 
 .timetables_govuk_table {
@@ -13,7 +10,7 @@ $govuk-table-border: 1px solid $govuk-border-colour;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  
+
 }
 
 .custom_govuk_table {

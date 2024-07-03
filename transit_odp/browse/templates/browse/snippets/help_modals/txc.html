@@ -1,10 +1,8 @@
 {% extends "snippets/help_modal_base.html" %}
 {% load i18n %}
-
 {% block help_heading %}
-{% trans "TransXChange" %}
+  {% trans "TransXChange" %}
 {% endblock %}
-
 {% block help_content %}
   <p class="govuk-body">
     {% blocktrans %}
@@ -13,8 +11,8 @@
     {% endblocktrans %}
   </p>
   <ul class="govuk-list govuk-list--bullet">
-    <li>{% trans 'The electronic registration of bus routes' %}</li>
-    <li>{% trans 'The Traffic Area Network' %}</li>
+    <li>{% trans "The electronic registration of bus routes" %}</li>
+    <li>{% trans "The Traffic Area Network" %}</li>
     <li>
       {% blocktrans %}
         The exchange of bus routes with other computer systems such as journey planners
@@ -27,8 +25,6 @@
       TransXChange is part of a family of coherent transport related XML standards that
       follow GovTalk guidelines. The latest transxchange profile used on BODS can be
     {% endblocktrans %}
-    <a class="govuk-link" href="{{ pti_pdf_url }}" target="_blank">
-      {% trans 'found here' %}
-    </a>.
+    <a class="govuk-link" href="{{ pti_pdf_url }}" target="_blank">{% trans "found here" %}</a>.
   </p>
 {% endblock %}

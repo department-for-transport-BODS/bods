@@ -1,20 +1,18 @@
 {% load i18n %}
-
 {% if feed_api %}
   <h2 class="govuk-heading-m">
     {% if object.dataset_type == 2 %}
-      {% trans 'Use this data feed in your code' %}
+      {% trans "Use this data feed in your code" %}
     {% else %}
-      {% trans 'Use this data set in your code' %}
+      {% trans "Use this data set in your code" %}
     {% endif %}
   </h2>
   <div class="api-url-panel">
     <span id="code-snippet-url" class="api-url-panel__url dont-break-out">{{ feed_api }}</span>
     <button class="govuk-button govuk-button--link"
             aria-label="Copy Code snippet to clipboard"
-            onclick="BODSFrontend.copyToClipboard(document.getElementById('code-snippet-url').innerText)"
-    >
-      {% trans 'Copy' %}
+            onclick="BODSFrontend.copyToClipboard(document.getElementById('code-snippet-url').innerText)">
+      {% trans "Copy" %}
     </button>
   </div>
 {% endif %}

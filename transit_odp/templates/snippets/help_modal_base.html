@@ -1,21 +1,18 @@
 {% load i18n %}
-
 <div class="help-modal">
-    {% block help_icon %}
-        <i class="help-icon fas fa-question-circle">
-        </i>
-    {% endblock %}
-    <div class="overlay">
-        <div class="window">
-            <button type="button" class="close-button govuk-link">{% trans "Close" %}</button>
-            <div class="content">
-                <h1 class="govuk-heading-m">
-                    {% block help_heading %}
-                    {% endblock %}
-                </h1>
-                {% block help_content %}
-                {% endblock %}
-            </div>
-        </div>
+  {% block help_icon %}
+    <i class="help-icon fas fa-question-circle">
+    </i>
+  {% endblock %}
+  <div class="overlay">
+    <div class="window">
+      <button type="button" class="close-button govuk-link">{% trans "Close" %}</button>
+      <div class="content">
+        <h1 class="govuk-heading-m">
+          {% block help_heading %}{% endblock %}
+        </h1>
+        {% block help_content %}{% endblock %}
+      </div>
     </div>
+  </div>
 </div>
