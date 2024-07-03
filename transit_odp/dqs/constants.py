@@ -89,3 +89,8 @@ CHECKS_DATA = [
         "queue_name": "incorrect-licence-number-queue",
     },
 ]
+
+
+class Checks(Enum):
+    IncorrectNoc = "Incorrect NOC"
+    FirstStopIsSetDown = "First stop is set down only"
