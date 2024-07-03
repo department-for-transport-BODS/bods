@@ -29,7 +29,7 @@
             {% block table.tbody.row %}    
               <tr class="govuk-table__row {{ row.attrs.class }}">                            
                 <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
-                  <a href="http://publish.localhost:8000/org/1/dataset/timetable/20/detail/?line=6&service={{row.cells.service_code}}">
+                  <a href="{% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{row.cells.line_name}}&service={{row.cells.service_code}}">
                     {{row.cells.line_name}} - {{row.cells.service_code}}
                   </a>
                   </td>

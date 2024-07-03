@@ -41,11 +41,6 @@ class CheckBasis(Enum):
     data_set = "data_set"
 
 
-class Checks(Enum):
-    IncorrectNoc = "Incorrect NOC"
-    FirstStopIsSetDown = "First stop is set down only"
-
-
 @dataclass
 class Observation:
     level: Level
