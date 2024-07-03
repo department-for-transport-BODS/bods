@@ -28,7 +28,8 @@ class IncorrectNOCListTable(WarningListBaseTable):
         is_new_data_quality_service_active = flag_is_active(
             "", "is_new_data_quality_service_active"
         )
-        if is_new_data_quality_service_active:
-            sequence = ("message", "dqs_details")
-        else:
-            sequence = ("message",)
+        sequence = (
+            ("message", "dqs_details")
+            if is_new_data_quality_service_active
+            else ("message",)
+        )
