@@ -114,4 +114,4 @@ use_gitignore = true
 format_attribute_template_tags=false
 line_break_after_multiline_tag=false
 no_set_formatting=true
-ignore = "T003,H022"
+ignore = "T003,H022,T002"
