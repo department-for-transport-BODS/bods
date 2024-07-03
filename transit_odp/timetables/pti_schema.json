@@ -461,19 +461,6 @@
       ]
     },
     {
-      "details": "In 'VehicleJourney' field. If you are providing VehicleJourneyTimingLink then number of 'JourneyPatternTimingLink' must be equal to 'VehicleJourneyTimingLink' for that VehicleJourney.",
-      "category": "Vehicle journeys",
-      "service_type": "All",
-      "reference": "9.2",
-      "number": 39,
-      "context": "//x:VehicleJourneys/x:VehicleJourney",
-      "rules": [
-        {
-          "test": "check_vehicle_journey_timing_links(.)"
-        }
-      ]
-    },
-    {
       "details": "Mandatory elements incorrect for Services and Lines. Please ensure that the lines defined in the lines group are related either spatially or temporally.",
       "category": "Services and Lines",
       "service_type": "All",

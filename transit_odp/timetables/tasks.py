@@ -455,9 +455,6 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
             revision.id
         )
-        adapter.info(
-            f"txc_file_attributes_objects query {txc_file_attributes_objects.query}"
-        )
         combinations = itertools.product(txc_file_attributes_objects, checks)
         TaskResults.initialize_task_results(report, combinations)
         adapter.info(
@@ -466,13 +463,11 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         pending_checks = TaskResults.objects.get_pending_objects(
             txc_file_attributes_objects
         )
-        adapter.info(f"DQS-SQS:The pending checks query is {pending_checks.query}")
-        adapter.info(f"DQS-SQS:Pending check items created {pending_checks}")
-        adapter.info("DQS-SQS:Creating SQS queues payload")
+        adapter.info(
+            f"DQS-SQS:The number of pending check items is: {len(pending_checks)}"
+        )
         queues_payload = create_queue_payload(pending_checks)
-        adapter.info(f"DQS-SQS:SQS queues payload created with {queues_payload}")
         sqs_queue_client = SQSClientWrapper()
-        adapter.info("DQS-SQS:Boto3 SQS client initialised")
         sqs_queue_client.send_message_to_queue(queues_payload)
         adapter.info("DQS-SQS:SQS queue messsages sent successfully.")
 

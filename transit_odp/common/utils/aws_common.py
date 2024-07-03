@@ -34,14 +34,9 @@ class SQSClientWrapper:
         Initialize and return an SQS client.
         """
         try:
-            logger.info(
-                f"DQS-SQS:Initialising SQS client wrapper for environment: {settings.AWS_ENVIRONMENT}"
-            )
             self.endpoint_url = settings.SQS_QUEUE_ENDPOINT_URL
-            logger.info(f"DQS-SQS:Endpoint URL is :: {self.endpoint_url}")
 
             if settings.AWS_ENVIRONMENT == "LOCAL":
-                logger.info(f"DQS-SQS:Initialising local SQS client")
                 self.sqs_client = boto3.client(
                     "sqs",
                     endpoint_url=self.endpoint_url,
@@ -50,14 +45,13 @@ class SQSClientWrapper:
                     aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
                 )
             else:
-                logger.info(f"DQS-SQS:Inside non-local boto3 client initialisation")
                 self.sqs_client = boto3.client(
                     "sqs",
                     endpoint_url=self.endpoint_url,
                 )
         except Exception as e:
             logger.info(
-                f"DQS-SQS:General exception when initialising SQS client wrapper: {e} with {e.__class__.__name__}"
+                f"DQS-SQS:General exception when initialising SQS client wrapper: {e}"
             )
             raise
 
@@ -79,20 +73,22 @@ class SQSClientWrapper:
 
         try:
             if "QueueUrls" in response:
-                logger.info(f"DQS-SQS:Queue URLS received in response")
                 queue_urls = response["QueueUrls"]
                 # Create a mapping from queue name to URL
                 queue_url_map = {
                     self.get_queue_name_from_url(queue_url): queue_url
                     for queue_url in queue_urls
                 }
-
+                batch_size = 10
                 for queue_name, messages in queues_payload.items():
                     if queue_name in queue_url_map:
                         queue_url = queue_url_map[queue_name]
                         try:
+                            # Max allowed batch size by SQS is 10
+                            for i in range(0, len(messages), batch_size):
+                                batch = messages[i : i + batch_size]
                             response_send_messages = self.sqs_client.send_message_batch(
-                                QueueUrl=queue_url, Entries=messages
+                                QueueUrl=queue_url, Entries=batch
                             )
 
                             for success in response_send_messages.get("Successful", []):
