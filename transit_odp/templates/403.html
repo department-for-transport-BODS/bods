@@ -1,23 +1,21 @@
 {% extends "error_base.html" %}
-
 {% load i18n %}
-
-{% block title_tag %}{% trans 'Forbidden (403)' %}{% endblock %}
-
+{% block title_tag %}
+  {% trans "Forbidden (403)" %}
+{% endblock %}
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-three-quarters">
-            <h1 class="govuk-heading-xl">
-                {% filter force_escape %}
-                    {% trans 'We are sorry but you don’t have permissions to access this.' %}
-                {% endfilter %}
-            </h1>
-
-            <p class="govuk-body">
-                {% filter force_escape %}
-                    {% trans "Please liase with your organisation's admin for further information." %}
-                {% endfilter %}
-            </p>
-        </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <h1 class="govuk-heading-xl">
+        {% filter force_escape %}
+          {% trans "We are sorry but you don’t have permissions to access this." %}
+        {% endfilter %}
+      </h1>
+      <p class="govuk-body">
+        {% filter force_escape %}
+          {% trans "Please liase with your organisation's admin for further information." %}
+        {% endfilter %}
+      </p>
     </div>
+  </div>
 {% endblock %}

@@ -2,34 +2,27 @@
 {% load static %}
 {% load breadcrumbs %}
 {% load i18n %}
-
 {% block title_tag %}
-    {% trans 'Disruption data API' %}
+  {% trans "Disruption data API" %}
 {% endblock %}
-
 {# c.f. https://petstore.swagger.io/?_ga=2.232423831.96874064.1570887934-705927868.1570887934 #}
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Try API Service' 'api-select' host hosts.data %}
-    {% breadcrumb_url 'Disruption data API' 'api:disruptionsopenapi' host hosts.data %}
+  {{ block.super }}
+  {% breadcrumb_url 'Try API Service' 'api-select' host hosts.data %}
+  {% breadcrumb_url 'Disruption data API' 'api:disruptionsopenapi' host hosts.data %}
 {% endblock %}
-
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-width-container">
-            <div id="swagger-ui"></div>
-        </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-width-container">
+      <div id="swagger-ui"></div>
     </div>
+  </div>
 {% endblock %}
-
-
 {% block scripts %}
-    {{ block.super }}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        BODSFrontend.initAPIDocs('#swagger-ui', "{% static "openapi/disruptions3.yml" %}")
-    </script>
-    <script>
+  {{ block.super }}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>BODSFrontend.initAPIDocs('#swagger-ui', "{% static "openapi/disruptions3.yml" %}")</script>
+  <script>
         $(document).ready(function () {
             $(document).on("click", "button.btn.execute", function () {
                 gtag('event', 'Execute API button', {
@@ -39,5 +32,5 @@
                 });
             });
         });
-    </script>
+  </script>
 {% endblock %}

@@ -1,15 +1,11 @@
 {% load i18n %}
-
 <div class="search-result">
-    <div class="search-result__heading">
-        {% block dataset_detail_link %}
-        {% endblock %}
-        {% include 'organisation/snippets/status_indicator.html' with status=item.status record=item %}
-    </div>
-    <ul class="key-value-list">
-        {% block dataset_result_content %}
-        {% endblock %}
-    </ul>
-
-    <p class="govuk-body dont-break-out">{{ item.description }}</p>
+  <div class="search-result__heading">
+    {% block dataset_detail_link %}{% endblock %}
+    {% include "organisation/snippets/status_indicator.html" with status=item.status record=item %}
+  </div>
+  <ul class="key-value-list">
+    {% block dataset_result_content %}{% endblock %}
+  </ul>
+  <p class="govuk-body dont-break-out">{{ item.description }}</p>
 </div>

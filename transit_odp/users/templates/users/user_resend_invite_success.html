@@ -1,24 +1,17 @@
 {% extends "users/users_invite_added.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block title_tag %}
-  {% trans 'User re-invited' %}
+  {% trans "User re-invited" %}
 {% endblock %}
-
 {% block title_text %}
-  {% trans 'Invitation has been re-sent' %}
+  {% trans "Invitation has been re-sent" %}
 {% endblock %}
-
 {% block body_text %}
   {% blocktrans %}Invitation has been resent to {{ invite_email }}{% endblocktrans %}
 {% endblock %}
-
 {% block button_href %}
   {% if is_site_admin %}
     {% url 'users:org-user-manage' pk=object.organisation.id host hosts.admin %}
