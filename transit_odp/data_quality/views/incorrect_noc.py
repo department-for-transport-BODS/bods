@@ -51,6 +51,7 @@ class IncorrectNOCListView(WarningListBaseView):
                     "The following service(s) have been observed to have incorrect "
                     "national operator code(s)."
                 ),
+                "is_new_data_quality_service_active": self.is_new_data_quality_service_active,
             }
         )
         return context

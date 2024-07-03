@@ -17,25 +17,24 @@
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl">
         {{ title }}
-      </h1>
-      {% if definition %}
-      <h2 class="govuk-heading-m">Impacts</h2>
+      </h1>      
+      {% if not is_new_data_quality_service_active %}
       <p class="govuk-body-m">
         {{ definition|safe }}
       </p>
       {% endif %}
       {% if impacts %}
-      <h2 class="govuk-heading-m">Impacts</h2>
-      <p class="govuk-body-m">
-        {{ impacts|safe }}
-      </p>
-      {% endif %}
-      {% if resolve %}
-        <h2 class="govuk-heading-m">How to resolve</h2>
+        <h2 class="govuk-heading-m">Impacts</h2>
         <p class="govuk-body-m">
-          {{ resolve | safe }}
+          {{ impacts|safe }}
         </p>
-      {% endif %}
+        {% endif %}
+        {% if resolve %}
+          <h2 class="govuk-heading-m">How to resolve</h2>
+          <p class="govuk-body-m">
+            {{ resolve | safe }}
+          </p>
+        {% endif %}
       <p class="govuk-body-m">
         {{ preamble }}
       </p>
