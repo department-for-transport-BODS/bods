@@ -34,8 +34,8 @@ from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 from transit_odp.timetables.utils import (
     get_bank_holidays,
     get_holidays_records_to_insert,
-    read_delete_datasets_file_from_s3,
 )
+from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     PostSchemaValidator,
@@ -502,14 +502,13 @@ def task_delete_datasets(*args):
             logger.warning(f"Dataset with ID {dataset_id} does not exist.")
     else:
         try:
-            dataset_ids = read_delete_datasets_file_from_s3()
-            if not dataset_ids:
-                logger.info("No valid dataset IDs found in the file.")
+            csv_file_name = "delete_datasets.csv"
+            _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
+            if not _ids and not _id_type == "dataset_ids":
+                logger.info("No valid dataset IDs in the file.")
                 return
-            logger.info(
-                f"Total number of datasets to be deleted is: {len(dataset_ids)}"
-            )
-            datasets = Dataset.objects.filter(id__in=dataset_ids)
+            logger.info(f"Total number of datasets to be deleted is: {len(_ids)}")
+            datasets = Dataset.objects.filter(id__in=_ids)
             deleted_count = 0
             failed_deletion_ids = []
 
@@ -544,3 +543,92 @@ def task_load_bank_holidays():
         BankHolidays.objects.all().delete()
         BankHolidays.objects.bulk_create(bank_holidays_to_insert, BATCH_SIZE)
         logger.info("completed process to load bank holidays from api successfully")
+
+
+@shared_task(ignore_errors=True)
+def task_rerun_timetables_etl_specific_datasets():
+    """This is a one-off task to rerun the timetables ETL for a list of datasets
+    provided in a csv file available in AWS S3 bucket
+    """
+    csv_file_name = "rerun_timetables_etl.csv"
+    _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
+
+    if not _ids:
+        logger.info("No valid dataset IDs or dataset revision IDs found in the file.")
+        return
+
+    timetables_datasets = []
+    if _id_type == "dataset_id":
+        logger.info(f"Total number of datasets to be processed: {len(_ids)}")
+        timetables_datasets = Dataset.objects.filter(id__in=_ids).get_active()
+    elif _id_type == "dataset_revision_id":
+        logger.info(f"Total number of dataset revisions to be processed: {len(_ids)}")
+        timetables_datasets = _ids
+
+    if not timetables_datasets:
+        logger.info("No active datasets found in BODS with these dataset IDs")
+        return
+
+    processed_count = 0
+    successfully_processed_ids = []
+    failed_datasets = []
+
+    total_count = len(timetables_datasets)
+    for timetables_dataset in timetables_datasets:
+        try:
+            if _id_type == "dataset_id":
+                logger.info(
+                    f"Running Timetables ETL pipeline for dataset id {timetables_dataset.id}"
+                )
+                revision = timetables_dataset.live_revision
+                if revision:
+                    revision_id = revision.id
+                    output_id = revision.id
+                else:
+                    raise PipelineException(
+                        f"No live revision for dataset id {timetables_dataset.id}"
+                    )
+            elif _id_type == "dataset_revision_id":
+                revision_id = timetables_dataset
+                output_id = timetables_dataset
+                logger.info(
+                    f"Running Timetables ETL pipeline for revision id {timetables_dataset}"
+                )
+
+            try:
+                revision = DatasetRevision.objects.get(
+                    pk=revision_id, dataset__dataset_type=TimetableType
+                )
+            except DatasetRevision.DoesNotExist as exc:
+                message = f"DatasetRevision {revision_id} does not exist."
+                failed_datasets.append(output_id)
+                logger.exception(message, exc_info=True)
+                raise PipelineException(message) from exc
+
+            task_id = uuid.uuid4()
+            task = DatasetETLTaskResult.objects.create(
+                revision=revision,
+                status=DatasetETLTaskResult.STARTED,
+                task_id=task_id,
+            )
+
+            task_dataset_download(revision_id, task.id)
+            task_dataset_etl(revision_id, task.id)
+
+            task.update_progress(100)
+            task.to_success()
+            successfully_processed_ids.append(output_id)
+            processed_count += 1
+            logger.info(f"The task completed for {processed_count} of {total_count}")
+
+        except Exception as exc:
+            failed_datasets.append(output_id)
+            message = f"Error processing dataset id {output_id}: {exc}"
+            logger.exception(message, exc_info=True)
+
+    logger.info(
+        f"Total number of datasets processed successfully is {len(successfully_processed_ids)} out of {total_count}"
+    )
+    logger.info(
+        f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
+    )
