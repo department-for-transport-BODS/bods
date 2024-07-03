@@ -48,7 +48,7 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
 
         if not storage.exists(csv_file_name):
             logger.warning(f"{csv_file_name} does not exist in the S3 bucket.")
-            return [], [], "none"
+            return [], [], None
 
         file = storage._open(csv_file_name)
         content = file.read().decode()
@@ -62,29 +62,31 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
         csv_file = StringIO(content)
         reader = csv.DictReader(csv_file)
 
-        dataset_ids = []
-        dataset_revision_ids = []
-        for row in reader:
-            if row.get("Dataset ID") and row["Dataset ID"].strip():
-                dataset_ids.append(int(row["Dataset ID"]))
-            if row.get("Dataset revision ID") and row["Dataset revision ID"].strip():
-                dataset_revision_ids.append(int(row["Dataset revision ID"]))
+        _ids = []
+        _id_type = ""
+        _column_name = ""
 
-        if dataset_ids:
-            logger.info(
-                f"Successfully read {len(dataset_ids)} dataset IDs from {csv_file_name} in S3."
-            )
-            return dataset_ids, dataset_revision_ids, "dataset_ids"
-        elif dataset_revision_ids:
-            logger.info(
-                f"Successfully read {len(dataset_revision_ids)} dataset revision IDs from {csv_file_name} in S3."
-            )
-            return dataset_ids, dataset_revision_ids, "dataset_revision_ids"
-        else:
-            logger.warning(
-                f"{csv_file_name} in S3 is empty or does not contain valid dataset IDs."
-            )
-            return [], [], "none"
+        with csv.DictReader(csv_file) as reader:
+            column_names = reader.fieldnames
+
+            if column_names[0].lower() == "dataset id":
+                _column_name = column_names[0]
+                _id_type = "dataset_id"
+            elif column_names[0].lower() == "dataset revision id":
+                _column_name = column_names[0]
+                _id_type = "dataset_revision_id"
+            else:
+                _column_name = ""
+                _id_type = None
+
+            if _column_name:
+                _ids = [
+                    int(row[_column_name])
+                    for row in reader
+                    if row[_column_name].strip()
+                ]
+
+            return _ids, _id_type
 
     except Exception as e:
         logger.error(f"Error reading {csv_file_name} from S3: {str(e)}")
