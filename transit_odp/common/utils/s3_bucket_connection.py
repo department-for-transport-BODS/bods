@@ -47,7 +47,7 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
 
         if not storage.exists(csv_file_name):
             logger.warning(f"{csv_file_name} does not exist in the S3 bucket.")
-            return [], [], None
+            return [], None
 
         file = storage._open(csv_file_name)
         content = file.read().decode()
