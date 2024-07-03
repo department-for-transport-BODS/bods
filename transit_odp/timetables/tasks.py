@@ -632,10 +632,10 @@ def task_rerun_timetables_etl_specific_datasets():
         return
 
     timetables_datasets = []
-    if _id_type == "dataset_ids":
+    if _id_type == "dataset_id":
         logger.info(f"Total number of datasets to be processed: {len(_ids)}")
         timetables_datasets = Dataset.objects.filter(id__in=_ids).get_active()
-    elif _id_type == "dataset_revision_ids":
+    elif _id_type == "dataset_revision_id":
         logger.info(f"Total number of dataset revisions to be processed: {len(_ids)}")
         timetables_datasets = _ids
 
@@ -650,7 +650,7 @@ def task_rerun_timetables_etl_specific_datasets():
     total_count = len(timetables_datasets)
     for timetables_dataset in timetables_datasets:
         try:
-            if _id_type == "dataset_ids":
+            if _id_type == "dataset_id":
                 logger.info(
                     f"Running Timetables ETL pipeline for dataset id {timetables_dataset.id}"
                 )
@@ -662,7 +662,7 @@ def task_rerun_timetables_etl_specific_datasets():
                     raise PipelineException(
                         f"No live revision for dataset id {timetables_dataset.id}"
                     )
-            elif _id_type == "dataset_revision_ids":
+            elif _id_type == "dataset_revision_id":
                 revision_id = timetables_dataset
                 output_id = timetables_dataset
                 logger.info(

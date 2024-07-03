@@ -1,7 +1,7 @@
 import csv
 import logging
 from io import StringIO
-
+import os
 from django.conf import settings
 from storages.backends.s3boto3 import S3Boto3Storage
 
@@ -66,27 +66,24 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
         _id_type = ""
         _column_name = ""
 
-        with csv.DictReader(csv_file) as reader:
-            column_names = reader.fieldnames
+        column_names = reader.fieldnames
 
-            if column_names[0].lower() == "dataset id":
-                _column_name = column_names[0]
-                _id_type = "dataset_id"
-            elif column_names[0].lower() == "dataset revision id":
-                _column_name = column_names[0]
-                _id_type = "dataset_revision_id"
-            else:
-                _column_name = ""
-                _id_type = None
+        if column_names[0].lower() == "dataset id":
+            _column_name = column_names[0]
+            _id_type = "dataset_id"
+        elif column_names[0].lower() == "dataset revision id":
+            _column_name = column_names[0]
+            _id_type = "dataset_revision_id"
+        else:
+            _column_name = ""
+            _id_type = None
 
-            if _column_name:
-                _ids = [
-                    int(row[_column_name])
-                    for row in reader
-                    if row[_column_name].strip()
-                ]
+        if _column_name:
+            _ids = [
+                int(row[_column_name]) for row in reader if row[_column_name].strip()
+            ]
 
-            return _ids, _id_type
+        return _ids, _id_type
 
     except Exception as e:
         logger.error(f"Error reading {csv_file_name} from S3: {str(e)}")
