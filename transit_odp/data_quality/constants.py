@@ -175,18 +175,19 @@ FirstStopSetDownOnlyObservation = Observation(
     check_basis=CheckBasis.timing_patterns,
 )
 LastStopPickUpOnlyObservation = Observation(
-    title="Last stop is found to be pick up only",
-    text=(
-        "This observation identifies timing patterns where the last stop is "
-        "designated to be "
-        "pick up only, meaning the bus is not scheduled to drop off passengers "
-        "at the last "
-        "stop. "
-    ),
+    title="Last stop is pick up only",
+    text=(""),
     impacts=(
-        "Journey planners may not be able to show journeys ending at this stop "
-        "correctly "
+        "This observation identifies timing patterns where the last stop is "
+        "designated to be pick up only, meaning the bus is not scheduled to drop off passengers "
+        "at the last stop."
+        + _LINE_BREAK
+        + "Journey planners may not be able to show journeys with this stop correctly "
         "to passengers, disrupting their journeys. "
+    ),
+    resolve=(
+        "Please correct the stop details on your scheduling tool or get in contact with your "
+        "agent to address this observation."
     ),
     model=models.TimingDropOffWarning,
     list_url_name="dq:last-stop-pick-up-only-list",

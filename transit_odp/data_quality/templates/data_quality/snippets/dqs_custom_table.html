@@ -34,7 +34,16 @@
                   </a>
                   </td>
                   <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
-                    {{ row.cells.dqs_details}}</td>                
+                    {% if table.attrs.tbody.is_details_link %}
+                      <a href="#">
+                        <!-- TODO: We need to modify the link /detail?line=&service_code=
+                        {% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{row.cells.line_name}}&service={{row.cells.service_code}} -->
+                        {{row.cells.dqs_details}}
+                      </a>
+                    {% else %}
+                      {{row.cells.dqs_details}}
+                    {% endif %}                    
+                  </td>                
               </tr>
             {% endblock table.tbody.row %}
           {% empty %}

@@ -94,3 +94,4 @@ CHECKS_DATA = [
 class Checks(Enum):
     IncorrectNoc = "Incorrect NOC"
     FirstStopIsSetDown = "First stop is set down only"
+    LastStopIsPickUpOnly = "Last stop is pick up only"
