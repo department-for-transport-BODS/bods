@@ -1,19 +1,14 @@
 {% extends "page.html" %}
 {% load i18n %}
 {% load static %}
-
 {% block title_tag %}
-  {% trans 'Details about cookies' %}
+  {% trans "Details about cookies" %}
 {% endblock %}
-
-{% block breadcrumb.content %}
-
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-l">{% trans 'Details about cookies on Bus Open Data Service' %}</h1>
+      <h1 class="govuk-heading-l">{% trans "Details about cookies on Bus Open Data Service" %}</h1>
       <p class="govuk-body-m">
         {% blocktrans %}
           Bus Open Data Service puts small files (known as 'cookies') onto your computer to collect
@@ -21,7 +16,7 @@
           what they're for and when they expire.
         {% endblocktrans %}
       </p>
-      <h2 class="govuk-heading-m">{% trans 'Cookies that measure website usage' %}</h2>
+      <h2 class="govuk-heading-m">{% trans "Cookies that measure website usage" %}</h2>
       <p class="govuk-body-m">
         {% blocktrans %}
           We use Google Analytics software (Universal Analytics) to collect anonymised information about how
@@ -30,147 +25,146 @@
         {% endblocktrans %}
       </p>
       <div class="govuk-inset-text">
-        {% trans 'We do not allow Google to use or share the data about how you use this site.' %}
+        {% trans "We do not allow Google to use or share the data about how you use this site." %}
       </div>
-      <p class="govuk-body-m">{% trans 'Google Analytics stores information about:' %}</p>
+      <p class="govuk-body-m">{% trans "Google Analytics stores information about:" %}</p>
       <ul class="govuk-list--bullet">
-        <li style="font-size: 1.185rem; font-family:nta, Arial, sans-serif ">{% trans 'how you got to the site' %}</li>
-        <li
-          style="font-size: 1.185rem; font-family:nta, Arial, sans-serif ">{% trans 'the pages you visit and how long you spend on them' %}</li>
-        <li class="govuk-!-margin-bottom-6"
-          style="font-size: 1.185rem; font-family:nta, Arial, sans-serif ">
+        <li class="font-arial-lg">{% trans "how you got to the site" %}</li>
+        <li class="font-arial-lg">{% trans "the pages you visit and how long you spend on them" %}</li>
+        <li class="font-arial-lg govuk-!-margin-bottom-6">
           {% blocktrans %}
             what you click on while you're visiting the site
           {% endblocktrans %}
         </li>
       </ul>
-      <p class="govuk-body-m">{% trans 'Google Analytics sets the following cookies:' %}</p>
+      <p class="govuk-body-m">{% trans "Google Analytics sets the following cookies:" %}</p>
       <table class="govuk-table">
         <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__header" scope="col">{% trans 'Name' %}</th>
-          <th class="govuk-table__header" scope="col">{% trans 'Purpose' %}</th>
-          <th class="govuk-table__header" scope="col">{% trans 'Expires' %}</th>
-        </tr>
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">{% trans "Name" %}</th>
+            <th class="govuk-table__header" scope="col">{% trans "Purpose" %}</th>
+            <th class="govuk-table__header" scope="col">{% trans "Expires" %}</th>
+          </tr>
         </thead>
         <tbody class="govuk-table__body">
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell" scope="row">{% trans '_ga' %}</td>
-          <td class="govuk-table__cell">
-            {% blocktrans %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell" scope="row">{% trans "_ga" %}</td>
+            <td class="govuk-table__cell">
+              {% blocktrans %}
               This helps us count how many people visit Bus Open Data Service by tracking
               if you've visited before
             {% endblocktrans %}
-          </td>
-          <td class="govuk-table__cell">{% trans '2 years' %}</td>
-        </tr>
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell" scope="row">{% trans '_gid' %}</td>
-          <td class="govuk-table__cell">
-            {% blocktrans %}
+            </td>
+            <td class="govuk-table__cell">{% trans "2 years" %}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell" scope="row">{% trans "_gid" %}</td>
+            <td class="govuk-table__cell">
+              {% blocktrans %}
               This helps us count how many people visit Bus Open Data Service by tracking
               if you've visited before
             {% endblocktrans %}
-          </td>
-          <td class="govuk-table__cell">{% trans '24 hours' %}</td>
-        </tr>
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell" scope="row">{% trans '_gat' %}</td>
-          <td class="govuk-table__cell">{% trans 'Used to manage the rate at which page view requests are made' %}</td>
-          <td class="govuk-table__cell">{% trans '1 minute' %}</td>
-        </tr>
+            </td>
+            <td class="govuk-table__cell">{% trans "24 hours" %}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell" scope="row">{% trans "_gat" %}</td>
+            <td class="govuk-table__cell">{% trans "Used to manage the rate at which page view requests are made" %}</td>
+            <td class="govuk-table__cell">{% trans "1 minute" %}</td>
+          </tr>
         </tbody>
       </table>
       <div class="govuk-inset-text">
-        <span>{% trans 'You can' %}</span>
-        <a class="govuk-link" href="https://tools.google.com/dlpage/gaoptout"
-           target="_blank">{% trans 'opt out of Google Analytics cookies.' %}</a>
+        <span>{% trans "You can" %}</span>
+        <a class="govuk-link" href="https://tools.google.com/dlpage/gaoptout" target="_blank">
+          {% trans "opt out of Google Analytics cookies." %}
+        </a>
       </div>
-      <h2 class="govuk-heading-m">{% trans 'Cookies that remember your settings' %}</h2>
-    <p class="govuk-body-m">
-      {% blocktrans %}
-      These cookies do things like remember your preferences and the choices you make to personalise your experience
-        of using Bus Open Data Service.
-      {% endblocktrans %}
-    </p>
-    <h2 class="govuk-heading-m">{% trans 'Strictly necessary cookies' %}</h2>
-    <h2 class="govuk-heading-s">{% trans 'Remembering who you are' %}</h2>
-    <p class="govuk-body-m">
-      {% blocktrans %}
-      When you have logged into the service we use a cookie to keep track of who you are until you log out or the
-        session ends automatically.
-      {% endblocktrans %}
-    </p>
-    <table class="govuk-table">
+      <h2 class="govuk-heading-m">{% trans "Cookies that remember your settings" %}</h2>
+      <p class="govuk-body-m">
+        {% blocktrans %}
+          These cookies do things like remember your preferences and the choices you make to personalise your experience
+          of using Bus Open Data Service.
+        {% endblocktrans %}
+      </p>
+      <h2 class="govuk-heading-m">{% trans "Strictly necessary cookies" %}</h2>
+      <h2 class="govuk-heading-s">{% trans "Remembering who you are" %}</h2>
+      <p class="govuk-body-m">
+        {% blocktrans %}
+          When you have logged into the service we use a cookie to keep track of who you are until you log out or the
+          session ends automatically.
+        {% endblocktrans %}
+      </p>
+      <table class="govuk-table">
         <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__header" scope="col">{% trans 'Name' %}</th>
-          <th class="govuk-table__header" scope="col">{% trans 'Purpose' %}</th>
-          <th class="govuk-table__header" scope="col">{% trans 'Expires' %}</th>
-        </tr>
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">{% trans "Name" %}</th>
+            <th class="govuk-table__header" scope="col">{% trans "Purpose" %}</th>
+            <th class="govuk-table__header" scope="col">{% trans "Expires" %}</th>
+          </tr>
         </thead>
         <tbody class="govuk-table__body">
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell" scope="row">{% trans 'session_id' %}</td>
-          <td class="govuk-table__cell">
-            {% blocktrans %}
-              Remembers who is logged in
-            {% endblocktrans %}
-          </td>
-          <td class="govuk-table__cell">{% trans '30 minutes' %}</td>
-        </tr>
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell" scope="row">{% trans 'lb_cookie' %}</td>
-          <td class="govuk-table__cell">
-            {% blocktrans %}
-              The time period, in seconds, during which requests from a user should be
-              routed to the same target
-            {% endblocktrans %}
-          </td>
-          <td class="govuk-table__cell">{% trans '10 minutes' %}</td>
-        </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell" scope="row">{% trans "session_id" %}</td>
+            <td class="govuk-table__cell">
+              {% blocktrans %}
+                Remembers who is logged in
+              {% endblocktrans %}
+            </td>
+            <td class="govuk-table__cell">{% trans "30 minutes" %}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell" scope="row">{% trans "lb_cookie" %}</td>
+            <td class="govuk-table__cell">
+              {% blocktrans %}
+                The time period, in seconds, during which requests from a user should be
+                routed to the same target
+              {% endblocktrans %}
+            </td>
+            <td class="govuk-table__cell">{% trans "10 minutes" %}</td>
+          </tr>
         </tbody>
       </table>
-
-    <h2 class="govuk-heading-s">{% trans 'Cookie message' %}</h2>
-    <p class="govuk-body-m">
-      {% blocktrans %}
-      You may see a banner when you visit Bus Open Data Service inviting you to accept cookies or review your
-        settings. We'll set cookies so that your computer knows you've seen it and not to show it again, and also
-        to store your settings.
-      {% endblocktrans %}
-    </p>
-    <table class="govuk-table">
+      <h2 class="govuk-heading-s">{% trans "Cookie message" %}</h2>
+      <p class="govuk-body-m">
+        {% blocktrans %}
+          You may see a banner when you visit Bus Open Data Service inviting you to accept cookies or review your
+          settings. We'll set cookies so that your computer knows you've seen it and not to show it again, and also
+          to store your settings.
+        {% endblocktrans %}
+      </p>
+      <table class="govuk-table">
         <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__header" scope="col">{% trans 'Name' %}</th>
-          <th class="govuk-table__header" scope="col">{% trans 'Purpose' %}</th>
-          <th class="govuk-table__header" scope="col">{% trans 'Expires' %}</th>
-        </tr>
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="col">{% trans "Name" %}</th>
+            <th class="govuk-table__header" scope="col">{% trans "Purpose" %}</th>
+            <th class="govuk-table__header" scope="col">{% trans "Expires" %}</th>
+          </tr>
         </thead>
         <tbody class="govuk-table__body">
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell" scope="row">{% trans 'cookielaw_accepted' %}</td>
-          <td class="govuk-table__cell">
-            {% blocktrans %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell" scope="row">{% trans "cookielaw_accepted" %}</td>
+            <td class="govuk-table__cell">
+              {% blocktrans %}
               Lets us know that you've seen our cookie message
             {% endblocktrans %}
-          </td>
-          <td class="govuk-table__cell">{% trans '1 year' %}</td>
-        </tr>
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell" scope="row">{% trans 'cookie_policy' %}</td>
-          <td class="govuk-table__cell">
-            {% blocktrans %}
+            </td>
+            <td class="govuk-table__cell">{% trans "1 year" %}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell" scope="row">{% trans "cookie_policy" %}</td>
+            <td class="govuk-table__cell">
+              {% blocktrans %}
               Saves your cookie consent settings
             {% endblocktrans %}
-          </td>
-          <td class="govuk-table__cell">{% trans '1 year' %}</td>
-        </tr>
+            </td>
+            <td class="govuk-table__cell">{% trans "1 year" %}</td>
+          </tr>
         </tbody>
       </table>
-      <h2 class="govuk-heading-m govuk-!-margin-top-9">{% trans 'Change your settings' %}</h2>
-      <p class="govuk-body-m">{% trans 'You can ' %}
+      <h2 class="govuk-heading-m govuk-!-margin-top-9">{% trans "Change your settings" %}</h2>
+      <p class="govuk-body-m">
+        {% trans "You can " %}
         <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">
           {% blocktrans %}
           change which cookies you're happy for us to use.

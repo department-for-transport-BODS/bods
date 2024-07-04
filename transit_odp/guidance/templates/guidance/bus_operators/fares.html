@@ -1,97 +1,89 @@
 {% extends "guidance/bus_operators/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-
-    <h1 data-qa="fares-data-header" class="govuk-heading-l">{% trans 'Fares data' %}</h1>
-    <p class="govuk-body">
-        {% blocktrans %}
+  <h1 data-qa="fares-data-header" class="govuk-heading-l">{% trans "Fares data" %}</h1>
+  <p class="govuk-body">
+    {% blocktrans %}
             During 2019 industry standard leads developed the UK NeTEx profile, to standardise the publication of fares data within the UK bus industry. NeTEx is a highly interoperable CEN standard that can be used to represent various aspects of multi-modal transport networks, including both timetables and fares. For this reason, NeTEx may be considered for expanded used by DfT in the future.
         {% endblocktrans %}
-    </p>
-
-    <h2 data-qa="netex-header" class="govuk-heading-l">{% trans 'How can I produce NeTEx?' %}</h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <h2 data-qa="netex-header" class="govuk-heading-l">{% trans "How can I produce NeTEx?" %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             Operators will be able to use the free Fare Data Build Tool to produce their own NeTEx.
             The tool can be found here:
         {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://fares-data.dft.gov.uk/" >
-            https://fares-data.dft.gov.uk/
-        </a>
-    </p>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://fares-data.dft.gov.uk/">
+      https://fares-data.dft.gov.uk/
+    </a>
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             Operators who have ETM suppliers can talk with them about hosted NeTEx solutions.
             A large proportion of fares data already resides within ETM systems.
             This can be leveraged to provide NeTEx to BODS. There may be a need for additional
             product development, so ensure your needs are understood by your supplier.
         {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             For the creation of NeTEx files using bespoke NeTEx tools, operators can input a
             start date in the future to make sure that the relevant tickets are applicable for
             the relevant amount of time.
         {% endblocktrans %}
-    </p>
-
-    <h2 data-qa="easier-fare-header" class="govuk-heading-l">{% trans 'Easier fares' %}</h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <h2 data-qa="easier-fare-header" class="govuk-heading-l">{% trans "Easier fares" %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             Operators that maintain easy to understand fare structure will see many benefits moving forward. These include but are not limited to the following; increased usage of their data by data consumers, increased exposure of fares information to passengers, improved representation of offerings by third parties, increased public trust, increased patronage, and easier revenue apportionment. Easier fares are endorsed by the DfT, passengers and local transport authorities.
         {% endblocktrans %}
-    </p>
-
-
-    <h2 data-qa="netex-profile-header" class="govuk-heading-l">{% trans 'NeTEx profile' %}</h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <h2 data-qa="netex-profile-header" class="govuk-heading-l">{% trans "NeTEx profile" %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             The UK NeTEx profile will remain open on the Bus Open Data Service, to allow for accurate representations of operators’ offerings to the market. For more information on the UK Profile and the schema please use the following links:
         {% endblocktrans %}
-    </p>
-    <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-        <li>
-            <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="http://netex.uk/farexchange/">http://netex.uk/farexchange/</a>
-        </li>
-        <li>
-            <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="http://www.transmodel-cen.eu/standards/netex/">http://www.transmodel-cen.eu/standards/netex/</a>
-        </li>
-    </ul>
-
-    <h2 data-qa="simple-fares-header" class="govuk-heading-l">{% trans 'Simple and complex fares' %}</h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+    <li>
+      <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="http://netex.uk/farexchange/">http://netex.uk/farexchange/</a>
+    </li>
+    <li>
+      <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="http://www.transmodel-cen.eu/standards/netex/">http://www.transmodel-cen.eu/standards/netex/</a>
+    </li>
+  </ul>
+  <h2 data-qa="simple-fares-header" class="govuk-heading-l">{% trans "Simple and complex fares" %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             Simple fare and ticket information means information about:
         {% endblocktrans %}
-    </p>
-    <ul class="govuk-list govuk-list--bullet">
-        <li>adult single and return fares and tickets;</li>
-        <li>child single and return fares and tickets;</li>
-        <li>group fares and tickets;</li>
-        <li>period tickets;</li>
-        <li>single operator fares and tickets;</li>
-        <li>multi-operator fares and tickets;</li>
-        <li>zonal fares and tickets;</li>
-        <li>the ways in which fares may be paid;</li>
-        <li>which tickets can be purchased in advance and which can only be purchased on board a vehicle;</li>
-        <li>age restrictions;</li>
-        <li>time restrictions.</li>
-    </ul>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>adult single and return fares and tickets;</li>
+    <li>child single and return fares and tickets;</li>
+    <li>group fares and tickets;</li>
+    <li>period tickets;</li>
+    <li>single operator fares and tickets;</li>
+    <li>multi-operator fares and tickets;</li>
+    <li>zonal fares and tickets;</li>
+    <li>the ways in which fares may be paid;</li>
+    <li>which tickets can be purchased in advance and which can only be purchased on board a vehicle;</li>
+    <li>age restrictions;</li>
+    <li>time restrictions.</li>
+  </ul>
+  <p class="govuk-body">
+    {% blocktrans %}
             Complex fare and ticket information means information about fares that vary depending on:
         {% endblocktrans %}
-    </p>
-    <ul class="govuk-list govuk-list--bullet">
-        <li>the route taken;</li>
-        <li>the duration of the journey;</li>
-        <li>the type and the number of passengers;</li>
-        <li>the method of payment;</li>
-        <li>the amount of subsequent travel undertaken in a given period;</li>
-        <li>whether or not a discount or a cap is applied to the fare.</li>
-    </ul>
+  </p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>the route taken;</li>
+    <li>the duration of the journey;</li>
+    <li>the type and the number of passengers;</li>
+    <li>the method of payment;</li>
+    <li>the amount of subsequent travel undertaken in a given period;</li>
+    <li>whether or not a discount or a cap is applied to the fare.</li>
+  </ul>
 {% endblock %}

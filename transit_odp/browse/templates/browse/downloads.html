@@ -1,211 +1,268 @@
-{% extends 'browse/base.html' %}
-
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'Download all data' %}
+  {% trans "Download all data" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
+  {{ block.super }}
+  {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
 {% endblock %}
-
-{% block heading.title.text %}{% trans 'Download all data' %}{% endblock %}
-
+{% block heading.title.text %}
+  {% trans "Download all data" %}
+{% endblock %}
 {% block secondary.title %}
-    <p class="govuk-body">
-        <a class="govuk-link" href="{% url 'download-catalogue' host hosts.data %}">
-            {% trans 'Download the data catalogue' %}
-        </a>
-    </p>
+  <p class="govuk-body">
+    <a class="govuk-link" href="{% url 'download-catalogue' host hosts.data %}">
+      {% trans "Download the data catalogue" %}
+    </a>
+  </p>
 {% endblock %}
-
 {% block heading.subtitle %}
-    <p class="govuk-body">
-        {% blocktrans %}
-            Data catalogue will provide you with a comprehensive
-            view of all data published on BODS and provide matching
-            information between different dataset types.
-        {% endblocktrans %}
-    </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+      Data catalogue will provide you with a comprehensive
+      view of all data published on BODS and provide matching
+      information between different dataset types.
+    {% endblocktrans %}
+  </p>
 {% endblock %}
-
 {% block heading.secondary %}
-    <div class="govuk-grid-column-one-third">
-        <h3 class="govuk-heading-m">
-            {% trans 'Need further help?' %}
-        </h3>
-        <ul class="govuk-list">
-            <li class="govuk-!-margin-bottom-3">
-                <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">
-                    {% trans 'Guide me' %}
-                </a>
-            </li>
-            <li class="govuk-!-margin-bottom-3">
-                <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
-                    {% trans 'Contact us for technical issues' %}
-                </a>
-            </li>
-        </ul>
-    </div>
+  <div class="govuk-grid-column-one-third">
+    <h3 class="govuk-heading-m">{% trans "Need further help?" %}</h3>
+    <ul class="govuk-list">
+      <li class="govuk-!-margin-bottom-3">
+        <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">{% trans "Guide me" %}</a>
+      </li>
+      <li class="govuk-!-margin-bottom-3">
+        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact us for technical issues" %}</a>
+      </li>
+    </ul>
+  </div>
 {% endblock %}
-
 {% block inner %}
-    <div class="govuk-grid-row govuk-!-margin-top-5">
-        <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body">
-                <a class="govuk-link" href="{% url 'download-timetables' host hosts.data %}"
-                    onClick="addGATagEvent('timetables')">
-                    {% trans 'Timetables data' %}
-                </a>
-            </p>
-            <p class="govuk-body">
-                {% blocktrans %}
-                    Timetables data provides details of a specific number, day, date,<br>
-                    route and time. You can download all the timetables data cached<br>
-                    on the service.
-                {% endblocktrans %}
-            </p>
-            <ul class="govuk-list">
-                <li>
-                    <b>{% trans 'Format' %}:</b>
-                    {% trans 'TransXChange' %} {% include "browse/snippets/help_modals/txc.html" %}
-                    {% trans 'GTFS' %} {% include "browse/snippets/help_modals/gtfs.html" %}
-                </li>
-                <li><b>{% trans 'TXC profile' %}:</b> {% trans 'TXC 2.4 PTI v1.1' %}</li>
-                <li><b>{% trans 'Mode' %}:</b> {% trans 'Bus' %}</li>
-                <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
-                <li><b>{% trans 'Update frequency' %}:</b>
-                    {% trans 'Daily 6:00 am and 6:00 pm GMT' %}</li>
-            </ul>
-        </div>
+  <div class="govuk-grid-row govuk-!-margin-top-5">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body">
+        <a class="govuk-link" href="{% url 'download-timetables' host hosts.data %}" onClick="addGATagEvent('timetables')">
+          {% trans "Timetables data" %}
+        </a>
+      </p>
+      <p class="govuk-body">
+        {% blocktrans %}
+          Timetables data provides details of a specific number, day, date,<br />
+          route and time. You can download all the timetables data cached<br />
+          on the service.
+        {% endblocktrans %}
+      </p>
+      <ul class="govuk-list">
+        <li>
+          <b>
+            {% trans "Format" %}
+          :</b>
+          {% trans "TransXChange" %}
+          {% include "browse/snippets/help_modals/txc.html" %}
+          {% trans "GTFS" %}
+          {% include "browse/snippets/help_modals/gtfs.html" %}
+        </li>
+        <li>
+          <b>{% trans "TXC profile" %}:</b> {% trans "TXC 2.4 PTI v1.1" %}
+        </li>
+        <li>
+          <b>{% trans "Mode" %}:</b> {% trans "Bus" %}
+        </li>
+        <li>
+          <b>{% trans "File type" %}:</b> {% trans "ZIP file" %}
+        </li>
+        <li>
+          <b>{% trans "Update frequency" %}:</b>
+          {% trans "Daily 6:00 am and 6:00 pm GMT" %}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-5">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body">
+        <a class="govuk-link" href="{% url 'download-avl' host hosts.data %}" onClick="addGATagEvent('avl')">
+          {% trans "Location data" %}
+        </a>
+      </p>
+      <p class="govuk-body">
+        {% blocktrans %}
+          Location data provides the most recent real time vehicle<br />
+          position cached on the service. You can download all current<br />
+          bus location data.
+      {% endblocktrans %}
+      </p>
+      <ul class="govuk-list">
+        <li>
+          <b>{% trans "Format:" %}</b>
+          {% trans "SIRI-VM" %}
+          {% include "browse/snippets/help_modals/sirivm.html" %}
+          {% filter force_escape %}
+            {% trans "GTFS-RT" %}
+          {% endfilter %}
+          {% include "browse/snippets/help_modals/gtfsrt.html" %}
+        </li>
+        <li>
+          <b>{% trans "Mode" %}:</b> {% trans "Bus" %}
+        </li>
+        <li>
+          <b>{% trans "File type" %}:</b> {% trans "ZIP file" %}
+        </li>
+        <li>
+          <b>
+            {% filter force_escape %}
+              {% trans "Update frequency" %}
+            {% endfilter %}
+          :</b>
+          {% filter force_escape %}
+            {% trans "Every 10 seconds" %}
+          {% endfilter %}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-5">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body">
+        <a class="govuk-link" href="{% url 'download-fares' host hosts.data %}" onClick="addGATagEvent('fares')">
+          {% trans "Fares data" %}
+        </a>
+      </p>
+      <p class="govuk-body">
+        {% blocktrans %}
+          You can download all fares data cached on the service.
+        {% endblocktrans %}
+      </p>
+      <ul class="govuk-list">
+        <li>
+          <b>{% trans "Format" %}:</b>
+          {% trans "NeTEx" %}
+          {% include "browse/snippets/help_modals/netex.html" %}
+        </li>
+        <li>
+          <b>{% trans "NeTEx profile" %}:</b> {% trans "v1.1" %}
+        </li>
+        <li>
+          <b>{% trans "Mode" %}:</b> {% trans "Bus" %}
+        </li>
+        <li>
+          <b>{% trans "File type" %}:</b> {% trans "ZIP file" %}
+        </li>
+        <li>
+          <b>{% trans "Update frequency" %}:</b>
+          {% trans "Daily 6:00 am and 6:00 pm GMT" %}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-5">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body">
+        <a class="govuk-link" href="{% url 'download-disruptions' host hosts.data %}" onClick="addGATagEvent('disruptions')">
+          {% trans "Disruptions data" %}
+        </a>
+      </p>
+      <p class="govuk-body">
+        {% blocktrans %}
+          Download disruptions data for selected regions in SIRI-SX format.
+        {% endblocktrans %}
+      </p>
+      <ul class="govuk-list">
+        <li>
+          <b>{% trans "Format" %}:</b>
+          {% trans "SIRI-SX" %}
+          {% include "browse/snippets/help_modals/sirisx.html" %}
+        </li>
+        <li>
+          <b>{% trans "Mode" %}:</b> {% trans "Bus, Ferry, Light Rail" %}
+        </li>
+        <li>
+          <b>{% trans "File type" %}:</b> {% trans "ZIP file" %}
+        </li>
+        <li>
+          <b>{% trans "Update frequency" %}:</b>
+          {% trans "Every minute" %}
+        </li>
+        <li>
+          <b>{% trans "Source" %}:</b>
+          {% trans "Local authorities" %}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-5">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body">
+        <a class="govuk-link" href="{% url 'coach-download' host hosts.data %}" onClick="addGATagEvent('coach')">
+          {% trans "Coach data" %}
+        </a>
+      </p>
+      <p class="govuk-body">
+        {% blocktrans %}
+          Download coach data in ATCO.cif or TxC2.4 format.
+        {% endblocktrans %}
+      </p>
+      <ul class="govuk-list">
+        <li>
+          <b>{% trans "Format" %}:</b>
+          {% trans "TxC2.4/ATCO.cif" %}
+        </li>
+        <li>
+          <b>{% trans "Mode" %}:</b> {% trans "Coach" %}
+        </li>
+        <li>
+          <b>{% trans "File type" %}:</b> {% trans "ZIP file" %}
+        </li>
+        <li>
+          <b>{% trans "Update frequency" %}:</b>
+          {% trans "Daily 6:00 am GMT" %}
+        </li>
+        <li>
+          <b>{% trans "Source" %}:</b>
+          {% trans "Local Authority" %}
+        </li>
+      </ul>
     </div>
     <div class="govuk-grid-row govuk-!-margin-top-5">
-        <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body">
-                <a class="govuk-link" href="{% url 'download-avl' host hosts.data %}"
-                    onClick="addGATagEvent('avl')">
-                    {% trans 'Location data' %}
-                </a>
-            </p>
-            <p class="govuk-body">
-                {%  blocktrans %}
-                    Location data provides the most recent real time vehicle<br>
-                    position cached on the service. You can download all current<br>
-                    bus location data.
-                {%  endblocktrans %}
-            </p>
-            <ul class="govuk-list">
-                <li>
-                    <b>{% trans "Format:" %}</b>
-                    {% trans "SIRI-VM" %} {% include "browse/snippets/help_modals/sirivm.html" %}
-                    {% filter force_escape %}
-                        {% trans "GTFS-RT" %}
-                    {% endfilter %}
-                    {% include "browse/snippets/help_modals/gtfsrt.html" %}
-                </li>
-                <li><b>{% trans 'Mode' %}:</b> {% trans 'Bus' %}</li>
-                <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
-                <li><b>{% filter force_escape %}{% trans 'Update frequency' %}{% endfilter %}:</b> {% filter force_escape %}{% trans 'Every 10 seconds' %}{% endfilter %}</li>
-            </ul>
-        </div>
+      <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body">
+          <a class="govuk-link" href="{% url 'coach-download' host hosts.data %}" onClick="addGATagEvent('coach')">
+            {% trans "Coach data" %}
+          </a>
+        </p>
+        <p class="govuk-body">
+          {% blocktrans %}
+            Download coach data in ATCO.cif or TxC2.4 format.
+          {% endblocktrans %}
+        </p>
+        <ul class="govuk-list">
+          <li>
+            <b>{% trans "Format" %}:</b>
+            {% trans "TxC2.4/ATCO.cif" %}
+          </li>
+          <li>
+            <b>{% trans "Mode" %}:</b> {% trans "Coach" %}
+          </li>
+          <li>
+            <b>{% trans "File type" %}:</b> {% trans "ZIP file" %}
+          </li>
+          <li>
+            <b>{% trans "Update frequency" %}:</b>
+            {% trans "Daily 6:00 am GMT" %}
+          </li>
+          <li>
+            <b>{% trans "Source" %}:</b>
+            {% trans "Local Authority" %}
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="govuk-grid-row govuk-!-margin-top-5">
-        <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body">
-                <a class="govuk-link" href="{% url 'download-fares' host hosts.data %}"
-                    onClick="addGATagEvent('fares')">
-                    {% trans 'Fares data' %}
-                </a>
-            </p>
-            <p class="govuk-body">
-                {%  blocktrans %}
-                    You can download all fares data cached on the service.
-                {%  endblocktrans %}
-            </p>
-            <ul class="govuk-list">
-                <li>
-                    <b>{% trans 'Format' %}:</b>
-                    {% trans 'NeTEx' %} {% include "browse/snippets/help_modals/netex.html" %}
-                </li>
-                <li><b>{% trans 'NeTEx profile' %}:</b> {% trans 'v1.1' %}</li>
-                <li><b>{% trans 'Mode' %}:</b> {% trans 'Bus' %}</li>
-                <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
-                <li>
-                    <b>{% trans 'Update frequency' %}:</b>
-                    {% trans 'Daily 6:00 am and 6:00 pm GMT' %}
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="govuk-grid-row govuk-!-margin-top-5">
-        <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body">
-                <a class="govuk-link" href="{% url 'download-disruptions' host hosts.data %}"
-                    onClick="addGATagEvent('disruptions')">
-                    {% trans 'Disruptions data' %}
-                </a>
-            </p>
-            <p class="govuk-body">
-                {%  blocktrans %}
-                    Download disruptions data for selected regions in SIRI-SX format.
-                {%  endblocktrans %}
-            </p>
-            <ul class="govuk-list">
-                <li>
-                    <b>{% trans 'Format' %}:</b>
-                    {% trans 'SIRI-SX' %} {% include "browse/snippets/help_modals/sirisx.html" %}
-                </li>
-                <li><b>{% trans 'Mode' %}:</b> {% trans 'Bus, Ferry, Light Rail' %}</li>
-                <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
-                <li>
-                    <b>{% trans 'Update frequency' %}:</b>
-                    {% trans 'Every minute' %}
-                </li>
-                <li>
-                    <b>{% trans 'Source' %}:</b>
-                    {% trans 'Local authorities' %}
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="govuk-grid-row govuk-!-margin-top-5">
-        <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body">
-                <a class="govuk-link" href="{% url 'coach-download' host hosts.data %}"
-                    onClick="addGATagEvent('coach')">
-                    {% trans 'Coach data' %}
-                </a>
-            </p>
-            <p class="govuk-body">
-                {%  blocktrans %}
-                    Download coach data in ATCO.cif or TxC2.4 format.
-                {%  endblocktrans %}
-            </p>
-            <ul class="govuk-list">
-                <li>
-                    <b>{% trans 'Format' %}:</b>
-                    {% trans 'TxC2.4/ATCO.cif' %}
-                </li>
-                <li><b>{% trans 'Mode' %}:</b> {% trans 'Coach' %}</li>
-                <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
-                <li>
-                    <b>{% trans 'Update frequency' %}:</b>
-                    {% trans 'Daily 6:00 am GMT' %}
-                </li>
-                <li>
-                    <b>{% trans 'Source' %}:</b>
-                    {% trans 'Local Authority' %}
-                </li>
-            </ul>
-        </div>
-    </div>
-{% endblock %}
-
-{% block scripts %}
+  {% endblock %}
+  {% block scripts %}
     {{ block.super }}
     <script>
         function addGATagEvent(obj) {
@@ -216,4 +273,4 @@
             });
         };
     </script>
-{% endblock %}
+  {% endblock %}
