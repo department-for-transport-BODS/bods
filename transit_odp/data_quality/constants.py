@@ -236,20 +236,17 @@ StopsRepeatedObservation = Observation(
 )
 IncorrectStopTypeObservation = Observation(
     title="Incorrect stop type",
-    text=(
-        "Stopping patterns are considered to be using stops of the incorrect"
-        " type if the "
-        "stops are not designated at bus stops within NaPTAN. Stopping patterns are "
-        "considered to be using stops of the incorrect type if the stops are not "
-        "designated as bus stops within NaPTAN. Expected stop types are BCT, BCQ "
-        "or BCS."
-    ),
+    text=(""),
     impacts=(
-        "An incorrect stop type suggested that that stop being used, is not "
-        "intended for "
-        "buses. This can impede the ability of passengers to be able to find "
-        "the correct "
-        "location to board services, particularly when planning multimodal journeys. "
+        "This observation identifies the use of stops that are not designated as bus stops within NaPTAN. "
+        "Expected stop types are BCT, BCQ or BCS."
+        "An incorrect stop type suggested that that stop being used, is not intended for buses. "
+        "This can impede the ability of passengers to be able to find the correct location to board services, "
+        "particularly when planning multimodal journeys."
+    ),
+    resolve=(
+        "Please correct the stop details on your scheduling tool or contact your Local Transport Authroity "
+        "to update the stop type in NaPTAN."
     ),
     model=models.JourneyStopInappropriateWarning,
     list_url_name="dq:incorrect-stop-type-list",
