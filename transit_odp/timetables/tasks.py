@@ -24,6 +24,8 @@ from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
 from transit_odp.organisation.models import Dataset, DatasetRevision, TXCFileAttributes
 from transit_odp.organisation.updaters import update_dataset
+from transit_odp.organisation.constants import TimetableType
+from transit_odp.common.constants import CSVFileName
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.dataclasses.transxchange import TXCFile
@@ -502,7 +504,7 @@ def task_delete_datasets(*args):
             logger.warning(f"Dataset with ID {dataset_id} does not exist.")
     else:
         try:
-            csv_file_name = "delete_datasets.csv"
+            csv_file_name = CSVFileName.DELETE_DATASETS.value
             _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
             if not _ids and not _id_type == "dataset_ids":
                 logger.info("No valid dataset IDs in the file.")
@@ -550,7 +552,7 @@ def task_rerun_timetables_etl_specific_datasets():
     """This is a one-off task to rerun the timetables ETL for a list of datasets
     provided in a csv file available in AWS S3 bucket
     """
-    csv_file_name = "rerun_timetables_etl.csv"
+    csv_file_name = CSVFileName.RERUN_ETL_TIMETABLES.value
     _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
 
     if not _ids:
