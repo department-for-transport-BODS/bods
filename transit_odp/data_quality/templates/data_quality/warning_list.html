@@ -15,11 +15,21 @@
       {% if not is_new_data_quality_service_active %}
       <p class="govuk-body-m">{{ definition|safe }}</p>
       {% endif %}
+      
       {% if impacts %}
-        <h2 class="govuk-heading-m">Impacts</h2>
-        <p class="govuk-body-m">{{ impacts | safe }}</p>
-      {% endif %}
-      <p class="govuk-body-m">{{ preamble }}</p>
+        <p class="govuk-body-m">
+          {{ impacts|safe }}
+        </p>
+        {% endif %}
+        {% if resolve %}
+          <h2 class="govuk-heading-m">How to resolve</h2>
+          <p class="govuk-body-m">
+            {{ resolve | safe }}
+          </p>
+        {% endif %}
+      <p class="govuk-body-m">
+        {{ preamble }}
+      </p>
       {% if extra_info %}
         <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
           <div class="govuk-accordion__section ">
@@ -38,19 +48,7 @@
           </div>
         </div>
       {% endif %}
-        <p class="govuk-body-m">
-          {{ impacts|safe }}
-        </p>
-        {% endif %}
-        {% if resolve %}
-          <h2 class="govuk-heading-m">How to resolve</h2>
-          <p class="govuk-body-m">
-            {{ resolve | safe }}
-          </p>
-        {% endif %}
-      <p class="govuk-body-m">
-        {{ preamble }}
-      </p>
+      
 
 {% if extra_info %}
       <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
