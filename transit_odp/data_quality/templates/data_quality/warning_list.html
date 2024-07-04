@@ -23,6 +23,7 @@
         {{ definition|safe }}
       </p>
       {% endif %}
+      
       {% if impacts %}
         <h2 class="govuk-heading-m">Impacts</h2>
         <p class="govuk-body-m">
@@ -39,24 +40,24 @@
         {{ preamble }}
       </p>
 
-{% if extra_info %}
-      <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
-        <div class="govuk-accordion__section ">
-          <div class="govuk-accordion__section-header">
-            <h2 class="govuk-accordion__section-heading">
-              <span class="govuk-accordion__section-button" id="accordion-default-heading-1">
-               {% trans "What are the different types of bus stops?" %}
-              </span>
-            </h2>
-          </div>
-          <div id="accordion-default-content-1" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-1">
-          <div class="incorrect_stop_type_list">
-            {% include "data_quality/snippets/incorrect_stop_types.html" with info=extra_info%}
-          </div>
+      {% if extra_info %}
+        <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
+          <div class="govuk-accordion__section ">
+            <div class="govuk-accordion__section-header">
+              <h2 class="govuk-accordion__section-heading">
+                <span class="govuk-accordion__section-button" id="accordion-default-heading-1">
+                  {% trans "What are the different types of bus stops?" %}
+                </span>
+              </h2>
+            </div>
+            <div id="accordion-default-content-1" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-1">
+              <div class="incorrect_stop_type_list">
+                {% include "data_quality/snippets/incorrect_stop_types.html" with info=extra_info %}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-{% endif %}
+      {% endif %}
     </div>
   </div>
 
