@@ -396,7 +396,20 @@ class ServiceQuerySet(QuerySet):
 
         return self.merge_weca_otc_queries(weca_registrations)
 
-    def get_in_scope_in_season_lta_services(self, lta_list):
+    def get_in_scope_in_season_lta_services(self, lta_list) -> TServiceQuerySet:
+        """
+        Retrieve the in-scope, in-season LTA (Local Transport Authority) services.
+
+        This method fetches services for the given list of Local Authorities, excluding exempted services and out-of-season
+        seasonal services. It counts the number of unique in-scope, in-season services based on the licence and registration
+        numbers.
+
+        Args:
+            lta_list (list[LocalAuthority]): A list of Local Authority objects to filter the services.
+
+        Returns:
+            TServiceQuerySet
+        """
         now = timezone.now()
         services_subquery_list = [
             x.registration_numbers.values("id")
@@ -440,7 +453,7 @@ class ServiceQuerySet(QuerySet):
                     self.get_weca_otc_traveline_region_exemption(lta_list[0].ui_lta)
                 )
 
-                all_in_scope_in_season_services_count = (
+                all_in_scope_in_season_services = (
                     self.filter(id__in=Subquery(final_subquery.values("id")))
                     .annotate(otc_licence_number=F("licence__number"))
                     .exclude(registration_number__in=exemptions_subquery)
@@ -452,8 +465,8 @@ class ServiceQuerySet(QuerySet):
                         "licence__number", "registration_number", "service_number"
                     )
                     .distinct("licence__number", "registration_number")
-                ).count()
-            return all_in_scope_in_season_services_count
+                )
+            return all_in_scope_in_season_services
         else:
             return None
 

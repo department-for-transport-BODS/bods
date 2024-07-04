@@ -1,13 +1,17 @@
+import uuid
+
 from logging import getLogger
 from pathlib import Path
 from urllib.parse import unquote
 
 import celery
+import itertools
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.db import IntegrityError, transaction
+from django.db import DatabaseError, IntegrityError, transaction
 from django.utils import timezone
+from waffle import flag_is_active
 
 from transit_odp.common.loggers import (
     MonitoringLoggerContext,
@@ -45,12 +49,14 @@ from transit_odp.timetables.validate import (
     TXCRevisionValidator,
 )
 from transit_odp.transmodel.models import BankHolidays
+from transit_odp.dqs.models import Report, Checks, TaskResults
 from transit_odp.validate import (
     DataDownloader,
     DownloadException,
     FileScanner,
     ValidationException,
 )
+from transit_odp.common.utils.aws_common import SQSClientWrapper
 
 logger = getLogger(__name__)
 
@@ -59,6 +65,10 @@ BATCH_SIZE = 2000
 
 @shared_task(bind=True)
 def task_dataset_pipeline(self, revision_id: int, do_publish=False):
+    is_new_data_quality_service_active = flag_is_active(
+        "", "is_new_data_quality_service_active"
+    )
+
     try:
         revision = DatasetRevision.objects.get(id=revision_id)
     except DatasetRevision.DoesNotExist as e:
@@ -77,6 +87,7 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
 
         adapter.info(f"Dataset {revision.dataset_id} - task {task.id}")
         args = (task.id,)
+
         jobs = [
             task_dataset_download.signature(args),
             task_scan_timetables.signature(args),
@@ -87,8 +98,13 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_pti_validation.signature(args),
             task_dqs_upload.signature(args),
             task_dataset_etl.signature(args),
-            task_dataset_etl_finalise.signature(args),
         ]
+
+        if is_new_data_quality_service_active:
+            jobs.append(task_data_quality_service.signature(args))
+
+        # Adding the final step for ETL
+        jobs.append(task_dataset_etl_finalise.signature(args))
 
         if do_publish:
             jobs.append(task_publish_revision.signature((revision_id,), immutable=True))
@@ -420,6 +436,57 @@ def task_dqs_upload(revision_id: int, task_id: int):
     N.B. this is just a proxy to `upload_dataset_to_dqs` as part of a refactor.
     """
     upload_dataset_to_dqs(task_id)
+
+
+@shared_task()
+def task_data_quality_service(revision_id: int, task_id: int) -> int:
+    """A task that runs the DQS checks on TxC file(s)."""
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = task.revision
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    adapter.info("Starting DQS checks initiation task.")
+    try:
+        task.update_progress(95)
+        report = Report.initialise_dqs_task(revision)
+        adapter.info(
+            f"Report is initialised for with status PIPELINE_PENDING for {revision}"
+        )
+        checks = Checks.get_all_checks()
+        txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
+            revision.id
+        )
+        combinations = itertools.product(txc_file_attributes_objects, checks)
+        TaskResults.initialize_task_results(report, combinations)
+        adapter.info(
+            f"TaskResults is initialised for with status PENDING for {revision}"
+        )
+        pending_checks = TaskResults.objects.get_pending_objects(
+            txc_file_attributes_objects
+        )
+        adapter.info(
+            f"DQS-SQS:The number of pending check items is: {len(pending_checks)}"
+        )
+        queues_payload = create_queue_payload(pending_checks)
+        sqs_queue_client = SQSClientWrapper()
+        sqs_queue_client.send_message_to_queue(queues_payload)
+        adapter.info("DQS-SQS:SQS queue messsages sent successfully.")
+
+    except (DatabaseError, IntegrityError) as db_exc:
+        task.handle_general_pipeline_exception(
+            db_exc,
+            adapter,
+            message="Database error occurred:",
+            task_name="dataset_etl",
+        )
+
+    except Exception as exc:
+        task.handle_general_pipeline_exception(
+            exc,
+            adapter,
+            message="Unknown timetable pipeline error in DQS.",
+            task_name="dataset_etl",
+        )
+    adapter.info("Timetable DQS initiation task completed.")
     return revision_id
 
 
