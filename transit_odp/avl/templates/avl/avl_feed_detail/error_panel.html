@@ -1,78 +1,73 @@
 {% load i18n %}
-
 <div class="govuk-panel app-panel--error govuk-!-padding-top-9 govuk-!-padding-bottom-9 govuk-!-margin-bottom-7">
-  <h2 class="govuk-heading-xl govuk-panel__title govuk-!-font-size-36">
-      {% trans 'Data feed not available' %}
-  </h2>
+  <h2 class="govuk-heading-xl govuk-panel__title govuk-!-font-size-36">{% trans "Data feed not available" %}</h2>
 </div>
-
-<div class="govuk-error-summary govuk-!-margin-bottom-0" aria-labelledby="error-summary-title" role="alert"
-     tabindex="-1" data-module="govuk-error-summary">
+<div class="govuk-error-summary govuk-!-margin-bottom-0"
+     aria-labelledby="error-summary-title"
+     role="alert"
+     tabindex="-1"
+     data-module="govuk-error-summary">
   <h2 class="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
-      {% trans 'There is a problem' %}
+    {% trans "There is a problem" %}
   </h2>
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list govuk-!-margin-bottom-6">
     </ul>
-    <a role="button" class="govuk-button govuk-!-margin-bottom-0"
-       href="{% url 'feed-update' pk1=pk1 pk=object.id host hosts.publish %}">
-        {{ _('Publish correct data feed') }}
-    </a>
+    <a role="button"
+       class="govuk-button govuk-!-margin-bottom-0"
+       href="{% url 'feed-update' pk1=pk1 pk=object.id host hosts.publish %}">{{ _("Publish correct data feed") }}</a>
   </div>
 </div>
-
 <table class="govuk-table dataset-property-table">
   <tbody class="govuk-table__body">
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
-    <td class="govuk-table__cell dont-break-out">{% trans object.name %}</td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
-    <td class="govuk-table__cell">{% trans object.organisation.name %}</td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans 'Last updated' %}</th>
-    <td class="govuk-table__cell">
-      <div class="flex-between">
-        <span>
-            {{ object.published_at|date:"j M Y H:i" }} {% trans 'by ' %}
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header">{% trans "Name" %}</th>
+      <td class="govuk-table__cell dont-break-out">{% trans object.name %}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header">{% trans "Owner" %}</th>
+      <td class="govuk-table__cell">{% trans object.organisation.name %}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header">{% trans "Last updated" %}</th>
+      <td class="govuk-table__cell">
+        <div class="flex-between">
+          <span>
+            {{ object.published_at|date:"j M Y H:i" }}
+            {% trans "by " %}
             {% if object.live_revision.published_by %}
-                {{ object.live_revision.published_by.username }}
+              {{ object.live_revision.published_by.username }}
             {% else %}
-                {% trans 'System' %}
+              {% trans "System" %}
             {% endif %}
-        </span>
-        <span style="text-align: right">
-          {% block inner.last_updated.changelog_link %}
-            <a class="govuk-link"
-               href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans 'View change log' %}</a>
-          {% endblock %}
-        </span>
-      </div>
-    </td>
-  </tr>
+          </span>
+          <span class="right-justify">
+            {% block inner.last_updated.changelog_link %}
+              <a class="govuk-link" href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans "View change log" %}</a>
+            {% endblock %}
+          </span>
+        </div>
+      </td>
+    </tr>
   </tbody>
 </table>
-
-<h3 class="govuk-heading-m">{% trans 'What should I do next?' %}</h3>
+<h3 class="govuk-heading-m">{% trans "What should I do next?" %}</h3>
 <p class="govuk-body govuk-!-font-size-16">
-    {% blocktrans %}
-      You can re-upload a different data feed file again. Please ensure that your provided data format is correct and
-      that your feed file contains valid data.
-    {% endblocktrans %}
+  {% blocktrans %}
+    You can re-upload a different data feed file again. Please ensure that your provided data format is correct and
+    that your feed file contains valid data.
+  {% endblocktrans %}
 </p>
 <p class="govuk-body govuk-!-font-size-16">
-    {% blocktrans %}
-      You can delete this data feed to stop using https://www.arriva.co.uk/timetables
-    {% endblocktrans %}
+  {% blocktrans %}
+    You can delete this data feed to stop using https://www.arriva.co.uk/timetables
+  {% endblocktrans %}
 </p>
 <p class="govuk-body app-!-text-muted govuk-!-font-size-16">
-    {% blocktrans %}
-      Accepted file formats include .xml (TransXChange).
-    {% endblocktrans %}
+  {% blocktrans %}
+    Accepted file formats include .xml (TransXChange).
+  {% endblocktrans %}
 </p>
-<a role="button" class="govuk-button govuk-button--secondary"
-   href="{% url 'revision-delete' pk=object.id host hosts.publish %}">
-    {{ _('Delete data') }}
-</a>
+<a role="button"
+   class="govuk-button govuk-button--secondary"
+   href="{% url 'revision-delete' pk=object.id host hosts.publish %}">{{ _("Delete data") }}</a>

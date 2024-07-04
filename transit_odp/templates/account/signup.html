@@ -1,37 +1,32 @@
 {% extends "account/base.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
 {% load hosts %}
-
 {% block title_tag %}
-    {% if form.errors %}{% trans 'Error: ' %}{% endif %}
-    {% trans 'Create account' %}
+  {% if form.errors %}
+    {% trans "Error: " %}
+  {% endif %}
+  {% trans "Create account" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Sign in' 'account_login' %}
-    {% breadcrumb_url 'Create account' 'account_signup' %}
+  {{ block.super }}
+  {% breadcrumb_url 'Sign in' 'account_login' %}
+  {% breadcrumb_url 'Create account' 'account_signup' %}
 {% endblock %}
-
 {% block head_title %}
-    {% trans 'Create account' %}
+  {% trans "Create account" %}
 {% endblock %}
-
 {% block inner %}
-    <p class="govuk-body-m">
-        {% filter force_escape %}
-            {% blocktrans %}
+  <p class="govuk-body-m">
+    {% filter force_escape %}
+      {% blocktrans %}
                 Enter your details to create an account and start using bus open data.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-    {% crispy form %}
+    {% endfilter %}
+  </p>
+  {% crispy form %}
 {% endblock %}
-
-
 {% block inner_secondary %}
-    {% include 'account/snippets/already_have_an_account.html' %}
+  {% include "account/snippets/already_have_an_account.html" %}
 {% endblock %}

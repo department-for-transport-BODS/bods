@@ -1,31 +1,25 @@
 {% extends "publish/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'Choose data type' %}
+  {% trans "Choose data type" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {% breadcrumb_url root_site.name 'home' host hosts.root %}
-    {% breadcrumb_url site.name 'home' host hosts.publish %}
-    {% if user.is_agent_user %}
-        {% breadcrumb_url 'Operator Dashboard' 'select-org' host hosts.publish %}
-        {% breadcrumb_url 'Publish a Dataset or Data Feed' 'select-data' pk1=pk1 host host.name %}
-    {% else %}
-        {% breadcrumb_url 'Publish a Dataset or Data Feed' 'select-data' pk1=pk1 host host.name %}
-    {% endif %}
+  {% breadcrumb_url root_site.name 'home' host hosts.root %}
+  {% breadcrumb_url site.name 'home' host hosts.publish %}
+  {% if user.is_agent_user %}
+    {% breadcrumb_url 'Operator Dashboard' 'select-org' host hosts.publish %}
+    {% breadcrumb_url 'Publish a Dataset or Data Feed' 'select-data' pk1=pk1 host host.name %}
+  {% else %}
+    {% breadcrumb_url 'Publish a Dataset or Data Feed' 'select-data' pk1=pk1 host host.name %}
+  {% endif %}
 {% endblock %}
-
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-            <div class="component-wrapper">
-                {% crispy form %}
-            </div>
-        </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
+      <div class="component-wrapper">{% crispy form %}</div>
     </div>
+  </div>
 {% endblock %}
