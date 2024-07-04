@@ -116,7 +116,7 @@ def task_validate_avl_feed(task_id: str):
 
 @shared_task(bind=True)
 def task_create_sirivm_zipfile(self):
-    URL = f"{settings.CAVL_API_BASE_URL}/siri-vm"
+    URL = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm"
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     start = time.time()
     try:
