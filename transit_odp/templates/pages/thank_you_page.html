@@ -2,27 +2,20 @@
 {% load i18n %}
 {% load static %}
 {% load crispy_forms_tags %}
-
 {% block title_tag %}
-    {% trans 'Thank you' %}
+  {% trans "Thank you" %}
 {% endblock %}
-
 {% block breadcrumb.content %}{% endblock %}
-
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l app-!-mb-4">
-                {% trans 'Thank you for getting in touch' %}
-            </h1>
-            <p class="govuk-body">
-                {% trans 'Your feedback helps to improve our service.' %}
-            </p>
-        </div>
-        <div class="govuk-grid-column-one-third">
-            {% block inner_secondary %}
-                {% include 'pages/snippets/inner_secondary.html' %}
-            {% endblock %}
-        </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l app-!-mb-4">{% trans "Thank you for getting in touch" %}</h1>
+      <p class="govuk-body">{% trans "Your feedback helps to improve our service." %}</p>
     </div>
+    <div class="govuk-grid-column-one-third">
+      {% block inner_secondary %}
+        {% include "pages/snippets/inner_secondary.html" %}
+      {% endblock %}
+    </div>
+  </div>
 {% endblock %}

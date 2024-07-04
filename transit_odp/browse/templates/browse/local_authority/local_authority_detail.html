@@ -1,103 +1,94 @@
 {% extends "page.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% filter force_escape %}
-        {% trans 'Local Transport Authority details' %}
-    {% endfilter %}
+  {% filter force_escape %}
+    {% trans "Local Transport Authority details" %}
+  {% endfilter %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Local Authority Profiles' 'local-authority' %}
-    {% with name=object.ui_lta_name|truncatechars:19 %}
-        <li class="govuk-breadcrumbs__list-item">
-            <a class="govuk-breadcrumbs__link" href="{% url 'local-authority-detail' host hosts.data %}?auth_ids={{ auth_ids }}">
-                {{ name }}
-            </a>
-        </li>
-    {% endwith %}
+  {{ block.super }}
+  {% breadcrumb_url 'Local Authority Profiles' 'local-authority' %}
+  {% with name=object.ui_lta_name|truncatechars:19 %}
+    <li class="govuk-breadcrumbs__list-item">
+      <a class="govuk-breadcrumbs__link" href="{% url 'local-authority-detail' host hosts.data %}?auth_ids={{ auth_ids }}">
+        {{ name }}
+      </a>
+    </li>
+  {% endwith %}
 {% endblock %}
-
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">
-                {{ object.ui_lta_name }}
-            </h1>
-
-            <h3 class="govuk-heading-m govuk-!-margin-top-3">
-                {% filter force_escape %}{% trans 'Timetables data' %}{% endfilter %}
-                {% if services_require_attention_percentage == 0 %}
-                    <span class="govuk-tag govuk-tag--green" style="letter-spacing: 0px;">{% trans 'Compliant' %}</span>
-                {% else %}
-                    <span class="govuk-tag govuk-tag--red" style="letter-spacing: 0px;">{% trans 'Not Compliant' %}</span>
-                {% endif %}
-            </h3>
-            <p class="govuk-body">
-                {% filter force_escape %}{% trans 'The service codes summarised here are registered with the OTC and are in scope of BODS, but are not yet published in a complete and accurate way.' %}{% endfilter %}
-            </p>
-            <p class="govuk-body">
-                {% filter force_escape %}{% trans 'Please download the detailed export for more information on the compliance data relating to each service.' %}{% endfilter %}
-            </p>
-
-            <div id="feed-stat-list" class="govuk-grid-row">
-                <div class="govuk-grid-column-one-half">
-                    <div class="feed-stat">
-                        <span class="feed-stat__value">
-                            {{ total_in_scope_in_season_services }}
-                        </span>
-                        <span class="feed-stat__label">
-                            {% trans 'Registered in scope/<br>in season services' %}
-                        </span>
-                    </div>
-                </div>
-                <div class="govuk-grid-column-one-half">
-                    <div class="feed-stat">
-                        <span class="feed-stat__value">
-                            {{ services_require_attention_percentage }}%
-                        </span>
-                        <span class="feed-stat__label">
-                            {% trans 'Services that<br>require attention' %}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <ul class="govuk-list govuk-!-margin-top-5">
-                <li>
-                    <a class="govuk-link" href="{% url 'local-authority-export' host hosts.data %}?auth_ids={{ auth_ids }}">
-                        {% filter force_escape %}{% trans 'Download detailed export' %}{% endfilter %}
-                    </a>
-                </li>
-            </ul>
-            <ul class="govuk-list govuk-!-margin-top-5">
-                <li>
-                    <a class="govuk-link" href="{% url 'local-authority-line-level-export' host hosts.data %}?auth_ids={{ auth_ids }}">
-                        {% filter force_escape %}{% trans 'Download detailed line level export' %}{% endfilter %}
-                    </a>
-                </li>
-            </ul>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{{ object.ui_lta_name }}</h1>
+      <h3 class="govuk-heading-m govuk-!-margin-top-3">
+        {% filter force_escape %}
+          {% trans "Timetables data" %}
+        {% endfilter %}
+        {% if services_require_attention_percentage == 0 %}
+          <span class="govuk-tag bods-4a5288c641-0 govuk-tag--green">{% trans "Compliant" %}</span>
+        {% else %}
+          <span class="govuk-tag--red govuk-tag bods-4a5288c641-0">{% trans "Not Compliant" %}</span>
+        {% endif %}
+      </h3>
+      <p class="govuk-body">
+        {% filter force_escape %}
+          {% trans "The service codes summarised here are registered with the OTC and are in scope of BODS, but are not yet published in a complete and accurate way." %}
+        {% endfilter %}
+      </p>
+      <p class="govuk-body">
+        {% filter force_escape %}
+          {% trans "Please download the detailed export for more information on the compliance data relating to each service." %}
+        {% endfilter %}
+      </p>
+      <div id="feed-stat-list" class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+          <div class="feed-stat">
+            <span class="feed-stat__value">{{ total_in_scope_in_season_services }}</span>
+            <span class="feed-stat__label">
+              {% trans "Registered in scope/<br />in season services" %}
+            </span>
+          </div>
         </div>
-
-        <div class="govuk-grid-column-one-third">
-            <h3 class="govuk-heading-m">
-                {% trans 'Need further help?' %}
-            </h3>
-            <ul class="govuk-list">
-                <li class="govuk-!-margin-bottom-3">
-                    <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
-                        {% trans 'Contact the service desk' %}
-                    </a>
-                </li>
-                <li class="govuk-!-margin-bottom-3">
-                    <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">
-                        {% trans 'Guide me' %}
-                    </a>
-                </li>
-            </ul>
+        <div class="govuk-grid-column-one-half">
+          <div class="feed-stat">
+            <span class="feed-stat__value">{{ services_require_attention_percentage }}%</span>
+            <span class="feed-stat__label">
+              {% trans "Services that<br />require attention" %}
+            </span>
+          </div>
         </div>
+      </div>
+      <ul class="govuk-list govuk-!-margin-top-5">
+        <li>
+          <a class="govuk-link" href="{% url 'local-authority-export' host hosts.data %}?auth_ids={{ auth_ids }}">
+            {% filter force_escape %}
+              {% trans "Download detailed export" %}
+            {% endfilter %}
+          </a>
+        </li>
+      </ul>
+      <ul class="govuk-list govuk-!-margin-top-5">
+        <li>
+          <a class="govuk-link" href="{% url 'local-authority-line-level-export' host hosts.data %}?auth_ids={{ auth_ids }}">
+            {% filter force_escape %}
+              {% trans "Download detailed line level export" %}
+            {% endfilter %}
+          </a>
+        </li>
+      </ul>
     </div>
+    <div class="govuk-grid-column-one-third">
+      <h3 class="govuk-heading-m">{% trans "Need further help?" %}</h3>
+      <ul class="govuk-list">
+        <li class="govuk-!-margin-bottom-3">
+          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact the service desk" %}</a>
+        </li>
+        <li class="govuk-!-margin-bottom-3">
+          <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">{% trans "Guide me" %}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
 {% endblock %}

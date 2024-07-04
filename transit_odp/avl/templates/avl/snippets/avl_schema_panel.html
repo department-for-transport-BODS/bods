@@ -13,23 +13,21 @@
         </p>
         <p class="govuk-body">
           <a class="govuk-link"
-            href="{% url 'avl:schema-report-download' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">
+             href="{% url 'avl:schema-report-download' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">
             Download validation report
           </a>
         </p>
-         <p class="govuk-body">
-
+        <p class="govuk-body">
           {% blocktrans %}
-          The AVL data supplied is not compliant and cannot be submitted to
-          BODS as per the
+            The AVL data supplied is not compliant and cannot be submitted to
+            BODS as per the
           {% endblocktrans %}
-          <a class="govuk-link"
-            href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
+          <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
             {% trans "guidance." %}
           </a>
           {% blocktrans %}
-          To pass the validation please address all outstanding issues in the
-          validation report.
+            To pass the validation please address all outstanding issues in the
+            validation report.
           {% endblocktrans %}
         </p>
       </div>
