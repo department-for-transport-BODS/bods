@@ -1,69 +1,60 @@
 {% extends "publish/base.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load waffle_tags %}
-
 {% block title_tag %}
-    {% if update %}
-        {% trans 'Data set updated' %}
-    {% else %}
-        {% trans 'Data set published' %}
-    {% endif %}
+  {% if update %}
+    {% trans "Data set updated" %}
+  {% else %}
+    {% trans "Data set published" %}
+  {% endif %}
 {% endblock %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <hr class="govuk-section-break govuk-section-break--m govuk-section-break"/>
-            <div class="govuk-panel govuk-panel--confirmation" style="height: 14rem">
-                <h1 class="govuk-panel__title;font-size: 19px">
-                    {% blocktrans %}
-                        Your data set has been successfully
-                    {% endblocktrans %}
-                    {% if update %}
-                        updated
-                    {% else %}
-                        published
-                    {% endif %}
-                </h1>
-            </div>
-            <p class="govuk-body-m">
-                {% trans 'We have sent you a confirmation email.' %}
-            </p>
-            {% flag "is_fares_validator_active" %}
-                {% if validator_error %}
-                    <p class="govuk-body-m">
-                        {% blocktrans %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
+      <div class="tall-section govuk-panel--confirmation govuk-panel">
+        <h1 class="govuk-panel__title;font-size: 19px">
+          {% blocktrans %}
+            Your data set has been successfully
+          {% endblocktrans %}
+          {% if update %}
+            updated
+          {% else %}
+            published
+          {% endif %}
+        </h1>
+      </div>
+      <p class="govuk-body-m">{% trans "We have sent you a confirmation email." %}</p>
+      {% flag "is_fares_validator_active" %}
+      {% if validator_error %}
+        <p class="govuk-body-m">
+          {% blocktrans %}
                             Your dataset failed the validation set and will be marked as not compliant.
                             Please contact your supplier to create a compliant dataset.
                         {% endblocktrans %}
-                    </p>
-                {% endif %}
-            {% endflag %}
-            <h2 class="govuk-heading-m">{% trans 'What happens next?' %}</h2>
-            <p class="govuk-body-m">
-                {% blocktrans %}
+        </p>
+      {% endif %}
+    {% endflag %}
+    <h2 class="govuk-heading-m">{% trans "What happens next?" %}</h2>
+    <p class="govuk-body-m">
+      {% blocktrans %}
                     You can view the data set on
                 {% endblocktrans %}
-                <a class="govuk-link" href={% url 'fares:feed-list' pk1=pk1 host hosts.publish %}>{% trans 'your fares data sets' %}</a>
-                {% blocktrans %}
+      <a class="govuk-link" href={% url 'fares:feed-list' pk1=pk1 host hosts.publish %}>
+        {% trans "your fares data sets" %}
+      </a>
+      {% blocktrans %}
                     or by clicking the button below. The data will now be live for everyone else to see.
                 {% endblocktrans %}
-            </p>
-            <hr class="govuk-section-break govuk-section-break--l govuk-section-break"/>
-            <a role="button" class="govuk-button" href=
-                "{% url 'fares:feed-detail' pk1=pk1 pk=pk host hosts.publish %}"
-            >
-                {% trans 'View published data set' %}
-            </a>
-            <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
-        </div>
-        <div class="govuk-!-width-one-third">
-
-        </div>
-    </div>
+    </p>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
+    <a role="button" class="govuk-button" href="{% url 'fares:feed-detail' pk1=pk1 pk=pk host hosts.publish %}">
+      {% trans "View published data set" %}
+    </a>
+    <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
+  </div>
+  <div class="govuk-!-width-one-third"></div>
+</div>
 {% endblock %}

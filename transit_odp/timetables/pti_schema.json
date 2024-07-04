@@ -170,6 +170,32 @@
       ]
     },
     {
+      "details": "Unexpected missing 'Description' within the 'InboundDescription' element. Please include a description for your inbound journey.",
+      "category": "Services and Lines",
+      "service_type": "StandardService",
+      "reference": "5.5.4",
+      "context": "//x:Services",
+      "number": 26,
+      "rules": [
+        {
+          "test": "check_description_for_inbound_description(.)"
+        }
+      ]
+    },
+    {
+      "details": "Unexpected missing 'Description' within the 'OutboundDescription' element. Please include a description for your outbound journey.",
+      "category": "Services and Lines",
+      "service_type": "StandardService",
+      "reference": "5.5.4",
+      "context": "//x:Services",
+      "number": 27,
+      "rules": [
+        {
+          "test": "check_description_for_outbound_description(.)"
+        }
+      ]
+    },
+    {
       "details": "Mandatory elements incorrect in 'Route'. Should not contain ReversingManoeuvres element.",
       "category": "Routes and tracks",
       "service_type": "All",

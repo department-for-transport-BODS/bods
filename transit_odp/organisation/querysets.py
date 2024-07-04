@@ -27,7 +27,7 @@ from django.db.models import (
     Value,
     When,
 )
-from django.db.models.expressions import Exists
+from django.db.models.expressions import Exists, RawSQL
 from django.db.models.functions import (
     Cast,
     Coalesce,
@@ -60,7 +60,6 @@ from transit_odp.organisation.constants import (
 )
 from transit_odp.organisation.view_models import GlobalFeedStats
 from transit_odp.users.constants import AccountType
-from django.db.models.expressions import RawSQL
 
 User = get_user_model()
 ANONYMOUS = "Anonymous"
@@ -1163,6 +1162,22 @@ class DatasetRevisionQuerySet(models.QuerySet):
             )
         )
 
+    def get_fares_stuck_revisions(self):
+        now = timezone.now()
+        yesterday = now - timedelta(days=1)
+        return (
+            self.add_latest_task_status()
+            .add_latest_task_progress()
+            .filter(
+                dataset__dataset_type=FaresType,
+                latest_task_progress__lt=100,
+                created__lt=yesterday,
+            )
+            .exclude(
+                latest_task_status__in=["FAILURE", "SUCCESS"],
+            )
+        )
+
 
 class TXCFileAttributesQuerySet(models.QuerySet):
     def get_active_revisions(self):
@@ -1354,6 +1369,12 @@ class TXCFileAttributesQuerySet(models.QuerySet):
         return (
             self.add_effective_stale_date_last_modified_date().add_effective_stale_date_end_date()  # noqa: E501
         )
+
+    def for_revision(self, revision_id: int) -> list:
+        """Returns TXCFileAttributes objects for a revision."""
+        return self.filter(
+            service_txcfileattributes__revision_id=revision_id
+        ).distinct()
 
 
 class ConsumerFeedbackQuerySet(models.QuerySet):
