@@ -3,6 +3,7 @@ import django_tables2 as tables
 from transit_odp.data_quality.tables import WarningListBaseTable
 from waffle import flag_is_active
 
+
 class IncorrectNOCListTable(WarningListBaseTable):
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"

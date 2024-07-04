@@ -22,9 +22,14 @@ class TestIncorrectNocListPage(ListPageBaseTest):
     factory = factories.IncorrectNOCWarningFactory
     view = views.IncorrectNOCListView
     expected_output = {
-        "test_get_table_creates_correct_column_headers": ["Summary (1)"],
+        "test_get_table_creates_correct_column_headers": [
+            "Service",
+            "Details",
+            "Service Code",
+            "Line Name",
+        ],
         "test_preamble_text": (
-            "The following data sets have been observed to have incorrect "
+            "The following service(s) have been observed to have incorrect "
             "national operator code(s)."
         ),
     }
@@ -38,4 +43,4 @@ class TestIncorrectNocListPage(ListPageBaseTest):
         expected_message = (
             "NOC1 is specified in the dataset but not assigned to your organisation"
         )
-        assert warnings_qs.first().message == expected_message
+        assert warnings_qs.first().service == expected_message
