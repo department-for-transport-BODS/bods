@@ -1,22 +1,27 @@
-{% extends "browse/base/search.html" %}
+{% extends 'browse/base/search.html' %}
+
 {% load i18n %}
 {% load breadcrumbs %}
+
 {% block title_tag %}
-  {% filter force_escape %}
-    {% trans "Browse Timetables Data" %}
-  {% endfilter %}
+    {% filter force_escape %}
+        {% trans 'Browse Timetables Data' %}
+    {% endfilter %}
 {% endblock %}
+
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
-  <li class="govuk-breadcrumbs__list-item">
-    <a class="govuk-breadcrumbs__link" href="{% url 'search' host hosts.data %}?status=live">Timetables Data</a>
-  </li>
+    {{ block.super }}
+    {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
+    <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link" href="{% url 'search' host hosts.data %}?status=live">
+            Timetables Data
+        </a>
+    </li>
 {% endblock %}
+
 {% block full_width_content %}
-  <form>
-    {% with title="Timetables data" description="Search for specific operator or location" placeholder="Search by NOC, Location, Operator or Description" %}
-      {% include "browse/snippets/search_banner.html" %}
-    {% endwith %}
-  </form>
+    <form>
+        {% with title="Timetables data" description="Search for specific operator or location" placeholder="Search by NOC, Location, Operator or Description" %}
+            {% include "browse/snippets/search_banner.html" %}
+        {% endwith %}
 {% endblock %}

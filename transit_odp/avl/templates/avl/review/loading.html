@@ -1,16 +1,33 @@
 {% load i18n %}
-<div class="govuk-panel blue-background govuk-panel--confirmation">
-  <h1 class="govuk-panel__title govuk-!-font-size-36">{% trans "Your data is being processed" %}</h1>
+
+<div class="govuk-panel govuk-panel--confirmation" style="background-color: #2b8cc4;">
+  <h1 class="govuk-panel__title govuk-!-font-size-36">
+      {% trans 'Your data is being processed' %}
+  </h1>
   <div class="govuk-panel__body govuk-!-font-size-19">
-    <div class="pb3-l">
-      {% blocktrans %}
-          Once successfully processed, the feed will be published, <br />
+    <div style="padding-bottom: 1rem">
+        {% blocktrans %}
+          Once successfully processed, the feed will be published, <br/>
           and you will be able to view the details here
-      {% endblocktrans %}
+        {% endblocktrans %}</div>
+    <div id="progressOuterDiv"
+            {#                         class="progress-bar-outer"#}
+         style=" width: 100%; background-color: #005ea5;"
+    >
+      <div id="progressInnerDiv"
+              {#                              class="progress-bar-inner"#}
+           style="width: 0%;  height: 30px;  background-color: #ffffff; text-align: center;  line-height: 30px;  color: white;"
+      >
+
+      </div>
+
     </div>
-    <div id="progressOuterDiv" class="progress-bar-outer">
-      <div id="progressInnerDiv" class="progress-bar-inner"></div>
-    </div>
-    <span id="progressSpan" class="progress-bar-text"></span>
+    <span
+            {#                      class="progress-bar-text"#}
+            style="width: 70px; height: 41px; font-size: 36px; font-weight: bold; color: #ffffff; align-content: center"
+            id="progressSpan">
+                  </span>
+
+
   </div>
 </div>

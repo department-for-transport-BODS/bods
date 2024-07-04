@@ -1,74 +1,93 @@
 {% extends "browse/base/property_table.html" %}
+
 {% load i18n %}
 {% load tz %}
 {% load filters %}
 {% load waffle_tags %}
+
 {% block dataset_type %}
-  {% trans "Fares data" %}
+    {% trans "Fares data" %}
 {% endblock %}
+
 {% block owner_search_link %}
-  {% url 'search-fares' host host.name %}?organisation={{ property.organisation.id }}&status=live
+    {% url 'search-fares' host host.name %}?organisation={{ property.organisation.id }}&status=live
 {% endblock %}
+
+
 {% block datatype_content %}
-  {% flag "is_fares_validator_active" %}
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans "BODS Compliant data" %}</th>
-    {% if is_compliant_error %}
-      <td colspan="2" class="govuk-table__cell">
-        <div class="govuk-warning-text stacked govuk-!-margin-bottom-0">
-          <span class="govuk-warning-text__icon content-box" aria-hidden="true">!</span>
-          <span class="app-task-list__items app-step-nav-related">{% trans "Non compliant" %}</span>
-          {% if show_report_link %}
-            <a class="govuk-link govuk-!-margin-left-6" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
-          {% endif %}
-        </div>
-      </td>
-    {% else %}
-      <td colspan="2" class="govuk-table__cell">
-        <span class="item__value">{% trans "Compliant" %}</span>
-      </td>
-    {% endif %}
-  </tr>
-{% endflag %}
-<tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans "NeTEx Version " %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.schema_version }}</td>
-</tr>
-<tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans "Last updated" %}</th>
-  <td class="govuk-table__cell dont-break-out">{{ object.published_at|localtime|date:"j M Y H:i" }}</td>
-  <td class="govuk-table__cell">
-    <a class="govuk-link" href="{% url 'fares-feed-changelog' pk=object.id host host.name %}">
-      {% trans "View change log" %}
-    </a>
-  </td>
-</tr>
-<tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans "Number of fare zones" %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.num_of_fare_zones }}</td>
-</tr>
-<tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans "Number of lines" %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.num_of_lines }}</td>
-</tr>
-<tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans "Number of sales offer packages " %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.num_of_sales_offer_packages }}</td>
-</tr>
-<tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans "Number of fare products" %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.num_of_fare_products }}</td>
-</tr>
-<tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans "Number of user types" %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.num_of_user_profiles }}</td>
-</tr>
-<tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans "Earliest start date" %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.valid_from }}</td>
-</tr>
-<tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">{% trans "Earliest end date" %}</th>
-  <td class="govuk-table__cell" colspan="2">{{ metadata.valid_to }}</td>
-</tr>
+
+    {% flag "is_fares_validator_active" %}
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'BODS Compliant data' %}</th>
+            {% if is_compliant_error %}
+                <td colspan="2" class="govuk-table__cell">
+                    <div class="govuk-warning-text stacked govuk-!-margin-bottom-0">
+                        <span class="govuk-warning-text__icon" aria-hidden="true" style="min-width: 20px; min-height: 20px; font-size: 15px; line-height: 15px; top: 16px;">!</span>
+                        <span class="govuk-warning-text__text" style="padding-left: 30px;">{% trans 'Non compliant' %}</span>
+                        {% if show_report_link %}
+                            <a class="govuk-link govuk-!-margin-left-6" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
+                        {% endif %}
+                    </div>
+                </td>
+            {% else %}
+                <td colspan="2" class="govuk-table__cell">
+                    <span class="item__value">{% trans 'Compliant' %}</span>
+                </td>
+            {% endif %}
+        </tr>
+    {% endflag %}
+
+    <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'NeTEx Version ' %}</th>
+        <td class="govuk-table__cell" colspan="2">{{metadata.schema_version}}</td>
+    </tr>
+
+    <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Last updated' %}</th>
+        <td class="govuk-table__cell dont-break-out">
+            {{ object.published_at|localtime|date:"j M Y H:i" }}
+        </td>
+        <td class="govuk-table__cell">
+            <a class="govuk-link"
+                href="{% url 'fares-feed-changelog' pk=object.id host host.name %}"
+            >
+                {% trans 'View change log' %}
+            </a>
+        </td>
+    </tr>
+
+    <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Number of fare zones' %}</th>
+        <td class="govuk-table__cell" colspan="2">{{metadata.num_of_fare_zones}}</td>
+    </tr>
+
+    <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Number of lines' %}</th>
+        <td class="govuk-table__cell" colspan="2">{{metadata.num_of_lines}}</td>
+    </tr>
+
+    <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Number of sales offer packages ' %}</th>
+        <td class="govuk-table__cell" colspan="2">{{metadata.num_of_sales_offer_packages}}</td>
+    </tr>
+
+    <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Number of fare products' %}</th>
+        <td class="govuk-table__cell" colspan="2">{{metadata.num_of_fare_products}}</td>
+    </tr>
+
+    <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Number of user types' %}</th>
+        <td class="govuk-table__cell" colspan="2">{{metadata.num_of_user_profiles}}</td>
+    </tr>
+
+    <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Earliest start date' %}</th>
+        <td class="govuk-table__cell" colspan="2">{{metadata.valid_from}}</td>
+    </tr>
+
+    <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Earliest end date' %}</th>
+        <td class="govuk-table__cell" colspan="2">{{metadata.valid_to}}</td>
+    </tr>
 {% endblock %}

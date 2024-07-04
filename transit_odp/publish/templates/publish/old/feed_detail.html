@@ -1,125 +1,138 @@
 {% extends "browse/feed_detail.html" %}
+
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
+
 {% block heading.subtitle.text %}
-  {% blocktrans %}
+    {% blocktrans %}
         Preview your service data status and make changes.
     {% endblocktrans %}
 {% endblock %}
+
 {% block inner.status %}
-  {% if object.status != 'error' and object.status != 'indexing' %}
-    <li>
-      <h4 class="info-item__title">{% trans "Status" %}</h4>
-      <div class="info-item__description">
-        <div class="flex-between">
-          {% block inner.status.indicator %}
-            {% include "organisation/snippets/status_indicator.html" with status=object.status %}
-          {% endblock %}
-          <a class="govuk-link" href="{% url 'feed-detail' pk1=pk1 pk=object.id host hosts.data %}">
-            {% trans "Preview developer view" %}
+    {% if object.status != 'error' and object.status != 'indexing' %}
+      <li>
+        <h4 class="info-item__title">{% trans 'Status' %}</h4>
+        <div class="info-item__description">
+          <div class="flex-between">
+              {% block inner.status.indicator %}
+                  {% include 'organisation/snippets/status_indicator.html' with status=object.status %}
+              {% endblock %}
+            <a class="govuk-link" href="{% url 'feed-detail' pk1=pk1 pk=object.id host hosts.data %}">
+                {% trans 'Preview developer view' %}
+            </a>
+          </div>
+        </div>
+      </li>
+    {% endif %}
+{% endblock %}
+
+
+{% block inner.extra %}
+    {% if  object.status == 'error' and object.is_published == False %}
+      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
+      <h2 class="govuk-heading-m">{% trans 'What happens next?' %}</h2>
+      <p class="govuk-body">
+          {% blocktrans %}
+            You can re-upload a different data set file again. Please ensure <br/>
+            that your provided data format is correct and that your data set file <br/>
+            contains valid data.<br/>
+          {% endblocktrans %}
+      </p>
+      <span class="govuk-caption-m">{% trans 'Accepted file formats include .zip and .xml (TransXChange).' %}</span>
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break"/>
+        {#    <a role="button" class="govuk-button" href="{% url 'feed-update' pk=object.id host hosts.publish %}">#}
+        {#      {{ _('Publish data again') }}#}
+        {#    </a>#}
+        {##}
+        {#    <p class="govuk-body">#}
+        {#      <a class="govuk-link govuk-!-font-size-19" href="{% url 'feed-list' host hosts.publish %}">#}
+        {#        {{ _('Cancel') }}#}
+        {#      </a></p>#}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+          <a role="button" class="govuk-button" href="{% url 'feed-update' pk=object.id host hosts.publish %}">
+              {{ _('Try again to publish') }}
+          </a>
+        </div>
+        <div class="govuk-grid-column-one-half">
+          <a role="button" class="govuk-button govuk-button--warning"
+             href="{% url 'feed-delete' pk=object.id host hosts.publish %}">
+              {{ _('Delete data') }}
           </a>
         </div>
       </div>
-    </li>
-  {% endif %}
-{% endblock %}
-{% block inner.extra %}
-  {% if object.status == 'error' and object.is_published == False %}
-    <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
-    <h2 class="govuk-heading-m">{% trans "What happens next?" %}</h2>
-    <p class="govuk-body">
-      {% blocktrans %}
-            You can re-upload a different data set file again. Please ensure <br />
-            that your provided data format is correct and that your data set file <br />
-            contains valid data.<br />
-          {% endblocktrans %}
-    </p>
-    <span class="govuk-caption-m">{% trans "Accepted file formats include .zip and .xml (TransXChange)." %}</span>
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
-    {#    <a role="button" class="govuk-button" href="{% url 'feed-update' pk=object.id host hosts.publish %}">#}
-    {#      {{ _('Publish data again') }}#}
-    {#    </a>#}
-    {##}
-    {#    <p class="govuk-body">#}
-    {#      <a class="govuk-link govuk-!-font-size-19" href="{% url 'feed-list' host hosts.publish %}">#}
-    {#        {{ _('Cancel') }}#}
-    {#      </a></p>#}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-half">
-        <a role="button" class="govuk-button" href="{% url 'feed-update' pk=object.id host hosts.publish %}">
-          {{ _("Try again to publish") }}
-        </a>
-      </div>
-      <div class="govuk-grid-column-one-half">
-        <a role="button" class="govuk-button govuk-button--warning" href="{% url 'feed-delete' pk=object.id host hosts.publish %}">
-          {{ _("Delete data") }}
-        </a>
-      </div>
-    </div>
-    <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
-  {% elif object.status == 'indexing' %}
-    <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
-    <h2 class="govuk-heading-m">{% trans "What happens next?" %}</h2>
-    <p class="govuk-body">
-      {% blocktrans %}
-            We are now processing the data you've uploaded. You can view the <br />
+
+      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
+
+    {% elif object.status == 'indexing' %}
+      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
+      <h2 class="govuk-heading-m">{% trans 'What happens next?' %}</h2>
+      <p class="govuk-body">
+          {% blocktrans %}
+            We are now processing the data you've uploaded. You can view the <br/>
             progress on your
           {% endblocktrans %}
-      <a class="govuk-link" href="{% url 'feed-list' pk1=pk1 host hosts.publish %}">{% trans "data sets page." %}</a>
-      {% blocktrans %}
-            Once this is processed, your data <br />
+        <a class="govuk-link" href="{% url 'feed-list' pk1=pk1 host hosts.publish %}"> {% trans 'data sets page.' %}</a>
+          {% blocktrans %}
+            Once this is processed, your data <br/>
             will be live for everyone else to see.
           {% endblocktrans %}
-    </p>
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
-    <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
-  {% elif object.status != 'expired' %}
-    <hr class="govuk-section-break govuk-section-break--s govuk-section-break" />
-    <div class="govuk-grid-row">
-      <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
-      <div class="btn-group-justified">
-        <a role="button" class="govuk-button" href="{% url 'feed-update' pk=object.id host hosts.publish %}">
-          {{ _("Update data set") }}
-        </a>&nbsp;&nbsp;&nbsp;
-        <a role="button"
-           class="govuk-button govuk-button--secondary"
-           href="{% url 'feed-archive' pk=object.id host hosts.publish %}">{{ _("Archive data set") }}</a>
+      </p>
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break"/>
+
+      <hr class="govuk-section-break govuk-section-break--xl govuk-section-break"/>
+
+    {% elif object.status != 'expired' %}
+      <hr class="govuk-section-break govuk-section-break--s govuk-section-break"/>
+      <div class="govuk-grid-row">
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break">
+        <div class="btn-group-justified">
+          <a role="button" class="govuk-button" href="{% url 'feed-update' pk=object.id host hosts.publish %}">
+              {{ _('Update data set') }}
+          </a>&nbsp;&nbsp;&nbsp;
+           <a role="button" class="govuk-button govuk-button--secondary" href="{% url 'feed-archive' pk=object.id host hosts.publish %}">
+          {{ _('Archive data set') }}
+        </a>
+        </div>
       </div>
-    </div>
-  {% endif %}
+
+    {% endif %}
 {% endblock %}
+
 {% block inner.secondary %}
   <div class="govuk-!-margin-top-6">
-    <h2 class="govuk-heading-m">{% trans "Need help with operator data requirements?" %}</h2>
+
+    <h2 class="govuk-heading-m">{% trans 'Need help with operator data requirements?' %}</h2>
     <ul class="govuk-list app-list--nav govuk-!-font-size-19">
       <li>
-        <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
-          {% trans "View our guidelines here" %}
-        </a>
+        <a class="govuk-link"
+           href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{% trans 'View our guidelines here' %}</a>
       </li>
       <li>
-        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact support desk" %}</a>
+        <a class="govuk-link"
+           href="{% url 'contact' host hosts.root %}">{% trans 'Contact support desk' %}</a>
       </li>
     </ul>
   </div>
-  <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
-  {#  <div>#}
-  {#  TODO - need to handle case when there is already a draft revision in process #}
-  {#    {% if object.live_revision.status != 'indexing' and object.live_revision.is_published == True %}#}
-  {#    <h2 class="govuk-heading-m">{% trans "Making changes to your data set?" %}</h2>#}
-  {#    <ul class="govuk-list app-list--nav govuk-!-font-size-19">#}
-  {#      <li>#}
-  {#        <a class="govuk-link"#}
-  {#           href="{% url 'feed-update' pk=object.id host hosts.publish %}">{% trans "Change data" %}</a>#}
-  {#      </li>#}
-  {#        {% if object.status != 'expired' %}#}
-  {#          <li>#}
-  {#            <a class="govuk-link"#}
-  {#               href="{% url 'feed-archive' pk=object.id host hosts.publish %}">{% trans "Archive data set" %}</a>#}
-  {#          </li>#}
-  {#        {% endif %}#}
-  {#    </ul>#}
-  {#    {% endif %}#}
-  {#  </div>#}
+  <hr class="govuk-section-break govuk-section-break--l govuk-section-break"/>
+{#  <div>#}
+      {#  TODO - need to handle case when there is already a draft revision in process #}
+      {#    {% if object.live_revision.status != 'indexing' and object.live_revision.is_published == True %}#}
+{#    <h2 class="govuk-heading-m">{% trans 'Making changes to your data set?' %}</h2>#}
+{#    <ul class="govuk-list app-list--nav govuk-!-font-size-19">#}
+{#      <li>#}
+{#        <a class="govuk-link"#}
+{#           href="{% url 'feed-update' pk=object.id host hosts.publish %}">{% trans 'Change data' %}</a>#}
+{#      </li>#}
+{#        {% if object.status != 'expired' %}#}
+{#          <li>#}
+{#            <a class="govuk-link"#}
+{#               href="{% url 'feed-archive' pk=object.id host hosts.publish %}">{% trans 'Archive data set' %}</a>#}
+{#          </li>#}
+{#        {% endif %}#}
+{#    </ul>#}
+      {#    {% endif %}#}
+{#  </div>#}
 {% endblock %}

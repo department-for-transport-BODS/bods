@@ -1,8 +1,10 @@
 {% extends "guidance/bus_operators/base.html" %}
+
 {% load i18n %}
+
 {% block extra_content %}
-  <h1 class="govuk-heading-xl">{% trans "TransXchange" %}</h1>
-  <h2 class="govuk-heading-m">{% trans "What is TransXchange?" %}</h2>
+  <h1 class="govuk-heading-xl">{% trans 'TransXchange' %}</h1>
+  <h2 class="govuk-heading-m">{% trans 'What is TransXchange?' %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
       TransXchange is the UK nationwide standard for exchanging bus schedules and related data.
@@ -14,20 +16,17 @@
       This guide has content suitable for both users and implementers. It provides an overview of how
       the TransXchange model works, a detailed description of the schema element, worked examples and
       technical annexes, including a specification of the integrity rules used in TransXchange.
-    {% endblocktrans %}
-  </p>
-  <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
-  <h2 class="govuk-heading-m">{% trans "How can I produce TransXchange?" %}</h2>
+    {% endblocktrans %}</p>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+  <h2 class="govuk-heading-m">{% trans 'How can I produce TransXchange?' %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
     You can find further information about how to produce TransXchange
     {% endblocktrans %}
-    <a class="govuk-link" href="https://www.gov.uk/guidance/publish-bus-open-data#transxchange" target="_blank">
-      {% trans "here." %}
-    </a>
+  <a class="govuk-link" href="https://www.gov.uk/guidance/publish-bus-open-data#transxchange" target="_blank">{% trans 'here.' %}</a>
   </p>
-  <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
-  <h2 class="govuk-heading-m">{% trans "Contacts" %}</h2>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+  <h2 class="govuk-heading-m">{% trans 'Contacts' %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
       The central point of contact for all TransXchange enquiries within DFT:
@@ -36,16 +35,17 @@
   </p>
   <p class="govuk-body">
     {% blocktrans %}
-      The designated owner of the TransXchange schema: <br />
-      TransXchange<br />
-      Digital & Open Data team <br />
-      Department for Transport <br />
-      2/27 Great Minster House <br />
-      33 Horseferry Road <br />
+      The designated owner of the TransXchange schema: <br/>
+      TransXchange<br/>
+      Digital & Open Data team <br/>
+      Department for Transport <br/>
+      2/27 Great Minster House <br/>
+      33 Horseferry Road <br/>
       London, SW1P 4DR
     {% endblocktrans %}
   </p>
-  {% url 'guidance:support-bus_operators' host hosts.publish as url %}
-  {% include "../snippets/previous.html" with url=url prev_page=prev_page %}
-  {% include "../snippets/next.html" with url=url next_page=next_page %}
+
+{% url 'guidance:support-bus_operators' host hosts.publish as url %}
+{% include '../snippets/previous.html' with url=url prev_page=prev_page %}
+{% include '../snippets/next.html' with url=url next_page=next_page %}
 {% endblock %}

@@ -1,8 +1,13 @@
 {% extends "page.html" %}
+
 {% load i18n %}
 {% load static %}
 {% load breadcrumbs %}
-{% block breadcrumb.content %}{{ block.super }}{% endblock %}
+
+{% block breadcrumb.content %}
+  {{ block.super }}
+{% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -12,8 +17,10 @@
           {% endblock head_title %}
         </h1>
       {% endblock %}
+
       {% block inner %}{% endblock %}
     </div>
+
     <div class="govuk-grid-column-one-third">
       {% block inner_secondary %}{% endblock %}
     </div>

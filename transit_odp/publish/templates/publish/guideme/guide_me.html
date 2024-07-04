@@ -1,39 +1,47 @@
-{% extends "common/guide_me.html" %}
+{% extends 'common/guide_me.html' %}
 {% load i18n %}
+
 {% block heading.subtitle %}
-  {{ block.super }}
-  <p class="govuk-body">
-    {% blocktrans %}
+    {{ block.super }}
+
+    <p class="govuk-body">
+        {% blocktrans %}
             For all the key dates and requirements for publishing data on BODS
-            <a class="govuk-link govuk-!-font-size-19" href=https://www.gov.uk/government/collections/bus-open-data-service target="_blank" rel="noreferrer" rel="noopener">access the data requirement guidance.
+            <a class="govuk-link govuk-!-font-size-19"
+                href=https://www.gov.uk/government/collections/bus-open-data-service
+                target="_blank" rel="noreferrer" rel="noopener"
+            >access the data requirement guidance.
             </a>
         {% endblocktrans %}
-  </p>
+    </p>
 {% endblock %}
+
 {% block heading.secondary %}
-  <div class="govuk-grid-column-one-third">
-    <h3 class="govuk-heading-m">{% trans "Need further help?" %}</h3>
-    <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-      <li>
-        <a class="govuk-link"
-           href="https://www.travelinedata.org.uk/traveline-open-data/transport-operations/about-2/"
-           target="_blank"
-           rel="noreferrer"
-           rel="noopener">{% trans "National Operator Code" %}</a>
-      </li>
-      <li>
-        <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">{% trans "Service changelog" %}</a>
-      </li>
-      <li>
-        <a class="govuk-link"
-           href="https://www.gov.uk/government/publications/bus-open-data-implementation-guide/bus-open-data-implementation-guide#glossary-of-terms"
-           target="_blank"
-           rel="noreferrer"
-           rel="noopener">{% trans "Glossary of terms" %}</a>
-      </li>
-      <li>
-        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact us for technical issues" %}</a>
-      </li>
-    </ul>
-  </div>
+    <div class="govuk-grid-column-one-third">
+        <h3 class="govuk-heading-m">
+            {% trans 'Need further help?' %}
+        </h3>
+        <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+            <li>
+                <a class="govuk-link" href="https://www.travelinedata.org.uk/traveline-open-data/transport-operations/about-2/" target="_blank" rel="noreferrer" rel="noopener">
+                    {% trans 'National Operator Code' %}
+                </a>
+            </li>
+            <li>
+                <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">
+                    {% trans 'Service changelog' %}
+                </a>
+            </li>
+            <li>
+                <a class="govuk-link" href="https://www.gov.uk/government/publications/bus-open-data-implementation-guide/bus-open-data-implementation-guide#glossary-of-terms" target="_blank" rel="noreferrer" rel="noopener">
+                    {% trans 'Glossary of terms' %}
+                </a>
+            </li>
+            <li>
+                <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
+                    {% trans 'Contact us for technical issues' %}
+                </a>
+            </li>
+        </ul>
+    </div>
 {% endblock heading.secondary %}

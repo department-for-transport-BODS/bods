@@ -1,24 +1,29 @@
 {% load i18n %}
+
 <div class="search-result">
   <div class="search-result__heading">
     {% if item.status != "success" %}
-      <a class="govuk-link" href="{% url 'feed-detail' pk=item.id host hosts.data %}">{{ item.name }}</a>
+    <a class='govuk-link' href="{% url 'feed-detail' pk=item.id host hosts.data %}">
+      {{ item.name }}
+    </a>
     {% else %}
-      <p class="govuk-body">{{ item.name }}</p>
+    <p class="govuk-body">
+      {{ item.name }}
+    </p>
     {% endif %}
-    {% include "organisation/snippets/status_indicator.html" with status=item.status record=item %}
+    {% include 'organisation/snippets/status_indicator.html' with status=item.status record=item %}
   </div>
   <ul class="key-value-list">
     <li>
-      <span class="item__key">{% trans "Number of routes:" %}</span>
+      <span class="item__key">{% trans 'Number of routes:' %}</span>
       <span class="item__value">{{ item.num_of_routes }}</span>
     </li>
     <li>
-      <span class="item__key">{% trans "Number of bus stops:" %}</span>
+      <span class="item__key">{% trans 'Number of bus stops:' %}</span>
       <span class="item__value">{{ item.num_of_bus_stops }}</span>
     </li>
     <li>
-      <span class="item__key">{% trans "Last updated:" %}</span>
+      <span class="item__key">{% trans 'Last updated:' %}</span>
       <span class="item__value">{{ item.last_updated|date:"j M Y" }}  {{ item.last_updated|time:"h:i A" }}</span>
     </li>
   </ul>

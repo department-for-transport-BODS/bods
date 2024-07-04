@@ -1,9 +1,9 @@
 {% load i18n %}
+
+
 <div id="user-feed-back-section">
-  <h3 class="govuk-heading-m govuk-!-font-size-27">
-    {% trans "Would you like to provide feedback to the publisher of this data feed?" %}
-  </h3>
-  <a role="button"
-     class="govuk-button govuk-button--secondary"
-     href="{% url 'avl-feed-feedback' object.id host hosts.data %}">{% trans "Provide feedback" %}</a>
+  <h3 class="govuk-heading-m govuk-!-font-size-27">{% trans 'Would you like to provide feedback to the publisher of this data feed?' %}</h3>
+  <a role="button" class="govuk-button govuk-button--secondary" href="{% url 'avl-feed-feedback' object.id host hosts.data %}">
+      {% trans 'Provide feedback' %}
+  </a>
 </div>

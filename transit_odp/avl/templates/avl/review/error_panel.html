@@ -1,97 +1,102 @@
 {% load i18n %}
-<div class="govuk-error-summary govuk-!-margin-bottom-0"
-     aria-labelledby="error-summary-title"
-     role="alert"
-     tabindex="-1"
-     data-module="govuk-error-summary">
-  <h2 class="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
-    {% trans "Supplied data feed has failed to upload" %}
-  </h2>
-  <div class="govuk-error-summary__body">
-    <ul class="govuk-list govuk-error-summary__list ">
-      <li class="no-underline-l app-error-summary__item">{{ error.description | safe }}</li>
-    </ul>
-  </div>
+
+<div class="govuk-error-summary govuk-!-margin-bottom-0" aria-labelledby="error-summary-title" role="alert"
+    tabindex="-1" data-module="govuk-error-summary">
+    <h2 class="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
+        {% trans 'Supplied data feed has failed to upload' %}
+    </h2>
+    <div class="govuk-error-summary__body">
+        <ul class="govuk-list govuk-error-summary__list ">
+            <li class="app-error-summary__item" style="text-decoration: none">{{ error.description | safe }}</li>
+        </ul>
+    </div>
 </div>
+
 <div class="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
-  <a role="button"
-     class="govuk-button govuk-!-margin-bottom-0"
-     href="{% url 'avl:feed-update' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
-    {{ _("Publish correct data feed") }}
-  </a>
+    <a role="button" class="govuk-button govuk-!-margin-bottom-0"
+        href="{% url 'avl:feed-update' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
+        {{ _('Publish correct data feed') }}
+    </a>
 </div>
+
 {% load i18n %}
-<h2 class="govuk-heading-l govuk-!-padding-top-5">{{ object.name }}</h2>
+
+<h2 class="govuk-heading-l govuk-!-padding-top-5">
+    {{ object.name }}
+</h2>
+
 <table class="govuk-table dataset-property-table">
-  <tbody class="govuk-table__body">
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans "Name" %}</th>
-      <td class="govuk-table__cell dont-break-out">{% trans properties.name %}</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans "Data feed ID" %}</th>
-      <td class="govuk-table__cell dont-break-out">{{ object.dataset_id }}</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans "URL link" %}</th>
-      <td class="govuk-table__cell dont-break-out">{% trans object.url_link %}</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans "Description" %}</th>
-      <td class="govuk-table__cell">
-        <div class="flex-between">
-          <span class="dont-break-out">{% trans properties.description %}</span>
-          <span><a class="govuk-link right-justify" href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
-            {% trans "Edit" %}
-          </a>
-        </span>
-      </div>
-    </td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans "Short description" %}</th>
-    <td class="govuk-table__cell dont-break-out">
-      <div class="flex-between">
-        {% trans properties.short_description %}
-        <a class="govuk-link" href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
-          {% trans "Edit" %}
-        </a>
-      </div>
-    </td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans "Status" %}</th>
-    <td class="govuk-table__cell">
-      <div class="flex-between">
-        {% include "organisation/snippets/status_indicator.html" with status=properties.status %}
-      </div>
-    </td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans "Owner" %}</th>
-    <td class="govuk-table__cell">{% trans properties.owner_name %}</td>
-  </tr>
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans "SIRI-VM version" %}</th>
-    <td class="govuk-table__cell">{{ properties.siri_version }}</td>
-  </tr>
-</tbody>
+    <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
+            <td class="govuk-table__cell dont-break-out">{% trans properties.name %}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'Data feed ID' %}</th>
+            <td class="govuk-table__cell dont-break-out">{{ object.dataset_id }}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'URL link' %}</th>
+            <td class="govuk-table__cell dont-break-out">{% trans object.url_link %}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'Description' %}</th>
+            <td class="govuk-table__cell">
+                <div class="flex-between">
+                    <span class="dont-break-out">
+                        {% trans properties.description %}
+                    </span>
+                    <span style="text-align: right"><a class="govuk-link"
+                        href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">{% trans 'Edit' %}</a>
+                    </span> </div>
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'Short description' %}</th>
+            <td class="govuk-table__cell dont-break-out">
+                <div class="flex-between">{% trans properties.short_description %}
+                    <a class="govuk-link"
+                        href="{% url 'avl:revision-edit' pk=object.dataset_id pk1=pk1 host hosts.publish %}">{% trans 'Edit' %}</a>
+                </div>
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'Status' %}</th>
+            <td class="govuk-table__cell">
+                <div class="flex-between">
+                    {% include 'organisation/snippets/status_indicator.html' with status=properties.status %}
+                </div>
+            </td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
+            <td class="govuk-table__cell">{% trans properties.owner_name %}</td>
+        </tr>
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans 'SIRI-VM version' %}</th>
+            <td class="govuk-table__cell">{{ properties.siri_version }}
+            </td>
+        </tr>
+    </tbody>
 </table>
-<h3 class="govuk-heading-m">{% trans "What should I do next?" %}</h3>
+
+<h3 class="govuk-heading-m">{% trans 'What should I do next?' %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
-  {% blocktrans %}
-    You can refer to the documentation or contact support to help you fix this.
-  {% endblocktrans %}
+    {% blocktrans %}
+        You can refer to the documentation or contact support to help you fix this.
+    {% endblocktrans %}
 </p>
-<p class="govuk-!-font-size-19 checkbox-filter__annotation govuk-body">
-  {% blocktrans %}
-    Accepted formats include SIRI-VM
-  {% endblocktrans %}
+
+<p class="govuk-body govuk-!-font-size-19" style="color: #505a5f">
+    {% blocktrans %}
+        Accepted formats include SIRI-VM
+    {% endblocktrans %}
 </p>
+
+
 <div class="btn-group-justified">
-  <a role="button"
-     class="govuk-button govuk-button--secondary"
-     href="{% url 'avl:revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
-    {{ _("Delete data feed") }}
-  </a>
+    <a role="button" class="govuk-button govuk-button--secondary"
+        href="{% url 'avl:revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
+        {{ _('Delete data feed') }}
+    </a>
 </div>

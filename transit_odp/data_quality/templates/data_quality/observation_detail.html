@@ -1,27 +1,31 @@
 {% extends "data_quality/base.html" %}
 {% load render_table from django_tables2 %}
 {% load i18n %}
+
 {% block title_tag %}
-  {% blocktrans %}{{ title }} observation detail{% endblocktrans %}
+    {% blocktrans %}{{ title }} observation detail{% endblocktrans %}
 {% endblock %}
+
 {% block backlink %}
-  {% include "snippets/backlink.html" with url=back_url %}
+  {% include 'snippets/backlink.html' with url=back_url %}
 {% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <span class="govuk-caption-xl">{{ title }}</span>
       <h1 class="govuk-heading-xl">{{ subtitle }}</h1>
-      {% include "data_quality/snippets/detail_map.html" %}
+
+      {% include 'data_quality/snippets/detail_map.html' %}
+
       <div>{% render_table tables.0 %}</div>
+
       {# designs sometimes include only one table #}
       {% if tables.1 %}
         <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{% trans "Which journeys have been affected?" %}</h1>
         <div class="total_vehicles">
           <span class="govuk-heading-xl govuk-!-margin-0">{{ number_of_journeys }}</span>
-          <span class="govuk-body-s govuk-!-font-weight-bold">Total journeys affected
-            {% if start_date %}from {{ start_date|date:"d/m/Y" }}{% endif %}
-          </span>
+          <span class="govuk-body-s govuk-!-font-weight-bold">Total journeys affected{% if start_date %} from {{ start_date|date:"d/m/Y" }}{% endif %}</span>
         </div>
         <h2 class="govuk-heading-m">{% trans "Example vehicle journeys affected" %}</h2>
         <p class="govuk-body">
@@ -29,14 +33,17 @@
           pattern. Please refer back to these journeys in your scheduling tool and update the corresponding
           timetables(s) to address the observation <span class="govuk-!-font-weight-bold">"{{ title }}".</span>
         </p>
+
         <div>{% render_table tables.1 %}</div>
       {% endif %}
+
     </div>
   </div>
 {% endblock %}
+
 {% block scripts %}
-  {{ block.super }}
-  <script>
-      BODSFrontend.initWarningDetailMap("{{ api_root }}", "{{ service_pattern_id }}", "{{ stop_ids }}", "{{ effected_stop_ids }}", "{{ service_link_ids }}");
-  </script>
+    {{ block.super }}
+    <script>
+        BODSFrontend.initWarningDetailMap("{{ api_root }}", "{{ service_pattern_id }}", "{{ stop_ids }}", "{{ effected_stop_ids }}", "{{ service_link_ids }}");
+    </script>
 {% endblock %}

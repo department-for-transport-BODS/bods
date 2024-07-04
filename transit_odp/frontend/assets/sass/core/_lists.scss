@@ -1,3 +1,10 @@
+@import "../variables";
+@import "govuk-frontend/govuk/core/lists";
+@import "govuk-frontend/govuk/helpers/media-queries";
+@import "govuk-frontend/govuk/helpers/spacing";
+@import "govuk-frontend/govuk/helpers/typography";
+@import "govuk-frontend/govuk/settings/typography-responsive";
+
 .govuk-list-inline {
   display: flex;
 }

@@ -1,28 +1,38 @@
 {% extends "base_success.html" %}
+
 {% load i18n %}
-{% block breadcrumb.content %}{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
 {% block backlink %}
-  {% url 'users:organisation-manage' host hosts.admin as backlink_url %}
-  {% include "snippets/backlink.html" with url=backlink_url %}
+    {% url 'users:organisation-manage' host hosts.admin as backlink_url %}
+    {% include 'snippets/backlink.html' with url=backlink_url %}
 {% endblock %}
+
 {% block title_tag %}
-  {% trans "Organisation invited" %}
+
+    {% trans 'Organisation invited' %}
 {% endblock %}
+
 {% block title_text %}
-  {% trans "Invite new organisation" %}
+    {% trans 'Invite new organisation' %}
 {% endblock %}
+
 {% block body_text %}
-  {% blocktrans %}
-    An email invite has been sent
-  {% endblocktrans %}
-  {% if invite_email %}
-    to
-    {{ invite_email }}
-  {% endif %}
+    {% blocktrans %}
+        An email invite has been sent
+    {% endblocktrans %}
+    {% if invite_email %}
+        to
+        {{ invite_email }}
+    {% endif %}
 {% endblock %}
+
 {% block button_href %}
-  {% url 'users:organisation-manage' host hosts.admin %}
+    {% url 'users:organisation-manage' host hosts.admin %}
 {% endblock %}
+
 {% block button_text %}
-  {% trans "Go back to organisation management" %}
+    {% trans 'Go back to organisation management' %}
 {% endblock %}

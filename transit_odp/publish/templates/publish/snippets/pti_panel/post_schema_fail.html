@@ -1,26 +1,28 @@
 {% extends "publish/snippets/pti_panel/base.html" %}
 {% load i18n %}
+
 {% block pti_panel_content %}
-  <h2 class="govuk-heading-m">3a Validation check - Failed</h2>
-  <p class="govuk-body">
-    {% blocktrans %}
+    <h2 class="govuk-heading-m">3a Validation check - Failed</h2>
+    <p class="govuk-body">
+        {% blocktrans %}
             The validation report checks for compliance against the mandated
             TxC 2.4 v1.1 profile.
         {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    <a class="govuk-link" href="{% url 'review-post-schema-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download validation report</a>
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
+    </p>
+    <p class="govuk-body">
+        <a class="govuk-link" href="{% url 'review-post-schema-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download validation report</a>
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
             The timetables data supplied is non-compliant and cannot be submitted to BODS as
             per the
         {% endblocktrans %}
-    <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
-      {% trans "guidance." %}
-    </a>
-    {% blocktrans %}
+        <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality"
+            class="govuk-link">
+            {% trans "guidance." %}
+        </a>
+        {% blocktrans %}
             To pass the validation please address all outstanding issues in the validation report.
         {% endblocktrans %}
-  </p>
+    </p>
 {% endblock %}

@@ -1,3 +1,5 @@
+@import "govuk-frontend/govuk/helpers/spacing";
+
 $breakpoint-map: (
   mobile: xs,
   tablet: sm,
@@ -16,3 +18,77 @@ $direction-map: (
   bottom: b,
   left: l,
 );
+
+// See govuk/overrides/_spacing.scss
+// Adds breakpoints to selector to apply overrides at different breakpoint widths similar to Bootstrap
+// Using the format:
+//    `.app-\!-{property}{direction}-{size}` for 'xs'
+//    `.app-\!-{property}{direction}-{breakpoint}-{size}` for sm, md and l.
+// where direction is optional.
+//
+// Example:
+//    .app-\!-mb-md-2
+//    applies 'margin-bottom: govuk-spacing(2)' above 'desktop' breakpoint only
+@mixin _app-generate-spacing-overrides($property) {
+  // map property name to shorthand version
+  $p: map-get($property-map, $property);
+
+  // create aliases of 'govuk-!-' selectors, e.g. app-!-mb-2 is the same as govuk-!-margin-bottom-2
+  @each $scale-point, $scale-map in $govuk-spacing-responsive-scale {
+    .app-\!-#{$p}-#{$scale-point} {
+      // using extend avoids duplication of the generated CSS rules
+      @extend .govuk-\!-#{$property}-#{$scale-point};
+    }
+
+    // ... and then an override for each individual direction
+    @each $direction in $_spacing-directions {
+      // get direction shorthand
+      $d: map-get($direction-map, $direction);
+
+      .app-\!-#{$p}#{$d}-#{$scale-point} {
+        @extend .govuk-\!-#{$property}-#{$direction}-#{$scale-point};
+      }
+    }
+  }
+
+  // create rules which include breakpoint
+  @each $breakpoint, $_ in $mq-breakpoints {
+    $b: map-get($breakpoint-map, $breakpoint);
+
+    // don't create a breakpoint class for the smallest size
+    @if $b != "xs" {
+      // these classes only apply above the breakpoint
+      @include govuk-media-query($from: $breakpoint) {
+        @each $scale-point, $scale-map in $govuk-spacing-responsive-scale {
+          .app-\!-#{$p}-#{$b}-#{$scale-point} {
+            @include _govuk-responsive-spacing(
+              $scale-point,
+              $property,
+              "all",
+              true
+            );
+          }
+
+          // ... and then an override for each individual direction
+          @each $direction in $_spacing-directions {
+            $d: map-get($direction-map, $direction);
+            .app-\!-#{$p}#{$d}-#{$b}-#{$scale-point} {
+              @include _govuk-responsive-spacing(
+                $scale-point,
+                $property,
+                $direction,
+                true
+              );
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@include govuk-exports("app/overrides/spacing") {
+  @include _app-generate-spacing-overrides("margin");
+  @include _govuk-generate-responsive-spacing-overrides("padding");
+  @include _govuk-generate-static-spacing-overrides("padding");
+}

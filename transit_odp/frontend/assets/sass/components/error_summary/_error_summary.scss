@@ -1,3 +1,5 @@
+@import "../../variables";
+
 .app-error-summary__item {
   @include govuk-font($size: 19, $weight: bold);
   color: $govuk-error-colour;

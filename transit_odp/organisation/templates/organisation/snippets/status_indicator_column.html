@@ -1,11 +1,11 @@
 {% load i18n %}
-{% include "organisation/snippets/status_indicator.html" with status=record.status %}
+
+{% include 'organisation/snippets/status_indicator.html' with status=record.status %}
+
 {% if show_update_link %}
   {% if value == 'error' or value == 'expiring' or value == 'draft' %}
-    <span class="ml2-l">
-      <a class="govuk-link" href="{% url 'feed-update' host hosts.publish pk=record.id pk1=record.organisation_id %}">
-        {% trans "Update feed" %}
-      </a>
+    <span style="margin-left: 0.5rem;">
+      <a class='govuk-link' href='{% url 'feed-update' host hosts.publish pk=record.id pk1=record.organisation_id %}'>{% trans 'Update feed' %}</a>
     </span>
   {% endif %}
 {% endif %}

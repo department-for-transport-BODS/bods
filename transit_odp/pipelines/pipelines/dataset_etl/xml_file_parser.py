@@ -273,8 +273,9 @@ class XmlFileParser(ETLUtility):
         return stop_point_refs_to_dataframe(refs)
 
     def extract_provisional_stops(self, doc):
+        system = self.trans.get_location_system()
         stop_points = self.trans.get_stop_points()
-        return provisional_stops_to_dataframe(stop_points, self.trans)
+        return provisional_stops_to_dataframe(stop_points, system=system)
 
     def extract_journey_patterns(self, doc, file_id: int):
         services = self.trans.get_services()

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "transit_odp"
+name = "bods"
 version = "1.22.0"
 description = "Bus Open Data Service"
 authors = [
@@ -95,22 +95,7 @@ werkzeug = "~=3.0.1"
 debugpy = "1.8.0"
 hupper = "^1.12"
 docutils = "^0.20.1"
-djlint = "^1.34.1"
 
 [build-system]
 requires = ["poetry-core>=1.8.1"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.djlint]
-profile = "django"
-close_void_tags = true
-extension = "html"
-indent_size = 2
-indent = 2
-max_attribute_length = 120
-max_line_length = 120
-use_gitignore = true
-format_attribute_template_tags=false
-line_break_after_multiline_tag=false
-no_set_formatting=true
-ignore = "T003,H022,T002"

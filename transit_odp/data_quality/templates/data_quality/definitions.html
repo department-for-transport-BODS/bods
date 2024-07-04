@@ -1,64 +1,78 @@
 {% extends "page.html" %}
+
 {% load i18n %}
 {% load breadcrumbs %}
+
+
 {% block title_tag %}
-  {% trans "Bus operator requirements" %}
+    {% trans 'Bus operator requirements' %}
 {% endblock %}
+
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb_url 'Guidance' 'guidance:operators-home' host hosts.publish %}
-  {% breadcrumb_url 'Observation definitions' 'guidance:dq-definitions' host hosts.publish %}
+    {{ block.super }}
+    {% breadcrumb_url 'Guidance' 'guidance:operators-home' host hosts.publish %}
+    {% breadcrumb_url 'Observation definitions' 'guidance:dq-definitions' host hosts.publish %}
 {% endblock %}
+
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-xl">{% trans "Observation definitions" %}</h1>
-      <p class="govuk-body-m">{% trans "Please find the definitions for the observations below." %}</p>
-      <p class="govuk-body-m govuk-!-margin-bottom-6">
-        <a class="govuk-link" href="https://www.gov.uk/government/collections/transxchange" target="_blank">
-          {% trans "View Department for Transport's TransXChange Schema Guide" %}
-        </a>
-      </p>
-      <div class="govuk-tabs" data-module="govuk-tabs">
-        <ul class="govuk-tabs__list">
-          <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-            <a class="govuk-tabs__tab" href="#critical">Critical observations</a>
-          </li>
-          <li class="govuk-tabs__list-item">
-            <a class="govuk-tabs__tab" href="#advisory">Advisory observations</a>
-          </li>
-        </ul>
-        <div class="govuk-tabs__panel" id="critical">
-          <div class="govuk-!-padding-5">
-            <h2 class="govuk-heading-l">Critical observations ({{ critical_count }})</h2>
-            <p class="govuk-body">
-              {% blocktrans %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-xl">
+                {% trans 'Observation definitions' %}
+            </h1>
+            <p class="govuk-body-m">
+                {% trans 'Please find the definitions for the observations below.' %}
+            </p>
+            <p class="govuk-body-m govuk-!-margin-bottom-6">
+                <a class="govuk-link"
+                    href="https://www.gov.uk/government/collections/transxchange" target="_blank">
+                    {% trans "View Department for Transport's TransXChange Schema Guide" %}
+                </a>
+            </p>
+            <div class="govuk-tabs" data-module="govuk-tabs">
+                <ul class="govuk-tabs__list">
+                    <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                        <a class="govuk-tabs__tab" href="#critical">
+                            Critical observations
+                        </a>
+                    </li>
+                    <li class="govuk-tabs__list-item">
+                        <a class="govuk-tabs__tab" href="#advisory">
+                            Advisory observations
+                        </a>
+                    </li>
+                </ul>
+                <div class="govuk-tabs__panel" id="critical">
+                    <div class="govuk-!-padding-5">
+                        <h2 class="govuk-heading-l">Critical observations ({{critical_count}})</h2>
+                        <p class="govuk-body">
+                            {% blocktrans %}
                                 These observations are considered critical in terms of data quality.
                                 An operator should aim to have zero critical observations in their data.
                             {% endblocktrans %}
-            </p>
-            {% for category in critical_observations %}
-              {% include "data_quality/snippets/glossary_accordion.html" with category=category counter=forloop.counter type="critical" %}
-            {% endfor %}
-          </div>
-        </div>
-        <div class="govuk-tabs__panel js-hidden" id="advisory">
-          <div class="govuk-!-padding-5">
-            <h2 class="govuk-heading-l">Advisory observations ({{ advisory_count }})</h2>
-            <p class="govuk-body">
-              {% blocktrans %}
+                        </p>
+                        {% for category in critical_observations %}
+                            {% include 'data_quality/snippets/glossary_accordion.html' with category=category counter=forloop.counter type="critical" %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="advisory">
+                    <div class="govuk-!-padding-5">
+                        <h2 class="govuk-heading-l">Advisory observations ({{advisory_count}})</h2>
+                        <p class="govuk-body">
+                            {% blocktrans %}
                                 These observations suggest there may be an error in the data.
                                 However, for some types of services these may be intended by the operator.
                                 Please check that these are intentional and check for new advisory
                                 observations that may still indicate an issue with the data.
                             {% endblocktrans %}
-            </p>
-            {% for category in advisory_observations %}
-              {% include "data_quality/snippets/glossary_accordion.html" with category=category counter=forloop.counter type="advisory" %}
-            {% endfor %}
-          </div>
+                        </p>
+                        {% for category in advisory_observations %}
+                            {% include 'data_quality/snippets/glossary_accordion.html' with category=category counter=forloop.counter type="advisory" %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 {% endblock %}

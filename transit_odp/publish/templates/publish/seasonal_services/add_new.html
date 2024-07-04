@@ -1,14 +1,20 @@
 {% extends "publish/seasonal_services/form.html" %}
+
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load seasonal_services_stepper %}
 {% load breadcrumbs %}
+
 {% block breadcrumb_extend %}
-  {% breadcrumb_url "Add new" "add-seasonal-service" pk1=pk1 host hosts.publish %}
-  <div class="govuk-breadcrumbs">{% stepper %}</div>
+    {% breadcrumb_url "Add new" 'add-seasonal-service' pk1=pk1 host hosts.publish %}
+    </div>
+    <div class="govuk-breadcrumbs">
+        {% stepper %}
+    </div>
 {% endblock %}
+
 {% block form_extend %}
-  {{ wizard.form.media }}
-  {{ wizard.management_form }}
-  {% crispy wizard.form wizard.form.helper %}
+    {{ wizard.form.media }}
+    {{ wizard.management_form }}
+    {% crispy wizard.form wizard.form.helper %}
 {% endblock %}

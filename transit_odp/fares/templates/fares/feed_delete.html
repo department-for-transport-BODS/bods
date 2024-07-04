@@ -1,27 +1,33 @@
 {% extends "publish/base.html" %}
+
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
+
 {% block title_tag %}
-  {% trans "Delete data set" %}
+  {% trans 'Delete data set' %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
 {% block backlink %}
   {% if object.live_revision %}
     {% url 'fares:feed-detail' pk1=view.kwargs.pk1 pk=object.id host hosts.publish as backlink %}
   {% else %}
     {% url 'fares:revision-publish' pk1=view.kwargs.pk1 pk=object.id host hosts.publish as backlink %}
   {% endif %}
-  {% include "snippets/backlink.html" with url=backlink %}
+  {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl">
         {% if object.live_revision %}
-          {% trans "Would you like to cancel updating this data set" %}
+          {% trans 'Would you like to cancel updating this data set' %}
         {% else %}
-          {% trans "Would you like to delete this data set?" %}
+          {% trans 'Would you like to delete this data set?' %}
         {% endif %}
       </h1>
       <p class="govuk-body-l">
@@ -45,8 +51,11 @@
       </p>
     </div>
   </div>
+
   {% block inner %}
     {% crispy form %}
   {% endblock %}
-  {% block inner_secondary %}{% endblock %}
+
+  {% block inner_secondary %}
+  {% endblock %}
 {% endblock %}

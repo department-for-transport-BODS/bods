@@ -1,11 +1,14 @@
 {% load i18n %}
+
 <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-8">
   {% for issue in known_issues %}
-    <li class="govuk-!-margin-bottom-3">
+   <li class="govuk-!-margin-bottom-3">
       {% if issue.status == "fixed" %}
-        <strong class="govuk-tag govuk-tag--green">{% trans "Fixed" %}</strong>
+        <strong class="govuk-tag govuk-tag--green">
+          {% trans "Fixed" %}
+        </strong>
       {% endif %}
       {{ issue.description }}
-    </li>
+   </li>
   {% endfor %}
 </ul>

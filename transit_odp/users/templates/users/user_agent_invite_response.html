@@ -1,25 +1,33 @@
 {% extends "users/base.html" %}
+
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-{% block breadcrumb.content %}{% endblock %}
-{% block title_tag %}
-  {% trans "Respond to invite" %}
+
+{% block breadcrumb.content %}
 {% endblock %}
+
+{% block title_tag %}
+    {% trans 'Respond to invite' %}
+{% endblock %}
+
 {% block backlink %}
   {% url 'users:home' host host.name as backlink %}
-  {% include "snippets/backlink.html" with url=backlink %}
+  {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-xl">{{ object.organisation.name }} has sent you an invitation to act as an agent</h1>
+      <h1 class="govuk-heading-xl">
+        {{object.organisation.name}} has sent you an invitation to act as an agent
+      </h1>
       <p class="govuk-body-m govuk-!-margin-bottom-6">
         {% blocktrans %}
         What would you like to do?
         {% endblocktrans %}
       </p>
-      {% crispy form %}
+        {% crispy form %}
     </div>
   </div>
 {% endblock %}

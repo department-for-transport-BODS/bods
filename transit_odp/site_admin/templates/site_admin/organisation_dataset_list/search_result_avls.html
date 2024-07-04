@@ -1,24 +1,29 @@
 {% load i18n %}
+
 <div class="search-result">
   <div class="search-result__heading">
     {% if item.status != "success" %}
-      <a class="govuk-link" href="{% url 'avl-feed-detail' pk=item.id host hosts.data %}">{{ item.name }}</a>
+    <a class='govuk-link' href="{% url 'avl-feed-detail' pk=item.id host hosts.data %}">
+      {{ item.name }}
+    </a>
     {% else %}
-      <p class="govuk-body">{{ item.name }}</p>
+    <p class="govuk-body">
+      {{ item.name }}
+    </p>
     {% endif %}
-    {% include "organisation/snippets/status_indicator.html" with status=item.status record=item %}
+    {% include 'organisation/snippets/status_indicator.html' with status=item.status record=item %}
   </div>
   <ul class="key-value-list">
     <li>
-      <span class="item__key">{% trans "Data feed ID:" %}</span>
+      <span class="item__key">{% trans 'Data feed ID:' %}</span>
       <span class="item__value">{{ item.id }}</span>
     </li>
     <li>
-      <span class="item__key">{% trans "Last automated updated:" %}</span>
+      <span class="item__key">{% trans 'Last automated updated:' %}</span>
       {% if item.avl_feed_last_checked %}
-        <span class="item__value">{{ item.avl_feed_last_checked|date:"j M Y" }}  {{ item.avl_feed_last_checked|time:"h:i A" }}</span>
+      <span class="item__value">{{ item.avl_feed_last_checked|date:"j M Y" }}  {{ item.avl_feed_last_checked|time:"h:i A" }}</span>
       {% else %}
-        <span class="item__value">N/A</span>
+       <span class="item__value">N/A</span>
       {% endif %}
     </li>
   </ul>

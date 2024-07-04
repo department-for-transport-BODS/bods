@@ -1,24 +1,31 @@
 {# Snippet for selecting and navigating to feed-list page for a given data type #}
 {% load i18n %}
 {% url 'feed-list' pk1=pk1 host hosts.publish as nav_url %}
+
 <h3 class="govuk-heading-m">Choose data type</h3>
 <div class="select-wrapper govuk-!-width-one-third govuk-!-margin-bottom-7">
-  <select class="govuk-!-width-full govuk-select"
-          id="data-type-select"
-          name="data-type"
-          data-qa="data-type-select"
-          aria-label="Select data type"
-          onchange="window.location.assign(this.value)">
-    <option value="{{ nav_url }}" data-qa="timetable-option" {% if nav_url == current_url %}selected{% endif %}>
-      {% trans "Timetables data" %}
-    </option>
-    {% url 'avl:feed-list' pk1=pk1 host hosts.publish as nav_url %}
-    <option value="{{ nav_url }}" data-qa="avl-option" {% if nav_url == current_url %}selected{% endif %}>
-      {% trans "Bus location data" %}
-    </option>
-    {% url 'fares:feed-list' pk1=pk1 host hosts.publish as nav_url %}
-    <option value="{{ nav_url }}" data-qa="fares-option" {% if nav_url == current_url %}selected{% endif %}>
-      {% trans "Fares data" %}
-    </option>
-  </select>
+    <select class="govuk-!-width-full govuk-select"
+        id="data-type-select"
+        name="data-type"
+        data-qa="data-type-select"
+        aria-label="Select data type"
+        onchange="window.location.assign(this.value)">
+        <option value="{{ nav_url }}"
+            data-qa="timetable-option"
+            {% if nav_url == current_url %}selected{% endif %}>
+            {% trans 'Timetables data' %}
+        </option>
+        {% url 'avl:feed-list' pk1=pk1 host hosts.publish as nav_url %}
+        <option value="{{ nav_url }}"
+            data-qa="avl-option"
+            {% if nav_url == current_url %}selected{% endif %}>
+            {% trans 'Bus location data' %}
+        </option>
+        {% url 'fares:feed-list' pk1=pk1 host hosts.publish as nav_url %}
+        <option value="{{ nav_url }}"
+            data-qa="fares-option"
+            {% if nav_url == current_url %}selected{% endif %}>
+            {% trans 'Fares data' %}
+        </option>
+    </select>
 </div>

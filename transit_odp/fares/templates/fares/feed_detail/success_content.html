@@ -1,17 +1,21 @@
 {% load i18n %}
-{% include "publish/snippets/dataset_map.html" %}
-{% include "fares/feed_detail/property_table.html" %}
+
+{% include 'publish/snippets/dataset_map.html' %}
+{% include 'fares/feed_detail/property_table.html' %}
+
 <div class="btn-group-justified">
-  {% if object.live_revision.status != 'inactive' %}
-    <a role="button"
-       class="govuk-button app-!-mr-sm-4"
-       href="{% url 'fares:feed-update' pk=object.id pk1=pk1 host hosts.publish %}">{% trans "Update data set" %}</a>
-  {% endif %}
-  {% if object.live_revision.status != 'expired' and object.live_revision.status != 'inactive' %}
-    <a role="button"
-       class="govuk-button govuk-button--secondary"
-       href="{% url 'fares:feed-archive' pk1=pk1 pk=object.id host hosts.publish %}">
-      {% trans "Deactivate data set" %}
-    </a>
-  {% endif %}
+{% if object.live_revision.status != 'inactive' %}
+  <a role="button" class="govuk-button app-!-mr-sm-4" href=
+          "{% url 'fares:feed-update' pk=object.id pk1=pk1 host hosts.publish %}"
+  >
+      {% trans 'Update data set' %}
+  </a>
+{% endif %}
+    {% if object.live_revision.status != 'expired' and object.live_revision.status != 'inactive' %}
+      <a role="button" class="govuk-button govuk-button--secondary"
+         href="{% url 'fares:feed-archive' pk1=pk1 pk=object.id host hosts.publish %}"
+      >
+          {% trans 'Deactivate data set' %}
+      </a>
+    {% endif %}
 </div>

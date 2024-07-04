@@ -1,75 +1,96 @@
 {% extends "page.html" %}
 {% load i18n %}
 {% load breadcrumbs %}
+
 {% block breadcrumb.content %}
-  {# defining here otherwise root-home is shown twice #}
-  {% breadcrumb_url 'Bus Open Data Service' 'home' host hosts.root %}
-  {% breadcrumb_url "Service Changelog" 'changelog' host hosts.root %}
+    {# defining here otherwise root-home is shown twice #}
+    {% breadcrumb_url 'Bus Open Data Service' 'home' host hosts.root %}
+    {% breadcrumb_url "Service Changelog" 'changelog' host hosts.root %}
 {% endblock %}
-{% block backlink %}{% endblock %}
+
+{% block backlink %}
+{% endblock %}
+
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">
-        {% filter force_escape %}
-          {% trans "Service changelog" %}
-        {% endfilter %}
-      </h1>
-      <p class="govuk-body">
-        {% trans "Last Updated: " %}
-        {{ last_updated|date:"d/m/Y" }}
-      </p>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                {% filter force_escape %}{% trans "Service changelog" %}{% endfilter %}
+            </h1>
+            <p class="govuk-body">
+                {% trans "Last Updated: " %}{{ last_updated|date:"d/m/Y" }}
+            </p>
+        </div>
+        <div class="govuk-grid-column-one-third">
+            <h2 class="govuk-heading-m">
+                {% trans "Need further guidance?" %}
+            </h2>
+            <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+                <li>
+                    <a class="govuk-link"
+                        href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
+                        {% trans 'View operator guidance' %}
+                    </a>
+                </li>
+                <li>
+                    <a class="govuk-link"
+                        href="{% url 'guidance:support-developer' host hosts.data %}">
+                        {% trans 'View developer guidance' %}
+                    </a>
+                </li>
+                <li>
+                    <a class="govuk-link"
+                        href="{% url 'contact' host hosts.root %}">
+                        {% trans 'Contact support desk' %}
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <div class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-m">{% trans "Need further guidance?" %}</h2>
-      <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-        <li>
-          <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
-            {% trans "View operator guidance" %}
-          </a>
-        </li>
-        <li>
-          <a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}">
-            {% trans "View developer guidance" %}
-          </a>
-        </li>
-        <li>
-          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact support desk" %}</a>
-        </li>
-      </ul>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"/>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-l">
+                {% trans "Known Issues" %}
+            </h2>
+            <h3 class="govuk-heading-m govuk-!-margin-bottom-7">
+                {% trans "Publisher issues:" %}
+            </h3>
+            {% include 'changelog/snippets/issue_list.html' with known_issues=known_issues.publisher %}
+            <h3 class="govuk-heading-m govuk-!-margin-bottom-7">
+                {% trans "Consumer issues:" %}
+            </h3>
+            {% include 'changelog/snippets/issue_list.html' with known_issues=known_issues.consumer %}
+        </div>
     </div>
-  </div>
-  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-l">{% trans "Known Issues" %}</h2>
-      <h3 class="govuk-heading-m govuk-!-margin-bottom-7">{% trans "Publisher issues:" %}</h3>
-      {% include "changelog/snippets/issue_list.html" with known_issues=known_issues.publisher %}
-      <h3 class="govuk-heading-m govuk-!-margin-bottom-7">{% trans "Consumer issues:" %}</h3>
-      {% include "changelog/snippets/issue_list.html" with known_issues=known_issues.consumer %}
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"/>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-l">
+                {% trans "High-level roadmap" %}
+            </h2>
+            <p class="govuk-body">
+                {{ roadmap.description }}
+            </p>
+        </div>
     </div>
-  </div>
-  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-l">{% trans "High-level roadmap" %}</h2>
-      <p class="govuk-body">{{ roadmap.description }}</p>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible"/>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-l govuk-!-margin-bottom-5">
+                {% trans "Release notes" %}
+            </h2>
+            <p class="govuk-body">
+                Get involved in the work that is being done by the BODS team, and join the
+                fortnightly sprint review and feedback sessions held every Thursday at 11.30am
+                UK time via this Microsoft Teams link:
+                <a class="govuk-link"
+                    href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_MDcxNzU0MDMtODFmYS00MTJiLTg5YTItZDkwNjQwMzM2NTQz%40thread.v2/0?context=%7b%22Tid%22%3a%22deff24bb-2089-4400-8c8e-f71e680378b2%22%2c%22Oid%22%3a%22b0d75f03-6c88-47d2-89a1-40e135bab419%22%7d"
+                >
+                    {% trans 'Click here to join the meeting' %}
+                </a>
+            </p>
+            {% include 'changelog/snippets/release_notes.html' %}
+        </div>
     </div>
-  </div>
-  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-l govuk-!-margin-bottom-5">{% trans "Release notes" %}</h2>
-      <p class="govuk-body">
-        Get involved in the work that is being done by the BODS team, and join the
-        fortnightly sprint review and feedback sessions held every Thursday at 11.30am
-        UK time via this Microsoft Teams link:
-        <a class="govuk-link"
-           href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_MDcxNzU0MDMtODFmYS00MTJiLTg5YTItZDkwNjQwMzM2NTQz%40thread.v2/0?context=%7b%22Tid%22%3a%22deff24bb-2089-4400-8c8e-f71e680378b2%22%2c%22Oid%22%3a%22b0d75f03-6c88-47d2-89a1-40e135bab419%22%7d">
-          {% trans "Click here to join the meeting" %}
-        </a>
-      </p>
-      {% include "changelog/snippets/release_notes.html" %}
-    </div>
-  </div>
 {% endblock %}

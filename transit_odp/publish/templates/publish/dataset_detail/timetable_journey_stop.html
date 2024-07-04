@@ -1,114 +1,99 @@
 {% load i18n %}
 {% load query_transform %}
 {% load parse_dictionary %}
-<table class="govuk-table govuk-table--small-text-until-tablet {% if timetable_details.df.columns|length <= 5 %}timetables_govuk_table{% endif %}">
-  <caption class="govuk-table__caption govuk-table__caption--m">
-    {% trans timetable_details.journey_name %}
-  </caption>
+
+
+{% if  timetable_details.df.columns|length  <= 5 %}
+<table class="govuk-table govuk-table--small-text-until-tablet timetables_govuk_table">
+{% else %}
+<table class="govuk-table govuk-table--small-text-until-tablet">
+{% endif %}
+  <caption class="govuk-table__caption govuk-table__caption--m">{% trans timetable_details.journey_name %}</caption>
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      {% for col in timetable_details.df.columns %}<th scope="col" class="govuk-table__header ">{{ col }}</th>{% endfor %}
+      {% for col in timetable_details.df.columns %}
+        <th scope="col" class="govuk-table__header ">{{col}}</th>
+    {% endfor %}
     </tr>
   </thead>
   <tbody class="govuk-table__body">
     {% for idx, row in timetable_details.df.iterrows %}
       <tr class="govuk-table__row">
         {% for col_name, cell in row.items %}
-          <td class="govuk-table__cell timetable_govuk_body">
-            {% if col_name == 'Journey Code' %}
-              {% with key=cell|concatenate:"_"|concatenate:idx %}
-                <a class="tooltip govuk-link"
-                   title="More information"
-                   id="stop-{{ direction }}-{{ idx }}"
-                   onclick="BODSFrontend.showTooltip(event,'{{ idx }}', '{{ direction }}');">{{ cell }}
-                  <p class="tooltiptext" id="tooltip-{{ direction }}-{{ idx }}" onclick="BODSFrontend.disableClick(event);">
-                    <span class="govuk-!-font-weight-bold">ATCO Code:</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}
-                    <br />
-                    <span class="govuk-!-font-weight-bold">Street:</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'street' }}
-                    <br />
-                    <span class="govuk-!-font-weight-bold">Indicator:</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'indicator' }}
-                    <br />
-                    <button type="submit"
-                            class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
-                            id="closeToolTip-{{ direction }}-{{ idx }}"
-                            onclick="BODSFrontend.hideTooltip(event);"
-                            data-module="govuk-button">Close</button>
-                  </p>
-                </a>
+        <td class="govuk-table__cell timetable_govuk_body">          
+            {% if col_name == 'Journey Code'  %}
+              {% with key=cell|concatenate:"_"|concatenate:idx %}              
+              <a class="tooltip govuk-link" title="More information" id="stop-{{direction}}-{{idx}}" onclick="BODSFrontend.showTooltip(event,'{{idx}}', '{{direction}}');"  >{{cell}}                
+                <p class="tooltiptext" id="tooltip-{{direction}}-{{idx}}" onclick="BODSFrontend.disableClick(event);" >
+                  <span class="govuk-!-font-weight-bold">ATCO Code: </span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}<br/>
+                  <span class="govuk-!-font-weight-bold">Street: </span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'street' }}<br/> 
+                  <span class="govuk-!-font-weight-bold">Indicator: </span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'indicator' }}<br/>
+                  <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1" id="closeToolTip-{{direction}}-{{idx}}" onclick="BODSFrontend.hideTooltip(event);" data-module="govuk-button">
+                    Close
+                  </button>
+                </p>
+              </a>
               {% endwith %}
             {% else %}
-              <span>{{ cell }}</span>
+            <span class="">{{cell}}</span>
             {% endif %}
-          </td>
+        </td>
         {% endfor %}
       </tr>
-    {% endfor %}
+    {% endfor %}      
   </tbody>
 </table>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
-    <p class="govuk-body">
-      {% if timetable_details.total_row_count > 10 %}
+    <p class="govuk-body">      
+      {% if timetable_details.total_row_count > 10  %}
         {% if timetable_details.show_all %}
-          <a href="{% query_transform_kv timetable_details.show_all_param False %}" class="govuk-link govuk-link--no-underline">See less </a>
+        <a href="{% query_transform_kv timetable_details.show_all_param False %}" class="govuk-link govuk-link--no-underline">See less </a>
         {% else %}
-          <a href="{% query_transform_kv timetable_details.show_all_param True %}" class="govuk-link govuk-link--no-underline">See more </a>
+        <a href="{% query_transform_kv timetable_details.show_all_param True %}" class="govuk-link govuk-link--no-underline">See more </a>
         {% endif %}
       {% endif %}
     </p>
   </div>
-  {% if timetable_details.total_page > 0 %}
-    <div class="govuk-grid-column-one-half govuk-!-text-align-right">
-      <nav class="govuk-pagination end-justified govuk-!-text-align-right govuk-!-width-full"
-           role="navigation"
-           aria-label="Pagination">
-        {% if timetable_details.curr_page != 1 %}
-          <div class="govuk-pagination__prev">
-            <a class="govuk-link govuk-pagination__link"
-               rel="prev"
-               href="{% query_transform_kv timetable_details.page_param timetable_details.curr_page|add:'-1' %}">
-              <svg class="govuk-pagination__icon govuk-pagination__icon--prev"
-                   xmlns="http://www.w3.org/2000/svg"
-                   height="13"
-                   width="15"
-                   aria-hidden="true"
-                   focusable="false"
-                   viewBox="0 0 15 13">
-                <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z">
-                </path>
-              </svg>
-              <span class="govuk-pagination__link-title">
-                Previous
-                <br />
-                {{ timetable_details.curr_page|add:"-1" }} / {{ timetable_details.total_page }} <span class="govuk-visually-hidden">page</span>
-              </span>
-            </a>
-          </div>
-        {% endif %}
-        {% if timetable_details.curr_page != timetable_details.total_page %}
-          <div class="govuk-pagination__next govuk-!-text-align-right">
-            <a class="govuk-link govuk-pagination__link"
-               rel="next"
-               href="{% query_transform_kv timetable_details.page_param timetable_details.curr_page|add:'1' %}">
-              <span class="govuk-pagination__link-title">
-                Next
-                <br />
-                {{ timetable_details.curr_page|add:"1" }}/{{ timetable_details.total_page }}<span class="govuk-visually-hidden">page</span>
-              </span>
-              <svg class="govuk-pagination__icon govuk-pagination__icon--next"
-                   xmlns="http://www.w3.org/2000/svg"
-                   height="13"
-                   width="15"
-                   aria-hidden="true"
-                   focusable="false"
-                   viewBox="0 0 15 13">
-                <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z">
-                </path>
-              </svg>
-            </a>
-          </div>
-        {% endif %}
-      </nav>
-    </div>
+
+  {% if timetable_details.total_page > 0 %}  
+  <div class="govuk-grid-column-one-half govuk-!-text-align-right">
+    <nav class=" govuk-pagination govuk-!-width-full govuk-!-text-align-right" style="justify-content: end;" role="navigation"
+      aria-label="Pagination">
+      {% if timetable_details.curr_page != 1 %}
+      <div class="govuk-pagination__prev">
+        <a class=" govuk-link govuk-pagination__link" rel="prev"
+        href="{% query_transform_kv timetable_details.page_param timetable_details.curr_page|add:'-1' %}" >
+          <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg"
+            height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+            <path
+              d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z">
+            </path>
+          </svg>
+          <span class="govuk-pagination__link-title">
+            Previous <br/> {{ timetable_details.curr_page|add:"-1" }} / {{timetable_details.total_page}} <span class="govuk-visually-hidden"> page</span>
+          </span>
+        </a>
+      </div>
+      {% endif %}
+      {% if timetable_details.curr_page != timetable_details.total_page %}
+      <div class="govuk-pagination__next govuk-!-text-align-right">
+        <a class="govuk-link govuk-pagination__link" rel="next"
+        href="{% query_transform_kv timetable_details.page_param timetable_details.curr_page|add:'1' %}" >
+          <span class="govuk-pagination__link-title">
+            Next <br /> {{ timetable_details.curr_page|add:"1" }}/{{timetable_details.total_page}}<span class="govuk-visually-hidden"> page</span>
+          </span>
+          <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg"
+            height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+            <path
+              d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z">
+            </path>
+          </svg>
+        </a>
+      </div>
+      {% endif %}
+    </nav>
+  </div>
   {% endif %}
 </div>

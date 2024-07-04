@@ -1,28 +1,37 @@
 {% extends "site_admin/base.html" %}
+
 {% load static %}
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
+
 {% block title_tag %}
-  {% if form.errors %}
-    {% trans "Error: " %}
-  {% endif %}
-  {% trans "Invite new organisation" %}
+    {% if form.errors %}{% trans 'Error: ' %}{% endif %}
+    {% trans 'Invite new organisation' %}
 {% endblock %}
+
 {# Breadcrumb #}
-{% block breadcrumb.content %}{% endblock %}
-{% block backlink %}
-  {% url 'users:organisation-manage' host hosts.admin as backlink %}
-  {% include "snippets/backlink.html" with url=backlink %}
+{% block breadcrumb.content %}
 {% endblock %}
+
+{% block backlink %}
+    {% url 'users:organisation-manage' host hosts.admin as backlink %}
+    {% include 'snippets/backlink.html' with url=backlink %}
+{% endblock %}
+
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">{% trans "Create new organisation" %}</h1>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">
+                {% trans 'Create new organisation' %}
+            </h1>
+        </div>
     </div>
-  </div>
-  {# Main Section #}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">{% crispy form %}</div>
-  </div>
+
+    {# Main Section #}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% crispy form %}
+        </div>
+    </div>
 {% endblock %}

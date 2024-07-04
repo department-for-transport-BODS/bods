@@ -1,71 +1,74 @@
 {% extends "browse/base/property_table.html" %}
+
 {% load i18n %}
 {% load tz %}
 {% load filters %}
+
 {% block dataset_type %}
-  {% trans "Timetables data" %}
+    {% trans "Timetables data" %}
 {% endblock %}
+
 {% block owner_search_link %}
-  {% url 'search' host host.name %}?organisation={{ property.organisation.id }}&status=live
+    {% url 'search' host host.name %}?organisation={{ property.organisation.id }}&status=live
 {% endblock %}
+
 {% block datatype_content %}
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans "TransXChange version" %}</th>
-    <td class="govuk-table__cell" colspan="2">{{ object.transxchange_version }}</td>
-  </tr>
-  <tr class="govuk-table__row">
-    {# This will probably go away soon because all non compliant datasets will be    #}
-    {# inactive. However the search page allows users to look for inactive datasets  #}
-    <th scope="row" class="govuk-table__header">
-      {% filter force_escape %}
-        {% trans "BODS compliant data" %}
-      {% endfilter %}
-      {% include "browse/snippets/help_modals/timetables_pti_compliance.html" %}
-    </th>
-    <td class="govuk-table__cell" colspan="2">
-      {# Hack to avoid 3rd td width accommodating "download validation report" #}
-      {# none of the other fields need it to be that large #}
-      <div class="side-by-side">
-        <span>{{ object.is_pti_compliant|yesno:"Yes,No" }}</span>
-        {% if show_pti_link %}
-          <a class="govuk-link" href="{% url 'revision-pti-csv' pk=view.kwargs.pk pk1=object.organisation_id host hosts.publish %}">
-            {% trans "Download validation report" %}
-          </a>
-        {% endif %}
-      </div>
-    </td>
-  </tr>
-  {% if dq_score != None %}
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% filter force_escape %}
-          {% trans "Data quality report" %}
-        {% endfilter %}
-        {% include "browse/snippets/help_modals/data_quality_report.html" %}
-      </th>
-      <td class="govuk-table__cell">
-        <div class="stacked">
-          {% trans "Data quality" %}
-          {{ dq_score.score | percentage:0 }}
-          <span class="status-indicator status-indicator--{{ dq_score.css_indicator }}">{{ dq_score.rag_level | upper }}</span>
-        </div>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link"
-           target="_blank"
-           rel="noopener"
-           rel="noreferrer"
-           href="{% url 'dq:overview' pk1=object.organisation.id pk=object.id report_id=report_id host hosts.publish %}">
-          {% trans "View data quality report" %}
-        </a>
-      </td>
+        <th scope="row" class="govuk-table__header">{% trans 'TransXChange version' %}</th>
+        <td class="govuk-table__cell" colspan="2">{{ object.transxchange_version }}</td>
     </tr>
-  {% endif %}
-  <tr class="govuk-table__row">
-    <th scope="row" class="govuk-table__header">{% trans "Last updated" %}</th>
-    <td class="govuk-table__cell dont-break-out">{{ object.published_at|localtime|date:"j M Y H:i" }}</td>
-    <td class="govuk-table__cell">
-      <a class="govuk-link" href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans "View change log" %}</a>
-    </td>
-  </tr>
+    <tr class="govuk-table__row">
+        {# This will probably go away soon because all non compliant datasets will be    #}
+        {# inactive. However the search page allows users to look for inactive datasets  #}
+        <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'BODS compliant data' %}{% endfilter %}{% include 'browse/snippets/help_modals/timetables_pti_compliance.html' %}</th>
+        <td class="govuk-table__cell" colspan="2">
+            {# Hack to avoid 3rd td width accommodating "download validation report" #}
+            {# none of the other fields need it to be that large #}
+            <div class="side-by-side">
+                <span>{{ object.is_pti_compliant|yesno:"Yes,No" }}</span>
+                {% if show_pti_link %}
+                    <a class="govuk-link"
+                        href="{% url 'revision-pti-csv' pk=view.kwargs.pk pk1=object.organisation_id host hosts.publish %}"
+                    >
+                        {% trans "Download validation report" %}
+                    </a>
+                {% endif %}
+            </div>
+        </td>
+    </tr>
+    {% if dq_score != None %}
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% filter force_escape %}{% trans 'Data quality report' %}{% endfilter %}{% include 'browse/snippets/help_modals/data_quality_report.html' %}</th>
+            <td class="govuk-table__cell">
+                <div class="stacked">
+                    {% trans "Data quality" %}
+                    {{ dq_score.score | percentage:0 }}
+                    <span class="status-indicator status-indicator--{{dq_score.css_indicator}}">
+                        {{ dq_score.rag_level | upper }}
+                    </span>
+                </div>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link"
+                    target="_blank" rel="noopener" rel="noreferrer"
+                    href="{% url 'dq:overview' pk1=object.organisation.id pk=object.id report_id=report_id host hosts.publish %}"
+                >
+                    {% trans 'View data quality report' %}
+                </a>
+            </td>
+        </tr>
+    {% endif %}
+    <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{% trans 'Last updated' %}</th>
+        <td class="govuk-table__cell dont-break-out">
+            {{ object.published_at|localtime|date:"j M Y H:i" }}
+        </td>
+        <td class="govuk-table__cell">
+            <a class="govuk-link"
+                href="{% url 'feed-changelog' pk=object.id host host.name %}"
+            >
+                {% trans 'View change log' %}
+            </a>
+        </td>
+    </tr>
 {% endblock %}

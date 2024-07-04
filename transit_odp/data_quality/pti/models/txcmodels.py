@@ -6,7 +6,6 @@ class VehicleJourney(BaseModel):
     line_ref: str
     journey_pattern_ref: str
     vehicle_journey_ref: str
-    service_ref: str
 
     @classmethod
     def from_xml(cls, xml):
@@ -19,13 +18,11 @@ class VehicleJourney(BaseModel):
         vehicle_journey_ref = xml.xpath(
             "string(x:VehicleJourneyRef)", namespaces=namespaces
         )
-        service_ref = xml.xpath("string(x:ServiceRef)", namespaces=namespaces)
         return cls(
             code=code,
             line_ref=line_ref,
             journey_pattern_ref=journey_pattern_ref,
             vehicle_journey_ref=vehicle_journey_ref,
-            service_ref=service_ref,
         )
 
 

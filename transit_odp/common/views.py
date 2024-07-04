@@ -1,10 +1,8 @@
 from collections import namedtuple
-from typing import Any
 
 from django.shortcuts import render
 from django.views.generic import DetailView, TemplateView, UpdateView
 
-from django.conf import settings
 from transit_odp.common.constants import FALSE, TRUE
 from transit_odp.common.utils.cookie_settings import delete_cookie, set_cookie
 from transit_odp.common.view_mixins import BODSBaseView
@@ -86,15 +84,4 @@ class GuideMeBaseView(BaseTemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["sections"] = self.SECTIONS
-        return context
-
-
-class CoachDownloadView(BaseTemplateView):
-    template_name = "common/coach_download.html"
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["txc_file"] = settings.COACH_TXC_FILE_S3_URL
-        context["atco_file"] = settings.COACH_ATCO_FILE_S3_URL
-
         return context

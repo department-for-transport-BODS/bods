@@ -1,20 +1,27 @@
 {% extends "account/base.html" %}
+
 {% load i18n %}
 {% load breadcrumbs %}
+
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb 'Account Inactive' %}
 {% endblock %}
-{% block head_title %}
-  {% trans "Account Inactive" %}
-{% endblock %}
+
+
+{% block head_title %}{% trans 'Account Inactive' %}{% endblock %}
+
+
 {% block inner %}
   <p class="govuk-body">
-    {% blocktrans %}
+  {% blocktrans %}
   Your account is inactive and you no longer have access to the Bus Open Data Service.
     If you were not expecting this then please
   {% endblocktrans %}
-    <a class="govuk-link" href="{% url 'contact' host hosts.root %}">contact us</a>.
+  <a class="govuk-link" href="{% url 'contact' host hosts.root %}">contact us</a>.
   </p>
 {% endblock %}
-{% block inner_secondary %}{% endblock %}
+
+
+{% block inner_secondary %}
+{% endblock %}

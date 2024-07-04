@@ -1,11 +1,13 @@
 {% load crispy_forms_field %}
 {% load crispy_forms_govuk_tags %}
-<div class="{% if wrapper_class %} {{ wrapper_class }} {% else %} govuk-form-group {% endif %} {% if field.errors and not suppress_form_group_error %}govuk-form-group--error{% endif %}">
-  {% include "govuk/snippets/field_label.html" %}
-  {# Render form group errors #}
-  {% include "govuk/snippets/field_errors.html" %}
-  <div class="service-code-widget{% if field.errors %} govuk-input--error{% endif %}">
-    <p>{{ form.licence.number }}/</p>
-    {% crispy_field field %}
-  </div>
+
+<div
+    class="{% if wrapper_class %}{{ wrapper_class }}{% else %}govuk-form-group {% endif %} {% if field.errors and not suppress_form_group_error %} govuk-form-group--error{% endif %}">
+    {% include 'govuk/snippets/field_label.html' %}
+    {# Render form group errors #}
+    {% include 'govuk/snippets/field_errors.html' %}
+    <div class="service-code-widget{% if field.errors %} govuk-input--error{% endif %}">
+        <p>{{ form.licence.number }}/</p>
+        {% crispy_field field %}
+    </div>
 </div>

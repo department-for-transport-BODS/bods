@@ -125,11 +125,7 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
         # prevent user from trying to update dataset with existing draft, regardless of
         # how they got to this page
         if self.object.dataset.revisions.filter(
-            status__in=[
-                FeedStatus.draft.value,
-                FeedStatus.success.value,
-                FeedStatus.error.value,
-            ]
+            status__in=[FeedStatus.draft.value, FeedStatus.success.value]
         ).exists():
             return redirect(
                 "fares:feed-draft-exists",

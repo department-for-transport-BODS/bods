@@ -21,7 +21,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
 )
 from datetime import datetime, timedelta
 from typing import Dict, Any, Union
-from transit_odp.timetables.transxchange import TransXChangeDocument
+from transit_odp.transmodel.models import StopActivity
 
 logger = logging.getLogger(__name__)
 
@@ -247,7 +247,7 @@ def get_geometry_from_location(system, location):
             northing = location.get_element(["Translation", "Northing"]).text
         else:
             easting = location.get_element(["Easting"]).text
-            northing = location.get_element(["Northing"]).text
+            northing = location.get_element(["Easting"]).text
         geometry = (
             grid_gemotry_from_str(easting, northing) if easting and northing else None
         )
@@ -265,13 +265,12 @@ def get_geometry_from_location(system, location):
     return geometry
 
 
-def provisional_stops_to_dataframe(stops, doc: TransXChangeDocument):
+def provisional_stops_to_dataframe(stops, system=None):
     """
     This function returns the stoppoint detials like atco_code, geometry, location and comman name
     """
     stop_points = []
     for stop in stops:
-        system = doc.get_location_system(stop)
         locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
         flx_zone_locations = []
         atco_code = stop.get_element(["AtcoCode"]).text

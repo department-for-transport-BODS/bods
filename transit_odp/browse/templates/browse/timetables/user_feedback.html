@@ -1,55 +1,60 @@
-{% extends "page.html" %}
+{% extends 'page.html' %}
+
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
+
 {% block title_tag %}
-  {% if form.errors %}
-    {% trans "Error: " %}
-  {% endif %}
-  {% trans "Provide feedback" %}
+    {% if form.errors %}{% trans 'Error: ' %}{% endif %}
+    {% trans 'Provide feedback' %}
 {% endblock %}
+
 {# Breadcrumb #}
-{% block breadcrumb %}{# No breadcrumb #}{% endblock %}
+{% block breadcrumb %}
+    {# No breadcrumb #}
+{% endblock %}
+
 {# Backlink #}
 {% block backlink %}
-  {% include "snippets/backlink.html" with url=back_url %}
+    {% include 'snippets/backlink.html' with url=back_url %}
 {% endblock %}
+
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">
-        {% if dataset.dataset_type == 2 %}
-          {% trans "Contact the data feed owner" %}
-        {% else %}
-          {% trans "Contact the data set owner" %}
-        {% endif %}
-      </h1>
-      <p class="govuk-body">
-        {% trans "An email generated from this form will be sent to the" %}
-        {% if dataset.dataset_type == 2 %}
-          {% trans "data feed" %}
-        {% else %}
-          {% trans "data set" %}
-        {% endif %}
-        {% trans "owner directly. They will be your point of contact for any potential resolution to your query." %}
-      </p>
-    </br />
-    <p class="govuk-body">
-      <span class="govuk-body-l govuk-!-font-weight-bold">{% trans "Name " %}</span>
-      <span class="govuk-body-l">{{ dataset.live_revision.name }}</span>
-    </p>
-    <p class="govuk-body">
-      <span class="govuk-body-l govuk-!-font-weight-bold">
-        {% if dataset.dataset_type == 2 %}
-          {% trans "Data feed ID " %}
-        {% else %}
-          {% trans "Data set ID " %}
-        {% endif %}
-      </span>
-      <span class="govuk-body-l">{{ dataset.id }}</span>
-    </p>
-    {% crispy form %}
-  </div>
-</div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">
+                {% if dataset.dataset_type == 2 %}
+                    {% trans 'Contact the data feed owner' %}
+                {% else %}
+                    {% trans 'Contact the data set owner' %}
+                {% endif %}
+            </h1>
+            <p class="govuk-body">
+                {% trans "An email generated from this form will be sent to the" %}
+                {% if dataset.dataset_type == 2 %}
+                    {% trans 'data feed' %}
+                {% else %}
+                    {% trans 'data set' %}
+                {% endif %}
+                {% trans "owner directly. They will be your point of contact for any potential resolution to your query." %}
+            </p>
+            </br>
+            <p class="govuk-body">
+                <span class="govuk-body-l govuk-!-font-weight-bold">{% trans 'Name ' %}</span>
+                <span class="govuk-body-l">{{ dataset.live_revision.name }}</span>
+            </p>
+            <p class="govuk-body">
+                <span class="govuk-body-l govuk-!-font-weight-bold">
+                    {% if dataset.dataset_type == 2 %}
+                        {% trans 'Data feed ID ' %}
+                    {% else %}
+                        {% trans 'Data set ID ' %}
+                    {% endif %}
+                </span>
+                <span class="govuk-body-l">{{ dataset.id }}</span>
+            </p>
+            {% crispy form %}
+        </div>
+    </div>
 {% endblock %}

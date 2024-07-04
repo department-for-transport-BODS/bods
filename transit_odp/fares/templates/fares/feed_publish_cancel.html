@@ -1,59 +1,68 @@
 {% extends "publish/base.html" %}
+
 {% load i18n %}
 {% load static %}
-{% block title_tag %}{{ title_tag_text }}{% endblock %}
+
+{% block title_tag %}
+  {{ title_tag_text }}
+{% endblock %}
+
 {% block breadcrumb.content %}
   <form method="post" novalidate>
-    {% csrf_token %}
-    {{ wizard.form.media }}
-    {{ wizard.management_form }}
-    <button type="submit" name="wizard_goto_step" value="{{ previous_step }}" class="govuk-button-back-link">
-      {% trans "Back" %}
-    </button>
-  {% endblock %}
-  {% block backlink %}{% endblock %}
-  {% block content %}
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">
-          {% if is_update or is_revision_modify %}
-            {% trans "Would you like to cancel updating this data set?" %}
-          {% else %}
-            {% trans "Would you like to cancel publishing this data set?" %}
-          {% endif %}
-        </h1>
-        <p class="govuk-body">{% trans "Any changes you have made so far will not be saved." %}</p>
-        <div class="btn-group-justified">
-          {% if is_update and not is_revision_modify %}
-            <a role="button"
-               class="govuk-button app-!-mr-sm-4"
-               href="{% url 'fares:feed-detail' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
-              {{ _("Confirm") }}
+  {% csrf_token %}
+  {{ wizard.form.media }}
+  {{ wizard.management_form }}
+  <button type="submit" name="wizard_goto_step" value="{{ previous_step }}"
+          class="govuk-button-back-link">
+    {% trans 'Back' %} </button>
+
+{% endblock %}
+
+{% block backlink %}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{% if is_update or is_revision_modify %}
+        {% trans 'Would you like to cancel updating this data set?' %} {% else %}
+        {% trans 'Would you like to cancel publishing this data set?' %}{% endif %}</h1>
+      <p class="govuk-body">{% trans 'Any changes you have made so far will not be saved.' %}</p>
+      <div class="btn-group-justified">
+        {% if is_update and not is_revision_modify %}
+          <a role="button" class="govuk-button app-!-mr-sm-4"
+             href=
+                     "{% url 'fares:feed-detail' pk=object.dataset_id pk1=pk1 host hosts.publish %}"
+          >
+            {{ _('Confirm') }}
+          </a>
+        {% elif is_revision_modify %}
+          {% if object.live_revision or is_update %}
+            <a role="button" class="govuk-button app-!-mr-sm-4"
+               href=
+                       "{% url 'fares:revision-update-publish' pk=object.dataset_id pk1=pk1 host hosts.publish %}"
+            >
+              {{ _('Confirm') }}
             </a>
-          {% elif is_revision_modify %}
-            {% if object.live_revision or is_update %}
-              <a role="button"
-                 class="govuk-button app-!-mr-sm-4"
-                 href="{% url 'fares:revision-update-publish' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
-                {{ _("Confirm") }}
-              </a>
-            {% else %}
-              <a role="button"
-                 class="govuk-button app-!-mr-sm-4"
-                 href="{% url 'fares:revision-publish' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
-                {{ _("Confirm") }}
-              </a>
-            {% endif %}
           {% else %}
-            <a role="button" class="govuk-button app-!-mr-sm-4" href="{% url 'fares:feed-list' pk1=pk1 host hosts.publish %}">
-              {{ _("Confirm") }}
+            <a role="button" class="govuk-button app-!-mr-sm-4"
+               href=
+                       "{% url 'fares:revision-publish' pk=object.dataset_id pk1=pk1 host hosts.publish %}"
+            >
+              {{ _('Confirm') }}
             </a>
           {% endif %}
-          <button type="submit" name="wizard_goto_step" value="{{ previous_step }}" class="govuk-button govuk-button--secondary">
-            {% trans "Cancel" %}
-          </button>
-        </div>
+        {% else %}
+          <a role="button" class="govuk-button app-!-mr-sm-4"
+             href="{% url 'fares:feed-list' pk1=pk1 host hosts.publish %}">
+            {{ _('Confirm') }}
+          </a>
+        {% endif %}
+        <button type="submit" name="wizard_goto_step" value="{{ previous_step }}"
+                class="govuk-button govuk-button--secondary">
+          {% trans 'Cancel' %} </button>
       </div>
     </div>
+  </div>
   </form>
 {% endblock %}

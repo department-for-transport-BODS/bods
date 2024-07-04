@@ -1,5 +1,6 @@
 {% extends "publish/snippets/pti_panel/base.html" %}
 {% load i18n %}
+
 {% block pti_panel_content %}
   <h2 class="govuk-heading-m">3a Validation check - Failed</h2>
   <p class="govuk-body">
@@ -16,11 +17,12 @@
       The timetables data supplied is non-compliant. It does not meet
       the data format required as specified in the
     {% endblocktrans %}
-    <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
+    <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality"
+       class="govuk-link">
       {% trans "guidance" %}
     </a>
-    {% trans "and from" %}
-    {{ pti_enforced_date|date:"jS F Y" }}
+      {% trans "and from" %}
+      {{ pti_enforced_date|date:"jS F Y" }}
     {% blocktrans %}
       it will be rejected from BODS. To pass the validation please address all
       outstanding issues in the validation report.

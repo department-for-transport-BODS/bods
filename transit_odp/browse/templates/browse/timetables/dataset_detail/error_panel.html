@@ -1,67 +1,75 @@
 {% load i18n %}
+
 <div class="govuk-panel app-panel--error govuk-!-padding-top-9 govuk-!-padding-bottom-9 govuk-!-margin-bottom-0">
-  <h2 class="govuk-heading-xl govuk-panel__title govuk-!-font-size-36">{% trans "Data set not available" %}</h2>
+  <h2 class="govuk-heading-xl govuk-panel__title govuk-!-font-size-36">
+      {% trans 'Data set not available' %}
+  </h2>
 </div>
+
 <table class="govuk-table dataset-property-table">
   <tbody class="govuk-table__body">
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans "Name" %}</th>
-      <td class="govuk-table__cell dont-break-out">{% trans object.name %}</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans "Owner" %}</th>
-      <td class="govuk-table__cell">{% trans object.organisation.name %}</td>
-    </tr>
-    <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">{% trans "Last updated" %}</th>
-      <td class="govuk-table__cell">
-        <div class="flex-between">
-          <span>
-            {{ object.published_at|date:"j M Y H:i" }}
-            {% trans "by " %}
-            {% if object.live_revision.published_by %}
-              {{ object.live_revision.published_by.username }}
-            {% else %}
-              {% trans "System" %}
-            {% endif %}
-          </span>
-          <span class="right-justify">
-            {% block inner.last_updated.changelog_link %}
-              <a class="govuk-link" href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans "View change log" %}</a>
-            {% endblock %}
-          </span>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
-{# TODO - finish this section #}
-<h2 class="govuk-heading-m govuk-!-font-size-27">{% trans "Download previous data" %}</h2>
-<p class="govuk-body-m">
-  {% blocktrans %}
-    There is currently an error in this data set. The operator has been informed. Whilst the issue is being fixed you
-    can use the pre-exisiting data set below.
-  {% endblocktrans %}
-</p>
-<table class="govuk-table">
   <tr class="govuk-table__row">
-    <td class="govuk-table__cell govuk-summary-list__row--no-border">{% trans "TransXChange version" %}</td>
-    <td class="govuk-table__cell govuk-summary-list__row--no-border">
+    <th scope="row" class="govuk-table__header">{% trans 'Name' %}</th>
+    <td class="govuk-table__cell dont-break-out">{% trans object.name %}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Owner' %}</th>
+    <td class="govuk-table__cell">{% trans object.organisation.name %}</td>
+  </tr>
+  <tr class="govuk-table__row">
+    <th scope="row" class="govuk-table__header">{% trans 'Last updated' %}</th>
+    <td class="govuk-table__cell">
       <div class="flex-between">
-        <span>{{ object.transxchange_version }}</span>
-        <span class="right-justify no-wrap">
-          {% if object.status == 'expired' or object.status == 'inactive' %}
-            {% url 'feed-download' pk=object.id host host.name as download_link %}
-          {% elif object.status == 'error' %}
-            {% url 'feed-download' pk=object.id host host.name as download_link %}
-          {% endif %}
-          <a class="govuk-link"
-             href="{% if object.status == 'expired' or object.status == 'inactive' %}{{ download_link }} {% elif object.status == 'error' %} {{ download_link }}?get_working=true {% endif %}">
-            {% trans "Download .xml (TransXChange format)" %}
-          </a>
+        <span>
+            {{ object.published_at|date:"j M Y H:i" }} {% trans 'by ' %}
+            {% if object.live_revision.published_by %}
+                {{ object.live_revision.published_by.username }}
+            {% else %}
+                {% trans 'System' %}
+            {% endif %}
+        </span>
+        <span style="text-align: right">
+          {% block inner.last_updated.changelog_link %}
+            <a class="govuk-link"
+               href="{% url 'feed-changelog' pk=object.id host host.name %}">{% trans 'View change log' %}</a>
+          {% endblock %}
         </span>
       </div>
     </td>
   </tr>
+  </tbody>
 </table>
-{% include "browse/timetables/dataset_detail/feedback_content.html" %}
+
+{# TODO - finish this section #}
+<h2 class="govuk-heading-m govuk-!-font-size-27">{% trans 'Download previous data' %}</h2>
+<p class="govuk-body-m">
+    {% blocktrans %}
+      There is currently an error in this data set. The operator has been informed. Whilst the issue is being fixed you
+      can use the pre-exisiting data set below.
+    {% endblocktrans %}
+</p>
+<table class="govuk-table">
+  <tr class="govuk-table__row">
+    <td class="govuk-table__cell" style="border: 0">{% trans 'TransXChange version' %}</td>
+    <td class="govuk-table__cell" style="border: 0">
+      <div class="flex-between">
+        <span>{{ object.transxchange_version }}</span>
+        <span class="no-wrap" style="text-align: right">
+          {% if object.status == 'expired' or object.status == 'inactive' %}
+          {% url 'feed-download' pk=object.id host host.name as download_link %}
+          {% elif object.status == 'error' %}
+            {% url 'feed-download' pk=object.id host host.name as download_link %}
+          {% endif %}
+          <a class="govuk-link"
+             href="{% if object.status == 'expired' or object.status == 'inactive' %}{{ download_link }}
+             {% elif object.status == 'error' %}
+               {{ download_link }}?get_working=true
+             {% endif %}">
+            {% trans 'Download .xml (TransXChange format)' %}
+          </a>
+         </span>
+      </div>
+    </td>
+  </tr>
+</table>
+{% include 'browse/timetables/dataset_detail/feedback_content.html' %}

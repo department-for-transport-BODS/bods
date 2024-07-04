@@ -1,137 +1,169 @@
 {% extends "guidance/developer/base.html" %}
+
 {% load i18n %}
+
 {% block extra_content %}
-  <h1 data-qa="quick-start-header" class="govuk-heading-l">{% trans "Quick start" %}</h1>
-  <h2 data-qa="apis-header" class="govuk-heading-m">{% trans "APIs" %}</h2>
-  <p class="govuk-body">
-    {% blocktrans %}
+    <h1 data-qa="quick-start-header" class="govuk-heading-l">{% trans 'Quick start' %}</h1>
+
+    <h2 data-qa="apis-header" class="govuk-heading-m">{% trans 'APIs' %}</h2>
+
+    <p class="govuk-body">
+        {% blocktrans %}
             Start calling data
             <a class="govuk-link" href="?section=api">Using the APIs</a>.
             A different API is required to consume each data type.
         {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
+    </p>
+
+    <p class="govuk-body">
+        {% blocktrans %}
             Query parameters are documented in the
         {% endblocktrans %}
-    <a class="govuk-link" href="?section=apireference">API reference</a>.
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
+        <a class="govuk-link" href="?section=apireference">API reference</a>.
+    </p>
+
+    <p class="govuk-body">
+        {% blocktrans %}
             You must
         {% endblocktrans %}
-    <a class="govuk-link" href="{% url 'account_signup' host hosts.data %}">register</a>
-    {% blocktrans %}
+        <a class="govuk-link" href="{% url 'account_signup' host hosts.data %}">
+            register
+        </a>
+        {% blocktrans %}
             for an account to get an API key.
         {% endblocktrans %}
-  </p>
-  <h2 data-qa="download-all-header" class="govuk-heading-m">{% trans "Download all data" %}</h2>
-  <p class="govuk-body">
-    <a class="govuk-link" href="{% url 'downloads' host hosts.data %}">{% trans "Download all data" %}</a>
-    {% blocktrans %}
+    </p>
+
+    <h2 data-qa="download-all-header" class="govuk-heading-m">
+        {% trans 'Download all data' %}
+    </h2>
+    <p class="govuk-body">
+        <a class="govuk-link" href="{% url 'downloads' host hosts.data %}">
+            {% trans 'Download all data' %}
+        </a>
+        {% blocktrans %}
             will give you all data cached by the service for your chosen data type.
             All data set statuses are included in the download all, including: Published and Inactive.
         {% endblocktrans %}
-  </p>
-  <h2 data-qa="data-service-header" class="govuk-heading-m">{% trans "Data provided to service" %}</h2>
-  <p class="govuk-body">
-    <a class="govuk-link" href="{% url 'select-data' host hosts.data %}">Browse for specific data</a> to:
-    <ul class="govuk-list govuk-list--bullet">
-      <li>{% trans "Look for examples of data published to the service" %}</li>
-      <li>{% trans "Find a data set’s detail page" %}</li>
-      <li>{% trans "View a data set’s metadata" %}</li>
-      <li>{% trans "Find a data set’s ID" %}</li>
-      <li>{% trans "Download a data set" %}</li>
-      <li>
-        <strong>{% trans "Provide feedback to data publishers about a certain data set" %}</strong>
-      </li>
-    </ul>
-  </p>
-  <h2 data-qa="data-updates-header" class="govuk-heading-m">{% trans "Data updates" %}</h2>
-  {% include "../snippets/data_updates_table.html" %}
-  <h2 data-qa="status-header" class="govuk-heading-m">{% trans "Status" %}</h2>
-  <table class="govuk-table">
-    <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">{% trans "Data set status" %}</th>
-        <th scope="col" class="govuk-table__header">{% trans "Explanation" %}</th>
-      </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans "Published" %}</td>
-        <td class="govuk-table__cell">{% trans "Data that has been published" %}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans "Inactive" %}</td>
-        <td class="govuk-table__cell">
-          {% blocktrans %}
+    </p>
+
+    <h2 data-qa="data-service-header" class="govuk-heading-m">
+        {% trans 'Data provided to service' %}
+    </h2>
+    <p class="govuk-body">
+        <a class="govuk-link" href="{% url 'select-data' host hosts.data %}">
+            Browse for specific data
+        </a> to:
+        <ul class="govuk-list govuk-list--bullet">
+            <li>{% trans 'Look for examples of data published to the service' %}</li>
+            <li>{% trans 'Find a data set’s detail page' %}</li>
+            <li>{% trans 'View a data set’s metadata' %}</li>
+            <li>{% trans 'Find a data set’s ID' %}</li>
+            <li>{% trans 'Download a data set' %}</li>
+            <li><strong>
+                {% trans 'Provide feedback to data publishers about a certain data set' %}
+            </strong></li>
+        </ul>
+    </p>
+
+    <h2 data-qa="data-updates-header" class="govuk-heading-m">
+        {% trans 'Data updates' %}
+    </h2>
+
+    {% include "../snippets/data_updates_table.html" %}
+
+    <h2 data-qa="status-header" class="govuk-heading-m">
+        {% trans 'Status' %}
+    </h2>
+    <table class="govuk-table">
+        <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">{% trans 'Data set status' %}</th>
+                <th scope="col" class="govuk-table__header">{% trans 'Explanation' %}</th>
+            </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{% trans 'Published' %}</td>
+                <td class="govuk-table__cell">{% trans 'Data that has been published' %}</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{% trans 'Inactive' %}</td>
+                <td class="govuk-table__cell">
+                    {% blocktrans %}
                         If a publisher actively wants to remove data
                         from a published state, they can move it to an inactive state
                     {% endblocktrans %}
-        </td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans "Error" %}</td>
-        <td class="govuk-table__cell">
-          {% blocktrans %}
+                </td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{% trans 'Error' %}</td>
+                <td class="govuk-table__cell">
+                    {% blocktrans %}
                         If the publisher users a URL link to publish and the URL link fails to validate during the daily pull from BODS,
                         then the data set will move into error but however the old data will still be available
                     {% endblocktrans %}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <table class="govuk-table">
-    <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">{% trans "Data feed status" %}</th>
-        <th scope="col" class="govuk-table__header">{% trans "Explanation" %}</th>
-      </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans "Published" %}</td>
-        <td class="govuk-table__cell">{% trans "Data that has been published" %}</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans "No vehicle activity" %}</td>
-        <td class="govuk-table__cell">
-          {% blocktrans %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="govuk-table">
+        <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">{% trans 'Data feed status' %}</th>
+                <th scope="col" class="govuk-table__header">{% trans 'Explanation' %}</th>
+            </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{% trans 'Published' %}</td>
+                <td class="govuk-table__cell">{% trans 'Data that has been published' %}</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{% trans 'No vehicle activity' %}</td>
+                <td class="govuk-table__cell">
+                    {% blocktrans %}
                         Data feeds provide location data and can either be in a published or
                         error state. Error states are given to feeds when:
                     {% endblocktrans %}
-          <ol class="govuk-list govuk-list--number">
-            <li>{% trans "Feeds are unable to make a connection" %}</li>
-            <li>{% trans "No data has been provided for over 5 minutes during the day" %}</li>
-          </ol>
-        </td>
-      </tr>
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{% trans "Inactive" %}</td>
-        <td class="govuk-table__cell">
-          {% blocktrans %}
+
+                    <ol class="govuk-list govuk-list--number">
+                        <li>{% trans 'Feeds are unable to make a connection' %}</li>
+                        <li>{% trans 'No data has been provided for over 5 minutes during the day' %}</li>
+                    </ol>
+                </td>
+            </tr>
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{% trans 'Inactive' %}</td>
+                <td class="govuk-table__cell">
+                    {% blocktrans %}
                         If a publisher actively wants to remove data
                         from a published state, they can move it to an inactive state.
                     {% endblocktrans %}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <h2 data-qa="what-is-header" class="govuk-heading-m">{% trans "What is a data set/feed?" %}</h2>
-  <p class="govuk-body">
-    {% blocktrans %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <h2 data-qa="what-is-header" class="govuk-heading-m">
+        {% trans 'What is a data set/feed?' %}
+    </h2>
+    <p class="govuk-body">
+        {% blocktrans %}
             Operators must provide a complete set of data regarding local bus services.
             They may provide this as a single data set or break it down into multiple data
             sets, depending on their own business needs. Commonly operators break the data
             down into data sets per:
         {% endblocktrans %}
-  </p>
-  <ul class="govuk-list govuk-list--bullet">
-    <li>{% trans "Operating companies" %}</li>
-    <li>{% trans "Regions of operation" %}</li>
-    <li>{% trans "Underlying scheduler" %}</li>
-    <li>{% trans "Route or line" %}</li>
-    <li>{% trans "Data source / system supplying data" %}</li>
-  </ul>
+    </p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>{% trans 'Operating companies' %}</li>
+        <li>{% trans 'Regions of operation' %}</li>
+        <li>{% trans 'Underlying scheduler' %}</li>
+        <li>{% trans 'Route or line' %}</li>
+        <li>{% trans 'Data source / system supplying data' %}</li>
+    </ul>
 {% endblock %}

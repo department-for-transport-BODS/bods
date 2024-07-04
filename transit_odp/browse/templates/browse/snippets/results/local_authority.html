@@ -1,21 +1,22 @@
 {% load i18n %}
+
 <div class="search-result">
-  <div class="search-result__heading">
-    <a class="govuk-link" href="{% url 'local-authority-detail' host hosts.data %}?auth_ids={{ item.auth_ids }}">
-      {{ item.ui_lta_name }}
-    </a>
-  </div>
-  <ul class="key-value-list">
-    <li>
-      <span class="item__key">
-        {% filter force_escape %}
-          {% trans "Services requiring attention:" %}
-        {% endfilter %}
-      </span>
-      <span class="item__value">
-        {{ item.services_require_attention_percentage }}
-        {% trans "%" %}
-      </span>
-    </li>
-  </ul>
+    <div class="search-result__heading">
+        <a class='govuk-link' href="{% url 'local-authority-detail' host hosts.data %}?auth_ids={{ item.auth_ids }}">
+            {{ item.ui_lta_name }}
+        </a>
+    </div>
+    <ul class="key-value-list">
+        <li>
+            <span class="item__key">
+                {% filter force_escape %}
+                    {% trans 'Services requiring attention:' %}
+                {% endfilter %}
+            </span>
+            <span class="item__value">
+                {{ item.services_require_attention_percentage }}
+                {% trans '%' %}
+            </span>
+        </li>
+    </ul>
 </div>

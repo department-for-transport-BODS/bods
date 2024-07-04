@@ -1,21 +1,29 @@
 {% extends "account/base.html" %}
+
 {% load i18n %}
 {% load breadcrumbs %}
+
 {% block title_tag %}
-  {% trans "You have signed out" %}
+    {% trans 'You have signed out' %}
 {% endblock %}
+
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb_url 'My account' 'users:home' host host.name %}
-  {% breadcrumb_url 'Sign out' 'account_logout_success' host host.name %}
+    {{ block.super }}
+    {% breadcrumb_url 'My account' 'users:home' host host.name %}
+    {% breadcrumb_url 'Sign out' 'account_logout_success' host host.name %}
 {% endblock %}
-{% block head_title %}
-  {% trans "Signed out" %}
-{% endblock %}
+
+
+{% block head_title %}{% trans 'Signed out' %}{% endblock %}
+
+
 {% block inner %}
-  <p class="govuk-body-l">{% trans "You have successfully signed out from your account" %}</p>
-  <p class="govuk-body-l">
-    <a class="govuk-link" href="{% url 'home' host host.name %}">{% trans "Return to the homepage" %}</a>
-  </p>
+    <p class="govuk-body-l">{% trans 'You have successfully signed out from your account' %}</p>
+    <p class="govuk-body-l">
+        <a class="govuk-link" href="{% url 'home' host host.name %}">{% trans 'Return to the homepage' %}</a>
+    </p>
 {% endblock %}
-{% block inner_secondary %}{% endblock %}
+
+
+{% block inner_secondary %}
+{% endblock %}

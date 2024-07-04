@@ -1,3 +1,7 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/helpers/all";
+@import "govuk-frontend/govuk/components/table/table";
+
 .manage-users-table {
   @include govuk-font($size: 19);
   margin-bottom: govuk-spacing(9);

@@ -2,27 +2,34 @@
 {% load static %}
 {% load breadcrumbs %}
 {% load i18n %}
+
 {% block title_tag %}
-  {% trans "Fares data API" %}
+    {% trans 'Fares data API' %}
 {% endblock %}
+
 {# c.f. https://petstore.swagger.io/?_ga=2.232423831.96874064.1570887934-705927868.1570887934 #}
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb_url 'Try API Service' 'api-select' host hosts.data %}
-  {% breadcrumb_url 'Fares data API' 'api:faresopenapi' host hosts.data %}
+    {{ block.super }}
+    {% breadcrumb_url 'Try API Service' 'api-select' host hosts.data %}
+    {% breadcrumb_url 'Fares data API' 'api:faresopenapi' host hosts.data %}
 {% endblock %}
+
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-width-container">
-      <div id="swagger-ui"></div>
+    <div class="govuk-grid-row">
+        <div class="govuk-width-container">
+            <div id="swagger-ui"></div>
+        </div>
     </div>
-  </div>
 {% endblock %}
+
+
 {% block scripts %}
-  {{ block.super }}
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script>BODSFrontend.initAPIDocs('#swagger-ui', "{% static "openapi/fares.yml" %}")</script>
-  <script>
+    {{ block.super }}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        BODSFrontend.initAPIDocs('#swagger-ui', "{% static "openapi/fares.yml" %}")
+    </script>
+    <script>
         function bindExecuteButtonClickEvent() {
 
             const executeButton = document.querySelector('button.execute');
@@ -44,5 +51,5 @@
                 bindExecuteButtonClickEvent()
             });
         });
-  </script>
+    </script>
 {% endblock %}

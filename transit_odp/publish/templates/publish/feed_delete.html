@@ -1,47 +1,56 @@
 {% extends "publish/base.html" %}
+
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
+
 {% block title_tag %}
-  {% trans "Delete data set" %}
+{% trans 'Delete data set' %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
 {% block backlink %}
-  {% include "snippets/backlink.html" with url=cancel_url %}
+{% include 'snippets/backlink.html' with url=cancel_url %}
 {% endblock %}
+
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl">
         {% if object.live_revision and object.live_revision.status != "expired" %}
-          {% trans "Would you like to cancel updating this data set" %}
+        {% trans 'Would you like to cancel updating this data set' %}
         {% else %}
-          {% trans "Would you like to delete this data set?" %}
+        {% trans 'Would you like to delete this data set?' %}
         {% endif %}
       </h1>
       <p class="govuk-body-l">
-        {% if object.live_revision and object.live_revision.status != "expired" %}
-          {% blocktrans %}
+      {% if object.live_revision and object.live_revision.status != "expired" %}
+      {% blocktrans %}
         Please confirm that you would like to cancel updating data set
         {% endblocktrans %}
-          "{{ revision_name }}"
-          {% blocktrans %}
+        "{{ revision_name }}"
+      {% blocktrans %}
       . Any changes you have made so far will not be saved.
       {% endblocktrans %}
-        {% else %}
-          {% blocktrans %}
+      {% else %}
+        {% blocktrans %}
         Please confirm that you would like to delete data set
         {% endblocktrans %}
-          "{{ revision_name }}"
-          {% blocktrans %}
+        "{{ revision_name }}"
+      {% blocktrans %}
       . Any changes you have made so far will not be saved.
       {% endblocktrans %}
-        {% endif %}
+      {% endif %}
       </p>
-    </div>
   </div>
-  {% block inner %}
-    {% crispy form %}
-  {% endblock %}
-  {% block inner_secondary %}{% endblock %}
+</div>
+
+{% block inner %}
+  {% crispy form %}
+{% endblock %}
+
+{% block inner_secondary %}
+{% endblock %}
 {% endblock %}

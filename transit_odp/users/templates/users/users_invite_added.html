@@ -1,39 +1,49 @@
 {% extends "base_success.html" %}
+
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-{% block breadcrumb.content %}{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
 {% block title_tag %}
-  {% trans "Invitation has been sent" %}
+  {% trans 'Invitation has been sent' %}
 {% endblock %}
+
 {% block title_text %}
-  {% trans "Invitation has been sent" %}
+  {% trans 'Invitation has been sent' %}
 {% endblock %}
+
 {% block body_section %}
-  <p class="govuk-body-m govuk-!-margin-top-7">
-    {% blocktrans %}
+   <p class="govuk-body-m govuk-!-margin-top-7">
+     {% blocktrans %}
         An email invite has been sent
     {% endblocktrans %}
     {% if invite_email %}
-      to
-      {{ invite_email }}.
+        to
+        {{ invite_email }}.
     {% else %}
-      .
+        .
     {% endif %}
     {% blocktrans %}
         You will be notified when they accept your invitation.
     {% endblocktrans %}
-  </p>
-  <p class="govuk-body-m govuk-!-margin-top-7">
-    {% blocktrans %}
+   </p>
+   <p class="govuk-body-m govuk-!-margin-top-7">
+   {% blocktrans %}
       Please note that even if you nominate an agent, it is still your legal
       obligation to ensure that your data is up to date. It is recommended
       you have consistent communication with your agent and have
       contracts agreed with them external to this platform.
    {% endblocktrans %}
-  </p>
+   </p>
+ {% endblock %}
+
+{% block button_href %}
+    {{ button_link }}
 {% endblock %}
-{% block button_href %}{{ button_link }}{% endblock %}
+
 {% block button_text %}
-  {% trans "Go back to user management" %}
+    {% trans 'Go back to user management' %}
 {% endblock %}

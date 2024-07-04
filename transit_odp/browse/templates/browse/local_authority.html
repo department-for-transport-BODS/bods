@@ -1,125 +1,135 @@
-{% extends "browse/base.html" %}
+{% extends 'browse/base.html' %}
+
 {% load breadcrumbs %}
 {% load i18n %}
 {% load query_transform %}
 {% load static %}
 {% load filters %}
+
 {% block title_tag %}
-  {% filter force_escape %}
-    {% trans "Local Transport Authority" %}
-  {% endfilter %}
+    {% filter force_escape %}
+        {% trans 'Local Transport Authority' %}
+    {% endfilter %}
 {% endblock %}
+
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb_url 'Local Transport Authority Profiles' 'local-authority' host hosts.data %}
+    {{ block.super }}
+    {% breadcrumb_url 'Local Transport Authority Profiles' 'local-authority' host hosts.data %}
 {% endblock %}
+
 {% block full_width_content %}
-  <form autocomplete="off">
-    {% with title="Local Transport Authority" description="Search for a specific Local Transport Authority" placeholder="Enter Local Transport Authority name" %}
-      {% include "browse/snippets/search_banner.html" %}
-      {{ ltas | json_script:"lta-data" }}
-    {% endwith %}
-  {% endblock %}
-  {% block content %}
+    <form autocomplete="off">
+        {% with title="Local Transport Authority" description="Search for a specific Local Transport Authority" placeholder="Enter Local Transport Authority name" %}
+            {% include "browse/snippets/search_banner.html" %}
+            {{ ltas | json_script:"lta-data" }}
+        {% endwith %}
+{% endblock %}
+
+{% block content %}
     <div class="govuk-width-container">
-      <div class="govuk-grid-row govuk-!-margin-top-5">
-        <div class="govuk-grid-column-two-thirds">
-          <div class="search-list__heading">
-            {% if updated_result > 1 %}
-              <span class="govuk-body">
-                {% filter force_escape %}
-                  {{ updated_result }}
-                  {% trans "results" %}
-                {% endfilter %}
-              </span>
-            {% elif updated_result == 1 %}
-              <span class="govuk-body">
-                {% filter force_escape %}
-                  {% trans "1 result" %}
-                {% endfilter %}
-              </span>
-            {% else %}
-              <h3 class="govuk-heading-m">
-                {% filter force_escape %}
-                  {% trans "Sorry, no results found" %}
-                  {% if q %}
-                    {% blocktrans %} for {{ q }}{% endblocktrans %}
-                  {% endif %}
-                {% endfilter %}
-              </h3>
-            {% endif %}
-          </div>
-          <div class="govuk-body-s govuk-grid-row search-pillbox">
-            {% if q %}
-              <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-                {% trans "Containing" as tmsg %}
-                {{ tmsg | force_escape }}
-              </span>
-              <a href="?ordering={{ ordering }}">
-                <div class="pill-item">
-                  <img class="pill-item__image"
-                       src="{% static 'frontend/images/icon-cross.png' %}"
-                       alt="{% trans "Delete icon" as tmsg %}{{ tmsg | force_escape }}"
-                       height="auto"
-                       width="auto" />
-                  <span class="pill-item__label">{{ q }}</span>
+        <div class="govuk-grid-row govuk-!-margin-top-5">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="search-list__heading">
+                    {% if updated_result > 1 %}
+                        <span class="govuk-body">
+                            {% filter force_escape %}
+                                {{ updated_result }} {% trans 'results' %}
+                            {% endfilter %}
+                        </span>
+                    {% elif updated_result == 1 %}
+                        <span class="govuk-body">
+                            {% filter force_escape %}
+                                {% trans '1 result' %}
+                            {% endfilter %}
+                        </span>
+                    {% else %}
+                        <h3 class="govuk-heading-m">
+                            {% filter force_escape %}
+                                {% trans 'Sorry, no results found' %}
+                                {% if q %}{% blocktrans %} for {{ q }}{% endblocktrans %}{% endif %}
+                            {% endfilter %}
+                        </h3>
+                    {% endif %}
                 </div>
-              </a>
-            {% endif %}
-          </div>
-          <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break govuk-!-margin-top-0" />
-          <div class="govuk-form-group">
-            <label class="govuk-label" for="ordering">Sort by</label>
-            <select class="govuk-select" id="ordering" name="ordering" aria-label="Sort by" onchange="this.form.submit()">
-              <option value="ui_lta_name_trimmed" {% if ordering == "ui_lta_name_trimmed" %}selected{% endif %}>
-                {% filter force_escape %}
-                  {% trans "Name A-Z" %}
-                {% endfilter %}
-              </option>
-              <option value="-ui_lta_name_trimmed" {% if ordering == "-ui_lta_name_trimmed" %}selected{% endif %}>
-                {% filter force_escape %}
-                  {% trans "Name Z-A" %}
-                {% endfilter %}
-              </option>
-            </select>
-          </div>
-          <div class="search-result__list govuk-body">
-            {% for item in object_list %}
-              {% if not forloop.first %}
-                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
-              {% endif %}
-              {% include "browse/snippets/results/local_authority.html" with item=item host=host hosts_data=hosts.data %}
-            {% empty %}
-              <div>
-                <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
-                <h4 class="govuk-heading-s">
-                  {% filter force_escape %}
-                    {% trans "Having trouble finding what you want?" %}
-                  {% endfilter %}
-                </h4>
-                <ul class="govuk-list govuk-list--bullet">
-                  <li>
-                    {% filter force_escape %}
-                      {% trans "Check your spelling and try again" %}
-                    {% endfilter %}
-                  </li>
-                </ul>
-              </div>
-            {% endfor %}
-          </div>
-          {% if updated_result > 0 %}
-            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
-            {% include "snippets/pagination.html" with page=page_obj paginator=paginator %}
-          {% endif %}
+
+                <div class="govuk-body-s govuk-grid-row search-pillbox">
+                    {% if q %}
+                        <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
+                            {% trans 'Containing' as tmsg %}{{tmsg | force_escape}}
+                        </span>
+                        <a href="?ordering={{ ordering }}">
+                            <div class="pill-item">
+                                <img class="pill-item__image"
+                                    src="{% static 'frontend/images/icon-cross.png' %}"
+                                    alt="{% trans 'Delete icon' as tmsg %}{{tmsg | force_escape}}">
+                                <span class="pill-item__label">{{ q }}</span>
+                            </div>
+                        </a>
+                    {% endif %}
+                </div>
+
+                <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break govuk-!-margin-top-0">
+
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="ordering">Sort by</label>
+                    <select class="govuk-select"
+                        id="ordering"
+                        name="ordering"
+                        aria-label="Sort by"
+                        onchange="this.form.submit()">
+                        <option value="ui_lta_name_trimmed" {% if ordering == "ui_lta_name_trimmed" %}selected{% endif %}>
+                            {% filter force_escape %}
+                                {% trans 'Name A-Z' %}
+                            {% endfilter %}
+                        </option>
+                        <option value="-ui_lta_name_trimmed" {% if ordering == "-ui_lta_name_trimmed" %}selected{% endif %}>
+                            {% filter force_escape %}
+                                {% trans 'Name Z-A' %}
+                            {% endfilter %}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="search-result__list">
+                    {% for item in object_list %}
+                        {% if not forloop.first %}
+                            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                        {% endif %}
+                        {% include 'browse/snippets/results/local_authority.html' with item=item host=host hosts_data=hosts.data%}
+                    {% empty %}
+                        <div>
+                            <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+                            <h4 class="govuk-heading-s">
+                                {% filter force_escape %}
+                                    {% trans 'Having trouble finding what you want?' %}
+                                {% endfilter %}
+                            </h4>
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li>
+                                    {% filter force_escape %}
+                                        {% trans 'Check your spelling and try again' %}
+                                    {% endfilter %}
+                                </li>
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if updated_result > 0 %}
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                    {% include "snippets/pagination.html" with page=page_obj paginator=paginator %}
+                {% endif %}
+
+            </div>
         </div>
-      </div>
     </div>
-  </form>
+    </form>
 {% endblock %}
+
 {% block scripts %}
-  {{ block.super }}
-  <script>
-    const ltas = JSON.parse(document.getElementById("lta-data").textContent);
-    new BODSFrontend.AutoCompleteSearch("search", ltas["names"]);
-  </script>
-{% endblock %}
+    {{block.super}}
+    <script>
+        const ltas = JSON.parse(document.getElementById("lta-data").textContent);
+        new BODSFrontend.AutoCompleteSearch("search", ltas["names"]);
+    </script>
+{% endblock  %}

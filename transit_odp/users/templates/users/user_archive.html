@@ -1,49 +1,56 @@
 {% extends "users/base.html" %}
+
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-{% block breadcrumb.content %}{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
 {% block title_tag %}
   {% if object.is_active %}
-    {% trans "Deactivate user" %}
+    {% trans 'Deactivate user' %}
   {% else %}
-    {% trans "Activate user" %}
+    {% trans 'Activate user' %}
   {% endif %}
 {% endblock %}
+
 {% block backlink %}
   {% url 'users:manage' pk=object.organisation.id host host.name as backlink %}
-  {% include "snippets/backlink.html" with url=backlink %}
+  {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
       <h1 class="govuk-heading-xl">
-        {% if object.is_active %}
-          {% trans "Deactivate user" %}
-        {% else %}
-          {% trans "Activate user" %}
-        {% endif %}
+      {% if object.is_active %}
+        {% trans 'Deactivate user' %}
+      {% else %}
+        {% trans 'Activate user' %}
+      {% endif %}
       </h1>
+
       <p class="govuk-body-m govuk-!-margin-bottom-6">
-        {% if object.is_active %}
-          {% blocktrans %}
+      {% if object.is_active %}
+        {% blocktrans %}
           Would you like to deactivate
         {% endblocktrans %}
           {{ object.username }}?
-          {% blocktrans %}
+        {% blocktrans %}
            Deactivating user(s) will suspend them from accessing the Bus Open Data Service.
         {% endblocktrans %}
-        {% else %}
-          {% blocktrans %}
+      {% else %}
+        {% blocktrans %}
           Would you like to activate
         {% endblocktrans %}
           {{ object.username }}?
-          {% blocktrans %}
+        {% blocktrans %}
            Activating user(s) will give access to the Bus Open Data Service.
         {% endblocktrans %}
-        {% endif %}
+      {% endif %}
       </p>
-      {% crispy form %}
+        {% crispy form %}
     </div>
   </div>
 {% endblock %}

@@ -1,3 +1,6 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/components/radios/radios";
+
 .govuk-radios__conditional--error {
   border-left: $govuk-border-width-form-group-error solid $govuk-error-colour;
 }

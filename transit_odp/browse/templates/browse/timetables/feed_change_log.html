@@ -1,22 +1,33 @@
 {% extends "browse/feed_base.html" %}
+
 {% load static %}
 {% load i18n %}
 {% load render_table from django_tables2 %}
 {% load breadcrumbs %}
+
 {% block title_tag %}
-  {% trans "Changelog" %}
+    {% trans 'Changelog' %}
 {% endblock %}
-{% block breadcrumb.content %}{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
 {% block backlink %}
-  {% url 'feed-detail' pk=object.id host host.name as backlink_url %}
-  {% include "snippets/backlink.html" with url=backlink_url %}
+    {% url 'feed-detail' pk=object.id host host.name as backlink_url %}
+    {% include 'snippets/backlink.html' with url=backlink_url %}
 {% endblock %}
+
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <span class="govuk-caption-xl">{% trans "Changelog" %}</span>
-      <h1 class="govuk-heading-xl dont-break-out">{{ feed.name }}</h1>
+      <span class="govuk-caption-xl">
+        {% trans 'Changelog' %}
+      </span>
+      <h1 class="govuk-heading-xl dont-break-out">
+          {{ feed.name }}
+      </h1>
     </div>
   </div>
-  {% render_table table %}
+    {% render_table table %}
 {% endblock %}

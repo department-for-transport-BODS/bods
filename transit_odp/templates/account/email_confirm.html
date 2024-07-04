@@ -1,62 +1,70 @@
 {% extends "account/base.html" %}
+
 {% load i18n %}
 {% load account %}
 {% load breadcrumbs %}
+
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% breadcrumb_url 'Confirm your email address' 'account_confirm_email' key=confirmation.key host host.name %}
+    {{ block.super }}
+    {% breadcrumb_url 'Confirm your email address' 'account_confirm_email' key=confirmation.key host host.name %}
 {% endblock %}
-{% block head_title %}
-  {% trans "Confirm email address" %}
-{% endblock %}
+
+{% block head_title %}{% trans 'Confirm email address' %}{% endblock %}
+
 {% block inner %}
-  {% if verified %}
-    <div class="govuk-error-summary"
-         aria-labelledby="error-summary-title"
-         role="alert"
-         tabindex="-1"
-         data-module="govuk-error-summary">
-      <h2 class="govuk-error-summary__title" id="error-summary-title">{% trans "Your account is already verified." %}</h2>
-      <div class="govuk-error-summary__body">
-        <p class="govuk-body">
-          {% url 'account_login' host host.name as login_url %}
-          {% blocktrans %}
+    {% if verified %}
+
+        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1"
+            data-module="govuk-error-summary">
+            <h2 class="govuk-error-summary__title" id="error-summary-title">
+                {% trans 'Your account is already verified.' %}
+            </h2>
+            <div class="govuk-error-summary__body">
+                <p class="govuk-body">
+                    {% url 'account_login' host host.name as login_url %}
+                    {% blocktrans %}
                         Please
                         <a class="govuk-link" href="{{ login_url }}">sign in</a> to continue.
-                    {% endblocktrans %}
-        </p>
-      </div>
-    </div>
-  {% elif confirmation %}
-    {% user_display confirmation.email_address.user as user_display %}
-    <p class="govuk-body">
-      {% blocktrans with confirmation.email_address.email as email %}
+                    {% endblocktrans %}</p>
+            </div>
+        </div>
+
+    {% elif confirmation %}
+
+        {% user_display confirmation.email_address.user as user_display %}
+
+        <p class="govuk-body">
+            {% blocktrans with confirmation.email_address.email as email %}
                 Please confirm your email address is <a class="govuk-link" href="mailto:{{ email }}">{{ email }}</a>.
             {% endblocktrans %}
-    </p>
-    <form method="post" action="{% url 'account_confirm_email' key=confirmation.key host host.name %}">
-      {% csrf_token %}
-      <button class="govuk-button" type="submit">{% trans "Confirm" %}</button>
-    </form>
-  {% else %}
-    <div class="govuk-error-summary"
-         aria-labelledby="error-summary-title"
-         role="alert"
-         tabindex="-1"
-         data-module="govuk-error-summary">
-      <h2 class="govuk-error-summary__title" id="error-summary-title">
-        {% trans "This email confirmation link expired or is invalid." %}
-      </h2>
-      <div class="govuk-error-summary__body">
-        <p class="govuk-body">
-          {% url 'account_login' host host.name as login_url %}
-          {% blocktrans %}
+        </p>
+
+        <form method="post" action="{% url 'account_confirm_email' key=confirmation.key host host.name %}">
+            {% csrf_token %}
+            <button class="govuk-button" type="submit">{% trans 'Confirm' %}</button>
+        </form>
+
+    {% else %}
+
+
+        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1"
+            data-module="govuk-error-summary">
+            <h2 class="govuk-error-summary__title" id="error-summary-title">
+                {% trans 'This email confirmation link expired or is invalid.' %}
+            </h2>
+            <div class="govuk-error-summary__body">
+                <p class="govuk-body">
+                    {% url 'account_login' host host.name as login_url %}
+                    {% blocktrans %}
                         Please
                         <a class="govuk-link" href="{{ login_url }}">issue a new email confirmation request</a>.
-                    {% endblocktrans %}
-        </p>
-      </div>
-    </div>
-  {% endif %}
+                    {% endblocktrans %}</p>
+            </div>
+        </div>
+
+    {% endif %}
 {% endblock %}
-{% block inner_secondary %}{% endblock %}
+
+
+{% block inner_secondary %}
+{% endblock %}

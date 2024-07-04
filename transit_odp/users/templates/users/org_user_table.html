@@ -3,28 +3,32 @@
 <div class="govuk-!-margin-top-0">
   <table class="govuk-table manage-users-table">
     <thead class="govuk-table__head govuk-body-m">
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header" scope="col">Organisation</th>
-        <th class="govuk-table__header">Account Type</th>
-        <th class="govuk-table__header">Actions</th>
-        <th class="govuk-table__header">Status</th>
-        <th class="govuk-table__header"></th>
-      </tr>
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Organisation</th>
+      <th class="govuk-table__header">Account Type</th>
+      <th class="govuk-table__header">Actions</th>
+      <th class="govuk-table__header">Status</th>
+      <th class="govuk-table__header"></th>
+    </tr>
     </thead>
     <tbody class="govuk-table__body govuk-body-m">
       <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{{ user.organisation.name }}</td>
-        <td class="govuk-table__cell">{% trans user.pretty_account_name %}</td>
-        <td class="govuk-table__cell "></td>
-        <td class="govuk-table__cell ">
-          {% if user.is_active %}
-            <span class="status-indicator status-indicator--success">{% trans user.pretty_status %}</span>
-          {% else %}
-            <span class="status-indicator status-indicator--inactive">{% trans user.pretty_status %}</span>
-          {% endif %}
-        </td>
-        <td class="govuk-table__cell "></td>
+        <td class="govuk-table__cell">{{user.organisation.name}}</td>
+          <td class="govuk-table__cell">{% trans user.pretty_account_name %}</td>
+          <td class="govuk-table__cell "></td>
+          <td class="govuk-table__cell ">
+            {% if user.is_active %}
+              <span class="status-indicator status-indicator--success">
+                {% trans user.pretty_status %}
+              </span>
+            {% else %}
+              <span class="status-indicator status-indicator--inactive">
+                {% trans user.pretty_status %}
+              </span>
+            {% endif %}
+          </td>
+      <td class="govuk-table__cell "></td>
       </tr>
     </tbody>
   </table>
-</div>
+  </div>

@@ -1,6 +1,8 @@
 <div class="search-list__page-index">
+    <span class="govuk-body-m">
+      Showing {{ page_obj.start_index }} - {{ page_obj.end_index }} of {{ paginator.count }} results
+    </span>
   <span class="govuk-body-m">
-    Showing {{ page_obj.start_index }} - {{ page_obj.end_index }} of {{ paginator.count }} results
-  </span>
-  <span class="govuk-body-m">{{ page_obj.number }}</span>
+      {{ page_obj.number }}
+    </span>
 </div>

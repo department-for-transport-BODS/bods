@@ -2,16 +2,16 @@
   "name": "bods-frontend",
   "version": "0.1.0",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "~6.5.2",
+    "@fortawesome/fontawesome-free": "~5.15.4",
     "@nazka/map-gl-js-spiderfy": "^1.2.1",
-    "air-datepicker": "^3.5.3",
-    "govuk-frontend": "^5.4.0",
+    "govuk-frontend": "~4.7.0",
     "jquery": "~3.7.1",
-    "mapbox-gl": "~3.4.0",
+    "mapbox-gl": "~1.13.3",
     "normalize.css": "~8.0.1",
     "process": "^0.11.10",
     "stream": "^0.0.2",
-    "swagger-ui": "^5.17.14"
+    "swagger-ui": "^5.10.3",
+    "air-datepicker": "^3.5.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
@@ -45,6 +45,7 @@
   },
   "scripts": {
     "start": "webpack --config webpack/dev.js",
-    "build": "webpack --config webpack/prod.js"
+    "build": "webpack --config webpack/prod.js",
+    "dev:static": "webpack --config webpack/dev.js"
   }
 }

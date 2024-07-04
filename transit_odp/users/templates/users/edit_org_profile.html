@@ -1,17 +1,21 @@
 {% extends "users/base.html" %}
+
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
-{% block breadcrumb.content %}{% endblock %}
+
+{% block breadcrumb.content %}
+{% endblock %}
+
 {% block backlink %}
   {% url 'users:organisation-profile' host hosts.publish as backlink %}
-  {% include "snippets/backlink.html" with url=backlink %}
+  {% include 'snippets/backlink.html' with url=backlink %}
 {% endblock %}
-{% block title_text %}
-  {% trans "Edit organisation detail" %}
-{% endblock %}
+
+{% block title_text %} {% trans 'Edit organisation detail' %} {% endblock %}
+
 {% block inner %}
-  {#   {% crispy form %}#}
-  {% crispy nocs %}
+{#   {% crispy form %}#}
+   {% crispy nocs %}
 {% endblock %}

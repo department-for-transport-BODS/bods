@@ -1,33 +1,27 @@
 {% extends "snippets/help_modal_base.html" %}
 {% load i18n %}
+
 {% block help_heading %}
-  {% trans "This section is read only" %}
+    {% trans "This section is read only" %}
 {% endblock %}
+
 {% block help_content %}
-  <p class="govuk-body">
-    {% blocktranslate %}
+    <p class="govuk-body">
+      {% blocktranslate %}
         This section describes the service codes which are not required to be published. The services that are not listed in this exemptions section
         must be published and kept up to date in order for your organisation to meet your obligations under the 2017 Bus Services Act.
       {% endblocktranslate %}
-  </p>
-  <p class="govuk-body">
-    {% blocktranslate %}
+    </p>
+    <p class="govuk-body">
+        {% blocktranslate %}
             You do not have the permissions required to edit this section. Please contact BODS help desk to modify service codes which are exempt.
         {% endblocktranslate %}
-  </p>
-  <p class="govuk-body">
-    {% blocktranslate %}The help desk can be contacted by telephone or email as follows:{% endblocktranslate %}
-  </p>
-  <ul class="govuk-list">
-    <li>
-      <b>
-        {% trans "Telephone:" %}
-      </b> +44 (0) 800 028 0930
-    </li>
-    <li>
-      <b>
-        {% trans "Email:" %}
-      </b> bodshelpdesk@kpmg.co.uk
-    </li>
-  </ul>
+    </p>
+    <p class="govuk-body">
+        {% blocktranslate %}The help desk can be contacted by telephone or email as follows:{% endblocktranslate %}
+    </p>
+    <ul class="govuk-list">
+        <li><b>{% trans "Telephone:" %}</b> +44 (0) 800 028 0930</li>
+        <li><b>{% trans "Email:" %}</b> bodshelpdesk@kpmg.co.uk</li>
+    </ul>
 {% endblock %}

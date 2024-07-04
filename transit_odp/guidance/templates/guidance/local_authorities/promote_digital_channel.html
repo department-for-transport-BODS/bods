@@ -1,7 +1,9 @@
 {% extends "guidance/local_authorities/base.html" %}
+
 {% load i18n %}
+
 {% block extra_content %}
-  <h1 class="govuk-heading-xl">{% trans "Promoting the digital channel" %}</h1>
+  <h1 class="govuk-heading-xl">{% trans 'Promoting the digital channel' %}</h1>
   <p class="govuk-body">
     {% blocktrans %}
       The new Bus Open Data Service makes it easier than ever before to
@@ -16,8 +18,10 @@
       include this recommendation in letters and emails that you send to bus operators
       in your area, including hyperlinks to the new service.
     {% endblocktrans %}
+
   </p>
-  {% url 'guidance:support-local_authorities' host hosts.publish as url %}
-  {% include "../snippets/previous.html" with url=url prev_page=prev_page %}
-  {% include "../snippets/next.html" with url=url next_page=next_page %}
+
+{% url 'guidance:support-local_authorities' host hosts.publish as url %}
+{% include '../snippets/previous.html' with url=url prev_page=prev_page %}
+{% include '../snippets/next.html' with url=url next_page=next_page %}
 {% endblock %}

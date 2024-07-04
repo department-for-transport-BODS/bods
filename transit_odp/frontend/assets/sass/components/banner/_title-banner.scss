@@ -6,27 +6,34 @@
   color: govuk-colour("white");
   background-color: govuk-colour("blue");
   margin-top: 16px;
+}
+.app-masthead__title {
+  color: govuk-colour("white");
+  margin-bottom: 20px;
+  white-space: nowrap;
+}
 
-  .govuk-body {
-    color: govuk-colour("white") !important;
+.app-masthead__description {
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 1.125rem;
+  line-height: 1.11111;
+}
 
-    a {
-      color: govuk-colour("white") !important;
-    }
-  }
+.app-masthead__description .app-a--inverted {
+  color: govuk-colour("white");
+  background-color: govuk-colour("blue");
+  font-weight: bold;
+  text-decoration: none;
+}
 
-  .app-button--inverted,
-  .app-button--inverted:link,
-  .app-button--inverted:visited {
-    color: govuk-colour("blue");
-    background-color: govuk-colour("white");
-    -webkit-box-shadow: 0 2px 0 #144e81;
-    box-shadow: 0 2px 0 #144e81;
-  }
-
-  .app-masthead__title {
-    color: govuk-colour("white") !important;
-    margin-bottom: 20px;
-    white-space: nowrap;
-  }
+.app-button--inverted,
+.app-button--inverted:link,
+.app-button--inverted:visited {
+  color: govuk-colour("blue");
+  background-color: govuk-colour("white");
+  -webkit-box-shadow: 0 2px 0 #144e81;
+  box-shadow: 0 2px 0 #144e81;
 }

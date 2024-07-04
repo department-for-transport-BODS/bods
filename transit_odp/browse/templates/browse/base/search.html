@@ -1,27 +1,29 @@
-{% extends "browse/base.html" %}
+{% extends 'browse/base.html' %}
+
 {% load i18n %}
 {% load static %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
 {% load breadcrumbs %}
+
 {# There are multiple forms on this page, the search box and the filter controls, need to submit #}
 {# both together so both form data persist when either form is submitted #}
+
 {% block full_width_content %}
   <form>
     {% with title="title" description="description" placeholder="placeholder" %}
       {% include "browse/snippets/search_banner.html" %}
     {% endwith %}
-  </form>
 {% endblock %}
+
 {% block content %}
-  <form>
     <div class="govuk-grid-row govuk-!-margin-top-8">
       <div class="govuk-grid-column-one-third">
-        <h2 class="govuk-heading-m">{% trans "Filter by" %}</h2>
+        <h2 class="govuk-heading-m">{% trans 'Filter by' %}</h2>
         {% crispy filter.form filter.form.helper %}
       </div>
       <div class="govuk-grid-column-two-thirds">
-        {% include "browse/snippets/search_list.html" with items=object_list ordering=ordering %}
+        {% include 'browse/snippets/search_list.html' with items=object_list ordering=ordering %}
       </div>
     </div>
   </form>

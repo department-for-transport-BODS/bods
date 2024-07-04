@@ -31,7 +31,7 @@ def stepper(context):
     )
 
     try:
-        # Where are we in the current process?
+        # Where are we  the current process?
         current_index = steps.index(current_step)
     except ValueError as e:
         # current step not in steps, check that its all lowercase.

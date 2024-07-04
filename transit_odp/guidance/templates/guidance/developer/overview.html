@@ -1,58 +1,63 @@
 {% extends "guidance/developer/base.html" %}
+
 {% load i18n %}
+
 {% block extra_content %}
-  <h1 data-qa="overview-header" class="govuk-heading-l">{% trans "Overview" %}</h1>
-  <p class="govuk-body">
-    {% blocktrans %}
+    <h1 data-qa="overview-header" class="govuk-heading-l">{% trans 'Overview' %}</h1>
+    <p class="govuk-body">
+        {% blocktrans %}
             The Bus Open Data Service provides <b>timetables, bus location and fares data for local bus
                 services across England.</b>
         {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
+        <p>
+            <p class="govuk-body">
+                {% blocktrans %}
                     The Bus Services Act 2017 requires all operators of local bus services in England to provide
                     this information. The transition period is from 2020-2021.
                 {% endblocktrans %}
-  </p>
-  <p class="govuk-body govuk-!-padding-bottom-5">
-    {% blocktrans %}
+            </p>
+            <p class="govuk-body govuk-!-padding-bottom-5">
+                {% blocktrans %}
                     The Bus Open Data Service is freely available for anyone to use, providing a single location to
                     discover and access data. As well as provide feedback to data publishers. You do not need
                     a license to use the data.
                 {% endblocktrans %}
-  </p>
-  <h2 class="govuk-heading-m">{% trans "Road map" %}</h2>
-  <p class="govuk-body">
-    {% url 'changelog' host hosts.root as changelog_url %}
-    {% blocktrans %}
+            </p>
+
+            <h2 class="govuk-heading-m">
+                {% trans "Road map" %}
+            </h2>
+            <p class="govuk-body">
+                {% url 'changelog' host hosts.root as changelog_url %}
+                {% blocktrans %}
                     Bus Open Data Service is currently in public beta testing stage.
                     Please find the key dates for changes below.
                     Please visit the <a class="govuk-link" href="{{ changelog_url }}">Service changelog</a>
                     for more detailed updates.
                 {% endblocktrans %}
-  </p>
-  <table class="govuk-table govuk-!-font-size-16">
-    <thead class="govuk-table__head">
-      <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">Date</th>
-        <th scope="col" class="govuk-table__header">Event</th>
-      </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header">31 December 2020</th>
-        <td class="govuk-table__cell">Obligation to provide bus timetable data to the Bus Open Data Service.</td>
-      </tr>
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header">7 January 2021</th>
-        <td class="govuk-table__cell">
-          Obligation to provide vehicle location and basic fares and tickets data to the Bus Open Data Service.
-        </td>
-      </tr>
-      <tr class="govuk-table__row">
-        <th class="govuk-table__header">7 January 2023</th>
-        <td class="govuk-table__cell">Obligation to provide complex fares and ticket data to the Bus Open Data Service.</td>
-      </tr>
-    </tbody>
-  </table>
+            </p>
+            <table class="govuk-table govuk-!-font-size-16">
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">Date</th>
+                        <th scope="col" class="govuk-table__header">Event</th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                    <tr class="govuk-table__row">
+                        <th class="govuk-table__header">31 December 2020</th>
+                        <td class="govuk-table__cell">Obligation to provide bus timetable data to the Bus Open Data Service.</td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                        <th class="govuk-table__header">7 January 2021</th>
+                        <td class="govuk-table__cell">Obligation to provide vehicle location and basic fares and tickets data to the Bus Open Data Service.</td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                        <th class="govuk-table__header">7 January 2023</th>
+                        <td class="govuk-table__cell">Obligation to provide complex fares and ticket data to the Bus Open Data Service.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
 {% endblock %}

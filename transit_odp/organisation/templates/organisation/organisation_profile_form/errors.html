@@ -1,67 +1,92 @@
 {% load crispy_forms_field %}
+
+
 {% if form.errors or form.non_field_errors or nested_noc.errors or nested_noc.non_form_errors or nested_psv.errors or nested_psv.non_form_errors %}
   <div class="govuk-error-summary"
        aria-labelledby="error-summary-title"
        role="alert"
        tabindex="-1"
        data-module="govuk-error-summary">
-    {% if form_error_title %}
-      <h2 class="govuk-error-summary__title" id="error-summary-title">{{ form_error_title }}</h2>
-    {% endif %}
+
+      {% if form_error_title %}
+        <h2 class="govuk-error-summary__title" id="error-summary-title">
+            {{ form_error_title }}
+        </h2>
+      {% endif %}
+
     <div class="govuk-error-summary__body">
       <ul class="govuk-list govuk-error-summary__list">
-        {# Non-field errors parent form #}
-        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-        {# Non-FORM errors of noc formset #}
-        {% for error in nested_noc.non_form_errors %}
-          <li>
-            <a href="#id_nocs-formset">{{ error }}</a>
-          </li>
-        {% endfor %}
-        {# Non-FORM errors of psv formset #}
-        {% for error in nested_psv.non_form_errors %}<li>{{ error }}</li>{% endfor %}
-        {# Non-field errors of each form in noc formset #}
-        {% for form in nested_noc %}
-          {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-        {% endfor %}
-        {# Non-field errors of each form in psv formset #}
-        {% for form in nested_psv %}
-          {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-        {% endfor %}
-        {# Field errors of parent form #}
-        {% for field in form %}
-          {% if field.errors %}
-            {% for error in field.errors %}
-              <li>
-                <a href="#{{ field.auto_id }}{% if field|is_radioselect %}_0_1{% endif %}">{{ error }}</a>
-              </li>
-            {% endfor %}
-          {% endif %}
-        {% endfor %}
-        {# Field errors of each field on noc forms #}
-        {% for form in nested_noc %}
-          {% for field in form %}
-            {% if field.errors %}
-              {% for error in field.errors %}
+
+          {# Non-field errors parent form #}
+          {% for error in form.non_field_errors %}
+            <li>
+                {{ error }}
+            </li>
+          {% endfor %}
+
+          {# Non-FORM errors of noc formset #}
+          {% for error in nested_noc.non_form_errors %}
+            <li>
+                <a href="#id_nocs-formset"> {{ error }}</a>
+            </li>
+          {% endfor %}
+          {# Non-FORM errors of psv formset #}
+          {% for error in nested_psv.non_form_errors %}
+            <li>
+                {{ error }}
+            </li>
+          {% endfor %}
+          {# Non-field errors of each form in noc formset #}
+          {% for form in nested_noc %}
+              {% for error in form.non_field_errors %}
                 <li>
-                  <a href="#{{ field.auto_id }}{% if field|is_radioselect %}_0_1{% endif %}">{{ error }}</a>
+                    {{ error }}
                 </li>
               {% endfor %}
-            {% endif %}
           {% endfor %}
-        {% endfor %}
-        {# Field errors of each field on psv forms #}
-        {% for form in nested_psv %}
-          {% for field in form %}
-            {% if field.errors %}
-              {% for error in field.errors %}
+          {# Non-field errors of each form in psv formset #}
+          {% for form in nested_psv %}
+              {% for error in form.non_field_errors %}
                 <li>
-                  <a href="#{{ field.auto_id }}{% if field|is_radioselect %}_0_1{% endif %}">{{ error }}</a>
+                    {{ error }}
                 </li>
               {% endfor %}
-            {% endif %}
           {% endfor %}
-        {% endfor %}
+          {# Field errors of parent form #}
+          {% for field in form %}
+              {% if field.errors %}
+                  {% for error in field.errors %}
+                    <li>
+                      <a href="#{{ field.auto_id }}{% if field|is_radioselect %}_0_1{% endif %}"> {{ error }}</a>
+                    </li>
+                  {% endfor %}
+              {% endif %}
+          {% endfor %}
+
+          {# Field errors of each field on noc forms #}
+          {% for form in nested_noc %}
+              {% for field in form %}
+                  {% if field.errors %}
+                      {% for error in field.errors %}
+                        <li>
+                          <a href="#{{ field.auto_id }}{% if field|is_radioselect %}_0_1{% endif %}"> {{ error }}</a>
+                        </li>
+                      {% endfor %}
+                  {% endif %}
+              {% endfor %}
+          {% endfor %}
+          {# Field errors of each field on psv forms #}
+          {% for form in nested_psv %}
+              {% for field in form %}
+                  {% if field.errors %}
+                      {% for error in field.errors %}
+                        <li>
+                          <a href="#{{ field.auto_id }}{% if field|is_radioselect %}_0_1{% endif %}"> {{ error }}</a>
+                        </li>
+                      {% endfor %}
+                  {% endif %}
+              {% endfor %}
+          {% endfor %}
       </ul>
     </div>
   </div>

@@ -105,15 +105,13 @@ class PostPublishingResultsJsonWriter:
             - 'Revision number': The revision number associated with the error.
             - 'Operation period start date': The start date of the operating period associated with the error.
             - 'Operating period end date': The end date of the operating period associated with the error.
-            - 'Dated Vehicle Journey Ref': Dated Vehicle Jounery Ref from SiriVM field
-            - 'Line Name': Line Name from Siri VM field
-            - 'Recorded at time': Vehicle Recorded time from Siri VM field
             Additional keys depend on the specific error code:
                 - For error codes 1.2 and 2.1: No additional keys.
                 - For error code 3.1: 'Journey Code', 'Operating Profile', and 'Service Code'.
                 - For error code 5.1: 'Journey Code', 'Operating Profile', 'Service Code', and 'LineRef'.
                 - For error codes 6.2 A and 6.2 C: 'Journey Code', 'Operating Profile',
                   'Serviced organisation for that journey', and 'Serviced organisation operating on that day'.
+
         """
         error_results_json = {}
 
@@ -136,15 +134,11 @@ class PostPublishingResultsJsonWriter:
                 "Operating period end date": result.transxchange_attribute(
                     TransXChangeField.OPERATING_PERIOD_END_DATE
                 ),
-                "Dated Vehicle Journey Ref": result.sirivm_value(
-                    SirivmField.DATED_VEHICLE_JOURNEY_REF
-                ),
-                "Line Name": result.sirivm_value(SirivmField.LINE_REF),
-                "Recorded at time": result.sirivm_value(SirivmField.RECORDED_AT_TIME),
             }
             for error_code, should_process in error_codes.items():
                 if not should_process:
                     continue
+
                 if error_code in (ErrorCode.CODE_1_2.name, ErrorCode.CODE_2_1.name):
                     txc_data = txc_data_common.copy()
                     pretty_printed_data = {

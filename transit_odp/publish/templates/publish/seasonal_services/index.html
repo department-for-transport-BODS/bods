@@ -1,94 +1,93 @@
 {% extends "publish/base.html" %}
+
 {% load i18n %}
 {% load breadcrumbs %}
 {% load render_table from django_tables2 %}
+
 {% block title_tag %}
-  {% filter force_escape %}
-    {% trans "Manage seasonal services" %}
-  {% endfilter %}
+    {% filter force_escape %}{% trans 'Manage seasonal services' %}{% endfilter %}
 {% endblock %}
+
 {% block breadcrumb.content %}
-  {{ block.super }}
-  {% if user.is_agent_user %}
-    {% with "Review "|add:organisation.name|title|add:" Timetables Data" as heading %}
-      {% breadcrumb_url heading 'feed-list' pk1=pk1 host hosts.publish %}
-    {% endwith %}
-  {% else %}
-    {% breadcrumb_url "Review My Timetables Data" 'feed-list' pk1=pk1 host hosts.publish %}
-  {% endif %}
-  {% breadcrumb_url "Manage seasonal services" "seasonal-service" pk1=pk1 host hosts.publish %}
+    {{ block.super }}
+    {% if user.is_agent_user %}
+        {% with "Review "|add:organisation.name|title|add:" Timetables Data" as heading %}
+            {% breadcrumb_url heading 'feed-list' pk1=pk1 host hosts.publish %}
+        {% endwith %}
+    {% else %}
+        {% breadcrumb_url "Review My Timetables Data" 'feed-list' pk1=pk1 host hosts.publish %}
+    {% endif %}
+    {% breadcrumb_url "Manage seasonal services" "seasonal-service" pk1=pk1 host hosts.publish %}
 {% endblock %}
+
 {% block full_width_content %}
-  <div class="app-masthead">
-    <div class="govuk-width-container">
-      <div class="govuk-grid-row">
-        <div class="govuk-!-margin-top-5">
-          <h1 class="govuk-heading-xl app-masthead__title">{% trans "Seasonal service operating dates" %}</h1>
-          <p class="govuk-body">
-            {% filter force_escape %}
-              {% blocktrans %}
-                  BODS marks your service as requiring
-                  attention if it has been registered
-                  with the OTC and you have not
-                  published any timetable data to
-                  BODS. From within this page, you can
-                  manage your seasonal services by
-                  providing an operating start and end
-                  date to let BODS know when to expect
-                  your data for a service.
-              {% endblocktrans %}
-            {% endfilter %}
-          </p>
-          <p class="govuk-body">
-            {% filter force_escape %}
-              {% blocktrans %}
+    <div class="app-masthead">
+        <div class="govuk-width-container">
+            <div class=govuk-grid-row">
+                <div class="govuk-!-margin-top-5">
+                    <h1 class="govuk-heading-xl app-masthead__title">{% trans 'Seasonal service operating dates' %}</h1>
+                        <p class="app-masthead__description">
+                            {% filter force_escape %}
+                                {% blocktrans %}
+                                    BODS marks your service as requiring
+                                    attention if it has been registered
+                                    with the OTC and you have not
+                                    published any timetable data to
+                                    BODS. From within this page, you can
+                                    manage your seasonal services by
+                                    providing an operating start and end
+                                    date to let BODS know when to expect
+                                    your data for a service.
+                                {% endblocktrans %}
+                            {% endfilter %}
+                            </p>
+                            <p class="app-masthead__description">
+                                {% filter force_escape %}
+                                    {% blocktrans %}
                                         BODS will not alert you for not
                                         publishing data for a service until 42
                                         days prior to the service start date
                                         listed below
                                     {% endblocktrans %}
-            {% endfilter %}
-          </p>
-          <div class="review-banner">
-            <div class="review-stat govuk-!-margin-bottom-0">
-              <div>
-                <span class="review-stat__top">{{ seasonal_services_counter }}</span>
-              </div>
-              <p class="review-stat__description">{% trans "Seasonal services" %}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+                                {% endfilter %}
+                                </p>
+                                <div class="review-banner">
+                                    <div class="review-stat govuk-!-margin-bottom-0">
+                                        <div>
+                                        <span class="review-stat__top">{{ seasonal_services_counter }}</span>
+                                            </div>
+                                            <p class="review-stat__description">{% trans 'Seasonal services' %}</p>
+                                                </div>
+                                                </div>
+                                                </div>
+                                                </div>
+                                                </div>
+                                                </div>
 {% endblock %}
+
 {% block content %}
-  <div class="govuk-width-container">
-    <div class="govuk-grid-row govuk-!-margin-top-0">
-      <div class="govuk-width-container">
-        <div class="govuk-grid-column-full custom_govuk_table_border">
-          <form method="post"
-                enctype="multipart/form-data"
-                action="{% url 'delete-seasonal-service' pk1=pk1 host hosts.publish %}?page={{ page_obj.number }}&">
-            {% csrf_token %}
-            {% render_table table %}
-          </form>
-        </div>
-      </div>
-      <div class="govuk-width-container">
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-two-thirds">
-            <a role="button"
-               class="govuk-button govuk-button--secondary govuk-!-margin-top-5"
-               href="{% url 'add-seasonal-service' pk1=pk1 host hosts.publish %}?page={{ page_obj.number }}&">
-              {{ _("Add new date range") }}
-            </a>
-            <a role="button"
-               class="govuk-button govuk-button--secondary govuk-!-margin-top-5"
-               href="{% url 'feed-list' pk1=pk1 host hosts.publish %}">{{ _("Close") }}</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+    <div class="govuk-width-container">
+        <div class="govuk-grid-row govuk-!-margin-top-0">
+            <div class="govuk-width-container">
+                <div class="govuk-grid-column-full custom_govuk_table_border">
+                    <form method="post" enctype="multipart/form-data" action="{% url 'delete-seasonal-service' pk1=pk1 host hosts.publish %}?page={{ page_obj.number }}&">
+                        {% csrf_token %}
+                        {% render_table table %}
+                        </form>
+                        </div>
+                        </div>
+                        <div class="govuk-width-container">
+                            <div class="govuk-grid-row">
+                                <div class="govuk-grid-column-two-thirds">
+                                    <a role="button" class="govuk-button govuk-button--secondary govuk-!-margin-top-5" href="{% url 'add-seasonal-service' pk1=pk1 host hosts.publish %}?page={{ page_obj.number }}&">
+                                        {{ _('Add new date range') }}
+                                        </a>
+                                        <a role="button" class="govuk-button govuk-button--secondary govuk-!-margin-top-5" href="{% url 'feed-list' pk1=pk1 host hosts.publish %}">
+                                            {{ _('Close') }}
+                                            </a>
+                                            </div>
+                                            </div>
+                                            </div>
+                                            </div>
+                                            </div>
 {% endblock %}

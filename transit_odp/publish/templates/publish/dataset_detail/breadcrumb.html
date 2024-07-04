@@ -1,18 +1,19 @@
 {% load i18n %}
 {% load breadcrumbs %}
+
 {% if host.name == hosts.data %}
-  {% breadcrumb_url 'Browse' 'catalogue' host hosts.data %}
-  {% breadcrumb_url 'All operator data sets' 'feed-list' host hosts.data %}
+    {% breadcrumb_url 'Browse' 'catalogue' host hosts.data %}
+    {% breadcrumb_url 'All operator data sets' 'feed-list' host hosts.data %}
 {% elif host.name == hosts.publish %}
-  {% breadcrumb_url 'Choose data type' 'select-data' pk1=pk1 host host.name %}
-  {% breadcrumb_url 'Timetables Data Sets' 'feed-list' pk1=pk1 host hosts.publish %}
+    {% breadcrumb_url 'Choose data type' 'select-data' pk1=pk1 host host.name %}
+    {% breadcrumb_url 'Timetables Data Sets' 'feed-list' pk1=pk1 host hosts.publish %}
 {% endif %}
 {% if object.name|length > 20 %}
-  {% with feed_name=object.name|slice:":19"|add:"..." %}
-    {% breadcrumb_url feed_name 'feed-detail' pk1=pk1 pk=object.id host hosts.publish %}
-  {% endwith %}
+    {% with feed_name=object.name|slice:":19"|add:"..." %}
+        {% breadcrumb_url feed_name 'feed-detail' pk1=pk1 pk=object.id host hosts.publish %}
+    {% endwith %}
 {% else %}
-  {% with feed_name=object.name %}
-    {% breadcrumb_url feed_name 'feed-detail' pk1=pk1 pk=object.id host hosts.publish %}
-  {% endwith %}
+    {% with feed_name=object.name %}
+        {% breadcrumb_url feed_name 'feed-detail' pk1=pk1 pk=object.id host hosts.publish %}
+    {% endwith %}
 {% endif %}

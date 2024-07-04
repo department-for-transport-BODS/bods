@@ -1,25 +1,19 @@
 {% extends "snippets/help_modal_base.html" %}
 {% load i18n %}
+
 {% block help_heading %}
-  {% filter force_escape %}
-    {% trans "Data Quality Report" %}
-  {% endfilter %}
+    {% filter force_escape %}{% trans "Data Quality Report" %}{% endfilter %}
 {% endblock %}
+
 {% block help_content %}
-  <p class="govuk-body">
+<p class="govuk-body">
     {% url 'guidance:support-bus_operators' host 'publish' as support_dataquality %}
-    {% filter force_escape %}
-      {% blocktrans %}
+    {% filter force_escape %}{% blocktrans %}
         Beyond the usual validation check for the TransXChange 2.4 v1.1
         PTI, BODS does additional checks to ascertain the quality of the
         data and assigns a subsequent score to the data set. More
         information on the data quality checks can be
-      {% endblocktrans %}
-    {% endfilter %}
-    <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ support_dataquality }}?section=dataquality">
-      {% filter force_escape %}
-        {% trans "found here." %}
-      {% endfilter %}
-    </a>
-  </p>
+    {% endblocktrans %}{% endfilter %}
+    <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ support_dataquality }}?section=dataquality" >{% filter force_escape %}{% trans 'found here.' %}{% endfilter %}</a>
+    </p>
 {% endblock %}

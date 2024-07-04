@@ -1,38 +1,41 @@
 {% extends "header.html" %}
 {% load static %}
 {% load i18n %}
+
 {% block menu %}
   <ul id="navigation" class="govuk-header__navigation " aria-label="Top Level Navigation">
     <li class="govuk-header__navigation-item">
-      <a class="govuk-header__link" href="{% url 'home' host hosts.admin %}">{% trans "Home" %}</a>
+      <a class="govuk-header__link" href="{% url 'home' host hosts.admin %}">
+        {% trans 'Home' %}
+      </a>
     </li>
     <li class="flexfill"></li>
-    {% if user.is_authenticated %}
-      <li class="govuk-header__navigation-item dropdown bods-dropdown">
-        <a href="#" class="govuk-header__link">
-          <img alt="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
-               class="account-menu__icon"
-               src="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
-               height="auto"
-               width="auto" />
-          {% trans "My account" %}
+  {% if user.is_authenticated %}
+    <li class="govuk-header__navigation-item dropdown bods-dropdown">
+      <a href="#" class="govuk-header__link">
+        <img class="account-menu__icon"
+             src="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
+             alt="">
+        {% trans 'My account' %}
+      </a>
+      <div class="dropdown-content">
+        <a class="govuk-link" href="{% url 'users:settings' host hosts.admin %}">
+          {% trans 'Settings' %}
         </a>
-        <div class="dropdown-content">
-          <a class="govuk-link" href="{% url 'users:settings' host hosts.admin %}">{% trans "Settings" %}</a>
-          <a class="govuk-link" href="{% url 'account_logout' host hosts.admin %}">{% trans "Sign out" %}</a>
-        </div>
-      </li>
-    {% else %}
-      <li class="govuk-header__navigation-item">
-        <a class="govuk-header__link" href="{% url 'account_login' host hosts.admin %}">
-          <img class="account-menu__icon"
-               src="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
-               alt="person-icon"
-               height="auto"
-               width="auto" />
-          {% trans "Sign in" %}
+        <a class="govuk-link" href="{% url 'account_logout' host hosts.admin %}">
+          {% trans 'Sign out' %}
         </a>
-      </li>
-    {% endif %}
+      </div>
+    </li>
+  {% else %}
+    <li class="govuk-header__navigation-item">
+      <a class="govuk-header__link" href="{% url 'account_login' host hosts.admin %}">
+        <img class="account-menu__icon"
+             src="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
+             alt="person-icon">
+        {% trans 'Sign in' %}
+      </a>
+    </li>
+  {% endif %}
   </ul>
 {% endblock %}

@@ -1,3 +1,7 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/helpers/spacing";
+@import "govuk-frontend/govuk/helpers/colour";
+
 /* Pillbox */
 
 $light-grey-25: mix(white, govuk-colour("light-grey"), 25%);

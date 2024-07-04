@@ -1,8 +1,10 @@
 {% extends "snippets/help_modal_base.html" %}
 {% load i18n %}
+
 {% block help_heading %}
-  {% trans "GTFS" %}
+{% trans "GTFS" %}
 {% endblock %}
+
 {% block help_content %}
   <p class="govuk-body">
     {% blocktrans %}
@@ -16,6 +18,8 @@
     {% blocktrans %}
       More information on this can be
     {% endblocktrans %}
-    <a class="govuk-link" href="https://gtfs.org/" target="_blank">{% trans "found here" %}</a>.
+    <a class="govuk-link" href="https://gtfs.org/" target="_blank">
+      {% trans 'found here' %}
+    </a>.
   </p>
 {% endblock %}

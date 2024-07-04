@@ -1,291 +1,198 @@
 {% load i18n %}
-<h2 data-qa="timetable-header" class="govuk-heading-m">{% trans "Timetables solution suppliers" %}</h2>
+<h2 data-qa="timetable-header" class="govuk-heading-m">
+    {% trans 'Timetables solution suppliers' %}
+</h2>
 <table data-qa="requirements-table" class="govuk-table">
-  <tbody class="govuk-table__body">
-    <tr data-qa="timetable-row" class="govuk-table__row">
-      <td class="govuk-table__cell"></td>
-      <td class="govuk-table__cell"></td>
-      <td class="govuk-table__cell"></td>
-      <td class="govuk-table__cell"></td>
-    </tr>
-    <tr data-qa="timetable-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Excel TransXChange Tool" %}</td>
-      <td class="govuk-table__cell">{% trans "N/A" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">{% trans "bodshelpdesk@kpmg.co.uk" %}</a>
-      </td>
-      <td class="govuk-table__cell"></td>
-    </tr>
-    <tr data-qa="timetable-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "GRM Mapping" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.grmmapping.co.uk">
-          {% trans "www.grmmapping.co.uk" %}
-        </td>
-      </a>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:enquiries@grmmapping.co.uk">{% trans "enquiries@grmmapping.co.uk" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "Timetables" %}</td>
-    </tr>
-    <tr data-qa="timetable-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Transmach TM 500 and TM 920" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://transmach.co.uk/tm500.html">
-          {% trans "https://transmach.co.uk/tm500.html" %}
-        </td>
-      </a>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:sales@transmach.co.uk">{% trans "sales@transmach.co.uk" %}</a>
-      </td>
-      <td class="govuk-table__cell">
-        {% trans "Timetables</br />AVL" %}
-      </td>
-    </tr>
-    <tr data-qa="timetable-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Elydium" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://elydium.co.uk/bus-open-data/">
-          {% trans "https://elydium.co.uk/bus-open-data/" %}
-        </td>
-      </a>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:busopendata@elydium.co.uk">{% trans "busopendata@elydium.co.uk" %}</a>
-      </td>
-      <td class="govuk-table__cell">
-        {% trans "Timetables</br />Fares" %}
-      </td>
-    </tr>
-    <tr data-qa="bus-location-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Omnibus" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://omnibus.solutions/">
-          {% trans "https://omnibus.solutions/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:support@omnibus.uk.com">{% trans "support@omnibus.uk.com" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "Timetables" %}</td>
-    </tr>
-    <tr data-qa="bus-location-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Ticketer" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.ticketer.com/en/">
-          {% trans "https://www.ticketer.com/en/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:support@ticketer.co.uk">{% trans "support@ticketer.co.uk" %}</a>
-      </td>
-      <td class="govuk-table__cell">
-        {% trans "Timetables</br />AVL</br />Fares" %}
-      </td>
-    </tr>
-    <tr data-qa="bus-location-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Shuttle ID - BOD Package" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://shuttleid.uk/packages/">
-          {% trans "https://shuttleid.uk/packages/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:info@shuttleid.uk">{% trans "info@shuttleid.uk" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "AVL" %}</td>
-    </tr>
-    <tr data-qa="bus-location-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Create Fares Data Service" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://fares-data.dft.gov.uk/">
-          {% trans "https://fares-data.dft.gov.uk/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">{% trans "bodshelpdesk@kpmg.co.uk" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "Fares" %}</td>
-    </tr>
-    <tr data-qa="timetable-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Mentz" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.mentz.net/en/">
-          {% trans "https://www.mentz.net/en/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:info@mentz.net">{% trans "info@mentz.net" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "Timetables" %}</td>
-    </tr>
-    <tr data-qa="basic-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Optibus" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.optibus.com/">
-          {% trans "https://www.optibus.com/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:info@optibus.com">{% trans "info@optibus.com" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "Timetables" %}</td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Trapeze" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://trapezegroup.co.uk/">
-          {% trans "https://trapezegroup.co.uk/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:ccuk@trapezegroup.com">{% trans "ccuk@trapezegroup.com" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "Timetables" %}</td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Systra" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.systra.co.uk/en/">
-          {% trans "https://www.systra.co.uk/en/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.systra.co.uk/en/systra/contact">
-          {% trans "https://www.systra.co.uk/en/systra/contact" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">{% trans "Timetables" %}</td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "INIT" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.initse.com/ende/home/">
-          {% trans "https://www.initse.com/ende/home/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:pobszynski@init.co.uk">{% trans "pobszynski@init.co.uk" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "AVL" %}</td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Vix Technology" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://vixtechnology.com/">
-          {% trans "https://vixtechnology.com/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:uk.sales@vixtechnology.com">{% trans "uk.sales@vixtechnology.com" %}</a>
-      </td>
-      <td class="govuk-table__cell">
-        {% trans "Timetables</br />AVL" %}
-      </td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "InfoRox" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.inforox.com/">
-          {% trans "https://www.inforox.com/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:info@inforox.com">{% trans "info@inforox.com" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "AVL" %}</td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "R2P" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.r2p.com/">
-          {% trans "https://www.r2p.com/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:info@r2p.com">{% trans "info@r2p.com" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "AVL" %}</td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Ticket Technology - Tixiom Handheld and Ezifare Handheld" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link"
-           rel="noopener noreferrer"
-           target="_blank"
-           href="http://www.ticket-technology.co.uk/products/tixiom-t1m">
-          {% trans "http://www.ticket-technology.co.uk/products/tixiom-t1m" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="http://www.ticket-technology.co.uk/contact-us">
-          {% trans "http://www.ticket-technology.co.uk/contact-us" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">{% trans "AVL" %}</td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Go Swiftly - Monotrome" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.goswift.ly/metronome">
-          {% trans "https://www.goswift.ly/metronome" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.goswift.ly/contact-us">
-          {% trans "https://www.goswift.ly/contact-us" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">{% trans "AVL" %}</td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Rise DM - Next Stop Driver" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="http://www.nextstopapp.co.uk/">
-          {% trans "http://www.nextstopapp.co.uk/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:info@risedm.com">{% trans "info@risedm.com" %}</a>
-      </td>
-      <td class="govuk-table__cell">
-        {% trans "Timetables</br />AVL" %}
-      </td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Vectare - VecTive" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://vectare.co.uk/">
-          {% trans "https://vectare.co.uk/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:info@vectare.co.uk">{% trans "info@vectare.co.uk" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "AVL" %}</td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Parkeon Flowbird" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.flowbird.group/">
-          {% trans "https://www.flowbird.group/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:contact@flowbird.group">{% trans "contact@flowbird.group" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "AVL" %}</td>
-    </tr>
-    <tr data-qa="complex-fares-row" class="govuk-table__row">
-      <td class="govuk-table__cell">{% trans "Rewire Security" %}</td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.rewiresecurity.co.uk/">
-          {% trans "https://www.rewiresecurity.co.uk/" %}
-        </a>
-      </td>
-      <td class="govuk-table__cell">
-        <a class="govuk-link" href="mailto:info@rewiresecurity.co.uk">{% trans "info@rewiresecurity.co.uk" %}</a>
-      </td>
-      <td class="govuk-table__cell">{% trans "AVL" %}</td>
-    </tr>
-  </tbody>
+    <tbody class="govuk-table__body">
+        <tr data-qa="timetable-row" class="govuk-table__row">
+            <td class="govuk-table__cell"></td>
+            <td class="govuk-table__cell"></td>
+            <td class="govuk-table__cell"></td>
+            <td class="govuk-table__cell"></td>
+        </tr>
+        <tr data-qa="timetable-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Excel TransXChange Tool' %}</td>
+            <td class="govuk-table__cell">{% trans 'N/A' %}</td>
+            <td class="govuk-table__cell"><a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">{% trans 'bodshelpdesk@kpmg.co.uk' %}</a></td>
+            <td class="govuk-table__cell"></td>
+        </tr>
+        <tr data-qa="timetable-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'GRM Mapping' %}</td>
+            <td class="govuk-table__cell"><a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.grmmapping.co.uk">{% trans 'www.grmmapping.co.uk' %}</td></a>
+            <td class="govuk-table__cell"><a class="govuk-link" href="mailto:enquiries@grmmapping.co.uk">{% trans 'enquiries@grmmapping.co.uk' %}</a></td>
+            <td class="govuk-table__cell">{% trans 'Timetables' %}</td>
+        </tr>
+        <tr data-qa="timetable-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Transmach TM 500 and TM 920' %}</td>
+            <td class="govuk-table__cell"><a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://transmach.co.uk/tm500.html">{% trans 'https://transmach.co.uk/tm500.html' %}</td></a>
+            <td class="govuk-table__cell"><a class="govuk-link" href="mailto:sales@transmach.co.uk">{% trans 'sales@transmach.co.uk' %}</a></td>
+            <td class="govuk-table__cell">{% trans 'Timetables</br>AVL' %}</td>
+        </tr>
+        <tr data-qa="timetable-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Elydium' %}</td>
+            <td class="govuk-table__cell"><a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://elydium.co.uk/bus-open-data/">{% trans 'https://elydium.co.uk/bus-open-data/' %}</td></a>
+            <td class="govuk-table__cell"><a class="govuk-link" href="mailto:busopendata@elydium.co.uk">{% trans 'busopendata@elydium.co.uk' %}</a></td>
+            <td class="govuk-table__cell">{% trans 'Timetables</br>Fares' %}</td>
+        </tr>
+        <tr data-qa="bus-location-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Omnibus' %}</td>
+            <td class="govuk-table__cell"><a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://omnibus.solutions/">{% trans 'https://omnibus.solutions/' %}</a></td>
+            <td class="govuk-table__cell"><a class="govuk-link" href="mailto:support@omnibus.uk.com">{% trans 'support@omnibus.uk.com' %}</a></td>
+            <td class="govuk-table__cell">{% trans 'Timetables' %}</td>
+        </tr>
+        <tr data-qa="bus-location-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Ticketer' %}</td>
+            <td class="govuk-table__cell"><a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.ticketer.com/en/">{% trans 'https://www.ticketer.com/en/' %}</a></td>
+            <td class="govuk-table__cell"><a class="govuk-link" href="mailto:support@ticketer.co.uk">{% trans 'support@ticketer.co.uk' %}</a></td>
+            <td class="govuk-table__cell">{% trans 'Timetables</br>AVL</br>Fares' %}</td>
+        </tr>
+        <tr data-qa="bus-location-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Shuttle ID - BOD Package' %}</td>
+            <td class="govuk-table__cell"><a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://shuttleid.uk/packages/">{% trans 'https://shuttleid.uk/packages/' %}</a></td>
+            <td class="govuk-table__cell"><a class="govuk-link" href="mailto:info@shuttleid.uk">{% trans 'info@shuttleid.uk' %}</a></td>
+            <td class="govuk-table__cell">{% trans 'AVL' %}</td>
+        </tr>
+        <tr data-qa="bus-location-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Create Fares Data Service' %}</td>
+            <td class="govuk-table__cell"><a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://fares-data.dft.gov.uk/">{% trans 'https://fares-data.dft.gov.uk/' %}</a></td>
+            <td class="govuk-table__cell"><a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">{% trans 'bodshelpdesk@kpmg.co.uk' %}</a></td>
+            <td class="govuk-table__cell">{% trans 'Fares' %}</td>
+        </tr>
+        <tr data-qa="timetable-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Mentz' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.mentz.net/en/">{% trans 'https://www.mentz.net/en/' %}</a>
+            </td>
+            <td class="govuk-table__cell"><a class="govuk-link" href="mailto:info@mentz.net">{% trans 'info@mentz.net' %}</a></td>
+            <td class="govuk-table__cell">{% trans 'Timetables' %}</td>
+        </tr>
+        <tr data-qa="basic-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Optibus' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.optibus.com/">{% trans 'https://www.optibus.com/' %}</a>
+            </td>
+            <td class="govuk-table__cell"><a class="govuk-link" href="mailto:info@optibus.com">{% trans 'info@optibus.com' %}</a></td>
+            <td class="govuk-table__cell">{% trans 'Timetables' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Trapeze' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://trapezegroup.co.uk/">{% trans 'https://trapezegroup.co.uk/' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" href="mailto:ccuk@trapezegroup.com">{% trans 'ccuk@trapezegroup.com' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'Timetables' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Systra' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.systra.co.uk/en/">{% trans 'https://www.systra.co.uk/en/' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.systra.co.uk/en/systra/contact">{% trans 'https://www.systra.co.uk/en/systra/contact' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'Timetables' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'INIT' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.initse.com/ende/home/">{% trans 'https://www.initse.com/ende/home/' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" href="mailto:pobszynski@init.co.uk">{% trans 'pobszynski@init.co.uk' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'AVL' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Vix Technology' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://vixtechnology.com/">{% trans 'https://vixtechnology.com/' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" href="mailto:uk.sales@vixtechnology.com">{% trans 'uk.sales@vixtechnology.com' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'Timetables</br>AVL' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'InfoRox' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.inforox.com/">{% trans 'https://www.inforox.com/' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" href="mailto:info@inforox.com">{% trans 'info@inforox.com' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'AVL' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'R2P' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.r2p.com/">{% trans 'https://www.r2p.com/' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" href="mailto:info@r2p.com">{% trans 'info@r2p.com' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'AVL' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Ticket Technology - Tixiom Handheld and Ezifare Handheld' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="http://www.ticket-technology.co.uk/products/tixiom-t1m">{% trans 'http://www.ticket-technology.co.uk/products/tixiom-t1m' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="http://www.ticket-technology.co.uk/contact-us">{% trans 'http://www.ticket-technology.co.uk/contact-us' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'AVL' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Go Swiftly - Monotrome' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.goswift.ly/metronome">{% trans 'https://www.goswift.ly/metronome' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.goswift.ly/contact-us">{% trans 'https://www.goswift.ly/contact-us' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'AVL' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Rise DM - Next Stop Driver' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="http://www.nextstopapp.co.uk/">{% trans 'http://www.nextstopapp.co.uk/' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" href="mailto:info@risedm.com">{% trans 'info@risedm.com' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'Timetables</br>AVL' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Vectare - VecTive' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://vectare.co.uk/">{% trans 'https://vectare.co.uk/' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" href="mailto:info@vectare.co.uk">{% trans 'info@vectare.co.uk' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'AVL' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Parkeon Flowbird' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.flowbird.group/">{% trans 'https://www.flowbird.group/' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" href="mailto:contact@flowbird.group">{% trans 'contact@flowbird.group' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'AVL' %}</td>
+        </tr>
+        <tr data-qa="complex-fares-row" class="govuk-table__row">
+            <td class="govuk-table__cell">{% trans 'Rewire Security' %}</td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.rewiresecurity.co.uk/">{% trans 'https://www.rewiresecurity.co.uk/' %}</a>
+            </td>
+            <td class="govuk-table__cell">
+                <a class="govuk-link" href="mailto:info@rewiresecurity.co.uk">{% trans 'info@rewiresecurity.co.uk' %}</a>
+            </td>
+            <td class="govuk-table__cell">{% trans 'AVL' %}</td>
+        </tr>
+    </tbody>
 </table>

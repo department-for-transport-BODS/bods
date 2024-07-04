@@ -1,22 +1,25 @@
 {% extends "snippets/help_modal_base.html" %}
 {% load i18n %}
+
 {% block help_icon %}
-  <i class="help-icon-white fas fa-question-circle">
-  </i>
+    <i class="help-icon-white fas fa-question-circle">
+    </i>
 {% endblock %}
+
 {% block help_heading %}
-  {% trans "Weekly overall AVL to Timetables data matching score" %}
+    {% trans "Weekly overall AVL to Timetables data matching score" %}
 {% endblock %}
+
 {% block help_content %}
-  <p class="govuk-body">
-    {% blocktrans %}
+    <p class="govuk-body">
+        {% blocktrans %}
             The weekly overall AVL to Timetables data matching score
             is an average weekly score of all your published data
             feeds on BODS.
         {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
             All the individual weekly report scores for all the
             published feeds you have on BODS are collected together
             and averaged to generate a weekly overall score. This
@@ -26,21 +29,21 @@
             Monday every week. This is latest weekly matching score
             for all published feeds.
         {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
             Please note that BODS doesn't check every single packet of
             data but we do a random sampling throughout the day in
             order to determine these reports and scores.
         {% endblocktrans %}
-  </p>
-  <p class="govuk-body">
-    {% blocktrans %}
+    </p>
+    <p class="govuk-body">
+        {% blocktrans %}
             We also provide you with the last 4 weeks' matching
             reports to download. Please download the reports and work
             with your technology suppliers to provide the most
             accurate data so that data consumers and, eventually, your
             bus passengers can benefit.
         {% endblocktrans %}
-  </p>
+    </p>
 {% endblock %}

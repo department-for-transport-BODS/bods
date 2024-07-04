@@ -1,32 +1,34 @@
 {% extends "snippets/help_modal_base.html" %}
 {% load i18n %}
+
 {% block help_heading %}
-  {% filter force_escape %}
-    {% trans "GTFS-RT" %}
-  {% endfilter %}
+    {% filter force_escape %}
+        {% trans "GTFS-RT" %}
+    {% endfilter %}
 {% endblock %}
+
 {% block help_content %}
-  <p class="govuk-body">
-    {% filter force_escape %}
-      {% blocktrans %}
-        GTFS Realtime is a feed specification that allows public transportation
-        agencies to provide realtime updates about their fleet to application
-        developers. It is an extension to GTFS (General Transit Feed
-        Specification), an open data format for public transportation schedules
-        and associated geographic information.
-      {% endblocktrans %}
-    {% endfilter %}
-  </p>
-  <p class="govuk-body">
-    {% filter force_escape %}
-      {% blocktrans %}
-        To learn more about GTFS-RT please visit
-      {% endblocktrans %}
-    {% endfilter %}
-    <a class="govuk-link" href="https://developers.google.com/transit/gtfs-realtime" target="_blank" rel="noopener noreferrer">
-      {% filter force_escape %}
-        {% trans "here" %}
-      {% endfilter %}
-    </a>.
-  </p>
+    <p class="govuk-body">
+        {% filter force_escape %}
+            {% blocktrans %}
+                GTFS Realtime is a feed specification that allows public transportation
+                agencies to provide realtime updates about their fleet to application
+                developers. It is an extension to GTFS (General Transit Feed
+                Specification), an open data format for public transportation schedules
+                and associated geographic information.
+            {% endblocktrans %}
+        {% endfilter %}
+    </p>
+    <p class="govuk-body">
+        {% filter force_escape %}
+            {% blocktrans %}
+                To learn more about GTFS-RT please visit
+            {% endblocktrans %}
+        {% endfilter %}
+        <a class="govuk-link"
+            href="https://developers.google.com/transit/gtfs-realtime"
+            target="_blank"
+            rel="noopener noreferrer">
+            {% filter force_escape %}{% trans 'here' %}{% endfilter %}</a>.
+    </p>
 {% endblock %}

@@ -1,3 +1,6 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/components/header/header";
+
 /* Allows SignIn and MyAccount navigation link to be positioned to the right of the header */
 .govuk-header__navigation {
   display: flex;

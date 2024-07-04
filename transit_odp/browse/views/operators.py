@@ -8,18 +8,13 @@ from config.hosts import DATA_HOST, PUBLISH_HOST
 from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.avl.proxies import AVLDataset
-from transit_odp.browse.common import (
-    get_in_scope_in_season_services_line_level,
-)
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
 from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.constants import EXPIRED, INACTIVE, AVLType, FaresType
 from transit_odp.organisation.models import Dataset, Organisation
 from transit_odp.otc.models import Service as OTCService
-from transit_odp.publish.requires_attention import (
-    get_requires_attention_line_level_data,
-)
+from transit_odp.publish.requires_attention import get_requires_attention_data
 
 
 class OperatorsView(BaseListView):
@@ -80,11 +75,11 @@ class OperatorDetailView(BaseDetailView):
         organisation = self.object
 
         context["total_services_requiring_attention"] = len(
-            get_requires_attention_line_level_data(organisation.id)
+            get_requires_attention_data(organisation.id)
         )
-        context["total_in_scope_in_season_services"] = len(
-            get_in_scope_in_season_services_line_level(organisation.id)
-        )
+        context[
+            "total_in_scope_in_season_services"
+        ] = OTCService.objects.get_in_scope_in_season_services(organisation.id).count()
         try:
             context["services_require_attention_percentage"] = round(
                 100

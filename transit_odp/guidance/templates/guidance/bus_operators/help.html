@@ -1,13 +1,16 @@
 {% extends "guidance/bus_operators/base.html" %}
+
 {% load i18n %}
+
 {% block extra_content %}
-  <h1 data-qa="help-header" class="govuk-heading-l">{% trans "How to get help" %}</h1>
-  {% include "../snippets/timetable_suppliers.html" %}
-  {% include "../snippets/bus_location_suppliers.html" %}
-  {% include "../snippets/agent_timetables_fares_support.html" %}
-  {% include "../snippets/agent_timetable_support.html" %}
-  {% include "../snippets/agent_avl_support.html" %}
-  {% include "../snippets/agent_timetable_avl_support.html" %}
-  {% include "../snippets/fares_suppliers.html" %}
-  {% include "../snippets/contact_details.html" %}
+    <h1 data-qa="help-header" class="govuk-heading-l">{% trans 'How to get help' %}</h1>
+    {% include "../snippets/timetable_suppliers.html" %}
+    {% include "../snippets/bus_location_suppliers.html" %}
+    {% include "../snippets/agent_timetables_fares_support.html" %}
+    {% include "../snippets/agent_timetable_support.html" %}
+    {% include "../snippets/agent_avl_support.html" %}
+    {% include "../snippets/agent_timetable_avl_support.html" %}
+    {% include "../snippets/fares_suppliers.html" %}
+    {% include "../snippets/contact_details.html" %}
+
 {% endblock %}

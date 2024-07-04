@@ -1,15 +1,16 @@
 {% load i18n %}
+
 <h2 class="govuk-heading-m">
   {% if object.dataset_type == 2 %}
-    {% trans "Noticed issues with this data feed?" %}
+    {% trans 'Noticed issues with this data feed?' %}
   {% else %}
-    {% trans "Noticed issues with this data set?" %}
+    {% trans 'Noticed issues with this data set?' %}
   {% endif %}
 </h2>
 <a class="govuk-link govuk-!-font-size-19" href="{% url feedback_url_name object.id host hosts.data %}">
   {% if object.dataset_type == 2 %}
-    {% trans "Contact data feed owner directly" %}
+    {% trans 'Contact data feed owner directly' %}
   {% else %}
-    {% trans "Contact data set owner directly" %}
+    {% trans 'Contact data set owner directly' %}
   {% endif %}
 </a>

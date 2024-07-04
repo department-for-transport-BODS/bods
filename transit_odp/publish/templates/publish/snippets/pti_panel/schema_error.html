@@ -1,5 +1,6 @@
 {% extends "publish/snippets/pti_panel/base.html" %}
 {% load i18n %}
+
 {% block pti_panel_content %}
   <h2 class="govuk-heading-m">3a Validation check - Failed</h2>
   <p class="govuk-body">
@@ -11,12 +12,13 @@
   <p class="govuk-body">
     <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download validation report</a>
   </p>
-  <p class="govuk-body">
+   <p class="govuk-body">
     {% blocktrans %}
       The timetables data supplied is non-compliant and cannot be submitted to
       BODS as per the
     {% endblocktrans %}
-    <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
+    <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality"
+       class="govuk-link">
       {% trans "guidance." %}
     </a>
     {% blocktrans %}

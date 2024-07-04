@@ -1,3 +1,7 @@
+@import "../../variables";
+@import "govuk-frontend/govuk/components/select/select";
+@import "govuk-frontend/govuk/core/links";
+
 // These classes style select elements. The down arrow is hidden and replace with custom content :after
 // This requires a wrapping div.
 

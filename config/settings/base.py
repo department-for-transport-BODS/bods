@@ -169,7 +169,6 @@ LOCAL_APPS = [
     "transit_odp.fares_validator.apps.FaresValidatorConfig",
     "transit_odp.disruptions.apps.DisruptionsConfig",
     "transit_odp.crispy_forms_govuk.apps.CrispyFormsGovukConfig",
-    "transit_odp.dqs.apps.DQSConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -608,9 +607,6 @@ EP_AUTH_URL = env(
     default="https://dev-pdbrd.auth.eu-west-2.amazoncognito.com/oauth2/token",
 )
 
-COACH_ATCO_FILE_S3_URL = env("COACH_ATCO_FILE_S3_URL", default="#")
-COACH_TXC_FILE_S3_URL = env("COACH_TXC_FILE_S3_URL", default="#")
-
 # Disruptions API
 # ------------------------------------------------------------------------------
 DISRUPTIONS_API_BASE_URL = env("DISRUPTIONS_API_BASE_URL", default="")
@@ -627,15 +623,6 @@ AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
     "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME",
     default="bodds-dataset-dev-maintenance",
 )
-# SQS QUEUE
-# ------------------------------------------------------------------------------
-SQS_QUEUE_ENDPOINT_URL = env(
-    "SQS_QUEUE_ENDPOINT_URL", default="http://localstack-main:4566"
-)
-AWS_REGION_NAME = env("AWS_REGION_NAME", default="eu-west-2")
-AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
-AWS_ENVIRONMENT = env("AWS_ENVIRONMENT", default="LOCAL")
 
 # Crispy forms
 # ------------------------------------------------------------------------------

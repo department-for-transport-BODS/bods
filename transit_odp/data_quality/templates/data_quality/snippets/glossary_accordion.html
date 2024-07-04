@@ -1,31 +1,32 @@
 {% load i18n %}
+
 <h2 class="govuk-heading-m govuk-!-margin-bottom-3">{{ category.type }}</h2>
-<div class="govuk-accordion"
-     data-module="govuk-accordion"
-     id="accordion-default-{{ category.type|lower|slugify }}-{{ type }}">
-  {% for warning in category.observations %}
-    <div class="govuk-accordion__section">
-      <div class="govuk-accordion__section-header">
-        <h2 class="govuk-accordion__section-heading">
-          <span class="govuk-accordion__section-button"
-                id="accordion-default-heading-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}"
-                aria-controls="accordion-default-content-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}">
-            {{ warning.title }}
-          </span>
-        </h2>
-      </div>
-      <div id="accordion-default-content-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}"
-           class="govuk-accordion__section-content govuk-!-margin-right-9 govuk-!-padding-right-9"
-           aria-labelledby="accordion-default-heading-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}">
-        <p class="govuk-body">{{ warning.text | safe }}</p>
-        {% if warning.extra_info %}
-          {% include "data_quality/snippets/incorrect_stop_types.html" with info=warning.extra_info %}
-        {% endif %}
-        {% if warning.impacts %}
-          <h3 class="govuk-heading-s">Impacts</h3>
-          <p class="govuk-body">{{ warning.impacts | safe }}</p>
-        {% endif %}
-      </div>
-    </div>
-  {% endfor %}
+<div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default-{{ category.type|lower|slugify }}-{{ type }}">
+    {% for warning in category.observations %}
+        <div class="govuk-accordion__section">
+            <div class="govuk-accordion__section-header">
+                <h2 class="govuk-accordion__section-heading">
+                    <span class="govuk-accordion__section-button"
+                        id="accordion-default-heading-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}"
+                        aria-controls="accordion-default-content-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}">
+                        {{ warning.title }}
+                    </span>
+                </h2>
+            </div>
+            <div id="accordion-default-content-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}"
+                class="govuk-accordion__section-content govuk-!-margin-right-9 govuk-!-padding-right-9"
+                aria-labelledby="accordion-default-heading-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}">
+                <p class="govuk-body">{{ warning.text | safe }}</p>
+                {% if warning.extra_info %}
+                    {% include "data_quality/snippets/incorrect_stop_types.html" with info=warning.extra_info %}
+                {% endif %}
+                {% if warning.impacts %}
+                    <h3 class="govuk-heading-s">Impacts</h3>
+                    <p class="govuk-body">
+                        {{ warning.impacts | safe }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
 </div>
