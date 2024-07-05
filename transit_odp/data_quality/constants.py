@@ -303,29 +303,21 @@ FirstStopNotTimingPointObservation = Observation(
 )
 LastStopNotTimingPointObservation = Observation(
     title="Last stop is not a timing point",
-    text=(
-        "A timing point is a designated stop where the bus has been "
-        "registered to depart "
-        "from at a specific time. The Traffic Commissioner requires "
-        "registered services "
-        "have the first and last stop designated as timing points for "
-        "the main route variant. "
-    ),
+    text=(""),
     impacts=(
-        "The Traffic Commissioner requires “a timetable for the service indicating the "
-        "proposed times (on the days when the service is to run) of "
-        "individual services at "
-        "principal points on the route” and it is these points that a "
-        "service's punctuality is "
-        "monitored. Timing points are used to generate hard copy "
-        "'shortened' timetables "
-        "at bus stops, as well as their soft copy counterparts online. "
-        "If the first and last "
-        "stop are not timing points, these will not be printed correctly. "
-        "In turn reducing the "
-        "quality of information available to passengers. This effect is "
-        "particularly negative "
-        "for low digital passengers who rely on hard copy timetables. "
+        "This observation identifies journeys where the last stop is not set to be a timing point. "
+        + _LINE_BREAK
+        + "A timing point is a designated stop where the bus has been registered to depart from at a specific time. "
+        "The Traffic Commissioner requires registered services have the first and last stop designated as timing "
+        "points. These points are where the service punctuality is monitored and is often used to generate "
+        "‘shortened’ timetables."
+        + _LINE_BREAK
+        + "If the first and last stops are not timing points, the printed timetables may not display correctly"
+        + "and will reduce the quality of information available to passengers. "
+    ),
+    resolve=(
+        "Please correct the stop details on your scheduling tool or get in contact with your agent to address "
+        "this observation."
     ),
     model=models.TimingLastWarning,
     list_url_name="dq:last-stop-not-timing-point-list",

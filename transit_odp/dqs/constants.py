@@ -97,3 +97,5 @@ class Checks(Enum):
     LastStopIsPickUpOnly = "Last stop is pick up only"
     IncorrectStopType = "Incorrect stop type"
     StopNotFoundInNaptan = "Stop not found in NaPTAN"
+    LastStopIsNotATimingPoint = "Last stop is not a timing point"
+    FirstStopIsNotATimingPoint = "First stop is not a timing point"

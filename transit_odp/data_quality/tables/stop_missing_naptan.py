@@ -40,7 +40,9 @@ class StopMissingNaptanListTable(TimingPatternListTable):
             attrs = {
                 "tbody": {"is_details_link": True},
             }
-        sequence = ("line", "message")
+            sequence = ("message", "dqs_details")
+        else:
+            sequence = ("line", "message")
 
 
 class StopMissingNaptanWarningTimingTable(StopNameTimingPatternTable):
