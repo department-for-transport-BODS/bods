@@ -14,6 +14,15 @@ PUBLISH_ERROR_MESSAGE = (
 )
 
 
+class AdminInline(admin.TabularInline):
+    model = Organisation.admin_areas.through
+    extra = 1
+    min_num = 1
+    show_change_link = True
+    verbose_name = "Admin Area"
+    verbose_name_plural = "Admin Areas"
+
+
 class OperatorCodeInline(admin.TabularInline):
     model = OperatorCode
     show_change_link = True
@@ -25,8 +34,9 @@ class OperatorCodeInline(admin.TabularInline):
 class OrganisationAdmin(admin.ModelAdmin):
     list_display = ["name", "is_abods_global_viewer"]
     search_fields = ["name"]
+    exclude = ["admin_areas"]
 
-    inlines = [OperatorCodeInline]
+    inlines = [OperatorCodeInline, AdminInline]
 
 
 @admin.register(Dataset)
