@@ -392,7 +392,7 @@ class VehicleJourneyFinder:
                 ErrorCode.CODE_5_1,
             )
             return None
-        return vehicle_journeys
+        return required_vjs
 
     def get_operating_profile_for_journey(
         self, vj: TxcVehicleJourney
