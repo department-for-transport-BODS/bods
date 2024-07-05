@@ -9,22 +9,42 @@ from transit_odp.data_quality.views.base import (
     TimingPatternsListBaseView,
     TwoTableDetailView,
 )
+from transit_odp.dqs.models import ObservationResults
+from transit_odp.dqs.constants import Checks
+from waffle import flag_is_active
 
 
 class StopMissingNaptanListView(TimingPatternsListBaseView):
     data = StopNotInNaptanObservation
-    model = StopMissingNaptanWarning
+    is_new_data_quality_service_active = flag_is_active(
+        "", "is_new_data_quality_service_active"
+    )
+    model = (
+        StopMissingNaptanWarning
+        if not is_new_data_quality_service_active
+        else ObservationResults
+    )
     table_class = StopMissingNaptanListTable
 
     def get_queryset(self):
-        # The synthetic stop can appear in multiple service patterns, here we just pick
-        # an arbitrary service pattern to help the user.
-        return (
-            super()
-            .get_queryset()
-            .exclude_null_service_patterns()
-            .add_message()
-            .add_line()
+
+        if not self.is_new_data_quality_service_active:
+            # The synthetic stop can appear in multiple service patterns, here we just pick
+            # an arbitrary service pattern to help the user.
+            return (
+                super()
+                .get_queryset()
+                .exclude_null_service_patterns()
+                .add_message()
+                .add_line()
+            )
+
+        report_id = self.kwargs.get("report_id")
+        revision_id = self.kwargs.get("pk")
+        check = Checks.StopNotFoundInNaptan
+        message = "There is at least one stop that is not registered with NaPTAN"
+        return self.model.objects.get_observations_grouped(
+            report_id, check, revision_id, message
         )
 
     def get_context_data(self, **kwargs):
@@ -34,12 +54,20 @@ class StopMissingNaptanListView(TimingPatternsListBaseView):
                 "title": self.data.title,
                 "definition": self.data.text,
                 "preamble": (
-                    "The following timing pattern(s) have been observed to have stops "
-                    "that are not in NaPTAN."
+                    "The following service(s) have been observed to have a stop that "
+                    "is not registered with NaPTAN."
                 ),
+                "resolve": self.data.resolve,
             }
         )
         return context
+
+    def get_table_kwargs(self):
+
+        kwargs = {}
+        if not self.is_new_data_quality_service_active:
+            kwargs = super().get_table_kwargs()
+        return kwargs
 
 
 class StopMissingNaptanDetailView(TwoTableDetailView):

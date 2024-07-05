@@ -122,30 +122,22 @@ MissingBlockNumber = Observation(
 )
 
 StopNotInNaptanObservation = Observation(
-    title="Stop(s) are not found in NaPTAN",
-    text=(
-        "Operators should notify the relevant Local Transport Authority to request "
-        "a stop "
-        "in advance of the timetable being published.</br></br>"
-        "This observation identifies cases where a stop used in a timetable is "
-        "still not in "
-        "the NaPTAN reference database. Operators should notify the relevant Local "
-        "Transport Authority immediately to request the stops, notifying them of "
-        "issues "
-        "found by this observation.</br></br>"
-        "For temporary stops that do not include a reference to NaPTAN, they must be "
-        "defined geographically using a latitude and longitude in the data. This "
-        "will support consumers to provide accurate stop information to passengers. "
-    ),
+    title="Stop not found in NaPTAN",
+    text=(""),
     impacts=(
-        "NaPTAN provides key stop information across different transport types, "
-        "enabling "
-        "multi-modal journey planning that can encourage bus patronage. It is "
-        "therefore "
-        "important for the public transport ecosystem to work together to ensure "
-        "the stop "
-        "data inputted is correctly detailed and can be referenced to the NaPTAN "
-        "database. "
+        "This observation identifies the use of stops that are not registered with NaPTAN. "
+        "NaPTAN provides a source for key stop information across different transport types "
+        "to support consumers to provide accurate stop information to passengers."
+        + _LINE_BREAK
+        + "It is important for the public transport ecosystem to work together to ensure the stop"
+        " data inputted is correctly detailed and can be referenced to the NaPTAN database."
+    ),
+    resolve=(
+        "Please notify the relevant Local Transport Authority immediately to request the stops to "
+        "be registered, notifying them of issues found by this observation."
+        + _LINE_BREAK
+        + "For temporary stops that do not include a reference to NaPTAN, they must be defined "
+        "geographically using a latitude and longitude in the data and must not be used for more than two months. "
     ),
     model=models.StopMissingNaptanWarning,
     list_url_name="dq:stop-missing-naptan-list",

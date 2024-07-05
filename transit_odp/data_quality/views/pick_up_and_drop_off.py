@@ -27,7 +27,6 @@ class LastStopPickUpListView(TimingPatternsListBaseView):
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
-    is_new_data_quality_service_active = True
     model = (
         TimingDropOffWarning
         if not is_new_data_quality_service_active
