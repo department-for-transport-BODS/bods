@@ -91,11 +91,27 @@ class LastStopNotTimingDetailView(TwoTableDetailView):
 
 class FirstStopNotTimingListView(TimingPatternsListBaseView):
     data = FirstStopNotTimingPointObservation
-    model = TimingFirstWarning
+    is_new_data_quality_service_active = flag_is_active(
+        "", "is_new_data_quality_service_active"
+    )
+    model = (
+        TimingFirstWarning
+        if not is_new_data_quality_service_active
+        else ObservationResults
+    )
     table_class = TimingPatternListTable
 
     def get_queryset(self):
-        return super().get_queryset().add_message().add_line()
+        if not self.is_new_data_quality_service_active:
+            return super().get_queryset().add_message().add_line()
+        else:
+            report_id = self.kwargs.get("report_id")
+            revision_id = self.kwargs.get("pk")
+            check = Checks.LastStopIsNotATimingPoint
+            message = "There is at least one journey where the first stop is not a timing point"
+            return self.model.objects.get_observations_grouped(
+                report_id, check, revision_id, message
+            )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -104,13 +120,20 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView):
                 "title": self.data.title,
                 "definition": self.data.text,
                 "preamble": (
-                    "The following service(s) have been observed to not have the last stop set "
+                    "The following service(s) have been observed to not have the first stop set "
                     "as a timing point."
                 ),
                 "resolve": self.data.resolve,
             }
         )
         return context
+
+    def get_table_kwargs(self):
+
+        kwargs = {}
+        if not self.is_new_data_quality_service_active:
+            kwargs = super().get_table_kwargs()
+        return kwargs
 
 
 class FirstStopNotTimingDetailView(TwoTableDetailView):
