@@ -133,14 +133,8 @@ class VehicleJourneyTable(GovUkTable):
 class WarningListBaseTable(GovUkTable):
     class Meta:
 
-        is_new_data_quality_service_active = flag_is_active(
-            "", "is_new_data_quality_service_active"
-        )
-        template_name = (
-            "data_quality/snippets/dqs_custom_table.html"
-            if is_new_data_quality_service_active
-            else "data_quality/snippets/dq_custom_table.html"
-        )
+        template_name = "data_quality/snippets/dq_custom_table.html"
+
         attrs = {
             "th": {"class": "govuk-table__header"},
         }
