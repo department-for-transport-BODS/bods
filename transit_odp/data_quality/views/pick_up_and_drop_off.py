@@ -12,8 +12,8 @@ from transit_odp.data_quality.tables import (
     LastStopPickUpOnlyDetail,
     LastStopPickUpOnlyVehicleTable,
     PickUpDropOffListTable,
-    DQSPickUpDropOffListTable,
 )
+from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 from transit_odp.data_quality.views.base import (
     TimingPatternsListBaseView,
     TwoTableDetailView,
@@ -34,7 +34,7 @@ class LastStopPickUpListView(TimingPatternsListBaseView):
         table_class = PickUpDropOffListTable
     else:
         model = ObservationResults
-        table_class = DQSPickUpDropOffListTable
+        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
 

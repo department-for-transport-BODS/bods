@@ -7,6 +7,7 @@ from transit_odp.data_quality.tables import (
     StopIncorrectTypeWarningTimingTable,
     StopIncorrectTypeWarningVehicleTable,
 )
+from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 from transit_odp.data_quality.views.base import JourneyListBaseView, TwoTableDetailView
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
@@ -17,12 +18,13 @@ class IncorrectStopTypeListView(JourneyListBaseView):
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
-    model = (
-        JourneyStopInappropriateWarning
-        if not is_new_data_quality_service_active
-        else ObservationResults
-    )
-    table_class = StopIncorrectTypeListTable
+
+    if not is_new_data_quality_service_active:
+        model = JourneyStopInappropriateWarning
+        table_class = StopIncorrectTypeListTable
+    else:
+        model = ObservationResults
+        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
 

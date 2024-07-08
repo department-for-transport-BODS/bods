@@ -31,7 +31,6 @@ from .pickup_and_drop_off import (
     LastStopPickUpOnlyDetail,
     LastStopPickUpOnlyVehicleTable,
     PickUpDropOffListTable,
-    DQSPickUpDropOffListTable,
 )
 from .service_link_missing_stop import (
     ServiceLinkMissingStopWarningTimingTable,
@@ -88,7 +87,6 @@ __all__ = [
     "MissingStopWarningDetailTable",
     "MissingStopWarningVehicleTable",
     "PickUpDropOffListTable",
-    "DQSPickUpDropOffListTable",
     "ServiceLinkMissingStopWarningTimingTable",
     "ServiceLinkMissingStopWarningVehicleTable",
     "SlowLinkWarningTimingTable",

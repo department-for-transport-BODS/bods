@@ -45,11 +45,6 @@ class PickUpDropOffListTable(TimingPatternListTable):
             sequence = ("line", "message")
 
 
-class DQSPickUpDropOffListTable(DQSWarningListBaseTable):
-    class Meta(DQSWarningListBaseTable.Meta):
-        pass
-
-
 class LastStopPickUpOnlyDetail(BaseStopNameTimingPatternTable):
     def __init__(self, *args, **kwargs):
         row_attrs = {
