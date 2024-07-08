@@ -243,3 +243,25 @@ class JourneyListTable(WarningListBaseTable):
             date = "unknown date"
         finally:
             return date
+
+
+class DQSWarningListBaseTable(GovUkTable):
+
+    message = tables.Column(verbose_name="Service", orderable=False, empty_values=())
+    dqs_details = tables.Column(
+        verbose_name="Details",
+        orderable=False,
+        empty_values=(),
+        attrs={"is_link": True},
+    )
+    service_code = tables.Column(verbose_name="Service Code", visible=True)
+    line_name = tables.Column(verbose_name="Line Name", visible=True)
+
+    class Meta:
+
+        attrs = {
+            "tbody": {"is_details_link": True},
+            "th": {"class": "govuk-table__header"},
+        }
+        sequence = ("message", "dqs_details")
+        template_name = "data_quality/snippets/dqs_custom_table.html"

@@ -79,3 +79,38 @@ class ObservationResultsQueryset(models.QuerySet):
         )
 
         return qs
+
+    def get_observations_grouped(
+        self,
+        report_id: int,
+        check: Checks,
+        revision_id: int,
+        dqs_details: str = "Message in details",
+    ) -> list:
+        """
+        Filter for observation results for the report and revision of the specific check and ingesting the message
+        """
+
+        columns = ["service_code", "line_name", "message", "dqs_details"]
+
+        qs = (
+            self.filter(
+                taskresults__dataquality_report_id=report_id,
+                taskresults__checks__observation=check.value,
+                taskresults__dataquality_report__revision_id=revision_id,
+            )
+            .annotate(
+                service_code=F(
+                    "taskresults__transmodel_txcfileattributes__service_code"
+                ),
+                line_name=F(
+                    "taskresults__transmodel_txcfileattributes__service_txcfileattributes__name"
+                ),
+                message=Value("", output_field=TextField()),
+                dqs_details=Value(dqs_details, output_field=TextField()),
+            )
+            .values(*columns)
+            .distinct()
+        )
+
+        return qs
