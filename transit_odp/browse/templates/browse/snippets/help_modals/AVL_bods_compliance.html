@@ -1,15 +1,27 @@
 {% extends "snippets/help_modal_base.html" %}
 {% load i18n %}
-
 {% block help_heading %}
-    {% trans "BODS Compliant Location data" as tmsg %}{{ tmsg | force_escape }}
+  {% trans "BODS Compliant Location data" as tmsg %}
+  {{ tmsg | force_escape }}
 {% endblock %}
-
 {% block help_content %}
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
-                BODS recommends that all publishers use the mandatory SIRI profile as specified by the Department for Transport (DfT).
-                More information on the profile can be found {% endblocktrans %}{% endfilter %}
-        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.gov.uk/government/publications/technical-guidance-publishing-location-data-using-the-bus-open-data-service-siri-vm/technical-guidance-siri-vm" >{% filter force_escape %}{% trans 'here' %}{% endfilter %}</a>{% filter force_escape %}{% trans '.' %}{% endfilter %}</p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
+        BODS recommends that all publishers use the mandatory SIRI profile as specified by the Department for Transport (DfT).
+        More information on the profile can be found
+      {% endblocktrans %}
+    {% endfilter %}
+    <a class="govuk-link"
+       rel="noopener noreferrer"
+       target="_blank"
+       href="https://www.gov.uk/government/publications/technical-guidance-publishing-location-data-using-the-bus-open-data-service-siri-vm/technical-guidance-siri-vm">
+      {% filter force_escape %}
+        {% trans "here" %}
+      {% endfilter %}
+    </a>
+    {% filter force_escape %}
+      {% trans "." %}
+    {% endfilter %}
+  </p>
 {% endblock %}

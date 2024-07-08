@@ -1,31 +1,23 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
-
 {# PTI Report Section #}
 {% if has_pti_observations %}
-    {# This is the soft fail path, should tidy up after pti enforced date #}
-    {% include "publish/snippets/pti_panel/soft_fail.html" %}
+  {# This is the soft fail path, should tidy up after pti enforced date #}
+  {% include "publish/snippets/pti_panel/soft_fail.html" %}
 {% else %}
-    {% include "publish/snippets/pti_panel/pass.html" %}
+  {% include "publish/snippets/pti_panel/pass.html" %}
 {% endif %}
-
 {# DQS Report Section #}
 {% include "publish/snippets/dqs_review_panel.html" %}
-
 {# Preview Section #}
 <div id="preview-section">
-    <h2 class="govuk-heading-l dont-break-out">
-        {{ object.name }}
-    </h2>
-
-    {% include 'publish/snippets/dataset_map.html' %}
-    {% include 'publish/revision_review/property_table.html' %}
-    {% include 'publish/revision_review/review_service_codes.html' %}
-
-    <div class="btn-group-justified">
-        <a role="button" class="govuk-button govuk-button--secondary"
-            href="{% url 'revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">
-            {{ _('Delete data') }}
-        </a>
-    </div>
+  <h2 class="govuk-heading-l dont-break-out">{{ object.name }}</h2>
+  {% include "publish/snippets/dataset_map.html" %}
+  {% include "publish/revision_review/property_table.html" %}
+  {% include "publish/revision_review/review_service_codes.html" %}
+  <div class="btn-group-justified">
+    <a role="button"
+       class="govuk-button govuk-button--secondary"
+       href="{% url 'revision-delete' pk1=pk1 pk=object.dataset_id host hosts.publish %}">{{ _("Delete data") }}</a>
+  </div>
 </div>

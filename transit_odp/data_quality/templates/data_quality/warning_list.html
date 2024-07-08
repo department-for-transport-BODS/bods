@@ -1,17 +1,13 @@
 {% extends "data_quality/base.html" %}
-
 {% load i18n %}
 {% load render_table from django_tables2 %}
-
 {% block title_tag %}
-    {% blocktrans %}{{ title }} observations list{% endblocktrans %}
+  {% blocktrans %}{{ title }} observations list{% endblocktrans %}
 {% endblock %}
-
 {% block backlink %}
-    {% url 'dq:overview' pk=view.kwargs.pk pk1=view.kwargs.pk1 report_id=view.kwargs.report_id host host.name as backlink_url %}
-    {% include 'snippets/backlink.html' with url=backlink_url %}
+  {% url 'dq:overview' pk=view.kwargs.pk pk1=view.kwargs.pk1 report_id=view.kwargs.report_id host host.name as backlink_url %}
+  {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -22,6 +18,8 @@
       <p class="govuk-body-m">
         {{ definition|safe }}
       </p>
+      {% if not is_new_data_quality_service_active %}
+      <p class="govuk-body-m">{{ definition|safe }}</p>
       {% endif %}
       
       {% if impacts %}
@@ -39,6 +37,25 @@
       <p class="govuk-body-m">
         {{ preamble }}
       </p>
+      {% if extra_info %}
+        <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
+          <div class="govuk-accordion__section ">
+            <div class="govuk-accordion__section-header">
+              <h2 class="govuk-accordion__section-heading">
+                <span class="govuk-accordion__section-button" id="accordion-default-heading-1">
+                  {% trans "What are the different types of bus stops?" %}
+                </span>
+              </h2>
+            </div>
+            <div id="accordion-default-content-1" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-1">
+              <div class="incorrect_stop_type_list">
+                {% include "data_quality/snippets/incorrect_stop_types.html" with info=extra_info %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      
 
       {% if extra_info %}
         <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
@@ -60,10 +77,7 @@
       {% endif %}
     </div>
   </div>
-
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {% render_table table %}
-    </div>
+    <div class="govuk-grid-column-full">{% render_table table %}</div>
   </div>
 {% endblock %}

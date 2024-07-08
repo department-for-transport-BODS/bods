@@ -1,43 +1,36 @@
-{% extends 'browse/base.html' %}
-
+{% extends "browse/base.html" %}
 {% load i18n %}
 {% load static %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'Browse Disruption Data' %}
+  {% trans "Browse Disruption Data" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
-    {% breadcrumb_url 'Disruption data' 'disruptions-data' host hosts.data %}
+  {{ block.super }}
+  {% breadcrumb_url 'Browse' 'select-data' host hosts.data %}
+  {% breadcrumb_url 'Disruption data' 'disruptions-data' host hosts.data %}
 {% endblock %}
-
 {% block full_width_content %}
-    <form autocomplete="off">
-        {% with title="Disruption data" description="Search for a specific Local Transport Authority" placeholder="Enter Local Transport Authority name" %}
-            {% include "browse/snippets/search_banner.html" %}
-            {{ org_names | json_script:"lta-data" }}
-        {% endwith %}
-{% endblock %}
-
-{% block content %}
+  <form autocomplete="off">
+    {% with title="Disruption data" description="Search for a specific Local Transport Authority" placeholder="Enter Local Transport Authority name" %}
+      {% include "browse/snippets/search_banner.html" %}
+      {{ org_names | json_script:"lta-data" }}
+    {% endwith %}
+  {% endblock %}
+  {% block content %}
     <div class="govuk-grid-row govuk-!-margin-top-4">
-        <div class="govuk-grid-column-two-thirds">
-            {% include "browse/snippets/search_list.html" with items=api_data ordering=ordering show_search_terms_only=True  %}
-        </div>
+      <div class="govuk-grid-column-two-thirds">
+        {% include "browse/snippets/search_list.html" with items=api_data ordering=ordering show_search_terms_only=True %}
+      </div>
     </div>
-    </form>
+  </form>
 {% endblock %}
-
 {% block scripts %}
-    {{block.super}}
-    <script>
-        const ltas = JSON.parse(document.getElementById("lta-data").textContent);
-
-        new BODSFrontend.AutoCompleteSearch("search", ltas["names"]);
-    </script>
-{% endblock  %}
+  {{ block.super }}
+  <script>
+    const ltas = JSON.parse(document.getElementById("lta-data").textContent);
+    new BODSFrontend.AutoCompleteSearch("search", ltas["names"]);
+  </script>
+{% endblock %}
