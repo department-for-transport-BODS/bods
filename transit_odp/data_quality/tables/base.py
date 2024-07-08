@@ -164,43 +164,17 @@ class WarningListBaseTable(GovUkTable):
 
 class TimingPatternListTable(WarningListBaseTable):
 
-    is_new_data_quality_service_active = flag_is_active(
-        "", "is_new_data_quality_service_active"
+    line = tables.Column(
+        verbose_name="Line",
+        orderable=False,
+    )
+    message = tables.Column(
+        verbose_name="Timing pattern", orderable=False, linkify=True
     )
 
-    if is_new_data_quality_service_active:
-        message = tables.Column(
-            verbose_name="Service", orderable=False, empty_values=()
-        )
-        dqs_details = tables.Column(
-            verbose_name="Details",
-            orderable=False,
-            empty_values=(),
-            attrs={"is_link": True},
-        )
-        service_code = tables.Column(verbose_name="Service Code", visible=True)
-        line_name = tables.Column(verbose_name="Line Name", visible=True)
-    else:
-        line = tables.Column(
-            verbose_name="Line",
-            orderable=False,
-        )
-        message = tables.Column(
-            verbose_name="Timing pattern", orderable=False, linkify=True
-        )
-
     class Meta(WarningListBaseTable.Meta):
-        is_new_data_quality_service_active = flag_is_active(
-            "", "is_new_data_quality_service_active"
-        )
 
-        if is_new_data_quality_service_active:
-            attrs = {
-                "tbody": {"is_details_link": True},
-            }
-            sequence = ("message", "dqs_details")
-        else:
-            sequence = ("line", "message")
+        sequence = ("line", "message")
 
 
 class JourneyLineListTable(WarningListBaseTable):
