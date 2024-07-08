@@ -144,8 +144,7 @@ def run_dqs_monitoring():
 def upload_dataset_to_dqs(task_pk):
     etl_task = get_etl_task_or_pipeline_exception(task_pk)
     revision = etl_task.revision
-    dq_task = DataQualityTask.objects.create(revision=revision)
-
+    dq_task, _ = DataQualityTask.objects.get_or_create(revision=revision)
     adapter = get_dataset_adapter_from_revision(logger, revision)
     try:
         report_uuid = upload_file_to_dqs(revision.upload_file)

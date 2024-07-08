@@ -23,8 +23,9 @@ from transit_odp.fares.netex import (
 from transit_odp.fares.transform import NeTExDocumentsTransformer, TransformationError
 from transit_odp.fares.utils import (
     get_etl_task_or_pipeline_exception,
-    read_fares_validator_rerun_datasets_file_from_s3,
 )
+from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
+from transit_odp.common.constants import CSVFileName
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation.constants import FaresType
 from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision
@@ -383,13 +384,13 @@ def task_rerun_fares_validation_specific_datasets():
     """This is a one-off task to rerun the fares validator for a list of datasets
     provided in a csv file available in AWS S3 bucket
     """
-
-    dataset_ids = read_fares_validator_rerun_datasets_file_from_s3()
-    if not dataset_ids:
+    csv_file_name = CSVFileName.RERUN_FARES_VALIDATION.value
+    _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
+    if not _ids and not _id_type == "dataset_ids":
         logger.info("No valid dataset IDs found in the file.")
         return
-    logger.info(f"Total number of datasets to be processed: {len(dataset_ids)}")
-    fares_datasets = Dataset.objects.filter(id__in=dataset_ids).get_active()
+    logger.info(f"Total number of datasets to be processed: {len(_ids)}")
+    fares_datasets = Dataset.objects.filter(id__in=_ids).get_active()
 
     if not fares_datasets:
         logger.info(f"No active datasets found in BODS with these dataset IDs")
