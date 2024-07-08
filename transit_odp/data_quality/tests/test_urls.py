@@ -1,4 +1,5 @@
 from typing import NamedTuple
+from unittest.mock import patch
 
 from django.conf import settings
 from django.urls import resolve
@@ -7,6 +8,19 @@ from django_hosts.resolvers import reverse
 
 import config.hosts
 from transit_odp.data_quality import views
+
+
+import pytest
+
+
+pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture(autouse=True)
+def client():
+    from django.test import Client
+
+    return Client()
 
 
 # define named tuples for clarity about scenario format required by each test method
@@ -151,7 +165,13 @@ class TestReportOverviewUrl(DqUrlsTestBase):
             ),
         )
 
-    def get_url_resolves_to_correct_view_scenarios(self):
+    @pytest.mark.django_db
+    @patch("waffle.flag_is_active", return_value=True)
+    def get_url_resolves_to_correct_view_scenarios(self, client):
+        # from
+        # view = views.ReportOverviewView.as_view()
+        # view = client.get(reverse('dq:overview', kwargs={'pk': self.dataset_id, 'pk1': self.org_id, 'report_id': self.report_id}))
+        # view = client.get(reverse('dq:overview'))
         return (UrlResolvesViewScenario(self.generate_dq_base_url_path(), self.view),)
 
 
