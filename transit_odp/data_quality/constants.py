@@ -147,17 +147,18 @@ StopNotInNaptanObservation = Observation(
     check_basis=CheckBasis.stops,
 )
 FirstStopSetDownOnlyObservation = Observation(
-    title="First stop is found to be set down only",
-    text=(
-        "This observation identifies timing patterns where the first stop "
-        "is designated as "
-        "set down only, meaning the bus is not scheduled to pick up passengers at this "
-        "stop. "
-    ),
+    title="First stop is set down only",
+    text=(""),
     impacts=(
-        "Journey planners may not be able to show journeys ending at this "
-        "stop correctly "
-        "to passengers, disrupting their journeys. "
+        "This observation identifies journeys where the first stop is designated as set down only, "
+        "meaning the bus is not scheduled to pick up passengers at the first stop. "
+        + _LINE_BREAK
+        + "Journey planners may not be able to show journeys with this stop correctly to passengers, "
+        "disrupting their journeys."
+    ),
+    resolve=(
+        "Please correct the stop activity on your scheduling tool or get in contact with your "
+        "agent to address this observation."
     ),
     model=models.TimingPickUpWarning,
     list_url_name="dq:first-stop-set-down-only-list",
