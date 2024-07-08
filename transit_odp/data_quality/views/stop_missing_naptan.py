@@ -5,6 +5,7 @@ from transit_odp.data_quality.tables import (
     StopMissingNaptanWarningTimingTable,
     StopMissingNaptanWarningVehicleTable,
 )
+from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 from transit_odp.data_quality.views.base import (
     TimingPatternsListBaseView,
     TwoTableDetailView,
@@ -19,12 +20,13 @@ class StopMissingNaptanListView(TimingPatternsListBaseView):
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
-    model = (
-        StopMissingNaptanWarning
-        if not is_new_data_quality_service_active
-        else ObservationResults
-    )
-    table_class = StopMissingNaptanListTable
+
+    if not is_new_data_quality_service_active:
+        model = StopMissingNaptanWarning
+        table_class = StopMissingNaptanListTable
+    else:
+        model = ObservationResults
+        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
 

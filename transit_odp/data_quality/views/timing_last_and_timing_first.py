@@ -12,7 +12,10 @@ from transit_odp.data_quality.tables import (
     TimingLastWarningDetailTable,
     TimingLastWarningVehicleTable,
 )
-from transit_odp.data_quality.tables.base import TimingPatternListTable
+from transit_odp.data_quality.tables.base import (
+    TimingPatternListTable,
+    DQSWarningListBaseTable,
+)
 from transit_odp.data_quality.views.base import (
     TimingPatternsListBaseView,
     TwoTableDetailView,
@@ -27,12 +30,12 @@ class LastStopNotTimingListView(TimingPatternsListBaseView):
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
-    model = (
-        TimingLastWarning
-        if not is_new_data_quality_service_active
-        else ObservationResults
-    )
-    table_class = TimingPatternListTable
+    if not is_new_data_quality_service_active:
+        model = TimingLastWarning
+        table_class = TimingPatternListTable
+    else:
+        model = ObservationResults
+        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
         if not self.is_new_data_quality_service_active:
@@ -94,12 +97,13 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView):
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
-    model = (
-        TimingFirstWarning
-        if not is_new_data_quality_service_active
-        else ObservationResults
-    )
-    table_class = TimingPatternListTable
+
+    if not is_new_data_quality_service_active:
+        model = TimingFirstWarning
+        table_class = TimingPatternListTable
+    else:
+        model = ObservationResults
+        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
         if not self.is_new_data_quality_service_active:
