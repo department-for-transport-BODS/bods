@@ -12,6 +12,7 @@ from transit_odp.data_quality.tables import (
     LastStopPickUpOnlyDetail,
     LastStopPickUpOnlyVehicleTable,
     PickUpDropOffListTable,
+    DQSPickUpDropOffListTable,
 )
 from transit_odp.data_quality.views.base import (
     TimingPatternsListBaseView,
@@ -27,12 +28,13 @@ class LastStopPickUpListView(TimingPatternsListBaseView):
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
-    model = (
-        TimingDropOffWarning
-        if not is_new_data_quality_service_active
-        else ObservationResults
-    )
-    table_class = PickUpDropOffListTable
+
+    if not is_new_data_quality_service_active:
+        model = TimingDropOffWarning
+        table_class = PickUpDropOffListTable
+    else:
+        model = ObservationResults
+        table_class = DQSPickUpDropOffListTable
 
     def get_queryset(self):
 
