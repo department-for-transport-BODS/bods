@@ -16,6 +16,7 @@ _TRAVEL_LINE_ANCHOR = _ANCHOR.format(
 _TRANSXCHANGE_ANCHOR: Final = _ANCHOR.format(
     "https://www.gov.uk/government/collections/transxchange"
 )
+_LINE_BREAK = "<br/><br/>"
 
 
 @unique
@@ -52,6 +53,7 @@ class Observation:
     impacts: str = None
     weighting: float = None
     check_basis: CheckBasis = None
+    resolve: str = None
 
     @property
     def type(self):
@@ -60,18 +62,20 @@ class Observation:
 
 IncorrectNocObservation = Observation(
     title="Incorrect NOC code",
-    text=(
-        "Operators can find their organisation’s NOC by browsing the Traveline NOC "
-        "database here:"
-        "</br></br>" + _TRAVEL_LINE_ANCHOR + "</br></br>"
-        "Operators can assign a NOC to their account on this service by going to My "
-        "account (in the top right-hand side of the dashboard) and choosing "
-        "Organisation profile. "
-    ),
+    text="",
     impacts=(
-        "The NOC is used by consumers to know which operator is running the service, "
-        "and to match their data across data types. This ability improves "
-        "the quality of information available to passengers."
+        "This observation identifies where the National Operator Code (NOC) used in the data is not registered to the your Organisation profile."
+        + _LINE_BREAK
+        + "NOCs are used by data consumers to know which operator is running the service, and to match the data with bus location and fares data. This ability improves the quality of information available to passengers."
+    ),
+    resolve=(
+        "Please check the NOC(s) on your data is correct for your organisation and is assigned to your Organisation profile."
+        + _LINE_BREAK
+        + "Operators can find their organisation’s NOC by browsing the Traveline NOC database here:"
+        + _LINE_BREAK
+        + _TRAVEL_LINE_ANCHOR
+        + _LINE_BREAK
+        + "Operators can assign a NOC to their account by going to My account (in the top right-hand side of the dashboard) and choosing Organisation profile."
     ),
     model=models.IncorrectNOCWarning,
     list_url_name="dq:incorrect-noc-list",
@@ -118,30 +122,22 @@ MissingBlockNumber = Observation(
 )
 
 StopNotInNaptanObservation = Observation(
-    title="Stop(s) are not found in NaPTAN",
-    text=(
-        "Operators should notify the relevant Local Transport Authority to request "
-        "a stop "
-        "in advance of the timetable being published.</br></br>"
-        "This observation identifies cases where a stop used in a timetable is "
-        "still not in "
-        "the NaPTAN reference database. Operators should notify the relevant Local "
-        "Transport Authority immediately to request the stops, notifying them of "
-        "issues "
-        "found by this observation.</br></br>"
-        "For temporary stops that do not include a reference to NaPTAN, they must be "
-        "defined geographically using a latitude and longitude in the data. This "
-        "will support consumers to provide accurate stop information to passengers. "
-    ),
+    title="Stop not found in NaPTAN",
+    text=(""),
     impacts=(
-        "NaPTAN provides key stop information across different transport types, "
-        "enabling "
-        "multi-modal journey planning that can encourage bus patronage. It is "
-        "therefore "
-        "important for the public transport ecosystem to work together to ensure "
-        "the stop "
-        "data inputted is correctly detailed and can be referenced to the NaPTAN "
-        "database. "
+        "This observation identifies the use of stops that are not registered with NaPTAN. "
+        "NaPTAN provides a source for key stop information across different transport types "
+        "to support consumers to provide accurate stop information to passengers."
+        + _LINE_BREAK
+        + "It is important for the public transport ecosystem to work together to ensure the stop"
+        " data inputted is correctly detailed and can be referenced to the NaPTAN database."
+    ),
+    resolve=(
+        "Please notify the relevant Local Transport Authority immediately to request the stops to "
+        "be registered, notifying them of issues found by this observation."
+        + _LINE_BREAK
+        + "For temporary stops that do not include a reference to NaPTAN, they must be defined "
+        "geographically using a latitude and longitude in the data and must not be used for more than two months. "
     ),
     model=models.StopMissingNaptanWarning,
     list_url_name="dq:stop-missing-naptan-list",
@@ -151,17 +147,18 @@ StopNotInNaptanObservation = Observation(
     check_basis=CheckBasis.stops,
 )
 FirstStopSetDownOnlyObservation = Observation(
-    title="First stop is found to be set down only",
-    text=(
-        "This observation identifies timing patterns where the first stop "
-        "is designated as "
-        "set down only, meaning the bus is not scheduled to pick up passengers at this "
-        "stop. "
-    ),
+    title="First stop is set down only",
+    text=(""),
     impacts=(
-        "Journey planners may not be able to show journeys ending at this "
-        "stop correctly "
-        "to passengers, disrupting their journeys. "
+        "This observation identifies journeys where the first stop is designated as set down only, "
+        "meaning the bus is not scheduled to pick up passengers at the first stop. "
+        + _LINE_BREAK
+        + "Journey planners may not be able to show journeys with this stop correctly to passengers, "
+        "disrupting their journeys."
+    ),
+    resolve=(
+        "Please correct the stop activity on your scheduling tool or get in contact with your "
+        "agent to address this observation."
     ),
     model=models.TimingPickUpWarning,
     list_url_name="dq:first-stop-set-down-only-list",
@@ -171,18 +168,19 @@ FirstStopSetDownOnlyObservation = Observation(
     check_basis=CheckBasis.timing_patterns,
 )
 LastStopPickUpOnlyObservation = Observation(
-    title="Last stop is found to be pick up only",
-    text=(
-        "This observation identifies timing patterns where the last stop is "
-        "designated to be "
-        "pick up only, meaning the bus is not scheduled to drop off passengers "
-        "at the last "
-        "stop. "
-    ),
+    title="Last stop is pick up only",
+    text=(""),
     impacts=(
-        "Journey planners may not be able to show journeys ending at this stop "
-        "correctly "
+        "This observation identifies timing patterns where the last stop is "
+        "designated to be pick up only, meaning the bus is not scheduled to drop off passengers "
+        "at the last stop."
+        + _LINE_BREAK
+        + "Journey planners may not be able to show journeys with this stop correctly "
         "to passengers, disrupting their journeys. "
+    ),
+    resolve=(
+        "Please correct the stop details on your scheduling tool or get in contact with your "
+        "agent to address this observation."
     ),
     model=models.TimingDropOffWarning,
     list_url_name="dq:last-stop-pick-up-only-list",
@@ -231,20 +229,17 @@ StopsRepeatedObservation = Observation(
 )
 IncorrectStopTypeObservation = Observation(
     title="Incorrect stop type",
-    text=(
-        "Stopping patterns are considered to be using stops of the incorrect"
-        " type if the "
-        "stops are not designated at bus stops within NaPTAN. Stopping patterns are "
-        "considered to be using stops of the incorrect type if the stops are not "
-        "designated as bus stops within NaPTAN. Expected stop types are BCT, BCQ "
-        "or BCS."
-    ),
+    text=(""),
     impacts=(
-        "An incorrect stop type suggested that that stop being used, is not "
-        "intended for "
-        "buses. This can impede the ability of passengers to be able to find "
-        "the correct "
-        "location to board services, particularly when planning multimodal journeys. "
+        "This observation identifies the use of stops that are not designated as bus stops within NaPTAN. "
+        "Expected stop types are BCT, BCQ or BCS."
+        "An incorrect stop type suggested that that stop being used, is not intended for buses. "
+        "This can impede the ability of passengers to be able to find the correct location to board services, "
+        "particularly when planning multimodal journeys."
+    ),
+    resolve=(
+        "Please correct the stop details on your scheduling tool or contact your Local Transport Authroity "
+        "to update the stop type in NaPTAN."
     ),
     model=models.JourneyStopInappropriateWarning,
     list_url_name="dq:incorrect-stop-type-list",
@@ -278,29 +273,21 @@ IncorrectStopTypeObservation = Observation(
 )
 FirstStopNotTimingPointObservation = Observation(
     title="First stop is not a timing point",
-    text=(
-        "A timing point is a designated stop where the bus has been registered"
-        " to depart "
-        "from at a specific time. The Traffic Commissioner requires registered "
-        "services "
-        "have the first and last stop designated as timing points for the main "
-        "route variant. "
-    ),
+    text=(""),
     impacts=(
-        "The Traffic Commissioner requires “a timetable for the service indicating the "
-        "proposed times (on the days when the service is to run) of "
-        "individual services at "
-        "principal points on the route” and it is these points that a "
-        "service's punctuality is "
-        "monitored. Timing points are used to generate hard copy "
-        "'shortened' timetables "
-        "at bus stops, as well as their soft copy counterparts online. "
-        "If the first and last "
-        "stop are not timing points, these will not be printed correctly. "
-        "In turn reducing the "
-        "quality of information available to passengers. This effect is "
-        "particularly negative "
-        "for low digital passengers who rely on hard copy timetables. "
+        "This observation identifies journeys where the first stop is not set to be a timing point."
+        + _LINE_BREAK
+        + "A timing point is a designated stop where the bus has been registered to depart from at "
+        "a specific time. The Traffic Commissioner requires registered services have the first and "
+        "last stop designated as timing points. These points are where the service punctuality is "
+        "monitored and is often used to generate ‘shortened’ timetables. "
+        + _LINE_BREAK
+        + "If the first and last stops are not timing points, the printed timetables may not display "
+        "correctly and will reduce the quality of information available to passengers. "
+    ),
+    resolve=(
+        "Please correct the stop details on your scheduling tool or get in contact with your "
+        "agent to address this observation."
     ),
     model=models.TimingFirstWarning,
     list_url_name="dq:first-stop-not-timing-point-list",
@@ -309,29 +296,21 @@ FirstStopNotTimingPointObservation = Observation(
 )
 LastStopNotTimingPointObservation = Observation(
     title="Last stop is not a timing point",
-    text=(
-        "A timing point is a designated stop where the bus has been "
-        "registered to depart "
-        "from at a specific time. The Traffic Commissioner requires "
-        "registered services "
-        "have the first and last stop designated as timing points for "
-        "the main route variant. "
-    ),
+    text=(""),
     impacts=(
-        "The Traffic Commissioner requires “a timetable for the service indicating the "
-        "proposed times (on the days when the service is to run) of "
-        "individual services at "
-        "principal points on the route” and it is these points that a "
-        "service's punctuality is "
-        "monitored. Timing points are used to generate hard copy "
-        "'shortened' timetables "
-        "at bus stops, as well as their soft copy counterparts online. "
-        "If the first and last "
-        "stop are not timing points, these will not be printed correctly. "
-        "In turn reducing the "
-        "quality of information available to passengers. This effect is "
-        "particularly negative "
-        "for low digital passengers who rely on hard copy timetables. "
+        "This observation identifies journeys where the last stop is not set to be a timing point. "
+        + _LINE_BREAK
+        + "A timing point is a designated stop where the bus has been registered to depart from at a specific time. "
+        "The Traffic Commissioner requires registered services have the first and last stop designated as timing "
+        "points. These points are where the service punctuality is monitored and is often used to generate "
+        "‘shortened’ timetables."
+        + _LINE_BREAK
+        + "If the first and last stops are not timing points, the printed timetables may not display correctly"
+        + "and will reduce the quality of information available to passengers. "
+    ),
+    resolve=(
+        "Please correct the stop details on your scheduling tool or get in contact with your agent to address "
+        "this observation."
     ),
     model=models.TimingLastWarning,
     list_url_name="dq:last-stop-not-timing-point-list",
