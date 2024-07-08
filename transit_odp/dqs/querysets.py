@@ -4,6 +4,7 @@ from transit_odp.dqs.constants import TaskResultsStatus, Checks
 from django.db.models.expressions import Value
 from django.db.models.functions import Concat
 
+
 class TaskResultsQueryset(models.QuerySet):
     """
     This queryset class is to include all querysets related to the TaskResults model

@@ -6,6 +6,7 @@ from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
 from waffle import flag_is_active
 
+
 class IncorrectNOCListView(WarningListBaseView):
     data = IncorrectNocObservation
     is_new_data_quality_service_active = flag_is_active(
