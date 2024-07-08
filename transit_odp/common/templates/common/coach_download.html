@@ -1,54 +1,48 @@
-{% extends 'browse/base.html' %}
-
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'All coach data' %}
+  {% trans "All coach data" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
-    {% breadcrumb_url 'All Coach Data' 'coach-download' host hosts.data %}
+  {{ block.super }}
+  {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
+  {% breadcrumb_url 'All Coach Data' 'coach-download' host hosts.data %}
 {% endblock %}
-
-{% block heading.title.text %}{% trans 'All coach data' %}{% endblock %}
-
+{% block heading.title.text %}
+  {% trans "All coach data" %}
+{% endblock %}
 {% block heading.subtitle.text %}
-    <div class="govuk-!-margin-top-0">
-        <h3 class="govuk-heading-m">{% trans 'Download regional and national coach data set in TxC2.4 and ATCO.cif format' %}</h3>
-        <p class="govuk-body">
-            {% blocktrans %}
-                You can download coach data in TxC2.4 or ATCo.cif format from the whole of GB. 
-                This dataset is created using transformed data from coach operators. 
-                The data provided is PTI compliant.
-            {% endblocktrans %}
-        </p>
-
-        <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-            <li>
-                <a class="govuk-link" href="{{ txc_file }}"
-                    onClick="addGATagEvent('All - timetables in txc format')">
-                    {% filter force_escape %}
-                        {% trans 'All - Download coach data in TxC2.4' %}
-                    {% endfilter %}
-                </a>
-            </li>
-            <li>
-                <a class="govuk-link" href="{{ atco_file }}"
-                    onClick="addGATagEvent('All - timetables in txc format')">
-                    {% filter force_escape %}
-                        {% trans 'All - Download coach data in ATCO.cif' %}
-                    {% endfilter %}
-                </a>
-            </li>
-        </ul>
-    </div>
-
+  <div class="govuk-!-margin-top-0">
+    <h3 class="govuk-heading-m">
+      {% trans "Download regional and national coach data set in TxC2.4 and ATCO.cif format" %}
+    </h3>
+    <p class="govuk-body">
+    {% blocktrans %}
+      You can download coach data in TxC2.4 or ATCo.cif format from the whole of GB.
+      This dataset is created using transformed data from coach operators.
+      The data provided is PTI compliant.
+    {% endblocktrans %}
+    </p>
+    <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+      <li>
+        <a class="govuk-link" href="{{ txc_file }}" onClick="addGATagEvent('All - timetables in txc format')">
+          {% filter force_escape %}
+            {% trans "All - Download coach data in TxC2.4" %}
+          {% endfilter %}
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="{{ atco_file }}" onClick="addGATagEvent('All - timetables in txc format')">
+          {% filter force_escape %}
+            {% trans "All - Download coach data in ATCO.cif" %}
+          {% endfilter %}
+        </a>
+      </li>
+    </ul>
+  </div>
 {% endblock %}
-
 {% block heading.secondary %}
-    {% include "browse/snippets/download_secondary_links.html" %}
+  {% include "browse/snippets/download_secondary_links.html" %}
 {% endblock %}

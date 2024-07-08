@@ -1,43 +1,34 @@
-{% extends 'common/guide_me.html' %}
+{% extends "common/guide_me.html" %}
 {% load i18n %}
-
 {% block heading.subtitle %}
-    {{ block.super }}
-
-    <p class="govuk-body">
-        {% url 'download-catalogue' host hosts.data as datalogue_url %}
-        {% blocktrans %}
-            For a quick tour of what has been published on BODS <a class="govuk-link govuk-!-font-size-19" href="{{ datalogue_url }}">download the Data Catalogue</a>
-        {% endblocktrans %}
-    </p>
+  {{ block.super }}
+  <p class="govuk-body">
+    {% url 'download-catalogue' host hosts.data as datalogue_url %}
+    {% blocktrans %}
+      For a quick tour of what has been published on BODS <a class="govuk-link govuk-!-font-size-19" href="{{ datalogue_url }}">download the Data Catalogue</a>
+    {% endblocktrans %}
+  </p>
 {% endblock %}
-
 {% block heading.secondary %}
-    <div class="govuk-grid-column-one-third">
-        <h3 class="govuk-heading-m">
-            {% trans 'Need further help?' %}
-        </h3>
-        <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-            <li>
-                <a class="govuk-link" href="https://www.travelinedata.org.uk/traveline-open-data/transport-operations/about-2/" target="_blank">
-                    {% trans 'National Operator Code' %}
-                </a>
-            </li>
-            <li>
-                <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">
-                    {% trans 'Service changelog' %}
-                </a>
-            </li>
-            <li>
-                <a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}?section=datacatalogue">
-                    {% trans 'Data catalogue field definitions' %}
-                </a>
-            </li>
-            <li>
-                <a class="govuk-link" href="{% url 'contact' host hosts.root %}">
-                    {% trans 'Contact us for technical issues' %}
-                </a>
-            </li>
-        </ul>
-    </div>
+  <div class="govuk-grid-column-one-third">
+    <h3 class="govuk-heading-m">{% trans "Need further help?" %}</h3>
+    <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+      <li>
+        <a class="govuk-link"
+           href="https://www.travelinedata.org.uk/traveline-open-data/transport-operations/about-2/"
+           target="_blank">{% trans "National Operator Code" %}</a>
+      </li>
+      <li>
+        <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">{% trans "Service changelog" %}</a>
+      </li>
+      <li>
+        <a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}?section=datacatalogue">
+          {% trans "Data catalogue field definitions" %}
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact us for technical issues" %}</a>
+      </li>
+    </ul>
+  </div>
 {% endblock heading.secondary %}
