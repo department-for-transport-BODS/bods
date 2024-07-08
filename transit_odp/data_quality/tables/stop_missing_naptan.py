@@ -5,17 +5,15 @@ from transit_odp.data_quality.tables.base import (
     TimingPatternListTable,
     VehicleJourneyTable,
 )
-from waffle import flag_is_active
+
 
 class StopMissingNaptanListTable(TimingPatternListTable):
-
     line = tables.Column(
         verbose_name="Line",
         orderable=False,
     )
 
     class Meta(TimingPatternListTable.Meta):
-
         sequence = ("line", "message")
 
 

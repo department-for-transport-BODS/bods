@@ -3,18 +3,14 @@ import django_tables2 as tables
 from transit_odp.data_quality.tables.base import (
     BaseStopNameTimingPatternTable,
     TimingPatternListTable,
-    DQSWarningListBaseTable,
     VehicleJourneyTable,
 )
-from waffle import flag_is_active
 
 
 class PickUpDropOffListTable(TimingPatternListTable):
-
     line = tables.Column(verbose_name="Line", orderable=False)
 
     class Meta(TimingPatternListTable.Meta):
-
         sequence = ("line", "message")
 
 

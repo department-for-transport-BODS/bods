@@ -11,6 +11,7 @@ from transit_odp.data_quality.models.transmodel import (
 )
 from waffle import flag_is_active
 
+
 class BaseStopNameTimingPatternTable(GovUkTable):
     class Meta(GovUkTable.Meta):
         template_name = "data_quality/snippets/dq_custom_table_boxed.html"
@@ -130,7 +131,6 @@ class VehicleJourneyTable(GovUkTable):
 
 
 class WarningListBaseTable(GovUkTable):
-
     class Meta:
 
         is_new_data_quality_service_active = flag_is_active(
@@ -163,7 +163,6 @@ class WarningListBaseTable(GovUkTable):
 
 
 class TimingPatternListTable(WarningListBaseTable):
-
     line = tables.Column(
         verbose_name="Line",
         orderable=False,
@@ -173,12 +172,10 @@ class TimingPatternListTable(WarningListBaseTable):
     )
 
     class Meta(WarningListBaseTable.Meta):
-
         sequence = ("line", "message")
 
 
 class JourneyLineListTable(WarningListBaseTable):
-
     line = tables.Column(
         verbose_name="Line",
         orderable=False,

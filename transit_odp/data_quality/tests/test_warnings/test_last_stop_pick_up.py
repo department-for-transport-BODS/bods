@@ -8,6 +8,7 @@ from transit_odp.data_quality.tests.test_warnings.base_warning_test import (
 
 pytestmark = pytest.mark.django_db
 
+
 @pytest.fixture()
 def warning():
     """

@@ -6,11 +6,9 @@ from transit_odp.data_quality.tables.base import (
     TimingPatternListTable,
     VehicleJourneyTable,
 )
-from waffle import flag_is_active
 
 
 class StopIncorrectTypeListTable(TimingPatternListTable):
-
     line = tables.Column(
         verbose_name="Line",
         orderable=False,
@@ -22,7 +20,6 @@ class StopIncorrectTypeListTable(TimingPatternListTable):
     )
 
     class Meta(TimingPatternListTable.Meta):
-
         sequence = ("line", "message")
 
     def render_message(self, record, value):
