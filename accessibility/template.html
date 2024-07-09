@@ -30,7 +30,6 @@
   </div>
   <h5>{{{ violationsSummary }}}</h5>
   <table class="table table-striped table-bordered">
-    {{#violationsSummary}}
     <thead>
       <tr>
         <th>#</th>
@@ -41,21 +40,20 @@
         <th>Count</th>
       </tr>
     </thead>
-  {{/violationsSummary}}
-  <tbody>
-    {{#violations}}
-    <tr>
-      <th scope="row border">
-        <a href="#{{ index }}" class="card-link">{{ index }}</a>
-      </th>
-      <td>{{ help }}</td>
-      <td>{{ id }}</td>
-      <td>{{ wcag }}</td>
-      <td>{{ impact }}</td>
-      <td>{{ nodes }}</td>
-    </tr>
-  {{/violations}}
-</tbody>
+    <tbody>
+      {{#violations}}
+      <tr>
+        <th scope="row border">
+          <a href="#{{ index }}" class="card-link">{{ index }}</a>
+        </th>
+        <td>{{ help }}</td>
+        <td>{{ id }}</td>
+        <td>{{ wcag }}</td>
+        <td>{{ impact }}</td>
+        <td>{{ nodes }}</td>
+      </tr>
+    {{/violations}}
+  </tbody>
 </table>
 {{#violationDetails}}
 <div class="card my-3">
@@ -105,11 +103,11 @@
             <p>
               <strong>Element location</strong>
             </p>
-            <pre class="border rounded bg-dark text-light p-3"><code class="css text-wrap">{{targetNodes}}</code></pre>
+            <pre class="border rounded bg-light p-3"><code class="css text-wrap">{{targetNodes}}</code></pre>
             <p>
               <strong>Element source</strong>
             </p>
-            <pre class="border rounded bg-dark text-light p-3"><code class="html text-wrap">{{html}}</code></pre>
+            <pre class="border rounded bg-light p-3"><code class="html text-wrap">{{html}}</code></pre>
           </td>
           <td>
             {{#fixSummaries}}
@@ -126,7 +124,7 @@
         <p>
           <strong>Related node:</strong>
         </p>
-        <pre class="border rounded bg-dark text-light p-3"><code class="css text-wrap">{{.}}</code></pre>
+        <pre class="border rounded bg-light p-3"><code class="css text-wrap">{{.}}</code></pre>
       {{/relatedNodesAny}}
     </td>
   </tr>
@@ -137,21 +135,16 @@
 </div>
 </div>
 {{/violationDetails}}
-{{#hasPassed}}
-<div id="accordionPasses">
+<div class="mb-3">
   <div class="card">
     <div class="card-header" id="headingOne">
       <h5 class="mb-0">
-        <button class="btn btn-link" data-toggle="collapse" data-target="#passes" aria-expanded="false" aria-controls="passes">
-          axe returned {{ checksPassed.length }} passed axe
-          checks{{#checksPassed.length}}. Expand details on
-          click{{/checksPassed.length}}
-        </button>
+        passed axe
+        {{ checksPassed.length }}
       </h5>
     </div>
-    <div id="passes" class="collapse" aria-labelledby="headingOne" data-parent="#accordionPasses">
+    <div id="passes" class="show" aria-labelledby="headingOne" data-parent="#accordionPasses">
       <div class="card-body">
-        {{#checksPassed}}
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -174,24 +167,16 @@
           </tbody>
         {{/checksPassed}}
       </table>
-    {{/checksPassed}}
+    </div>
   </div>
 </div>
 </div>
-</div>
-{{/hasPassed}}
-{{#hasIncomplete}}
-<div id="accordionIncomplete">
+<div class="mb-3">
   <div class="card">
     <div class="card-header" id="headingTwo">
-      <h5 class="mb-0">
-        <button class="btn btn-link" data-toggle="collapse" data-target="#incomplete" aria-expanded="false" aria-controls="incomplete">
-          axe returned {{ checksIncomplete.length }} incomplete checks. Expand
-          details on click
-        </button>
-      </h5>
+      <h5 class="mb-0">axe returned {{ checksIncomplete.length }} incomplete checks.</h5>
     </div>
-    <div id="incomplete" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionIncomplete">
+    <div id="incomplete" class="show" aria-labelledby="headingTwo" data-parent="#accordionIncomplete">
       <div class="card-body">
         <p>
           <em>What 'incomplete' axe checks means?</em>
@@ -205,7 +190,6 @@
           <a href="https://www.deque.com/axe/core-documentation/api-documentation/#results-object">Visit axe API Documentation</a>
           to learn more.
         </p>
-        {{#checksIncomplete}}
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -228,28 +212,16 @@
           </tbody>
         {{/checksIncomplete}}
       </table>
-    {{/checksIncomplete}}
+    </div>
   </div>
 </div>
 </div>
-</div>
-{{/hasIncomplete}}
-{{#hasInapplicable}}
-<div id="accordionInapplicable">
+<div class="mb-3">
   <div class="card">
     <div class="card-header" id="headingThree">
-      <h5 class="mb-0">
-        <button class="btn btn-link"
-                data-toggle="collapse"
-                data-target="#inapplicable"
-                aria-expanded="false"
-                aria-controls="inapplicable">
-          axe returned {{ checksInapplicable.length }} inapplicable checks.
-          Expand details on click
-        </button>
-      </h5>
+      <h5 class="mb-0">Inapplicable checks {{checksInapplicable.length}}</h5>
     </div>
-    <div id="inapplicable" class="collapse" aria-labelledby="headingThree" data-parent="#accordionInapplicable">
+    <div id="inapplicable" class="show" aria-labelledby="headingThree" data-parent="#accordionInapplicable">
       <div class="card-body">
         <p>
           <em>What 'inapplicable' axe checks means?</em>
@@ -262,13 +234,12 @@
           <a href="https://www.deque.com/axe/core-documentation/api-documentation/#results-object">Visit axe API Documentation</a>
           to learn more.
         </p>
-        {{#checksInapplicable}}
         <table class="table table-bordered">
           <thead>
             <tr>
               <th>#</th>
               <th>Description</th>
-              <th >Axe rule ID</th>
+              <th>Axe rule ID</th>
               <th>WCAG</th>
             </tr>
           </thead>
@@ -283,31 +254,23 @@
           </tbody>
         {{/checksInapplicable}}
       </table>
-    {{/checksInapplicable}}
+    </div>
   </div>
 </div>
 </div>
-</div>
-{{/hasInapplicable}}
-{{#hasAxeRawResults}}
-<div id="rulesSection">
+<div class="mb-3">
   <div class="card">
     <div class="card-header" id="ruleSection">
-      <h5 class="mb-0">
-        <button class="btn btn-link" data-toggle="collapse" data-target="#rules" aria-expanded="false" aria-controls="inapplicable">
-          axe was running with {{ rules.length }} rules. Expand details on click
-        </button>
-      </h5>
+      <h5 class="mb-0">axe was running with {{ rules.length }} rules.</h5>
     </div>
-    <div id="rules" class="collapse" aria-labelledby="ruleSection" data-parent="#rules">
+    <div id="rules" class="show" aria-labelledby="ruleSection" data-parent="#rules">
       <div class="card-body">
-        {{#rules.length}}
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th style="width: 5%">#</th>
-              <th style="width: 50%">Rule ID</th>
-              <th style="width: 45%">Enabled</th>
+              <th>#</th>
+              <th>Rule ID</th>
+              <th>Enabled</th>
             </tr>
           </thead>
           <tbody>
@@ -320,12 +283,10 @@
           </tbody>
         {{/rules}}
       </table>
-    {{/rules.length}}
+    </div>
   </div>
 </div>
 </div>
-</div>
-{{/hasAxeRawResults}}
 </div>
 </body>
 </html>

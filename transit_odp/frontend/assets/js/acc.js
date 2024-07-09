@@ -25,9 +25,11 @@ async function fetchSync(resultsViolations) {
   }
 }
 
-axe.run().then(async results => {
+axe.run({ xpath: true, reporter: "v2", ancestry: true, absolutePaths: true, elementRef: true }, (err, results) => {
+  if (err) {
+    console.log(err)
+    console.error('Something bad happened:', err.message);
+  } else {
     fetchSync(results);
-}).catch(err => {
-  console.log(err)
-  console.error('Something bad happened:', err.message);
+  }
 });

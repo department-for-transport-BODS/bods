@@ -99,14 +99,14 @@ def prepare_report_data(violations, passes=None, incomplete=None, inapplicable=N
         for node_index, node in enumerate(nodes):
             target_nodes = "\n".join(node["target"])
             html = node["html"]
-            failure_summary = node["failureSummary"]
+            failure_summary = "failureSummary" in node and node["failureSummary"] or None
             any_nodes = node["any"]
 
             default_highlight = {
                 "highlight": "Recommendation with the fix was not provided by axe result"
             }
             fix_summaries = (
-                prepare_fix_summary(failure_summary, default_highlight)
+                prepare_fix_summary(failure_summary=failure_summary, default_highlight=default_highlight)
                 if failure_summary
                 else [default_highlight]
             )
@@ -219,7 +219,7 @@ def create_html_report(results, options=None):
                     "incompleteTotal": prepared_report_data.get("checksIncomplete")
                     and len(prepared_report_data.get("checksIncomplete"))
                     or 0,
-                    # "rules": prepare_axe_rules(rules=results.get("rules")),
+                    "rules": prepare_axe_rules(rules=options.get("rules")),
                 },
             )
 
@@ -246,17 +246,6 @@ def create_html_report(results, options=None):
 
 
 def generate_html_from_json(directory,options=None):
-    data = []
-
-    for filename in os.listdir(directory):
-        if filename.endswith(".json"):
-            # Construct the full file path
-            file_path = os.path.join(directory, filename)
-            # Read the JSON file
-            with open(file_path, "r") as json_file:
-                data.append(json.load(json_file)[0])
-
-    create_html_report(results={"violations": data},options=options)
-
-
-# generate_html_from_json("../report", "output.html")
+    with open("accessibility/report/report.json", "r") as json_file:
+        data=json.load(json_file)
+        create_html_report(results=data,options=options)
