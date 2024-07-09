@@ -3,6 +3,8 @@ import os
 from django.http import JsonResponse
 import logging
 
+from accessibility.index import generate_html_from_json
+
 logger = logging.getLogger("django")
 
 def report(violations):
@@ -54,7 +56,7 @@ def write_acc(request) -> JsonResponse:
     logger.error(data)
     data[0].update({"path": name})
     name = (
-        "report/"
+        "accessibility/report/"
         + name.replace("http://", "")
         .replace("https://", "")
         .replace("/", "_")
@@ -70,4 +72,11 @@ def write_acc(request) -> JsonResponse:
             f.write(json.dumps(data, indent=4))
         except NameError:
             f.write(json.dumps(data, indent=4))
+    options = {
+        "doNotCreateReportFile": False,
+        "reportFileName": "index.html",
+        "outputDirPath": "transit_odp/frontend/static",
+        "outputDir": "report/",
+    }
+    generate_html_from_json(directory="accessibility/report/",options=options)
     return JsonResponse(data=data, safe=False)

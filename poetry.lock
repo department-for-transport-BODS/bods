@@ -479,6 +479,17 @@ files = [
 unicode-backport = ["unicodedata2"]
 
 [[package]]
+name = "chevron"
+version = "0.14.0"
+description = "Mustache templating language renderer"
+optional = false
+python-versions = "*"
+files = [
+    {file = "chevron-0.14.0-py3-none-any.whl", hash = "sha256:fbf996a709f8da2e745ef763f482ce2d311aa817d287593a5b990d6d6e4f0443"},
+    {file = "chevron-0.14.0.tar.gz", hash = "sha256:87613aafdf6d77b6a90ff073165a61ae5086e21ad49057aa0e53681601800ebf"},
+]
+
+[[package]]
 name = "clamd"
 version = "1.0.2"
 description = "Clamd is a python interface to Clamd (Clamav daemon)."
@@ -4055,4 +4066,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "936893a63b0470b5248d12e9047c7604177e1f5c4253fa1f336a98855a964aed"
+content-hash = "822f02bbe0dd4967635df466d4d327779e0a12ed5ea121f73786fc1f599dd7e9"

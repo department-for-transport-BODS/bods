@@ -241,7 +241,7 @@ def create_html_report(results, options=None):
         return f"Failed to create HTML report due to an error: {e}"
 
 
-def generate_html_from_json(directory, output_html_file):
+def generate_html_from_json(directory,options=None):
     data = []
     for filename in os.listdir(directory):
         if filename.endswith(".json"):
@@ -250,7 +250,7 @@ def generate_html_from_json(directory, output_html_file):
             # Read the JSON file
             with open(file_path, "r") as json_file:
                 data.append(json.load(json_file)[0])
-    create_html_report({"violations": data})
+    create_html_report(results={"violations": data},options=options)
 
 
-generate_html_from_json("../report", "output.html")
+# generate_html_from_json("../report", "output.html")
