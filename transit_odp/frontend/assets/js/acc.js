@@ -2,9 +2,8 @@ import axe from "axe-core";
 
 async function fetchSync(resultsViolations) {
   try {
-
+    console.log("fetching violations");
     const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    console.log(csrf);
     const formData = new FormData();
     formData.append("violation", JSON.stringify(resultsViolations));
     formData.append("csrfmiddlewaretoken", csrf);
@@ -27,10 +26,7 @@ async function fetchSync(resultsViolations) {
 }
 
 axe.run().then(async results => {
-  if (results.violations.length) {
-    console.log(results.violations);
-    fetchSync(results.violations);
-  }
+    fetchSync(results);
 }).catch(err => {
   console.log(err)
   console.error('Something bad happened:', err.message);

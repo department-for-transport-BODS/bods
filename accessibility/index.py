@@ -164,6 +164,10 @@ def save_html_report(
         os.makedirs(report_directory, exist_ok=True)
 
         report_file_path = os.path.join(report_directory, report_file_name)
+        try:
+            os.remove(report_file_path)
+        except FileNotFoundError:
+            pass
         with open(report_file_path, "w", encoding="utf8") as file:
             file.write(html_content)
 
@@ -243,6 +247,7 @@ def create_html_report(results, options=None):
 
 def generate_html_from_json(directory,options=None):
     data = []
+
     for filename in os.listdir(directory):
         if filename.endswith(".json"):
             # Construct the full file path
@@ -250,6 +255,7 @@ def generate_html_from_json(directory,options=None):
             # Read the JSON file
             with open(file_path, "r") as json_file:
                 data.append(json.load(json_file)[0])
+
     create_html_report(results={"violations": data},options=options)
 
 
