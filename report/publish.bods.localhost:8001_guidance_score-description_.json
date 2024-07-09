@@ -1,0 +1,203 @@
+[
+    {
+        "id": "empty-table-header",
+        "impact": "minor",
+        "tags": [
+            "cat.name-role-value",
+            "best-practice"
+        ],
+        "description": "Ensures table headers have discernible text",
+        "help": "Table header text should not be empty",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/empty-table-header?application=axeAPI",
+        "nodes": [
+            {
+                "any": [
+                    {
+                        "id": "has-visible-text",
+                        "data": null,
+                        "relatedNodes": [],
+                        "impact": "minor",
+                        "message": "Element does not have text that is visible to screen readers"
+                    }
+                ],
+                "all": [],
+                "none": [],
+                "impact": "minor",
+                "html": "<th scope=\"col\" class=\"govuk-table__header\"></th>",
+                "target": [
+                    "table:nth-child(13) > thead > tr > th:nth-child(1)"
+                ],
+                "failureSummary": "Fix any of the following:\n  Element does not have text that is visible to screen readers"
+            },
+            {
+                "any": [
+                    {
+                        "id": "has-visible-text",
+                        "data": null,
+                        "relatedNodes": [],
+                        "impact": "minor",
+                        "message": "Element does not have text that is visible to screen readers"
+                    }
+                ],
+                "all": [],
+                "none": [],
+                "impact": "minor",
+                "html": "<th scope=\"col\" class=\"govuk-table__header govuk-!-width-full\"></th>",
+                "target": [
+                    ".govuk-\\!-width-full"
+                ],
+                "failureSummary": "Fix any of the following:\n  Element does not have text that is visible to screen readers"
+            }
+        ],
+        "path": "http://publish.bods.localhost:8001/guidance/score-description/"
+    },
+    {
+        "id": "landmark-main-is-top-level",
+        "impact": "moderate",
+        "tags": [
+            "cat.semantics",
+            "best-practice"
+        ],
+        "description": "Ensures the main landmark is at top level",
+        "help": "Main landmark should not be contained in another landmark",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/landmark-main-is-top-level?application=axeAPI",
+        "nodes": [
+            {
+                "any": [
+                    {
+                        "id": "landmark-is-top-level",
+                        "data": {
+                            "role": "main"
+                        },
+                        "relatedNodes": [],
+                        "impact": "moderate",
+                        "message": "The main landmark is contained in another landmark."
+                    }
+                ],
+                "all": [],
+                "none": [],
+                "impact": "moderate",
+                "html": "<main class=\"govuk-main-wrapper\">",
+                "target": [
+                    ".govuk-width-container > main"
+                ],
+                "failureSummary": "Fix any of the following:\n  The main landmark is contained in another landmark."
+            }
+        ]
+    },
+    {
+        "id": "landmark-no-duplicate-main",
+        "impact": "moderate",
+        "tags": [
+            "cat.semantics",
+            "best-practice"
+        ],
+        "description": "Ensures the document has at most one main landmark",
+        "help": "Document should not have more than one main landmark",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/landmark-no-duplicate-main?application=axeAPI",
+        "nodes": [
+            {
+                "any": [
+                    {
+                        "id": "page-no-duplicate-main",
+                        "data": null,
+                        "relatedNodes": [
+                            {
+                                "html": "<main class=\"govuk-main-wrapper\">",
+                                "target": [
+                                    ".govuk-width-container > main"
+                                ]
+                            }
+                        ],
+                        "impact": "moderate",
+                        "message": "Document has more than one main landmark"
+                    }
+                ],
+                "all": [],
+                "none": [],
+                "impact": "moderate",
+                "html": "<main id=\"main-content\" role=\"main\">",
+                "target": [
+                    "#main-content"
+                ],
+                "failureSummary": "Fix any of the following:\n  Document has more than one main landmark"
+            }
+        ]
+    },
+    {
+        "id": "landmark-unique",
+        "impact": "moderate",
+        "tags": [
+            "cat.semantics",
+            "best-practice"
+        ],
+        "help": "Ensures landmarks are unique",
+        "description": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/landmark-unique?application=axeAPI",
+        "nodes": [
+            {
+                "any": [
+                    {
+                        "id": "landmark-is-unique",
+                        "data": {
+                            "role": "main",
+                            "accessibleText": null
+                        },
+                        "relatedNodes": [
+                            {
+                                "html": "<main class=\"govuk-main-wrapper\">",
+                                "target": [
+                                    ".govuk-width-container > main"
+                                ]
+                            }
+                        ],
+                        "impact": "moderate",
+                        "message": "The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+                    }
+                ],
+                "all": [],
+                "none": [],
+                "impact": "moderate",
+                "html": "<main id=\"main-content\" role=\"main\">",
+                "target": [
+                    "#main-content"
+                ],
+                "failureSummary": "Fix any of the following:\n  The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+            }
+        ]
+    },
+    {
+        "id": "region",
+        "impact": "moderate",
+        "tags": [
+            "cat.keyboard",
+            "best-practice"
+        ],
+        "description": "Ensures all page content is contained by landmarks",
+        "help": "All page content should be contained by landmarks",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/region?application=axeAPI",
+        "nodes": [
+            {
+                "any": [
+                    {
+                        "id": "region",
+                        "data": {
+                            "isIframe": false
+                        },
+                        "relatedNodes": [],
+                        "impact": "moderate",
+                        "message": "Some page content is not contained by landmarks"
+                    }
+                ],
+                "all": [],
+                "none": [],
+                "impact": "moderate",
+                "html": "<div class=\"govuk-width-container\">",
+                "target": [
+                    "div:nth-child(5) > .govuk-width-container"
+                ],
+                "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            }
+        ]
+    }
+]

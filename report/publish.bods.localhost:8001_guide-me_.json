@@ -1,0 +1,92 @@
+[
+    {
+        "id": "empty-heading",
+        "impact": "minor",
+        "tags": [
+            "cat.name-role-value",
+            "best-practice"
+        ],
+        "description": "Ensures headings have discernible text",
+        "help": "Headings should not be empty",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/empty-heading?application=axeAPI",
+        "nodes": [
+            {
+                "any": [
+                    {
+                        "id": "has-visible-text",
+                        "data": null,
+                        "relatedNodes": [],
+                        "impact": "minor",
+                        "message": "Element does not have text that is visible to screen readers"
+                    },
+                    {
+                        "id": "aria-label",
+                        "data": null,
+                        "relatedNodes": [],
+                        "impact": "minor",
+                        "message": "aria-label attribute does not exist or is empty"
+                    },
+                    {
+                        "id": "aria-labelledby",
+                        "data": null,
+                        "relatedNodes": [],
+                        "impact": "minor",
+                        "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty"
+                    },
+                    {
+                        "id": "non-empty-title",
+                        "data": {
+                            "messageKey": "noAttr"
+                        },
+                        "relatedNodes": [],
+                        "impact": "minor",
+                        "message": "Element has no title attribute"
+                    }
+                ],
+                "all": [],
+                "none": [],
+                "impact": "minor",
+                "html": "<h2 class=\"govuk-heading-l dont-break-out\">\n              \n            </h2>",
+                "target": [
+                    ".govuk-heading-l.dont-break-out"
+                ],
+                "failureSummary": "Fix any of the following:\n  Element does not have text that is visible to screen readers\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute"
+            }
+        ],
+        "path": "http://publish.bods.localhost:8001/guide-me/"
+    },
+    {
+        "id": "region",
+        "impact": "moderate",
+        "tags": [
+            "cat.keyboard",
+            "best-practice"
+        ],
+        "description": "Ensures all page content is contained by landmarks",
+        "help": "All page content should be contained by landmarks",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/region?application=axeAPI",
+        "nodes": [
+            {
+                "any": [
+                    {
+                        "id": "region",
+                        "data": {
+                            "isIframe": false
+                        },
+                        "relatedNodes": [],
+                        "impact": "moderate",
+                        "message": "Some page content is not contained by landmarks"
+                    }
+                ],
+                "all": [],
+                "none": [],
+                "impact": "moderate",
+                "html": "<div class=\"govuk-width-container\">",
+                "target": [
+                    "div:nth-child(5) > .govuk-width-container"
+                ],
+                "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            }
+        ]
+    }
+]
