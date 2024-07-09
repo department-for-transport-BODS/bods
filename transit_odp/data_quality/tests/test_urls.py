@@ -6,15 +6,12 @@ from django.urls import resolve
 from django.views import View
 from django_hosts.resolvers import reverse
 
-import config.hosts
-from transit_odp.data_quality import views
-
-
 import pytest
 
 
 pytestmark = pytest.mark.django_db
-
+import config.hosts
+# from transit_odp.data_quality import views
 
 @pytest.fixture(autouse=True)
 def client():
@@ -67,7 +64,7 @@ class DqUrlsTestBase:
                 host=config.hosts.PUBLISH_HOST,
             )
 
-    def test_url_resolves_to_correct_view(self):
+    def test_url_resolves_to_correct_view(self,patched=None):
         """Test that list and detail url paths resolve to the expected views"""
         scenarios = self.get_url_resolves_to_correct_view_scenarios()
 
@@ -84,7 +81,7 @@ class DqUrlsTestBase:
             "Method must be overriden with scenarios for your test"
         )
 
-    def get_url_resolves_to_correct_view_scenarios(self):
+    def get_url_resolves_to_correct_view_scenarios(self,patched=None):
         raise NotImplementedError(
             "Method must be overriden with scenarios for your test"
         )
@@ -150,7 +147,6 @@ class WarningUrlsTestBase(DqUrlsTestBase):
 class TestReportOverviewUrl(DqUrlsTestBase):
     url_segment = ""
     url_name = "dq:overview"
-    view = views.ReportOverviewView
 
     def get_url_name_scenarios(self):
         return (
@@ -165,20 +161,16 @@ class TestReportOverviewUrl(DqUrlsTestBase):
             ),
         )
 
-    @pytest.mark.django_db
     @patch("waffle.flag_is_active", return_value=True)
-    def get_url_resolves_to_correct_view_scenarios(self, client):
-        # from
-        # view = views.ReportOverviewView.as_view()
-        # view = client.get(reverse('dq:overview', kwargs={'pk': self.dataset_id, 'pk1': self.org_id, 'report_id': self.report_id}))
-        # view = client.get(reverse('dq:overview'))
-        return (UrlResolvesViewScenario(self.generate_dq_base_url_path(), self.view),)
+    def get_url_resolves_to_correct_view_scenarios(self,patched=None):
+        from transit_odp.data_quality.views import ReportOverviewView 
+        return (UrlResolvesViewScenario(self.generate_dq_base_url_path(), ReportOverviewView),)
 
 
 class TestGlossaryUrl(DqUrlsTestBase):
     url_segment = "glossary/"
     url_name = "dq:glossary"
-    view = views.DataQualityGlossaryView
+    # view = DataQualityGlossaryView
 
     def get_url_name_scenarios(self):
         return (
@@ -192,11 +184,12 @@ class TestGlossaryUrl(DqUrlsTestBase):
                 },
             ),
         )
-
+    # @patch("waffle.flag_is_active", return_value=True)
     def get_url_resolves_to_correct_view_scenarios(self):
+        from transit_odp.data_quality.views import DataQualityGlossaryView 
         return (
             UrlResolvesViewScenario(
-                f"{self.generate_dq_base_url_path()}{self.url_segment}", self.view
+                f"{self.generate_dq_base_url_path()}{self.url_segment}", DataQualityGlossaryView
             ),
         )
 
@@ -204,55 +197,83 @@ class TestGlossaryUrl(DqUrlsTestBase):
 class TestFastTimingWarningUrls(WarningUrlsTestBase):
     url_segment = "fast-timings"
     list_url_name = "dq:fast-timings-list"
-    list_view = views.FastTimingListView
+    # list_view = FastTimingListView
     detail_url_name = "dq:fast-timings-detail"
-    detail_view = views.FastTimingDetailView
+    # detail_view = FastTimingDetailView
+    
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import FastTimingListView, FastTimingDetailView
+        self.list_view = FastTimingListView
+        self.detail_view = FastTimingDetailView
 
 
 class TestSlowTimingWarningUrls(WarningUrlsTestBase):
     url_segment = "slow-timings"
     list_url_name = "dq:slow-timings-list"
-    list_view = views.SlowTimingsListView
     detail_url_name = "dq:slow-timings-detail"
-    detail_view = views.SlowTimingsDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def get_url_resolves_to_correct_view_scenarios(self,patched=None):
+        from transit_odp.data_quality.views import SlowTimingsListView, SlowTimingsDetailView
+        return (
+            UrlResolvesViewScenario(self.generate_list_url_path(), SlowTimingsListView),
+            UrlResolvesViewScenario(self.generate_detail_url_path(), SlowTimingsDetailView),
+        )
 
 
 class TestFastLinkWarningUrls(WarningUrlsTestBase):
     url_segment = "fast-links"
     list_url_name = "dq:fast-link-list"
-    list_view = views.FastLinkListView
     detail_url_name = "dq:fast-link-detail"
-    detail_view = views.FastLinkDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import FastLinkListView, FastLinkDetailView
+        self.list_view = FastLinkListView
+        self.detail_view = FastLinkDetailView
 
 
 class TestSlowLinkWarningUrls(WarningUrlsTestBase):
     url_segment = "slow-links"
     list_url_name = "dq:slow-link-list"
-    list_view = views.SlowLinkListView
     detail_url_name = "dq:slow-link-detail"
-    detail_view = views.SlowLinkDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import SlowLinkListView, SlowLinkDetailView
+        self.list_view = SlowLinkListView
+        self.detail_view = SlowLinkDetailView
 
 
 class TestDuplicateJourneyWarningUrls(WarningUrlsTestBase):
     url_segment = "duplicate-journeys"
     list_url_name = "dq:duplicate-journey-list"
-    list_view = views.DuplicateJourneyListView
     detail_url_name = "dq:duplicate-journey-detail"
-    detail_view = views.DuplicateJourneyDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import DuplicateJourneyListView, DuplicateJourneyDetailView
+        self.list_view = DuplicateJourneyListView
+        self.detail_view = DuplicateJourneyDetailView
 
 
 class TestBackwardTimingWarningUrls(WarningUrlsTestBase):
     url_segment = "backward-timing"
     list_url_name = "dq:backward-timing-list"
-    list_view = views.BackwardTimingListView
     detail_url_name = "dq:backward-timing-detail"
-    detail_view = views.BackwardTimingDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import BackwardTimingListView, BackwardTimingDetailView
+        self.list_view = BackwardTimingListView
+        self.detail_view = BackwardTimingDetailView
+
 
 
 class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
     url_segment = "incorrect-noc"
     list_url_name = "dq:incorrect-noc-list"
-    list_view = views.IncorrectNOCListView
     detail_url_name = ""
     detail_view = None
 
@@ -270,94 +291,139 @@ class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
                 },
             ),
         )
-
-    def get_url_resolves_to_correct_view_scenarios(self):
-        return (UrlResolvesViewScenario(self.generate_list_url_path(), self.list_view),)
+    @patch("waffle.flag_is_active", return_value=True)
+    def get_url_resolves_to_correct_view_scenarios(self,patched=None):
+        from transit_odp.data_quality.views import IncorrectNOCListView
+        return (UrlResolvesViewScenario(self.generate_list_url_path(), IncorrectNOCListView),)
 
 
 class TestLastStopPickUpWarningUrls(WarningUrlsTestBase):
     url_segment = "pick-up-only"
     list_url_name = "dq:last-stop-pick-up-only-list"
-    list_view = views.LastStopPickUpListView
     detail_url_name = "dq:last-stop-pick-up-only-detail"
-    detail_view = views.LastStopPickUpDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import LastStopPickUpListView, LastStopPickUpDetailView
+        self.list_view = LastStopPickUpListView
+        self.detail_view = LastStopPickUpDetailView
 
 
 class TestFirstStopDropOffWarningUrls(WarningUrlsTestBase):
     url_segment = "drop-off-only"
     list_url_name = "dq:first-stop-set-down-only-list"
-    list_view = views.FirstStopDropOffListView
     detail_url_name = "dq:first-stop-set-down-only-detail"
-    detail_view = views.FirstStopDropOffDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import FirstStopDropOffListView, FirstStopDropOffDetailView
+        self.list_view = FirstStopDropOffListView
+        self.detail_view = FirstStopDropOffDetailView
 
 
 class TestLastStopNotTimingPointWarningUrls(WarningUrlsTestBase):
     url_segment = "last-stop-not-timing-point"
     list_url_name = "dq:last-stop-not-timing-point-list"
-    list_view = views.LastStopNotTimingListView
     detail_url_name = "dq:last-stop-not-timing-point-detail"
-    detail_view = views.LastStopNotTimingDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import LastStopNotTimingListView, LastStopNotTimingDetailView
+        self.list_view = LastStopNotTimingListView
+        self.detail_view = LastStopNotTimingDetailView
 
 
 class TestFirstStopNotTimingPointWarningUrls(WarningUrlsTestBase):
     url_segment = "first-stop-not-timing-point"
     list_url_name = "dq:first-stop-not-timing-point-list"
-    list_view = views.FirstStopNotTimingListView
     detail_url_name = "dq:first-stop-not-timing-point-detail"
-    detail_view = views.FirstStopNotTimingDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import FirstStopNotTimingListView, FirstStopNotTimingDetailView
+        self.list_view = FirstStopNotTimingListView
+        self.detail_view = FirstStopNotTimingDetailView
 
 
 class TestStopNotInNaptanWarningUrls(WarningUrlsTestBase):
     url_segment = "stop-not-in-naptan"
     list_url_name = "dq:stop-missing-naptan-list"
-    list_view = views.StopMissingNaptanListView
     detail_url_name = "dq:stop-missing-naptan-detail"
-    detail_view = views.StopMissingNaptanDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import StopMissingNaptanListView, StopMissingNaptanDetailView
+        self.list_view = StopMissingNaptanListView
+        self.detail_view = StopMissingNaptanDetailView
 
 
 class TestServiceLinkMissingStopWarningUrls(WarningUrlsTestBase):
     url_segment = "service-link-missing-stops"
     list_url_name = "dq:service-link-missing-stops-list"
-    list_view = views.ServiceLinkMissingStopListView
     detail_url_name = "dq:service-link-missing-stops-detail"
-    detail_view = views.ServiceLinkMissingStopDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import ServiceLinkMissingStopListView, ServiceLinkMissingStopDetailView
+        self.list_view = ServiceLinkMissingStopListView
+        self.detail_view = ServiceLinkMissingStopDetailView
 
 
 class TestStopRepeatedWarningUrls(WarningUrlsTestBase):
     url_segment = "multiple-stops"
     list_url_name = "dq:stop-repeated-list"
-    list_view = views.StopRepeatedListView
     detail_url_name = "dq:stop-repeated-detail"
-    detail_view = views.StopRepeatedDetailView
+    
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import StopRepeatedListView, StopRepeatedDetailView
+        self.list_view = StopRepeatedListView
+        self.detail_view = StopRepeatedDetailView
 
 
 class TestMissingStopWarningUrls(WarningUrlsTestBase):
     url_segment = "missing-stops"
     list_url_name = "dq:missing-stops-list"
-    list_view = views.MissingStopListView
     detail_url_name = "dq:missing-stops-detail"
-    detail_view = views.MissingStopDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import MissingStopListView, MissingStopDetailView
+        self.list_view = MissingStopListView
+        self.detail_view = MissingStopDetailView
 
 
 class TestJourneyOverlapWarningUrls(WarningUrlsTestBase):
     url_segment = "journey-overlap"
     list_url_name = "dq:journey-overlap-list"
-    list_view = views.JourneyOverlapListView
     detail_url_name = "dq:journey-overlap-detail"
-    detail_view = views.JourneyOverlapDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import JourneyOverlapListView, JourneyOverlapDetailView
+        self.list_view = JourneyOverlapListView
+        self.detail_view = JourneyOverlapDetailView
 
 
 class TestBackwardDateRangeWarningUrls(WarningUrlsTestBase):
     url_segment = "backward-date-range"
     list_url_name = "dq:backward-date-range-list"
-    list_view = views.BackwardDateRangeListView
     detail_url_name = "dq:backward-date-range-detail"
-    detail_view = views.BackwardDateRangeDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import BackwardDateRangeListView, BackwardDateRangeDetailView
+        self.list_view = BackwardDateRangeListView
+        self.detail_view = BackwardDateRangeDetailView
 
 
 class TestIncorrectStopTypeWarningUrls(WarningUrlsTestBase):
     url_segment = "incorrect-stop-type"
     list_url_name = "dq:incorrect-stop-type-list"
-    list_view = views.IncorrectStopTypeListView
     detail_url_name = "dq:incorrect-stop-type-detail"
-    detail_view = views.IncorrectStopTypeDetailView
+
+    @patch("waffle.flag_is_active", return_value=True)
+    def __init__(self):
+        from transit_odp.data_quality.views import IncorrectStopTypeListView, IncorrectStopTypeDetailView
+        self.list_view = IncorrectStopTypeListView
+        self.detail_view = IncorrectStopTypeDetailView
