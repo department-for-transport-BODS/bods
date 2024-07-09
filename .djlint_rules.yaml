@@ -10,6 +10,12 @@
     flags: re.DOTALL
     patterns:
       - <video[^>]*?captions=["'][^"']*["'][^>]*>
+- rule:
+    name: AS03
+    message: Missing ARIA Roles Accessible Rich Internet Applications (ARIA) roles enhance screen reader navigation. Use them appropriately.
+    flags: re.DOTALL
+    patterns:
+      - <(main|footer)(?![^>]*\brole=)[^>]*>
 # - rule:
 #     name: AS03
 #     message: Accessability To validate whether HTML content adheres to proper structure.

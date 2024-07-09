@@ -19,6 +19,7 @@ from transit_odp.common.views import (
     PrivacyPolicyView,
     VersionView,
 )
+from transit_odp.api.views.acc import write_acc
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -58,6 +59,7 @@ urlpatterns = [
     path("privacy-policy/", PrivacyPolicyView.as_view(), name="privacy-policy"),
     path("account/", include("config.urls.allauth")),
     path("changelog/", ChangelogView.as_view(), name="changelog"),
+    path("api/acc/", write_acc, name="write_acc"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

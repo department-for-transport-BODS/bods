@@ -29,6 +29,7 @@
   </head>
   {% block body %}
     <body class="govuk-template__body govuk-body">
+      {% csrf_token %}
       <script>
           document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');
       </script>

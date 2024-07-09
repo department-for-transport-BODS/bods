@@ -5,6 +5,7 @@
     "@fortawesome/fontawesome-free": "~6.5.2",
     "@nazka/map-gl-js-spiderfy": "^1.2.1",
     "air-datepicker": "^3.5.3",
+    "axe-core": "^4.9.1",
     "govuk-frontend": "^5.4.0",
     "jquery": "~3.7.1",
     "mapbox-gl": "~3.4.0",
