@@ -1,6 +1,6 @@
 import pytest
 
-from transit_odp.data_quality import views
+from transit_odp.data_quality.views import FastLinkListView, FastLinkDetailView
 from transit_odp.data_quality.factories import (
     FastLinkWarningFactory,
     TimingPatternFactory,
@@ -43,7 +43,7 @@ class TestFastLinkListPage(ListPageBaseTest):
 
     model = FastLinkWarning
     factory = FastLinkWarningFactory
-    view = views.FastLinkListView
+    view = FastLinkListView
     expected_output = {
         "test_get_queryset_adds_correct_message_annotation": (
             "Fast running time between " "{from_stop_name} and {to_stop_name}"
@@ -61,7 +61,7 @@ class TestFastLinkDetailPage(DetailPageBaseTest):
 
     model = FastLinkWarning
     factory = FastLinkWarningFactory
-    view = views.FastLinkDetailView
+    view = FastLinkDetailView
     list_url_name = "dq:fast-link-list"
 
     expected_output = {
