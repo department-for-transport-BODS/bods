@@ -7,7 +7,6 @@
   <head>
     <link rel="shortcut icon" sizes="16x16 32x32 48x48" type="image/x-icon" href="{% static 'frontend/images/favicon.ico' %}" />
     <meta charset="utf-8" />
-    {% cookielaw_banner %}
     <title>
       {% block title_tag %}
         {% trans "Bus Open Data Service" %}
@@ -29,12 +28,13 @@
   </head>
   {% block body %}
     <body class="govuk-template__body govuk-body">
+      {% cookielaw_banner %}
       {% csrf_token %}
       <script>
           document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');
       </script>
       {% block skiplink %}
-        <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
+        <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link" role="button">Skip to main content</a>
       {% endblock %}
       {% block page %}{% endblock %}
       {% block scripts %}

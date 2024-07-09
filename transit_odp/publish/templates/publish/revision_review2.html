@@ -30,7 +30,9 @@
 {% block heading.subtitle.text %}{% endblock %}
 {% block secondary.title.text %}
   {% if object.status != 'processing' and object.status != 'pending' and object.status != 'indexing' %}
+  <h2 class="govuk-heading-l dont-break-out">
     {{ object.name }}
+  </h2>
   {% endif %}
 {% endblock %}
 {% block heading.extra %}{% endblock %}
