@@ -179,7 +179,9 @@ class DeveloperSignupForm(BaseBODSSignupForm):
             (False, "Regional, please provide specific location(s) if you can "),
         ),
     )
-    regional_areas = forms.CharField(label="", required=False, max_length=60)
+    regional_areas = forms.CharField(
+        label="Regional Areas", required=False, max_length=60
+    )
     share_app_usage = forms.ChoiceField(
         required=True, choices=((True, "Yes"), (False, "No"))
     )

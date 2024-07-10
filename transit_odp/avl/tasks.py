@@ -117,10 +117,11 @@ def task_validate_avl_feed(task_id: str):
 @shared_task(bind=True)
 def task_create_sirivm_zipfile(self):
     URL = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm"
+    headers = {"x-api-key": settings.AVL_CONSUMER_API_KEY}
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     start = time.time()
     try:
-        response = requests.get(URL)
+        response = requests.get(URL, headers=headers)
         logger.info(
             f"Request to {URL} took {response.elapsed.total_seconds()} seconds for job-task_create_sirivm_zipfile"
         )

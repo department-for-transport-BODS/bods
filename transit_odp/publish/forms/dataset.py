@@ -159,7 +159,7 @@ class FeedUploadForm(GOVUKModelForm):
         self.is_revision_modify = is_revision_modify
 
         url_link = self.fields["url_link"]
-        url_link.label = _("")
+        url_link.label = _("URL Link")
         url_link.help_text = _(
             "Please provide data set URL that contains either TransXChange "
             "(see description in guidance) or zip consisting only of TransXChange "
@@ -177,7 +177,7 @@ class FeedUploadForm(GOVUKModelForm):
         )
 
         upload_file = self.fields["upload_file"]
-        upload_file.label = _("")
+        upload_file.label = _("Upload File")
         upload_file.widget = forms.FileInput()
         # Default widget is 'ClearableFileInput' which renders 'current file' in
         # the HTML
@@ -322,7 +322,7 @@ class FeedUploadForm(GOVUKModelForm):
 class SelectDataTypeForm(GOVUKForm):
     form_title = _("Choose data type")
     dataset_type = forms.ChoiceField(
-        label="",
+        label="Dataset Type",
         choices=[
             (1, _("Timetables")),
             (2, _("Automatic Vehicle Locations (AVL)")),

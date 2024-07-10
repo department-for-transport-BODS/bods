@@ -175,7 +175,7 @@ class FaresFeedUploadForm(GOVUKModelForm):
         self.is_revision_modify = is_revision_modify
 
         url_link = self.fields["url_link"]
-        url_link.label = _("")
+        url_link.label = _("URL Link")
         url_link.help_text = _(
             "Please provide a URL link where your NeTEX files are hosted. "
             "Example address: 'mybuscompany.com/fares.xml'. "
@@ -196,7 +196,7 @@ class FaresFeedUploadForm(GOVUKModelForm):
         )
 
         upload_file = self.fields["upload_file"]
-        upload_file.label = _("")
+        upload_file.label = _("Upload File")
         upload_file.widget = forms.FileInput()
         # Default widget is 'ClearableFileInput' which renders 'current file' in
         # the HTML
