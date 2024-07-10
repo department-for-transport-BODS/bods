@@ -1,6 +1,7 @@
 from django.urls import include, path
 
 from transit_odp.data_quality import views
+from transit_odp.api.views.acc import write_acc
 
 app_name = "dq"
 
@@ -334,4 +335,5 @@ urlpatterns = [
             ]
         ),
     ),
+    path("api/acc/", write_acc, name="write_acc"),
 ]

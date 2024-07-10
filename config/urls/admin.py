@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from django.views import defaults as default_views
+from transit_odp.api.views.acc import write_acc
 
 from transit_odp.common.utils.custom_error_handlers import (
     page_not_found,
@@ -60,6 +61,7 @@ urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     # TODO - host route on Admin service
     path(settings.ADMIN_URL, admin.site.urls),
+    path("api/acc/", write_acc, name="write_acc"),
 ]
 
 if settings.DEBUG:

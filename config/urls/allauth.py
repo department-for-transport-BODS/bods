@@ -15,6 +15,7 @@ from transit_odp.users.views.auth import (
     PasswordResetView,
     SignupView,
 )
+from transit_odp.api.views.acc import write_acc
 
 urlpatterns = [
     # Custom views
@@ -64,4 +65,5 @@ urlpatterns = [
     ),
     # Include AllAuth views
     path("", include("allauth.urls")),
+    path("api/acc/", write_acc, name="write_acc"),
 ]
