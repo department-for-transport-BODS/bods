@@ -31,6 +31,7 @@ from transit_odp.users.views.account import (
     SettingsView,
     UserRedirectView,
 )
+from transit_odp.api.views.acc import write_acc
 
 urlpatterns = [
     path("", view=BrowseHomeView.as_view(), name="home"),
@@ -154,6 +155,7 @@ urlpatterns = [
     path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
     path("version/", VersionView.as_view(), name="version"),
     path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
+    path("api/acc/", write_acc, name="write_acc"),
 ]
 
 if settings.DEBUG:
