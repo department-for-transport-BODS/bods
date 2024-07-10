@@ -3,7 +3,7 @@ on:
     branches:
     - 'feature/BODS-4755'
     paths:
-    - version.txt
+    - version-cavl.txt
   workflow_dispatch:
 
 name: 'cavl_deployment'
@@ -43,7 +43,7 @@ jobs:
 
     - id: set-version-number
       run: |
-        TEXT=$(cat ./version.txt)
+        TEXT=$(cat ./version-cavl.txt)
         echo "::set-output name=version::${TEXT//'%'/'%25'}"
 
     - id: echo-version
