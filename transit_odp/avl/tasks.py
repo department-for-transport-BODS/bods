@@ -177,11 +177,12 @@ def task_create_gtfsrt_zipfile():
 def task_create_sirivm_tfl_zipfile(self):
     start = time.time()
     logger.info(f"Starting to create sirivm_tfl_zipfile with url")
-    url = f"{settings.CAVL_CONSUMER_URL}/siri-vm?downloadTfl=true"
+    url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm?downloadTfl=true"
+    headers = {"x-api-key": settings.AVL_CONSUMER_API_KEY}
     params = {"operatorRef": "TFLO"}
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     try:
-        response = requests.get(url, params=params, timeout=30)
+        response = requests.get(url, params=params, headers=headers, timeout=30)
         logger.info(
             f"Request to cavl took {response.elapsed.total_seconds()} seconds for job-task_create_sirivm_tfl_zipfile"
         )
