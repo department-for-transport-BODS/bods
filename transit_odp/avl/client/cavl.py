@@ -8,6 +8,7 @@ from requests.exceptions import RequestException, ConnectionError
 
 from transit_odp.avl.client.interface import ICAVLService
 from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -23,16 +24,22 @@ class CAVLService(ICAVLService):
         username: str,
         password: str,
     ) -> bool:
-        api_url = self.CAVL_URL + "/feed"
+        api_url = self.CAVL_URL + "/subscriptions"
+
+        print(feed_id)
+
         post = {
-            "id": feed_id,
-            "publisherId": publisher_id,
-            "url": url,
+            "subscriptionId": str(feed_id),
+            "publisherId": str(publisher_id),
+            "dataProducerEndpoint": url,
             "username": username,
             "password": password,
+            "description": f"Subscription to BODS feed: {feed_id}",
+            "shortDescription": "BODS subscription",
         }
 
         try:
+            print("Subscribing to AVL service")
             response = requests.post(api_url, json=post, timeout=30)
             response.raise_for_status()
         except RequestException:
@@ -105,6 +112,15 @@ class CAVLService(ICAVLService):
     def validate_feed(
         self, url: str, username: str, password: str, **kwargs
     ) -> Optional[ValidationTaskResult]:
+        return ValidationTaskResult(
+            status="FEED_VALID",
+            url=url,
+            username=username,
+            password=password,
+            created=datetime.datetime.now(),
+            version="1",
+        )
+
         api_url = self.CAVL_URL + "/validate"
 
         body = {

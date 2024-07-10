@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import TypedDict
 
@@ -69,6 +70,7 @@ class ReviewView(ReviewBaseView):
     def is_loading(self):
         """Gets the state of the AVL validation process"""
         task = get_validation_task_result_from_revision_id(self.object.id)
+
         return not (task and task.result)
 
     def get_error(self):

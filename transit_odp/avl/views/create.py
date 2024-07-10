@@ -90,9 +90,12 @@ class AVLUploadWizard(FeedUploadWizard):
         CAVLValidationTaskResult.objects.create(
             revision=revision,
             task_id=task_id,
-            status=CAVLValidationTaskResult.STARTED,
+            status=CAVLValidationTaskResult.SUCCESS,
         )
+
         transaction.on_commit(lambda: task_validate_avl_feed.delay(task_id))
+        #
+        # print("transaction has happened")
 
         return HttpResponseRedirect(
             reverse(

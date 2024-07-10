@@ -76,6 +76,7 @@ class ValidateResponse:
 def task_validate_avl_feed(task_id: str):
     """Task for validating an AVL feed."""
     try:
+        print("I am getting here")
         task = CAVLValidationTaskResult.objects.get(task_id=task_id)
     except CAVLValidationTaskResult.DoesNotExist:
         logger.warning(f"CAVLValidationTaskResult {task_id} does not exist")
@@ -89,6 +90,8 @@ def task_validate_avl_feed(task_id: str):
             username=revision.username,
             password=revision.password,
         )
+
+        print(response.status)
     except ReadTimeoutError:
         logger.warning("Request to Validation Service timed out.", exc_info=True)
         task.to_timeout_error()
@@ -101,6 +104,7 @@ def task_validate_avl_feed(task_id: str):
             task.to_system_error()
         else:
             if response.status == CAVLValidationTaskResult.VALID:
+                print("my feed is valid")
                 metadata, _ = DatasetMetadata.objects.update_or_create(
                     revision=revision, defaults={"schema_version": response.version}
                 )
