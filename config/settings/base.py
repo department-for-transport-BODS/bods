@@ -625,6 +625,12 @@ GTFS_API_BASE_URL = env("GTFS_API_BASE_URL", default="")
 AVL_CONSUMER_API_BASE_URL = env("AVL_CONSUMER_API_BASE_URL", default="")
 AVL_IP_ADDRESS_LIST = env("AVL_IP_ADDRESS_LIST", default="")
 
+# S3 bucket name for Dataset maintenance
+# ------------------------------------------------------------------------------
+AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
+    "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME",
+    default="bodds-dataset-dev-maintenance",
+)
 # SQS QUEUE
 # ------------------------------------------------------------------------------
 SQS_QUEUE_ENDPOINT_URL = env(

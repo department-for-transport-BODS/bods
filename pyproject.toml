@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "transit_odp"
+name = "bods"
 version = "1.22.0"
 description = "Bus Open Data Service"
 authors = [
