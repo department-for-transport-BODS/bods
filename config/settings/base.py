@@ -620,7 +620,6 @@ DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
 # ------------------------------------------------------------------------------
 GTFS_API_BASE_URL = env("GTFS_API_BASE_URL", default="")
 
-
 # AVL API
 # ------------------------------------------------------------------------------
 AVL_CONSUMER_API_BASE_URL = env("AVL_CONSUMER_API_BASE_URL", default="")
