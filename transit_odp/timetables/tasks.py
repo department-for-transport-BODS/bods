@@ -1,3 +1,5 @@
+import uuid
+
 from logging import getLogger
 from pathlib import Path
 from urllib.parse import unquote
