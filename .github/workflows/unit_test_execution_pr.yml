@@ -231,6 +231,9 @@ jobs:
         CAVL_VALIDATION_URL: __change_me__
         CAVL_CONSUMER_URL: __change_me__
         AVL_CONSUMER_API_BASE_URL: __change_me__
+        AVL_CONSUMER_API_KEY: __change_me__
+        AVL_PRODUCER_API_BASE_URL: __change_me__
+        AVL_PRODUCER_API_KEY: __change_me__
         DATABASE_URL: postgis://transit_odp:transit_odp@postgres:5432/transit_odp
         CELERY_BROKER_URL: redis://localhost:6379
         PTI_START_DATE: 2021-04-01
