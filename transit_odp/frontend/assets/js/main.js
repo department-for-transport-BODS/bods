@@ -24,7 +24,7 @@ import { CounterCharactersInTextBox } from "./counter-characters-text-box";
 import { FormSet } from "./django-formset";
 import { initDatePicker, changeTargetDate } from "./timetable";
 import { showTooltip, hideTooltip, disableClick } from "./tooltip";
-
+import "./acc.js"
 function initAll() {
   console.log(`Initialising BODSFrontend -   ${new Date().toISOString()}`);
   initTimeoutWarning();

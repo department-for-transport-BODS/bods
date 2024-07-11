@@ -29,6 +29,7 @@ from transit_odp.publish.views.reporting import (
     ConsumerInteractionsView,
 )
 from transit_odp.users.views.auth import InviteOnlySignupView
+from transit_odp.api.views.acc import write_acc
 
 handler404 = "transit_odp.common.utils.custom_error_handlers.page_not_found"
 handler403 = "transit_odp.common.utils.custom_error_handlers.permission_denied"
@@ -138,6 +139,7 @@ urlpatterns = [
     ),
     path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
     path("version/", VersionView.as_view(), name="version"),
+    path("api/acc/", write_acc, name="write_acc"),
 ]
 
 if settings.DEBUG:
