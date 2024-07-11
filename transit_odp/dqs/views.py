@@ -1,3 +1,36 @@
 from django.shortcuts import render
+from django_tables2 import SingleTableView
 
-# Create your views here.
+from transit_odp.dqs.models import ObservationResults
+from transit_odp.dqs.constants import Checks
+from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
+
+
+class DQSWarningListBaseView(SingleTableView):
+    template_name = "data_quality/warning_list.html"
+    table_class = DQSWarningListBaseTable
+    model = ObservationResults
+    paginate_by = 10
+    check: Checks = Checks.DefaultCheck
+    dqs_details: str = None
+
+    def get_queryset(self):
+
+        print("Calling DQSWarningListBaseView QS")
+
+        report_id = self.kwargs.get("report_id")
+        revision_id = self.kwargs.get("pk")
+
+        print(
+            f"Calling DQS Warning List base view: {report_id}, {revision_id}, {self.check}"
+        )
+
+        if self.dqs_details:
+            return self.model.objects.get_observations_grouped(
+                report_id, self.check, revision_id, self.dqs_details
+            )
+
+        return self.model.objects.get_observations(report_id, self.check, revision_id)
+
+    def get_table_kwargs(self):
+        pass

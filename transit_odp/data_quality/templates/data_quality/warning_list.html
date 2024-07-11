@@ -18,13 +18,21 @@
       <h1 class="govuk-heading-xl">
         {{ title }}
       </h1>
+      {% if definition %}
       <p class="govuk-body-m">
         {{ definition|safe }}
       </p>
+      {% endif %}
       {% if impacts %}
         <h2 class="govuk-heading-m">Impacts</h2>
         <p class="govuk-body-m">
           {{ impacts | safe }}
+        </p>
+      {% endif %}
+      {% if resolve %}
+        <h2 class="govuk-heading-m">How to resolve</h2>
+        <p class="govuk-body-m">
+          {{ resolve | safe }}
         </p>
       {% endif %}
       <p class="govuk-body-m">

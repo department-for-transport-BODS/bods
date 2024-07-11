@@ -1,5 +1,4 @@
 from itertools import chain
-from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 from django.views.generic import TemplateView
 from django_hosts import reverse
 from django_tables2 import MultiTableMixin, SingleTableView
@@ -19,8 +18,7 @@ from transit_odp.data_quality.tables import (
     TimingPatternListTable,
     WarningListBaseTable,
 )
-from transit_odp.dqs.models import ObservationResults
-from transit_odp.dqs.constants import Checks
+
 
 class SimpleDetailBaseView(TemplateView):
     """
@@ -345,23 +343,3 @@ class JourneyListBaseView(WarningListBaseView):
         kwargs = super().get_table_kwargs()
         kwargs.update({"message_col_verbose_name": "Journey"})
         return kwargs
-
-
-class DQSWarningListBaseView(SingleTableView):
-    template_name = "data_quality/warning_list.html"
-    table_class = DQSWarningListBaseTable
-    model = ObservationResults
-    paginate_by = 10
-    check: Checks = Checks.DefaultCheck
-
-    def get_queryset(self):
-
-        report_id = self.kwargs.get("report_id")
-        revision_id = self.kwargs.get("pk")
-        print(
-            f"Calling DQS Warning List base view: {report_id}, {revision_id}, {self.check}"
-        )
-        return self.model.objects.get_observations(report_id, self.check, revision_id)
-
-    def get_table_kwargs(self):
-        pass

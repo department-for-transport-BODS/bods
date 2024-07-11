@@ -20,14 +20,18 @@ from transit_odp.data_quality.views.base import (
 )
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.views import DQSWarningListBaseView
+
 from waffle import flag_is_active
 
 
-class LastStopPickUpListView(TimingPatternsListBaseView):
+class LastStopPickUpListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = LastStopPickUpOnlyObservation
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
+    check = Checks.LastStopIsPickUpOnly
+    dqs_details = "There is at least one journey where the last stop is designated as pick up only"
 
     if not is_new_data_quality_service_active:
         model = TimingDropOffWarning
@@ -41,13 +45,8 @@ class LastStopPickUpListView(TimingPatternsListBaseView):
         if not self.is_new_data_quality_service_active:
             return super().get_queryset().add_message().add_line()
 
-        report_id = self.kwargs.get("report_id")
-        revision_id = self.kwargs.get("pk")
-        check = Checks.LastStopIsPickUpOnly
-        message = "There is at least one journey where the last stop is designated as pick up only"
-        return self.model.objects.get_observations_grouped(
-            report_id, check, revision_id, message
-        )
+        # Calling the qs method of DQSWarningListBaseView
+        return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -90,11 +89,13 @@ class LastStopPickUpDetailView(TwoTableDetailView):
         return context
 
 
-class FirstStopDropOffListView(TimingPatternsListBaseView):
+class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = FirstStopSetDownOnlyObservation
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
+    check = Checks.FirstStopIsSetDown
+    dqs_details = "There is at least one journey where the first stop is designated as set down only"
     if not is_new_data_quality_service_active:
         model = TimingPickUpWarning
         table_class = PickUpDropOffListTable
@@ -107,13 +108,8 @@ class FirstStopDropOffListView(TimingPatternsListBaseView):
         if not self.is_new_data_quality_service_active:
             return super().get_queryset().add_line().add_message()
 
-        report_id = self.kwargs.get("report_id")
-        revision_id = self.kwargs.get("pk")
-        check = Checks.FirstStopIsSetDown
-        message = "There is at least one journey where the first stop is designated as set down only"
-        return self.model.objects.get_observations_grouped(
-            report_id, check, revision_id, message
-        )
+        # Calling the qs method of DQSWarningListBaseView
+        return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

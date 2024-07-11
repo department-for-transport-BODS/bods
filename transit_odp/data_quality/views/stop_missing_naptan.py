@@ -12,14 +12,17 @@ from transit_odp.data_quality.views.base import (
 )
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.views import DQSWarningListBaseView
 from waffle import flag_is_active
 
 
-class StopMissingNaptanListView(TimingPatternsListBaseView):
+class StopMissingNaptanListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = StopNotInNaptanObservation
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
+    check = Checks.StopNotFoundInNaptan
+    dqs_details = "There is at least one stop that is not registered with NaPTAN"
 
     if not is_new_data_quality_service_active:
         model = StopMissingNaptanWarning
@@ -41,13 +44,8 @@ class StopMissingNaptanListView(TimingPatternsListBaseView):
                 .add_line()
             )
 
-        report_id = self.kwargs.get("report_id")
-        revision_id = self.kwargs.get("pk")
-        check = Checks.StopNotFoundInNaptan
-        message = "There is at least one stop that is not registered with NaPTAN"
-        return self.model.objects.get_observations_grouped(
-            report_id, check, revision_id, message
-        )
+        # Calling the qs method of DQSWarningListBaseView
+        return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
