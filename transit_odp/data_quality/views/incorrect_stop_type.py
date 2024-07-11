@@ -7,14 +7,12 @@ from transit_odp.data_quality.tables import (
     StopIncorrectTypeWarningTimingTable,
     StopIncorrectTypeWarningVehicleTable,
 )
-from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 from transit_odp.data_quality.views.base import JourneyListBaseView, TwoTableDetailView
-from transit_odp.dqs.models import ObservationResults
-from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.views import DQSWarningListBaseView
 from waffle import flag_is_active
 
 
-class IncorrectStopTypeListView(JourneyListBaseView):
+class IncorrectStopTypeListView(JourneyListBaseView, DQSWarningListBaseView):
     data = IncorrectStopTypeObservation
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
@@ -23,22 +21,13 @@ class IncorrectStopTypeListView(JourneyListBaseView):
     if not is_new_data_quality_service_active:
         model = JourneyStopInappropriateWarning
         table_class = StopIncorrectTypeListTable
-    else:
-        model = ObservationResults
-        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
 
         if not self.is_new_data_quality_service_active:
             return super().get_queryset().add_line().add_message()
 
-        report_id = self.kwargs.get("report_id")
-        revision_id = self.kwargs.get("pk")
-        check = Checks.IncorrectStopType
-        message = "There is at least one stop with an incorrect stop type"
-        return self.model.objects.get_observations_grouped(
-            report_id, check, revision_id, message
-        )
+        super(JourneyListBaseView, self).get_queryset()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

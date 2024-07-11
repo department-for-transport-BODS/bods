@@ -6,7 +6,7 @@ from django_extensions.db.fields import CreationDateTimeField
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.transmodel.models import ServicePatternStop, VehicleJourney
 from transit_odp.organisation.models.data import TXCFileAttributes
-from transit_odp.dqs.querysets import TaskResultsQueryset
+from transit_odp.dqs.querysets import TaskResultsQueryset, ObservationResultsQueryset
 from transit_odp.dqs.constants import ReportStatus, TaskResultsStatus
 
 BATCH_SIZE = 1000
@@ -114,3 +114,5 @@ class ObservationResults(models.Model):
         on_delete=models.CASCADE,
         related_name="dqs_observationresult_service_pattern_stop",
     )
+
+    objects = ObservationResultsQueryset.as_manager()

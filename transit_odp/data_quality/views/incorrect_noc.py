@@ -1,25 +1,25 @@
 from transit_odp.data_quality.constants import IncorrectNocObservation
 from transit_odp.data_quality.models.warnings import IncorrectNOCWarning
 from transit_odp.data_quality.tables.incorrect_noc import IncorrectNOCListTable
-from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
-from transit_odp.data_quality.views.base import WarningListBaseView
-from transit_odp.dqs.models import ObservationResults
+from transit_odp.data_quality.views.base import (
+    WarningListBaseView,
+)
 from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.views import DQSWarningListBaseView
 from waffle import flag_is_active
 
 
-class IncorrectNOCListView(WarningListBaseView):
+class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
     data = IncorrectNocObservation
+
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
+    check = Checks.IncorrectNoc
 
     if not is_new_data_quality_service_active:
         model = IncorrectNOCWarning
         table_class = IncorrectNOCListTable
-    else:
-        model = ObservationResults
-        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
 
@@ -28,10 +28,8 @@ class IncorrectNOCListView(WarningListBaseView):
             qs = super().get_queryset()
             return qs.add_message()
 
-        report_id = self.kwargs.get("report_id")
-        revision_id = self.kwargs.get("pk")
-        check = Checks.IncorrectNoc
-        return self.model.objects.get_observations(report_id, check, revision_id)
+        # Calling the qs method of DQSWarningListBaseView
+        return super(WarningListBaseView, self).get_queryset()
 
     def get_table_kwargs(self):
 
