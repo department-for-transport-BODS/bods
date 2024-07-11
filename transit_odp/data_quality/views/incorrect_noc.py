@@ -1,17 +1,18 @@
 from transit_odp.data_quality.constants import IncorrectNocObservation
 from transit_odp.data_quality.models.warnings import IncorrectNOCWarning
 from transit_odp.data_quality.tables.incorrect_noc import IncorrectNOCListTable
+from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 from transit_odp.data_quality.views.base import (
     WarningListBaseView,
+    DQSWarningListBaseView,
 )
+from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
-from transit_odp.dqs.views import DQSWarningListBaseView
 from waffle import flag_is_active
 
 
 class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
     data = IncorrectNocObservation
-
     is_new_data_quality_service_active = flag_is_active(
         "", "is_new_data_quality_service_active"
     )
@@ -20,6 +21,9 @@ class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
     if not is_new_data_quality_service_active:
         model = IncorrectNOCWarning
         table_class = IncorrectNOCListTable
+    else:
+        model = ObservationResults
+        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
 
