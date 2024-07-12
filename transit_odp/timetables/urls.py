@@ -12,6 +12,7 @@ from transit_odp.timetables.views import (
 )
 from transit_odp.timetables.views.post_schema import ReviewPostSchemaCSVView
 from transit_odp.timetables.views.pti import PublishedViolationsCSVFileView
+from django_axe import urls
 
 urlpatterns = [
     path("", view=timetable.ListView.as_view(), name="feed-list"),
@@ -211,4 +212,5 @@ urlpatterns = [
         view=timetable.RevisionDeleteSuccessView.as_view(),
         name="revision-delete-success",
     ),
+    path("axe/", include(urls, namespace="django_axe"))
 ]

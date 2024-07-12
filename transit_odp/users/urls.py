@@ -29,6 +29,7 @@ from transit_odp.users.views.account import (
     SettingsView,
     UserRedirectView,
 )
+from django_axe import urls
 
 AGENT_PATHS = [
     path(
@@ -168,4 +169,5 @@ urlpatterns = [
     ),
     # Used to redirect back to user's account page
     path("~redirect/", view=UserRedirectView.as_view(), name="redirect"),
+    path("axe/", include(urls, namespace="django_axe"))
 ]

@@ -1,3 +1,4 @@
+import os
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
@@ -19,6 +20,7 @@ from transit_odp.common.views import (
     PrivacyPolicyView,
     VersionView,
 )
+from django_axe import urls
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -80,6 +82,7 @@ if settings.DEBUG:
             kwargs={"exception": Exception("Page not Found")},
         ),
         path("500/", default_views.server_error),
+        path("axe/", include(urls, namespace="django_axe"))
     ]
     if "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar

@@ -1,6 +1,6 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-
+from django_axe import urls
 from transit_odp.data_quality.api import views
 
 app_name = "dq-api"
@@ -12,4 +12,5 @@ router.register(r"stop_point", views.StopPointViewSet, "stop_point")
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("axe/", include(urls, namespace="django_axe"))
 ]

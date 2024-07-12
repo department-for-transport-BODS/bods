@@ -1,5 +1,5 @@
 from django.urls import include, path
-
+from django_axe import urls
 from transit_odp.fares import views
 from transit_odp.fares.views.edit_description import (
     EditDraftRevisionDescriptionView,
@@ -135,4 +135,5 @@ urlpatterns = [
             ]
         ),
     ),
+    path("axe/", include(urls, namespace="django_axe"))
 ]

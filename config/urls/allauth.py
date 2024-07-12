@@ -15,6 +15,7 @@ from transit_odp.users.views.auth import (
     PasswordResetView,
     SignupView,
 )
+from django_axe import urls
 
 urlpatterns = [
     # Custom views
@@ -64,4 +65,5 @@ urlpatterns = [
     ),
     # Include AllAuth views
     path("", include("allauth.urls")),
+    path("axe/", include(urls, namespace="django_axe"))
 ]

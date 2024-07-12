@@ -1,6 +1,7 @@
 from django.urls import include, path
 
 from transit_odp.data_quality import views
+from django_axe import urls
 
 app_name = "dq"
 
@@ -334,4 +335,5 @@ urlpatterns = [
             ]
         ),
     ),
+    path("axe/", include(urls, namespace="django_axe"))
 ]

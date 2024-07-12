@@ -709,3 +709,5 @@ if env("GEOS_LIBRARY_PATH", default=None):
     GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")
 
 MAPBOX_KEY = env("MAPBOX_KEY", default=None)
+
+DJANGO_AXE_REPORT_PATH = os.path.join(MEDIA_ROOT, "django_axe_report.json")

@@ -15,6 +15,7 @@ from transit_odp.api.views import (
     v2,
 )
 from transit_odp.api.views.disruptions import DisruptionsApiView
+from django_axe import urls
 
 app_name = "api"
 
@@ -52,4 +53,5 @@ urlpatterns = [
     ),
     path("v1/gtfsrtdatafeed/", AVLGTFSRTApiView.as_view(), name="gtfsrtdatafeedapi"),
     path("v2/", include((router_v2.urls, app_name), namespace="v2")),
+    path("axe/", include(urls, namespace="django_axe")),
 ]
