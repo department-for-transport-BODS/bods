@@ -161,7 +161,7 @@ if settings.DEBUG:
             kwargs={"exception": Exception("Page not Found")},
         ),
         path("500/", default_views.server_error),
-        path("axe/", include(urls, namespace="django_axe"))
+        path("axe/", include(urls, namespace="django_axe")),
     ]
     if "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar

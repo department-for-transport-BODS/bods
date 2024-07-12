@@ -1,4 +1,4 @@
-from django.urls import include, re_path,path
+from django.urls import include, re_path, path
 from rest_framework.routers import DefaultRouter
 from django_axe import urls
 from transit_odp.api.app import views
@@ -30,5 +30,5 @@ router.register(
 
 urlpatterns = [
     re_path("", include(router.urls)),
-    path("axe/", include(urls, namespace="django_axe"))
+    path("axe/", include(urls, namespace="django_axe")),
 ]

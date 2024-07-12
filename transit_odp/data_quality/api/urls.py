@@ -12,5 +12,5 @@ router.register(r"stop_point", views.StopPointViewSet, "stop_point")
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("axe/", include(urls, namespace="django_axe"))
+    path("axe/", include(urls, namespace="django_axe")),
 ]

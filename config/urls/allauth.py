@@ -65,5 +65,5 @@ urlpatterns = [
     ),
     # Include AllAuth views
     path("", include("allauth.urls")),
-    path("axe/", include(urls, namespace="django_axe"))
+    path("axe/", include(urls, namespace="django_axe")),
 ]

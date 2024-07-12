@@ -335,5 +335,5 @@ urlpatterns = [
             ]
         ),
     ),
-    path("axe/", include(urls, namespace="django_axe"))
+    path("axe/", include(urls, namespace="django_axe")),
 ]

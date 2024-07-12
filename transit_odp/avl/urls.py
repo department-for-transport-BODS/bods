@@ -135,5 +135,5 @@ urlpatterns = [
         view=views.RevisionDeleteSuccessView.as_view(),
         name="revision-delete-success",
     ),
-    path("axe/", include(urls, namespace="django_axe"))
+    path("axe/", include(urls, namespace="django_axe")),
 ]
