@@ -16,14 +16,8 @@ class DQSWarningListBaseView(SingleTableView):
 
     def get_queryset(self):
 
-        print("Calling DQSWarningListBaseView QS")
-
         report_id = self.kwargs.get("report_id")
         revision_id = self.kwargs.get("pk")
-
-        print(
-            f"Calling DQS Warning List base view: {report_id}, {revision_id}, {self.check}"
-        )
 
         if self.dqs_details:
             return self.model.objects.get_observations_grouped(
