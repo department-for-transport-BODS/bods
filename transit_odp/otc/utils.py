@@ -104,6 +104,9 @@ def check_missing_csv_lta_names(csv_data: List[dict]) -> set:
 
 
 def is_service_in_scotland(service_ref: str):
+    if not service_ref:
+        return False
+    
     service_obj = (
         Service.objects.filter(registration_number=service_ref.replace(":", "/"))
         .add_traveline_region_weca()
