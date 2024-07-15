@@ -26,3 +26,5 @@ router.register(
     views.DisruptionDetailView,
     "disruption_detail_map_data",
 )
+
+urlpatterns = []
