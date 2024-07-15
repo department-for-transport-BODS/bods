@@ -59,7 +59,6 @@ urlpatterns = [
     path("privacy-policy/", PrivacyPolicyView.as_view(), name="privacy-policy"),
     path("account/", include("config.urls.allauth")),
     path("changelog/", ChangelogView.as_view(), name="changelog"),
-    path("axe/", include(urls, namespace="django_axe")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
@@ -87,3 +86,6 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
+
+if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
+    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns

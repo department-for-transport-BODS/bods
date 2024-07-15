@@ -142,6 +142,8 @@ INSTALLED_APPS += ["gunicorn"]  # noqa F405
 NOTIFIER = "govuk-notify"
 GENERIC_TEMPLATE_ID = env("GENERIC_TEMPLATE_ID")
 
+DJANGO_AXE_ENABLED = False
+
 if env.bool("DJANGO_SHOW_DEBUG_TOOLBAR", default=False):
     # django-debug-toolbar
     # ------------------------------------------------------------------------------

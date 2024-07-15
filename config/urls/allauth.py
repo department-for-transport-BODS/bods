@@ -1,5 +1,7 @@
 from django.urls import include, path, re_path
+from django_axe import urls
 
+from config import settings
 from transit_odp.users.views.account import (
     EmailView,
     PasswordChangeDoneView,
@@ -15,7 +17,6 @@ from transit_odp.users.views.auth import (
     PasswordResetView,
     SignupView,
 )
-from django_axe import urls
 
 urlpatterns = [
     # Custom views
@@ -65,5 +66,7 @@ urlpatterns = [
     ),
     # Include AllAuth views
     path("", include("allauth.urls")),
-    path("axe/", include(urls, namespace="django_axe")),
 ]
+
+if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
+    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns

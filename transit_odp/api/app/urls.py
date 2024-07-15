@@ -1,6 +1,8 @@
-from django.urls import include, re_path, path
-from rest_framework.routers import DefaultRouter
+from django.conf import settings
+from django.urls import include, path
 from django_axe import urls
+from rest_framework.routers import DefaultRouter
+
 from transit_odp.api.app import views
 
 app_name = "app"
@@ -28,7 +30,5 @@ router.register(
     "disruption_detail_map_data",
 )
 
-urlpatterns = [
-    re_path("", include(router.urls)),
-    path("axe/", include(urls, namespace="django_axe")),
-]
+if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
+    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))]

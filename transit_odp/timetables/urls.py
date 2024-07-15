@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.urls import include, path
+from django_axe import urls
 
 from transit_odp.data_quality.views.report import DraftReportOverviewView
 from transit_odp.publish.views import timetable
@@ -12,7 +14,6 @@ from transit_odp.timetables.views import (
 )
 from transit_odp.timetables.views.post_schema import ReviewPostSchemaCSVView
 from transit_odp.timetables.views.pti import PublishedViolationsCSVFileView
-from django_axe import urls
 
 urlpatterns = [
     path("", view=timetable.ListView.as_view(), name="feed-list"),
@@ -212,5 +213,7 @@ urlpatterns = [
         view=timetable.RevisionDeleteSuccessView.as_view(),
         name="revision-delete-success",
     ),
-    path("axe/", include(urls, namespace="django_axe")),
 ]
+
+if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
+    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns

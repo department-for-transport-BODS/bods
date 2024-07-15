@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
 from django_axe import urls
+from rest_framework.routers import DefaultRouter
+
 from transit_odp.data_quality.api import views
 
 app_name = "dq-api"
@@ -12,5 +14,7 @@ router.register(r"stop_point", views.StopPointViewSet, "stop_point")
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("axe/", include(urls, namespace="django_axe")),
 ]
+
+if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
+    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns
