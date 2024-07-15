@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.urls import include, path
 from django.views import defaults as default_views
+from django_axe import urls
 
 from transit_odp.avl.views.archive import PPCArchiveView
 from transit_odp.common.utils.custom_error_handlers import (
@@ -29,7 +30,6 @@ from transit_odp.publish.views.reporting import (
     ConsumerInteractionsView,
 )
 from transit_odp.users.views.auth import InviteOnlySignupView
-from django_axe import urls
 
 handler404 = "transit_odp.common.utils.custom_error_handlers.page_not_found"
 handler403 = "transit_odp.common.utils.custom_error_handlers.permission_denied"
@@ -161,9 +161,11 @@ if settings.DEBUG:
             kwargs={"exception": Exception("Page not Found")},
         ),
         path("500/", default_views.server_error),
-        path("axe/", include(urls, namespace="django_axe")),
     ]
     if "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
+    urlpatterns = [
+        path("axe/", include(urls, namespace="django_axe")),
+    ] + urlpatterns

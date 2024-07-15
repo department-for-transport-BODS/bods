@@ -2,6 +2,7 @@ from typing import Final
 
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
+from django_axe import urls
 
 from transit_odp.browse.views.timetable_views import (
     DatasetChangeLogView,
@@ -110,4 +111,5 @@ urlpatterns = [
         RedirectView.as_view(url="/timetable/%(path)s/", permanent=True),
     ),
     path("dataset/", include(DATASET_PATHS)),
+    path("axe/", include(urls, namespace="django_axe")),
 ]

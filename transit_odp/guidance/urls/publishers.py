@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import include, path
+from django_axe import urls
 
 from transit_odp.data_quality.views.glossary import (
     DataQualityGlossaryView,
@@ -30,4 +31,5 @@ urlpatterns = [
         view=DataQualityScoreGuidanceView.as_view(),
         name="dq-score-description",
     ),
+    path("axe/", include(urls, namespace="django_axe")),
 ]

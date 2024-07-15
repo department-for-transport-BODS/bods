@@ -1,4 +1,5 @@
 from django.urls import include, path
+from django_axe import urls
 
 from transit_odp.browse.views.avl_views import (
     AVLChangeLogView,
@@ -87,4 +88,5 @@ urlpatterns = [
             ]
         ),
     ),
+    path("axe/", include(urls, namespace="django_axe")),
 ]

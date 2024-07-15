@@ -1,9 +1,9 @@
-import os
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
+from django_axe import urls
 
 from transit_odp.browse.views.base_views import (
     GlobalFeedbackThankYouView,
@@ -20,7 +20,6 @@ from transit_odp.common.views import (
     PrivacyPolicyView,
     VersionView,
 )
-from django_axe import urls
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -60,6 +59,7 @@ urlpatterns = [
     path("privacy-policy/", PrivacyPolicyView.as_view(), name="privacy-policy"),
     path("account/", include("config.urls.allauth")),
     path("changelog/", ChangelogView.as_view(), name="changelog"),
+    path("axe/", include(urls, namespace="django_axe")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
@@ -82,7 +82,6 @@ if settings.DEBUG:
             kwargs={"exception": Exception("Page not Found")},
         ),
         path("500/", default_views.server_error),
-        path("axe/", include(urls, namespace="django_axe")),
     ]
     if "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar

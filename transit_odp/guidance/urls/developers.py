@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import include, path
+from django_axe import urls
 
 from ..views import DeveloperGuidanceHomeView, DeveloperReqView
 
@@ -14,4 +15,5 @@ urlpatterns = [
         view=DeveloperReqView.as_view(),
         name="support-developer",
     ),
+    path("axe/", include(urls, namespace="django_axe")),
 ]
