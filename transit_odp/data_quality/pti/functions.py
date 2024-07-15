@@ -14,6 +14,7 @@ from transit_odp.data_quality.pti.constants import (
     SCOTTISH_BANK_HOLIDAYS,
 )
 from transit_odp.naptan.models import StopPoint
+from transit_odp.otc.utils import is_service_in_scotland
 
 PROHIBITED = r",[]{}^=@:;#$£?%+<>«»\/|~_¬"
 
@@ -224,9 +225,29 @@ def validate_bank_holidays(context, bank_holidays):
     if sorted(list(set(holidays))) != sorted(holidays):
         return False
 
+    service_ref = get_service_ref_from_element(element, ns)
+
+    is_scottish_service = is_service_in_scotland(service_ref)
+    if is_scottish_service:
+        english_removed = list(set(holidays) - set(BANK_HOLIDAYS))
+        return sorted(SCOTTISH_BANK_HOLIDAYS) == sorted(english_removed)
+
     # optional Scottish holiday check
     scottish_removed = list(set(holidays) - set(SCOTTISH_BANK_HOLIDAYS))
     return sorted(BANK_HOLIDAYS) == sorted(scottish_removed)
+
+
+def get_service_ref_from_element(element, ns):
+    vj = element.xpath("ancestor::x:VehicleJourney", namespaces=ns)
+    service_ref = None
+    if vj:
+        service_ref = vj[0].xpath("string(x:ServiceRef)", namespaces=ns)
+    else:
+        service = element.xpath("ancestor::x:Service", namespaces=ns)
+        if service:
+            service_ref = service[0].xpath("string(x:ServiceCode)", namespaces=ns)
+
+    return service_ref
 
 
 def check_service_group_validations(context, services):
