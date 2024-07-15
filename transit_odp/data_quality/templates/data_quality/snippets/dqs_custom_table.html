@@ -29,18 +29,25 @@
             {% block table.tbody.row %}    
               <tr class="govuk-table__row {{ row.attrs.class }}">                            
                 <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
-                  <a href="#">
-                    <!-- "{% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{row.cells.line_name}}&service={{row.cells.service_code}}" -->
-                    {{row.cells.line_name}} - {{row.cells.service_code}}
-                  </a>
+                  {{row.cells.line_name}} - {{row.cells.service_code}}
+                  
+                    <!-- <a href="#">
+                      "{% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{row.cells.line_name}}&service={{row.cells.service_code}}" 
+                      </a>
+                    -->
+                    
+                  
                   </td>
                   <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
                     {% if table.attrs.tbody.is_details_link %}
-                      <a href="#">
+                      
                         <!-- TODO: We need to modify the link /detail?line=&service_code=
-                        {% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{row.cells.line_name}}&service={{row.cells.service_code}} -->
+                            <a href="#">
+                        {% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{row.cells.line_name}}&service={{row.cells.service_code}} 
+                              </a>
+                        -->
                         {{row.cells.dqs_details}}
-                      </a>
+                      
                     {% else %}
                       {{row.cells.dqs_details}}
                     {% endif %}                    
