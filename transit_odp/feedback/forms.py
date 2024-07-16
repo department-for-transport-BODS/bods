@@ -32,13 +32,13 @@ class GlobalFeedbackForm(GOVUKModelForm):
 
     form_title = _("Give feedback on Bus Open Data Service")
     satisfaction_rating = forms.ChoiceField(
-        label="",
+        label="Satisfaction Rating",
         choices=[(real, label) for real, label in SatisfactionRating.choices],
         widget=forms.RadioSelect(attrs={"id": "feedback_type"}),
         initial=2,
     )
     comment = forms.CharField(
-        label="",
+        label="Comment",
         validators=[CustomMaxLengthValidator(MAX_LENGTH_COMMENT)],
         widget=forms.Textarea(
             attrs={
@@ -54,7 +54,9 @@ class GlobalFeedbackForm(GOVUKModelForm):
         strip=False,
         required=False,
     )
-    page_url = forms.CharField(label="", required=False, widget=forms.HiddenInput())
+    page_url = forms.CharField(
+        label="Page URL", required=False, widget=forms.HiddenInput()
+    )
 
     def __init__(self, *args, url=None, **kwargs):
         super().__init__(*args, **kwargs)
