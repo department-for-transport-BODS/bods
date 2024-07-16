@@ -88,4 +88,6 @@ if settings.DEBUG:
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
 
 if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns
+    urlpatterns = [
+        path("django-axe/", include(urls, namespace="django_axe"))
+    ] + urlpatterns
