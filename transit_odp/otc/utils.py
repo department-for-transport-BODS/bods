@@ -103,10 +103,18 @@ def check_missing_csv_lta_names(csv_data: List[dict]) -> set:
     return missing_csv_lta_names
 
 
-def is_service_in_scotland(service_ref: str):
+def is_service_in_scotland(service_ref: str) -> bool:
+    """Check weather a service is from the scotland region or not
+
+    Args:
+        service_ref (str): service registration number
+
+    Returns:
+        bool: True/False if service is in scotland
+    """
     if not service_ref:
         return False
-    
+
     service_obj = (
         Service.objects.filter(registration_number=service_ref.replace(":", "/"))
         .add_traveline_region_weca()
