@@ -8,7 +8,6 @@ const initAPIDocs = (domId, schemaUrl) => {
     presets: [SwaggerUI.presets.apis],
     plugins: [SwaggerUI.plugins.DownloadUrl],
     validatorUrl: null,
-    syntaxHighlight: false
   });
 };
 
