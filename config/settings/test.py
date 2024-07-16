@@ -56,5 +56,3 @@ EMAIL_PORT = 1025
 # Your stuff...
 # ------------------------------------------------------------------------------
 NOTIFIER = "django"
-
-DJANGO_AXE_ENABLED = True
