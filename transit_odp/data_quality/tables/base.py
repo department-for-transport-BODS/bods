@@ -238,7 +238,7 @@ class JourneyListTable(WarningListBaseTable):
         finally:
             return date
 
-
+# TODO: DQSMIGRATION: Move to dqs module
 class DQSWarningListBaseTable(GovUkTable):
 
     message = tables.Column(verbose_name="Service", orderable=False, empty_values=())

@@ -59,7 +59,7 @@ class Observation:
     def type(self):
         return self.category.value
 
-
+# TODO: DQSMIGRATION: Move to dqs module
 IncorrectNocObservation = Observation(
     title="Incorrect NOC code",
     text="",
@@ -121,6 +121,7 @@ MissingBlockNumber = Observation(
     check_basis=CheckBasis.lines,
 )
 
+# TODO: DQSMIGRATION: Move to dqs module
 StopNotInNaptanObservation = Observation(
     title="Stop not found in NaPTAN",
     text=(""),
@@ -146,6 +147,7 @@ StopNotInNaptanObservation = Observation(
     weighting=0.12,
     check_basis=CheckBasis.stops,
 )
+# TODO: DQSMIGRATION: Move to dqs module
 FirstStopSetDownOnlyObservation = Observation(
     title="First stop is set down only",
     text=(""),
@@ -167,6 +169,7 @@ FirstStopSetDownOnlyObservation = Observation(
     weighting=0.10,
     check_basis=CheckBasis.timing_patterns,
 )
+# TODO: DQSMIGRATION: Move to dqs module
 LastStopPickUpOnlyObservation = Observation(
     title="Last stop is pick up only",
     text=(""),
@@ -227,6 +230,7 @@ StopsRepeatedObservation = Observation(
     level=Level.advisory,
     category=Category.stops,
 )
+# TODO: DQSMIGRATION: Move to dqs module
 IncorrectStopTypeObservation = Observation(
     title="Incorrect stop type",
     text=(""),
@@ -271,6 +275,7 @@ IncorrectStopTypeObservation = Observation(
     weighting=0.10,
     check_basis=CheckBasis.stops,
 )
+# TODO: DQSMIGRATION: Move to dqs module
 FirstStopNotTimingPointObservation = Observation(
     title="First stop is not a timing point",
     text=(""),
@@ -294,6 +299,7 @@ FirstStopNotTimingPointObservation = Observation(
     level=Level.advisory,
     category=Category.timing,
 )
+# TODO: DQSMIGRATION: Move to dqs module
 LastStopNotTimingPointObservation = Observation(
     title="Last stop is not a timing point",
     text=(""),
