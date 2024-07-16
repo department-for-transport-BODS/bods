@@ -13,19 +13,40 @@ from transit_odp.data_quality.tables import (
     LastStopPickUpOnlyVehicleTable,
     PickUpDropOffListTable,
 )
+from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 from transit_odp.data_quality.views.base import (
     TimingPatternsListBaseView,
     TwoTableDetailView,
 )
+from transit_odp.dqs.models import ObservationResults
+from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.views import DQSWarningListBaseView
+
+from waffle import flag_is_active
 
 
-class LastStopPickUpListView(TimingPatternsListBaseView):
+class LastStopPickUpListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = LastStopPickUpOnlyObservation
-    model = TimingDropOffWarning
-    table_class = PickUpDropOffListTable
+    is_new_data_quality_service_active = flag_is_active(
+        "", "is_new_data_quality_service_active"
+    )
+    check = Checks.LastStopIsPickUpOnly
+    dqs_details = "There is at least one journey where the last stop is designated as pick up only"
+
+    if not is_new_data_quality_service_active:
+        model = TimingDropOffWarning
+        table_class = PickUpDropOffListTable
+    else:
+        model = ObservationResults
+        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
-        return super().get_queryset().add_message().add_line()
+
+        if not self.is_new_data_quality_service_active:
+            return super().get_queryset().add_message().add_line()
+
+        # Calling the qs method of DQSWarningListBaseView
+        return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -34,12 +55,20 @@ class LastStopPickUpListView(TimingPatternsListBaseView):
                 "title": self.data.title,
                 "definition": self.data.text,
                 "preamble": (
-                    "The following timing pattern(s) have been observed to have last "
+                    "The following service(s) have been observed to have last "
                     "stop as pick up only."
                 ),
+                "resolve": self.data.resolve,
             }
         )
         return context
+
+    def get_table_kwargs(self):
+
+        kwargs = {}
+        if not self.is_new_data_quality_service_active:
+            kwargs = super().get_table_kwargs()
+        return kwargs
 
 
 class LastStopPickUpDetailView(TwoTableDetailView):
@@ -60,13 +89,27 @@ class LastStopPickUpDetailView(TwoTableDetailView):
         return context
 
 
-class FirstStopDropOffListView(TimingPatternsListBaseView):
+class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = FirstStopSetDownOnlyObservation
-    model = TimingPickUpWarning
-    table_class = PickUpDropOffListTable
+    is_new_data_quality_service_active = flag_is_active(
+        "", "is_new_data_quality_service_active"
+    )
+    check = Checks.FirstStopIsSetDown
+    dqs_details = "There is at least one journey where the first stop is designated as set down only"
+    if not is_new_data_quality_service_active:
+        model = TimingPickUpWarning
+        table_class = PickUpDropOffListTable
+    else:
+        model = ObservationResults
+        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
-        return super().get_queryset().add_line().add_message()
+
+        if not self.is_new_data_quality_service_active:
+            return super().get_queryset().add_line().add_message()
+
+        # Calling the qs method of DQSWarningListBaseView
+        return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -78,9 +121,17 @@ class FirstStopDropOffListView(TimingPatternsListBaseView):
                     "The following timing pattern(s) have been observed to have first "
                     "stop as set down only."
                 ),
+                "resolve": self.data.resolve,
             }
         )
         return context
+
+    def get_table_kwargs(self):
+
+        kwargs = {}
+        if not self.is_new_data_quality_service_active:
+            kwargs = super().get_table_kwargs()
+        return kwargs
 
 
 class FirstStopDropOffDetailView(TwoTableDetailView):

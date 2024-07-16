@@ -89,3 +89,14 @@ CHECKS_DATA = [
         "queue_name": "incorrect-licence-number-queue",
     },
 ]
+
+
+class Checks(Enum):
+    DefaultCheck = ""
+    IncorrectNoc = "Incorrect NOC"
+    FirstStopIsSetDown = "First stop is set down only"
+    LastStopIsPickUpOnly = "Last stop is pick up only"
+    IncorrectStopType = "Incorrect stop type"
+    StopNotFoundInNaptan = "Stop not found in NaPTAN"
+    LastStopIsNotATimingPoint = "Last stop is not a timing point"
+    FirstStopIsNotATimingPoint = "First stop is not a timing point"
