@@ -57,7 +57,7 @@ class ReportOverviewView(DetailView):
         report = self.get_object()
         if kwargs.get("object"):
             revision_id = kwargs.get("object").revision_id
-        flag_is_active("","is_new_data_quality_ser")
+
         summary = Summary.get_report(report.summary, revision_id)
         rag = get_data_quality_rag(report)
         context.update(

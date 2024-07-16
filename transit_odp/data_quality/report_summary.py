@@ -7,6 +7,7 @@ from transit_odp.data_quality.models import DataQualityReportSummary
 from transit_odp.dqs.models import ObservationResults
 import pandas as pd
 from django.db.models import F
+from waffle import flag_is_active
 
 CRITICAL_INTRO = (
     "These observations are considered critical in terms of data quality. "
@@ -92,6 +93,11 @@ class Summary(BaseModel):
 
     @classmethod
     def get_report(cls, report_summary: DataQualityReportSummary, revision_id):
+        if not flag_is_active(
+        "", "is_new_data_quality_service_active"
+            ):
+            return cls.initialize_warning_data()
+        
         if revision_id is None:
             return cls(data=cls.initialize_warning_data(), count=0)
         warning_data = {}
