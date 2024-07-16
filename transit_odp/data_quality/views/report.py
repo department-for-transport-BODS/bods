@@ -11,6 +11,7 @@ from transit_odp.users.views.mixins import OrgUserViewMixin
 
 from ..report_summary import Summary
 from .mixins import WithDraftRevision
+from waffle import flag_is_active
 
 
 class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision):
@@ -33,6 +34,7 @@ class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision)
         return super().get_redirect_url(*args, **kwargs)
 
 
+#TODO: DQSMIGRATION: REMOVE
 class ReportOverviewView(DetailView):
     template_name = "data_quality/report.html"
     pk_url_kwarg = "report_id"
@@ -55,7 +57,7 @@ class ReportOverviewView(DetailView):
         report = self.get_object()
         if kwargs.get("object"):
             revision_id = kwargs.get("object").revision_id
-
+        flag_is_active("","is_new_data_quality_ser")
         summary = Summary.get_report(report.summary, revision_id)
         rag = get_data_quality_rag(report)
         context.update(

@@ -20,8 +20,9 @@ ADVISORY_INTRO = (
 
 BUS_SERVICES_AFFECTED_SUBSET = ["service_code", "line_name"]
 
-
+# TODO: DQSMIGRATION: REMOVE
 class Summary(BaseModel):
+    
     data: Dict = {}
     count: int = 0
     bus_services_affected: int = 0
