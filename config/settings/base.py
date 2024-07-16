@@ -142,7 +142,7 @@ THIRD_PARTY_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "waffle",
-    "django_axe"
+    "django_axe",
 ]
 LOCAL_APPS = [
     "transit_odp.api.apps.ApiConfig",
