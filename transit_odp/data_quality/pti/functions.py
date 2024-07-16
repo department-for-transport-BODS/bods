@@ -568,7 +568,9 @@ def validate_licence_number(context, elements):
             if primary_mode_text.lower() == "coach":
                 continue
             else:
-                licence_number = element.xpath("//x:LicenceNumber", namespaces=ns)
-                if not (licence_number and licence_number[0].text):
-                    return False
+                return False  # validation failed for Primary_Mode != coach
+        else:
+            licence_number = element.xpath("//x:LicenceNumber", namespaces=ns)
+            if not (licence_number and licence_number[0].text):
+                return False
     return True
