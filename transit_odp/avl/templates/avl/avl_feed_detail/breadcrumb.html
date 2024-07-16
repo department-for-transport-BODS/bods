@@ -1,19 +1,18 @@
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% if host.name == hosts.data %}
-    {% breadcrumb_url 'Browse' 'catalogue' host hosts.data %}
-    {% breadcrumb_url 'All operator data feeds' 'feed-list' host hosts.data %}
+  {% breadcrumb_url 'Browse' 'catalogue' host hosts.data %}
+  {% breadcrumb_url 'All operator data feeds' 'feed-list' host hosts.data %}
 {% elif host.name == hosts.publish %}
-    {% breadcrumb_url 'Choose data type' 'select-data' pk1=pk1 host host.name %}
-    {% breadcrumb_url 'Bus Location Data Feeds' 'avl:feed-list' pk1=pk1 host hosts.publish %}
+  {% breadcrumb_url 'Choose data type' 'select-data' pk1=pk1 host host.name %}
+  {% breadcrumb_url 'Bus Location Data Feeds' 'avl:feed-list' pk1=pk1 host hosts.publish %}
 {% endif %}
 {% if properties.name|length > 20 %}
-    {% with feed_name=properties.name|slice:":19"|add:"..." %}
-        {% breadcrumb_url feed_name 'avl:feed-detail' pk1=pk1 pk=pk host hosts.publish %}
-    {% endwith %}
+  {% with feed_name=properties.name|slice:":19"|add:"..." %}
+    {% breadcrumb_url feed_name 'avl:feed-detail' pk1=pk1 pk=pk host hosts.publish %}
+  {% endwith %}
 {% else %}
-    {% with feed_name=properties.name %}
-        {% breadcrumb_url feed_name 'avl:feed-detail' pk1=pk1 pk=pk host hosts.publish %}
-    {% endwith %}
+  {% with feed_name=properties.name %}
+    {% breadcrumb_url feed_name 'avl:feed-detail' pk1=pk1 pk=pk host hosts.publish %}
+  {% endwith %}
 {% endif %}

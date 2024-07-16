@@ -1,169 +1,155 @@
 {% extends "site_admin/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Organisation management' 'users:organisation-manage' host hosts.admin %}
+  {{ block.super }}
+  {% breadcrumb_url 'Organisation management' 'users:organisation-manage' host hosts.admin %}
 {% endblock %}
-
 {% block full_width_content %}
-    <form autocomplete="off">
-        {% include "browse/snippets/search_banner.html" with title="Organisation management" description="Search for specific operator" placeholder="Search by Operator" %}
-        {{ operators | json_script:"operator-data" }}
-    </form>
+  <form autocomplete="off">
+    {% include "browse/snippets/search_banner.html" with title="Organisation management" description="Search for specific operator" placeholder="Search by Operator" %}
+    {{ operators | json_script:"operator-data" }}
+  </form>
 {% endblock %}
-
-
 {% block content %}
-    <div class="govuk-width-container">
-        {% if form.errors %}
-            <div class="govuk-error-summary govuk-!-width-one-half"
-                aria-labelledby="error-summary-title"
-                role="alert"
-                tabindex="-1"
-                data-module="govuk-error-summary">
-
-                <h2 class="govuk-error-summary__title" id="error-summary-title">
-                    {% trans "There is a problem" %}
-                </h2>
-                <div class="govuk-error-summary__body">
-                    <ul class="govuk-list govuk-error-summary__list">
-                        {% for error in form.non_field_errors %}
-                            <li class="app-error-summary__item">
-                                {{ error }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        {% endif %}
-
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                <h2 class="govuk-heading-m">{% trans 'Add new organisation' %}</h2>
-                <p class="govuk-body">
-                    {% blocktrans %}
-                        Send an email invite to the organisation to invite them to the bus
-                        open data service
-                    {% endblocktrans %}
-                </p>
-                <a class="govuk-button govuk-!-margin-right-5" href="{% url 'users:organisation-new' host hosts.admin %}"
-                    role="button">
-                    {% trans "Add new organisation" %}
-                </a>
-                <button class="govuk-button" type="submit" form="bulk-resend-invites">
-                    {% trans "Resend invitation to selected" %}
-                </button>
-            </div>
+  <div class="govuk-width-container">
+    {% if form.errors %}
+      <div class="govuk-error-summary govuk-!-width-one-half"
+           aria-labelledby="error-summary-title"
+           role="alert"
+           tabindex="-1"
+           data-module="govuk-error-summary">
+        <h2 class="govuk-error-summary__title" id="error-summary-title">{% trans "There is a problem" %}</h2>
+        <div class="govuk-error-summary__body">
+          <ul class="govuk-list govuk-error-summary__list">
+            {% for error in form.non_field_errors %}<li class="app-error-summary__item">{{ error }}</li>{% endfor %}
+          </ul>
         </div>
-        <main class="govuk-main-wrapper">
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-full">
-                    <h2 class="govuk-heading-m">View and manage organisations</h2>
-                </div>
-            </div>
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-one-quarter">
-                    <h2 class="govuk-heading-m">Filter by</h2>
-                    {% crispy filter.form filter.form.helper %}
-                </div>
-                <div class="govuk-grid-column-three-quarters">
-                    <div class="search-list__heading">
-                        {% if organisation_list.count > 0 %}
-                            <span class="govuk-body">
-                                {% filter force_escape %}
-                                    {% blocktrans count counter=organisation_list.count %}
-                                        1 result
-                                    {% plural %}
-                                        {{ counter }} results
-                                    {% endblocktrans %}
-                                {% endfilter %}
-                            </span>
-                        {% else %}
-                            <h3 class="govuk-heading-m">
-                                {% filter force_escape %}
-                                    {% trans 'Sorry, no results found' %}
-                                    {% if q %}
-                                        {% blocktrans %} for {{ q }}{% endblocktrans %}
-                                    {% endif %}
-                                {% endfilter %}
-                            </h3>
-                        {% endif %}
-                    </div>
-
-                    <div class="govuk-body-s govuk-grid-row search-pillbox">
-                        {% if q %}
-                            <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-                                {% trans 'Beginning' as tmsg %}{{tmsg | force_escape}}
-                            </span>
-                            <a href="?q=">
-                                <div class="pill-item">
-                                    <img class="pill-item__image"
-                                        src="{% static 'frontend/images/icon-cross.png' %}"
-                                        alt="{% trans 'Delete icon' as tmsg %}{{tmsg | force_escape}}">
-                                    <span class="pill-item__label">{{ q }}</span>
-                                </div>
-                            </a>
-                        {% elif letters %}
-                            <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
-                                {% trans 'Beginning' as tmsg %}{{tmsg | force_escape}}
-                            </span>
-                            <a href="?q=">
-                                <div class="pill-item">
-                                    <img class="pill-item__image"
-                                        src="{% static 'frontend/images/icon-cross.png' %}"
-                                        alt="{% trans 'Delete icon' as tmsg %}{{tmsg | force_escape}}">
-                                    <span class="pill-item__label">{{ letters|join:' ' }}</span>
-                                </div>
-                            </a>
-                        {% endif %}
-                    </div>
-
-                    <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break govuk-!-margin-top-0">
-
-                    {% if organisation_list.count > 0 %}
-                        <form id="bulk-resend-invites">
-                            <input type="hidden" name="bulk_invite" value="true">
-                            <div {% if form.errors %}class="govuk-form-group--error"{% endif %}>
-                                {% render_table table %}
-                            </div>
-                        </form>
-                    {% else %}
-                        <div>
-                            <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
-                            <h4 class="govuk-heading-s">
-                                {% filter force_escape %}
-                                    {% trans 'Having trouble finding what you want?' %}
-                                {% endfilter %}
-                            </h4>
-                            <ul class="govuk-list govuk-list--bullet">
-                                <li>
-                                    {% filter force_escape %}
-                                        {% if q %}
-                                            {% trans 'Check your spelling and try again' %}
-                                        {% else %}
-                                            {% trans 'Please try another filter' %}
-                                        {% endif %}
-                                    {% endfilter %}
-                                </li>
-                            </ul>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </main>
+      </div>
+    {% endif %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-m">{% trans "Add new organisation" %}</h2>
+        <p class="govuk-body">
+          {% blocktrans %}
+            Send an email invite to the organisation to invite them to the bus
+            open data service
+          {% endblocktrans %}
+        </p>
+        <a class="govuk-button govuk-!-margin-right-5" href="{% url 'users:organisation-new' host hosts.admin %}" role="button">
+          {% trans "Add new organisation" %}
+        </a>
+        <button class="govuk-button" type="submit" form="bulk-resend-invites">
+          {% trans "Resend invitation to selected" %}
+        </button>
+      </div>
     </div>
+    <main class="govuk-main-wrapper" role="main">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <h2 class="govuk-heading-m">View and manage organisations</h2>
+        </div>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-quarter">
+          <h2 class="govuk-heading-m">Filter by</h2>
+          {% crispy filter.form filter.form.helper %}
+        </div>
+        <div class="govuk-grid-column-three-quarters">
+          <div class="search-list__heading">
+            {% if organisation_list.count > 0 %}
+              <span class="govuk-body">
+                {% filter force_escape %}
+                  {% blocktrans count counter=organisation_list.count %}
+                    1 result
+                  {% plural %}
+                    {{ counter }} results
+                  {% endblocktrans %}
+                {% endfilter %}
+              </span>
+            {% else %}
+              <h3 class="govuk-heading-m">
+                {% filter force_escape %}
+                  {% trans "Sorry, no results found" %}
+                  {% if q %}
+                    {% blocktrans %} for {{ q }}{% endblocktrans %}
+                  {% endif %}
+                {% endfilter %}
+              </h3>
+            {% endif %}
+          </div>
+          <div class="govuk-body-s govuk-grid-row search-pillbox">
+            {% if q %}
+              <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
+                {% trans "Beginning" as tmsg %}
+                {{ tmsg | force_escape }}
+              </span>
+              <a href="?q=">
+                <div class="pill-item">
+                  <img class="pill-item__image"
+                       src="{% static 'frontend/images/icon-cross.png' %}"
+                       alt="{% trans "Delete icon" as tmsg %}{{ tmsg | force_escape }}"
+                       height="auto"
+                       width="auto" />
+                  <span class="pill-item__label">{{ q }}</span>
+                </div>
+              </a>
+            {% elif letters %}
+              <span class="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">
+                {% trans "Beginning" as tmsg %}
+                {{ tmsg | force_escape }}
+              </span>
+              <a href="?q=">
+                <div class="pill-item">
+                  <img class="pill-item__image"
+                       src="{% static 'frontend/images/icon-cross.png' %}"
+                       alt="{% trans "Delete icon" as tmsg %}{{ tmsg | force_escape }}"
+                       height="auto"
+                       width="auto" />
+                  <span class="pill-item__label">{{ letters|join:' ' }}</span>
+                </div>
+              </a>
+            {% endif %}
+          </div>
+          <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break govuk-!-margin-top-0" />
+          {% if organisation_list.count > 0 %}
+            <form id="bulk-resend-invites">
+              <input type="hidden" name="bulk_invite" value="true" />
+              <div {% if form.errors %}class="govuk-form-group--error"{% endif %}>{% render_table table %}</div>
+            </form>
+          {% else %}
+            <div>
+              <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
+              <h4 class="govuk-heading-s">
+                {% filter force_escape %}
+                  {% trans "Having trouble finding what you want?" %}
+                {% endfilter %}
+              </h4>
+              <ul class="govuk-list govuk-list--bullet">
+                <li>
+                  {% filter force_escape %}
+                    {% if q %}
+                      {% trans "Check your spelling and try again" %}
+                    {% else %}
+                      {% trans "Please try another filter" %}
+                    {% endif %}
+                  {% endfilter %}
+                </li>
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </main>
+  </div>
 {% endblock %}
-
 {% block scripts %}
-    {{block.super}}
-    <script>
-        const operators = JSON.parse(document.getElementById("operator-data").textContent);
-        new BODSFrontend.AutoCompleteSearch("search", operators["names"]);
-    </script>
-{% endblock  %}
+  {{ block.super }}
+  <script>
+      const operators = JSON.parse(document.getElementById("operator-data").textContent);
+      new BODSFrontend.AutoCompleteSearch("search", operators["names"]);
+  </script>
+{% endblock %}

@@ -1,148 +1,173 @@
 {% extends "guidance/developer/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-    <h1 data-qa="using-api-header" class="govuk-heading-l">{% filter force_escape %}{% trans 'Data Catalogue' %}{% endfilter %}</h1>
-    <p class="govuk-body">
-        {% url 'download-catalogue' host hosts.data as datalogue_url %}
-        {% blocktrans %}
+  <h1 data-qa="using-api-header" class="govuk-heading-l">
+    {% filter force_escape %}
+      {% trans "Data Catalogue" %}
+    {% endfilter %}
+  </h1>
+  <p class="govuk-body">
+    {% url 'download-catalogue' host hosts.data as datalogue_url %}
+    {% blocktrans %}
             <a class="govuk-link" href="{{ datalogue_url }}">The data catalogue zip</a>
         {% endblocktrans %}
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% filter force_escape %}
+      {% blocktrans %}
                 contains a series of CSVs which
                 gives a machine-readable overview of all the data
                 that resides in BODS currently.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 Note that the data catalogue only covers the data from
             {% endblocktrans %}
-        {% endfilter %}
-        <b>
-            {% filter force_escape %}
-                {% blocktrans %}
+    {% endfilter %}
+    <b>
+      {% filter force_escape %}
+        {% blocktrans %}
                     primary data sources
                 {% endblocktrans %}
-            {% endfilter %}
-        </b>
-        {% filter force_escape %}
-            {% blocktrans %}
+      {% endfilter %}
+    </b>
+    {% filter force_escape %}
+      {% blocktrans %}
                 on BODS which is timetables data in
                 TransXChange format, bus location data in SIRI-VM format
                 and fares data in NeTEx format. Other non-primary data on
                 BODS (e.g GTFS converted forms) are not represented on the
                 data catalogue.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 The data catalogue zip contains 7 distinct CSVs:
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-    <p class="govuk-body">
-        <ul class="govuk-list govuk-list--bullet">
-            <li>
-                {% filter force_escape %}
-                    {% blocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    <ul class="govuk-list govuk-list--bullet">
+      <li>
+        {% filter force_escape %}
+          {% blocktrans %}
                         Overall data catalogue: this contains a high-level
                         overview of all the static data on BODS:
                         timetables and fares data.
                     {% endblocktrans %}
-                {% endfilter %}
-            </li>
-            <li>
-                {% filter force_escape %}
-                    {% blocktrans %}
+        {% endfilter %}
+      </li>
+      <li>
+        {% filter force_escape %}
+          {% blocktrans %}
                         Timetables data catalogue: this contains a
                         detailed granular view of the timetables data
                         within BODS. It also contains a detailed mapping
                         of the BODS timetables data with the data from the
                         Office of the Traffic Commissioner (OTC).
                     {% endblocktrans %}
-                {% endfilter %}
-            </li>
-            <li>
-                {% filter force_escape %}
-                    {% blocktrans %}
+        {% endfilter %}
+      </li>
+      <li>
+        {% filter force_escape %}
+          {% blocktrans %}
                         Fares data catalogue: this contains a
                         detailed granular view of the fares data within BODS.
                     {% endblocktrans %}
-                {% endfilter %}
-            </li>
-            <li>
-                {% filter force_escape %}
-                    {% blocktrans %}
+        {% endfilter %}
+      </li>
+      <li>
+        {% filter force_escape %}
+          {% blocktrans %}
                         Disruptions data catalogue: this contains a detailed
                         view of all of the disruptions active and pending
                         within BODS.
                     {% endblocktrans %}
-                {% endfilter %}
-            </li>
-            <li>
-                {% filter force_escape %}
-                    {% blocktrans %}
+        {% endfilter %}
+      </li>
+      <li>
+        {% filter force_escape %}
+          {% blocktrans %}
                         Organisations data catalogue: this contains
                         helpful counts of data at an organisation level.
                     {% endblocktrans %}
-                {% endfilter %}
-            </li>
-            <li>
-                {% filter force_escape %}
-                    {% blocktrans %}
+        {% endfilter %}
+      </li>
+      <li>
+        {% filter force_escape %}
+          {% blocktrans %}
                         Location data catalogue: this contains an overview of the
                         location data within BODS.
                     {% endblocktrans %}
-                {% endfilter %}
-            </li>
-            <li>
-                {% filter force_escape %}
-                    {% blocktrans %}
+        {% endfilter %}
+      </li>
+      <li>
+        {% filter force_escape %}
+          {% blocktrans %}
                         Operator NOC data catalogue: this describes all
                         organisations on BODS and the National Operator Codes
                         (NOCs) that are associated with them.
                     {% endblocktrans %}
-                {% endfilter %}
-            </li>
-        </ul>
-    </p>
-
-    <h3 class="govuk-heading-m">{% filter force_escape %}{% trans 'Field definitions:' %}{% endfilter %}</h3>
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+        {% endfilter %}
+      </li>
+    </ul>
+  </p>
+  <h2 class="govuk-heading-m">
+    {% filter force_escape %}
+      {% trans "Field definitions:" %}
+    {% endfilter %}
+  </h2>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 The data catalogue contains certain fields the definitions
                 and explanations of which can be found below.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Overall data catalogue:' %}{% endfilter %}</h4>
-    {% include "../snippets/datacatalogue_table.html" with definitions_map=overall_column_map %}
-
-    <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Timetables data catalogue:' %}{% endfilter %}</h4>
-    {% include "../snippets/datacatalogue_table.html" with definitions_map=timetable_column_map %}
-
-    <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Fares data catalogue:' %}{% endfilter %}</h4>
-    {% include "../snippets/datacatalogue_table.html" with definitions_map=fares_data_column_map %}
-
-    <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Disruptions data catalogue:' %}{% endfilter %}</h4>
-    {% include "../snippets/datacatalogue_table.html" with definitions_map=disruptions_column_map %}
-
-    <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Organisations data catalogue:' %}{% endfilter %}</h4>
-    {% include "../snippets/datacatalogue_table.html" with definitions_map=org_column_map %}
-
-    <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Location data catalogue:' %}{% endfilter %}</h4>
-    {% include "../snippets/datacatalogue_table.html" with definitions_map=location_definitions %}
-
-    <h4 class="govuk-heading-s">{% filter force_escape %}{% trans 'Operator NOC data catalogue:' %}{% endfilter %}</h4>
-    {% include "../snippets/datacatalogue_table.html" with definitions_map=operator_noc_column_map %}
-
+    {% endfilter %}
+  </p>
+  <h3 class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans "Overall data catalogue:" %}
+    {% endfilter %}
+  </h3>
+  {% include "../snippets/datacatalogue_table.html" with definitions_map=overall_column_map %}
+  <h3 class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans "Timetables data catalogue:" %}
+    {% endfilter %}
+  </h3>
+  {% include "../snippets/datacatalogue_table.html" with definitions_map=timetable_column_map %}
+  <h3 class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans "Fares data catalogue:" %}
+    {% endfilter %}
+  </h3>
+  {% include "../snippets/datacatalogue_table.html" with definitions_map=fares_data_column_map %}
+  <h3 class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans "Disruptions data catalogue:" %}
+    {% endfilter %}
+  </h3>
+  {% include "../snippets/datacatalogue_table.html" with definitions_map=disruptions_column_map %}
+  <h3 class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans "Organisations data catalogue:" %}
+    {% endfilter %}
+  </h3>
+  {% include "../snippets/datacatalogue_table.html" with definitions_map=org_column_map %}
+  <h3 class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans "Location data catalogue:" %}
+    {% endfilter %}
+  </h3>
+  {% include "../snippets/datacatalogue_table.html" with definitions_map=location_definitions %}
+  <h3 class="govuk-heading-s">
+    {% filter force_escape %}
+      {% trans "Operator NOC data catalogue:" %}
+    {% endfilter %}
+  </h3>
+  {% include "../snippets/datacatalogue_table.html" with definitions_map=operator_noc_column_map %}
 {% endblock %}

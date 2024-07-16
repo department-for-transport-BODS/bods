@@ -2,13 +2,11 @@
 {% if prev_page %}
   <a class="prevandnext" href="{{ url }}?section={{ prev_page }}">
     <div>
-     <span class="prevandnext__title">
-        <i class='fas fa-arrow-left'></i>
-        {% trans 'Previous' %}
-     </span>
-     <span class="prevandnext__link">
-       {{ prev_page }}
-     </span>
+      <span class="prevandnext__title">
+        <i class="fas fa-arrow-left"></i>
+        {% trans "Previous" %}
+      </span>
+      <span class="prevandnext__link">{{ prev_page }}</span>
     </div>
   </a>
 {% endif %}

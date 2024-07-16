@@ -177,9 +177,6 @@ class VehicleJourneyFinder:
                 TransXChangeField.FILENAME, txc_file_attrs[0].filename
             )
             result.set_transxchange_attribute(
-                TransXChangeField.FILENAME, txc_file_attrs[0].filename
-            )
-            result.set_transxchange_attribute(
                 TransXChangeField.OPERATING_PERIOD_END_DATE,
                 txc_file_attrs[0].operating_period_end_date,
             )
@@ -236,6 +233,9 @@ class VehicleJourneyFinder:
         with non-matching timetables removed.
         """
         for idx in range(len(txc_xml) - 1, -1, -1):
+            result.set_transxchange_attribute(
+                TransXChangeField.FILENAME, txc_xml[idx].get_file_name()
+            )
             operating_period_start = txc_xml[idx].get_operating_period_start_date()
             error_msg = None
             if not operating_period_start:
@@ -314,6 +314,9 @@ class VehicleJourneyFinder:
         for timetable in txc_xml:
             try:
                 vehicle_journeys = timetable.get_vehicle_journeys()
+                result.set_transxchange_attribute(
+                    TransXChangeField.FILENAME, timetable.get_file_name()
+                )
             except NoElement:
                 vehicle_journeys = []
             logger.debug(
@@ -367,6 +370,9 @@ class VehicleJourneyFinder:
         journey_code_operating_profile = []
 
         for vj in vehicle_journeys:
+            result.set_transxchange_attribute(
+                TransXChangeField.FILENAME, vj.txc_xml.get_file_name()
+            )
             operating_profile_xml_string = (
                 self.get_operating_profile_xml_tag_for_journey(vj)
             )
@@ -392,7 +398,7 @@ class VehicleJourneyFinder:
                 ErrorCode.CODE_5_1,
             )
             return None
-        return vehicle_journeys
+        return required_vjs
 
     def get_operating_profile_for_journey(
         self, vj: TxcVehicleJourney
@@ -443,6 +449,9 @@ class VehicleJourneyFinder:
         """
         journey_code_operating_profile = []
         for vj in reversed(vehicle_journeys):
+            result.set_transxchange_attribute(
+                TransXChangeField.FILENAME, vj.txc_xml.get_file_name()
+            )
             operating_profile: TransXChangeElement = (
                 self.get_operating_profile_for_journey(vj)
             )
@@ -795,6 +804,9 @@ class VehicleJourneyFinder:
         journey_code_operating_profile_service_org = []
 
         for vj in reversed(vehicle_journeys):
+            result.set_transxchange_attribute(
+                TransXChangeField.FILENAME, vj.txc_xml.get_file_name()
+            )
             service_org_ref, _, _, _ = self.get_service_org_ref_and_days_of_operation(
                 vj
             )

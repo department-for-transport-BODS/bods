@@ -608,6 +608,9 @@ EP_AUTH_URL = env(
     default="https://dev-pdbrd.auth.eu-west-2.amazoncognito.com/oauth2/token",
 )
 
+COACH_ATCO_FILE_S3_URL = env("COACH_ATCO_FILE_S3_URL", default="#")
+COACH_TXC_FILE_S3_URL = env("COACH_TXC_FILE_S3_URL", default="#")
+
 # Disruptions API
 # ------------------------------------------------------------------------------
 DISRUPTIONS_API_BASE_URL = env("DISRUPTIONS_API_BASE_URL", default="")
@@ -617,6 +620,13 @@ DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
 # ------------------------------------------------------------------------------
 GTFS_API_BASE_URL = env("GTFS_API_BASE_URL", default="")
 
+
+# S3 bucket name for Dataset maintenance
+# ------------------------------------------------------------------------------
+AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
+    "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME",
+    default="bodds-dataset-dev-maintenance",
+)
 # SQS QUEUE
 # ------------------------------------------------------------------------------
 SQS_QUEUE_ENDPOINT_URL = env(

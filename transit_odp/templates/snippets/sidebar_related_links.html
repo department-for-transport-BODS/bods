@@ -1,10 +1,8 @@
 {% load i18n %}
-
 <div class="sidebar-related-links">
-  <h3 class="govuk-heading-m">
-    {% block heading %}
-    {% endblock %}
-  </h3>
+  <h2 class="govuk-heading-m">
+    {% block heading %}{% endblock %}
+  </h2>
   <ul class="govuk-list">
     {% block links %}
       {% for link in links %}
