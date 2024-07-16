@@ -142,6 +142,7 @@ THIRD_PARTY_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "waffle",
+    "django_axe"
 ]
 LOCAL_APPS = [
     "transit_odp.api.apps.ApiConfig",
@@ -241,6 +242,7 @@ MIDDLEWARE = [
     "transit_odp.restrict_sessions.middleware.OneSessionPerUserMiddleware",
     "waffle.middleware.WaffleMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "django_axe.middleware.DjangoAxeScriptMiddleware",
     "transit_odp.common.middleware.APILoggerMiddleware",  # leave this to last
 ]
 
