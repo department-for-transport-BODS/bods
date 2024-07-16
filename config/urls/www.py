@@ -3,6 +3,7 @@ from django.conf.urls.static import static
 from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
+from django_axe import urls
 
 from transit_odp.browse.views.base_views import (
     GlobalFeedbackThankYouView,
@@ -85,3 +86,6 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
+
+if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
+    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns

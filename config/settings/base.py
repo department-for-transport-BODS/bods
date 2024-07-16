@@ -142,6 +142,7 @@ THIRD_PARTY_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "waffle",
+    "django_axe",
 ]
 LOCAL_APPS = [
     "transit_odp.api.apps.ApiConfig",
@@ -241,6 +242,7 @@ MIDDLEWARE = [
     "transit_odp.restrict_sessions.middleware.OneSessionPerUserMiddleware",
     "waffle.middleware.WaffleMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "django_axe.middleware.DjangoAxeScriptMiddleware",
     "transit_odp.common.middleware.APILoggerMiddleware",  # leave this to last
 ]
 
@@ -709,3 +711,6 @@ if env("GEOS_LIBRARY_PATH", default=None):
     GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")
 
 MAPBOX_KEY = env("MAPBOX_KEY", default=None)
+
+DJANGO_AXE_REPORT_PATH = os.path.join(MEDIA_ROOT, "django_axe_report.json")
+DJANGO_AXE_ENABLED = True

@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.urls import include, path
+from django_axe import urls
 
 from transit_odp.data_quality import views
 
@@ -335,3 +337,6 @@ urlpatterns = [
         ),
     ),
 ]
+
+if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
+    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns
