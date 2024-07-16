@@ -49,6 +49,7 @@ class CAVLService(ICAVLService):
         return response.status_code == HTTPStatus.CREATED
 
     def delete_feed(self, feed_id: int) -> bool:
+        print("I am getting here")
         api_url = self.CAVL_URL + f"/feed/{feed_id}"
         response = None
 

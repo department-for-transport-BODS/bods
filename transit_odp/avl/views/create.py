@@ -94,8 +94,6 @@ class AVLUploadWizard(FeedUploadWizard):
         )
 
         transaction.on_commit(lambda: task_validate_avl_feed.delay(task_id))
-        #
-        # print("transaction has happened")
 
         return HttpResponseRedirect(
             reverse(
