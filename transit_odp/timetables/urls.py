@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.urls import include, path
+from django_axe import urls
 
 from transit_odp.data_quality.views.report import DraftReportOverviewView
 from transit_odp.publish.views import timetable
@@ -212,3 +214,6 @@ urlpatterns = [
         name="revision-delete-success",
     ),
 ]
+
+if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
+    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns

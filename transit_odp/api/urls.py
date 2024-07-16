@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.urls import include, path
+from django_axe import urls
 from rest_framework.routers import DefaultRouter
 from rest_framework_swagger.views import get_swagger_view
 
@@ -7,11 +9,11 @@ from transit_odp.api.views import (
     AVLDetailApiView,
     AVLGTFSRTApiView,
     AVLOpenApiView,
+    DisruptionsOpenApiView,
     FaresDatasetViewset,
     FaresOpenApiView,
     TimetablesApiView,
     TimetablesViewSet,
-    DisruptionsOpenApiView,
     v2,
 )
 from transit_odp.api.views.disruptions import DisruptionsApiView
@@ -53,3 +55,6 @@ urlpatterns = [
     path("v1/gtfsrtdatafeed/", AVLGTFSRTApiView.as_view(), name="gtfsrtdatafeedapi"),
     path("v2/", include((router_v2.urls, app_name), namespace="v2")),
 ]
+
+if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
+    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns

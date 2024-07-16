@@ -72,7 +72,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#prerequisites
-INSTALLED_APPS += ["debug_toolbar"]  # noqa F405
+INSTALLED_APPS += ["debug_toolbar", "django_axe"]  # noqa F405
 # explicit setup, see https://django-debug-toolbar.readthedocs.io/en/1.0/
 # installation.html#explicit-setup
 DEBUG_TOOLBAR_PATCH_SETTINGS = False
@@ -83,6 +83,10 @@ DEBUG_TOOLBAR_PATCH_SETTINGS = False
 MIDDLEWARE.insert(
     MIDDLEWARE.index("django.middleware.common.CommonMiddleware") + 1,
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+)
+MIDDLEWARE.insert(
+    MIDDLEWARE.index("debug_toolbar.middleware.DebugToolbarMiddleware") + 1,
+    "django_axe.middleware.DjangoAxeScriptMiddleware",
 )
 #
 # MIDDLEWARE.insert(
