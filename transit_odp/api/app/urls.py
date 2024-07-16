@@ -27,4 +27,4 @@ router.register(
     "disruption_detail_map_data",
 )
 
-urlpatterns = []
+urlpatterns = router.get_urls()
