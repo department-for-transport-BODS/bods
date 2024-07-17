@@ -44,6 +44,7 @@ from transit_odp.data_quality.pti.functions import (
     validate_modification_date_time,
     validate_run_time,
     validate_timing_link_stops,
+    validate_licence_number,
 )
 from transit_odp.data_quality.pti.models import Observation, Schema, Violation
 from transit_odp.data_quality.pti.models.txcmodels import Line, VehicleJourney
@@ -597,6 +598,7 @@ class PTIValidator:
         self.register_function(
             "check_vehicle_journey_timing_links", check_vehicle_journey_timing_links
         )
+        self.register_function("validate_licence_number", validate_licence_number)
 
     def register_function(self, key: str, function: Callable) -> None:
         self.fns[key] = function

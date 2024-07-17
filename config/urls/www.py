@@ -3,7 +3,6 @@ from django.conf.urls.static import static
 from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
-from django_axe import urls
 
 from transit_odp.browse.views.base_views import (
     GlobalFeedbackThankYouView,
@@ -59,6 +58,7 @@ urlpatterns = [
     path("privacy-policy/", PrivacyPolicyView.as_view(), name="privacy-policy"),
     path("account/", include("config.urls.allauth")),
     path("changelog/", ChangelogView.as_view(), name="changelog"),
+    path("django_axe/", include("django_axe.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
@@ -86,6 +86,3 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
-
-if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns
