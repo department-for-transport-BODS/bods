@@ -87,5 +87,4 @@ urlpatterns = [
             ]
         ),
     ),
-    path("django_axe/", include("django_axe.urls")),
 ]

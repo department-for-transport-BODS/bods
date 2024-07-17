@@ -168,5 +168,4 @@ urlpatterns = [
     ),
     # Used to redirect back to user's account page
     path("~redirect/", view=UserRedirectView.as_view(), name="redirect"),
-    path("django_axe/", include("django_axe.urls")),
 ]

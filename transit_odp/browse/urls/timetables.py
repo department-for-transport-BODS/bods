@@ -110,5 +110,4 @@ urlpatterns = [
         RedirectView.as_view(url="/timetable/%(path)s/", permanent=True),
     ),
     path("dataset/", include(DATASET_PATHS)),
-    path("django_axe/", include("django_axe.urls")),
 ]

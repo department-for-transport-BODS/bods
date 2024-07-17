@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 
 from transit_odp.fares_validator.views.export_excel import FaresXmlExporter
 from transit_odp.fares_validator.views.views import FaresXmlValidator
@@ -14,5 +14,4 @@ urlpatterns = [
         FaresXmlValidator.as_view(),
         name="transit_odp.fares_validator",
     ),
-    path("django_axe/", include("django_axe.urls")),
 ]

@@ -52,5 +52,4 @@ urlpatterns = [
     ),
     path("v1/gtfsrtdatafeed/", AVLGTFSRTApiView.as_view(), name="gtfsrtdatafeedapi"),
     path("v2/", include((router_v2.urls, app_name), namespace="v2")),
-    path("django_axe/", include("django_axe.urls")),
 ]
