@@ -8,7 +8,7 @@
   {% include "snippets/backlink.html" with url=back_url %}
 {% endblock %}
 {% block content %}
-{% debug %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <span class="govuk-caption-xl">{{ title }}</span>
@@ -27,6 +27,8 @@
           Below is list of the vehicle journeys for this service that are affected by the “{{title}}” data quality observation. 
           Please refer back to these journeys in your scheduling tool and update the corresponding timetable(s) to address this.
         </p>      
+        {{ df }}
+        {% render_table df %}
       {% if tables.0 %}
       <div>{% render_table tables.0 %}</div>
       {% endif %}

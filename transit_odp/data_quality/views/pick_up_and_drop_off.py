@@ -18,12 +18,14 @@ from transit_odp.data_quality.tables import (
 from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.views.base import (
+    DetailBaseView,
     TimingPatternsListBaseView,
     TwoTableDetailView,
 )
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
 from transit_odp.dqs.views import DQSWarningListBaseView
+from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
 
 from waffle import flag_is_active
 
@@ -92,10 +94,11 @@ class LastStopPickUpDetailView(TwoTableDetailView):
         return context
 
 
-class DQSLastStopPickUpDetailView(TwoTableDetailView):
+class DQSLastStopPickUpDetailView(DetailBaseView):
     data = LastStopPickUpOnlyObservation
     model = ObservationResults
-    tables = ["table1"]
+    table_class = DQSWarningDetailsBaseTable
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         print("context called")
@@ -112,13 +115,33 @@ class DQSLastStopPickUpDetailView(TwoTableDetailView):
             f"designated as pick up only"
         )
 
+        print("df imported")
+        qs = self.get_queryset()
+        page = self.request.GET.get("page", 1)
+        context["df"] = DQSWarningDetailsBaseTable(qs, page)
         return context
 
     def get_queryset(self):
 
         print("Queryset called")
 
-        import pandas as pd
+        # DQSWarningListBaseView.get_queryset(self)
+        report_id = self.kwargs.get("report_id")
+        dataset_id = self.kwargs.get("pk")
+        org_id = self.kwargs.get("pk1")
+
+        # qs = Dataset.objects.filter(id=dataset_id, organisation_id=org_id).get_active()
+        # if not len(qs):
+        #    return qs
+        # revision_id = qs[0].live_revision_id
+        revision_id = 73
+        self.check = Checks.LastStopIsPickUpOnly
+
+        qs = ObservationResults.objects.get_observations_details(
+            report_id, self.check, revision_id
+        )
+
+        return qs
 
         # Create data for the dataframe
         data = {

@@ -8,10 +8,17 @@
           <caption class="govuk-table__caption {{ table.attrs.caption.class |default_if_none:"" }}">{{ table.caption }}</caption>
         {% endif %}
         {% block table.thead %}
+        Columns 2
+        {% for key, value in table.items %}  
+          <p>{{ key }}: {{ value }}</p>  
+      {% endfor %}
+      
           {% if table.show_header %}
             <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:"" }}">
               <tr class="govuk-table__row">
+                Columns - {{ table.columns }}
                 {% for column in table.columns %}
+                {{ column.attrs.th.as_html}}
                   <th scope="col" {{ column.attrs.th.as_html |default_if_none:"" }}>
                     {% if column.orderable %}
                       <a class="column-header-link" href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next "page"=1 %}">{{ column.header }}

@@ -126,6 +126,8 @@ class DetailBaseView(MultiTableMixin, TemplateView):
 
         Override this method to further customize pagination for a `View`.
         """
+        print("in the custom pagination")
+
         # Edited line
         paginate = table.table_pagination
         if paginate is False:

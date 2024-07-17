@@ -1,8 +1,8 @@
 from django.db import models
-from django.db.models import F, TextField
+from django.db.models import F, TextField, CharField
 from transit_odp.dqs.constants import TaskResultsStatus, Checks
 from django.db.models.expressions import Value
-from django.db.models.functions import Concat
+from django.db.models.functions import Concat, Coalesce
 
 
 class TaskResultsQueryset(models.QuerySet):
@@ -112,5 +112,37 @@ class ObservationResultsQueryset(models.QuerySet):
             .values(*columns)
             .distinct()
         )
+
+        return qs
+
+    def get_observations_details(self, report_id: int, check: Checks, revision_id: int):
+        columns = [
+            "journey_start_time",
+            "direction",
+            "stop_name",
+            "stop_type",
+        ]
+
+        qs = (
+            self.filter(
+                taskresults__dataquality_report_id=report_id,
+                taskresults__checks__observation=check.value,
+                taskresults__dataquality_report__revision_id=revision_id,
+            )
+            .annotate(
+                # service_pattern_stop
+                journey_start_time=F("vehicle_journey__start_time"),
+                direction=F("vehicle_journey__direction"),
+                stop_name=Coalesce(
+                    "service_pattern_stop__naptan_stop__common_name",
+                    "service_pattern_stop__txc_common_name",
+                    output_field=CharField(),
+                ),
+                stop_type=F("service_pattern_stop__naptan_stop__stop_type"),
+            )
+            .values(*columns)
+        )
+
+        print(qs.query)
 
         return qs
