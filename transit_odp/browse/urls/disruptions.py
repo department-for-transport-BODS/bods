@@ -1,10 +1,11 @@
 from django.urls import include, path
+
 from transit_odp.browse.views.disruptions_views import (
+    DisruptionDetailView,
     DisruptionOrganisationDetailView,
     DisruptionsDataView,
     DownloadDisruptionsDataArchiveView,
     DownloadDisruptionsView,
-    DisruptionDetailView,
 )
 
 urlpatterns = [
@@ -54,4 +55,5 @@ urlpatterns = [
             ]
         ),
     ),
+    path("django_axe/", include("django_axe.urls")),
 ]

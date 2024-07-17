@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.urls import include, path
 
 from transit_odp.fares_validator.views.export_excel import FaresXmlExporter
@@ -15,7 +14,5 @@ urlpatterns = [
         FaresXmlValidator.as_view(),
         name="transit_odp.fares_validator",
     ),
+    path("django_axe/", include("django_axe.urls")),
 ]
-
-if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [path("django_axe/", include("django_axe.urls"))] + urlpatterns

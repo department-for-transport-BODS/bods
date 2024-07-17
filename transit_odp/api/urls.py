@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_swagger.views import get_swagger_view
@@ -53,7 +52,5 @@ urlpatterns = [
     ),
     path("v1/gtfsrtdatafeed/", AVLGTFSRTApiView.as_view(), name="gtfsrtdatafeedapi"),
     path("v2/", include((router_v2.urls, app_name), namespace="v2")),
+    path("django_axe/", include("django_axe.urls")),
 ]
-
-if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [path("django_axe/", include("django_axe.urls"))] + urlpatterns

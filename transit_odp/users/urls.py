@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.urls import include, path
 
 from transit_odp.organisation.views import (
@@ -169,7 +168,5 @@ urlpatterns = [
     ),
     # Used to redirect back to user's account page
     path("~redirect/", view=UserRedirectView.as_view(), name="redirect"),
+    path("django_axe/", include("django_axe.urls")),
 ]
-
-if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [path("django_axe/", include("django_axe.urls"))] + urlpatterns

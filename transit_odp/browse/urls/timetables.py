@@ -1,6 +1,5 @@
 from typing import Final
 
-from django.conf import settings
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 
@@ -111,6 +110,5 @@ urlpatterns = [
         RedirectView.as_view(url="/timetable/%(path)s/", permanent=True),
     ),
     path("dataset/", include(DATASET_PATHS)),
+    path("django_axe/", include("django_axe.urls")),
 ]
-if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [path("django_axe/", include("django_axe.urls"))] + urlpatterns
