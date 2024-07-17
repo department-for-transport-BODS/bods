@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.urls import include, path
-from django_axe import urls
 from rest_framework.routers import DefaultRouter
 
 from transit_odp.data_quality.api import views
@@ -15,8 +14,5 @@ router.register(r"stop_point", views.StopPointViewSet, "stop_point")
 urlpatterns = [
     path("", include(router.urls)),
 ]
-
 if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [
-        path("django-axe/", include(urls, namespace="django_axe"))
-    ] + urlpatterns
+    urlpatterns = [path("django_axe/", include("django_axe.urls"))] + urlpatterns
