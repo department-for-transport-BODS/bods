@@ -1,9 +1,7 @@
 from typing import Final
 
-from django.conf import settings
 from django.urls import include, path, re_path
 from django.views.generic import RedirectView
-from django_axe import urls
 
 from transit_odp.browse.views.timetable_views import (
     DatasetChangeLogView,
@@ -113,8 +111,3 @@ urlpatterns = [
     ),
     path("dataset/", include(DATASET_PATHS)),
 ]
-
-if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [
-        path("django-axe/", include(urls, namespace="django_axe"))
-    ] + urlpatterns
