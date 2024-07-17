@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.urls import include, path
 from django.views import defaults as default_views
-from django_axe import urls
 
 from transit_odp.avl.views.archive import PPCArchiveView
 from transit_odp.common.utils.custom_error_handlers import (
@@ -139,6 +138,7 @@ urlpatterns = [
     ),
     path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
     path("version/", VersionView.as_view(), name="version"),
+    path("django_axe/", include("django_axe.urls", namespace="django_axe")),
 ]
 
 if settings.DEBUG:
@@ -166,6 +166,3 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
-
-if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns

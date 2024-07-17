@@ -1001,13 +1001,13 @@ resend = ["svix"]
 
 [[package]]
 name = "django-axe"
-version = "0.4.5"
+version = "0.5.11"
 description = ""
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "django_axe-0.4.5-py3-none-any.whl", hash = "sha256:e7863a9b2bb3758c724559da59d06aa7b32529736c643d8f22ca173754eb2026"},
-    {file = "django_axe-0.4.5.tar.gz", hash = "sha256:682d03b3922289950778565831842a36030edfc3375eacb137e3f59c5c03bd0b"},
+    {file = "django_axe-0.5.11-py3-none-any.whl", hash = "sha256:3a1a213ba2ba0ea8820772e4dc0dcda09b9e3c7988fa040bbf729069e6b2e7da"},
+    {file = "django_axe-0.5.11.tar.gz", hash = "sha256:b11892cdda53f4e18afa3d58903e1af0dad7d4ab96e1017d12ca5b806a3c8579"},
 ]
 
 [package.dependencies]
@@ -4098,4 +4098,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "166cad92c03ca235283e90e1cccde96bd6fac7a727e2246e62d278eaf09c3f5f"
+content-hash = "bd25dd0350c354a2cb9d69144f579aa000e4da3e63ac9ccbdf133d34526ae0aa"
