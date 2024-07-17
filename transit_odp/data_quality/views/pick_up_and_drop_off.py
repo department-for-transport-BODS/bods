@@ -92,6 +92,46 @@ class LastStopPickUpDetailView(TwoTableDetailView):
         return context
 
 
+class DQSLastStopPickUpDetailView(TwoTableDetailView):
+    data = LastStopPickUpOnlyObservation
+    model = ObservationResults
+    tables = ["table1"]
+
+    def get_context_data(self, **kwargs):
+        print("context called")
+        context = super().get_context_data(**kwargs)
+
+        title = self.data.title
+        service_code = self.request.GET.get("service")
+        line = self.request.GET.get("line")
+        # line_name = self.warning.get_timing_pattern().service_pattern.service.name
+
+        context["title"] = title
+        context["subtitle"] = (
+            f"Service {service_code} has at least one journey where the last stop is "
+            f"designated as pick up only"
+        )
+
+        return context
+
+    def get_queryset(self):
+
+        print("Queryset called")
+
+        import pandas as pd
+
+        # Create data for the dataframe
+        data = {
+            "start time": ["09:00", "12:30", "15:45"],
+            "direction": ["North", "South", "West"],
+            "last stop": ["Station A", "Station B", "Station C"],
+        }
+
+        # Create the dataframe
+        df = pd.DataFrame(data)
+        return df
+
+
 class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = FirstStopSetDownOnlyObservation
     is_new_data_quality_service_active = flag_is_active(

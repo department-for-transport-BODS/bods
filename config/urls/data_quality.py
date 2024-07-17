@@ -132,6 +132,11 @@ urlpatterns = [
                     view=views.LastStopPickUpDetailView.as_view(),
                     name="last-stop-pick-up-only-detail",
                 ),
+                path(
+                    "detail/",
+                    view=views.DQSLastStopPickUpDetailView.as_view(),
+                    name="last-stop-pick-up-only-detail",
+                ),
             ]
         ),
     ),
