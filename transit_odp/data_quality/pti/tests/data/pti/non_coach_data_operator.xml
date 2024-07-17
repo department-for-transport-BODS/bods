@@ -1090,6 +1090,7 @@
       <OperatorNameOnLicence>Lincolnshire Road Car Co Ltd</OperatorNameOnLicence>
       <TradingName>Stagecoach East Midlands</TradingName>
       <LicenceNumber>PF0007038</LicenceNumber>
+      <PrimaryMode>bus</PrimaryMode>
       <Garages>
         <Garage>
           <GarageCode>EMGA</GarageCode>

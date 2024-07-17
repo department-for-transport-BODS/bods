@@ -561,10 +561,9 @@ def check_vehicle_journey_timing_links(
 
 def validate_licence_number(context, elements: List[etree._Element]) -> bool:
     """
-    Validate the license number within a list of XML elements.
+    Validate the license number within a list of XML elements if Primary Mode is not coach.
 
-    This function checks if the PrimaryMode
-    is not "coach", then LicenceNumber is mandatory and should be non-empty.
+    This function checks if the PrimaryMode is not "coach", then LicenceNumber is mandatory and should be non-empty.
 
     Args:
         context: The context in which the function is called.
@@ -578,10 +577,8 @@ def validate_licence_number(context, elements: List[etree._Element]) -> bool:
     for element in elements:
         primary_mode = element.xpath(".//x:PrimaryMode", namespaces=ns)
         licence_number = element.xpath(".//x:LicenceNumber", namespaces=ns)
-        if primary_mode:
-            primary_mode_text = primary_mode[0].text
-            if primary_mode_text.lower() != "coach":
-                return False  # Validation failed for Primary_Mode != coach
+        if primary_mode and primary_mode[0].text.lower() == "coach":
+            continue
         elif not (licence_number and licence_number[0].text):
             return False
     return True
