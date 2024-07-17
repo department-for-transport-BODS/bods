@@ -5,10 +5,8 @@ from typing import List, Optional
 
 from transit_odp.common.utils.s3_bucket_connection import get_s3_bodds_bucket_storage
 from transit_odp.organisation.constants import SCOTLAND_TRAVELINE_REGIONS
-from transit_odp.otc.constants import API_TYPE_WECA
 from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority
 from transit_odp.otc.models import UILta, Service
-from transit_odp.naptan.models import AdminArea
 
 
 logger = logging.getLogger(__name__)
@@ -112,9 +110,6 @@ def is_service_in_scotland(service_ref: str) -> bool:
     Returns:
         bool: True/False if service is in scotland
     """
-    if not service_ref:
-        return False
-
     service_obj = (
         Service.objects.filter(registration_number=service_ref.replace(":", "/"))
         .add_traveline_region_weca()

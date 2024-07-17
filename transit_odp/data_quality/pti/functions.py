@@ -226,9 +226,7 @@ def validate_bank_holidays(context, bank_holidays):
         return False
 
     service_ref = get_service_ref_from_element(element, ns)
-
-    is_scottish_service = is_service_in_scotland(service_ref)
-    if is_scottish_service:
+    if service_ref and is_service_in_scotland(service_ref):
         english_removed = list(set(holidays) - set(BANK_HOLIDAYS))
         return sorted(SCOTTISH_BANK_HOLIDAYS) == sorted(english_removed)
 
