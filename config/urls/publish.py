@@ -138,7 +138,7 @@ urlpatterns = [
     ),
     path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
     path("version/", VersionView.as_view(), name="version"),
-    path("django_axe/", include("django_axe.urls",namespace="django_axe"))
+    path("django_axe/", include("django_axe.urls", namespace="django_axe")),
 ]
 
 if settings.DEBUG:
@@ -166,5 +166,3 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
-
-
