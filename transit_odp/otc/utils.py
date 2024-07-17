@@ -117,10 +117,7 @@ def is_service_in_scotland(service_ref: str) -> bool:
         .add_traveline_region_details()
         .first()
     )
-    if not service_obj:
-        return False
-
-    if service_obj.traveline_region:
+    if service_obj and service_obj.traveline_region:
         regions = service_obj.traveline_region.split("|")
         return SCOTLAND_TRAVELINE_REGIONS in regions
 
