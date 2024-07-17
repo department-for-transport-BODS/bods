@@ -58,8 +58,10 @@ urlpatterns = [
     path("privacy-policy/", PrivacyPolicyView.as_view(), name="privacy-policy"),
     path("account/", include("config.urls.allauth")),
     path("changelog/", ChangelogView.as_view(), name="changelog"),
-    path("django_axe/", include("django_axe.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
+    urlpatterns = [path("django_axe/", include("django_axe.urls"))] + urlpatterns
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
@@ -86,5 +88,3 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
-if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [path("django_axe/", include("django_axe.urls"))] + urlpatterns
