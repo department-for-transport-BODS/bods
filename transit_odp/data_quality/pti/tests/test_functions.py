@@ -1200,6 +1200,9 @@ def test_check_vehicle_journey_timing_links_with_errors(values, expected):
 
 @pytest.mark.django_db
 def test_validate_licence_number_coach_data():
+    """
+    This test case validates LicenceNumber is not a mandatory element for Operators with PrimaryMode as Coach
+    """
     NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
     string_xml = DATA_DIR / "coach_operator.xml"
     with string_xml.open("r") as txc_xml:
@@ -1211,6 +1214,9 @@ def test_validate_licence_number_coach_data():
 
 @pytest.mark.django_db
 def test_validate_licence_number_non_coach_data_success():
+    """
+    This test case validates LicenceNumber is a mandatory element for Non Coach Operators
+    """
     NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
     string_xml = DATA_DIR / "non_coach_data_operator.xml"
     with string_xml.open("r") as txc_xml:
@@ -1222,6 +1228,9 @@ def test_validate_licence_number_non_coach_data_success():
 
 @pytest.mark.django_db
 def test_validate_licence_number_non_coach_data_failed():
+    """
+    This test case validates LicenceNumber is a mandatory element for Non Coach Operators
+    """
     NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
     string_xml = DATA_DIR / "non_coach_data_operator_without_licence_number.xml"
     with string_xml.open("r") as txc_xml:
