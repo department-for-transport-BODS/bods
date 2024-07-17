@@ -17,7 +17,6 @@ from transit_odp.site_admin.urls import (
 )
 from transit_odp.site_admin.views import AdminHomeView
 from transit_odp.users.views.auth import InviteOnlySignupView
-from django_axe import urls
 
 urlpatterns = [
     path("", AdminHomeView.as_view(), name="home"),
@@ -63,8 +62,6 @@ urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
 ]
 
-if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [path("axe/", include(urls, namespace="django_axe"))] + urlpatterns
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
