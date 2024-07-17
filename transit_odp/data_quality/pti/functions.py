@@ -562,15 +562,12 @@ def check_vehicle_journey_timing_links(
 def validate_licence_number(context, elements):
     ns = {"x": elements[0].nsmap.get(None)}
     for element in elements:
-        primary_mode = element.xpath("//x:PrimaryMode", namespaces=ns)
+        primary_mode = element.xpath(".//x:PrimaryMode", namespaces=ns)
+        licence_number = element.xpath(".//x:LicenceNumber", namespaces=ns)
         if primary_mode:
             primary_mode_text = primary_mode[0].text
-            if primary_mode_text.lower() == "coach":
-                continue
-            else:
-                return False  # validation failed for Primary_Mode != coach
-        else:
-            licence_number = element.xpath("//x:LicenceNumber", namespaces=ns)
-            if not (licence_number and licence_number[0].text):
-                return False
+            if primary_mode_text.lower() != "coach":
+                return False  # Validation failed for Primary_Mode != coach
+        elif not (licence_number and licence_number[0].text):
+            return False
     return True
