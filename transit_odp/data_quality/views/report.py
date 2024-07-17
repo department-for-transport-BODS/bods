@@ -54,6 +54,7 @@ class ReportOverviewView(DetailView):
     def get_context_data(self, **kwargs):
         revision_id = None
         context = super().get_context_data(**kwargs)
+        print(self.get_queryset())
         report = self.get_object()
         if kwargs.get("object"):
             revision_id = kwargs.get("object").revision_id
@@ -69,6 +70,7 @@ class ReportOverviewView(DetailView):
                 "bus_services_affected": summary.bus_services_affected,
             }
         )
+        print(" This is the report overview")
         return context
 
 

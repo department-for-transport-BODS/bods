@@ -21,6 +21,7 @@ from typing import Dict
 import math
 import re
 from waffle import flag_is_active
+from transit_odp.data_quality.report_summary import Summary
 
 
 class FeedDetailView(OrgUserViewMixin, BaseDetailView):
@@ -41,11 +42,12 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
             .add_is_live_pti_compliant()
             .select_related("live_revision")
         )
-        print(query.query)
+        # print(query.query)
         return query
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
+        # kwargs["warning_data"] = "some text to test"
         print("before adding report_id")
         print(kwargs)
 
@@ -54,6 +56,10 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
         live_revision = dataset.live_revision
         report = live_revision.report.order_by("-created").first()
         print("report ", report)
+        print("printing live_revision")
+        print(live_revision.id)
+        warning_data = Summary.get_report(report.summary, live_revision.id)
+        kwargs["warning_data"] = warning_data
         summary = getattr(report, "summary", None)
 
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)

@@ -71,8 +71,8 @@ class Summary(BaseModel):
         ]
         data = (
             ObservationResults.objects.filter(
-                taskresults__dataquality_report_id=report_id,
-                taskresults__dataquality_report__revision_id=revision_id,
+                taskresults__dataquality_report_id=19,
+                taskresults__dataquality_report__revision_id=36,
             )
             .annotate(
                 details_annotation=F("details"),
@@ -89,6 +89,8 @@ class Summary(BaseModel):
             )
             .values(*columns)
         )
+        print("Printing the query of the report")
+        print(data.query)
         return pd.DataFrame(data)
 
     @classmethod
@@ -164,6 +166,8 @@ class Summary(BaseModel):
                 CRITICAL_INTRO if level.value == "Critical" else ADVISORY_INTRO
             )
             warning_data[level.value]["count"] = 0
+        print("WARNING DATA!!!!!")
+        print(warning_data)
         return warning_data
 
     @classmethod
