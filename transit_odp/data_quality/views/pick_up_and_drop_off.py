@@ -24,9 +24,9 @@ from transit_odp.data_quality.views.base import (
 )
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
-from transit_odp.dqs.views import DQSWarningListBaseView
+from transit_odp.dqs.views import DQSWarningListBaseView, DQSDetailBaseView
 from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
-
+from transit_odp.dqs.tables.pick_up_and_set_down import LastStopIsSetDownOnlyTable
 from waffle import flag_is_active
 
 
@@ -94,7 +94,7 @@ class LastStopPickUpDetailView(TwoTableDetailView):
         return context
 
 
-class DQSLastStopPickUpDetailView(DetailBaseView):
+class DQSLastStopPickUpDetailView(DQSDetailBaseView):
     data = LastStopPickUpOnlyObservation
     model = ObservationResults
     table_class = DQSWarningDetailsBaseTable
@@ -107,18 +107,18 @@ class DQSLastStopPickUpDetailView(DetailBaseView):
         title = self.data.title
         service_code = self.request.GET.get("service")
         line = self.request.GET.get("line")
-        # line_name = self.warning.get_timing_pattern().service_pattern.service.name
+
+        qs = self.get_queryset()
 
         context["title"] = title
         context["subtitle"] = (
             f"Service {service_code} has at least one journey where the last stop is "
             f"designated as pick up only"
         )
+        context["num_of_journeys"] = len(qs)
 
-        print("df imported")
-        qs = self.get_queryset()
         page = self.request.GET.get("page", 1)
-        context["df"] = DQSWarningDetailsBaseTable(qs, page)
+        context["table"] = LastStopIsSetDownOnlyTable(qs, page)
         return context
 
     def get_queryset(self):
@@ -142,17 +142,6 @@ class DQSLastStopPickUpDetailView(DetailBaseView):
         )
 
         return qs
-
-        # Create data for the dataframe
-        data = {
-            "start time": ["09:00", "12:30", "15:45"],
-            "direction": ["North", "South", "West"],
-            "last stop": ["Station A", "Station B", "Station C"],
-        }
-
-        # Create the dataframe
-        df = pd.DataFrame(data)
-        return df
 
 
 class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseView):

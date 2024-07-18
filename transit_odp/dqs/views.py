@@ -1,5 +1,8 @@
 from django.shortcuts import render
-from django_tables2 import SingleTableView
+from django.views.generic import TemplateView
+from django_tables2 import MultiTableMixin, SingleTableView
+from django_hosts import reverse
+import config.hosts
 
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
@@ -35,8 +38,6 @@ class DQSWarningListBaseView(SingleTableView):
 
     def get_table_kwargs(self):
         pass
-
-
 class DQSWarningDetailsBaseView(SingleTableView):
     # template_name = "data_quality/warning_list.html"
     table_class = DQSWarningListBaseTable
@@ -65,3 +66,47 @@ class DQSWarningDetailsBaseView(SingleTableView):
 
     def get_table_kwargs(self):
         pass
+
+
+class DQSDetailBaseView(MultiTableMixin, TemplateView):
+    template_name = "dqs/observation_detail.html"
+    model = None
+    related_model = None
+    related_object = None
+    tables = []
+    paginate_by = 10
+
+    @property
+    def data(self):
+        raise NotImplementedError("Warning detail views must have data attribute")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Map variables defined largely as empty strings, with values overridden
+        # in views as needed for that map
+        revision_id = kwargs.get("pk")
+        context.update(
+            {
+                # for map -- empty strings passed if specific geometry not needed
+                "service_pattern_id": "",
+                "stop_ids": "",
+                "effected_stop_ids": "",
+                "service_link_ids": "",
+                "api_root": reverse(
+                    "dq-api:api-root",
+                    host=config.hosts.PUBLISH_HOST,
+                ),
+                # for backlink -- inheriting views need data attribute set to
+                # relevant constant
+                "back_url": reverse(
+                    self.data.list_url_name,
+                    kwargs={
+                        "pk": revision_id,
+                        "pk1": kwargs.get("pk1"),
+                        "report_id": kwargs.get("report_id"),
+                    },
+                    host=config.hosts.PUBLISH_HOST,
+                ),
+            }
+        )
+        return context
