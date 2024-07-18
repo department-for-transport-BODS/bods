@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import F, TextField, CharField, Func
+from django.db.models import F, TextField, CharField
 from transit_odp.dqs.constants import TaskResultsStatus, Checks
 from django.db.models.expressions import Value
 from django.db.models.functions import (
@@ -143,7 +143,6 @@ class ObservationResultsQueryset(models.QuerySet):
                 taskresults__dataquality_report__revision_id=revision_id,
             )
             .annotate(
-                # service_pattern_stop
                 journey_start_time=Concat(
                     LPad(
                         Cast(

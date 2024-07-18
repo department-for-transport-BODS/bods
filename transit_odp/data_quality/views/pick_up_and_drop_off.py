@@ -27,9 +27,7 @@ from transit_odp.data_quality.views.base import (
 )
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
-from transit_odp.dqs.views.base import DQSWarningListBaseView, DQSWarningDetailBaseView
-from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
-from transit_odp.dqs.tables.pick_up_and_set_down import LastStopIsSetDownOnlyTable
+from transit_odp.dqs.views.base import DQSWarningListBaseView
 from waffle import flag_is_active
 
 
