@@ -14,7 +14,6 @@ class DQSWarningDetailsBaseTable(GovUkTable):
         self.show_header = True
         self.show_footer = False
         self._prefix = self._page_field = None
-        # tables.TimeColumn(format="H:i", orderable=False)
 
         self.journey_start_time = tables.TimeColumn(
             verbose_name="Journey Start Time",
@@ -38,7 +37,6 @@ class DQSWarningDetailsBaseTable(GovUkTable):
             self.direction,
             self.stop_name,
         ]
-        print(f"curr_page: {curr_page}, {type(curr_page)}")
         paginator = Paginator(qs, paginate_by)
         self.paginator = paginator
         self.page = self.paginator.page(curr_page)

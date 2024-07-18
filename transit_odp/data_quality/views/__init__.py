@@ -26,7 +26,6 @@ from .pick_up_and_drop_off import (
     FirstStopDropOffListView,
     LastStopPickUpDetailView,
     LastStopPickUpListView,
-    DQSLastStopPickUpDetailView,
 )
 from .report import ReportCSVDownloadView, ReportOverviewView
 from .service_link_missing_stop import (
@@ -72,7 +71,6 @@ __all__ = [
     "LastStopNotTimingListView",
     "LastStopPickUpDetailView",
     "LastStopPickUpListView",
-    "DQSLastStopPickUpDetailView",
     "LineExpiredListView",
     "LineMissingBlockIDDetailView",
     "LineMissingBlockIDListView",

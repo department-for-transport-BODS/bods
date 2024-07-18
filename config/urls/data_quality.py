@@ -1,6 +1,7 @@
 from django.urls import include, path
 
 from transit_odp.data_quality import views
+from transit_odp.dqs import views as DQSviews
 
 app_name = "dq"
 
@@ -134,7 +135,7 @@ urlpatterns = [
                 ),
                 path(
                     "detail/",
-                    view=views.DQSLastStopPickUpDetailView.as_view(),
+                    view=DQSviews.DQSLastStopPickUpDetailView.as_view(),
                     name="last-stop-pick-up-only-detail",
                 ),
             ]

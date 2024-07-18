@@ -182,6 +182,4 @@ class ObservationResultsQueryset(models.QuerySet):
             .values(*columns)
         )
 
-        print(qs.query)
-
         return qs
