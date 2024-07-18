@@ -1,5 +1,6 @@
 from .base import DQSWarningDetailsBaseTable
 
+
 class LastStopIsSetDownOnlyTable(DQSWarningDetailsBaseTable):
     def __init__(self, *args, **kwargs):
 
