@@ -489,7 +489,10 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
             )
             vj_departure_time = departure_time
             if dead_run_time:
-                departure_time = departure_time + pd.to_timedelta(dead_run_time.text)
+                parsed_dead_run_time = isodate.parse_duration(dead_run_time.text)
+                departure_time = departure_time + pd.to_timedelta(
+                    parsed_dead_run_time.total_seconds(), unit="s"
+                )
 
             journey_pattern_ref_element = vehicle_journey.get_element_or_none(
                 ["JourneyPatternRef"]
@@ -540,7 +543,12 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                     ).text
                     run_time_element = links.get_element_or_none(["RunTime"])
                     if run_time_element:
-                        run_time = pd.to_timedelta(run_time_element.text)
+                        parsed_run_time_element = isodate.parse_duration(
+                            run_time_element.text
+                        )
+                        run_time = pd.to_timedelta(
+                            parsed_run_time_element.total_seconds(), unit="s"
+                        )
                     else:
                         run_time = pd.NaT
                     from_wait_time_element = links.get_element_or_none(["From"])
