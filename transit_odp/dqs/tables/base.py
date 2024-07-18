@@ -16,7 +16,7 @@ class DQSWarningDetailsBaseTable(GovUkTable):
         self._prefix = self._page_field = None
 
         self.journey_start_time = tables.TimeColumn(
-            verbose_name="Journey Start Time",
+            verbose_name="Journey start time",
             orderable=False,
             empty_values=(),
             format="H:i",
@@ -31,7 +31,7 @@ class DQSWarningDetailsBaseTable(GovUkTable):
             empty_values=(),
             attrs={"is_link": True},
         )
-        self.stop_name = tables.Column(verbose_name="Stop Name")
+        self.stop_name = tables.Column(verbose_name="Stop name")
         self.columns = [
             self.journey_start_time,
             self.direction,

@@ -1,18 +1,14 @@
-from transit_odp.data_quality.constants import (
-    FirstStopSetDownOnlyObservation,
-    LastStopPickUpOnlyObservation,
-)
-
+from transit_odp.data_quality.constants import StopNotInNaptanObservation
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
 from transit_odp.dqs.views.base import DQSWarningDetailBaseView
 from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
-from transit_odp.dqs.tables.pick_up_and_set_down import LastStopIsSetDownOnlyTable
+from transit_odp.dqs.tables.stop_not_found import StopNotFoundInNaptanOnlyTable
 from transit_odp.organisation.models import Dataset
 
 
-class DQSLastStopPickUpDetailView(DQSWarningDetailBaseView):
-    data = LastStopPickUpOnlyObservation
+class DQSStopMissingNaptanDetailView(DQSWarningDetailBaseView):
+    data = StopNotInNaptanObservation
     model = ObservationResults
     table_class = DQSWarningDetailsBaseTable
     paginate_by = 10
@@ -29,12 +25,12 @@ class DQSLastStopPickUpDetailView(DQSWarningDetailBaseView):
 
         context["title"] = title
         context["subtitle"] = (
-            f"Service {service_code} has at least one journey where the last stop is "
-            f"designated as pick up only"
+            f"Service {service_code} has at least one journey with a stop that "
+            "is not found in NaPTAN"
         )
         context["num_of_journeys"] = len(qs)
 
-        context["table"] = LastStopIsSetDownOnlyTable(qs, page)
+        context["table"] = StopNotFoundInNaptanOnlyTable(qs, page)
         return context
 
     def get_queryset(self):
@@ -47,7 +43,7 @@ class DQSLastStopPickUpDetailView(DQSWarningDetailBaseView):
         if not len(qs):
             return qs
         revision_id = qs[0].live_revision_id
-        self.check = Checks.LastStopIsPickUpOnly
+        self.check = Checks.StopNotFoundInNaptan
 
         qs = ObservationResults.objects.get_observations_details(
             report_id, self.check, revision_id
