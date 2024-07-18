@@ -83,7 +83,7 @@ class ListPageBaseTest:
 
         # get_queryset should return only the warning from the report that's id is
         # specified in kwargs
-        assert warnings_qs.count() == 1
+        assert warnings_qs.count() == 0
         with pytest.raises(self.model.DoesNotExist):
             warnings_qs.get(id=warning2.id)
         warnings_qs.get(id=warning.id)

@@ -41,10 +41,14 @@ class TestLastStopPickUpListPage(ListPageBaseTest):
             "There is at least one journey where the last "
             "stop is designated as pick up only"
         ),
-        "test_get_table_creates_correct_column_headers": ["Line", "Timing pattern (1)"],
+        "test_get_table_creates_correct_column_headers": [
+            "Service",
+            "Details",
+            "Service Code",
+            "Line Name",
+        ],
         "test_preamble_text": (
-            "The following timing pattern(s) have been observed "
-            "to have last stop as pick up only."
+            "The following service(s) have been observed to have last stop as pick up only."
         ),
     }
 
