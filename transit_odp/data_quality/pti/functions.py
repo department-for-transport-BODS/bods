@@ -14,6 +14,7 @@ from transit_odp.data_quality.pti.constants import (
     SCOTTISH_BANK_HOLIDAYS,
 )
 from transit_odp.naptan.models import StopPoint
+from transit_odp.otc.utils import is_service_in_scotland
 
 PROHIBITED = r",[]{}^=@:;#$£?%+<>«»\/|~_¬"
 
@@ -224,9 +225,27 @@ def validate_bank_holidays(context, bank_holidays):
     if sorted(list(set(holidays))) != sorted(holidays):
         return False
 
+    service_ref = get_service_ref_from_element(element, ns)
+    if service_ref and is_service_in_scotland(service_ref):
+        english_removed = list(set(holidays) - set(BANK_HOLIDAYS))
+        return sorted(SCOTTISH_BANK_HOLIDAYS) == sorted(english_removed)
+
     # optional Scottish holiday check
     scottish_removed = list(set(holidays) - set(SCOTTISH_BANK_HOLIDAYS))
     return sorted(BANK_HOLIDAYS) == sorted(scottish_removed)
+
+
+def get_service_ref_from_element(element, ns):
+    vj = element.xpath("ancestor::x:VehicleJourney", namespaces=ns)
+    service_ref = None
+    if vj:
+        service_ref = vj[0].xpath("string(x:ServiceRef)", namespaces=ns)
+    else:
+        service = element.xpath("ancestor::x:Service", namespaces=ns)
+        if service:
+            service_ref = service[0].xpath("string(x:ServiceCode)", namespaces=ns)
+
+    return service_ref
 
 
 def check_service_group_validations(context, services):
@@ -556,4 +575,29 @@ def check_vehicle_journey_timing_links(
 
     if len(vehicle_journey_timing_links) != journey_pattern_sections_refs_ids:
         return False
+    return True
+
+
+def validate_licence_number(context, elements: List[etree._Element]) -> bool:
+    """
+    Validate the license number within a list of XML elements if Primary Mode is not coach.
+
+    This function checks if the PrimaryMode is not "coach", then LicenceNumber is mandatory and should be non-empty.
+
+    Args:
+        context: The context in which the function is called.
+        elements (list): A list of XML elements to validate
+
+    Returns:
+        bool: True if all elements are valid according to the specified rules,
+              False otherwise.
+    """
+    ns = {"x": elements[0].nsmap.get(None)}
+    for element in elements:
+        primary_mode = element.xpath(".//x:PrimaryMode", namespaces=ns)
+        licence_number = element.xpath(".//x:LicenceNumber", namespaces=ns)
+        if primary_mode and primary_mode[0].text.lower() == "coach":
+            continue
+        elif not (licence_number and licence_number[0].text):
+            return False
     return True
