@@ -172,24 +172,24 @@ class ServicePatternStop(models.Model):
         """
         Generate sequence numbers incrementally for the'auto_sequence_number' column.
         """
-        generating_sequence = False
-
+        print(">>>>>")
         if not self.vehicle_journey:
             return None
 
-        if not generating_sequence:
-            generating_sequence = True
-            stops = ServicePatternStop.objects.filter(
-                vehicle_journey=self.vehicle_journey
-            ).order_by("id")
+        stops = ServicePatternStop.objects.filter(
+            vehicle_journey=self.vehicle_journey
+        ).order_by("id")
 
-            for index, stop in enumerate(stops):
-                stop.auto_sequence_number = index
-                stop.save(update_fields=["auto_sequence_number"])
+        for index, stop in enumerate(stops):
+            stop.auto_sequence_number = index
+            stop.save(update_fields=["auto_sequence_number"])
 
     def save(self, *args, **kwargs):
+        print("before_save>>>>")
         super().save(*args, **kwargs)
+        print("after_save>>>>")
         self.update_auto_sequence_numbers()
+        print("after_update_auto_sequence_numbers>>>>")
 
 
 class ServiceLink(models.Model):
