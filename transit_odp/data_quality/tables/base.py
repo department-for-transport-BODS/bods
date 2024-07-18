@@ -139,8 +139,6 @@ class WarningListBaseTable(GovUkTable):
             "th": {"class": "govuk-table__header"},
         }
 
-    table_pagination = None
-    pagination_top = False
     pagination_bottom = True
 
     def __init__(self, *args, **kwargs):
@@ -239,6 +237,7 @@ class JourneyListTable(WarningListBaseTable):
             date = "unknown date"
         finally:
             return date
+
 
 # TODO: DQSMIGRATION: Move to dqs module
 class DQSWarningListBaseTable(GovUkTable):

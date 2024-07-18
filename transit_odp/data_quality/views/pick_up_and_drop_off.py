@@ -2,11 +2,13 @@ from transit_odp.data_quality.constants import (
     FirstStopSetDownOnlyObservation,
     LastStopPickUpOnlyObservation,
 )
+
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.models.warnings import (
     TimingDropOffWarning,
     TimingPickUpWarning,
 )
+
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.tables import (
     FirstStopDropOffOnlyDetail,
@@ -16,6 +18,7 @@ from transit_odp.data_quality.tables import (
     PickUpDropOffListTable,
 )
 from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
+
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.views.base import (
     DetailBaseView,

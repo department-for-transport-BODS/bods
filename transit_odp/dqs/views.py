@@ -38,6 +38,8 @@ class DQSWarningListBaseView(SingleTableView):
 
     def get_table_kwargs(self):
         pass
+
+
 class DQSWarningDetailsBaseView(SingleTableView):
     # template_name = "data_quality/warning_list.html"
     table_class = DQSWarningListBaseTable

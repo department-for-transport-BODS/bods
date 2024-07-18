@@ -4,9 +4,8 @@
 {# Using django_tables2 'table_page_range' tag to return a list of max 10 (by default) page numbers #}
 {# note in the 'querystring' tags, I've hardcoded query param 'page', could use prefixed_page_field #}
 {% with prefixed_page_field=prefixed_page_field|default:"page" %}
-
   {% with params=request.GET.urlencode %}
-    {% block pagination %}    
+    {% block pagination %}
       <nav class="justify-center-l govuk-pagination" role="navigation" aria-label="Pagination">
         {% if page.has_previous %}
           <div class="govuk-pagination__prev">
@@ -27,7 +26,6 @@
             </a>
           </div>
         {% endif %}
-
         <ul class="govuk-pagination__list">
           {% for item in page|paginator_range:paginator %}
             {% if page.number == item %}

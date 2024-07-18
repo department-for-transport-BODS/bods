@@ -4,7 +4,6 @@ from django.core.paginator import Paginator
 
 
 class DQSWarningDetailsBaseTable(GovUkTable):
-
     def __init__(self, *args, **kwargs):
 
         self.template_name = "dqs/snippets/dqs_warning_detail.html"

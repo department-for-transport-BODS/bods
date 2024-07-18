@@ -13,6 +13,7 @@ from django.db.models.functions import (
     Cast,
 )
 
+
 class TaskResultsQueryset(models.QuerySet):
     """
     This queryset class is to include all querysets related to the TaskResults model

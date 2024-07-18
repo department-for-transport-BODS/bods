@@ -17,7 +17,7 @@
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{% trans "Which journeys have been affected?" %}</h1>
         <div class="total_vehicles">
           <span class="govuk-heading-xl govuk-!-margin-0">{{num_of_journeys}}</span>
-          <span class="govuk-body-s govuk-!-font-weight-bold">Total journeys affected
+          <span class="govuk-body-s">Total journeys affected
             {% if start_date %}from {{ start_date|date:"d/m/Y" }}{% endif %}
           </span>
         </div>

@@ -74,7 +74,7 @@ class DetailBaseView(MultiTableMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         # add warning to view so that we can use self.warning in other methods instead
         # of repeatedly using self.get_warning() and hammering the db
-        # self.warning = self.get_warning()
+        self.warning = self.get_warning()
         return super().get(request, *args, **kwargs)
 
     def get_warning(self):
@@ -126,8 +126,6 @@ class DetailBaseView(MultiTableMixin, TemplateView):
 
         Override this method to further customize pagination for a `View`.
         """
-        print("in the custom pagination")
-
         # Edited line
         paginate = table.table_pagination
         if paginate is False:
@@ -232,29 +230,15 @@ class OneTableDetailView(DetailBaseView):
 class TwoTableDetailView(DetailBaseView):
     def get_tables(self):
         # This style of detail page has two tables: timing pattern and vehicle journeys
-
-        print("tables called")
-        import pandas as pd
-
-        # Create data for the dataframe
-        data = {
-            "start time": ["09:00", "12:30", "15:45"],
-            "direction": ["North", "South", "West"],
-            "last stop": ["Station A", "Station B", "Station C"],
-        }
-
-        # Create the dataframe
-        df = pd.DataFrame(data)
-        return [df]
-        # assert (
-        #     len(self.tables) == 2
-        # ), "View must have two tables, for timing pattern and vehicle journeys"
-        # table1_class = self.tables[0]
-        # table2_class = self.tables[1]
-        # return [
-        #     table1_class(self.get_queryset1(), **self.get_table1_kwargs()),
-        #     table2_class(self.get_queryset2(), **self.get_table2_kwargs()),
-        # ]
+        assert (
+            len(self.tables) == 2
+        ), "View must have two tables, for timing pattern and vehicle journeys"
+        table1_class = self.tables[0]
+        table2_class = self.tables[1]
+        return [
+            table1_class(self.get_queryset1(), **self.get_table1_kwargs()),
+            table2_class(self.get_queryset2(), **self.get_table2_kwargs()),
+        ]
 
     def get_queryset1(self):
         timing_pattern = self.warning.get_timing_pattern()
@@ -295,10 +279,7 @@ class TwoTableDetailView(DetailBaseView):
         return date
 
     def get_context_data(self, **kwargs):
-
-        return self.kwargs
         context = super().get_context_data(**kwargs)
-
         vehicle_journeys = self.warning.get_vehicle_journeys()
         # For text above table 2
         context["start_date"] = self.get_earliest_vehicle_journey_date(vehicle_journeys)
