@@ -12,7 +12,8 @@ from transit_odp.users.views.mixins import OrgUserViewMixin
 from ..report_summary import Summary
 from .mixins import WithDraftRevision
 from waffle import flag_is_active
-from transit_odp.dqs.models import Report 
+from transit_odp.dqs.models import Report
+
 
 class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision):
     permanent = False
@@ -34,7 +35,7 @@ class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision)
         return super().get_redirect_url(*args, **kwargs)
 
 
-#TODO: DQSMIGRATION: REMOVE
+# TODO: DQSMIGRATION: REMOVE
 class ReportOverviewView(DetailView):
     template_name = "data_quality/report.html"
     pk_url_kwarg = "report_id"
@@ -57,9 +58,15 @@ class ReportOverviewView(DetailView):
         if kwargs.get("object"):
             revision_id = kwargs.get("object").revision_id
 
-        is_new_data_quality_service_active = flag_is_active("","is_new_data_quality_service_active")
+        is_new_data_quality_service_active = flag_is_active(
+            "", "is_new_data_quality_service_active"
+        )
         if is_new_data_quality_service_active:
-            report = Report.objects.filter(revision_id=revision_id).order_by("-created").first()
+            report = (
+                Report.objects.filter(revision_id=revision_id)
+                .order_by("-created")
+                .first()
+            )
             report_id = report.id if report else None
         else:
             report = self.get_object()
@@ -75,7 +82,7 @@ class ReportOverviewView(DetailView):
                 "warning_data": summary.data,
                 "total_warnings": summary.count,
                 "bus_services_affected": summary.bus_services_affected,
-                "is_new_data_quality_service_active" : is_new_data_quality_service_active
+                "is_new_data_quality_service_active": is_new_data_quality_service_active,
             }
         )
         return context

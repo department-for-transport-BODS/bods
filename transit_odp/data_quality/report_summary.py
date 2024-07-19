@@ -21,15 +21,15 @@ ADVISORY_INTRO = (
 )
 
 URL_MAPPING = {
-                "First stop is set down only": "drop-off-only",
-                "Last stop is pick up only": "pick-up-only",
-                "Stop not found in NaPTAN": "stop-not-in-naptan",
-                }
+    "First stop is set down only": "drop-off-only",
+    "Last stop is pick up only": "pick-up-only",
+    "Stop not found in NaPTAN": "stop-not-in-naptan",
+}
 
 
 # TODO: DQSMIGRATION: REMOVE
 class Summary(BaseModel):
-    
+
     data: Dict = {}
     count: int = 0
     bus_services_affected: int = 0
@@ -105,7 +105,7 @@ class Summary(BaseModel):
     @classmethod
     def get_report(cls, report_id, revision_id):
         """Generate a summary of the data quality report
-        Functionality: 
+        Functionality:
         - Check if the is_new_data_quality_service_active flag is active,
           then it will return empty warning data report.
         - Get the data quality report as a pandas dataframe by report_id and revision_id
@@ -115,14 +115,16 @@ class Summary(BaseModel):
         - Count the number of services affected by the observation
         - Create a dictionary of warning data
         - Return the warning data report
-        
+
 
         Returns:
             class instance with data as the warning data report, and count of all warnings.
         """
 
-        if report_id is None or revision_id is None or not flag_is_active(
-            "", "is_new_data_quality_service_active"
+        if (
+            report_id is None
+            or revision_id is None
+            or not flag_is_active("", "is_new_data_quality_service_active")
         ):
             return cls(data=cls.initialize_warning_data(), count=0)
         warning_data = {}
@@ -166,7 +168,7 @@ class Summary(BaseModel):
                     df["importance"] == level.value
                 ]["number_of_services_affected"].sum()
                 importance_df = df[df["importance"] == level.value]
-                #TODO: change df to something like data, or better name in the dict
+                # TODO: change df to something like data, or better name in the dict
                 warning_data[level.value]["df"] = {}
                 warning_data[level.value]["intro"] = (
                     CRITICAL_INTRO if level.value == "Critical" else ADVISORY_INTRO

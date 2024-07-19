@@ -22,7 +22,7 @@ import math
 import re
 from waffle import flag_is_active
 from transit_odp.data_quality.report_summary import Summary
-from transit_odp.dqs.models import Report 
+from transit_odp.dqs.models import Report
 
 
 class FeedDetailView(OrgUserViewMixin, BaseDetailView):
@@ -30,7 +30,7 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
     model = Dataset
 
     def get_queryset(self):
-        
+
         query = (
             super()
             .get_queryset()
@@ -48,18 +48,25 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
-        is_new_data_quality_service_active = flag_is_active("","is_new_data_quality_service_active")
-        kwargs["is_new_data_quality_service_active"] = is_new_data_quality_service_active
+        is_new_data_quality_service_active = flag_is_active(
+            "", "is_new_data_quality_service_active"
+        )
+        kwargs["is_new_data_quality_service_active"] = (
+            is_new_data_quality_service_active
+        )
         dataset = self.object
         live_revision = dataset.live_revision
-        
+
         if is_new_data_quality_service_active:
-            report = Report.objects.filter(revision_id=live_revision.id).order_by("-created").first()
+            report = (
+                Report.objects.filter(revision_id=live_revision.id)
+                .order_by("-created")
+                .first()
+            )
             warning_data = Summary.get_report(report.id, live_revision.id)
             kwargs["warning_data"] = warning_data
         else:
             report = live_revision.report.order_by("-created").first()
-
 
         kwargs["report_id"] = report.id if report else None
         summary = getattr(report, "summary", None)
