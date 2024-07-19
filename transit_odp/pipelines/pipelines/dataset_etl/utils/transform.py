@@ -182,6 +182,17 @@ def transform_service_pattern_stops(
     service_pattern_stops.set_index(
         ["file_id"], append=True, verify_integrity=True, inplace=True
     )
+
+    service_pattern_stops["auto_sequence_number"] = service_pattern_stops.groupby(
+        "vehicle_journey_code"
+    ).cumcount()
+
+    print("Grouped DataFrame:")
+    for name, group in service_pattern_stops.groupby("vehicle_journey_code"):
+        print(f"vehicle_journey_code: {name}")
+        print(group[["vehicle_journey_code", "auto_sequence_number"]])
+
+    print("service_pattern_stops>>>", service_pattern_stops.to_csv())
     return service_pattern_stops
 
 

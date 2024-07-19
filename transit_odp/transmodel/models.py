@@ -168,29 +168,6 @@ class ServicePatternStop(models.Model):
             f"{self.id}, {self.atco_code}, service_pattern: {self.service_pattern.id}"
         )
 
-    def update_auto_sequence_numbers(self):
-        """
-        Generate sequence numbers incrementally for the'auto_sequence_number' column.
-        """
-        print(">>>>>")
-        if not self.vehicle_journey:
-            return None
-
-        stops = ServicePatternStop.objects.filter(
-            vehicle_journey=self.vehicle_journey
-        ).order_by("id")
-
-        for index, stop in enumerate(stops):
-            stop.auto_sequence_number = index
-            stop.save(update_fields=["auto_sequence_number"])
-
-    def save(self, *args, **kwargs):
-        print("before_save>>>>")
-        super().save(*args, **kwargs)
-        print("after_save>>>>")
-        self.update_auto_sequence_numbers()
-        print("after_update_auto_sequence_numbers>>>>")
-
 
 class ServiceLink(models.Model):
     # Retain the from/to atco codes in case the naptan_stops disappear in a
