@@ -89,3 +89,6 @@ CHECKS_DATA = [
         "queue_name": "incorrect-licence-number-queue",
     },
 ]
+
+
+BUS_SERVICES_AFFECTED_SUBSET = ["service_code", "line_name"]

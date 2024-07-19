@@ -8,6 +8,7 @@ from transit_odp.dqs.models import ObservationResults
 import pandas as pd
 from django.db.models import F
 from waffle import flag_is_active
+from transit_odp.dqs.constants import BUS_SERVICES_AFFECTED_SUBSET
 
 CRITICAL_INTRO = (
     "These observations are considered critical in terms of data quality. "
@@ -19,7 +20,6 @@ ADVISORY_INTRO = (
     "Advisory observations should be investigated and addressed."
 )
 
-BUS_SERVICES_AFFECTED_SUBSET = ["service_code", "line_name"]
 URL_MAPPING = {
                 "First stop is set down only": "drop-off-only",
                 "Last stop is pick up only": "pick-up-only",
@@ -66,6 +66,11 @@ class Summary(BaseModel):
 
     @classmethod
     def get_dataframe_report(cls, report_id, revision_id):
+        """Get the data quality report as a pandas dataframe
+        by report_id and revision_id
+        Returns:
+            DF : DataFrame contains the data quality report or empty DataFrame
+        """
         columns = [
             "importance",
             "category",
@@ -99,6 +104,23 @@ class Summary(BaseModel):
 
     @classmethod
     def get_report(cls, report_id, revision_id):
+        """Generate a summary of the data quality report
+        Functionality: 
+        - Check if the is_new_data_quality_service_active flag is active,
+          then it will return empty warning data report.
+        - Get the data quality report as a pandas dataframe by report_id and revision_id
+        - If the dataframe is empty, then it will return empty warning data report.
+        - Get the unique combinations of service_code and line_name
+        - Group the dataframe by observation, category, and importance
+        - Count the number of services affected by the observation
+        - Create a dictionary of warning data
+        - Return the warning data report
+        
+
+        Returns:
+            class instance with data as the warning data report, and count of all warnings.
+        """
+
         if report_id is None or revision_id is None or not flag_is_active(
             "", "is_new_data_quality_service_active"
         ):
