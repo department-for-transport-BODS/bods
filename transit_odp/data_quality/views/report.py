@@ -12,7 +12,7 @@ from transit_odp.users.views.mixins import OrgUserViewMixin
 from ..report_summary import Summary
 from .mixins import WithDraftRevision
 from waffle import flag_is_active
-
+from transit_odp.dqs.models import Report 
 
 class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision):
     permanent = False
@@ -54,23 +54,30 @@ class ReportOverviewView(DetailView):
     def get_context_data(self, **kwargs):
         revision_id = None
         context = super().get_context_data(**kwargs)
-        print(self.get_queryset())
-        report = self.get_object()
         if kwargs.get("object"):
             revision_id = kwargs.get("object").revision_id
 
-        summary = Summary.get_report(report.summary, revision_id)
-        rag = get_data_quality_rag(report)
+        is_new_data_quality_service_active = flag_is_active("","is_new_data_quality_service_active")
+        if is_new_data_quality_service_active:
+            report = Report.objects.filter(revision_id=revision_id).order_by("-created").first()
+            report_id = report.id if report else None
+        else:
+            report = self.get_object()
+            report_id = report.summary.report_id
+            rag = get_data_quality_rag(report)
+            context.update({"dq_score": rag})
+
+        summary = Summary.get_report(report_id, revision_id)
+
         context.update(
             {
                 "title": report.revision.name,
                 "warning_data": summary.data,
                 "total_warnings": summary.count,
-                "dq_score": rag,
                 "bus_services_affected": summary.bus_services_affected,
+                "is_new_data_quality_service_active" : is_new_data_quality_service_active
             }
         )
-        print(" This is the report overview")
         return context
 
 

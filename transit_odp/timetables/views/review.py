@@ -124,7 +124,6 @@ class PublishRevisionView(BaseTimetableReviewView):
                 "distinct_attributes": get_distinct_dataset_txc_attributes(revision.id),
             }
         )
-        print("from publish revision view")
         return context
 
     def get_success_url(self):

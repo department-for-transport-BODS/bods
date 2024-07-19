@@ -20,6 +20,12 @@ ADVISORY_INTRO = (
 )
 
 BUS_SERVICES_AFFECTED_SUBSET = ["service_code", "line_name"]
+URL_MAPPING = {
+                "First stop is set down only": "drop-off-only",
+                "Last stop is pick up only": "pick-up-only",
+                "Stop not found in NaPTAN": "stop-not-in-naptan",
+                }
+
 
 # TODO: DQSMIGRATION: REMOVE
 class Summary(BaseModel):
@@ -71,8 +77,8 @@ class Summary(BaseModel):
         ]
         data = (
             ObservationResults.objects.filter(
-                taskresults__dataquality_report_id=19,
-                taskresults__dataquality_report__revision_id=36,
+                taskresults__dataquality_report_id=report_id,
+                taskresults__dataquality_report__revision_id=revision_id,
             )
             .annotate(
                 details_annotation=F("details"),
@@ -89,22 +95,17 @@ class Summary(BaseModel):
             )
             .values(*columns)
         )
-        print("Printing the query of the report")
-        print(data.query)
         return pd.DataFrame(data)
 
     @classmethod
-    def get_report(cls, report_summary: DataQualityReportSummary, revision_id):
-        if not flag_is_active(
-        "", "is_new_data_quality_service_active"
-            ):
-            return cls.initialize_warning_data()
-        
-        if revision_id is None:
+    def get_report(cls, report_id, revision_id):
+        if report_id is None or revision_id is None or not flag_is_active(
+            "", "is_new_data_quality_service_active"
+        ):
             return cls(data=cls.initialize_warning_data(), count=0)
         warning_data = {}
         try:
-            df = cls.get_dataframe_report(report_summary.report_id, revision_id)
+            df = cls.get_dataframe_report(report_id, revision_id)
             if df.empty:
                 return cls(data=cls.initialize_warning_data(), count=0)
             bus_services_affected = cls.qet_service_code_line_name_unique_combinations(
@@ -132,6 +133,10 @@ class Summary(BaseModel):
                 )
                 .reset_index()
             )
+            # Add column on the df for the url from the url mapping, if the obeervation is not in mapping use None
+            df["url"] = df["observation"].map(URL_MAPPING)
+            # change nan to no-url in url column only
+            df["url"] = df["url"].fillna("no-url")
 
             for level in Level:
                 warning_data[level.value] = {}
@@ -139,6 +144,7 @@ class Summary(BaseModel):
                     df["importance"] == level.value
                 ]["number_of_services_affected"].sum()
                 importance_df = df[df["importance"] == level.value]
+                #TODO: change df to something like data, or better name in the dict
                 warning_data[level.value]["df"] = {}
                 warning_data[level.value]["intro"] = (
                     CRITICAL_INTRO if level.value == "Critical" else ADVISORY_INTRO
@@ -166,8 +172,6 @@ class Summary(BaseModel):
                 CRITICAL_INTRO if level.value == "Critical" else ADVISORY_INTRO
             )
             warning_data[level.value]["count"] = 0
-        print("WARNING DATA!!!!!")
-        print(warning_data)
         return warning_data
 
     @classmethod
