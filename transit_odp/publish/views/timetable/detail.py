@@ -63,7 +63,8 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
                 .order_by("-created")
                 .first()
             )
-            warning_data = Summary.get_report(report.id, live_revision.id)
+            report_id = report.id if report else None
+            warning_data = Summary.get_report(report_id, live_revision.id)
             kwargs["warning_data"] = warning_data
         else:
             report = live_revision.report.order_by("-created").first()
