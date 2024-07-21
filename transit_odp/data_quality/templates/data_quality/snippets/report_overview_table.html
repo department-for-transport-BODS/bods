@@ -24,23 +24,24 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-  {% for idx, row in df.iterrows %}
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header govuk-!-font-weight-regular ">{{row.number_of_services_affected}}</th>
-            <td class="govuk-table__cell">
-              {% if row.url != 'no-url' %}
-              <a href="{% url 'dq:overview' pk1=view.kwargs.pk1 pk=view.kwargs.pk report_id=view.kwargs.report_id host hosts.publish %}{{row.url}}">
-              {% else %}
-              <a href="{% url 'dq:overview' pk1=view.kwargs.pk1 pk=view.kwargs.pk report_id=view.kwargs.report_id host hosts.publish %}{{row.observation|lower|replace_spaces}}">
-              {% endif %}
-                {{row.observation}}
-              </a>
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-  {% endfor %}
+    {% for idx, row in df.iterrows %}
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header govuk-!-font-weight-regular ">{{row.number_of_services_affected}}</th>
+              <td class="govuk-table__cell">
+                {% if row.url != 'no-url' %}
+                <a href="{% url 'dq:overview' pk1=view.kwargs.pk1 pk=view.kwargs.pk report_id=view.kwargs.report_id host hosts.publish %}{{row.url}}">
+                  {{row.observation}}
+                </a>
+                  {% else %}
+                  <a href="{% url 'dq:overview' pk1=view.kwargs.pk1 pk=view.kwargs.pk report_id=view.kwargs.report_id host hosts.publish %}{{row.observation|lower|replace_spaces}}">
+                  {{row.observation}}
+                  </a>
+                    {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
   {% endfor %}
 {% for category_title, category_data in level_data.categories.items %}
   {% if category_data.count %}

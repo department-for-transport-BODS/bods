@@ -12,7 +12,7 @@ from transit_odp.dqs.constants import BUS_SERVICES_AFFECTED_SUBSET
 
 CRITICAL_INTRO = (
     "These observations are considered critical in terms of data quality. "
-    "An operator should aim to have zero critical observations in their data.!!"
+    "An operator should aim to have zero critical observations in their data."
 )
 ADVISORY_INTRO = (
     "These observations suggest there may be an error in the data. "
@@ -82,8 +82,10 @@ class Summary(BaseModel):
         ]
         data = (
             ObservationResults.objects.filter(
-                taskresults__dataquality_report_id=report_id,
-                taskresults__dataquality_report__revision_id=revision_id,
+                # taskresults__dataquality_report_id=report_id,
+                taskresults__dataquality_report_id=30,
+                taskresults__dataquality_report__revision_id=54,
+                # taskresults__dataquality_report__revision_id=revision_id,
             )
             .annotate(
                 details_annotation=F("details"),
@@ -161,7 +163,8 @@ class Summary(BaseModel):
             df["url"] = df["observation"].map(URL_MAPPING)
             # change nan to no-url in url column only
             df["url"] = df["url"].fillna("no-url")
-
+            print("DF")
+            print(df)
             for level in Level:
                 warning_data[level.value] = {}
                 warning_data[level.value]["count"] = df[

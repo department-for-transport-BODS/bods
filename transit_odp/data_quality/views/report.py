@@ -15,6 +15,7 @@ from waffle import flag_is_active
 from transit_odp.dqs.models import Report
 
 
+
 class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision):
     permanent = False
     query_string = False
@@ -35,21 +36,40 @@ class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision)
         return super().get_redirect_url(*args, **kwargs)
 
 
+
 # TODO: DQSMIGRATION: REMOVE
 class ReportOverviewView(DetailView):
     template_name = "data_quality/report.html"
     pk_url_kwarg = "report_id"
-    model = DataQualityReport
 
     def get_queryset(self):
+
         dataset_id = self.kwargs["pk"]
-        result = (
+
+        is_new_data_quality_service_active = flag_is_active("", "is_new_data_quality_service_active")
+        # change model based on the flag
+        if is_new_data_quality_service_active:
+            self.model = Report
+            result = (
             super()
             .get_queryset()
-            .add_number_of_lines()
             .filter(revision__dataset_id=dataset_id)
-            .select_related("summary")
-        )
+            .filter(id=self.kwargs["report_id"])
+            .filter(status="PIPELINE_SUCCEDED")
+            .select_related("revision")
+            # .filter(dataset_id=54)
+            # .filter(revision_id=54)
+            )
+        else:
+            self.model = DataQualityReport
+            print("getting report without the flag")
+            result = (
+                super()
+                .get_queryset()
+                .filter(revision__dataset_id=dataset_id)
+                .select_related("summary")
+            )
+        print("resultss", result.query)
         return result
 
     def get_context_data(self, **kwargs):
@@ -57,10 +77,7 @@ class ReportOverviewView(DetailView):
         context = super().get_context_data(**kwargs)
         if kwargs.get("object"):
             revision_id = kwargs.get("object").revision_id
-
-        is_new_data_quality_service_active = flag_is_active(
-            "", "is_new_data_quality_service_active"
-        )
+        is_new_data_quality_service_active = flag_is_active("", "is_new_data_quality_service_active")
         if is_new_data_quality_service_active:
             report = (
                 Report.objects.filter(revision_id=revision_id)
@@ -69,6 +86,7 @@ class ReportOverviewView(DetailView):
             )
             report_id = report.id if report else None
         else:
+            print("getting report without the flag")
             report = self.get_object()
             report_id = report.summary.report_id
             rag = get_data_quality_rag(report)
@@ -85,6 +103,7 @@ class ReportOverviewView(DetailView):
                 "is_new_data_quality_service_active": is_new_data_quality_service_active,
             }
         )
+        print("contexting", context)
         return context
 
 
