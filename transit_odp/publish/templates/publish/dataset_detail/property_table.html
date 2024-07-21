@@ -121,7 +121,9 @@
         {% endif %}
       </span>
       {% if dq_score  or report_id %}
-        <p class="govuk-!-margin-top-3">{% include "snippets/data_quality_row.html" with rag=dq_score warning_data=warning_data %}</p>
+        <p class="govuk-!-margin-top-3">
+          {% include "snippets/data_quality_row.html" with rag=dq_score warning_data=warning_data %}
+        </p>
       {% endif %}
     </td>
   </tr>
