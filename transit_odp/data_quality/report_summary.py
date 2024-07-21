@@ -82,10 +82,9 @@ class Summary(BaseModel):
         ]
         data = (
             ObservationResults.objects.filter(
-                # taskresults__dataquality_report_id=report_id,
-                taskresults__dataquality_report_id=30,
-                taskresults__dataquality_report__revision_id=54,
-                # taskresults__dataquality_report__revision_id=revision_id,
+                taskresults__dataquality_report_id=report_id,
+                taskresults__dataquality_report__revision_id=revision_id,
+                taskresults__dataquality_report__status="PIPELINE_SUCCEDED",
             )
             .annotate(
                 details_annotation=F("details"),
@@ -163,8 +162,6 @@ class Summary(BaseModel):
             df["url"] = df["observation"].map(URL_MAPPING)
             # change nan to no-url in url column only
             df["url"] = df["url"].fillna("no-url")
-            print("DF")
-            print(df)
             for level in Level:
                 warning_data[level.value] = {}
                 warning_data[level.value]["count"] = df[

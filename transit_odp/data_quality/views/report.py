@@ -43,11 +43,8 @@ class ReportOverviewView(DetailView):
     pk_url_kwarg = "report_id"
 
     def get_queryset(self):
-
         dataset_id = self.kwargs["pk"]
-
         is_new_data_quality_service_active = flag_is_active("", "is_new_data_quality_service_active")
-        # change model based on the flag
         if is_new_data_quality_service_active:
             self.model = Report
             result = (
@@ -57,19 +54,15 @@ class ReportOverviewView(DetailView):
             .filter(id=self.kwargs["report_id"])
             .filter(status="PIPELINE_SUCCEDED")
             .select_related("revision")
-            # .filter(dataset_id=54)
-            # .filter(revision_id=54)
             )
         else:
             self.model = DataQualityReport
-            print("getting report without the flag")
             result = (
                 super()
                 .get_queryset()
                 .filter(revision__dataset_id=dataset_id)
                 .select_related("summary")
             )
-        print("resultss", result.query)
         return result
 
     def get_context_data(self, **kwargs):
@@ -81,12 +74,13 @@ class ReportOverviewView(DetailView):
         if is_new_data_quality_service_active:
             report = (
                 Report.objects.filter(revision_id=revision_id)
+                .filter(status="PIPELINE_SUCCEDED")
                 .order_by("-created")
                 .first()
             )
             report_id = report.id if report else None
+            context.update({"is_new_data_quality_service_active": is_new_data_quality_service_active})
         else:
-            print("getting report without the flag")
             report = self.get_object()
             report_id = report.summary.report_id
             rag = get_data_quality_rag(report)
@@ -100,10 +94,8 @@ class ReportOverviewView(DetailView):
                 "warning_data": summary.data,
                 "total_warnings": summary.count,
                 "bus_services_affected": summary.bus_services_affected,
-                "is_new_data_quality_service_active": is_new_data_quality_service_active,
             }
         )
-        print("contexting", context)
         return context
 
 

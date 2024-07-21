@@ -12,10 +12,7 @@ class ReportOverviewView(DetailView):
     is_new_data_quality_service_active = flag_is_active("", "is_new_data_quality_service_active")
     model = Report 
     def get_queryset(self):
-        print("is_new_data_quality_service_active")
-        print(self.is_new_data_quality_service_active)
         dataset_id = self.kwargs["pk"]
-        print("getting report with the flag")
         result = (
             super()
             .get_queryset()
@@ -24,7 +21,6 @@ class ReportOverviewView(DetailView):
             .filter(status="PIPELINE_SUCCEDED")
             .select_related("revision")
         )
-        print("resultss", result.query)
         return result
 
     def get_context_data(self, **kwargs):
@@ -35,6 +31,7 @@ class ReportOverviewView(DetailView):
 
         report = (
             Report.objects.filter(revision_id=revision_id)
+            .filter(status="PIPELINE_SUCCEDED")
             .order_by("-created")
             .first()
         )
@@ -51,5 +48,4 @@ class ReportOverviewView(DetailView):
                 "is_new_data_quality_service_active": self.is_new_data_quality_service_active,
             }
         )
-        print("contexting", context)
         return context

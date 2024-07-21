@@ -61,6 +61,7 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
             report = (
                 Report.objects.filter(revision_id=live_revision.id)
                 .order_by("-created")
+                .filter(status="PIPELINE_SUCCEDED")
                 .first()
             )
             report_id = report.id if report else None
