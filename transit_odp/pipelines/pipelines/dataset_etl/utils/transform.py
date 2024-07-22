@@ -155,7 +155,12 @@ def transform_service_pattern_stops(
     service_pattern_to_service_links: pd.DataFrame,
     stop_points: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Create service pattern stops sequence data which is ordered as per the stops mapped in journey pattern and journey pattern sections"""
+    """
+    Create service pattern stops sequence data which is ordered as per
+    the stops mapped in journey pattern and journey pattern sections.
+
+    Additionally, adding logic to handle populating 'auto_sequence_number'.
+    """
     columns = ["file_id", "service_pattern_id"]
     if "vehicle_journey_code" in service_pattern_to_service_links.columns:
         columns.append("vehicle_journey_code")
@@ -184,15 +189,9 @@ def transform_service_pattern_stops(
     )
 
     service_pattern_stops["auto_sequence_number"] = service_pattern_stops.groupby(
-        "vehicle_journey_code"
+        ["file_id", "vehicle_journey_code", "service_pattern_id"]
     ).cumcount()
 
-    print("Grouped DataFrame:")
-    for name, group in service_pattern_stops.groupby("vehicle_journey_code"):
-        print(f"vehicle_journey_code: {name}")
-        print(group[["vehicle_journey_code", "auto_sequence_number"]])
-
-    print("service_pattern_stops>>>", service_pattern_stops.to_csv())
     return service_pattern_stops
 
 
