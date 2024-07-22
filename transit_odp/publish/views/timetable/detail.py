@@ -52,9 +52,9 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
         is_new_data_quality_service_active = flag_is_active(
             "", "is_new_data_quality_service_active"
         )
-        kwargs["is_new_data_quality_service_active"] = (
-            is_new_data_quality_service_active
-        )
+        kwargs[
+            "is_new_data_quality_service_active"
+        ] = is_new_data_quality_service_active
         dataset = self.object
         live_revision = dataset.live_revision
 
