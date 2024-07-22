@@ -9,7 +9,6 @@ from transit_odp.data_quality.report_summary import Summary
 class ReportOverviewView(DetailView):
     template_name = "data_quality/report.html"
     pk_url_kwarg = "report_id"
-    is_new_data_quality_service_active = flag_is_active("", "is_new_data_quality_service_active")
     model = Report 
     def get_queryset(self):
         dataset_id = self.kwargs["pk"]
