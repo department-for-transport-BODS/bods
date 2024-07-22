@@ -188,9 +188,10 @@ def transform_service_pattern_stops(
         ["file_id"], append=True, verify_integrity=True, inplace=True
     )
 
-    service_pattern_stops["auto_sequence_number"] = service_pattern_stops.groupby(
-        ["file_id", "vehicle_journey_code", "service_pattern_id"]
-    ).cumcount()
+    if "vehicle_journey_code" in service_pattern_stops.columns:
+        service_pattern_stops["auto_sequence_number"] = service_pattern_stops.groupby(
+            ["file_id", "vehicle_journey_code", "service_pattern_id"]
+        ).cumcount()
 
     return service_pattern_stops
 
