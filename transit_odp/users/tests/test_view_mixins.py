@@ -16,6 +16,7 @@ from transit_odp.users.views.mixins import (
 pytestmark = pytest.mark.django_db
 
 
+@pytest.mark.django_db
 class TestOrgUserViewMixin:
     redirect_url = reverse("users:home", host=config.hosts.PUBLISH_HOST)
 
@@ -47,6 +48,7 @@ class TestOrgUserViewMixin:
             self.DummyView.as_view()(request)
 
 
+@pytest.mark.django_db
 class TestOrgAdminViewMixin:
     redirect_url = reverse("users:home", host=config.hosts.PUBLISH_HOST)
 
@@ -80,6 +82,7 @@ class TestOrgAdminViewMixin:
             self.DummyView.as_view()(request)
 
 
+@pytest.mark.django_db
 class TestSiteAdminViewMixin:
     class DummyView(SiteAdminViewMixin, TemplateView):
         template_name = "page.html"
@@ -112,6 +115,7 @@ class TestSiteAdminViewMixin:
             self.DummyView.as_view()(request)
 
 
+@pytest.mark.django_db
 class TestSiteAdminOrOrgAdminViewMixin:
     class DummyView(SiteAdminOrOrgAdminViewMixin, TemplateView):
         template_name = "page.html"
@@ -153,6 +157,7 @@ class TestSiteAdminOrOrgAdminViewMixin:
             self.DummyView.as_view()(request)
 
 
+@pytest.mark.django_db
 class TestAgentOrgAdminViewMixin:
     redirect_url = reverse("users:home", host=config.hosts.PUBLISH_HOST)
 

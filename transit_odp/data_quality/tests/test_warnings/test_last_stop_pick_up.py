@@ -32,6 +32,7 @@ def warning():
     )
 
 
+@pytest.mark.django_db
 class TestLastStopPickUpListPage(ListPageBaseTest):
     model = models.TimingDropOffWarning
     factory = factories.TimingDropOffWarningFactory
@@ -53,6 +54,7 @@ class TestLastStopPickUpListPage(ListPageBaseTest):
     }
 
 
+@pytest.mark.django_db
 class TestLastStopPickUpDetailPage(DetailPageBaseTest):
     # Naming is very, very confusing
     model = models.TimingDropOffWarning

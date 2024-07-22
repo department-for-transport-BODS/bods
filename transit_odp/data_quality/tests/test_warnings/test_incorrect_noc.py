@@ -17,6 +17,7 @@ def warning():
     return factories.IncorrectNOCWarningFactory.create(noc="NOC1")
 
 
+@pytest.mark.django_db
 class TestIncorrectNocListPage(ListPageBaseTest):
     model = models.IncorrectNOCWarning
     factory = factories.IncorrectNOCWarningFactory
