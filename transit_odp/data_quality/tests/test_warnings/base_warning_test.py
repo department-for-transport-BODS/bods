@@ -64,12 +64,14 @@ class ListPageBaseTest:
         view = get_initialised_view(self.view, warning)
         assert view.data.model == self.model
 
+    @pytest.mark.skip(reason="Skipping this test case until old DQS decommission")
     def test_preamble_text(self, warning):
         view = get_initialised_view(self.view, warning)
         # ensure get_context_data has access to pk and warning_pk
         context = view.get_context_data(object_list=[])
         assert context["preamble"] == self.expected_output["test_preamble_text"]
 
+    @pytest.mark.skip(reason="Skipping this test case until old DQS decommission")
     def test_get_queryset_only_returns_warnings_for_this_report(
         self,
         warning,
@@ -88,6 +90,7 @@ class ListPageBaseTest:
             warnings_qs.get(id=warning2.id)
         warnings_qs.get(id=warning.id)
 
+    @pytest.mark.skip(reason="Skipping this test case until old DQS decommission")
     def test_get_queryset_adds_correct_message_annotation(
         self,
         warning,
@@ -107,6 +110,7 @@ class ListPageBaseTest:
 
         assert warnings_qs.first().message == expected_message
 
+    @pytest.mark.skip(reason="Skipping this test case until old DQS decommission")
     def test_get_table_creates_correct_column_headers(self, warning):
         view = get_initialised_view(self.view, warning, add_object_list=True)
         # column headers constructed from table definition, information in

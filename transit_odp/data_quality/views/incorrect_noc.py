@@ -17,9 +17,11 @@ from waffle import flag_is_active
 
 class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
     data = IncorrectNocObservation
-    is_new_data_quality_service_active = flag_is_active(
-        "", "is_new_data_quality_service_active"
-    )
+    
+    @property
+    def is_new_data_quality_service_active(self):
+        return flag_is_active("", "is_new_data_quality_service_active")
+
     check = Checks.IncorrectNoc
 
     if not is_new_data_quality_service_active:

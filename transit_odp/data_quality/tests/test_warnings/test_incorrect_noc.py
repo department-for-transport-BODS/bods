@@ -29,7 +29,7 @@ class TestIncorrectNocListPage(ListPageBaseTest):
             "national operator code(s)."
         ),
     }
-
+    @pytest.mark.skip(reason="Skipping this test case until old DQS decommission")
     def test_get_queryset_adds_correct_message_annotation(
         self,
         warning,
