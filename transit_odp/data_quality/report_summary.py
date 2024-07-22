@@ -8,8 +8,7 @@ from transit_odp.dqs.models import ObservationResults
 import pandas as pd
 from django.db.models import F
 from waffle import flag_is_active
-from transit_odp.dqs.constants import BUS_SERVICES_AFFECTED_SUBSET
-
+from transit_odp.dqs.constants import BUS_SERVICES_AFFECTED_SUBSET, ReportStatus
 CRITICAL_INTRO = (
     "These observations are considered critical in terms of data quality. "
     "An operator should aim to have zero critical observations in their data."
@@ -84,7 +83,7 @@ class Summary(BaseModel):
             ObservationResults.objects.filter(
                 taskresults__dataquality_report_id=report_id,
                 taskresults__dataquality_report__revision_id=revision_id,
-                taskresults__dataquality_report__status="PIPELINE_SUCCEDED",
+                taskresults__dataquality_report__status=ReportStatus.PIPELINE_SUCCEEDED.value,
             )
             .annotate(
                 details_annotation=F("details"),

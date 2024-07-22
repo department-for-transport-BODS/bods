@@ -3,9 +3,11 @@ from django.views.generic import DetailView
 from waffle import flag_is_active
 from transit_odp.dqs.models import Report
 from transit_odp.data_quality.report_summary import Summary
+from transit_odp.dqs.constants import ReportStatus
 # Create your views here.
 
 
+# TODO: DQSMIGRATION: Utilise this view to replace the old ReportOverviewView
 class ReportOverviewView(DetailView):
     template_name = "data_quality/report.html"
     pk_url_kwarg = "report_id"
@@ -17,7 +19,7 @@ class ReportOverviewView(DetailView):
             .get_queryset()
             .filter(revision__dataset_id=dataset_id)
             .filter(id=self.kwargs["report_id"])
-            .filter(status="PIPELINE_SUCCEDED")
+            .filter(status=ReportStatus.PIPELINE_SUCCEEDED.value)
             .select_related("revision")
         )
         return result
@@ -30,12 +32,7 @@ class ReportOverviewView(DetailView):
         is_new_data_quality_service_active = flag_is_active(
             "", "is_new_data_quality_service_active"
         )
-        report = (
-            Report.objects.filter(revision_id=revision_id)
-            .filter(status="PIPELINE_SUCCEDED")
-            .order_by("-created")
-            .first()
-        )
+        report = self.get_object()
         report_id = report.id if report else None
 
         summary = Summary.get_report(report_id, revision_id)

@@ -23,6 +23,7 @@ import re
 from waffle import flag_is_active
 from transit_odp.data_quality.report_summary import Summary
 from transit_odp.dqs.models import Report
+from transit_odp.dqs.constants import ReportStatus
 
 
 class FeedDetailView(OrgUserViewMixin, BaseDetailView):
@@ -61,7 +62,7 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
             report = (
                 Report.objects.filter(revision_id=live_revision.id)
                 .order_by("-created")
-                .filter(status="PIPELINE_SUCCEDED")
+                .filter(status=ReportStatus.PIPELINE_SUCCEEDED.value)
                 .first()
             )
             report_id = report.id if report else None

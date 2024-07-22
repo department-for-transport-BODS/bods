@@ -13,6 +13,7 @@ from ..report_summary import Summary
 from .mixins import WithDraftRevision
 from waffle import flag_is_active
 from transit_odp.dqs.models import Report
+from transit_odp.dqs.constants import ReportStatus
 
 
 
@@ -52,7 +53,7 @@ class ReportOverviewView(DetailView):
             .get_queryset()
             .filter(revision__dataset_id=dataset_id)
             .filter(id=self.kwargs["report_id"])
-            .filter(status="PIPELINE_SUCCEDED")
+            .filter(status=ReportStatus.PIPELINE_SUCCEEDED.value)
             .select_related("revision")
             )
         else:
@@ -70,18 +71,12 @@ class ReportOverviewView(DetailView):
         context = super().get_context_data(**kwargs)
         if kwargs.get("object"):
             revision_id = kwargs.get("object").revision_id
+        report = self.get_object()
         is_new_data_quality_service_active = flag_is_active("", "is_new_data_quality_service_active")
         if is_new_data_quality_service_active:
-            report = (
-                Report.objects.filter(revision_id=revision_id)
-                .filter(status="PIPELINE_SUCCEDED")
-                .order_by("-created")
-                .first()
-            )
             report_id = report.id if report else None
             context.update({"is_new_data_quality_service_active": is_new_data_quality_service_active})
         else:
-            report = self.get_object()
             report_id = report.summary.report_id
             rag = get_data_quality_rag(report)
             context.update({"dq_score": rag})
