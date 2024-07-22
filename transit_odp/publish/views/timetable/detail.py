@@ -21,6 +21,9 @@ from typing import Dict
 import math
 import re
 from waffle import flag_is_active
+from transit_odp.data_quality.report_summary import Summary
+from transit_odp.dqs.models import Report
+from transit_odp.dqs.constants import ReportStatus
 
 
 class FeedDetailView(OrgUserViewMixin, BaseDetailView):
@@ -28,7 +31,8 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
     model = Dataset
 
     def get_queryset(self):
-        return (
+
+        query = (
             super()
             .get_queryset()
             .filter(
@@ -41,17 +45,35 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
             .add_is_live_pti_compliant()
             .select_related("live_revision")
         )
+        return query
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
-
+        is_new_data_quality_service_active = flag_is_active(
+            "", "is_new_data_quality_service_active"
+        )
+        kwargs[
+            "is_new_data_quality_service_active"
+        ] = is_new_data_quality_service_active
         dataset = self.object
         live_revision = dataset.live_revision
-        report = live_revision.report.order_by("-created").first()
-        summary = getattr(report, "summary", None)
 
+        if is_new_data_quality_service_active:
+            report = (
+                Report.objects.filter(revision_id=live_revision.id)
+                .order_by("-created")
+                .filter(status=ReportStatus.PIPELINE_SUCCEEDED.value)
+                .first()
+            )
+            report_id = report.id if report else None
+            warning_data = Summary.get_report(report_id, live_revision.id)
+            kwargs["warning_data"] = warning_data
+        else:
+            report = live_revision.report.order_by("-created").first()
+
+        kwargs["report_id"] = report.id if report else None
+        summary = getattr(report, "summary", None)
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-        kwargs["admin_areas"] = self.object.admin_area_names
         kwargs["pk"] = dataset.id
         kwargs["pk1"] = self.kwargs["pk1"]
 
@@ -73,7 +95,6 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
         )
         kwargs["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
 
-        kwargs["report_id"] = report.id if summary else None
         kwargs["dq_score"] = get_data_quality_rag(report) if summary else None
         kwargs["distinct_attributes"] = get_distinct_dataset_txc_attributes(
             live_revision.id
@@ -104,7 +125,6 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
     def get_direction_timetable(
         self, df_timetable: pd.DataFrame, direction: str = "outbound"
     ) -> Dict:
-
         """
         Get the timetable details like the total, current page and the dataframe
         based on the timetable dataframe and the direction.
