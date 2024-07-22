@@ -142,6 +142,7 @@ THIRD_PARTY_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "waffle",
+    "django_axe.apps.DjangoAxeConfig",
 ]
 LOCAL_APPS = [
     "transit_odp.api.apps.ApiConfig",
@@ -709,3 +710,9 @@ if env("GEOS_LIBRARY_PATH", default=None):
     GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")
 
 MAPBOX_KEY = env("MAPBOX_KEY", default=None)
+
+DJANGO_AXE_REPORT_PATH = os.path.join(
+    str(APPS_DIR.path("static")), "accessibility_report.json"
+)
+DJANGO_AXE_ENABLED = env.bool("DJANGO_AXE_ENABLED", default=False)
+DD_DBM_PROPAGATION_MODE = "full"

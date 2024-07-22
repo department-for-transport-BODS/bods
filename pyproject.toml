@@ -66,6 +66,7 @@ whitenoise = "~=6.6.0"
 setuptools="~=69.0.3"
 beautifulsoup4 = "^4.12.2"
 isodate = "^0.6.1"
+django-axe = "^0.5.11"
 
 [tool.poetry.dev-dependencies]
 black = {version = "22.3.0", extras = ["colorama"]}

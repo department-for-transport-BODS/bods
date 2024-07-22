@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load cookie_consent_tags %}
 {% load parse_dictionary %}
+{% load django_axe %}
 <!DOCTYPE html>
 <html lang="en" class="govuk-template">
   <head>
@@ -31,7 +32,7 @@
       {% cookielaw_banner %}
       {% csrf_token %}
       <script>
-          document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');
+                document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');
       </script>
       {% block skiplink %}
         <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link" role="button">Skip to main content</a>
@@ -43,28 +44,29 @@
         <script src="{% static 'frontend/vendor.bundle.js' %}"></script>
         <script src="{% static 'frontend/main.bundle.js' %}"></script>
         <script>
-          new BODSFrontend.MyAccountMenu();
-          BODSFrontend.initAll();
+                    new BODSFrontend.MyAccountMenu();
+                    BODSFrontend.initAll();
         </script>
         {% if not request.COOKIES.keys|is_value_in_dict:'cookie_policy' %}
           <!-- Global site tag (gtag.js) - Google Analytics -->
           <script async src="https://www.googletagmanager.com/gtag/js?id={{GOOGLE_ANALYTICS_KEY}}"></script>
           <script>
-            const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag('js', new Date());
-            gtag('config', gaToken);
+                        const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag() {
+                            dataLayer.push(arguments);
+                        }
+                        gtag('js', new Date());
+                        gtag('config', gaToken);
           </script>
         {% else %}
           <script>
-            const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
-            window['ga-disable-' + gaToken] = true;
+                        const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
+                        window['ga-disable-' + gaToken] = true;
           </script>
         {% endif %}
       {% endblock %}
+      {% django_axe_script %}
     </body>
   {% endblock %}
 </html>
