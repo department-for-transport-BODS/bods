@@ -27,7 +27,9 @@ class ReportOverviewView(DetailView):
         context = super().get_context_data(**kwargs)
         if kwargs.get("object"):
             revision_id = kwargs.get("object").revision_id
-
+        is_new_data_quality_service_active = flag_is_active(
+            "", "is_new_data_quality_service_active"
+        )
         report = (
             Report.objects.filter(revision_id=revision_id)
             .filter(status="PIPELINE_SUCCEDED")
@@ -44,7 +46,7 @@ class ReportOverviewView(DetailView):
                 "warning_data": summary.data,
                 "total_warnings": summary.count,
                 "bus_services_affected": summary.bus_services_affected,
-                "is_new_data_quality_service_active": self.is_new_data_quality_service_active,
+                "is_new_data_quality_service_active": is_new_data_quality_service_active,
             }
         )
         return context
