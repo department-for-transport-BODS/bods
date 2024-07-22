@@ -74,7 +74,6 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
         kwargs["report_id"] = report.id if report else None
         summary = getattr(report, "summary", None)
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-        # kwargs["admin_areas"] = self.object.admin_area_names
         kwargs["pk"] = dataset.id
         kwargs["pk1"] = self.kwargs["pk1"]
 
