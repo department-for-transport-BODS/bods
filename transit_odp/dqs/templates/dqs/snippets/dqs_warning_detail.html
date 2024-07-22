@@ -1,0 +1,88 @@
+{% load django_tables2 %}
+{% load i18n %}
+{% block table-wrapper %}
+  <div>
+    {% block table %}
+      <table class="custom_govuk_table" {% render_attrs table.attrs %}>
+        {% if table.caption %}
+          <caption class="govuk-table__caption {{ table.attrs.caption.class |default_if_none:"" }}">{{ table.caption }}</caption>
+        {% endif %}
+        {% block table.thead %}
+      
+          {% if table.show_header %}
+            <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:"" }}">
+              <tr class="govuk-table__row">
+                {% for column in table.columns %}                
+                  <th aria-sort="none" role="columnheader" scope="col" class="govuk-table__header">
+                      {{ column.header }}                    
+                  </th>
+                {% endfor %}
+              </tr>
+            </thead>
+          {% endif %}
+        {% endblock table.thead %}
+        {% block table.tbody %}
+          <tbody class="govuk-table__body {{ table.attrs.tbody.class |default_if_none:"" }}">
+            {% for row in table.paginated_rows %}
+              {% block table.tbody.row %}
+                <tr class="govuk-table__row {{ row.attrs.class }}">
+                  {% for column, cell in row.items %}                  
+                    {% if forloop.first %}
+                      <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
+                        {% if column.localize == None %}
+                          {{ cell }}
+                        {% else %}
+                          {% if column.localize %}
+                            {{ cell|localize }}
+                          {% else %}
+                            {{ cell|unlocalize }}
+                          {% endif %}
+                        {% endif %}
+                      </td>
+                    {% else %}
+                      <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
+                        {% if column.localize == None %}
+                          {{ cell }}
+                        {% else %}
+                          {% if column.localize %}
+                            {{ cell|localize }}
+                          {% else %}
+                            {{ cell|unlocalize }}
+                          {% endif %}
+                        {% endif %}
+                      </td>
+                    {% endif %}
+                  {% endfor %}
+                </tr>
+              {% endblock table.tbody.row %}
+            {% empty %}
+              {% if table.empty_text %}
+                {% block table.tbody.empty_text %}
+                  <tr class="govuk-table__row">
+                    <td class="govuk-table__cell" colspan="{{ table.columns|length }}">{{ table.empty_text }}</td>
+                  </tr>
+                {% endblock table.tbody.empty_text %}
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        {% endblock table.tbody %}
+        {% block table.tfoot %}
+          {% if table.has_footer %}
+            <tfoot {{ table.attrs.tfoot.as_html }}>
+              <tr class="govuk-table__row">
+                {% for column in table.columns %}
+                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">{{ column.footer }}</td>
+                {% endfor %}
+              </tr>
+            </tfoot>
+          {% endif %}
+        {% endblock table.tfoot %}
+      </table>
+    {% endblock table %}
+    {% block pagination.bottom %}
+      {% if table.pagination_bottom %}
+        {% include "snippets/pagination.html" with paginator=table.paginator prefixed_page_field=table.prefixed_page_field page=table.page %}
+      {% endif %}
+    {% endblock %}
+  </div>
+{% endblock table-wrapper %}

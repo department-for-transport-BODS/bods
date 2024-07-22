@@ -59,6 +59,7 @@ class Observation:
     def type(self):
         return self.category.value
 
+
 # TODO: DQSMIGRATION: Move to dqs module
 IncorrectNocObservation = Observation(
     title="Incorrect NOC code",

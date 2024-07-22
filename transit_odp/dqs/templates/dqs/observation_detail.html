@@ -1,0 +1,38 @@
+{% extends "data_quality/base.html" %}
+{% load render_table from django_tables2 %}
+{% load i18n %}
+{% block title_tag %}
+  {% blocktrans %}{{ title }} observation detail{% endblocktrans %}
+{% endblock %}
+{% block backlink %}
+  {% include "snippets/backlink.html" with url=back_url %}
+{% endblock %}
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <span class="govuk-caption-xl govuk-!-margin-bottom-6">{{ title }}</span>
+      <h1 class="govuk-heading-xl">{{ subtitle }}</h1>      
+      
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{% trans "Which journeys have been affected?" %}</h1>
+        <div class="total_vehicles">
+          <span class="govuk-heading-xl govuk-!-margin-0">{{num_of_journeys}}</span>
+          <span class="govuk-body-s">Total journeys affected
+            {% if start_date %}from {{ start_date|date:"d/m/Y" }}{% endif %}
+          </span>
+        </div>
+        <p class="govuk-body">          
+          Below is list of the vehicle journeys for this service that are affected by the “{{title}}” data quality observation. 
+          Please refer back to these journeys in your scheduling tool and update the corresponding timetable(s) to address this.
+        </p>      
+
+        {% render_table table %}      
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  {{ block.super }}
+  <script>
+      BODSFrontend.initWarningDetailMap("{{ api_root }}", "{{ service_pattern_id }}", "{{ stop_ids }}", "{{ effected_stop_ids }}", "{{ service_link_ids }}");
+  </script>
+{% endblock %}

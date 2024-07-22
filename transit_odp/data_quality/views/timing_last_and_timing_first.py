@@ -2,11 +2,13 @@ from transit_odp.data_quality.constants import (
     FirstStopNotTimingPointObservation,
     LastStopNotTimingPointObservation,
 )
+
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.models.warnings import (
     TimingFirstWarning,
     TimingLastWarning,
 )
+
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.tables import (
     TimingFirstWarningDetailTable,
@@ -14,11 +16,13 @@ from transit_odp.data_quality.tables import (
     TimingLastWarningDetailTable,
     TimingLastWarningVehicleTable,
 )
+
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.tables.base import (
     TimingPatternListTable,
     DQSWarningListBaseTable,
 )
+
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.views.base import (
     TimingPatternsListBaseView,
@@ -26,7 +30,7 @@ from transit_odp.data_quality.views.base import (
 )
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
-from transit_odp.dqs.views import DQSWarningListBaseView
+from transit_odp.dqs.views.base import DQSWarningListBaseView
 from waffle import flag_is_active
 
 

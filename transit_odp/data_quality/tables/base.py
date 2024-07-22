@@ -238,6 +238,7 @@ class JourneyListTable(WarningListBaseTable):
         finally:
             return date
 
+
 # TODO: DQSMIGRATION: Move to dqs module
 class DQSWarningListBaseTable(GovUkTable):
 
