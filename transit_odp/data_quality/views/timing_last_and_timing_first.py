@@ -36,11 +36,11 @@ from waffle import flag_is_active
 
 class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = LastStopNotTimingPointObservation
-    
+
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
-    
+
     check = Checks.LastStopIsNotATimingPoint
     dqs_details = (
         "There is at least one journey where the last stop is not a timing point"
@@ -102,11 +102,11 @@ class LastStopNotTimingDetailView(TwoTableDetailView):
 
 class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = FirstStopNotTimingPointObservation
-    
+
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
-    
+
     check = Checks.FirstStopIsNotATimingPoint
     dqs_details = (
         "There is at least one journey where the first stop is not a timing point"

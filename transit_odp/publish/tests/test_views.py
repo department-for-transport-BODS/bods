@@ -1333,6 +1333,7 @@ class TestFeedArchiveView:
         assert mail.to[0] == self.agent.email
         assert self.org.name in mail.body
 
+
 @pytest.mark.skip(reason="Skipping this test case until old DQS decommission")
 def test_report_dq_and_score_report_id_are_none_no_summary(client_factory):
     org_user = create_verified_org_user()

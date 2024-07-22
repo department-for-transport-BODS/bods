@@ -33,21 +33,21 @@ from waffle import flag_is_active
 
 class LastStopPickUpListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = LastStopPickUpOnlyObservation
-    
+
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
-    
+
     check = Checks.LastStopIsPickUpOnly
     dqs_details = "There is at least one journey where the last stop is designated as pick up only"
-    
+
     @property
     def model(self):
         if not self.is_new_data_quality_service_active:
             return TimingDropOffWarning
         else:
             return ObservationResults
-    
+
     @property
     def table_class(self):
         if not self.is_new_data_quality_service_active:
@@ -106,11 +106,11 @@ class LastStopPickUpDetailView(TwoTableDetailView):
 
 class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = FirstStopSetDownOnlyObservation
-    
+
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
-    
+
     check = Checks.FirstStopIsSetDown
     dqs_details = "There is at least one journey where the first stop is designated as set down only"
     if not is_new_data_quality_service_active:
