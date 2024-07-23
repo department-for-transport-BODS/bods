@@ -34,6 +34,7 @@ def warning():
     )
 
 
+@pytest.mark.django_db
 class TestStopMissingListPage(ListPageBaseTest):
     model = models.TimingMissingPointWarning
     factory = factories.TimingMissingPointWarningFactory
@@ -71,6 +72,7 @@ class TestStopMissingListPage(ListPageBaseTest):
         assert warnings_qs.earliest("timing_pattern_id").message == expected_message
 
 
+@pytest.mark.django_db
 class TestStopMissingDetailPage(DetailPageBaseTest):
     model = models.TimingMissingPointWarning
     factory = factories.TimingMissingPointWarningFactory

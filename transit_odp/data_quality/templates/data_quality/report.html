@@ -7,8 +7,25 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <span class="govuk-caption-xl">Data quality report</span>
-      <h1 class="govuk-heading-xl">{{ title }}</h1>
+      <div class="govuk-!-margin-bottom-4" style="display:flex;">
+        <div class="govuk-!-font-size-48 govuk-list govuk-!-margin-0">
+          <span class="">Data quality report</span>
+        </div>
+        {% if is_new_data_quality_service_active %}
+          <div class="" style="align-content: center;">
+            {% if warning_data.Critical.count == 0 %}
+              <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-weight-bold" style="align-content: center;">
+                NO ISSUES
+              </span>
+            {% else %}
+              <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-weight-bold" style="align-content: center;">
+                CRITICAL ISSUES
+              </span>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+      <h2 class="govuk-list govuk-!-font-size-24">{{ title }}</h2>
       <ul class="govuk-list">
         <li>{% trans "Please find your data quality observations below." %}</li>
         <li>
@@ -28,18 +45,24 @@
         <div class="govuk-grid-column-full govuk-grid-column-three-quarters-from-desktop">
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-quarter-from-desktop">
-              <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ object.no_of_lines }}</p>
-              <p class="govuk-body-s govuk-!-font-weight-bold">Bus line{{ object.no_of_lines|pluralize:"s" }}</p>
-            </div>
-            {% if dq_score %}
-              <div class="govuk-grid-column-one-quarter-from-desktop">
-                <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ dq_score.score | percentage:"0" }}</p>
-                <p class="govuk-body-s govuk-!-font-weight-bold">
-                  <span class="status-indicator status-indicator--{{ dq_score.css_indicator }}">{{ dq_score.rag_level | upper }}</span>
-                </br />
-                <a class="govuk-link" href="{% url 'guidance:dq-score-description' %}">Data quality</a>
+              <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ bus_services_affected }}</p>
+              <p class="govuk-body-s govuk-!-font-weight-bold">
+                Affected
+                <br />
+                Bus service{{ bus_services_affected|pluralize:"s" }}
               </p>
             </div>
+            {% if not is_new_data_quality_service_active %}
+              {% if dq_score %}
+                <div class="govuk-grid-column-one-quarter-from-desktop">
+                  <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ dq_score.score | percentage:"0" }}</p>
+                  <p class="govuk-body-s govuk-!-font-weight-bold">
+                    <span class="status-indicator status-indicator--{{ dq_score.css_indicator }}">{{ dq_score.rag_level | upper }}</span>
+                  </br />
+                  <a class="govuk-link" href="{% url 'guidance:dq-score-description' %}">Data quality</a>
+                </p>
+              </div>
+            {% endif %}
           {% endif %}
           <div class="govuk-grid-column-one-quarter-from-desktop">
             <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Critical.count }}</p>

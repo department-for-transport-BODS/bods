@@ -1,3 +1,4 @@
+import pytest
 from typing import NamedTuple
 
 from django.conf import settings
@@ -133,6 +134,7 @@ class WarningUrlsTestBase(DqUrlsTestBase):
         return f"{self.generate_list_url_path()}{self.warning_id}/"
 
 
+@pytest.mark.django_db
 class TestReportOverviewUrl(DqUrlsTestBase):
     url_segment = ""
     url_name = "dq:overview"
@@ -155,6 +157,7 @@ class TestReportOverviewUrl(DqUrlsTestBase):
         return (UrlResolvesViewScenario(self.generate_dq_base_url_path(), self.view),)
 
 
+@pytest.mark.django_db
 class TestGlossaryUrl(DqUrlsTestBase):
     url_segment = "glossary/"
     url_name = "dq:glossary"
@@ -181,6 +184,7 @@ class TestGlossaryUrl(DqUrlsTestBase):
         )
 
 
+@pytest.mark.django_db
 class TestFastTimingWarningUrls(WarningUrlsTestBase):
     url_segment = "fast-timings"
     list_url_name = "dq:fast-timings-list"
@@ -189,6 +193,7 @@ class TestFastTimingWarningUrls(WarningUrlsTestBase):
     detail_view = views.FastTimingDetailView
 
 
+@pytest.mark.django_db
 class TestSlowTimingWarningUrls(WarningUrlsTestBase):
     url_segment = "slow-timings"
     list_url_name = "dq:slow-timings-list"
@@ -197,6 +202,7 @@ class TestSlowTimingWarningUrls(WarningUrlsTestBase):
     detail_view = views.SlowTimingsDetailView
 
 
+@pytest.mark.django_db
 class TestFastLinkWarningUrls(WarningUrlsTestBase):
     url_segment = "fast-links"
     list_url_name = "dq:fast-link-list"
@@ -205,6 +211,7 @@ class TestFastLinkWarningUrls(WarningUrlsTestBase):
     detail_view = views.FastLinkDetailView
 
 
+@pytest.mark.django_db
 class TestSlowLinkWarningUrls(WarningUrlsTestBase):
     url_segment = "slow-links"
     list_url_name = "dq:slow-link-list"
@@ -213,6 +220,7 @@ class TestSlowLinkWarningUrls(WarningUrlsTestBase):
     detail_view = views.SlowLinkDetailView
 
 
+@pytest.mark.django_db
 class TestDuplicateJourneyWarningUrls(WarningUrlsTestBase):
     url_segment = "duplicate-journeys"
     list_url_name = "dq:duplicate-journey-list"
@@ -221,6 +229,7 @@ class TestDuplicateJourneyWarningUrls(WarningUrlsTestBase):
     detail_view = views.DuplicateJourneyDetailView
 
 
+@pytest.mark.django_db
 class TestBackwardTimingWarningUrls(WarningUrlsTestBase):
     url_segment = "backward-timing"
     list_url_name = "dq:backward-timing-list"
@@ -229,6 +238,7 @@ class TestBackwardTimingWarningUrls(WarningUrlsTestBase):
     detail_view = views.BackwardTimingDetailView
 
 
+@pytest.mark.django_db
 class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
     url_segment = "incorrect-noc"
     list_url_name = "dq:incorrect-noc-list"
@@ -255,6 +265,7 @@ class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
         return (UrlResolvesViewScenario(self.generate_list_url_path(), self.list_view),)
 
 
+@pytest.mark.django_db
 class TestLastStopPickUpWarningUrls(WarningUrlsTestBase):
     url_segment = "pick-up-only"
     list_url_name = "dq:last-stop-pick-up-only-list"
@@ -263,6 +274,7 @@ class TestLastStopPickUpWarningUrls(WarningUrlsTestBase):
     detail_view = views.LastStopPickUpDetailView
 
 
+@pytest.mark.django_db
 class TestFirstStopDropOffWarningUrls(WarningUrlsTestBase):
     url_segment = "drop-off-only"
     list_url_name = "dq:first-stop-set-down-only-list"
@@ -271,6 +283,7 @@ class TestFirstStopDropOffWarningUrls(WarningUrlsTestBase):
     detail_view = views.FirstStopDropOffDetailView
 
 
+@pytest.mark.django_db
 class TestLastStopNotTimingPointWarningUrls(WarningUrlsTestBase):
     url_segment = "last-stop-not-timing-point"
     list_url_name = "dq:last-stop-not-timing-point-list"
@@ -279,6 +292,7 @@ class TestLastStopNotTimingPointWarningUrls(WarningUrlsTestBase):
     detail_view = views.LastStopNotTimingDetailView
 
 
+@pytest.mark.django_db
 class TestFirstStopNotTimingPointWarningUrls(WarningUrlsTestBase):
     url_segment = "first-stop-not-timing-point"
     list_url_name = "dq:first-stop-not-timing-point-list"
@@ -287,6 +301,7 @@ class TestFirstStopNotTimingPointWarningUrls(WarningUrlsTestBase):
     detail_view = views.FirstStopNotTimingDetailView
 
 
+@pytest.mark.django_db
 class TestStopNotInNaptanWarningUrls(WarningUrlsTestBase):
     url_segment = "stop-not-in-naptan"
     list_url_name = "dq:stop-missing-naptan-list"
@@ -295,6 +310,7 @@ class TestStopNotInNaptanWarningUrls(WarningUrlsTestBase):
     detail_view = views.StopMissingNaptanDetailView
 
 
+@pytest.mark.django_db
 class TestServiceLinkMissingStopWarningUrls(WarningUrlsTestBase):
     url_segment = "service-link-missing-stops"
     list_url_name = "dq:service-link-missing-stops-list"
@@ -303,6 +319,7 @@ class TestServiceLinkMissingStopWarningUrls(WarningUrlsTestBase):
     detail_view = views.ServiceLinkMissingStopDetailView
 
 
+@pytest.mark.django_db
 class TestStopRepeatedWarningUrls(WarningUrlsTestBase):
     url_segment = "multiple-stops"
     list_url_name = "dq:stop-repeated-list"
@@ -311,6 +328,7 @@ class TestStopRepeatedWarningUrls(WarningUrlsTestBase):
     detail_view = views.StopRepeatedDetailView
 
 
+@pytest.mark.django_db
 class TestMissingStopWarningUrls(WarningUrlsTestBase):
     url_segment = "missing-stops"
     list_url_name = "dq:missing-stops-list"
@@ -319,6 +337,7 @@ class TestMissingStopWarningUrls(WarningUrlsTestBase):
     detail_view = views.MissingStopDetailView
 
 
+@pytest.mark.django_db
 class TestJourneyOverlapWarningUrls(WarningUrlsTestBase):
     url_segment = "journey-overlap"
     list_url_name = "dq:journey-overlap-list"
@@ -327,6 +346,7 @@ class TestJourneyOverlapWarningUrls(WarningUrlsTestBase):
     detail_view = views.JourneyOverlapDetailView
 
 
+@pytest.mark.django_db
 class TestBackwardDateRangeWarningUrls(WarningUrlsTestBase):
     url_segment = "backward-date-range"
     list_url_name = "dq:backward-date-range-list"
@@ -335,6 +355,7 @@ class TestBackwardDateRangeWarningUrls(WarningUrlsTestBase):
     detail_view = views.BackwardDateRangeDetailView
 
 
+@pytest.mark.django_db
 class TestIncorrectStopTypeWarningUrls(WarningUrlsTestBase):
     url_segment = "incorrect-stop-type"
     list_url_name = "dq:incorrect-stop-type-list"

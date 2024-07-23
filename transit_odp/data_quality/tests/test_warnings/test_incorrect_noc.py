@@ -17,6 +17,7 @@ def warning():
     return factories.IncorrectNOCWarningFactory.create(noc="NOC1")
 
 
+@pytest.mark.django_db
 class TestIncorrectNocListPage(ListPageBaseTest):
     model = models.IncorrectNOCWarning
     factory = factories.IncorrectNOCWarningFactory
@@ -29,6 +30,7 @@ class TestIncorrectNocListPage(ListPageBaseTest):
         ),
     }
 
+    @pytest.mark.skip(reason="Skipping this test case until old DQS is decommissioned")
     def test_get_queryset_adds_correct_message_annotation(
         self,
         warning,

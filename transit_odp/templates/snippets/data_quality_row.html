@@ -1,5 +1,17 @@
 {% load filters %}
 <p class="govuk-body govuk-!-margin-bottom-0">
-  {{ rag.score | percentage:0 }}
-  <span class="status-indicator status-indicator--{{ rag.css_indicator }} govuk-!-font-weight-bold">{{ rag.rag_level | upper }}</span>
+  {% if is_new_data_quality_service_active %}
+    {% if warning_data.data.Critical.count == 0 %}
+      <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-weight-bold" style="align-content: center;">
+        NO ISSUES
+      </span>
+    {% else %}
+      <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-weight-bold" style="align-content: center;">
+        CRITICAL ISSUES
+      </span>
+    {% endif %}
+  {% else %}
+    {{ rag.score | percentage:0 }}
+    <span class="status-indicator status-indicator--{{ rag.css_indicator }} govuk-!-font-weight-bold">{{ rag.rag_level | upper }}</span>
+  {% endif %}
 </p>
