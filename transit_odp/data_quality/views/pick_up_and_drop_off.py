@@ -33,18 +33,27 @@ from waffle import flag_is_active
 
 class LastStopPickUpListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = LastStopPickUpOnlyObservation
-    is_new_data_quality_service_active = flag_is_active(
-        "", "is_new_data_quality_service_active"
-    )
+
+    @property
+    def is_new_data_quality_service_active(self):
+        return flag_is_active("", "is_new_data_quality_service_active")
+
     check = Checks.LastStopIsPickUpOnly
     dqs_details = "There is at least one journey where the last stop is designated as pick up only"
 
-    if not is_new_data_quality_service_active:
-        model = TimingDropOffWarning
-        table_class = PickUpDropOffListTable
-    else:
-        model = ObservationResults
-        table_class = DQSWarningListBaseTable
+    @property
+    def model(self):
+        if not self.is_new_data_quality_service_active:
+            return TimingDropOffWarning
+        else:
+            return ObservationResults
+
+    @property
+    def table_class(self):
+        if not self.is_new_data_quality_service_active:
+            return PickUpDropOffListTable
+        else:
+            return DQSWarningListBaseTable
 
     def get_queryset(self):
 
@@ -97,9 +106,11 @@ class LastStopPickUpDetailView(TwoTableDetailView):
 
 class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = FirstStopSetDownOnlyObservation
-    is_new_data_quality_service_active = flag_is_active(
-        "", "is_new_data_quality_service_active"
-    )
+
+    @property
+    def is_new_data_quality_service_active(self):
+        return flag_is_active("", "is_new_data_quality_service_active")
+
     check = Checks.FirstStopIsSetDown
     dqs_details = "There is at least one journey where the first stop is designated as set down only"
     if not is_new_data_quality_service_active:

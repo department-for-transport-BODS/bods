@@ -32,7 +32,6 @@ def warning():
     )
 
 
-@pytest.mark.django_db
 class TestFirstStopDropOffListPage(ListPageBaseTest):
     # Naming is very, very confusing
     # sanity check:
@@ -52,7 +51,6 @@ class TestFirstStopDropOffListPage(ListPageBaseTest):
     }
 
 
-@pytest.mark.django_db
 class TestFirstStopDropOffDetailPage(DetailPageBaseTest):
     # Naming is very, very confusing
     model = models.TimingPickUpWarning
