@@ -129,6 +129,7 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
                 FeedStatus.draft.value,
                 FeedStatus.success.value,
                 FeedStatus.error.value,
+                FeedStatus.indexing.value,
             ]
         ).exists():
             return redirect(
