@@ -30,7 +30,7 @@ class TestIncorrectNocListPage(ListPageBaseTest):
         ),
     }
 
-    @pytest.mark.skip(reason="Skipping this test case until old DQS decommission")
+    @pytest.mark.skip(reason="Skipping this test case until old DQS is decommissioned")
     def test_get_queryset_adds_correct_message_annotation(
         self,
         warning,
