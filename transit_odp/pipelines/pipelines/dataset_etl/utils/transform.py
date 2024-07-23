@@ -80,8 +80,6 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     # Departure time for flexible stops is null
     if stops_atcos["departure_time"].isna().any():
         is_flexible_departure_time = True
-    else:
-        stops_atcos["is_timing_status"] = True
 
     use_vehicle_journey_runtime = False
     # run_time_vj is set only when run_time is found in VehicleJourney element

@@ -1004,9 +1004,13 @@ class DatasetQuerySet(models.QuerySet):
             ),
         )
 
+    def get_active_organisation(self):
+        return self.exclude(organisation__is_active=False)
+
     def get_overall_data_catalogue_annotations(self):
         return (
             self.get_published()
+            .get_active_organisation()
             .add_organisation_name()
             .add_live_filename()
             .add_live_name()
@@ -1254,6 +1258,9 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             )
         )
 
+    def get_active_organisation(self):
+        return self.exclude(revision__dataset__organisation__is_active=False)
+
     def add_organisation_name(self):
         return self.annotate(
             organisation_name=F("revision__dataset__organisation__name")
@@ -1294,6 +1301,7 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .add_bods_compliant()
             .add_dq_score()
             .add_revision_details()
+            .get_active_organisation()
             .add_organisation_name()
             .add_string_lines()
             .order_by(
@@ -1313,6 +1321,7 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .add_bods_compliant()
             .add_dq_score()
             .add_revision_details()
+            .get_active_organisation()
             .add_organisation_name()
             .add_string_lines()
             .add_split_linenames()
