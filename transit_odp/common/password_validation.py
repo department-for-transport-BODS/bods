@@ -8,19 +8,11 @@ class CustomPasswordValidator:
     Custom password validator for Django authentication system.
 
     This validator checks if a password meets the following criteria:
-    - Minimum length of 8 characters.
     - Contains at least one uppercase letter.
     - Contains at least one lowercase letter.
     - Contains at least one digit.
     - Contains at least one special character from the set: ~!@#$%^&*()_+{}":;'<>\?/|
 
-    Usage example:
-    ```
-    from myapp.validators import CustomPasswordValidator
-
-    validator = CustomPasswordValidator()
-    validator.validate('MyPassword123!')
-    ```
     """
 
     def validate(self, password, user=None):
