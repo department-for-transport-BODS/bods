@@ -26,20 +26,8 @@ class CustomPasswordValidator:
         Raises:
         - ValidationError: If the password does not meet any of the validation criteria.
         """
-
-        # Minimum password length
-        min_length = 8
-
         # Track failed criteria
         errors = []
-
-        # Check if password meets minimum length requirement
-        if len(password) < min_length:
-            errors.append(
-                gettext("Password must be at least {0} characters long.").format(
-                    min_length
-                )
-            )
 
         # Check if password contains both uppercase and lowercase characters
         if not any(char.isupper() for char in password) or not any(
