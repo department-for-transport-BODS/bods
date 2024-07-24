@@ -147,6 +147,8 @@ class ServicePatternStop(models.Model):
         blank=True,
     )
 
+    auto_sequence_number = models.IntegerField(blank=True, null=True)
+
     sequence_number = models.IntegerField()
 
     # Store the atco_code explicitly in case the naptan_stop fails to lookup.
