@@ -84,7 +84,7 @@ class Summary(BaseModel):
             ObservationResults.objects.filter(
                 taskresults__dataquality_report_id=report_id,
                 taskresults__dataquality_report__revision_id=revision_id,
-                taskresults__dataquality_report__status=ReportStatus.PIPELINE_SUCCEEDED.value,
+                taskresults__dataquality_report__status=ReportStatus.REPORT_GENERATED.value,
             )
             .annotate(
                 details_annotation=F("details"),

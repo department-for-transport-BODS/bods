@@ -9,6 +9,8 @@ from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
 from transit_odp.pipelines.models import DatasetETLTaskResult
+from transit_odp.dqs.models import Report
+from transit_odp.dqs.constants import ReportStatus
 from transit_odp.publish.forms import RevisionPublishFormViolations
 from transit_odp.publish.views.base import BaseDatasetUploadModify, ReviewBaseView
 from transit_odp.publish.views.utils import (
@@ -65,41 +67,85 @@ class BaseTimetableReviewView(ReviewBaseView):
         return queryset
 
     def get_context_data(self, **kwargs):
+        is_new_data_quality_service_active = flag_is_active(
+            "", "is_new_data_quality_service_active"
+        )
+        kwargs[
+            "is_new_data_quality_service_active"
+        ] = is_new_data_quality_service_active
+
         context = super().get_context_data(**kwargs)
         api_root = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
         revision = self.get_object()
         tasks = revision.data_quality_tasks
         loading = self.is_loading()
-        dq_pending_or_failed = tasks.get_latest_status() in ["FAILURE", "PENDING"]
+
         show_update = (
             self.object.is_pti_compliant() and tasks.get_latest_status() == "SUCCESS"
         )
         pti_deadline_passed = settings.PTI_ENFORCED_DATE.date() <= timezone.localdate()
-        context.update(
-            {
-                "loading": loading,
-                "current_step": "upload" if loading else "review",
-                "admin_areas": revision.admin_area_names,
-                "api_root": api_root,
-                "has_pti_observations": not revision.is_pti_compliant(),
-                "dq_status": tasks.get_latest_status(),
-                "dqs_timeout": settings.DQS_WAIT_TIMEOUT,
-                "pti_enforced_date": settings.PTI_ENFORCED_DATE,
-                "pti_deadline_passed": pti_deadline_passed,
-                "dq_pending_or_failed": dq_pending_or_failed,
-                "show_update": show_update,
-            }
-        )
-        if context["dq_status"] == DatasetETLTaskResult.SUCCESS:
-            report = tasks.latest().report
-            rag = get_data_quality_rag(report)
-
+        if is_new_data_quality_service_active:
+            report = (
+                Report.objects.filter(revision_id=revision.id)
+                .order_by("-created")
+                .filter(
+                    status__in=[
+                        ReportStatus.REPORT_GENERATED.value,
+                        ReportStatus.REPORT_GENERATION_FAILED.value,
+                    ]
+                )
+                .first()
+            )
+            dq_pending_or_failed = True
+            report_id = report.id if report else None
+            dq_status = "PENDING"
+            if report_id:
+                dq_status = "SUCCESS"
+                dq_pending_or_failed = False
             context.update(
                 {
-                    "summary": Summary.from_report_summary(report.summary),
-                    "dq_score": rag,
+                    "loading": loading,
+                    "current_step": "upload" if loading else "review",
+                    "admin_areas": revision.admin_area_names,
+                    "api_root": api_root,
+                    "has_pti_observations": not revision.is_pti_compliant(),
+                    "dq_status": dq_status,
+                    "dqs_timeout": settings.DQS_WAIT_TIMEOUT,
+                    "pti_enforced_date": settings.PTI_ENFORCED_DATE,
+                    "pti_deadline_passed": pti_deadline_passed,
+                    "dq_pending_or_failed": dq_pending_or_failed,
+                    "show_update": True,
+                    "is_new_data_quality_service_active": is_new_data_quality_service_active,
                 }
             )
+        else:
+            dq_pending_or_failed = tasks.get_latest_status() in ["FAILURE", "PENDING"]
+            context.update(
+                {
+                    "loading": loading,
+                    "current_step": "upload" if loading else "review",
+                    "admin_areas": revision.admin_area_names,
+                    "api_root": api_root,
+                    "has_pti_observations": not revision.is_pti_compliant(),
+                    "dq_status": tasks.get_latest_status(),
+                    "dqs_timeout": settings.DQS_WAIT_TIMEOUT,
+                    "pti_enforced_date": settings.PTI_ENFORCED_DATE,
+                    "pti_deadline_passed": pti_deadline_passed,
+                    "dq_pending_or_failed": dq_pending_or_failed,
+                    "show_update": show_update,
+                    "is_new_data_quality_service_active": is_new_data_quality_service_active,
+                }
+            )
+            if context["dq_status"] == DatasetETLTaskResult.SUCCESS:
+                report = tasks.latest().report
+                rag = get_data_quality_rag(report)
+
+                context.update(
+                    {
+                        "summary": Summary.from_report_summary(report.summary),
+                        "dq_score": rag,
+                    }
+                )
 
         has_error = bool(revision.error_code)
         if has_error:

@@ -20,7 +20,7 @@ class ReportOverviewView(DetailView):
             .get_queryset()
             .filter(revision__dataset_id=dataset_id)
             .filter(id=self.kwargs["report_id"])
-            .filter(status=ReportStatus.PIPELINE_SUCCEEDED.value)
+            .filter(status=ReportStatus.REPORT_GENERATED.value)
             .select_related("revision")
         )
         return result
