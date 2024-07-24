@@ -79,7 +79,7 @@ class BaseTimetableReviewView(ReviewBaseView):
         revision = self.get_object()
         tasks = revision.data_quality_tasks
         loading = self.is_loading()
-        
+
         show_update = (
             self.object.is_pti_compliant() and tasks.get_latest_status() == "SUCCESS"
         )
@@ -88,12 +88,17 @@ class BaseTimetableReviewView(ReviewBaseView):
             report = (
                 Report.objects.filter(revision_id=revision.id)
                 .order_by("-created")
-                .filter(status__in=[ReportStatus.REPORT_GENERATED.value, ReportStatus.REPORT_GENERATION_FAILED.value])
+                .filter(
+                    status__in=[
+                        ReportStatus.REPORT_GENERATED.value,
+                        ReportStatus.REPORT_GENERATION_FAILED.value,
+                    ]
+                )
                 .first()
             )
             dq_pending_or_failed = True
             report_id = report.id if report else None
-            dq_status = "PENDING" 
+            dq_status = "PENDING"
             if report_id:
                 dq_status = "SUCCESS"
                 dq_pending_or_failed = False
@@ -112,7 +117,7 @@ class BaseTimetableReviewView(ReviewBaseView):
                     "show_update": True,
                     "is_new_data_quality_service_active": is_new_data_quality_service_active,
                 }
-        )
+            )
         else:
             dq_pending_or_failed = tasks.get_latest_status() in ["FAILURE", "PENDING"]
             context.update(

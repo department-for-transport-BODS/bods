@@ -42,15 +42,19 @@ class DQSDatasetRevisionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Report.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = "revision_id"
- 
+
     @action(methods=["get"], detail=True, url_path="dqs-status", url_name="dqs-status")
     def dqs_status(self, request, revision_id=None):
         """Extra action to return status of DQS report"""
         revision: Report = self.get_object()
         status = "PENDING"
-        if revision.status in [ReportStatus.REPORT_GENERATED.value, ReportStatus.REPORT_GENERATION_FAILED.value]:
+        if revision.status in [
+            ReportStatus.REPORT_GENERATED.value,
+            ReportStatus.REPORT_GENERATION_FAILED.value,
+        ]:
             status = "SUCCESS"
         return Response(status)
+
 
 class StopViewSet(viewsets.ReadOnlyModelViewSet):
     """
