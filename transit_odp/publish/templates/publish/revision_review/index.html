@@ -47,8 +47,15 @@
     {{ object.id | json_script:"revisionIDElement" }}
     <script>
             const apiRootURL = JSON.parse(document.getElementById("apiRoot").textContent);
+            console.log("api ro url:", apiRootURL)
             const revisionID = JSON.parse(document.getElementById("revisionIDElement").textContent);
-            BODSFrontend.refresh(apiURL=apiRootURL, revisionId=parseInt(revisionID));
+            const is_new_data_quality_service_active = Boolean("{{is_new_data_quality_service_active}}")
+            var dqsClass = "revision"
+            console.log("is_new_data_quality_service_active", is_new_data_quality_service_active)
+            if (is_new_data_quality_service_active == true) {
+              dqsClass = "dqs_revision"
+            }
+            BODSFrontend.refresh(apiURL=apiRootURL, revisionId=parseInt(revisionID), dqsClass=dqsClass);
     </script>
   {% endif %}
   {% if loading %}

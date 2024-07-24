@@ -20,6 +20,8 @@ from transit_odp.browse.views.disruptions_views import (
     _get_disruptions_organisation_data,
 )
 from transit_odp.fares.models import FaresMetadata
+from transit_odp.dqs.constants import ReportStatus
+from transit_odp.dqs.models import Report
 from transit_odp.naptan.models import StopPoint
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import ServicePattern
@@ -35,6 +37,20 @@ class DatasetRevisionViewSet(viewsets.ReadOnlyModelViewSet):
         revision: DatasetRevision = self.get_object()
         return Response(revision.data_quality_tasks.get_latest_status())
 
+
+class DQSDatasetRevisionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Report.objects.all()
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    lookup_field = "revision_id"
+ 
+    @action(methods=["get"], detail=True, url_path="dqs-status", url_name="dqs-status")
+    def dqs_status(self, request, revision_id=None):
+        """Extra action to return status of DQS report"""
+        revision: Report = self.get_object()
+        status = "PENDING"
+        if revision.status in [ReportStatus.REPORT_GENERATED.value, ReportStatus.REPORT_GENERATION_FAILED.value]:
+            status = "SUCCESS"
+        return Response(status)
 
 class StopViewSet(viewsets.ReadOnlyModelViewSet):
     """
