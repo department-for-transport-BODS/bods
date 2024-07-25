@@ -42,7 +42,6 @@ class CAVLService(ICAVLService):
         }
 
         try:
-            print("Subscribing to AVL service")
             response = requests.post(
                 api_url, json=post, timeout=30, headers=self.headers
             )

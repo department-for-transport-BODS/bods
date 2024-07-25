@@ -1,12 +1,14 @@
 from datetime import datetime
 from http import HTTPStatus
 from typing import Optional, Union
-from urllib.error import HTTPError
+from contextlib import contextmanager
+from unittest.mock import MagicMock
 
 import pytest
 import requests
 import requests_mock
 import logging
+from requests.exceptions import RequestException, ConnectTimeout
 
 from transit_odp.avl.client import CAVLService
 from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
@@ -14,6 +16,19 @@ from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
 CapLog = pytest.LogCaptureFixture
 
 DUMMY_CAVL_URL = "http://www.dummy.com"
+
+
+@contextmanager
+def does_not_raise():
+    yield
+
+
+@pytest.fixture
+def mock_datetime_now(monkeypatch):
+    datetime_mock = MagicMock(wrap=datetime.datetime)
+    datetime_mock.now.return_value = datetime.datetime(2022, 12, 12, 0, 0, 0)
+
+    monkeypatch.setattr(datetime, "datetime", datetime_mock)
 
 
 @pytest.fixture()
@@ -31,9 +46,14 @@ class TestCAVLService:
     @pytest.mark.parametrize(
         "status, expected_result, expected_message",
         [
-            (HTTPStatus.CREATED, ["POST http://www.dummy.com/subscriptions 201"]),
+            (
+                HTTPStatus.CREATED,
+                does_not_raise(),
+                ["POST http://www.dummy.com/subscriptions 201"],
+            ),
             (
                 HTTPStatus.BAD_REQUEST,
+                pytest.raises(RequestException),
                 [
                     "POST http://www.dummy.com/subscriptions 400",
                     "[CAVL] Couldn't register feed <id=1>",
@@ -41,7 +61,7 @@ class TestCAVLService:
             ),
             (
                 HTTPStatus.NOT_FOUND,
-                None,
+                pytest.raises(RequestException),
                 [
                     "POST http://www.dummy.com/subscriptions 404",
                     "[CAVL] Couldn't register feed <id=1>",
@@ -49,7 +69,15 @@ class TestCAVLService:
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
-                None,
+                pytest.raises(RequestException),
+                [
+                    "POST http://www.dummy.com/subscriptions 500",
+                    "[CAVL] Couldn't register feed <id=1>",
+                ],
+            ),
+            (
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                pytest.raises(RequestException),
                 [
                     "POST http://www.dummy.com/subscriptions 500",
                     "[CAVL] Couldn't register feed <id=1>",
@@ -70,19 +98,20 @@ class TestCAVLService:
         url = DUMMY_CAVL_URL + "/subscriptions"
         kwargs["m"].post(url, status_code=status)
 
-        result = cavl_service.register_feed(
-            feed_id=1,
-            publisher_id=1,
-            url="dummy_url",
-            username="dummy_u",
-            password="dummy_p",
-            description="dummy_description",
-            short_description="dummy_short_description",
-        )
+        with expected_result:
+            assert (
+                cavl_service.register_feed(
+                    feed_id=1,
+                    publisher_id=1,
+                    url="dummy_url",
+                    username="dummy_u",
+                    password="dummy_p",
+                    description="dummy_description",
+                    short_description="dummy_short_description",
+                )
+                is not None
+            )
 
-        print(rec.message for rec in caplog.records)
-        print(result)
-        assert result == expected_result
         assert [rec.message for rec in caplog.records] == expected_message
 
     @pytest.mark.parametrize(
@@ -93,7 +122,7 @@ class TestCAVLService:
                 HTTPStatus.NOT_FOUND,
                 False,
                 [
-                    "DELETE http://www.dummy.com/subscriptions 404",
+                    "DELETE http://www.dummy.com/feed/1 404",
                     "[CAVL] Dataset 1 => Does not exist in CAVL Service.",
                 ],
             ),
@@ -205,14 +234,6 @@ class TestCAVLService:
                     "[CAVL] Couldn't fetch feed <id=1>",
                 ],
             ),
-            (
-                HTTPStatus.INTERNAL_SERVER_ERROR,
-                None,
-                [
-                    "GET http://www.dummy.com/feed/1 500",
-                    "[CAVL] Couldn't fetch feed <id=1>",
-                ],
-            ),
         ],
     )
     def test_get_feed(
@@ -284,21 +305,27 @@ class TestCAVLService:
         assert result == expected_result
         assert [rec.message for rec in caplog.records] == expected_message
 
+    @pytest.fixture
     def test_validate_feed(
-        self, caplog: CapLog, cavl_service: CAVLService, **kwargs
+        self, caplog: CapLog, cavl_service: CAVLService, mock_datetime_now, **kwargs
     ) -> None:
         caplog.set_level(logging.WARNING)
         url = DUMMY_CAVL_URL + "/feed/verify"
         response_mock = dict(
-            url="dummy", username="dummy", created="2022-12-12 00:00:00"
-        )
-        kwargs["m"].post(url, json=response_mock, status_code=HTTPStatus.OK)
-
-        expected_result = ValidationTaskResult(
             url="dummy",
             username="dummy",
-            status="DEPLOYING",
+            created="2022-12-12 00:00:00",
+            siriVersion="2.0",
+        )
+        kwargs["m"].put(url, json=response_mock, status_code=HTTPStatus.OK)
+
+        expected_result = ValidationTaskResult(
+            status="FEED_VALID",
+            url="dummy",
+            username="dummy",
+            password="dummy",
             created=datetime(2022, 12, 12, 0, 0, 0),
+            version="2.0",
         )
 
         result = cavl_service.validate_feed("dummy", "dummy", "dummy")
@@ -312,21 +339,21 @@ class TestCAVLService:
             (
                 HTTPStatus.NOT_FOUND,
                 [
-                    "POST http://www.dummy.com/feed/verify 404",
+                    "PUT http://www.dummy.com/feed/verify 404",
                     "[CAVL] Couldn't validate feed <url=dummy>",
                 ],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
                 [
-                    "POST http://www.dummy.com/feed/verify 400",
+                    "PUT http://www.dummy.com/feed/verify 400",
                     "[CAVL] Couldn't validate feed <url=dummy>",
                 ],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 [
-                    "POST http://www.dummy.com/feed/verify 500",
+                    "PUT http://www.dummy.com/feed/verify 500",
                     "[CAVL] Couldn't validate feed <url=dummy>",
                 ],
             ),
@@ -345,7 +372,7 @@ class TestCAVLService:
         response_mock = dict(
             url="dummy", username="dummy", created="2022-12-12 00:00:00"
         )
-        kwargs["m"].post(url, json=response_mock, status_code=status)
+        kwargs["m"].put(url, json=response_mock, status_code=status)
 
         with pytest.raises(requests.RequestException):
             cavl_service.validate_feed("dummy", "dummy", "dummy")
@@ -361,14 +388,6 @@ class TestCAVLService:
                 "/feed/1",
                 [1],
                 ["[CAVL] Couldn't delete feed <id=1>"],
-                False,
-            ),
-            (
-                "register_feed",
-                "post",
-                "/subscriptions",
-                [1, 1, "dummy", "dummy", "dummy"],
-                ["[CAVL] Couldn't register feed <id=1>"],
                 False,
             ),
             (
@@ -409,4 +428,41 @@ class TestCAVLService:
         result = getattr(cavl_service, method)(*parameters)
 
         assert result == expected_result
+        assert [rec.message for rec in caplog.records] == expected_log
+
+    # Modified exception handling tests for new AVL service as we are now raising an error instead of returning
+    # False. As other CAVL service functions migrate to the new AVL service we will populate the below test case to
+    # replace the old test case above
+    @pytest.mark.parametrize(
+        "method, http_method, endpoint, parameters, expected_log, expected_result",
+        [
+            (
+                "register_feed",
+                "post",
+                "/subscriptions",
+                [1, 1, "dummy", "dummy", "dummy", "dummy", "dummy"],
+                ["[CAVL] Couldn't register feed <id=1>"],
+                pytest.raises(ConnectTimeout),
+            ),
+        ],
+    )
+    def test_methods_exception_handling_new_avl(
+        self,
+        caplog: CapLog,
+        cavl_service: CAVLService,
+        method: str,
+        http_method: str,
+        endpoint: str,
+        parameters: list,
+        expected_log: list[str],
+        expected_result: Union[bool, None, list],
+        **kwargs
+    ) -> None:
+        url = DUMMY_CAVL_URL + endpoint
+
+        getattr(kwargs["m"], http_method)(url, exc=requests.exceptions.ConnectTimeout)
+
+        with expected_result:
+            assert getattr(cavl_service, method)(*parameters) is not None
+
         assert [rec.message for rec in caplog.records] == expected_log
