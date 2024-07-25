@@ -24,7 +24,7 @@ class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision)
     def get_latest_report(self):
         revision_id = self.get_revision_id()
         try:
-            report = Report.objects.filter(revision_id=revision_id).latest()    
+            report = Report.objects.filter(revision_id=revision_id).latest()
         except Report.DoesNotExist:
             report = DataQualityReport.objects.filter(revision_id=revision_id).latest()
         except DataQualityReport.DoesNotExist:
