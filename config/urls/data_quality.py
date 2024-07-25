@@ -208,6 +208,28 @@ urlpatterns = [
         ),
     ),
     path(
+        "first-stop-is-not-a-timing-point/",
+        include(
+            [
+                path(
+                    "",
+                    view=views.FirstStopNotTimingListView.as_view(),
+                    name="first-stop-not-timing-point-list",
+                ),
+                path(
+                    "<uuid:warning_pk>/",
+                    view=views.FirstStopNotTimingDetailView.as_view(),
+                    name="first-stop-not-timing-point-detail",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.DQSFirstStopNotTimingPointDetailView.as_view(),
+                    name="last-stop-pick-up-only-detail",
+                ),
+            ]
+        ),
+    ),
+    path(
         "stop-not-in-naptan/",
         include(
             [

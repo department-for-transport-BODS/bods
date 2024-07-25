@@ -104,6 +104,11 @@
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
+      {% if dq_score  or new_dqs_report %}
+        <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-1">
+          {% include "snippets/data_quality_row.html" with rag=dq_score warning_data=warning_data %}
+        </p>
+      {% endif %}
       <span class="no-wrap right-justify" id="id-publish-review-quality-report">
         {% if report_id %}
           <a class="govuk-link"
@@ -120,11 +125,6 @@
           {% endfilter %}
         {% endif %}
       </span>
-      {% if dq_score  or report_id %}
-        <p class="govuk-!-margin-top-3">
-          {% include "snippets/data_quality_row.html" with rag=dq_score warning_data=warning_data %}
-        </p>
-      {% endif %}
     </td>
   </tr>
   {% if show_pti %}

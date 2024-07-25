@@ -102,6 +102,7 @@ class BaseTimetableReviewView(ReviewBaseView):
             if report_id:
                 dq_status = "SUCCESS"
                 dq_pending_or_failed = False
+                show_update = True
             context.update(
                 {
                     "loading": loading,
@@ -114,7 +115,7 @@ class BaseTimetableReviewView(ReviewBaseView):
                     "pti_enforced_date": settings.PTI_ENFORCED_DATE,
                     "pti_deadline_passed": pti_deadline_passed,
                     "dq_pending_or_failed": dq_pending_or_failed,
-                    "show_update": True,
+                    "show_update": show_update,
                     "is_new_data_quality_service_active": is_new_data_quality_service_active,
                 }
             )
@@ -163,13 +164,53 @@ class PublishRevisionView(BaseTimetableReviewView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         revision = self.object
-        context.update(
-            {
-                "pk": revision.dataset_id,
-                "is_update": False,
-                "distinct_attributes": get_distinct_dataset_txc_attributes(revision.id),
-            }
+
+        is_new_data_quality_service_active = flag_is_active(
+            "", "is_new_data_quality_service_active"
         )
+        kwargs[
+            "is_new_data_quality_service_active"
+        ] = is_new_data_quality_service_active
+
+        if is_new_data_quality_service_active:
+            report = (
+                Report.objects.filter(revision_id=revision.id)
+                .order_by("-created")
+                .filter(
+                    status__in=[
+                        ReportStatus.REPORT_GENERATED.value,
+                        ReportStatus.REPORT_GENERATION_FAILED.value,
+                    ]
+                )
+                .first()
+            )
+            report_id = report.id if report else None
+            summary = None
+            if report_id:
+                summary = Summary.get_report(report_id, revision.id)
+
+            context.update(
+                {
+                    "pk": revision.dataset_id,
+                    "is_update": False,
+                    "distinct_attributes": get_distinct_dataset_txc_attributes(
+                        revision.id
+                    ),
+                    "report_id": report_id,
+                    "is_new_data_quality_service_active": is_new_data_quality_service_active,
+                    "summary": summary,
+                }
+            )
+        else:
+            context.update(
+                {
+                    "pk": revision.dataset_id,
+                    "is_update": False,
+                    "distinct_attributes": get_distinct_dataset_txc_attributes(
+                        revision.id
+                    ),
+                }
+            )
         return context
 
     def get_success_url(self):
