@@ -113,7 +113,7 @@ class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseVie
 
     check = Checks.FirstStopIsSetDown
     dqs_details = "There is at least one journey where the first stop is designated as set down only"
-    if not is_new_data_quality_service_active:
+    if not flag_is_active("", "is_new_data_quality_service_active"):
         model = TimingPickUpWarning
         table_class = PickUpDropOffListTable
     else:
@@ -122,7 +122,7 @@ class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseVie
 
     def get_queryset(self):
 
-        if not self.is_new_data_quality_service_active:
+        if not flag_is_active("", "is_new_data_quality_service_active"):
             return super().get_queryset().add_line().add_message()
 
         # Calling the qs method of DQSWarningListBaseView
@@ -146,7 +146,7 @@ class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseVie
     def get_table_kwargs(self):
 
         kwargs = {}
-        if not self.is_new_data_quality_service_active:
+        if not flag_is_active("", "is_new_data_quality_service_active"):
             kwargs = super().get_table_kwargs()
         return kwargs
 

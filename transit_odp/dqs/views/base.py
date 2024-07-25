@@ -7,7 +7,7 @@ import config.hosts
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
 from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
-from transit_odp.organisation.models import Dataset
+from transit_odp.dqs.models import Report
 
 
 class DQSWarningListBaseView(SingleTableView):
@@ -21,14 +21,11 @@ class DQSWarningListBaseView(SingleTableView):
     def get_queryset(self):
 
         report_id = self.kwargs.get("report_id")
-        dataset_id = self.kwargs.get("pk")
-        org_id = self.kwargs.get("pk1")
 
-        qs = Dataset.objects.filter(id=dataset_id, organisation_id=org_id).get_active()
+        qs = Report.objects.filter(id=report_id)
         if not len(qs):
             return qs
-        revision_id = qs[0].live_revision_id
-
+        revision_id = qs[0].revision_id
         if self.dqs_details:
             return self.model.objects.get_observations_grouped(
                 report_id, self.check, revision_id, self.dqs_details

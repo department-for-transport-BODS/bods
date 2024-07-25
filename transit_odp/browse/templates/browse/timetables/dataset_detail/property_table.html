@@ -35,7 +35,7 @@
       </div>
     </td>
   </tr>
-  {% if dq_score != None %}
+  {% if dq_score != None or new_dqs_report %}
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
         {% filter force_escape %}
@@ -43,12 +43,19 @@
         {% endfilter %}
         {% include "browse/snippets/help_modals/data_quality_report.html" %}
       </th>
+      
       <td class="govuk-table__cell">
-        <div class="stacked">
-          {% trans "Data quality" %}
-          {{ dq_score.score | percentage:0 }}
-          <span class="status-indicator status-indicator--{{ dq_score.css_indicator }}">{{ dq_score.rag_level | upper }}</span>
-        </div>
+        {% if new_dqs_report %}
+          <div class="stacked">
+            {% include "snippets/data_quality_row.html" with warning_data=summary %}
+          </div>
+        {% else %}
+          <div class="stacked">
+            {% trans "Data quality" %}
+            {{ dq_score.score | percentage:0 }}
+            <span class="status-indicator status-indicator--{{ dq_score.css_indicator }}">{{ dq_score.rag_level | upper }}</span>
+          </div>
+        {% endif %}
       </td>
       <td class="govuk-table__cell">
         <a class="govuk-link"

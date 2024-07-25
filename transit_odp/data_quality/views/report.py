@@ -45,27 +45,27 @@ class ReportOverviewView(DetailView):
 
     def get_queryset(self):
         dataset_id = self.kwargs["pk"]
-        is_new_data_quality_service_active = flag_is_active(
-            "", "is_new_data_quality_service_active"
+        self.model = Report
+        result = (
+            super()
+            .get_queryset()
+            .filter(revision__dataset_id=dataset_id)
+            .filter(id=self.kwargs["report_id"])
+            .filter(status=ReportStatus.REPORT_GENERATED.value)
+            .select_related("revision")
         )
-        if is_new_data_quality_service_active:
-            self.model = Report
-            result = (
-                super()
-                .get_queryset()
-                .filter(revision__dataset_id=dataset_id)
-                .filter(id=self.kwargs["report_id"])
-                .filter(status=ReportStatus.REPORT_GENERATED.value)
-                .select_related("revision")
-            )
-        else:
-            self.model = DataQualityReport
-            result = (
-                super()
-                .get_queryset()
-                .filter(revision__dataset_id=dataset_id)
-                .select_related("summary")
-            )
+
+        if result:
+            return result
+
+        self.model = DataQualityReport
+        result = (
+            super()
+            .get_queryset()
+            .filter(revision__dataset_id=dataset_id)
+            .select_related("summary")
+        )
+
         return result
 
     def get_context_data(self, **kwargs):
@@ -77,13 +77,8 @@ class ReportOverviewView(DetailView):
         is_new_data_quality_service_active = flag_is_active(
             "", "is_new_data_quality_service_active"
         )
-        if is_new_data_quality_service_active:
+        if self.model == Report:
             report_id = report.id if report else None
-            context.update(
-                {
-                    "is_new_data_quality_service_active": is_new_data_quality_service_active
-                }
-            )
         else:
             report_id = report.summary.report_id
             rag = get_data_quality_rag(report)
@@ -97,6 +92,7 @@ class ReportOverviewView(DetailView):
                 "warning_data": summary.data,
                 "total_warnings": summary.count,
                 "bus_services_affected": summary.bus_services_affected,
+                "is_new_data_quality_service_active": is_new_data_quality_service_active,
             }
         )
         return context

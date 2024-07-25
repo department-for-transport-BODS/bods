@@ -52,27 +52,26 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
         is_new_data_quality_service_active = flag_is_active(
             "", "is_new_data_quality_service_active"
         )
-        kwargs[
-            "is_new_data_quality_service_active"
-        ] = is_new_data_quality_service_active
+
         dataset = self.object
         live_revision = dataset.live_revision
+        report = live_revision.report.order_by("-created").first()
+        dqs_report = live_revision.dqs_report.order_by("-created").first()
 
-        if is_new_data_quality_service_active:
-            report = (
-                Report.objects.filter(revision_id=live_revision.id)
-                .order_by("-created")
-                .filter(status=ReportStatus.REPORT_GENERATED.value)
-                .first()
-            )
-            report_id = report.id if report else None
+        if dqs_report:
+            report_id = dqs_report.id if dqs_report else None
             warning_data = Summary.get_report(report_id, live_revision.id)
             kwargs["warning_data"] = warning_data
+            kwargs["new_dqs_report"] = True
+            kwargs["is_new_data_quality_service_active"] = True
         else:
-            report = live_revision.report.order_by("-created").first()
+            report_id = report.id if report else None
+            summary = getattr(report, "summary", None)
+            kwargs["dq_score"] = get_data_quality_rag(report) if summary else None
+            kwargs["new_dqs_report"] = False
+            kwargs["is_new_data_quality_service_active"] = False
 
-        kwargs["report_id"] = report.id if report else None
-        summary = getattr(report, "summary", None)
+        kwargs["report_id"] = report_id
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
         kwargs["pk"] = dataset.id
         kwargs["pk1"] = self.kwargs["pk1"]
@@ -94,8 +93,6 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
             live_revision.created.date() >= settings.PTI_START_DATE.date()
         )
         kwargs["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
-
-        kwargs["dq_score"] = get_data_quality_rag(report) if summary else None
         kwargs["distinct_attributes"] = get_distinct_dataset_txc_attributes(
             live_revision.id
         )

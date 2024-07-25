@@ -4,7 +4,7 @@ from transit_odp.dqs.constants import Checks
 from transit_odp.dqs.views.base import DQSWarningDetailBaseView
 from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
 from transit_odp.dqs.tables.set_down import FirstStopIsSetDownOnlyTable
-from transit_odp.organisation.models import Dataset
+from transit_odp.dqs.models import Report
 
 
 class DQSFirstStopSetDownDetailView(DQSWarningDetailBaseView):
@@ -36,13 +36,11 @@ class DQSFirstStopSetDownDetailView(DQSWarningDetailBaseView):
     def get_queryset(self):
 
         report_id = self.kwargs.get("report_id")
-        dataset_id = self.kwargs.get("pk")
-        org_id = self.kwargs.get("pk1")
 
-        qs = Dataset.objects.filter(id=dataset_id, organisation_id=org_id).get_active()
+        qs = Report.objects.filter(id=report_id)
         if not len(qs):
             return qs
-        revision_id = qs[0].live_revision_id
+        revision_id = qs[0].revision_id
         self.check = Checks.FirstStopIsSetDown
 
         qs = ObservationResults.objects.get_observations_details(
