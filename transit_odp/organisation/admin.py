@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.forms.models import BaseInlineFormSet
 
 from transit_odp.organisation.constants import SUCCESS, DatasetType
 from transit_odp.organisation.models import (
@@ -14,8 +15,16 @@ PUBLISH_ERROR_MESSAGE = (
 )
 
 
+class OptionalAdminAreaInlineFormSet(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for form in self.forms:
+            form.empty_permitted = True
+
+
 class AdminInline(admin.TabularInline):
     model = Organisation.admin_areas.through
+    formset = OptionalAdminAreaInlineFormSet
     extra = 1
     min_num = 1
     show_change_link = True
