@@ -76,7 +76,6 @@ class ValidateResponse:
 def task_validate_avl_feed(task_id: str):
     """Task for validating an AVL feed."""
     try:
-        print("I am getting here")
         task = CAVLValidationTaskResult.objects.get(task_id=task_id)
     except CAVLValidationTaskResult.DoesNotExist:
         logger.warning(f"CAVLValidationTaskResult {task_id} does not exist")

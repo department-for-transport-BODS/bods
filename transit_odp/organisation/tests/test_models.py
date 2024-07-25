@@ -204,6 +204,8 @@ class TestDatasetRevision:
             url_link="https://www.test-feed.com",
             username="test-account",
             password="password123",
+            description="test-description",
+            short_description="test--short-description",
         )
         cavl_service = mocker.patch(f"{self.mut}.CAVLService").return_value
         revision.publish()
@@ -213,6 +215,8 @@ class TestDatasetRevision:
             url="https://www.test-feed.com",
             username="test-account",
             password="password123",
+            description="test-description",
+            short_description="test--short-description",
         )
 
     def test_avl_dataset_publish_update_cavl(self, mocker):

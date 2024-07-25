@@ -55,18 +55,23 @@ class AVLDetailApiView(views.APIView):
 
     def get(self, request, pk=-1, format=None):
         """Get SIRI VM response from consumer API."""
-        url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm?subscriptionId={pk}/"
-        try:
-            Dataset.objects.get(pk=pk, dataset_type=DatasetType.AVL)
-        except Dataset.DoesNotExist:
-            msg = f"Datafeed {pk} does not exist."
-            content = create_xml_error_response(msg, status.HTTP_404_NOT_FOUND)
-            return Response(
-                content, status=status.HTTP_404_NOT_FOUND, content_type="text/xml"
-            )
+        url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm?subscriptionId={pk}"
+        print(url)
+        # try:
+        #     Dataset.objects.get(pk=pk, dataset_type=DatasetType.AVL)
+        # except Dataset.DoesNotExist:
+        #     msg = f"Datafeed {pk} does not exist."
+        #     content = create_xml_error_response(msg, status.HTTP_404_NOT_FOUND)
+        #     return Response(
+        #         content, status=status.HTTP_404_NOT_FOUND, content_type="text/xml"
+        #     )
 
         content, status_code = _get_consumer_api_response(url, request.query_params)
-        return Response(content, status=status_code, content_type="text/xml")
+        return Response(
+            content,
+            status=status_code,
+            content_type="text/xml",
+        )
 
 
 class AVLGTFSRTApiView(views.APIView):
@@ -143,7 +148,12 @@ def _get_consumer_api_response(url: str, query_params: QueryDict):
             return content, response_status
 
     try:
-        response = requests.get(url, params=params, timeout=60)
+        response = requests.get(
+            url,
+            params=params,
+            timeout=60,
+            headers={"x-api-key": "4DAD5A79-2F67-4F80-B63B-F472AB83BE0A"},
+        )
     except RequestException:
         return content, response_status
 

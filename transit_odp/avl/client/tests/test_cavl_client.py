@@ -1,6 +1,7 @@
 from datetime import datetime
 from http import HTTPStatus
 from typing import Optional, Union
+from urllib.error import HTTPError
 
 import pytest
 import requests
@@ -21,6 +22,7 @@ def cavl_service() -> CAVLService:
 
     c = CAVLService()
     c.CAVL_URL = DUMMY_CAVL_URL
+    c.AVL_URL = DUMMY_CAVL_URL
     return c
 
 
@@ -29,28 +31,27 @@ class TestCAVLService:
     @pytest.mark.parametrize(
         "status, expected_result, expected_message",
         [
-            (HTTPStatus.CREATED, True, ["POST http://www.dummy.com/feed 201"]),
+            (HTTPStatus.CREATED, ["POST http://www.dummy.com/subscriptions 201"]),
             (
                 HTTPStatus.BAD_REQUEST,
-                False,
                 [
-                    "POST http://www.dummy.com/feed 400",
+                    "POST http://www.dummy.com/subscriptions 400",
                     "[CAVL] Couldn't register feed <id=1>",
                 ],
             ),
             (
                 HTTPStatus.NOT_FOUND,
-                False,
+                None,
                 [
-                    "POST http://www.dummy.com/feed 404",
+                    "POST http://www.dummy.com/subscriptions 404",
                     "[CAVL] Couldn't register feed <id=1>",
                 ],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
-                False,
+                None,
                 [
-                    "POST http://www.dummy.com/feed 500",
+                    "POST http://www.dummy.com/subscriptions 500",
                     "[CAVL] Couldn't register feed <id=1>",
                 ],
             ),
@@ -66,7 +67,7 @@ class TestCAVLService:
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/feed"
+        url = DUMMY_CAVL_URL + "/subscriptions"
         kwargs["m"].post(url, status_code=status)
 
         result = cavl_service.register_feed(
@@ -75,8 +76,12 @@ class TestCAVLService:
             url="dummy_url",
             username="dummy_u",
             password="dummy_p",
+            description="dummy_description",
+            short_description="dummy_short_description",
         )
 
+        print(rec.message for rec in caplog.records)
+        print(result)
         assert result == expected_result
         assert [rec.message for rec in caplog.records] == expected_message
 
@@ -88,7 +93,7 @@ class TestCAVLService:
                 HTTPStatus.NOT_FOUND,
                 False,
                 [
-                    "DELETE http://www.dummy.com/feed/1 404",
+                    "DELETE http://www.dummy.com/subscriptions 404",
                     "[CAVL] Dataset 1 => Does not exist in CAVL Service.",
                 ],
             ),
@@ -283,7 +288,7 @@ class TestCAVLService:
         self, caplog: CapLog, cavl_service: CAVLService, **kwargs
     ) -> None:
         caplog.set_level(logging.WARNING)
-        url = DUMMY_CAVL_URL + "/validate"
+        url = DUMMY_CAVL_URL + "/feed/verify"
         response_mock = dict(
             url="dummy", username="dummy", created="2022-12-12 00:00:00"
         )
@@ -307,21 +312,21 @@ class TestCAVLService:
             (
                 HTTPStatus.NOT_FOUND,
                 [
-                    "POST http://www.dummy.com/validate 404",
+                    "POST http://www.dummy.com/feed/verify 404",
                     "[CAVL] Couldn't validate feed <url=dummy>",
                 ],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
                 [
-                    "POST http://www.dummy.com/validate 400",
+                    "POST http://www.dummy.com/feed/verify 400",
                     "[CAVL] Couldn't validate feed <url=dummy>",
                 ],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 [
-                    "POST http://www.dummy.com/validate 500",
+                    "POST http://www.dummy.com/feed/verify 500",
                     "[CAVL] Couldn't validate feed <url=dummy>",
                 ],
             ),
@@ -336,7 +341,7 @@ class TestCAVLService:
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/validate"
+        url = DUMMY_CAVL_URL + "/feed/verify"
         response_mock = dict(
             url="dummy", username="dummy", created="2022-12-12 00:00:00"
         )
@@ -361,7 +366,7 @@ class TestCAVLService:
             (
                 "register_feed",
                 "post",
-                "/feed",
+                "/subscriptions",
                 [1, 1, "dummy", "dummy", "dummy"],
                 ["[CAVL] Couldn't register feed <id=1>"],
                 False,
