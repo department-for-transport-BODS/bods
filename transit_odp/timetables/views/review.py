@@ -184,7 +184,7 @@ class PublishRevisionView(BaseTimetableReviewView):
                 .first()
             )
             report_id = report.id if report else None
-            warning_data = None
+            summary = None
             if report_id:
                 summary = Summary.get_report(report_id, revision.id)
 
