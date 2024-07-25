@@ -46,7 +46,9 @@ class Organisation(TimeStampedModel):
     licence_required = models.BooleanField(
         _("Whether an organisation requires a PSV licence"), null=True, default=None
     )
-    admin_areas = models.ManyToManyField(AdminArea, related_name="organisation_atco")
+    admin_areas = models.ManyToManyField(
+        AdminArea, related_name="organisation_atco", blank=True
+    )
 
     objects = OrganisationManager()
 
