@@ -25,7 +25,7 @@ class OptionalAdminAreaInlineFormSet(BaseInlineFormSet):
 class AdminInline(admin.TabularInline):
     model = Organisation.admin_areas.through
     formset = OptionalAdminAreaInlineFormSet
-    extra = 1
+    extra = 0
     min_num = 1
     show_change_link = True
     verbose_name = "Admin Area"
