@@ -14,7 +14,7 @@
     <li class="govuk-header__navigation-item dropdown bods-dropdown">
       {# TODO: use proper html rather than hacky href thing #}
       <a href="#" class="govuk-header__link {% active_url 'account' css_class='govuk-link--active' host='data' %}">
-        <img alt="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
+        <img alt="person-icon"
              class="account-menu__icon"
              src="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
              height="auto"
@@ -39,7 +39,7 @@
       {{ request.REQUEST.next }}
       <a class="govuk-header__link {% active_url 'account_login' host='data' css_class='govuk-link--active' %}"
          href="{% url 'account_login' host hosts.data %}">
-        <img alt="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
+        <img alt="person-icon"
              class="account-menu__icon"
              src="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
              height="auto"

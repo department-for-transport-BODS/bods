@@ -43,8 +43,12 @@
             -
             <span class="status-indicator status-indicator--{{ dq_score.css_indicator }}">{{ dq_score.rag_level | title }}</span>
             ({{ dq_score.score | percentage:"0" }})
+          {% endif %}
+          {% if report_id %}
+             - {% include "snippets/data_quality_row.html" with warning_data=summary %}
+          {% endif %}
           </h2>
-        {% endif %}
+        
         <p class="govuk-body">
           {% blocktrans %}
                             The data quality report goes beyond validation only and checks for
@@ -60,10 +64,12 @@
         </a>
         <table class="govuk-table govuk-!-margin-top-2">
           <tbody class="govuk-table__body">
+            {% if dq_score %}
             <tr class="govuk-table__row">
               <td class="govuk-table__cell">{{ dq_score.score | percentage:"0" }}</td>
               <td class="govuk-table__cell">{% trans "Data quality score" %}</td>
             </tr>
+            {% endif %}
             <tr class="govuk-table__row">
               <td class="govuk-table__cell">{{ summary.data.Critical.count }}</td>
               <td class="govuk-table__cell">{% trans "Critical data quality observations" %}</td>

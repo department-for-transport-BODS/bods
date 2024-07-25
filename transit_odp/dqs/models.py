@@ -20,6 +20,9 @@ class Report(models.Model):
     )
     status = models.CharField(max_length=64, null=True)
 
+    class Meta:
+        get_latest_by = "created"
+
     @classmethod
     def initialise_dqs_task(cls, revision: object) -> object:
         """

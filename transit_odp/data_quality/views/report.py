@@ -24,6 +24,8 @@ class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision)
     def get_latest_report(self):
         revision_id = self.get_revision_id()
         try:
+            report = Report.objects.filter(revision_id=revision_id).latest()
+        except Report.DoesNotExist:
             report = DataQualityReport.objects.filter(revision_id=revision_id).latest()
         except DataQualityReport.DoesNotExist:
             raise Http404
@@ -53,7 +55,7 @@ class ReportOverviewView(DetailView):
                 .get_queryset()
                 .filter(revision__dataset_id=dataset_id)
                 .filter(id=self.kwargs["report_id"])
-                .filter(status=ReportStatus.PIPELINE_SUCCEEDED.value)
+                .filter(status=ReportStatus.REPORT_GENERATED.value)
                 .select_related("revision")
             )
         else:

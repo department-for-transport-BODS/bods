@@ -235,8 +235,8 @@ class TestPasswordChangeView:
             self.url,
             data={
                 "oldpassword": "oldpassword",
-                "password1": "newpassword_34324()()",
-                "password2": "newpassword_34324()()",
+                "password1": "newPassword_34324()()",
+                "password2": "newPassword_34324()()",
                 "submit": "submit",
             },
         )
