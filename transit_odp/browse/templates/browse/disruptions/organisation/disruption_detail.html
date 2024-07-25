@@ -20,7 +20,7 @@
            width="20"
            height="20"
            src="{% static 'frontend/images/calendar-icon.png' %}"
-           alt="{% trans "Calendar icon" %}" />
+           alt="Calendar icon" />
       {{ object.publishStartDate }} {{ object.publishStartTime }} onwards
     </p>
   {% else %}
@@ -29,7 +29,7 @@
            width="20"
            height="20"
            src="{% static 'frontend/images/calendar-icon.png' %}"
-           alt="{% trans "Calendar icon" %}" />
+           alt="Calendar icon" />
       {{ object.publishStartDate }} {{ object.publishStartTime }} - {{ object.publishEndDate }} {{ object.publishEndTime }}
     </p>
   {% endif %}
