@@ -58,7 +58,7 @@ class AVLDetailApiView(views.APIView):
 
     def get(self, request, pk=-1, format=None):
         """Get SIRI VM response from consumer API."""
-        url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm?subscriptionId={pk}/"
+        url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm?subscriptionId={pk}"
         headers = {"x-api-key": settings.AVL_CONSUMER_API_KEY}
         try:
             Dataset.objects.get(pk=pk, dataset_type=DatasetType.AVL)
