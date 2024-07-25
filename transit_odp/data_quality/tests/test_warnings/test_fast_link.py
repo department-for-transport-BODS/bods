@@ -38,6 +38,7 @@ def warning():
     )
 
 
+@pytest.mark.django_db
 class TestFastLinkListPage(ListPageBaseTest):
     """Test Fast Link Warnings list page"""
 
@@ -56,6 +57,7 @@ class TestFastLinkListPage(ListPageBaseTest):
     }
 
 
+@pytest.mark.django_db
 class TestFastLinkDetailPage(DetailPageBaseTest):
     """Test Fast Link Warnings detail page"""
 

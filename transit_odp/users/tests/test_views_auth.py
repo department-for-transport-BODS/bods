@@ -57,8 +57,8 @@ class TestViewsAuthBase:
         # Craft POST data
         data = {
             "email": invite.email,
-            "password1": "a very long and complicated phrase",
-            "password2": "a very long and complicated phrase",
+            "password1": "a very Long and compl1c@ted phrase",
+            "password2": "a very Long and compl1c@ted phrase",
             "first_name": "first",
             "last_name": "last",
             "opt_in_user_research": True,
@@ -199,8 +199,8 @@ class TestSignupView(TestViewsAuthBase):
                 "email": email,
                 "first_name": first_name,
                 "last_name": last_name,
-                "password1": "a very long and complicated phrase",
-                "password2": "a very long and complicated phrase",
+                "password1": "a very Long and compl1c@ted phrase",
+                "password2": "a very Long and compl1c@ted phrase",
                 "account_type": "false",
                 "opt_in_user_research": True,
                 "share_app_usage": True,
@@ -240,8 +240,8 @@ class TestSignupView(TestViewsAuthBase):
                 "email": email,
                 "first_name": first_name,
                 "last_name": last_name,
-                "password1": "a very long and complicated phrase",
-                "password2": "a very long and complicated phrase",
+                "password1": "a very Long and compl1c@ted phrase",
+                "password2": "a very Long and compl1c@ted phrase",
                 "account_type": "false",
                 "opt_in_user_research": True,
                 "share_app_usage": True,
@@ -432,8 +432,8 @@ class TestSignupView(TestViewsAuthBase):
         # Craft POST data
         data = {
             "email": this_guys_invite.email,
-            "password1": "a very long and complicated phrase",
-            "password2": "a very long and complicated phrase",
+            "password1": "a very Long and compl1c@ted phrase",
+            "password2": "a very Long and compl1c@ted phrase",
             "first_name": "Accepter",
             "last_name": "Ontheball",
             "opt_in_user_research": True,
@@ -779,7 +779,7 @@ class TestPasswordResetFromKeyView(TestViewsAuthBase):
         )
 
         # Test
-        new_password = "fsfsw52542g34U"
+        new_password = "fsFsw52542g34U@"
         response = client.get(url)  # does some redirecting and sets session variables
 
         # post new password

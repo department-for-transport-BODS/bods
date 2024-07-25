@@ -32,6 +32,7 @@ def warning():
     )
 
 
+@pytest.mark.django_db
 class TestTimingLastListPage(ListPageBaseTest):
     model = models.TimingLastWarning
     factory = factories.TimingLastWarningFactory
@@ -48,6 +49,7 @@ class TestTimingLastListPage(ListPageBaseTest):
     }
 
 
+@pytest.mark.django_db
 class TestTimingLastDetailPage(DetailPageBaseTest):
     model = models.TimingLastWarning
     factory = factories.TimingLastWarningFactory

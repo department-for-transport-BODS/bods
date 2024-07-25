@@ -34,6 +34,7 @@ def warning():
     )
 
 
+@pytest.mark.django_db
 class TestSlowTimingListPage(ListPageBaseTest):
     """Test Slow Timing Warnings list page"""
 
@@ -53,6 +54,7 @@ class TestSlowTimingListPage(ListPageBaseTest):
     }
 
 
+@pytest.mark.django_db
 class TestSlowTimingDetailPage(DetailPageBaseTest):
     """Test Slow Timing Warnings detail page"""
 

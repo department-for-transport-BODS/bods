@@ -97,12 +97,14 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_post_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
             task_pti_validation.signature(args),
-            task_dqs_upload.signature(args),
-            task_dataset_etl.signature(args),
         ]
 
         if is_new_data_quality_service_active:
+            jobs.append(task_dataset_etl.signature(args))
             jobs.append(task_data_quality_service.signature(args))
+        else:
+            jobs.append(task_dqs_upload.signature(args))
+            jobs.append(task_dataset_etl.signature(args))
 
         # Adding the final step for ETL
         jobs.append(task_dataset_etl_finalise.signature(args))
@@ -403,6 +405,9 @@ def task_dataset_etl(revision_id: int, task_id: int):
     """A task that runs the ETL pipeline on a timetable dataset.
     N.B. this is just a proxy to `run_timetable_etl_pipeline` as part of a refactor.
     """
+    is_new_data_quality_service_active = flag_is_active(
+        "", "is_new_data_quality_service_active"
+    )
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
@@ -426,7 +431,8 @@ def task_dataset_etl(revision_id: int, task_id: int):
             message="Unknown timetable ETL pipeline error.",
             task_name="dataset_etl",
         )
-    update_dqs_task_status(task_id)
+    if not is_new_data_quality_service_active:
+        update_dqs_task_status(task_id)
     adapter.info("Timetable ETL pipeline task completed.")
     return revision_id
 
