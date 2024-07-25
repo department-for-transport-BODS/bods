@@ -1,4 +1,6 @@
+import os
 import pytest
+import time
 from allauth.account.adapter import get_adapter
 from allauth.account.forms import EmailAwarePasswordResetTokenGenerator
 from allauth.account.models import EmailAddress, EmailConfirmation
@@ -12,6 +14,8 @@ from django.test import RequestFactory, override_settings
 from django.urls import set_urlconf
 from django.utils.timezone import now
 from django_hosts.resolvers import get_host, reverse, reverse_host
+from django.test.client import Client
+from contextlib import contextmanager
 
 import config.hosts
 from transit_odp.common.adapters import AccountAdapter
@@ -41,6 +45,22 @@ from transit_odp.users.views.auth import (
 )
 
 pytestmark = pytest.mark.django_db
+
+
+@contextmanager
+def override_env(env_vars):
+    """
+    Context manager to temporarily override environment variables.
+    `env_vars` should be a dictionary where keys are environment variable names
+    and values are their corresponding new values.
+    """
+    original_env = dict(os.environ)
+    try:
+        os.environ.update(env_vars)
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(original_env)
 
 
 class TestViewsAuthBase:
@@ -613,6 +633,21 @@ class TestLoginView(TestViewsAuthBase):
         form = response.context_data["form"]
         field = form.fields["login"]
         assert field.initial == email
+
+    def test_login_form_rate_limit(self, client_factory):
+        html_content = None
+        admin = UserFactory.create()
+        client = client_factory(host=config.hosts.DATA_HOST)
+        login_url = reverse("account_login", host=config.hosts.DATA_HOST)
+        login_data = {
+            "login": admin.email,
+            "password": "1234",
+        }
+        for _ in range(0, 6):
+            response = client.post(login_url, data=login_data)
+            html_content = response.content.decode("utf-8")
+        assert html_content is not None
+        assert "Too many failed login attempts. Try again later." in html_content
 
 
 class TestConfirmEmailView(TestViewsAuthBase):
