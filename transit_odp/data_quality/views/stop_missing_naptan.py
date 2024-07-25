@@ -25,19 +25,21 @@ from waffle import flag_is_active
 class StopMissingNaptanListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = StopNotInNaptanObservation
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.is_new_data_quality_service_active:
+            self.model = StopMissingNaptanWarning
+            self.table_class = StopMissingNaptanListTable
+        else:
+            self.model = ObservationResults
+            self.table_class = DQSWarningListBaseTable
+
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
 
     check = Checks.StopNotFoundInNaptan
     dqs_details = "There is at least one stop that is not registered with NaPTAN"
-
-    if not is_new_data_quality_service_active:
-        model = StopMissingNaptanWarning
-        table_class = StopMissingNaptanListTable
-    else:
-        model = ObservationResults
-        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
 
@@ -52,7 +54,6 @@ class StopMissingNaptanListView(TimingPatternsListBaseView, DQSWarningListBaseVi
                 .add_line()
             )
 
-        # Calling the qs method of DQSWarningListBaseView
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
