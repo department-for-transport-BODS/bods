@@ -1,3 +1,4 @@
+from typing import Any
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django_tables2 import MultiTableMixin, SingleTableView
@@ -7,7 +8,7 @@ import config.hosts
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
 from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
-from transit_odp.organisation.models import Dataset
+from transit_odp.dqs.models import Report
 
 
 class DQSWarningListBaseView(SingleTableView):
@@ -17,24 +18,36 @@ class DQSWarningListBaseView(SingleTableView):
     paginate_by = 10
     check: Checks = Checks.DefaultCheck
     dqs_details: str = None
+    _is_dqs_new_report = None
+
+    @property
+    def is_dqs_new_report(self):
+        if self._is_dqs_new_report is None:
+            report_id = self.kwargs.get("report_id")
+            qs = Report.objects.filter(id=report_id)
+            if not len(qs):
+                self._is_dqs_new_report = False
+            self._is_dqs_new_report = True
+        return self._is_dqs_new_report
 
     def get_queryset(self):
+        self.model = ObservationResults
+        self.table_class = DQSWarningListBaseTable
 
         report_id = self.kwargs.get("report_id")
-        dataset_id = self.kwargs.get("pk")
-        org_id = self.kwargs.get("pk1")
 
-        qs = Dataset.objects.filter(id=dataset_id, organisation_id=org_id).get_active()
+        qs = Report.objects.filter(id=report_id)
         if not len(qs):
             return qs
-        revision_id = qs[0].live_revision_id
-
+        revision_id = qs[0].revision_id
         if self.dqs_details:
             return self.model.objects.get_observations_grouped(
                 report_id, self.check, revision_id, self.dqs_details
             )
 
-        return self.model.objects.get_observations(report_id, self.check, revision_id)
+        return self.model.objects.get_observations(
+            report_id, self.check, revision_id
+        ).distinct()
 
     def get_table_kwargs(self):
         pass

@@ -18,33 +18,30 @@ from waffle import flag_is_active
 class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
     data = IncorrectNocObservation
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._is_dqs_new_report = None
+        self.model = IncorrectNOCWarning
+        self.table_class = IncorrectNOCListTable
+
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
 
     check = Checks.IncorrectNoc
 
-    if not is_new_data_quality_service_active:
-        model = IncorrectNOCWarning
-        table_class = IncorrectNOCListTable
-    else:
-        model = ObservationResults
-        table_class = DQSWarningListBaseTable
-
     def get_queryset(self):
 
-        # For older DQS
-        if not self.is_new_data_quality_service_active:
+        if not self.is_dqs_new_report:
             qs = super().get_queryset()
             return qs.add_message()
 
-        # Calling the qs method of DQSWarningListBaseView
-        return super(WarningListBaseView, self).get_queryset()
+        return DQSWarningListBaseView.get_queryset(self)
 
     def get_table_kwargs(self):
 
         kwargs = {}
-        if not self.is_new_data_quality_service_active:
+        if not self.is_dqs_new_report:
             kwargs = super().get_table_kwargs()
             kwargs.update(
                 {"message_col_verbose_name": "Summary", "count": self.row_count}

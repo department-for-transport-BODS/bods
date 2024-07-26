@@ -104,7 +104,7 @@
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
-      {% if dq_score  or report_id %}
+      {% if dq_score  or new_dqs_report %}
         <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-1">
           {% include "snippets/data_quality_row.html" with rag=dq_score warning_data=warning_data %}
         </p>

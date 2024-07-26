@@ -9,7 +9,6 @@
   {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
 {% block content %}
-  <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-padding-left-0">
       <h1 class="govuk-heading-xl">
         {{ title }}
@@ -19,6 +18,7 @@
         {{ definition|safe }}
       </p>
       {% endif %}
+    </div>
 
     <div class="govuk-grid-column-full govuk-!-padding-left-0">
       {% if impacts %}
@@ -35,9 +35,10 @@
       <p class="govuk-body-m">
         {{ preamble }}
       </p>
+    </div>
 
 {% if extra_info %}
-      <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
+    <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
         <div class="govuk-accordion__section ">
           <div class="govuk-accordion__section-header">
             <h2 class="govuk-accordion__section-heading">
@@ -54,8 +55,7 @@
         </div>
       {% endif %}
     </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full govuk-!-padding-left-3">{% render_table table %}</div>
-  </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full govuk-!-padding-left-3">{% render_table table %}</div>
+    </div>
 {% endblock %}

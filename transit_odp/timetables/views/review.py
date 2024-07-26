@@ -102,6 +102,7 @@ class BaseTimetableReviewView(ReviewBaseView):
             if report_id:
                 dq_status = "SUCCESS"
                 dq_pending_or_failed = False
+                show_update = True
             context.update(
                 {
                     "loading": loading,
@@ -114,7 +115,7 @@ class BaseTimetableReviewView(ReviewBaseView):
                     "pti_enforced_date": settings.PTI_ENFORCED_DATE,
                     "pti_deadline_passed": pti_deadline_passed,
                     "dq_pending_or_failed": dq_pending_or_failed,
-                    "show_update": True,
+                    "show_update": show_update,
                     "is_new_data_quality_service_active": is_new_data_quality_service_active,
                 }
             )

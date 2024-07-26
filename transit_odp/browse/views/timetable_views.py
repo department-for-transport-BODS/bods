@@ -35,6 +35,7 @@ from transit_odp.common.view_mixins import (
     DownloadView,
     ResourceCounterMixin,
 )
+from transit_odp.data_quality.report_summary import Summary
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.notifications import get_notifications
 from transit_odp.organisation.constants import (
@@ -115,7 +116,24 @@ class DatasetDetailView(DetailView):
         dataset = self.object
         live_revision = dataset.live_revision
         report = live_revision.report.order_by("-created").first()
-        summary = getattr(report, "summary", None)
+        dqs_report = live_revision.dqs_report.order_by("-created").first()
+        if dqs_report:
+            summary = Summary.get_report(dqs_report.id, live_revision.id)
+            kwargs["report_id"] = getattr(dqs_report, "id", None)
+            kwargs["dq_score"] = None
+            kwargs["new_dqs_report"] = True
+            kwargs["is_new_data_quality_service_active"] = True
+        else:
+            summary = getattr(report, "summary", None)
+            kwargs["report_id"] = getattr(report, "id", None)
+            kwargs["dq_score"] = (
+                get_data_quality_rag(report) if report and summary else None
+            )
+            kwargs["new_dqs_report"] = False
+            kwargs["is_new_data_quality_service_active"] = False
+
+        kwargs["summary"] = summary
+
         user = self.request.user
 
         kwargs["pk"] = dataset.id
@@ -123,10 +141,6 @@ class DatasetDetailView(DetailView):
         kwargs["admin_areas"] = self.object.admin_area_names
         # Once all the reports are generated we should probably use the queryset
         # annotation get_live_dq_score and calculate the rag from that.
-        kwargs["report_id"] = getattr(report, "id", None)
-        kwargs["dq_score"] = (
-            get_data_quality_rag(report) if report and summary else None
-        )
 
         # Handle errors produced by pipeline
         task = live_revision.etl_results.latest()

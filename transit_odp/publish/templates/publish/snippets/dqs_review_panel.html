@@ -45,7 +45,7 @@
             ({{ dq_score.score | percentage:"0" }})
           {% endif %}
           {% if report_id %}
-             - {% include "snippets/data_quality_row.html" with warning_data=summary %}
+             - <span class="shifted-tag-top-3">{% include "snippets/data_quality_row.html" with warning_data=summary %}</span>
           {% endif %}
           </h2>
         

@@ -29,19 +29,21 @@ from waffle import flag_is_active
 class IncorrectStopTypeListView(JourneyListBaseView, DQSWarningListBaseView):
     data = IncorrectStopTypeObservation
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.is_new_data_quality_service_active:
+            self.model = JourneyStopInappropriateWarning
+            self.table_class = StopIncorrectTypeListTable
+        else:
+            self.model = ObservationResults
+            self.table_class = DQSWarningListBaseTable
+
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
 
     check = Checks.IncorrectStopType
     dqs_details = "There is at least one stop with an incorrect stop type"
-
-    if not is_new_data_quality_service_active:
-        model = JourneyStopInappropriateWarning
-        table_class = StopIncorrectTypeListTable
-    else:
-        model = ObservationResults
-        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
 
