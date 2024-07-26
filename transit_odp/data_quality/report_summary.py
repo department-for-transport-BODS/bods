@@ -24,6 +24,8 @@ URL_MAPPING = {
     "First stop is set down only": "drop-off-only",
     "Last stop is pick up only": "pick-up-only",
     "Stop not found in NaPTAN": "stop-not-in-naptan",
+    "First stop is not a timing point": "first-stop-not-timing-point",
+    "Last stop is not a timing point": "last-stop-not-timing-point",
 }
 
 
