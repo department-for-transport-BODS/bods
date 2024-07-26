@@ -721,4 +721,4 @@ DD_DBM_PROPAGATION_MODE = "full"
 # below environment variables are added for allauth library
 # to enable rate limit for user entering wrong password
 ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
-ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 600
+ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 900
