@@ -11,15 +11,19 @@ class ICAVLService(Protocol):
         url: str,
         username: str,
         password: str,
+        description: str,
+        short_description: str,
     ) -> bool:
         """
-        Registers a feed in the CAVL service.
+        Registers a feed in the AVL service.
         Args:
-            feed_id:
-            publisher_id:
-            url:
-            username:
-            password:
+            feed_id: Datafeed ID for subscription
+            publisher_id: Organisation ID that manages the subscription
+            url: The data producers endpoint
+            username: The data producers username
+            password: The data producers password
+            description: Description of the data feed (entered by user)
+            short_description: Short description of the data feed (entered by user)
 
         Returns: Boolean indicating the feed was added successfully.
         """

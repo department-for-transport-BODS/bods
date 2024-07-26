@@ -44,6 +44,7 @@ from transit_odp.organisation.querysets import (
 from transit_odp.pipelines.signals import dataset_etl
 from transit_odp.timetables.dataclasses.transxchange import TXCFile
 from transit_odp.users.models import User
+from requests.exceptions import RequestException
 
 logger = logging.getLogger(__name__)
 
@@ -353,16 +354,6 @@ class DatasetRevision(
         """Publish the revision"""
         if not self.is_published:
             now = timezone.now()
-            # TODO - should likely fold the logic in 'update_live_revision' receiver
-            # into this method, i.e. update live_revision on the dataset to point to
-            # this newly published revision in an atomic transaction.
-            #  However, then tests wouldn't be as easy to initialise / be data-driven
-            # TODO - remove 'live' status
-            if self.status == FeedStatus.success.value:
-                self.status = FeedStatus.live.value
-            self.is_published = True
-            self.published_at = now
-            self.published_by = user
 
             # register AVL dataset with CAVL
             if self.dataset.dataset_type == DatasetType.AVL:
@@ -379,6 +370,8 @@ class DatasetRevision(
                         url=self.url_link,
                         username=self.username,
                         password=self.password,
+                        description=self.description,
+                        short_description=self.short_description,
                     )
                 else:
                     cavl_service.update_feed(
@@ -387,6 +380,16 @@ class DatasetRevision(
                         username=self.username,
                         password=self.password,
                     )
+            # TODO - should likely fold the logic in 'update_live_revision' receiver
+            # into this method, i.e. update live_revision on the dataset to point to
+            # this newly published revision in an atomic transaction.
+            #  However, then tests wouldn't be as easy to initialise / be data-driven
+            # TODO - remove 'live' status
+            if self.status == FeedStatus.success.value:
+                self.status = FeedStatus.live.value
+            self.is_published = True
+            self.published_at = now
+            self.published_by = user
 
             self.save()
             signals.revision_publish.send(self, dataset=self.dataset)
