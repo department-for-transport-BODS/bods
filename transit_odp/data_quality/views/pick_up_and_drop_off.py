@@ -34,6 +34,15 @@ from waffle import flag_is_active
 class LastStopPickUpListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = LastStopPickUpOnlyObservation
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.is_new_data_quality_service_active:
+            self.model = TimingDropOffWarning
+            self.table_class = PickUpDropOffListTable
+        else:
+            self.model = ObservationResults
+            self.table_class = DQSWarningListBaseTable
+
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
@@ -41,26 +50,11 @@ class LastStopPickUpListView(TimingPatternsListBaseView, DQSWarningListBaseView)
     check = Checks.LastStopIsPickUpOnly
     dqs_details = "There is at least one journey where the last stop is designated as pick up only"
 
-    @property
-    def model(self):
-        if not self.is_new_data_quality_service_active:
-            return TimingDropOffWarning
-        else:
-            return ObservationResults
-
-    @property
-    def table_class(self):
-        if not self.is_new_data_quality_service_active:
-            return PickUpDropOffListTable
-        else:
-            return DQSWarningListBaseTable
-
     def get_queryset(self):
 
         if not self.is_new_data_quality_service_active:
             return super().get_queryset().add_message().add_line()
 
-        # Calling the qs method of DQSWarningListBaseView
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
@@ -79,7 +73,6 @@ class LastStopPickUpListView(TimingPatternsListBaseView, DQSWarningListBaseView)
         return context
 
     def get_table_kwargs(self):
-
         kwargs = {}
         if not self.is_new_data_quality_service_active:
             kwargs = super().get_table_kwargs()
@@ -106,26 +99,25 @@ class LastStopPickUpDetailView(TwoTableDetailView):
 
 class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = FirstStopSetDownOnlyObservation
+    check = Checks.FirstStopIsSetDown
+    dqs_details = "There is at least one journey where the first stop is designated as set down only"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.is_new_data_quality_service_active:
+            self.model = TimingPickUpWarning
+            self.table_class = PickUpDropOffListTable
+        else:
+            self.model = ObservationResults
+            self.table_class = DQSWarningListBaseTable
 
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
 
-    check = Checks.FirstStopIsSetDown
-    dqs_details = "There is at least one journey where the first stop is designated as set down only"
-    if not flag_is_active("", "is_new_data_quality_service_active"):
-        model = TimingPickUpWarning
-        table_class = PickUpDropOffListTable
-    else:
-        model = ObservationResults
-        table_class = DQSWarningListBaseTable
-
     def get_queryset(self):
-
-        if not flag_is_active("", "is_new_data_quality_service_active"):
+        if not self.is_new_data_quality_service_active:
             return super().get_queryset().add_line().add_message()
-
-        # Calling the qs method of DQSWarningListBaseView
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
@@ -144,9 +136,8 @@ class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseVie
         return context
 
     def get_table_kwargs(self):
-
         kwargs = {}
-        if not flag_is_active("", "is_new_data_quality_service_active"):
+        if not self.is_new_data_quality_service_active:
             kwargs = super().get_table_kwargs()
         return kwargs
 

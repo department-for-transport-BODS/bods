@@ -31,7 +31,9 @@ class DQSWarningListBaseView(SingleTableView):
                 report_id, self.check, revision_id, self.dqs_details
             )
 
-        return self.model.objects.get_observations(report_id, self.check, revision_id)
+        return self.model.objects.get_observations(
+            report_id, self.check, revision_id
+        ).distinct()
 
     def get_table_kwargs(self):
         pass

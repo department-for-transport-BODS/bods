@@ -4,7 +4,7 @@ from transit_odp.dqs.constants import Checks
 from transit_odp.dqs.views.base import DQSWarningDetailBaseView
 from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
 from transit_odp.dqs.tables.stop_not_found import StopNotFoundInNaptanOnlyTable
-from transit_odp.organisation.models import Dataset
+from transit_odp.dqs.models import Report
 
 
 class DQSStopMissingNaptanDetailView(DQSWarningDetailBaseView):
@@ -19,7 +19,6 @@ class DQSStopMissingNaptanDetailView(DQSWarningDetailBaseView):
 
         title = self.data.title
         service_code = self.request.GET.get("service")
-        line = self.request.GET.get("line")
         page = self.request.GET.get("page", 1)
         qs = self.get_queryset()
 
@@ -36,13 +35,12 @@ class DQSStopMissingNaptanDetailView(DQSWarningDetailBaseView):
     def get_queryset(self):
 
         report_id = self.kwargs.get("report_id")
-        dataset_id = self.kwargs.get("pk")
-        org_id = self.kwargs.get("pk1")
 
-        qs = Dataset.objects.filter(id=dataset_id, organisation_id=org_id).get_active()
+        qs = Report.objects.filter(id=report_id)
         if not len(qs):
             return qs
-        revision_id = qs[0].live_revision_id
+        revision_id = qs[0].revision_id
+        print(f"revision_id is {revision_id}")
         self.check = Checks.StopNotFoundInNaptan
 
         qs = ObservationResults.objects.get_observations_details(

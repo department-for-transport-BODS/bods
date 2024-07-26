@@ -28,6 +28,10 @@ class Report(models.Model):
         """
         Create a new Report instance with the provided data and save it to the database.
         """
+        existing_report = cls.objects.filter(revision=revision).first()
+        if existing_report:
+            return existing_report
+
         new_report = cls(
             file_name="", revision=revision, status=ReportStatus.PIPELINE_PENDING.value
         )
