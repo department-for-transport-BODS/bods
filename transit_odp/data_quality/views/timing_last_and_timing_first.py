@@ -39,10 +39,6 @@ class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseVi
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-<<<<<<< HEAD
-        self._is_dqs_new_report = None
-=======
->>>>>>> 61d2bfbe944c8f2475912c61bf19944a3412fbe1
         self.model = TimingLastWarning
         self.table_class = TimingPatternListTable
 
