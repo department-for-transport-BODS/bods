@@ -18,8 +18,17 @@ class DQSWarningListBaseView(SingleTableView):
     check: Checks = Checks.DefaultCheck
     dqs_details: str = None
 
-    def get_queryset(self):
+    def is_dqs_new_report(self):
+        report_id = self.kwargs.get("report_id")
+        qs = Report.objects.filter(id=report_id)
+        if not len(qs):
+            return False
+        return True
 
+    def get_queryset(self):
+        self.model = ObservationResults
+        self.table_class = DQSWarningListBaseTable
+        
         report_id = self.kwargs.get("report_id")
 
         qs = Report.objects.filter(id=report_id)
