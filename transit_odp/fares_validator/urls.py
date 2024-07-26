@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.urls import path
 
 from transit_odp.fares_validator.views.export_excel import FaresXmlExporter

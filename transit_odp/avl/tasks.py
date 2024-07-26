@@ -89,8 +89,6 @@ def task_validate_avl_feed(task_id: str):
             username=revision.username,
             password=revision.password,
         )
-
-        print(response.status)
     except ReadTimeoutError:
         logger.warning("Request to Validation Service timed out.", exc_info=True)
         task.to_timeout_error()
@@ -103,7 +101,6 @@ def task_validate_avl_feed(task_id: str):
             task.to_system_error()
         else:
             if response.status == CAVLValidationTaskResult.VALID:
-                print("my feed is valid")
                 metadata, _ = DatasetMetadata.objects.update_or_create(
                     revision=revision, defaults={"schema_version": response.version}
                 )
@@ -120,10 +117,11 @@ def task_validate_avl_feed(task_id: str):
 @shared_task(bind=True)
 def task_create_sirivm_zipfile(self):
     URL = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm"
+    headers = {"x-api-key": settings.AVL_CONSUMER_API_KEY}
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     start = time.time()
     try:
-        response = requests.get(URL)
+        response = requests.get(URL, headers=headers)
         logger.info(
             f"Request to {URL} took {response.elapsed.total_seconds()} seconds for job-task_create_sirivm_zipfile"
         )
@@ -179,11 +177,12 @@ def task_create_gtfsrt_zipfile():
 def task_create_sirivm_tfl_zipfile(self):
     start = time.time()
     logger.info(f"Starting to create sirivm_tfl_zipfile with url")
-    url = f"{settings.CAVL_CONSUMER_URL}/siri-vm?downloadTfl=true"
+    url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm?downloadTfl=true"
+    headers = {"x-api-key": settings.AVL_CONSUMER_API_KEY}
     params = {"operatorRef": "TFLO"}
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     try:
-        response = requests.get(url, params=params, timeout=30)
+        response = requests.get(url, params=params, headers=headers, timeout=30)
         logger.info(
             f"Request to cavl took {response.elapsed.total_seconds()} seconds for job-task_create_sirivm_tfl_zipfile"
         )

@@ -22,7 +22,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">{{ object.ui_lta_name }}</h1>
-      <h3 class="govuk-heading-m govuk-!-margin-top-3">
+      <h2 class="govuk-heading-m govuk-!-margin-top-3">
         {% filter force_escape %}
           {% trans "Timetables data" %}
         {% endfilter %}
@@ -31,7 +31,7 @@
         {% else %}
           <span class="govuk-tag--red govuk-tag bods-4a5288c641-0">{% trans "Not Compliant" %}</span>
         {% endif %}
-      </h3>
+      </h2>
       <p class="govuk-body">
         {% filter force_escape %}
           {% trans "The service codes summarised here are registered with the OTC and are in scope of BODS, but are not yet published in a complete and accurate way." %}

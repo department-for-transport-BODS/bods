@@ -16,10 +16,12 @@
   {{ block.super }}
   {% breadcrumb_url 'Account settings' 'users:settings' host hosts.data %}
 {% endblock %}
+{% block title_text %}
+  {% trans "Account settings" %}
+{% endblock %}
+{% block subtitle %}Account details{% endblock %}
 {% block inner %}
-  <h1 class="govuk-heading-xl">{% trans "Account settings" %}</h1>
   <table class="govuk-table manage-users-table">
-    <caption class="govuk-table__caption manage-users-table__caption">Account details</caption>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
         <td class="govuk-table__cell"></td>

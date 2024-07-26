@@ -6,7 +6,7 @@
   {% block header %}
     {% include "header.html" %}
   {% endblock %}
-  <div>
+  <main id="main-content" role="main">
     <div class="govuk-width-container">
       {% include "banner.html" with current_host=request.get_host current_path=request.get_full_path|urlencode %}
       {% block breadcrumb %}
@@ -25,16 +25,14 @@
       {% endblock %}
       {% block backlink %}{% endblock %}
     </div>
-    <main id="main-content" role="main">
-      {% block full_width_content %}{% endblock %}
-      <div class="govuk-width-container">
-        <div class="govuk-main-wrapper app-main-class">
-          {% include "snippets/timeout_warning_modal.html" %}
-          {% block content %}{% endblock %}
-        </div>
+    {% block full_width_content %}{% endblock %}
+    <div class="govuk-width-container">
+      <div class="govuk-main-wrapper app-main-class">
+        {% include "snippets/timeout_warning_modal.html" %}
+        {% block content %}{% endblock %}
       </div>
-    </main>
-  </div>
+    </div>
+  </main>
   {% block footer %}
     {% include "footer.html" %}
   {% endblock %}

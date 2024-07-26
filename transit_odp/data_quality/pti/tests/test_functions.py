@@ -25,6 +25,7 @@ from transit_odp.data_quality.pti.functions import (
     has_prohibited_chars,
     is_member_of,
     today,
+    validate_licence_number,
 )
 from transit_odp.data_quality.pti.tests.constants import TXC_END, TXC_START
 from transit_odp.naptan.factories import (
@@ -1195,3 +1196,45 @@ def test_check_vehicle_journey_timing_links_with_errors(values, expected):
         )
         actual = check_vehicle_journey_timing_links("", elements)
         assert actual == expected
+
+
+@pytest.mark.django_db
+def test_validate_licence_number_coach_data():
+    """
+    This test case validates LicenceNumber is not a mandatory element for Operators with PrimaryMode as Coach
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    string_xml = DATA_DIR / "coach_operator.xml"
+    with string_xml.open("r") as txc_xml:
+        doc = etree.parse(txc_xml)
+        elements = doc.xpath("//x:Operator", namespaces=NAMESPACE)
+        actual = validate_licence_number("", elements)
+        assert actual == True
+
+
+@pytest.mark.django_db
+def test_validate_licence_number_non_coach_data_success():
+    """
+    This test case validates LicenceNumber is a mandatory element for Non Coach Operators
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    string_xml = DATA_DIR / "non_coach_data_operator.xml"
+    with string_xml.open("r") as txc_xml:
+        doc = etree.parse(txc_xml)
+        elements = doc.xpath("//x:Operator", namespaces=NAMESPACE)
+        actual = validate_licence_number("", elements)
+        assert actual == True
+
+
+@pytest.mark.django_db
+def test_validate_licence_number_non_coach_data_failed():
+    """
+    This test case validates LicenceNumber is a mandatory element for Non Coach Operators
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    string_xml = DATA_DIR / "non_coach_data_operator_without_licence_number.xml"
+    with string_xml.open("r") as txc_xml:
+        doc = etree.parse(txc_xml)
+        elements = doc.xpath("//x:Operator", namespaces=NAMESPACE)
+        actual = validate_licence_number("", elements)
+        assert actual == False

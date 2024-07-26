@@ -508,7 +508,7 @@
       "context": "//x:Operator",
       "rules": [
         {
-          "test": "count(x:LicenceNumber) = 1"
+          "test": "validate_licence_number(.)"
         }
       ]
     },

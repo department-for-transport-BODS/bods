@@ -51,19 +51,8 @@ USE_TZ = True
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-# DATABASES = {"default": env.db("DATABASE_URL")}
-# DATABASES["default"]["ATOMIC_REQUESTS"] = True
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "NAME": "transit_odp",
-        "USER": "transit_odp",
-        "PASSWORD": "transit_odp",
-        "HOST": "postgres",
-        "PORT": "5432",
-    }
-}
+DATABASES = {"default": env.db("DATABASE_URL")}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # URLS
 # ------------------------------------------------------------------------------
@@ -153,6 +142,7 @@ THIRD_PARTY_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "waffle",
+    "django_axe.apps.DjangoAxeConfig",
 ]
 LOCAL_APPS = [
     "transit_odp.api.apps.ApiConfig",
@@ -639,6 +629,13 @@ AVL_PRODUCER_API_BASE_URL = env("AVL_PRODUCER_API_BASE_URL", default="")
 AVL_PRODUCER_API_KEY = env("AVL_PRODUCER_API_KEY", default="")
 AVL_IP_ADDRESS_LIST = env("AVL_IP_ADDRESS_LIST", default="")
 
+# S3 bucket name for Dataset maintenance
+# ------------------------------------------------------------------------------
+AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
+    "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME",
+    default="bodds-dataset-dev-maintenance",
+)
+
 # SQS QUEUE
 # ------------------------------------------------------------------------------
 SQS_QUEUE_ENDPOINT_URL = env(
@@ -721,3 +718,7 @@ if env("GEOS_LIBRARY_PATH", default=None):
     GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")
 
 MAPBOX_KEY = env("MAPBOX_KEY", default=None)
+
+DJANGO_AXE_REPORT_PATH = os.path.join(MEDIA_ROOT, "accessibility_report.json")
+DJANGO_AXE_ENABLED = env.bool("DJANGO_AXE_ENABLED", default=False)
+DD_DBM_PROPAGATION_MODE = "full"
