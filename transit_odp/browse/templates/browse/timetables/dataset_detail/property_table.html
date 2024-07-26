@@ -46,9 +46,7 @@
       
       <td class="govuk-table__cell">
         {% if new_dqs_report %}
-          <div class="stacked">
             {% include "snippets/data_quality_row.html" with warning_data=summary %}
-          </div>
         {% else %}
           <div class="stacked">
             {% trans "Data quality" %}
