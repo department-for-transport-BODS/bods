@@ -44,43 +44,39 @@ def cavl_service() -> CAVLService:
 @requests_mock.Mocker(kw="m")
 class TestCAVLService:
     @pytest.mark.parametrize(
-        "status, expected_result, expected_message",
+        "status, response_mock, expected_result, expected_message",
         [
             (
                 HTTPStatus.CREATED,
+                {},
                 does_not_raise(),
                 ["POST http://www.dummy.com/subscriptions 201"],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
+                dict(errors=["Bad request"]),
                 pytest.raises(RequestException),
                 [
                     "POST http://www.dummy.com/subscriptions 400",
-                    "[CAVL] Couldn't register feed <id=1>",
+                    "[CAVL] Couldn't register feed <id=1>. Response: {'errors': ['Bad request']}",
                 ],
             ),
             (
                 HTTPStatus.NOT_FOUND,
+                dict(errors=["Not found"]),
                 pytest.raises(RequestException),
                 [
                     "POST http://www.dummy.com/subscriptions 404",
-                    "[CAVL] Couldn't register feed <id=1>",
+                    "[CAVL] Couldn't register feed <id=1>. Response: {'errors': ['Not found']}",
                 ],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
+                dict(errors=["Server error"]),
                 pytest.raises(RequestException),
                 [
                     "POST http://www.dummy.com/subscriptions 500",
-                    "[CAVL] Couldn't register feed <id=1>",
-                ],
-            ),
-            (
-                HTTPStatus.INTERNAL_SERVER_ERROR,
-                pytest.raises(RequestException),
-                [
-                    "POST http://www.dummy.com/subscriptions 500",
-                    "[CAVL] Couldn't register feed <id=1>",
+                    "[CAVL] Couldn't register feed <id=1>. Response: {'errors': ['Server error']}",
                 ],
             ),
         ],
@@ -90,13 +86,14 @@ class TestCAVLService:
         caplog: CapLog,
         cavl_service: CAVLService,
         status: int,
+        response_mock,
         expected_result: bool,
         expected_message: list[str],
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_CAVL_URL + "/subscriptions"
-        kwargs["m"].post(url, status_code=status)
+        kwargs["m"].post(url, json=response_mock, status_code=status)
 
         with expected_result:
             assert (
@@ -163,31 +160,39 @@ class TestCAVLService:
         assert [rec.message for rec in caplog.records] == expected_message
 
     @pytest.mark.parametrize(
-        "status, expected_result, expected_message",
+        "status, response_mock, expected_result, expected_message",
         [
-            (HTTPStatus.NO_CONTENT, True, ["POST http://www.dummy.com/feed/1 204"]),
+            (
+                HTTPStatus.NO_CONTENT,
+                {},
+                does_not_raise(),
+                ["PUT http://www.dummy.com/subscriptions/1 204"],
+            ),
             (
                 HTTPStatus.NOT_FOUND,
-                False,
+                dict(errors=["Not found"]),
+                pytest.raises(RequestException),
                 [
-                    "POST http://www.dummy.com/feed/1 404",
-                    "[CAVL] Couldn't update feed <id=1>",
+                    "PUT http://www.dummy.com/subscriptions/1 404",
+                    "[CAVL] Couldn't update feed <id=1>. Response: {'errors': ['Not found']}",
                 ],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
-                False,
+                dict(errors=["Bad request"]),
+                pytest.raises(RequestException),
                 [
-                    "POST http://www.dummy.com/feed/1 400",
-                    "[CAVL] Couldn't update feed <id=1>",
+                    "PUT http://www.dummy.com/subscriptions/1 400",
+                    "[CAVL] Couldn't update feed <id=1>. Response: {'errors': ['Bad request']}",
                 ],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
-                False,
+                dict(errors=["Server error"]),
+                pytest.raises(RequestException),
                 [
-                    "POST http://www.dummy.com/feed/1 500",
-                    "[CAVL] Couldn't update feed <id=1>",
+                    "PUT http://www.dummy.com/subscriptions/1 500",
+                    "[CAVL] Couldn't update feed <id=1>. Response: {'errors': ['Server error']}",
                 ],
             ),
         ],
@@ -197,17 +202,22 @@ class TestCAVLService:
         caplog: CapLog,
         cavl_service: CAVLService,
         status: int,
+        response_mock: dict,
         expected_result: bool,
         expected_message: list[str],
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/feed/1"
-        kwargs["m"].post(url, status_code=status)
+        url = DUMMY_CAVL_URL + "/subscriptions/1"
 
-        result = cavl_service.update_feed(1, "dummy", "dummy", "dummy")
+        kwargs["m"].put(url, json=response_mock, status_code=status)
 
-        assert result == expected_result
+        with expected_result:
+            assert (
+                cavl_service.update_feed(1, "dummy", "dummy", "dummy", "dummy", "dummy")
+                is not None
+            )
+
         assert [rec.message for rec in caplog.records] == expected_message
 
     @pytest.mark.parametrize(
@@ -334,27 +344,30 @@ class TestCAVLService:
         assert [rec.message for rec in caplog.records] == []
 
     @pytest.mark.parametrize(
-        "status, expected_message",
+        "status, response_mock, expected_message",
         [
             (
                 HTTPStatus.NOT_FOUND,
+                dict(errors=["Not found"]),
                 [
                     "PUT http://www.dummy.com/feed/verify 404",
-                    "[CAVL] Couldn't validate feed <url=dummy>",
+                    "[CAVL] Couldn't validate feed <url=dummy>. Response: {'errors': ['Not found']}",
                 ],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
+                dict(errors=["Bad request"]),
                 [
                     "PUT http://www.dummy.com/feed/verify 400",
-                    "[CAVL] Couldn't validate feed <url=dummy>",
+                    "[CAVL] Couldn't validate feed <url=dummy>. Response: {'errors': ['Bad request']}",
                 ],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
+                dict(errors=["Server error"]),
                 [
                     "PUT http://www.dummy.com/feed/verify 500",
-                    "[CAVL] Couldn't validate feed <url=dummy>",
+                    "[CAVL] Couldn't validate feed <url=dummy>. Response: {'errors': ['Server error']}",
                 ],
             ),
         ],
@@ -364,14 +377,13 @@ class TestCAVLService:
         caplog: CapLog,
         cavl_service: CAVLService,
         status: int,
+        response_mock: dict,
         expected_message: list[str],
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_CAVL_URL + "/feed/verify"
-        response_mock = dict(
-            url="dummy", username="dummy", created="2022-12-12 00:00:00"
-        )
+
         kwargs["m"].put(url, json=response_mock, status_code=status)
 
         with pytest.raises(requests.RequestException):
@@ -388,14 +400,6 @@ class TestCAVLService:
                 "/feed/1",
                 [1],
                 ["[CAVL] Couldn't delete feed <id=1>"],
-                False,
-            ),
-            (
-                "update_feed",
-                "post",
-                "/feed/1",
-                [1, "dummy", "dummy", "dummy"],
-                ["[CAVL] Couldn't update feed <id=1>"],
                 False,
             ),
             (
@@ -441,7 +445,15 @@ class TestCAVLService:
                 "post",
                 "/subscriptions",
                 [1, 1, "dummy", "dummy", "dummy", "dummy", "dummy"],
-                ["[CAVL] Couldn't register feed <id=1>"],
+                ["[CAVL] Couldn't register feed <id=1>. Response: (empty)"],
+                pytest.raises(ConnectTimeout),
+            ),
+            (
+                "update_feed",
+                "put",
+                "/subscriptions/1",
+                [1, "dummy", "dummy", "dummy", "dummy", "dummy"],
+                ["[CAVL] Couldn't update feed <id=1>. Response: (empty)"],
                 pytest.raises(ConnectTimeout),
             ),
         ],

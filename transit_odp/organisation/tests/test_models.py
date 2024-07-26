@@ -228,6 +228,8 @@ class TestDatasetRevision:
                 url_link="https://www.test-feed.com",
                 username="test-account",
                 password="password123",
+                description="test-description",
+                short_description="test-short-description",
             )
 
         new_revision = AVLDatasetRevisionFactory(
@@ -236,6 +238,8 @@ class TestDatasetRevision:
             url_link="https://www.test-feed.v2.com",
             username="test-account.v2",
             password="password123.v2",
+            description="test-description2",
+            short_description="test--short-description2",
         )
 
         cavl_service = mocker.patch(f"{self.mut}.CAVLService").return_value
@@ -245,6 +249,8 @@ class TestDatasetRevision:
             url="https://www.test-feed.v2.com",
             username="test-account.v2",
             password="password123.v2",
+            description="test-description2",
+            short_description="test--short-description2",
         )
 
     def test_revision_draft_url_for_new_dataset(self):

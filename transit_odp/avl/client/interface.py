@@ -32,14 +32,24 @@ class ICAVLService(Protocol):
     def delete_feed(self, feed_id: int) -> bool:
         ...
 
-    def update_feed(self, feed_id: int, url: str, username: str, password: str) -> bool:
+    def update_feed(
+        self,
+        feed_id: int,
+        url: str,
+        username: str,
+        password: str,
+        description: str,
+        short_description: str,
+    ) -> bool:
         """
         Updates an existing feed in the CAVL service.
         Args:
-            feed_id:
-            url:
-            username:
-            password:
+            feed_id: Datafeed ID for subscription
+            url: The data producers endpoint
+            username: The data producers username
+            password: The data producers password
+            description: Description of the data feed (entered by user)
+            short_description: Short description of the data feed (entered by user)
 
         Returns:
         """
