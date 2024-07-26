@@ -614,6 +614,21 @@ class TestLoginView(TestViewsAuthBase):
         field = form.fields["login"]
         assert field.initial == email
 
+    def test_login_form_rate_limit(self, client_factory):
+        html_content = None
+        admin = UserFactory.create()
+        client = client_factory(host=config.hosts.DATA_HOST)
+        login_url = reverse("account_login", host=config.hosts.DATA_HOST)
+        login_data = {
+            "login": admin.email,
+            "password": "1234",
+        }
+        for _ in range(0, 6):
+            response = client.post(login_url, data=login_data)
+            html_content = response.content.decode("utf-8")
+        assert html_content is not None
+        assert "Too many failed login attempts. Try again later." in html_content
+
 
 class TestConfirmEmailView(TestViewsAuthBase):
     host = config.hosts.DATA_HOST
