@@ -26,6 +26,7 @@ URL_MAPPING = {
     "Stop not found in NaPTAN": "stop-not-in-naptan",
     "First stop is not a timing point": "first-stop-not-timing-point",
     "Last stop is not a timing point": "last-stop-not-timing-point",
+    "Incorrect stop type": "incorrect-stop-type",
 }
 
 

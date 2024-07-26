@@ -18,8 +18,8 @@
           <caption class="govuk-table__caption govuk-table__caption--s govuk-!-font-weight-regular govuk-!-font-size-24">{{ category }} ({{ df.number_of_services_affected.sum }})</caption>
           <thead class="govuk-table__head govuk-!-font-weight-regular">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-half">Number of services affected</th>
-              <th scope="col" class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-half">Observation category</th>
+              <th scope="col" class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-half">{% trans "Number of Observation" %}</th>
+              <th scope="col" class="govuk-table__header govuk-!-font-weight-regular">{% trans "Observation category" %} </th>
             </tr>
           </thead>
           <tbody class="govuk-table__body">
@@ -32,9 +32,7 @@
                       {{ row.observation }}
                     </a>
                   {% else %}
-                    <a href="{% url 'dq:overview' pk1=view.kwargs.pk1 pk=view.kwargs.pk report_id=view.kwargs.report_id host hosts.publish %}{{ row.observation|lower|replace_spaces }}">
                       {{ row.observation }}
-                    </a>
                   {% endif %}
                 </td>
               </tr>
@@ -50,7 +48,7 @@
             </caption>
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">{% trans "Number of observations" %}</th>
+                <th scope="col" class="govuk-table__header govuk-!-width-one-half">{% trans "Number of observations" %}</th>
                 <th scope="col" class="govuk-table__header">{% trans "Observation category" %}</th>
               </tr>
             </thead>
