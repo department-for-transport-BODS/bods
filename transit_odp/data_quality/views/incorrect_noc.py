@@ -20,12 +20,9 @@ class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not self.is_new_data_quality_service_active:
-            self.model = IncorrectNOCWarning
-            self.table_class = IncorrectNOCListTable
-        else:
-            self.model = ObservationResults
-            self.table_class = DQSWarningListBaseTable
+        self._is_dqs_new_report = None
+        self.model = IncorrectNOCWarning
+        self.table_class = IncorrectNOCListTable
 
     @property
     def is_new_data_quality_service_active(self):
@@ -35,7 +32,7 @@ class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
 
     def get_queryset(self):
 
-        if not self.is_new_data_quality_service_active:
+        if not self.is_dqs_new_report:
             qs = super().get_queryset()
             return qs.add_message()
 
@@ -44,7 +41,7 @@ class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
     def get_table_kwargs(self):
 
         kwargs = {}
-        if not self.is_new_data_quality_service_active:
+        if not self.is_dqs_new_report:
             kwargs = super().get_table_kwargs()
             kwargs.update(
                 {"message_col_verbose_name": "Summary", "count": self.row_count}
