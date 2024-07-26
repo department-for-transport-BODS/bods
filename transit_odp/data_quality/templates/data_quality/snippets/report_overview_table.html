@@ -32,7 +32,9 @@
                       {{ row.observation }}
                     </a>
                   {% else %}
+                    <a href="{% url 'dq:overview' pk1=view.kwargs.pk1 pk=view.kwargs.pk report_id=view.kwargs.report_id host hosts.publish %}{{ row.observation|lower|replace_spaces }}">
                       {{ row.observation }}
+                    </a>
                   {% endif %}
                 </td>
               </tr>
