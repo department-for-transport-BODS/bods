@@ -62,7 +62,7 @@ class Observation:
 
 # TODO: DQSMIGRATION: Move to dqs module
 IncorrectNocObservation = Observation(
-    title="Incorrect NOC code",
+    title="Incorrect NOC",
     text="",
     impacts=(
         "This observation identifies where the National Operator Code (NOC) used in the data is not registered to the your Organisation profile."

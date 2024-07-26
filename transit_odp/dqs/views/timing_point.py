@@ -24,13 +24,13 @@ class DQSFirstStopNotTimingPointDetailView(DQSWarningDetailBaseView):
         context = super().get_context_data(**kwargs)
 
         title = self.data.title
-        service_code = self.request.GET.get("service")
+        line = self.request.GET.get("line")
         page = self.request.GET.get("page", 1)
         qs = self.get_queryset()
 
         context["title"] = title
         context["subtitle"] = (
-            f"Service {service_code} has at least one journey where the first stop is "
+            f"Service {line} has at least one journey where the first stop is "
             "not a timing point"
         )
         context["num_of_journeys"] = len(qs)
@@ -66,13 +66,13 @@ class DQSLastStopNotTimingPointDetailView(DQSWarningDetailBaseView):
         context = super().get_context_data(**kwargs)
 
         title = self.data.title
-        service_code = self.request.GET.get("service")
+        line = self.request.GET.get("line")
         page = self.request.GET.get("page", 1)
         qs = self.get_queryset()
 
         context["title"] = title
         context["subtitle"] = (
-            f"Service {service_code} has at least one journey where the last stop is "
+            f"Service {line} has at least one journey where the last stop is "
             "not a timing point"
         )
         context["num_of_journeys"] = len(qs)

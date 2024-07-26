@@ -79,12 +79,14 @@ class ReportOverviewView(DetailView):
         )
         if self.model == Report:
             report_id = report.id if report else None
+            summary = Summary.get_report(report_id, revision_id)
+            is_dqs_new_report = True
         else:
             report_id = report.summary.report_id
             rag = get_data_quality_rag(report)
             context.update({"dq_score": rag})
-
-        summary = Summary.get_report(report_id, revision_id)
+            summary = getattr(report, "summary", None)
+            is_dqs_new_report = False
 
         context.update(
             {
@@ -93,6 +95,7 @@ class ReportOverviewView(DetailView):
                 "total_warnings": summary.count,
                 "bus_services_affected": summary.bus_services_affected,
                 "is_new_data_quality_service_active": is_new_data_quality_service_active,
+                "is_dqs_new_report": is_dqs_new_report,
             }
         )
         return context

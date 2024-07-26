@@ -11,11 +11,11 @@
         <div class="govuk-!-font-size-48 govuk-list govuk-!-margin-0">
           <span class="">Data quality report</span>
         </div>
-        {% if is_new_data_quality_service_active %}
+        {% if is_dqs_new_report %}
           <div class="" style="align-content: center;">
             {% if warning_data.Critical.count == 0 %}
               <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-weight-bold" style="align-content: center;">
-                NO ISSUES
+                NO CRITICAL ISSUES
               </span>
             {% else %}
               <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-weight-bold" style="align-content: center;">
@@ -52,7 +52,7 @@
                 Bus service{{ bus_services_affected|pluralize:"s" }}
               </p>
             </div>
-            {% if not is_new_data_quality_service_active %}
+            {% if not is_dqs_new_report %}
               {% if dq_score %}
                 <div class="govuk-grid-column-one-quarter-from-desktop">
                   <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ dq_score.score | percentage:"0" }}</p>
