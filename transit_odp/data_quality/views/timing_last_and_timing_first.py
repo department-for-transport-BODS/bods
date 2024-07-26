@@ -39,7 +39,10 @@ class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseVi
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+<<<<<<< HEAD
         self._is_dqs_new_report = None
+=======
+>>>>>>> 61d2bfbe944c8f2475912c61bf19944a3412fbe1
         self.model = TimingLastWarning
         self.table_class = TimingPatternListTable
 
@@ -104,8 +107,7 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseV
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._is_dqs_new_report = None
-        self.model = TimingLastWarning
+        self.model = TimingFirstWarning
         self.table_class = TimingPatternListTable
 
     @property
@@ -118,7 +120,6 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseV
     )
 
     def get_queryset(self):
-
         if not self.is_dqs_new_report:
             return super().get_queryset().add_message().add_line()
 
@@ -140,7 +141,6 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseV
         return context
 
     def get_table_kwargs(self):
-
         kwargs = {}
         if not self.is_dqs_new_report:
             kwargs = super().get_table_kwargs()
