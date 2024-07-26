@@ -37,6 +37,15 @@ from waffle import flag_is_active
 class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = LastStopNotTimingPointObservation
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.is_new_data_quality_service_active:
+            self.model = TimingLastWarning
+            self.table_class = TimingPatternListTable
+        else:
+            self.model = ObservationResults
+            self.table_class = DQSWarningListBaseTable
+
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
@@ -45,13 +54,6 @@ class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseVi
     dqs_details = (
         "There is at least one journey where the last stop is not a timing point"
     )
-
-    if not is_new_data_quality_service_active:
-        model = TimingLastWarning
-        table_class = TimingPatternListTable
-    else:
-        model = ObservationResults
-        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
         if not self.is_new_data_quality_service_active:
@@ -103,6 +105,15 @@ class LastStopNotTimingDetailView(TwoTableDetailView):
 class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseView):
     data = FirstStopNotTimingPointObservation
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.is_new_data_quality_service_active:
+            self.model = TimingFirstWarning
+            self.table_class = TimingPatternListTable
+        else:
+            self.model = ObservationResults
+            self.table_class = DQSWarningListBaseTable
+
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
@@ -111,13 +122,6 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseV
     dqs_details = (
         "There is at least one journey where the first stop is not a timing point"
     )
-
-    if not is_new_data_quality_service_active:
-        model = TimingFirstWarning
-        table_class = TimingPatternListTable
-    else:
-        model = ObservationResults
-        table_class = DQSWarningListBaseTable
 
     def get_queryset(self):
 
