@@ -35,12 +35,6 @@ class StopMissingNaptanListView(TimingPatternsListBaseView, DQSWarningListBaseVi
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
 
-    @property
-    def is_dqs_new_report(self):
-        if self._is_dqs_new_report == None:
-            self._is_dqs_new_report = DQSWarningListBaseView.is_dqs_new_report(self)
-        return self._is_dqs_new_report
-
     check = Checks.StopNotFoundInNaptan
     dqs_details = "There is at least one stop that is not registered with NaPTAN"
 
@@ -54,7 +48,7 @@ class StopMissingNaptanListView(TimingPatternsListBaseView, DQSWarningListBaseVi
                 .exclude_null_service_patterns()
                 .add_message()
                 .add_line()
-            )        
+            )
 
         return DQSWarningListBaseView.get_queryset(self)
 
@@ -75,7 +69,7 @@ class StopMissingNaptanListView(TimingPatternsListBaseView, DQSWarningListBaseVi
 
     def get_table_kwargs(self):
         kwargs = {}
-        if not self._is_dqs_new_report:
+        if not self.is_dqs_new_report:
             kwargs = super().get_table_kwargs()
         return kwargs
 

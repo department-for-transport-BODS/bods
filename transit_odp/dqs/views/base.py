@@ -1,3 +1,4 @@
+from typing import Any
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django_tables2 import MultiTableMixin, SingleTableView
@@ -17,18 +18,22 @@ class DQSWarningListBaseView(SingleTableView):
     paginate_by = 10
     check: Checks = Checks.DefaultCheck
     dqs_details: str = None
+    _is_dqs_new_report = None
 
+    @property
     def is_dqs_new_report(self):
-        report_id = self.kwargs.get("report_id")
-        qs = Report.objects.filter(id=report_id)
-        if not len(qs):
-            return False
-        return True
+        if self._is_dqs_new_report is None:
+            report_id = self.kwargs.get("report_id")
+            qs = Report.objects.filter(id=report_id)
+            if not len(qs):
+                self._is_dqs_new_report = False
+            self._is_dqs_new_report = True
+        return self._is_dqs_new_report
 
     def get_queryset(self):
         self.model = ObservationResults
         self.table_class = DQSWarningListBaseTable
-        
+
         report_id = self.kwargs.get("report_id")
 
         qs = Report.objects.filter(id=report_id)
