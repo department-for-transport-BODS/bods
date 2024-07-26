@@ -39,12 +39,8 @@ class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseVi
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not self.is_new_data_quality_service_active:
-            self.model = TimingLastWarning
-            self.table_class = TimingPatternListTable
-        else:
-            self.model = ObservationResults
-            self.table_class = DQSWarningListBaseTable
+        self.model = TimingLastWarning
+        self.table_class = TimingPatternListTable
 
     @property
     def is_new_data_quality_service_active(self):
@@ -56,7 +52,7 @@ class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseVi
     )
 
     def get_queryset(self):
-        if not self.is_new_data_quality_service_active:
+        if not self.is_dqs_new_report:
             return super().get_queryset().add_message().add_line()
 
         return DQSWarningListBaseView.get_queryset(self)
@@ -79,7 +75,7 @@ class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseVi
     def get_table_kwargs(self):
 
         kwargs = {}
-        if not self.is_new_data_quality_service_active:
+        if not self.is_dqs_new_report:
             kwargs = super().get_table_kwargs()
         return kwargs
 
@@ -107,12 +103,8 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseV
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not self.is_new_data_quality_service_active:
-            self.model = TimingFirstWarning
-            self.table_class = TimingPatternListTable
-        else:
-            self.model = ObservationResults
-            self.table_class = DQSWarningListBaseTable
+        self.model = TimingFirstWarning
+        self.table_class = TimingPatternListTable
 
     @property
     def is_new_data_quality_service_active(self):
@@ -124,8 +116,7 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseV
     )
 
     def get_queryset(self):
-
-        if not self.is_new_data_quality_service_active:
+        if not self.is_dqs_new_report:
             return super().get_queryset().add_message().add_line()
 
         return DQSWarningListBaseView.get_queryset(self)
@@ -146,9 +137,8 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseV
         return context
 
     def get_table_kwargs(self):
-
         kwargs = {}
-        if not self.is_new_data_quality_service_active:
+        if not self.is_dqs_new_report:
             kwargs = super().get_table_kwargs()
         return kwargs
 
