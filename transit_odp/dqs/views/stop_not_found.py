@@ -18,13 +18,13 @@ class DQSStopMissingNaptanDetailView(DQSWarningDetailBaseView):
         context = super().get_context_data(**kwargs)
 
         title = self.data.title
-        service_code = self.request.GET.get("service")
+        line = self.request.GET.get("line")
         page = self.request.GET.get("page", 1)
         qs = self.get_queryset()
 
         context["title"] = title
         context["subtitle"] = (
-            f"Service {service_code} has at least one journey with a stop that "
+            f"Service {line} has at least one journey with a stop that "
             "is not found in NaPTAN"
         )
         context["num_of_journeys"] = len(qs)

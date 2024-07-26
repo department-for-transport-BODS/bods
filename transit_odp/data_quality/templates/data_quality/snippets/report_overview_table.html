@@ -15,11 +15,11 @@
       <p class="govuk-body">{{ level_data.intro }}</p>
       {% for category, df in level_data.df.items %}
         <table class="govuk-table">
-          <caption class="govuk-table__caption govuk-table__caption--s govuk-!-font-weight-regular govuk-!-font-size-24">{{ category }} ({{ df.number_of_services_affected.sum }})</caption>
+          <caption class="govuk-table__caption govuk-table__caption--s govuk-!-font-weight-bold govuk-!-font-size-24">{{ category }} ({{ df.number_of_services_affected.sum }})</caption>
           <thead class="govuk-table__head govuk-!-font-weight-regular">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-half">{% trans "Number of Observation" %}</th>
-              <th scope="col" class="govuk-table__header govuk-!-font-weight-regular">{% trans "Observation category" %} </th>
+              <th scope="col" class="govuk-table__header govuk-!-font-weight-bold govuk-!-width-one-half">{% trans "Number of Observation" %}</th>
+              <th scope="col" class="govuk-table__header govuk-!-font-weight-bold">{% trans "Observation category" %} </th>
             </tr>
           </thead>
           <tbody class="govuk-table__body">
