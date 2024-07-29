@@ -2,6 +2,7 @@ from django.contrib.gis.db import models
 
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField
+from django.utils.timezone import now
 
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.transmodel.models import ServicePatternStop, VehicleJourney
@@ -30,6 +31,10 @@ class Report(models.Model):
         """
         existing_report = cls.objects.filter(revision=revision).first()
         if existing_report:
+            existing_report.created = now()
+            existing_report.file_name = ""
+            existing_report.status = ReportStatus.PIPELINE_PENDING.value
+            existing_report.save()
             return existing_report
 
         new_report = cls(
