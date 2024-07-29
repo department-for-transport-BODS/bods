@@ -16,12 +16,11 @@ class ValidationTaskResult(BaseModel):
 
 
 class Feed(BaseModel):
-    id: int
-    publisher_id: int = Field(alias="publisherId")
-    url: str
-    username: str
-    password: Optional[str] = None
-    status: AVLFeedStatus = AVLFeedStatus.DEPLOYING.value
-    created: Optional[datetime] = None
-    modified: Optional[datetime] = None
-    model_config = ConfigDict(populate_by_name=True)
+    id: str
+    publisher_id: str = Field(alias="publisherId")
+    status: AVLFeedStatus = AVLFeedStatus.DEPLOYING.value # todo - figure out if this needs remapping
+    last_avl_data_received_date_time: Optional[str] = Field(alias="lastAvlDataReceivedDateTime")
+    heartbeat_last_received_date_time: Optional[str] = Field(alias="heartbeatLastReceivedDateTime")
+    service_start_datetime: Optional[str] = Field(alias="serviceStartDatetime")
+    service_end_datetime: Optional[str] = Field(alias="serviceEndDatetime")
+    api_key: str = Field(alias="apiKey")

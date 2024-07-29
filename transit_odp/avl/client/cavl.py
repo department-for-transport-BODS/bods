@@ -112,27 +112,37 @@ class CAVLService(ICAVLService):
 
         return response.status_code == HTTPStatus.NO_CONTENT
 
-    def get_feed(self, feed_id: int) -> Optional[Feed]:
-        api_url = self.CAVL_URL + f"/feed/{feed_id}"
+    def get_feed(self, feed_id: int) -> Feed:
+        api_url = self.AVL_URL + f"/subscriptions/{feed_id}"
 
         try:
-            response = requests.get(api_url, timeout=30)
+            response = requests.get(api_url, timeout=30, headers=self.headers)
             response.raise_for_status()
-        except RequestException:
-            logger.exception(f"[CAVL] Couldn't fetch feed <id={feed_id}>")
+        except RequestException as e:
+            error_response = (
+                e.response.json() if hasattr(e.response, "json") else "(empty)"
+            )
+            logger.exception(
+                f"[CAVL] Couldn't fetch feed <id={feed_id}>. Response: {error_response}"
+            )
             return None
 
         if response.status_code == HTTPStatus.OK:
             return Feed(**response.json())
 
     def get_feeds(self) -> Sequence[Feed]:
-        api_url = self.CAVL_URL + "/feed"
+        api_url = self.AVL_URL + "/subscriptions"
 
         try:
-            response = requests.get(api_url, timeout=30)
+            response = requests.get(api_url, timeout=30, headers=self.headers)
             response.raise_for_status()
-        except RequestException:
-            logger.exception("[CAVL] Couldn't fetch feeds")
+        except RequestException as e:
+            error_response = (
+                e.response.json() if hasattr(e.response, "json") else "(empty)"
+            )
+            logger.exception(
+                f"[CAVL] Couldn't fetch feeds. Response: {error_response}"
+            )
             return []
 
         if response.status_code == HTTPStatus.OK:

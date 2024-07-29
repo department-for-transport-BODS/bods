@@ -12,6 +12,7 @@ from requests.exceptions import RequestException, ConnectTimeout
 
 from transit_odp.avl.client import CAVLService
 from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
+from transit_odp.avl.enums import AVLFeedStatus
 
 CapLog = pytest.LogCaptureFixture
 
@@ -221,28 +222,31 @@ class TestCAVLService:
         assert [rec.message for rec in caplog.records] == expected_message
 
     @pytest.mark.parametrize(
-        "status, expected_result, expected_message",
+        "status, response_mock, expected_result, expected_message",
         [
             (
                 HTTPStatus.OK,
-                Feed(id=1, publisher_id=1, url="dummy", username="dummy"),
-                ["GET http://www.dummy.com/feed/1 200"],
+                dict(id="1", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="1"),
+                Feed(id="1", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="1"),
+                ["GET http://www.dummy.com/subscriptions/1 200"],
             ),
             (
                 HTTPStatus.NOT_FOUND,
+                dict(errors=["Not found"]),
                 None,
-                [
-                    "GET http://www.dummy.com/feed/1 404",
-                    "[CAVL] Couldn't fetch feed <id=1>",
-                ],
+                ["GET http://www.dummy.com/subscriptions/1 404", "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Not found']}"],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
+                dict(errors=["Bad request"]),
                 None,
-                [
-                    "GET http://www.dummy.com/feed/1 400",
-                    "[CAVL] Couldn't fetch feed <id=1>",
-                ],
+                ["GET http://www.dummy.com/subscriptions/1 400", "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Bad request']}"],
+            ),
+            (
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                dict(errors=["Server error"]),
+                None,
+                ["GET http://www.dummy.com/subscriptions/1 500", "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Server error']}"],
             ),
         ],
     )
@@ -251,13 +255,13 @@ class TestCAVLService:
         caplog: CapLog,
         cavl_service: CAVLService,
         status: int,
+        response_mock,
         expected_result: Optional[Feed],
         expected_message: list[str],
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/feed/1"
-        response_mock = dict(id=1, publisher_id=1, url="dummy", username="dummy")
+        url = DUMMY_CAVL_URL + "/subscriptions/1"
         kwargs["m"].get(url, json=response_mock, status_code=status)
 
         result = cavl_service.get_feed(1)
@@ -266,30 +270,37 @@ class TestCAVLService:
         assert [rec.message for rec in caplog.records] == expected_message
 
     @pytest.mark.parametrize(
-        "status, expected_result, expected_message",
+        "status, response_mock, expected_response, expected_message",
         [
             (
                 HTTPStatus.OK,
                 [
-                    Feed(id=1, publisher_id=1, url="dummy", username="dummy"),
-                    Feed(id=2, publisher_id=1, url="dummy_2", username="dummy_2"),
+                    dict(id="1", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="1"),
+                    dict(id="2", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="2"),
                 ],
-                ["GET http://www.dummy.com/feed 200"],
+                [
+                    Feed(id="1", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="1"),
+                    Feed(id="2", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="2"),
+                ],
+                ["GET http://www.dummy.com/subscriptions 200"],
             ),
             (
                 HTTPStatus.NOT_FOUND,
+                dict(errors=["Not found"]),
                 [],
-                ["GET http://www.dummy.com/feed 404", "[CAVL] Couldn't fetch feeds"],
+                ["GET http://www.dummy.com/subscriptions 404", "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Not found']}"],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
+                dict(errors=["Bad request"]),
                 [],
-                ["GET http://www.dummy.com/feed 400", "[CAVL] Couldn't fetch feeds"],
+                ["GET http://www.dummy.com/subscriptions 400", "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Bad request']}"],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
+                dict(errors=["Server error"]),
                 [],
-                ["GET http://www.dummy.com/feed 500", "[CAVL] Couldn't fetch feeds"],
+                ["GET http://www.dummy.com/subscriptions 500", "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Server error']}"],
             ),
         ],
     )
@@ -298,16 +309,13 @@ class TestCAVLService:
         caplog: CapLog,
         cavl_service: CAVLService,
         status: int,
+        response_mock,
         expected_result: list[Feed],
         expected_message: list[str],
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/feed"
-        response_mock = [
-            dict(id=1, publisher_id=1, url="dummy", username="dummy"),
-            dict(id=2, publisher_id=1, url="dummy_2", username="dummy_2"),
-        ]
+        url = DUMMY_CAVL_URL + "/subscriptions"
         kwargs["m"].get(url, json=response_mock, status_code=status)
 
         result = cavl_service.get_feeds()
@@ -405,12 +413,12 @@ class TestCAVLService:
             (
                 "get_feed",
                 "get",
-                "/feed/1",
+                "/subscriptions/1",
                 [1],
-                ["[CAVL] Couldn't fetch feed <id=1>"],
+                ["[CAVL] Couldn't fetch feed <id=1>. Response: (empty)"],
                 None,
             ),
-            ("get_feeds", "get", "/feed", [], ["[CAVL] Couldn't fetch feeds"], []),
+            ("get_feeds", "get", "/subscriptions", [], ["[CAVL] Couldn't fetch feeds. Response: (empty)"], []),
         ],
     )
     def test_methods_exception_handling(
