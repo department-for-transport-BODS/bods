@@ -46,8 +46,13 @@ class CAVLService(ICAVLService):
                 api_url, json=post, timeout=30, headers=self.headers
             )
             response.raise_for_status()
-        except RequestException:
-            logger.exception(f"[CAVL] Couldn't register feed <id={feed_id}>")
+        except RequestException as e:
+            error_response = (
+                e.response.json() if hasattr(e.response, "json") else "(empty)"
+            )
+            logger.exception(
+                f"[CAVL] Couldn't register feed <id={feed_id}>. Response: {error_response}"
+            )
             raise
 
         return response.status_code == HTTPStatus.CREATED
@@ -73,17 +78,37 @@ class CAVLService(ICAVLService):
 
         return response.status_code == HTTPStatus.NO_CONTENT
 
-    def update_feed(self, feed_id: int, url: str, username: str, password: str) -> bool:
-        api_url = self.CAVL_URL + f"/feed/{feed_id}"
+    def update_feed(
+        self,
+        feed_id: int,
+        url: str,
+        username: str,
+        password: str,
+        description: str,
+        short_description: str,
+    ) -> bool:
+        api_url = self.AVL_URL + f"/subscriptions/{feed_id}"
 
-        body = {"url": url, "username": username, "password": password}
+        body = {
+            "dataProducerEndpoint": url,
+            "username": username,
+            "description": description,
+            "shortDescription": short_description,
+        }
 
         try:
-            response = requests.post(api_url, json=body, timeout=30)
+            response = requests.put(
+                api_url, json=body, timeout=30, headers=self.headers
+            )
             response.raise_for_status()
-        except RequestException:
-            logger.exception(f"[CAVL] Couldn't update feed <id={feed_id}>")
-            return False
+        except RequestException as e:
+            error_response = (
+                e.response.json() if hasattr(e.response, "json") else "(empty)"
+            )
+            logger.exception(
+                f"[CAVL] Couldn't update feed <id={feed_id}>. Response: {error_response}"
+            )
+            raise
 
         return response.status_code == HTTPStatus.NO_CONTENT
 
@@ -129,8 +154,13 @@ class CAVLService(ICAVLService):
                 api_url, json=body, timeout=30, headers=self.headers
             )
             response.raise_for_status()
-        except RequestException:
-            logger.exception(f"[CAVL] Couldn't validate feed <url={url}>")
+        except RequestException as e:
+            error_response = (
+                e.response.json() if hasattr(e.response, "json") else "(empty)"
+            )
+            logger.exception(
+                f"[CAVL] Couldn't validate feed <url={url}>. Response: {error_response}"
+            )
             raise
 
         if response.status_code == HTTPStatus.OK:

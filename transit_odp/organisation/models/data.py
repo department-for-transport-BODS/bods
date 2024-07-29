@@ -379,6 +379,8 @@ class DatasetRevision(
                         url=self.url_link,
                         username=self.username,
                         password=self.password,
+                        description=self.description,
+                        short_description=self.short_description,
                     )
             # TODO - should likely fold the logic in 'update_live_revision' receiver
             # into this method, i.e. update live_revision on the dataset to point to
