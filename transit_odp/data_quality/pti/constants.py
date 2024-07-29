@@ -4,6 +4,7 @@ from django.utils import timezone
 
 OPERATION_DAYS = ("DaysOfOperation", "DaysOfNonOperation")
 
+# holidays common for english and scottish
 BANK_HOLIDAYS_COMMON = [
     "ChristmasEve",
     "ChristmasDay",
@@ -17,18 +18,23 @@ BANK_HOLIDAYS_COMMON = [
     "SpringBank",
 ]
 
-BANK_HOLIDAYS = BANK_HOLIDAYS_COMMON + [
+# holidays only for english regions
+BANK_HOLIDAYS_ONLY_ENGLISH = [
     "NewYearsEve",
     "MayDay",
     "LateSummerBankHolidayNotScotland",
 ]
 
-SCOTTISH_BANK_HOLIDAYS = BANK_HOLIDAYS_COMMON + [
+# holidays only for scottish regions
+BANK_HOLIDAYS_ONLY_SCOTTISH = [
     "EarlyMay",
     "StAndrewsDayHoliday",
     "Jan2ndScotland",
     "Jan2ndScotlandHoliday",
 ]
+
+BANK_HOLIDAYS = BANK_HOLIDAYS_COMMON + BANK_HOLIDAYS_ONLY_ENGLISH
+SCOTTISH_BANK_HOLIDAYS = BANK_HOLIDAYS_COMMON + BANK_HOLIDAYS_ONLY_SCOTTISH
 OTHER_PUBLIC_HOLIDAYS = ["OtherPublicHoliday"]
 
 
