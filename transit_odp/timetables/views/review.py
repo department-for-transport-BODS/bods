@@ -222,7 +222,7 @@ class PublishRevisionView(BaseTimetableReviewView):
         )
 
 
-class UpdateRevisionPublishView(BaseTimetableReviewView):
+class UpdateRevisionPublishView(PublishRevisionView):
     template_name = "publish/revision_review/index.html"
 
     def get_form_kwargs(self):
