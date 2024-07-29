@@ -7,6 +7,7 @@ from transit_odp.users.constants import AccountType
 pytestmark = pytest.mark.django_db
 
 
+@pytest.mark.django_db
 class TestRestrictedSession:
     host = config.hosts.PUBLISH_HOST
     url = reverse("users:settings", host=host)

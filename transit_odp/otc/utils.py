@@ -4,8 +4,10 @@ from io import StringIO
 from typing import List, Optional
 
 from transit_odp.common.utils.s3_bucket_connection import get_s3_bodds_bucket_storage
+from transit_odp.organisation.constants import SCOTLAND_TRAVELINE_REGIONS
 from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority
-from transit_odp.otc.models import UILta
+from transit_odp.otc.models import UILta, Service
+
 
 logger = logging.getLogger(__name__)
 
@@ -97,3 +99,26 @@ def check_missing_csv_lta_names(csv_data: List[dict]) -> set:
             missing_csv_lta_names.add(otc_name)
 
     return missing_csv_lta_names
+
+
+def is_service_in_scotland(service_ref: str) -> bool:
+    """Check weather a service is from the scotland region or not
+
+    Args:
+        service_ref (str): service registration number
+
+    Returns:
+        bool: True/False if service is in scotland
+    """
+    service_obj = (
+        Service.objects.filter(registration_number=service_ref.replace(":", "/"))
+        .add_traveline_region_weca()
+        .add_traveline_region_otc()
+        .add_traveline_region_details()
+        .first()
+    )
+    if service_obj and service_obj.traveline_region:
+        regions = service_obj.traveline_region.split("|")
+        return SCOTLAND_TRAVELINE_REGIONS in regions
+
+    return False

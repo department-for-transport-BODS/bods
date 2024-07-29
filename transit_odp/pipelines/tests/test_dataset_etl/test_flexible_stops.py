@@ -1,14 +1,11 @@
-from dateutil import tz
 import pandas as pd
-import pytest
+from dateutil import tz
+from waffle.testutils import override_flag
 
 from transit_odp.pipelines.tests.test_dataset_etl.test_extract_metadata import (
     ExtractBaseTestCase,
 )
 from transit_odp.pipelines.tests.utils import check_frame_equal
-
-from waffle.testutils import override_flag
-
 from transit_odp.transmodel.models import ServicePattern, ServicePatternStop
 
 TZ = tz.gettz("Europe/London")
@@ -138,6 +135,7 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
                     "admin_area_id",
                     "common_name",
                     "sequence_number",
+                    "auto_sequence_number",
                     "activity_id",
                 ]
             ),

@@ -9,6 +9,7 @@ from transit_odp.data_quality.models.transmodel import (
     ServicePatternStop,
     VehicleJourney,
 )
+from waffle import flag_is_active
 
 
 class BaseStopNameTimingPatternTable(GovUkTable):
@@ -131,7 +132,9 @@ class VehicleJourneyTable(GovUkTable):
 
 class WarningListBaseTable(GovUkTable):
     class Meta:
+
         template_name = "data_quality/snippets/dq_custom_table.html"
+
         attrs = {
             "th": {"class": "govuk-table__header"},
         }
@@ -234,3 +237,26 @@ class JourneyListTable(WarningListBaseTable):
             date = "unknown date"
         finally:
             return date
+
+
+# TODO: DQSMIGRATION: Move to dqs module
+class DQSWarningListBaseTable(GovUkTable):
+
+    message = tables.Column(verbose_name="Service", orderable=False, empty_values=())
+    dqs_details = tables.Column(
+        verbose_name="Details",
+        orderable=False,
+        empty_values=(),
+        attrs={"is_link": True},
+    )
+    service_code = tables.Column(verbose_name="Service Code", visible=True)
+    line_name = tables.Column(verbose_name="Line Name", visible=True)
+
+    class Meta:
+
+        attrs = {
+            "tbody": {"is_details_link": True},
+            "th": {"class": "govuk-table__header"},
+        }
+        sequence = ("message", "dqs_details")
+        template_name = "data_quality/snippets/dqs_custom_table.html"

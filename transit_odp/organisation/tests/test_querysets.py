@@ -84,6 +84,11 @@ class TestOrganisationQuerySet:
         organisation_data = Organisation.objects.all().first()
         assert organisation_data.admin_areas.count() == len(admin_areas)
 
+    def test_get_organisation_with_empty_admin_areas(self):
+        org1 = OrganisationFactory(name="KPMGAdmin")
+        organisation_data = Organisation.objects.all().first()
+        assert organisation_data.admin_areas.count() == 0
+
     def test_is_abods_organisation(self):
         abods_organisation = OrganisationFactory(
             is_abods_global_viewer=True, name="dummy_aboads_org", short_name="dummy org"

@@ -1,6 +1,7 @@
 from django.urls import include, path
 
 from transit_odp.data_quality import views
+from transit_odp.dqs import views as DQSviews
 
 app_name = "dq"
 
@@ -132,6 +133,11 @@ urlpatterns = [
                     view=views.LastStopPickUpDetailView.as_view(),
                     name="last-stop-pick-up-only-detail",
                 ),
+                path(
+                    "detail/",
+                    view=DQSviews.DQSLastStopPickUpDetailView.as_view(),
+                    name="last-stop-pick-up-only-detail",
+                ),
             ]
         ),
     ),
@@ -149,6 +155,11 @@ urlpatterns = [
                     view=views.FirstStopDropOffDetailView.as_view(),
                     name="first-stop-set-down-only-detail",
                 ),
+                path(
+                    "detail/",
+                    view=DQSviews.DQSFirstStopSetDownDetailView.as_view(),
+                    name="last-stop-pick-up-only-detail",
+                ),
             ]
         ),
     ),
@@ -164,6 +175,11 @@ urlpatterns = [
                 path(
                     "<uuid:warning_pk>/",
                     view=views.LastStopNotTimingDetailView.as_view(),
+                    name="last-stop-not-timing-point-detail",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.DQSLastStopNotTimingPointDetailView.as_view(),
                     name="last-stop-not-timing-point-detail",
                 ),
             ]
@@ -183,6 +199,11 @@ urlpatterns = [
                     view=views.FirstStopNotTimingDetailView.as_view(),
                     name="first-stop-not-timing-point-detail",
                 ),
+                path(
+                    "detail/",
+                    view=DQSviews.DQSFirstStopNotTimingPointDetailView.as_view(),
+                    name="last-stop-pick-up-only-detail",
+                ),
             ]
         ),
     ),
@@ -198,6 +219,11 @@ urlpatterns = [
                 path(
                     "<uuid:warning_pk>/",
                     view=views.StopMissingNaptanDetailView.as_view(),
+                    name="stop-missing-naptan-detail",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.DQSStopMissingNaptanDetailView.as_view(),
                     name="stop-missing-naptan-detail",
                 ),
             ]
@@ -300,6 +326,11 @@ urlpatterns = [
                 path(
                     "<uuid:warning_pk>/",
                     view=views.IncorrectStopTypeDetailView.as_view(),
+                    name="incorrect-stop-type-detail",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.DQSIncorrectStopTypeDetailView.as_view(),
                     name="incorrect-stop-type-detail",
                 ),
             ]

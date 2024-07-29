@@ -1,21 +1,51 @@
 from transit_odp.data_quality.constants import IncorrectNocObservation
+
+# TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.models.warnings import IncorrectNOCWarning
+
+# TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.tables.incorrect_noc import IncorrectNOCListTable
+from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
+
+# TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.views.base import WarningListBaseView
+from transit_odp.dqs.models import ObservationResults
+from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.views.base import DQSWarningListBaseView
+from waffle import flag_is_active
 
 
-class IncorrectNOCListView(WarningListBaseView):
+class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
     data = IncorrectNocObservation
-    model = IncorrectNOCWarning
-    table_class = IncorrectNOCListTable
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._is_dqs_new_report = None
+        self.model = IncorrectNOCWarning
+        self.table_class = IncorrectNOCListTable
+
+    @property
+    def is_new_data_quality_service_active(self):
+        return flag_is_active("", "is_new_data_quality_service_active")
+
+    check = Checks.IncorrectNoc
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.add_message()
+
+        if not self.is_dqs_new_report:
+            qs = super().get_queryset()
+            return qs.add_message()
+
+        return DQSWarningListBaseView.get_queryset(self)
 
     def get_table_kwargs(self):
-        kwargs = super().get_table_kwargs()
-        kwargs.update({"message_col_verbose_name": "Summary"})
+
+        kwargs = {}
+        if not self.is_dqs_new_report:
+            kwargs = super().get_table_kwargs()
+            kwargs.update(
+                {"message_col_verbose_name": "Summary", "count": self.row_count}
+            )
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -24,10 +54,12 @@ class IncorrectNOCListView(WarningListBaseView):
             {
                 "title": self.data.title,
                 "definition": self.data.text,
+                "resolve": self.data.resolve,
                 "preamble": (
-                    "The following data sets have been observed to have incorrect "
+                    "The following service(s) have been observed to have incorrect "
                     "national operator code(s)."
                 ),
+                "is_new_data_quality_service_active": self.is_new_data_quality_service_active,
             }
         )
         return context

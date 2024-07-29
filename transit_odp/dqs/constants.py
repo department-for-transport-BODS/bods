@@ -7,6 +7,9 @@ class TaskResultsStatus(Enum):
 
 class ReportStatus(Enum):
     PIPELINE_PENDING = "PIPELINE_PENDING"
+    PIPELINE_SUCCEEDED = "PIPELINE_SUCCEEDED"
+    REPORT_GENERATED = "REPORT_GENERATED"
+    REPORT_GENERATION_FAILED = "REPORT_GENERATION_FAILED"
 
 
 CHECKS_DATA = [
@@ -89,3 +92,17 @@ CHECKS_DATA = [
         "queue_name": "incorrect-licence-number-queue",
     },
 ]
+
+
+BUS_SERVICES_AFFECTED_SUBSET = ["service_code", "line_name"]
+
+
+class Checks(Enum):
+    DefaultCheck = ""
+    IncorrectNoc = "Incorrect NOC"
+    FirstStopIsSetDown = "First stop is set down only"
+    LastStopIsPickUpOnly = "Last stop is pick up only"
+    IncorrectStopType = "Incorrect stop type"
+    StopNotFoundInNaptan = "Stop not found in NaPTAN"
+    LastStopIsNotATimingPoint = "Last stop is not a timing point"
+    FirstStopIsNotATimingPoint = "First stop is not a timing point"

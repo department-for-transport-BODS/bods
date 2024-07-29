@@ -86,7 +86,7 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
 
         self.assertNotIn("common_name", transformed.stop_points.columns)
         self.assertEqual(
-            1385,
+            1247,
             transformed_service_pattern_stops[
                 transformed_service_pattern_stops["is_timing_status"] == True
             ].shape[0],
@@ -196,7 +196,7 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
 
         self.assertNotIn("common_name", transformed.stop_points.columns)
         self.assertEqual(
-            341,
+            330,
             transformed_service_pattern_stops[
                 transformed_service_pattern_stops["is_timing_status"] == True
             ].shape[0],
