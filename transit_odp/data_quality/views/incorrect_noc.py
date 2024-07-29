@@ -44,7 +44,7 @@ class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
         if not self.is_dqs_new_report:
             kwargs = super().get_table_kwargs()
             kwargs.update(
-                {"message_col_verbose_name": "Summary", "count": self.row_count}
+                {"message_col_verbose_name": "Summary"}
             )
         return kwargs
 
