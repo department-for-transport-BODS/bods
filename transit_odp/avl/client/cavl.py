@@ -87,7 +87,7 @@ class CAVLService(ICAVLService):
         description: str,
         short_description: str,
     ) -> bool:
-        api_url = self.CAVL_URL + f"/subscriptions/{feed_id}"
+        api_url = self.AVL_URL + f"/subscriptions/{feed_id}"
 
         body = {
             "dataProducerEndpoint": url,
