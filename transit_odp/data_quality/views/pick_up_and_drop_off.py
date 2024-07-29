@@ -104,20 +104,17 @@ class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseVie
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not self.is_new_data_quality_service_active:
-            self.model = TimingPickUpWarning
-            self.table_class = PickUpDropOffListTable
-        else:
-            self.model = ObservationResults
-            self.table_class = DQSWarningListBaseTable
+        self.model = TimingPickUpWarning
+        self.table_class = PickUpDropOffListTable
 
     @property
     def is_new_data_quality_service_active(self):
         return flag_is_active("", "is_new_data_quality_service_active")
 
     def get_queryset(self):
-        if not self.is_new_data_quality_service_active:
-            return super().get_queryset().add_line().add_message()
+        if not self.is_dqs_new_report:
+            return super().get_queryset().add_message().add_line()
+
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
