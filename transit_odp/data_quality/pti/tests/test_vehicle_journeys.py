@@ -576,7 +576,7 @@ def test_bank_holidays_english_holidays_error():
     assert is_valid is False
 
 
-def test_bank_holidays_scottish_holidays_error():
+def test_bank_holidays_scottish_holidays_for_error():
     services = ServiceModelFactory(
         registration_number="PK0003556/55", service_number="100|200|Bellford"
     )
