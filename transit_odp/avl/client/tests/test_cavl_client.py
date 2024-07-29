@@ -115,30 +115,24 @@ class TestCAVLService:
     @pytest.mark.parametrize(
         "status, expected_result, expected_message",
         [
-            (HTTPStatus.NO_CONTENT, True, ["DELETE http://www.dummy.com/feed/1 204"]),
+            (HTTPStatus.NO_CONTENT, {}, True, ["DELETE http://www.dummy.com/subscriptions/1 204"]),
             (
                 HTTPStatus.NOT_FOUND,
+                dict(errors=["Not found"]),
                 False,
-                [
-                    "DELETE http://www.dummy.com/feed/1 404",
-                    "[CAVL] Dataset 1 => Does not exist in CAVL Service.",
-                ],
+                ["DELETE http://www.dummy.com/subscriptions/1 404", "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Not found']}"],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
+                dict(errors=["Bad request"]),
                 False,
-                [
-                    "DELETE http://www.dummy.com/feed/1 400",
-                    "[CAVL] Couldn't delete feed <id=1>",
-                ],
+                ["DELETE http://www.dummy.com/subscriptions/1 400", "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Bad request']}"],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
+                dict(errors=["Server error"]),
                 False,
-                [
-                    "DELETE http://www.dummy.com/feed/1 500",
-                    "[CAVL] Couldn't delete feed <id=1>",
-                ],
+                ["DELETE http://www.dummy.com/subscriptions/1 500", "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Server error']}"],
             ),
         ],
     )
@@ -152,7 +146,7 @@ class TestCAVLService:
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/feed/1"
+        url = DUMMY_CAVL_URL + "/subscriptions/1"
         kwargs["m"].delete(url, status_code=status)
 
         result = cavl_service.delete_feed(feed_id=1)
@@ -405,7 +399,7 @@ class TestCAVLService:
             (
                 "delete_feed",
                 "delete",
-                "/feed/1",
+                "/subscriptions/1",
                 [1],
                 ["[CAVL] Couldn't delete feed <id=1>"],
                 False,
