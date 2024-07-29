@@ -68,9 +68,9 @@ def get_dqs_report_from_s3(report_filename):
         storage = S3Boto3Storage(bucket_name=bucket_name)
         logger.info(f"Successfully connected to S3 bucket: {bucket_name}")
 
-        if not storage.exists(report_filename):
-            logger.warning(f"{report_filename} does not exist in the S3 bucket.")
-            return HttpResponse("Report not found", status=404)
+        storage.connection.meta.client.head_object(
+            Bucket=bucket_name, Key=report_filename
+        )
 
         file_obj = storage.open(report_filename, mode="rb")
         file_content = file_obj.read()
