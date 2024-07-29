@@ -43,10 +43,26 @@ def get_s3_bodds_bucket_storage():
 
 
 def get_dqs_report_from_s3(report_filename):
+    """
+    Retrieves a Data Quality Service (DQS) report from an S3 bucket and returns it as an HTTP response.
+    Args:
+        report_filename (str): The name of the report file to retrieve from the S3 bucket.
+
+    Returns:
+        HttpResponse: An HTTP response containing the CSV file content if found, otherwise a 404 or 403 response.
+
+    Raises:
+        ValueError: If the S3 bucket name is not configured in the settings.
+        Exception: For other errors encountered during the S3 operation.
+    """
     bucket_name = getattr(settings, "S3_BUCKET_DQS_CSV_REPORT", None)
     if not bucket_name:
-        logger.error("Bucket name is not configured in settings.")
-        raise ValueError("Bucket name is not configured in settings.")
+        logger.error(
+            "Bucket name - S3_BUCKET_DQS_CSV_REPORT is not configured in settings."
+        )
+        raise ValueError(
+            "Bucket name - S3_BUCKET_DQS_CSV_REPORT is not configured in settings."
+        )
 
     try:
         storage = S3Boto3Storage(bucket_name=bucket_name)
@@ -54,7 +70,7 @@ def get_dqs_report_from_s3(report_filename):
 
         if not storage.exists(report_filename):
             logger.warning(f"{report_filename} does not exist in the S3 bucket.")
-            return HttpResponse("Report not found in S3", status=404)
+            return HttpResponse("Report not found", status=404)
 
         file_obj = storage.open(report_filename, mode="rb")
         file_content = file_obj.read()
@@ -67,13 +83,15 @@ def get_dqs_report_from_s3(report_filename):
         error_code = e.response["Error"]["Code"]
         if error_code == "403":
             logger.error(
-                f"Permission denied when accessing the S3 bucket: {bucket_name}"
+                f"Permission denied (403) when accessing the S3 bucket: {bucket_name}"
             )
             return HttpResponse(
                 "Permission denied when accessing the S3 bucket", status=403
             )
         else:
-            logger.error(f"Error connecting to S3 bucket {bucket_name}: {str(e)}")
+            logger.error(
+                f"Error (Code: {error_code}) connecting to S3 bucket {bucket_name}: {str(e)}"
+            )
             raise
     except Exception as e:
         logger.error(f"Error connecting to S3 bucket {bucket_name}: {str(e)}")
