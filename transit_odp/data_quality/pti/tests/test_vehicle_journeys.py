@@ -554,6 +554,7 @@ def test_bank_holidays_english_holidays_with_multiple_admin_areas():
         is_valid = pti.is_valid(txc)
     assert is_valid
 
+
 def test_bank_holidays_english_holidays_error():
     services = ServiceModelFactory(
         registration_number="PK0003556/55", service_number="100|200|Bellford"
