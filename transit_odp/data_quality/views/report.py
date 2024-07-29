@@ -86,7 +86,7 @@ class ReportOverviewView(DetailView):
             report_id = report.summary.report_id
             rag = get_data_quality_rag(report)
             context.update({"dq_score": rag})
-            summary = getattr(report, "summary", None)
+            summary = Summary.from_report_summary(report.summary)
             is_dqs_new_report = False
 
         context.update(
