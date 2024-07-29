@@ -629,6 +629,13 @@ AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
     "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME",
     default="bodds-dataset-dev-maintenance",
 )
+
+# S3 bucket name for DQS Report download
+# ------------------------------------------------------------------------------
+S3_BUCKET_DQS_CSV_REPORT = env(
+    "S3_BUCKET_DQS_CSV_REPORT",
+    default="bodds-dev-dqs-reports",
+)
 # SQS QUEUE
 # ------------------------------------------------------------------------------
 SQS_QUEUE_ENDPOINT_URL = env(

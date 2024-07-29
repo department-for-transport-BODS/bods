@@ -25,9 +25,9 @@ class DQSWarningListBaseView(SingleTableView):
         if self._is_dqs_new_report is None:
             report_id = self.kwargs.get("report_id")
             qs = Report.objects.filter(id=report_id)
+            self._is_dqs_new_report = True
             if not len(qs):
                 self._is_dqs_new_report = False
-            self._is_dqs_new_report = True
         return self._is_dqs_new_report
 
     def get_queryset(self):
