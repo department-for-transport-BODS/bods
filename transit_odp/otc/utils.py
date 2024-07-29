@@ -4,7 +4,10 @@ from io import StringIO
 from typing import List, Optional
 
 from transit_odp.common.utils.s3_bucket_connection import get_s3_bodds_bucket_storage
-from transit_odp.organisation.constants import SCOTLAND_TRAVELINE_REGIONS
+from transit_odp.organisation.constants import (
+    ENGLISH_TRAVELINE_REGIONS,
+    SCOTLAND_TRAVELINE_REGIONS,
+)
 from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority
 from transit_odp.otc.models import UILta, Service
 
@@ -103,6 +106,8 @@ def check_missing_csv_lta_names(csv_data: List[dict]) -> set:
 
 def is_service_in_scotland(service_ref: str) -> bool:
     """Check weather a service is from the scotland region or not
+    If any of the english regions is present service will be considered as english
+    If only scottish is present then service will be considered as scottish
 
     Args:
         service_ref (str): service registration number
@@ -119,6 +124,8 @@ def is_service_in_scotland(service_ref: str) -> bool:
     )
     if service_obj and service_obj.traveline_region:
         regions = service_obj.traveline_region.split("|")
-        return SCOTLAND_TRAVELINE_REGIONS in regions
+        if not set(regions).isdisjoint(ENGLISH_TRAVELINE_REGIONS):
+            return False
+        return sorted(SCOTLAND_TRAVELINE_REGIONS) == sorted(regions)
 
     return False

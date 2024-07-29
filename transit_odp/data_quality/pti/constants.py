@@ -3,9 +3,9 @@ from django.template.defaultfilters import date
 from django.utils import timezone
 
 OPERATION_DAYS = ("DaysOfOperation", "DaysOfNonOperation")
-BANK_HOLIDAYS = [
+
+BANK_HOLIDAYS_COMMON = [
     "ChristmasEve",
-    "NewYearsEve",
     "ChristmasDay",
     "ChristmasDayHoliday",
     "BoxingDay",
@@ -14,16 +14,20 @@ BANK_HOLIDAYS = [
     "NewYearsDayHoliday",
     "GoodFriday",
     "EasterMonday",
-    "MayDay",
     "SpringBank",
+]
+
+BANK_HOLIDAYS = BANK_HOLIDAYS_COMMON + [
+    "NewYearsEve",
+    "MayDay",
     "LateSummerBankHolidayNotScotland",
 ]
-SCOTTISH_BANK_HOLIDAYS = [
-    "StAndrewsDay",
+
+SCOTTISH_BANK_HOLIDAYS = BANK_HOLIDAYS_COMMON + [
+    "EarlyMay",
     "StAndrewsDayHoliday",
     "Jan2ndScotland",
     "Jan2ndScotlandHoliday",
-    "AugustBankHolidayScotland",
 ]
 OTHER_PUBLIC_HOLIDAYS = ["OtherPublicHoliday"]
 

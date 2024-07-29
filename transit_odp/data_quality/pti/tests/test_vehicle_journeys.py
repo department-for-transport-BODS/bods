@@ -327,10 +327,20 @@ def test_bank_holidays_scottish_holidays_true():
     </DayType>
     """
 
-    days_of_operation = "\n".join(
-        "<{0}/>".format(d) for d in BANK_HOLIDAYS + SCOTTISH_BANK_HOLIDAYS
-    )
+    days_of_operation = "\n".join("<{0}/>".format(d) for d in SCOTTISH_BANK_HOLIDAYS)
     xml = day_type.format(days_of_operation)
+
+    services = ServiceModelFactory(
+        registration_number="PK0003556/55", service_number="100|200|Bellford"
+    )
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=[services],
+    )
+    AdminAreaFactory(traveline_region_id="S", ui_lta=ui_lta)
 
     OBSERVATION_ID = 43
     schema = Schema.from_path(PTI_PATH)
