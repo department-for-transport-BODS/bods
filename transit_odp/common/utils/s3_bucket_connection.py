@@ -2,7 +2,9 @@ import csv
 import logging
 from io import StringIO
 from django.conf import settings
+from django.http import HttpResponse
 from storages.backends.s3boto3 import S3Boto3Storage
+import botocore
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +37,44 @@ def get_s3_bodds_bucket_storage():
         storage = S3Boto3Storage(bucket_name=bucket_name)
         logger.info(f"Successfully connected to S3 bucket: {bucket_name}")
         return storage
+    except Exception as e:
+        logger.error(f"Error connecting to S3 bucket {bucket_name}: {str(e)}")
+        raise
+
+
+def get_dqs_report_from_s3(report_filename):
+    bucket_name = getattr(settings, "S3_BUCKET_DQS_CSV_REPORT", None)
+    if not bucket_name:
+        logger.error("Bucket name is not configured in settings.")
+        raise ValueError("Bucket name is not configured in settings.")
+
+    try:
+        storage = S3Boto3Storage(bucket_name=bucket_name)
+        logger.info(f"Successfully connected to S3 bucket: {bucket_name}")
+
+        if not storage.exists(report_filename):
+            logger.warning(f"{report_filename} does not exist in the S3 bucket.")
+            return HttpResponse("Report not found in S3", status=404)
+
+        file_obj = storage.open(report_filename, mode="rb")
+        file_content = file_obj.read()
+
+        response = HttpResponse(file_content, content_type="text/csv")
+        response["Content-Disposition"] = f"attachment; filename={report_filename}"
+        return response
+
+    except botocore.exceptions.ClientError as e:
+        error_code = e.response["Error"]["Code"]
+        if error_code == "403":
+            logger.error(
+                f"Permission denied when accessing the S3 bucket: {bucket_name}"
+            )
+            return HttpResponse(
+                "Permission denied when accessing the S3 bucket", status=403
+            )
+        else:
+            logger.error(f"Error connecting to S3 bucket {bucket_name}: {str(e)}")
+            raise
     except Exception as e:
         logger.error(f"Error connecting to S3 bucket {bucket_name}: {str(e)}")
         raise
