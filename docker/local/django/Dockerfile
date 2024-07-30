@@ -32,7 +32,9 @@ RUN apt-get update && apt-get install -y \
             nodejs \
             npm \
             binutils \
-            libgeos-dev
+            libgeos-dev \
+            && pip3 install --upgrade setuptools
+
 
 # Update C env vars so compiler can find gdal
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
