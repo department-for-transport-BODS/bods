@@ -113,7 +113,7 @@ class TravelineRegions(TextChoices):
 
 ENGLISH_TRAVELINE_REGIONS = ["EA", "EM", "NE", "NW", "SE", "SW", "WM", "Y"]
 
-SCOTLAND_TRAVELINE_REGIONS = "S"
+SCOTLAND_TRAVELINE_REGIONS = ["S"]
 
 
 @enum.unique
