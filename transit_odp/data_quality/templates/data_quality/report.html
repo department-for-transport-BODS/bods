@@ -9,7 +9,11 @@
     <div class="govuk-grid-column-full">
       <div class="govuk-!-margin-bottom-4" style="display:flex;">
         <div class="govuk-!-font-size-48 govuk-list govuk-!-margin-0">
+          {% if is_dqs_new_report %}
           <span class="">Data quality report</span>
+          {% else %}          
+          <span class="govuk-caption-xl">Data quality report</span>
+          {% endif %}
         </div>
         {% if is_dqs_new_report %}
           <div class="" style="align-content: center;">
@@ -25,7 +29,12 @@
           </div>
         {% endif %}
       </div>
+      {% if is_dqs_new_report %}
       <h2 class="govuk-list govuk-!-font-size-24">{{ title }}</h2>
+      {% else %}
+      <h1 class="govuk-heading-xl">{{ title }}</h1>
+      {% endif %}
+
       <ul class="govuk-list">
         <li>{% trans "Please find your data quality observations below." %}</li>
         <li>
@@ -45,12 +54,25 @@
         <div class="govuk-grid-column-full govuk-grid-column-three-quarters-from-desktop">
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-quarter-from-desktop">
-              <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ bus_services_affected }}</p>
+              <p class="govuk-heading-xl govuk-!-margin-bottom-0">
+                {% if is_dqs_new_report %}
+                  {{ bus_services_affected }}
+                {% else %}
+                  {{ object.no_of_lines }}
+                {% endif %}
+              </p>
+
+              {% if is_dqs_new_report %}
               <p class="govuk-body-s govuk-!-font-weight-bold">
                 Affected
                 <br />
                 Bus service{{ bus_services_affected|pluralize:"s" }}
               </p>
+              {% else %}
+              <p class="govuk-body-s govuk-!-font-weight-bold">
+                Bus line{{ object.no_of_lines|pluralize:"s" }}
+              </p>
+              {% endif %}
             </div>
             {% if not is_dqs_new_report %}
               {% if dq_score %}
