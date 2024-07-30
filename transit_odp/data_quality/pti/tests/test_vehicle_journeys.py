@@ -596,16 +596,13 @@ def test_bank_holidays_english_holidays_error():
 
 
 def test_bank_holidays_scottish_holidays_for_error():
-    services = ServiceModelFactory(
-        registration_number="PK0003556/55", service_number="100|200|Bellford"
+    ServiceModelFactory(
+        registration_number="PK0003556/55",
+        service_number="100|200|Bellford",
+        atco_code="010",
+        api_type=API_TYPE_WECA,
     )
     ui_lta = UILtaFactory(name="Dorset County Council")
-    LocalAuthorityFactory(
-        id="1",
-        name="Dorset Council",
-        ui_lta=ui_lta,
-        registration_numbers=[services],
-    )
     AdminAreaFactory(traveline_region_id="S", ui_lta=ui_lta, atco_code="010")
 
     filename = "pti/scotish_holidays_error.xml"
