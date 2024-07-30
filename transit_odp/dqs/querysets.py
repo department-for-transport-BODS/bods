@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import F, TextField, CharField
+from django.db.models import F, TextField, CharField, BooleanField
 from transit_odp.dqs.constants import TaskResultsStatus, Checks
 from django.db.models.expressions import Value
 from django.db.models.functions import (
@@ -95,12 +95,20 @@ class ObservationResultsQueryset(models.QuerySet):
         check: Checks,
         revision_id: int,
         dqs_details: str = "Message in details",
+        is_published: bool = False,
     ) -> list:
         """
         Filter for observation results for the report and revision of the specific check and ingesting the message
         """
 
-        columns = ["service_code", "line_name", "message", "dqs_details"]
+        columns = [
+            "service_code",
+            "line_name",
+            "message",
+            "dqs_details",
+            "revision_id",
+            "is_published",
+        ]
 
         qs = (
             self.filter(
@@ -117,6 +125,8 @@ class ObservationResultsQueryset(models.QuerySet):
                 ),
                 message=Value("", output_field=TextField()),
                 dqs_details=Value(dqs_details, output_field=TextField()),
+                revision_id=Value(revision_id, output_field=TextField()),
+                is_published=Value(is_published, output_field=BooleanField()),
             )
             .values(*columns)
             .distinct()
@@ -179,6 +189,7 @@ class ObservationResultsQueryset(models.QuerySet):
                 stop_type=F("service_pattern_stop__naptan_stop__stop_type"),
             )
             .values(*columns)
+            .distinct()
         )
 
         return qs
