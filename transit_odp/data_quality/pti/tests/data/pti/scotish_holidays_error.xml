@@ -1896,22 +1896,20 @@
         </SpecialDaysOperation>
         <BankHolidayOperation>
           <DaysOfOperation>
-            <ChristmasEve />
-            <NewYearsEve />
+            <StAndrewsDayHoliday />
           </DaysOfOperation>
           <DaysOfNonOperation>
+            <ChristmasEve />
             <ChristmasDay />
             <BoxingDay />
-            <StAndrewsDayHoliday />
-            <GoodFriday />
             <NewYearsDay />
-            <LateSummerBankHolidayNotScotland />
-            <MayDay />
             <EasterMonday />
             <SpringBank />
             <ChristmasDayHoliday />
             <BoxingDayHoliday />
             <NewYearsDayHoliday />
+            <Jan2ndScotland />
+            <Jan2ndScotlandHoliday />
           </DaysOfNonOperation>
         </BankHolidayOperation>
       </OperatingProfile>
