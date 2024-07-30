@@ -24,9 +24,15 @@
               {% block table.tbody.row %}
                 <tr class="govuk-table__row {{ row.attrs.class }}">
                   <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
-                    <a href="{% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
-                      {{ row.cells.line_name }} - {{ row.cells.service_code }}
-                    </a>
+                    {% if row.cells.is_published %}
+                      <a href="{% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
+                        {{ row.cells.line_name }} - {{ row.cells.service_code }}
+                      </a>
+                    {% else %}
+                      <a href="{% url 'revision-line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}&revision_id={{ row.cells.revision_id }}">
+                        {{ row.cells.line_name }} - {{ row.cells.service_code }}
+                      </a>
+                    {% endif %}
                   </td>
                   <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
                     {% if table.attrs.tbody.is_details_link %}
