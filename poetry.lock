@@ -3282,20 +3282,6 @@ files = [
 pytest = ">=3.0.0"
 
 [[package]]
-name = "pytest-dependency"
-version = "0.6.0"
-description = "Manage dependencies of tests"
-optional = false
-python-versions = ">=3.4"
-files = [
-    {file = "pytest-dependency-0.6.0.tar.gz", hash = "sha256:934b0e6a39d95995062c193f7eaeed8a8ffa06ff1bcef4b62b0dc74a708bacc1"},
-]
-
-[package.dependencies]
-pytest = ">=3.7.0"
-setuptools = "*"
-
-[[package]]
 name = "pytest-django"
 version = "4.7.0"
 description = "A Django plugin for pytest."
@@ -4319,4 +4305,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "3967479e1bd5c759320a69b419788e131d111749518e38b3edab1508168185f1"
+content-hash = "bc513725e36fec9f47d7cb291f5d924f1cc91f602f91ec275f35d2402243bd32"
