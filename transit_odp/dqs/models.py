@@ -2,11 +2,12 @@ from django.contrib.gis.db import models
 
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField
+from django.utils.timezone import now
 
 from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.transmodel.models import ServicePatternStop, VehicleJourney
 from transit_odp.organisation.models.data import TXCFileAttributes
-from transit_odp.dqs.querysets import TaskResultsQueryset
+from transit_odp.dqs.querysets import TaskResultsQueryset, ObservationResultsQueryset
 from transit_odp.dqs.constants import ReportStatus, TaskResultsStatus
 
 BATCH_SIZE = 1000
@@ -20,11 +21,22 @@ class Report(models.Model):
     )
     status = models.CharField(max_length=64, null=True)
 
+    class Meta:
+        get_latest_by = "created"
+
     @classmethod
     def initialise_dqs_task(cls, revision: object) -> object:
         """
         Create a new Report instance with the provided data and save it to the database.
         """
+        existing_report = cls.objects.filter(revision=revision).first()
+        if existing_report:
+            existing_report.created = now()
+            existing_report.file_name = ""
+            existing_report.status = ReportStatus.PIPELINE_PENDING.value
+            existing_report.save()
+            return existing_report
+
         new_report = cls(
             file_name="", revision=revision, status=ReportStatus.PIPELINE_PENDING.value
         )
@@ -116,3 +128,5 @@ class ObservationResults(models.Model):
         related_name="dqs_observationresult_service_pattern_stop",
         null=True,
     )
+
+    objects = ObservationResultsQueryset.as_manager()

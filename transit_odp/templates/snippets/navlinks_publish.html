@@ -13,7 +13,7 @@
   {% if request.user.is_authenticated %}
     <li class="govuk-header__navigation-item dropdown bods-dropdown">
       <a href="#" class="govuk-header__link {% active_url 'users:home' css_class='govuk-link--active' host='publish' %}">
-        <img alt="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
+        <img alt="person-icon"
              class="account-menu__icon"
              src="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
              height="auto"
@@ -42,7 +42,7 @@
     <li class="govuk-header__navigation-item">
       <a class="govuk-header__link {% active_url 'account_login' css_class='govuk-link--active' host='publish' %}"
          href="{% url 'account_login' host hosts.publish %}">
-        <img alt="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
+        <img alt="person-icon"
              class="account-menu__icon"
              src="{% static 'frontend/images/np-person-781585-ffffff.png' %}"
              height="auto"

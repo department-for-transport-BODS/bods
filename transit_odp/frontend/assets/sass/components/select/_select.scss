@@ -1,80 +1,80 @@
-// These classes style select elements. The down arrow is hidden and replace with custom content :after
-// This requires a wrapping div.
+// // These classes style select elements. The down arrow is hidden and replace with custom content :after
+// // This requires a wrapping div.
 
-%select-wrapper {
-  position: relative;
+// %select-wrapper {
+//   position: relative;
 
-  &::-ms-expand {
-    display: none;
-  }
+//   &::-ms-expand {
+//     display: none;
+//   }
 
-  &:after {
-    position: absolute;
-    box-sizing: border-box;
-    top: 0;
-    right: 0;
-    pointer-events: none;
-  }
-}
+//   &:after {
+//     position: absolute;
+//     box-sizing: border-box;
+//     top: 0;
+//     right: 0;
+//     pointer-events: none;
+//   }
+// }
 
-.select-wrapper {
-  @extend %select-wrapper;
-  font-size: 2rem;
-  height: 40px;
+// .select-wrapper {
+//   @extend %select-wrapper;
+//   font-size: 2rem;
+//   height: 40px;
 
-  &:after {
-    box-sizing: border-box;
-    max-height: 40px;
-    vertical-align: middle;
-    padding: 5px 10px 5px 5px;
-    content: "\f0dc";
-    font-family: "Font Awesome 5 Free", Arial, sans-serif;
-    font-weight: bold;
-    font-size: 1rem;
-    line-height: 35px;
-  }
+//   &:after {
+//     box-sizing: border-box;
+//     max-height: 40px;
+//     vertical-align: middle;
+//     padding: 5px 10px 5px 5px;
+//     content: "\f0dc";
+//     font-family: "Font Awesome 5 Free", Arial, sans-serif;
+//     font-weight: bold;
+//     font-size: 1rem;
+//     line-height: 35px;
+//   }
 
-  .govuk-select {
-    border-radius: 5px;
-    background-color: #f8f8f8;
-    // hide dropdown button
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    padding-right: 40px;
-  }
-}
+//   .govuk-select {
+//     border-radius: 5px;
+//     background-color: #f8f8f8;
+//     // hide dropdown button
+//     -webkit-appearance: none;
+//     -moz-appearance: none;
+//     appearance: none;
+//     padding-right: 40px;
+//   }
+// }
 
-.nav-select-wrapper {
-  @extend %select-wrapper;
+// .nav-select-wrapper {
+//   @extend %select-wrapper;
 
-  &:after {
-    font-family: "Font Awesome 5 Free", Arial, sans-serif;
-    font-weight: 900;
-    font-size: 1.125rem;
-    color: $govuk-link-colour;
-    vertical-align: middle;
+//   &:after {
+//     font-family: "Font Awesome 5 Free", Arial, sans-serif;
+//     font-weight: 900;
+//     font-size: 1.125rem;
+//     color: $govuk-link-colour;
+//     vertical-align: middle;
 
-    &:focus {
-      color: $govuk-link-hover-colour;
-    }
-  }
-}
+//     &:focus {
+//       color: $govuk-link-hover-colour;
+//     }
+//   }
+// }
 
-.nav-select {
-  @extend .govuk-select;
+// .nav-select {
+//   @extend .govuk-select;
 
-  &:after {
-    content: "\f0dc";
-  }
-}
+//   &:after {
+//     content: "\f0dc";
+//   }
+// }
 
-.licence-dropdown {
-  .select-wrapper {
-    font-size: unset;
-    height: unset;
-    select {
-      width: 100%;
-    }
-  }
-}
+// .licence-dropdown {
+//   .select-wrapper {
+//     font-size: unset;
+//     height: unset;
+//     select {
+//       width: 100%;
+//     }
+//   }
+// }

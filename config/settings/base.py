@@ -221,6 +221,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {"NAME": "transit_odp.common.password_validation.CustomPasswordValidator"},
 ]
 
 
@@ -636,6 +637,12 @@ AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
     default="bodds-dataset-dev-maintenance",
 )
 
+# S3 bucket name for DQS Report download
+# ------------------------------------------------------------------------------
+S3_BUCKET_DQS_CSV_REPORT = env(
+    "S3_BUCKET_DQS_CSV_REPORT",
+    default="bodds-dev-dqs-reports",
+)
 # SQS QUEUE
 # ------------------------------------------------------------------------------
 SQS_QUEUE_ENDPOINT_URL = env(
@@ -719,6 +726,13 @@ if env("GEOS_LIBRARY_PATH", default=None):
 
 MAPBOX_KEY = env("MAPBOX_KEY", default=None)
 
-DJANGO_AXE_REPORT_PATH = os.path.join(MEDIA_ROOT, "accessibility_report.json")
+DJANGO_AXE_REPORT_PATH = os.path.join(
+    str(APPS_DIR.path("static")), "accessibility_report.json"
+)
 DJANGO_AXE_ENABLED = env.bool("DJANGO_AXE_ENABLED", default=False)
 DD_DBM_PROPAGATION_MODE = "full"
+
+# below environment variables are added for allauth library
+# to enable rate limit for user entering wrong password
+ACCOUNT_LOGIN_ATTEMPTS_LIMIT = env("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", default=5)
+ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = env("ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT", default=900)

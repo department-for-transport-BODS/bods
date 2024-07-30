@@ -682,3 +682,22 @@ def test_stale_service_out_of_season():
     assert df["Timeliness Status"][0] == "42 day look ahead is incomplete"
     assert df["Seasonal Status"][0] == "Out of Season"
     assert df["Requires Attention"][0] == "No"
+
+
+def test_get_timetable_catalogue_dataframe_with_inactive_org():
+    active_org = OrganisationFactory(name="active_org", short_name="active_org")
+    inactive_org = OrganisationFactory(
+        name="inactive_org", short_name="inactive_org", is_active=False
+    )
+    dataset_1 = DatasetFactory(organisation=active_org)
+    dataset_2 = DatasetFactory(organisation=inactive_org)
+    dataset_revision_1 = DatasetRevisionFactory(dataset=dataset_1)
+    dataset_revision_2 = DatasetRevisionFactory(dataset=dataset_2)
+    services = ServiceModelFactory.create_batch(5)
+    TXCFileAttributesFactory(revision=dataset_revision_1, service_code=services[0])
+    TXCFileAttributesFactory(revision=dataset_revision_1, service_code=services[1])
+    TXCFileAttributesFactory(revision=dataset_revision_1, service_code=services[2])
+    TXCFileAttributesFactory(revision=dataset_revision_1, service_code=services[3])
+    TXCFileAttributesFactory(revision=dataset_revision_2, service_code=services[4])
+    df = _get_timetable_catalogue_dataframe()
+    assert inactive_org.name not in df["Organisation Name"].to_list()

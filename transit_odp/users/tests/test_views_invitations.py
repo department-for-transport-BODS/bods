@@ -21,6 +21,7 @@ from transit_odp.users.views.invitations import AcceptInvite
 pytestmark = pytest.mark.django_db
 
 
+@pytest.mark.django_db
 class TestAcceptInvite:
     def test_view_initialises_invitation_started_state(
         self, mocker, rf: RequestFactory
@@ -149,6 +150,7 @@ class TestAcceptInvite:
         )
 
 
+@pytest.mark.django_db
 class TestSendInvite:
     """
     Groups together all the tests for the send invite page ie inviting

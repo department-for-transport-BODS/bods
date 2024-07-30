@@ -8,6 +8,13 @@ from transit_odp.data_quality.pti.factories import SchemaFactory
 from transit_odp.data_quality.pti.models import Schema
 from transit_odp.data_quality.pti.tests.conftest import JSONFile, TXCFile
 from transit_odp.data_quality.pti.validators import PTIValidator
+from transit_odp.naptan.factories import AdminAreaFactory
+from transit_odp.otc.constants import API_TYPE_WECA
+from transit_odp.otc.factories import (
+    LocalAuthorityFactory,
+    ServiceModelFactory,
+    UILtaFactory,
+)
 from transit_odp.timetables.pti import PTI_PATH
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -454,3 +461,105 @@ def test_validate_vehicle_journey_ref(has_vj_ref, has_profile, expected):
     txc = TXCFile(xml)
     is_valid = pti.is_valid(txc)
     assert is_valid == expected
+
+
+def test_bank_holidays_scottish_holidays_with_service_ref():
+    services = ServiceModelFactory(
+        registration_number="PK0003556/55", service_number="100|200|Bellford"
+    )
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=[services],
+    )
+    AdminAreaFactory(traveline_region_id="S", ui_lta=ui_lta)
+
+    filename = "pti/scotish_holidays.xml"
+    OBSERVATION_ID = 43
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
+    json_file = JSONFile(schema.json())
+    pti = PTIValidator(json_file)
+    txc_path = DATA_DIR / filename
+
+    with txc_path.open("r") as txc:
+        is_valid = pti.is_valid(txc)
+    assert is_valid
+
+
+def test_bank_holidays_scottish_holidays_with_service_ref_WECA():
+    services = ServiceModelFactory(
+        registration_number="PK0003556/55",
+        service_number="100|200|Bellford",
+        atco_code="010",
+        api_type=API_TYPE_WECA,
+    )
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    AdminAreaFactory(traveline_region_id="S", ui_lta=ui_lta, atco_code="010")
+
+    filename = "pti/scotish_holidays.xml"
+    OBSERVATION_ID = 43
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
+    json_file = JSONFile(schema.json())
+    pti = PTIValidator(json_file)
+    txc_path = DATA_DIR / filename
+
+    with txc_path.open("r") as txc:
+        is_valid = pti.is_valid(txc)
+    assert is_valid
+
+
+def test_bank_holidays_english_holidays_with_service_ref():
+    services = ServiceModelFactory(
+        registration_number="PK0003556/55", service_number="100|200|Bellford"
+    )
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=[services],
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
+
+    filename = "pti/english_holidays.xml"
+    OBSERVATION_ID = 43
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
+    json_file = JSONFile(schema.json())
+    pti = PTIValidator(json_file)
+    txc_path = DATA_DIR / filename
+
+    with txc_path.open("r") as txc:
+        is_valid = pti.is_valid(txc)
+    assert is_valid
+
+
+def test_bank_holidays_english_holidays_with_service_ref_WECA():
+    services = ServiceModelFactory(
+        registration_number="PK0003556/55",
+        service_number="100|200|Bellford",
+        atco_code="010",
+        api_type=API_TYPE_WECA,
+    )
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta, atco_code="010")
+
+    filename = "pti/english_holidays.xml"
+    OBSERVATION_ID = 43
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
+    json_file = JSONFile(schema.json())
+    pti = PTIValidator(json_file)
+    txc_path = DATA_DIR / filename
+
+    with txc_path.open("r") as txc:
+        is_valid = pti.is_valid(txc)
+    assert is_valid

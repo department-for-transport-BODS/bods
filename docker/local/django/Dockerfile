@@ -2,7 +2,7 @@ ARG BASE_IMAGE=python:3.10-slim
 FROM ${BASE_IMAGE}
 
 ENV PYTHONUNBUFFERED=1 \
-    POETRY_VERSION=1.7.1
+    POETRY_VERSION=1.8.3
 
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
@@ -32,9 +32,7 @@ RUN apt-get update && apt-get install -y \
             nodejs \
             npm \
             binutils \
-            libgeos-dev \
-            && pip3 install --upgrade pip setuptools wheel cython
-
+            libgeos-dev
 
 # Update C env vars so compiler can find gdal
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
@@ -42,12 +40,11 @@ ENV C_INCLUDE_PATH=/usr/include/gdal
 
 COPY ./pyproject.toml ./poetry.lock ./package.json ./yarn.lock ./
 
-RUN python --version \
-    && npm install -g yarn@latest \
-    && yarn set version stable && yarn install \
+RUN npm install -g yarn@v1.22.22 \
+    && yarn install \
     && pip install poetry==$POETRY_VERSION \
     && poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi -vvv
+    && poetry install --no-root --no-interaction --no-cache --no-ansi -vvv
 
 # ARG UID=1001
 # ARG GID=36
