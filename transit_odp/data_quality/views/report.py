@@ -25,14 +25,16 @@ class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision)
     def get_latest_report(self):
         revision_id = self.get_revision_id()
         try:
-            report = Report.objects.filter(revision_id=revision_id).latest()
-            if report:
-                return report
-            else:
-                return DataQualityReport.objects.filter(
-                    revision_id=revision_id
-                ).latest()
+            report = Report.objects.filter(revision_id=revision_id)
+            if not report:
+                print(
+                    f"DQSDEBUG: Report with revisionid: {revision_id} not found in new DQS"
+                )
+                report = DataQualityReport.objects.filter(revision_id=revision_id)
+            print(f"DQSDEBUG: Report(draft): {report}")
+            return report.latest()
         except Exception as e:
+            print(f"DQSDEBUG: Logging error in report: {e}")
             raise Http404
 
     def get_redirect_url(self, *args, **kwargs):
