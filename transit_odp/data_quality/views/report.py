@@ -67,6 +67,7 @@ class ReportOverviewView(DetailView):
         result = (
             super()
             .get_queryset()
+            .add_number_of_lines()
             .filter(revision__dataset_id=dataset_id)
             .select_related("summary")
         )
