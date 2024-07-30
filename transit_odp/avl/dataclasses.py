@@ -18,9 +18,14 @@ class ValidationTaskResult(BaseModel):
 class Feed(BaseModel):
     id: str
     publisher_id: str = Field(alias="publisherId")
-    status: AVLFeedStatus = AVLFeedStatus.DEPLOYING.value # todo - figure out if this needs remapping
-    last_avl_data_received_date_time: Optional[str] = Field(alias="lastAvlDataReceivedDateTime")
-    heartbeat_last_received_date_time: Optional[str] = Field(alias="heartbeatLastReceivedDateTime")
+    status: AVLFeedStatus = AVLFeedStatus.live.value
+    last_avl_data_received_date_time: Optional[str] = Field(
+        alias="lastAvlDataReceivedDateTime"
+    )
+    heartbeat_last_received_date_time: Optional[str] = Field(
+        alias="heartbeatLastReceivedDateTime"
+    )
     service_start_datetime: Optional[str] = Field(alias="serviceStartDatetime")
     service_end_datetime: Optional[str] = Field(alias="serviceEndDatetime")
     api_key: str = Field(alias="apiKey")
+    model_config = ConfigDict(populate_by_name=True)

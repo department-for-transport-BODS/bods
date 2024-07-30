@@ -113,26 +113,40 @@ class TestCAVLService:
         assert [rec.message for rec in caplog.records] == expected_message
 
     @pytest.mark.parametrize(
-        "status, expected_result, expected_message",
+        "status, response_mock, expected_result, expected_message",
         [
-            (HTTPStatus.NO_CONTENT, {}, True, ["DELETE http://www.dummy.com/subscriptions/1 204"]),
+            (
+                HTTPStatus.NO_CONTENT,
+                {},
+                True,
+                ["DELETE http://www.dummy.com/subscriptions/1 204"],
+            ),
             (
                 HTTPStatus.NOT_FOUND,
                 dict(errors=["Not found"]),
                 False,
-                ["DELETE http://www.dummy.com/subscriptions/1 404", "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Not found']}"],
+                [
+                    "DELETE http://www.dummy.com/subscriptions/1 404",
+                    "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Not found']}",
+                ],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
                 dict(errors=["Bad request"]),
                 False,
-                ["DELETE http://www.dummy.com/subscriptions/1 400", "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Bad request']}"],
+                [
+                    "DELETE http://www.dummy.com/subscriptions/1 400",
+                    "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Bad request']}",
+                ],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 dict(errors=["Server error"]),
                 False,
-                ["DELETE http://www.dummy.com/subscriptions/1 500", "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Server error']}"],
+                [
+                    "DELETE http://www.dummy.com/subscriptions/1 500",
+                    "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Server error']}",
+                ],
             ),
         ],
     )
@@ -141,13 +155,14 @@ class TestCAVLService:
         caplog: CapLog,
         cavl_service: CAVLService,
         status: int,
+        response_mock,
         expected_result: bool,
         expected_message: list[str],
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_CAVL_URL + "/subscriptions/1"
-        kwargs["m"].delete(url, status_code=status)
+        kwargs["m"].delete(url, json=response_mock, status_code=status)
 
         result = cavl_service.delete_feed(feed_id=1)
 
@@ -220,27 +235,50 @@ class TestCAVLService:
         [
             (
                 HTTPStatus.OK,
-                dict(id="1", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="1"),
-                Feed(id="1", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="1"),
+                dict(
+                    id="1",
+                    publisherId="1",
+                    status=AVLFeedStatus.live.value,
+                    apiKey="1",
+                ),
+                Feed(
+                    id="1",
+                    publisher_id="1",
+                    status=AVLFeedStatus.live.value,
+                    last_avl_data_received_date_time=None,
+                    heartbeat_last_received_date_time=None,
+                    service_start_datetime=None,
+                    service_end_datetime=None,
+                    api_key="1",
+                ),
                 ["GET http://www.dummy.com/subscriptions/1 200"],
             ),
             (
                 HTTPStatus.NOT_FOUND,
                 dict(errors=["Not found"]),
                 None,
-                ["GET http://www.dummy.com/subscriptions/1 404", "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Not found']}"],
+                [
+                    "GET http://www.dummy.com/subscriptions/1 404",
+                    "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Not found']}",
+                ],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
                 dict(errors=["Bad request"]),
                 None,
-                ["GET http://www.dummy.com/subscriptions/1 400", "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Bad request']}"],
+                [
+                    "GET http://www.dummy.com/subscriptions/1 400",
+                    "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Bad request']}",
+                ],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 dict(errors=["Server error"]),
                 None,
-                ["GET http://www.dummy.com/subscriptions/1 500", "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Server error']}"],
+                [
+                    "GET http://www.dummy.com/subscriptions/1 500",
+                    "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Server error']}",
+                ],
             ),
         ],
     )
@@ -264,17 +302,45 @@ class TestCAVLService:
         assert [rec.message for rec in caplog.records] == expected_message
 
     @pytest.mark.parametrize(
-        "status, response_mock, expected_response, expected_message",
+        "status, response_mock, expected_result, expected_message",
         [
             (
                 HTTPStatus.OK,
                 [
-                    dict(id="1", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="1"),
-                    dict(id="2", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="2"),
+                    dict(
+                        id="1",
+                        publisherId="1",
+                        status=AVLFeedStatus.live.value,
+                        apiKey="1",
+                    ),
+                    dict(
+                        id="2",
+                        publisherId="1",
+                        status=AVLFeedStatus.live.value,
+                        apiKey="2",
+                    ),
                 ],
                 [
-                    Feed(id="1", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="1"),
-                    Feed(id="2", publisher_id="1", status=AVLFeedStatus.FEED_UP.value, api_key="2"),
+                    Feed(
+                        id="1",
+                        publisher_id="1",
+                        status=AVLFeedStatus.live.value,
+                        last_avl_data_received_date_time=None,
+                        heartbeat_last_received_date_time=None,
+                        service_start_datetime=None,
+                        service_end_datetime=None,
+                        api_key="1",
+                    ),
+                    Feed(
+                        id="2",
+                        publisher_id="1",
+                        status=AVLFeedStatus.live.value,
+                        last_avl_data_received_date_time=None,
+                        heartbeat_last_received_date_time=None,
+                        service_start_datetime=None,
+                        service_end_datetime=None,
+                        api_key="2",
+                    ),
                 ],
                 ["GET http://www.dummy.com/subscriptions 200"],
             ),
@@ -282,19 +348,28 @@ class TestCAVLService:
                 HTTPStatus.NOT_FOUND,
                 dict(errors=["Not found"]),
                 [],
-                ["GET http://www.dummy.com/subscriptions 404", "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Not found']}"],
+                [
+                    "GET http://www.dummy.com/subscriptions 404",
+                    "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Not found']}",
+                ],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
                 dict(errors=["Bad request"]),
                 [],
-                ["GET http://www.dummy.com/subscriptions 400", "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Bad request']}"],
+                [
+                    "GET http://www.dummy.com/subscriptions 400",
+                    "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Bad request']}",
+                ],
             ),
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 dict(errors=["Server error"]),
                 [],
-                ["GET http://www.dummy.com/subscriptions 500", "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Server error']}"],
+                [
+                    "GET http://www.dummy.com/subscriptions 500",
+                    "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Server error']}",
+                ],
             ),
         ],
     )
@@ -412,7 +487,14 @@ class TestCAVLService:
                 ["[CAVL] Couldn't fetch feed <id=1>. Response: (empty)"],
                 None,
             ),
-            ("get_feeds", "get", "/subscriptions", [], ["[CAVL] Couldn't fetch feeds. Response: (empty)"], []),
+            (
+                "get_feeds",
+                "get",
+                "/subscriptions",
+                [],
+                ["[CAVL] Couldn't fetch feeds. Response: (empty)"],
+                [],
+            ),
         ],
     )
     def test_methods_exception_handling(

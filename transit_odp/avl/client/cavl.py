@@ -19,7 +19,11 @@ class CAVLService(ICAVLService):
     headers = {"x-api-key": settings.AVL_PRODUCER_API_KEY}
 
     def _get_error_response(exception: RequestException) -> str:
-        return exception.response.json() if hasattr(exception.response, "json") else "(empty)"
+        return (
+            exception.response.json()
+            if hasattr(exception.response, "json")
+            else "(empty)"
+        )
 
     def register_feed(
         self,
