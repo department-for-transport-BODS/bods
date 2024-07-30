@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
             npm \
             binutils \
             libgeos-dev \
-            && pip3 install --upgrade setuptools
+            && pip3 install --upgrade setuptools wheel
 
 
 # Update C env vars so compiler can find gdal
