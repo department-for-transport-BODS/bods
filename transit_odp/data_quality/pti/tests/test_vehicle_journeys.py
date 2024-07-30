@@ -312,38 +312,6 @@ def test_bank_holidays_split_duplicates_false():
     assert not is_valid
 
 
-def test_bank_holidays_scottish_holidays_true():
-    day_type = """
-    <DayType id="day_04">
-        <Name>Bank Holiday Service</Name>
-        <RegularDayType>
-            <HolidaysOnly/>
-        </RegularDayType>
-        <BankHolidayOperation>
-        <DaysOfOperation>
-        {0}
-        </DaysOfOperation>
-        </BankHolidayOperation>
-    </DayType>
-    """
-
-    days_of_operation = "\n".join(
-        "<{0}/>".format(d) for d in BANK_HOLIDAYS + SCOTTISH_BANK_HOLIDAYS
-    )
-    xml = day_type.format(days_of_operation)
-
-    OBSERVATION_ID = 43
-    schema = Schema.from_path(PTI_PATH)
-    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
-    schema = SchemaFactory(observations=observations)
-    json_file = JSONFile(schema.json())
-    pti = PTIValidator(json_file)
-
-    txc = TXCFile(xml)
-    is_valid = pti.is_valid(txc)
-    assert is_valid
-
-
 def test_other_public_holidays_true():
     day_type = """
     <DayType id="day_04">
@@ -549,6 +517,12 @@ def test_bank_holidays_english_holidays_with_service_ref_WECA():
         api_type=API_TYPE_WECA,
     )
     ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=[services],
+    )
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta, atco_code="010")
 
     filename = "pti/english_holidays.xml"
@@ -563,3 +537,83 @@ def test_bank_holidays_english_holidays_with_service_ref_WECA():
     with txc_path.open("r") as txc:
         is_valid = pti.is_valid(txc)
     assert is_valid
+
+
+def test_bank_holidays_english_holidays_with_multiple_admin_areas():
+    services = ServiceModelFactory(
+        registration_number="PK0003556/55", service_number="100|200|Bellford"
+    )
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=[services],
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta, atco_code="010")
+    AdminAreaFactory(traveline_region_id="S", ui_lta=ui_lta, atco_code="011")
+
+    filename = "pti/english_holidays.xml"
+    OBSERVATION_ID = 43
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
+    json_file = JSONFile(schema.json())
+    pti = PTIValidator(json_file)
+    txc_path = DATA_DIR / filename
+
+    with txc_path.open("r") as txc:
+        is_valid = pti.is_valid(txc)
+    assert is_valid
+
+
+def test_bank_holidays_english_holidays_error():
+    services = ServiceModelFactory(
+        registration_number="PK0003556/55", service_number="100|200|Bellford"
+    )
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    LocalAuthorityFactory(
+        id="1",
+        name="Dorset Council",
+        ui_lta=ui_lta,
+        registration_numbers=[services],
+    )
+
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta, atco_code="010")
+
+    filename = "pti/english_holidays_error.xml"
+    OBSERVATION_ID = 43
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
+    json_file = JSONFile(schema.json())
+    pti = PTIValidator(json_file)
+    txc_path = DATA_DIR / filename
+
+    with txc_path.open("r") as txc:
+        is_valid = pti.is_valid(txc)
+    assert is_valid is False
+
+
+def test_bank_holidays_scottish_holidays_for_error():
+    ServiceModelFactory(
+        registration_number="PK0003556/55",
+        service_number="100|200|Bellford",
+        atco_code="010",
+        api_type=API_TYPE_WECA,
+    )
+    ui_lta = UILtaFactory(name="Dorset County Council")
+    AdminAreaFactory(traveline_region_id="S", ui_lta=ui_lta, atco_code="010")
+
+    filename = "pti/scotish_holidays_error.xml"
+    OBSERVATION_ID = 43
+    schema = Schema.from_path(PTI_PATH)
+    observations = [o for o in schema.observations if o.number == OBSERVATION_ID]
+    schema = SchemaFactory(observations=observations)
+    json_file = JSONFile(schema.json())
+    pti = PTIValidator(json_file)
+    txc_path = DATA_DIR / filename
+
+    with txc_path.open("r") as txc:
+        is_valid = pti.is_valid(txc)
+    assert is_valid is False

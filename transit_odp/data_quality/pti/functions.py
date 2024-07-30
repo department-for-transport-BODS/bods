@@ -9,6 +9,8 @@ from lxml import etree
 
 from transit_odp.data_quality.pti.constants import (
     BANK_HOLIDAYS,
+    BANK_HOLIDAYS_ONLY_ENGLISH,
+    BANK_HOLIDAYS_ONLY_SCOTTISH,
     OPERATION_DAYS,
     OTHER_PUBLIC_HOLIDAYS,
     SCOTTISH_BANK_HOLIDAYS,
@@ -227,11 +229,11 @@ def validate_bank_holidays(context, bank_holidays):
 
     service_ref = get_service_ref_from_element(element, ns)
     if service_ref and is_service_in_scotland(service_ref):
-        english_removed = list(set(holidays) - set(BANK_HOLIDAYS))
+        english_removed = list(set(holidays) - set(BANK_HOLIDAYS_ONLY_ENGLISH))
         return sorted(SCOTTISH_BANK_HOLIDAYS) == sorted(english_removed)
 
     # optional Scottish holiday check
-    scottish_removed = list(set(holidays) - set(SCOTTISH_BANK_HOLIDAYS))
+    scottish_removed = list(set(holidays) - set(BANK_HOLIDAYS_ONLY_SCOTTISH))
     return sorted(BANK_HOLIDAYS) == sorted(scottish_removed)
 
 
