@@ -236,8 +236,14 @@ class Summary(BaseModel):
                 )
                 for category in importance_df["category"].unique():
                     warning_data[level.value]["df"].update(
-                        {category: df[df["category"] == category]}
+                        {
+                            category: df[
+                                (df["category"] == category)
+                                & (df["importance"] == level.value)
+                            ]
+                        }
                     )
+
             return cls(
                 data=warning_data,
                 count=count,
