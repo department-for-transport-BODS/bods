@@ -29,3 +29,9 @@ jobs:
           options: "--check --config .black.toml"
           src: "."
           version: "22.3.0"
+
+      - name: djlint
+        id: djlint
+        run: |
+          pip install --upgrade djlint
+          djlint .
