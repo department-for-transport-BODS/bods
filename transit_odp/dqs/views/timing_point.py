@@ -41,7 +41,7 @@ class DQSFirstStopNotTimingPointDetailView(DQSWarningDetailBaseView):
     def get_queryset(self):
 
         report_id = self.kwargs.get("report_id")
-
+        service = self.request.GET.get("service")
         qs = Report.objects.filter(id=report_id)
         if not len(qs):
             return qs
@@ -49,7 +49,7 @@ class DQSFirstStopNotTimingPointDetailView(DQSWarningDetailBaseView):
         self.check = Checks.FirstStopIsNotATimingPoint
 
         qs = ObservationResults.objects.get_observations_details(
-            report_id, self.check, revision_id
+            report_id, self.check, revision_id, service
         )
 
         return qs

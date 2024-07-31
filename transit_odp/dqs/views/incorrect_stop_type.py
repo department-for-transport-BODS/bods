@@ -35,6 +35,7 @@ class DQSIncorrectStopTypeDetailView(DQSWarningDetailBaseView):
     def get_queryset(self):
 
         report_id = self.kwargs.get("report_id")
+        service = self.request.GET.get("service")
 
         qs = Report.objects.filter(id=report_id)
         if not len(qs):
@@ -43,7 +44,7 @@ class DQSIncorrectStopTypeDetailView(DQSWarningDetailBaseView):
         self.check = Checks.IncorrectStopType
 
         qs = ObservationResults.objects.get_observations_details(
-            report_id, self.check, revision_id, True
+            report_id, self.check, revision_id, service, True
         )
 
         return qs
