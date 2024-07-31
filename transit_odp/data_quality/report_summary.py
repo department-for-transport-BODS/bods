@@ -1,14 +1,25 @@
 from typing import Dict
 
+import pandas as pd
+from django.db.models import CharField, F
+from django.db.models.expressions import Value
+from django.db.models.functions import (
+    Cast,
+    Coalesce,
+    Concat,
+    ExtractHour,
+    ExtractMinute,
+    LPad,
+    Substr,
+    Upper,
+)
 from pydantic import BaseModel
+from waffle import flag_is_active
 
 from transit_odp.data_quality.constants import OBSERVATIONS, Category, Level
 from transit_odp.data_quality.models import DataQualityReportSummary
-from transit_odp.dqs.models import ObservationResults
-import pandas as pd
-from django.db.models import F
-from waffle import flag_is_active
 from transit_odp.dqs.constants import BUS_SERVICES_AFFECTED_SUBSET, ReportStatus
+from transit_odp.dqs.models import ObservationResults
 
 CRITICAL_INTRO = (
     "These observations are considered critical in terms of data quality. "
@@ -82,6 +93,9 @@ class Summary(BaseModel):
             "details",
             "line_name",
             "vehicle_journey_id",
+            "journey_start_time",
+            "direction",
+            "stop_name",
         ]
         data = (
             ObservationResults.objects.filter(
@@ -101,6 +115,40 @@ class Summary(BaseModel):
                 line_name=F(
                     "taskresults__transmodel_txcfileattributes__service_txcfileattributes__name"
                 ),
+                journey_start_time=Concat(
+                    LPad(
+                        Cast(
+                            ExtractHour(F("vehicle_journey__start_time")),
+                            output_field=CharField(),
+                        ),
+                        2,
+                        Value("0"),
+                    ),
+                    Value(":"),
+                    LPad(
+                        Cast(
+                            ExtractMinute(F("vehicle_journey__start_time")),
+                            output_field=CharField(),
+                        ),
+                        2,
+                        Value("0"),
+                    ),
+                ),
+                direction=Concat(
+                    Upper(Substr(F("vehicle_journey__direction"), 1, 1)),
+                    Substr(F("vehicle_journey__direction"), 2),
+                ),
+                stop_name=Concat(
+                    Coalesce(
+                        "service_pattern_stop__naptan_stop__common_name",
+                        "service_pattern_stop__txc_common_name",
+                        output_field=CharField(),
+                    ),
+                    Value(" ("),
+                    F("service_pattern_stop__naptan_stop__atco_code"),
+                    Value(")"),
+                ),
+                stop_type=F("service_pattern_stop__naptan_stop__stop_type"),
             )
             .values(*columns)
         )
@@ -139,7 +187,17 @@ class Summary(BaseModel):
             bus_services_affected = cls.qet_service_code_line_name_unique_combinations(
                 df
             )
-            df = df[["importance", "category", "observation", "vehicle_journey_id"]]
+            df = df[
+                [
+                    "importance",
+                    "category",
+                    "observation",
+                    "journey_start_time",
+                    "direction",
+                    "stop_name",
+                ]
+            ]
+            df.drop_duplicates(inplace=True)
             count = len(df)
             for level in Level:
                 warning_data[level.value] = {}
@@ -151,12 +209,12 @@ class Summary(BaseModel):
                 df.groupby(["observation", "category", "importance"])
                 .agg(
                     {
-                        "vehicle_journey_id": "size",
+                        "journey_start_time": "size",
                     }
                 )
                 .rename(
                     columns={
-                        "vehicle_journey_id": "number_of_services_affected",
+                        "journey_start_time": "number_of_services_affected",
                     }
                 )
                 .reset_index()

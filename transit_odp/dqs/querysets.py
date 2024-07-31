@@ -139,6 +139,8 @@ class ObservationResultsQueryset(models.QuerySet):
         report_id: int,
         check: Checks,
         revision_id: int,
+        service: str,
+        line: str,
         is_stop_type: bool = False,
     ):
         columns = ["journey_start_time", "direction", "stop_name"]
@@ -151,6 +153,8 @@ class ObservationResultsQueryset(models.QuerySet):
                 taskresults__dataquality_report_id=report_id,
                 taskresults__checks__observation=check.value,
                 taskresults__dataquality_report__revision_id=revision_id,
+                taskresults__transmodel_txcfileattributes__service_code=service,
+                taskresults__transmodel_txcfileattributes__service_txcfileattributes__name=line,
             )
             .annotate(
                 journey_start_time=Concat(
