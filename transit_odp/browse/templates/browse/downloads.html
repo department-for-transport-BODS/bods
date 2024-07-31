@@ -227,10 +227,11 @@
         </li>
       </ul>
     </div>
-  {% endblock %}
-  {% block scripts %}
-    {{ block.super }}
-    <script>
+  </div>
+{% endblock %}
+{% block scripts %}
+  {{ block.super }}
+  <script>
         function addGATagEvent(obj) {
             gtag('event', 'Download coach data events', {
                 'event_category': 'link',
@@ -238,5 +239,5 @@
                 'event_action': 'click'
             });
         };
-    </script>
-  {% endblock %}
+  </script>
+{% endblock %}
