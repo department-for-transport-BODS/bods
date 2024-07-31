@@ -36,6 +36,7 @@ class DQSFirstStopSetDownDetailView(DQSWarningDetailBaseView):
 
         report_id = self.kwargs.get("report_id")
         service = self.request.GET.get("service")
+        line = self.request.GET.get("line")
 
         qs = Report.objects.filter(id=report_id)
         if not len(qs):
@@ -44,7 +45,7 @@ class DQSFirstStopSetDownDetailView(DQSWarningDetailBaseView):
         self.check = Checks.FirstStopIsSetDown
 
         qs = ObservationResults.objects.get_observations_details(
-            report_id, self.check, revision_id, service
+            report_id, self.check, revision_id, service, line
         )
 
         return qs
