@@ -8,6 +8,7 @@ from transit_odp.data_quality.csv import ObservationCSV
 from transit_odp.data_quality.models import DataQualityReport
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.users.views.mixins import OrgUserViewMixin
+from transit_odp.common.utils.s3_bucket_connection import get_dqs_report_from_s3
 
 from ..report_summary import Summary
 from .mixins import WithDraftRevision
@@ -24,13 +25,12 @@ class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision)
     def get_latest_report(self):
         revision_id = self.get_revision_id()
         try:
-            report = Report.objects.filter(revision_id=revision_id).latest()
-        except Report.DoesNotExist:
-            report = DataQualityReport.objects.filter(revision_id=revision_id).latest()
-        except DataQualityReport.DoesNotExist:
+            report = Report.objects.filter(revision_id=revision_id)
+            if not report:
+                report = DataQualityReport.objects.filter(revision_id=revision_id)
+            return report.latest()
+        except Exception as e:
             raise Http404
-        else:
-            return report
 
     def get_redirect_url(self, *args, **kwargs):
         report = self.get_latest_report()
@@ -62,6 +62,7 @@ class ReportOverviewView(DetailView):
         result = (
             super()
             .get_queryset()
+            .add_number_of_lines()
             .filter(revision__dataset_id=dataset_id)
             .select_related("summary")
         )
@@ -85,7 +86,7 @@ class ReportOverviewView(DetailView):
             report_id = report.summary.report_id
             rag = get_data_quality_rag(report)
             context.update({"dq_score": rag})
-            summary = getattr(report, "summary", None)
+            summary = Summary.from_report_summary(report.summary)
             is_dqs_new_report = False
 
         context.update(
@@ -102,8 +103,30 @@ class ReportOverviewView(DetailView):
 
 
 class ReportCSVDownloadView(View):
+
     model = DataQualityReport
     pk_url_kwarg = "report_id"
+
+    _is_dqs_new_report = None
+
+    # TODO: Remove once old data quality is decomissioned
+
+    @property
+    def is_dqs_new_report(self):
+        report_id = self.kwargs.get("report_id")
+        qs = Report.objects.filter(id=report_id)
+        if not qs.exists():
+            self._is_dqs_new_report = False
+            self._report_file_name = None
+        else:
+            self._is_dqs_new_report = True
+            self._report_file_name = qs[0].file_name
+        return self._is_dqs_new_report
+
+    @property
+    def report_file_name(self):
+        _ = self.is_dqs_new_report
+        return self._report_file_name
 
     def get_queryset(self):
         dataset_id = self.kwargs["pk"]
@@ -112,6 +135,8 @@ class ReportCSVDownloadView(View):
     def render_to_response(self, *args, **kwargs):
         dataset_id = self.kwargs.get("pk")
         report_id = self.kwargs.get("report_id")
+        if self.is_dqs_new_report:
+            return get_dqs_report_from_s3(self.report_file_name)
         now = timezone.now()
         filename = f"{now:%Y-%m-%d_%H%M%S}_ID{dataset_id}.csv"
         observations = ObservationCSV(report_id, observations=OBSERVATIONS)

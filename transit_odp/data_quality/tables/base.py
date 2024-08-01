@@ -251,6 +251,8 @@ class DQSWarningListBaseTable(GovUkTable):
     )
     service_code = tables.Column(verbose_name="Service Code", visible=True)
     line_name = tables.Column(verbose_name="Line Name", visible=True)
+    revision_id = tables.Column(verbose_name="Revision Id", visible=True)
+    is_published = tables.Column(verbose_name="Is Published", visible=True)
 
     class Meta:
 

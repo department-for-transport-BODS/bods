@@ -43,10 +43,9 @@
         {% endfilter %}
         {% include "browse/snippets/help_modals/data_quality_report.html" %}
       </th>
-      
       <td class="govuk-table__cell">
         {% if new_dqs_report %}
-            {% include "snippets/data_quality_row.html" with warning_data=summary %}
+          {% include "snippets/data_quality_row.html" with warning_data=summary %}
         {% else %}
           <div class="stacked">
             {% trans "Data quality" %}

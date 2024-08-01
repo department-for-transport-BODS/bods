@@ -20,13 +20,12 @@
       {% for noc in organisation.nocs.all %}
         {% if forloop.counter0 >= 1 %}
           <tr class="govuk-table__row">
-              <th scope="row"
-                  class="govuk-table__header {% if not forloop.last %}govuk-summary-list__row--no-border {% else %}govuk-!-padding-4{% endif %}"
-                  aria-hidden="true">
-              </th>
-              <td class="govuk-table__cell {% if not forloop.last %}govuk-summary-list__row--no-border {% else %}govuk-!-padding-0{% endif %}">
-                {{ noc.noc }}
-              </td>
+            <th scope="row"
+                class="govuk-table__header {% if not forloop.last %}govuk-summary-list__row--no-border {% else %}govuk-!-padding-4{% endif %}"
+                aria-hidden="true"></th>
+            <td class="govuk-table__cell {% if not forloop.last %}govuk-summary-list__row--no-border {% else %}govuk-!-padding-0{% endif %}">
+              {{ noc.noc }}
+            </td>
           </tr>
         {% endif %}
       {% endfor %}
@@ -43,8 +42,7 @@
           <tr class="govuk-table__row">
             <th scope="row"
                 class="govuk-table__header {% if not forloop.last %}govuk-summary-list__row--no-border {% else %}govuk-!-padding-4{% endif %}"
-                aria-hidden="true">
-            </th>
+                aria-hidden="true"></th>
             <td class="govuk-table__cell {% if not forloop.last %}govuk-summary-list__row--no-border {% else %}govuk-!-padding-0{% endif %}">
               {{ licence.number }}
             </td>
@@ -66,9 +64,9 @@
         {% if forloop.counter > 1 %}
           <tr class="govuk-table__row">
             <th scope="row"
-                class="govuk-table__header {% if not forloop.last %}border-0 {% else %}govuk-!-padding-4{% endif %}"
+                class="govuk-table__header {% if not forloop.last %}govuk-summary-list__row--no-border {% else %}govuk-!-padding-4{% endif %}"
                 aria-hidden="true"></th>
-            <td class="govuk-table__cell {% if not forloop.last %}border-0 {% else %}govuk-!-padding-0{% endif %}">
+            <td class="govuk-table__cell {% if not forloop.last %}govuk-summary-list__row--no-border {% else %}govuk-!-padding-0{% endif %}">
               {{ service_code_exemption.registration_number }}
             </td>
           </tr>
