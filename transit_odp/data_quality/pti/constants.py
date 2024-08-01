@@ -17,18 +17,17 @@ BANK_HOLIDAYS_COMMON = [
     "GoodFriday",
     "EasterMonday",
     "SpringBank",
+    "MayDay",
 ]
 
 # holidays only for english regions
 BANK_HOLIDAYS_ONLY_ENGLISH = [
     "NewYearsEve",
-    "MayDay",
     "LateSummerBankHolidayNotScotland",
 ]
 
 # holidays only for scottish regions
 BANK_HOLIDAYS_ONLY_SCOTTISH = [
-    "EarlyMay",
     "StAndrewsDayHoliday",
     "Jan2ndScotland",
     "Jan2ndScotlandHoliday",
