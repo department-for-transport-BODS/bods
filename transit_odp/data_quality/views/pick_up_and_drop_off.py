@@ -58,9 +58,10 @@ class LastStopPickUpListView(TimingPatternsListBaseView, DQSWarningListBaseView)
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
         if self.is_dqs_new_report:
             self.data = DQSLastStopPickUpOnlyObservation
+        context = super().get_context_data(**kwargs)
+
         context.update(
             {
                 "title": self.data.title,
@@ -117,9 +118,9 @@ class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseVie
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
         if self.is_dqs_new_report:
             self.data = DQSFirstStopSetDownOnlyObservation
+        context = super().get_context_data(**kwargs)
 
         context.update(
             {
