@@ -120,18 +120,26 @@ class TransXChangeDocument:
         """Get the TransXChangeDocuments schema version."""
         return self._root["SchemaVersion"]
 
-    def get_location_system(self):
-        """Gets the location system used by the TxC file.
+    def get_location_system(self, stop):
+        """
+        Retrieves the location system information based on the provided parameters.
+
+        Parameters:
+        - stop: A stop object or identifier used to determine the location system.
 
         Returns:
-            str or None: If LocationSystem exists return text, else return None.
+        - If the 'LocationSystem' element exists in the XML structure represented by
+          self._root, returns the text content of that element.
+        - If the 'LocationSystem' element does not exist but the conditions specified by
+          self.has_latitude(stop, xpath) are met, returns the constant WSG84_LOCATION.
+        - If neither of the above conditions is met, returns the constant GRID_LOCATION.
         """
         element = self._root.get_element_or_none("LocationSystem")
 
         if element:
             return element.text
 
-        if self.has_latitude():
+        if self.has_latitude(stop):
             return WSG84_LOCATION
 
         return GRID_LOCATION
@@ -239,23 +247,24 @@ class TransXChangeDocument:
         xpath = ["Services", "Service", "FlexibleService"]
         return self.find_anywhere(xpath)
 
-    def has_latitude(self):
-        """Check if the first stop point contains a latitude element.
+    def has_latitude(self, stop):
+        """
+        Checks if a latitude element exists for a given stop and XPath expression.
+
+        Parameters:
+        - self: Instance of the class containing this method.
+        - stop: A stop object or identifier used to locate latitude information.
 
         Returns:
-            bool: If StopPoint < Place < Location has a Latitude element return True
-            else False.
+        - True if a 'Latitude' element is found within the result of 'stop.xpath(xpath)'.
+        - False otherwise.
         """
-        xpath = ["StopPoints", "StopPoint", "Place", "Location"]
-        locations = self.find_anywhere(xpath)
-
-        if len(locations) == 0:
-            return False
-
-        try:
-            locations[0].get_elements("Latitude")
+        xpath = ["Place", "Location"]
+        stop_location = stop.xpath(xpath)
+        stop_location_latitude = stop_location[0].get_element_or_none("Latitude")
+        if stop_location_latitude:
             return True
-        except NoElement:
+        else:
             return False
 
     def get_journey_pattern_sections(self, allow_none=False):

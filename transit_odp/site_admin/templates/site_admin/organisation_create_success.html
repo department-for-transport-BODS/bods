@@ -1,33 +1,24 @@
 {% extends "base_success.html" %}
-
 {% load i18n %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
-    {% url 'users:organisation-manage' host hosts.admin as backlink_url %}
-    {% include 'snippets/backlink.html' with url=backlink_url %}
+  {% url 'users:organisation-manage' host hosts.admin as backlink_url %}
+  {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
-
 {% block title_tag %}
-    {% trans 'Organisation added' %}
+  {% trans "Organisation added" %}
 {% endblock %}
-
 {% block title_text %}
-    {% trans 'New organisation added' %}
+  {% trans "New organisation added" %}
 {% endblock %}
-
 {% block body_text %}
-    {% blocktrans %}
-        Organisation has been added
-    {% endblocktrans %}
+  {% blocktrans %}
+    Organisation has been added
+  {% endblocktrans %}
 {% endblock %}
-
 {% block button_href %}
-    {% url 'users:organisation-manage' host hosts.admin %}
+  {% url 'users:organisation-manage' host hosts.admin %}
 {% endblock %}
-
 {% block button_text %}
-    {% trans 'Go back to organisation management' %}
+  {% trans "Go back to organisation management" %}
 {% endblock %}

@@ -9,11 +9,15 @@ from lxml import etree
 
 from transit_odp.data_quality.pti.constants import (
     BANK_HOLIDAYS,
+    BANK_HOLIDAYS_ONLY_ENGLISH,
+    BANK_HOLIDAYS_ONLY_SCOTTISH,
     OPERATION_DAYS,
     OTHER_PUBLIC_HOLIDAYS,
     SCOTTISH_BANK_HOLIDAYS,
+    OLD_HOLIDAYS_ALREADY_REMOVED,
 )
 from transit_odp.naptan.models import StopPoint
+from transit_odp.otc.utils import is_service_in_scotland
 
 PROHIBITED = r",[]{}^=@:;#$£?%+<>«»\/|~_¬"
 
@@ -216,17 +220,39 @@ def validate_bank_holidays(context, bank_holidays):
             holidays += days
 
     # .getchildren() will return comments: this filters out the comments.
-    # It also removes occurrences of OTHER_PUBLIC_HOLIDAYS of which there may be many or
+    # It also removes occurrences of OTHER_PUBLIC_HOLIDAYS and OLD_HOLIDAYS_ALREADY_REMOVED of which there may be many or
     # none.
-    holidays = [h for h in holidays if h and h not in OTHER_PUBLIC_HOLIDAYS]
+    holidays = [
+        h
+        for h in holidays
+        if h and h not in OTHER_PUBLIC_HOLIDAYS + OLD_HOLIDAYS_ALREADY_REMOVED
+    ]
 
     # duplicate check
     if sorted(list(set(holidays))) != sorted(holidays):
         return False
 
+    service_ref = get_service_ref_from_element(element, ns)
+    if service_ref and is_service_in_scotland(service_ref):
+        english_removed = list(set(holidays) - set(BANK_HOLIDAYS_ONLY_ENGLISH))
+        return sorted(SCOTTISH_BANK_HOLIDAYS) == sorted(english_removed)
+
     # optional Scottish holiday check
-    scottish_removed = list(set(holidays) - set(SCOTTISH_BANK_HOLIDAYS))
+    scottish_removed = list(set(holidays) - set(BANK_HOLIDAYS_ONLY_SCOTTISH))
     return sorted(BANK_HOLIDAYS) == sorted(scottish_removed)
+
+
+def get_service_ref_from_element(element, ns):
+    vj = element.xpath("ancestor::x:VehicleJourney", namespaces=ns)
+    service_ref = None
+    if vj:
+        service_ref = vj[0].xpath("string(x:ServiceRef)", namespaces=ns)
+    else:
+        service = element.xpath("ancestor::x:Service", namespaces=ns)
+        if service:
+            service_ref = service[0].xpath("string(x:ServiceCode)", namespaces=ns)
+
+    return service_ref
 
 
 def check_service_group_validations(context, services):
@@ -336,6 +362,60 @@ def check_inbound_outbound_description(context, services):
             ):
                 return False
 
+        return True
+
+
+def check_description_for_inbound_description(context, services):
+    """
+    Check if a standard service (includes StandardService) has description present for InboundDescription.
+
+    Args:
+        context: The context for the check.
+        services: A list of service elements to be checked.
+
+    Returns:
+        bool: True if all services have descriptions for InboundDescription, False otherwise.
+    """
+    for service in services:
+        inbound_description_list = []
+        ns = {"x": service.nsmap.get(None)}
+        standard_service_list = service.xpath(
+            "x:Service/x:StandardService", namespaces=ns
+        )
+        if standard_service_list:
+            inbound_description_list = service.xpath(
+                "x:Service/x:Lines/x:Line/x:InboundDescription", namespaces=ns
+            )
+        for inbound_description_tag in inbound_description_list:
+            if len(inbound_description_tag.xpath("x:Description", namespaces=ns)) == 0:
+                return False
+        return True
+
+
+def check_description_for_outbound_description(context, services):
+    """
+    Check if a standard service (includes StandardService) has description present for OutboundDescription.
+
+    Args:
+        context: The context for the check.
+        services: A list of service elements to be checked.
+
+    Returns:
+        bool: True if all services have descriptions for OutboundDescription, False otherwise.
+    """
+    for service in services:
+        outbound_description_tag = []
+        ns = {"x": service.nsmap.get(None)}
+        standard_service_list = service.xpath(
+            "x:Service/x:StandardService", namespaces=ns
+        )
+        if standard_service_list:
+            outbound_description_list = service.xpath(
+                "x:Service/x:Lines/x:Line/x:OutboundDescription", namespaces=ns
+            )
+        for outbound_description_tag in outbound_description_list:
+            if len(outbound_description_tag.xpath("x:Description", namespaces=ns)) == 0:
+                return False
         return True
 
 
@@ -502,4 +582,29 @@ def check_vehicle_journey_timing_links(
 
     if len(vehicle_journey_timing_links) != journey_pattern_sections_refs_ids:
         return False
+    return True
+
+
+def validate_licence_number(context, elements: List[etree._Element]) -> bool:
+    """
+    Validate the license number within a list of XML elements if Primary Mode is not coach.
+
+    This function checks if the PrimaryMode is not "coach", then LicenceNumber is mandatory and should be non-empty.
+
+    Args:
+        context: The context in which the function is called.
+        elements (list): A list of XML elements to validate
+
+    Returns:
+        bool: True if all elements are valid according to the specified rules,
+              False otherwise.
+    """
+    ns = {"x": elements[0].nsmap.get(None)}
+    for element in elements:
+        primary_mode = element.xpath(".//x:PrimaryMode", namespaces=ns)
+        licence_number = element.xpath(".//x:LicenceNumber", namespaces=ns)
+        if primary_mode and primary_mode[0].text.lower() == "coach":
+            continue
+        elif not (licence_number and licence_number[0].text):
+            return False
     return True

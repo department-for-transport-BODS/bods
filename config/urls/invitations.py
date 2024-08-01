@@ -11,4 +11,5 @@ urlpatterns = [
         r"^accept-invite/(?P<key>\w+)/?$", AcceptInvite.as_view(), name="accept-invite"
     ),
     path("", include("invitations.urls")),
+    path("django_axe/", include("django_axe.urls")),
 ]

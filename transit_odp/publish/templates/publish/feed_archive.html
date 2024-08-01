@@ -1,41 +1,32 @@
 {% extends "publish/base.html" %}
-
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-  {% if form.errors %}{% trans 'Error: ' %}{% endif %}
-  {% trans 'Deactivate data set' %}
+  {% if form.errors %}
+    {% trans "Error: " %}
+  {% endif %}
+  {% trans "Deactivate data set" %}
 {% endblock %}
-
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
-
 {% block content %}
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-xl">
-        {% trans 'Would you like to deactivate this data set?' %}
-      </h1>
-    <p class="govuk-body">
-      {% blocktrans %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <h1 class="govuk-heading-xl">{% trans "Would you like to deactivate this data set?" %}</h1>
+      <p class="govuk-body">
+        {% blocktrans %}
       Deactivating this data set means that this data set is no longer active. Inactive data sets can
         still be viewed and used by data consumers.
 
       {% endblocktrans %}
-    </p>
+      </p>
+    </div>
   </div>
-</div>
-
-{% block inner %}
-  {% crispy form %}
-{% endblock %}
-
-{% block inner_secondary %}
-{% endblock %}
+  {% block inner %}
+    {% crispy form %}
+  {% endblock %}
+  {% block inner_secondary %}{% endblock %}
 {% endblock %}

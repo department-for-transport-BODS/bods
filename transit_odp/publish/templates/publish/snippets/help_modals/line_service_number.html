@@ -1,17 +1,16 @@
 {% extends "snippets/help_modal_base.html" %}
 {% load i18n %}
-
 {% block help_heading %}
-    {% trans "Line" as tmsg %}{{ tmsg | force_escape }}
+  {% trans "Line" as tmsg %}
+  {{ tmsg | force_escape }}
 {% endblock %}
-
 {% block help_content %}
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans %}
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans %}
                 Line, service number, route number or name by which the service is known and registered (eg. 17A, 344 or Yeovile Route)
                 The line numbers listed here are associated with the missing service code using the data from the OTC database.
             {% endblocktrans %}
-        {% endfilter %}
-    </p>
+    {% endfilter %}
+  </p>
 {% endblock %}

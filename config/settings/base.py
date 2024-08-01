@@ -142,6 +142,7 @@ THIRD_PARTY_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "waffle",
+    "django_axe.apps.DjangoAxeConfig",
 ]
 LOCAL_APPS = [
     "transit_odp.api.apps.ApiConfig",
@@ -169,6 +170,7 @@ LOCAL_APPS = [
     "transit_odp.fares_validator.apps.FaresValidatorConfig",
     "transit_odp.disruptions.apps.DisruptionsConfig",
     "transit_odp.crispy_forms_govuk.apps.CrispyFormsGovukConfig",
+    "transit_odp.dqs.apps.DQSConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -219,6 +221,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {"NAME": "transit_odp.common.password_validation.CustomPasswordValidator"},
 ]
 
 
@@ -607,6 +610,9 @@ EP_AUTH_URL = env(
     default="https://dev-pdbrd.auth.eu-west-2.amazoncognito.com/oauth2/token",
 )
 
+COACH_ATCO_FILE_S3_URL = env("COACH_ATCO_FILE_S3_URL", default="#")
+COACH_TXC_FILE_S3_URL = env("COACH_TXC_FILE_S3_URL", default="#")
+
 # Disruptions API
 # ------------------------------------------------------------------------------
 DISRUPTIONS_API_BASE_URL = env("DISRUPTIONS_API_BASE_URL", default="")
@@ -623,6 +629,22 @@ AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
     "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME",
     default="bodds-dataset-dev-maintenance",
 )
+
+# S3 bucket name for DQS Report download
+# ------------------------------------------------------------------------------
+S3_BUCKET_DQS_CSV_REPORT = env(
+    "S3_BUCKET_DQS_CSV_REPORT",
+    default="bodds-dev-dqs-reports",
+)
+# SQS QUEUE
+# ------------------------------------------------------------------------------
+SQS_QUEUE_ENDPOINT_URL = env(
+    "SQS_QUEUE_ENDPOINT_URL", default="http://localstack-main:4566"
+)
+AWS_REGION_NAME = env("AWS_REGION_NAME", default="eu-west-2")
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
+AWS_ENVIRONMENT = env("AWS_ENVIRONMENT", default="LOCAL")
 
 # Crispy forms
 # ------------------------------------------------------------------------------
@@ -696,3 +718,16 @@ if env("GEOS_LIBRARY_PATH", default=None):
     GEOS_LIBRARY_PATH = env("GEOS_LIBRARY_PATH")
 
 MAPBOX_KEY = env("MAPBOX_KEY", default=None)
+
+DJANGO_AXE_REPORT_PATH = os.path.join(
+    str(APPS_DIR.path("static")), "accessibility_report.json"
+)
+DJANGO_AXE_ENABLED = env.bool("DJANGO_AXE_ENABLED", default=False)
+DD_DBM_PROPAGATION_MODE = "full"
+
+# below environment variables are added for allauth library
+# to enable rate limit for user entering wrong password
+ACCOUNT_LOGIN_ATTEMPTS_LIMIT = env("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", default=5)
+ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = env("ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT", default=900)
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=False)
+SESSION_COOKIE_HTTPONLY = env.bool("SESSION_COOKIE_HTTPONLY", default=True)

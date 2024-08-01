@@ -1,50 +1,31 @@
 {% extends "site_admin/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block content_heading %}
   <h1 class="govuk-heading-xl">{% trans "BODS Admin home" %}</h1>
 {% endblock %}
-
 {% block subtitle %}
   <ul class="govuk-list app-list--nav govuk-!-font-size-19">
     <li class="govuk-!-margin-bottom-5">
-      <a class="govuk-link app-nav-bold"
-         href="{% url 'users:organisation-manage' host hosts.admin %}">
+      <a class="govuk-link app-nav-bold" href="{% url 'users:organisation-manage' host hosts.admin %}">
         {% trans "Organisation management" %}
       </a>
-      <p class="govuk-body">
-        {% trans "Invite and manage organisations" %}
-      </p>
+      <p class="govuk-body">{% trans "Invite and manage organisations" %}</p>
     </li>
     <li class="govuk-!-margin-bottom-5">
-      <a class="govuk-link app-nav-bold"
-         href="{% url 'users:consumer-list' host hosts.admin %}">
+      <a class="govuk-link app-nav-bold" href="{% url 'users:consumer-list' host hosts.admin %}">
         {% trans "Data Consumers" %}
       </a>
-      <p class="govuk-body">
-        {% trans "Manage consumers of BODS data" %}
-      </p>
+      <p class="govuk-body">{% trans "Manage consumers of BODS data" %}</p>
     </li>
     <li class="govuk-!-margin-bottom-5">
-      <a class="govuk-link app-nav-bold"
-         href="{% url 'users:agent-list' host hosts.admin %}">
-        {% trans "Agents" %}
-      </a>
-      <p class="govuk-body">
-        {% trans "View agents" %}
-      </p>
+      <a class="govuk-link app-nav-bold" href="{% url 'users:agent-list' host hosts.admin %}">{% trans "Agents" %}</a>
+      <p class="govuk-body">{% trans "View agents" %}</p>
     </li>
     <li class="govuk-!-margin-bottom-5">
-      <a class="govuk-link app-nav-bold"
-         href="{% url 'bods-metrics' host hosts.admin %}">
-        {% trans "Data monitoring" %}
-      </a>
-      <p class="govuk-body">
-        {% trans "View or download compliance and monitoring metrics from BODS" %}
-      </p>
+      <a class="govuk-link app-nav-bold" href="{% url 'bods-metrics' host hosts.admin %}">{% trans "Data monitoring" %}</a>
+      <p class="govuk-body">{% trans "View or download compliance and monitoring metrics from BODS" %}</p>
     </li>
   </ul>
 {% endblock %}

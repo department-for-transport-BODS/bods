@@ -2,54 +2,43 @@
 {% load i18n %}
 <div class="govuk-!-margin-top-0">
   <p class="govuk-body">
-  Manage organisation for which you are acting as an Agent. You can accept or deny
-  requests to become an organisation's agent by clicking respond, and remove yourself
-  from an organisation by choosing leave organisation.
+    Manage organisation for which you are acting as an Agent. You can accept or deny
+    requests to become an organisation's agent by clicking respond, and remove yourself
+    from an organisation by choosing leave organisation.
   </p>
   <table class="govuk-table manage-users-table">
     <thead class="govuk-table__head govuk-body-m">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Organisations</th>
-      <th class="govuk-table__header">Actions</th>
-      <th class="govuk-table__header">Status</th>
-      <th class="govuk-table__header"></th>
-    </tr>
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="col">Organisations</th>
+        <th class="govuk-table__header">Actions</th>
+        <th class="govuk-table__header">Status</th>
+        <th class="govuk-table__header" aria-hidden="true"></th>
+      </tr>
     </thead>
     <tbody class="govuk-table__body govuk-body-m">
       {% for invite in user.agent_invitations.all %}
-      {% if invite.is_active %}
-      <tr class="govuk-table__row">
-        <td class="govuk-table__cell">{{invite.organisation.name}}</td>
-          <td class="govuk-table__cell">
-            {% if invite.is_pending %}
-            <a href="{% url 'users:agent-user-response' pk=invite.id %}"
-              class="govuk-link">
-              Respond
-            </a>
-            {% elif invite.is_accepted %}
-            <a href="{% url 'users:agent-user-leave' pk=invite.id %}"
-              class="govuk-link">
-              Leave Organisation
-            </a>
-            {% else %}
-
-            {% endif %}
-          </td>
-          <td class="govuk-table__cell ">
-            {% if invite.is_accepted %}
-              <span class="status-indicator status-indicator--success">
-                {% trans invite.get_status_display %}
-              </span>
-            {% elif invite.is_pending %}
-              <span class="status-indicator status-indicator--unavailable">
-                {% trans invite.get_status_display %}
-              </span>
-            {% endif %}
-          </td>
-        <td class="govuk-table__cell "></td>
-      </tr>
-      {% endif %}
+        {% if invite.is_active %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ invite.organisation.name }}</td>
+            <td class="govuk-table__cell">
+              {% if invite.is_pending %}
+                <a href="{% url 'users:agent-user-response' pk=invite.id %}" class="govuk-link">Respond</a>
+              {% elif invite.is_accepted %}
+                <a href="{% url 'users:agent-user-leave' pk=invite.id %}" class="govuk-link">Leave Organisation</a>
+              {% else %}
+              {% endif %}
+            </td>
+            <td class="govuk-table__cell ">
+              {% if invite.is_accepted %}
+                <span class="status-indicator status-indicator--success">{% trans invite.get_status_display %}</span>
+              {% elif invite.is_pending %}
+                <span class="status-indicator status-indicator--unavailable">{% trans invite.get_status_display %}</span>
+              {% endif %}
+            </td>
+            <td class="govuk-table__cell "></td>
+          </tr>
+        {% endif %}
       {% endfor %}
     </tbody>
   </table>
-  </div>
+</div>

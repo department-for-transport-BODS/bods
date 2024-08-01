@@ -21,7 +21,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
 )
 from datetime import datetime, timedelta
 from typing import Dict, Any, Union
-from transit_odp.transmodel.models import StopActivity
+from transit_odp.timetables.transxchange import TransXChangeDocument
 
 logger = logging.getLogger(__name__)
 
@@ -247,7 +247,7 @@ def get_geometry_from_location(system, location):
             northing = location.get_element(["Translation", "Northing"]).text
         else:
             easting = location.get_element(["Easting"]).text
-            northing = location.get_element(["Easting"]).text
+            northing = location.get_element(["Northing"]).text
         geometry = (
             grid_gemotry_from_str(easting, northing) if easting and northing else None
         )
@@ -265,12 +265,13 @@ def get_geometry_from_location(system, location):
     return geometry
 
 
-def provisional_stops_to_dataframe(stops, system=None):
+def provisional_stops_to_dataframe(stops, doc: TransXChangeDocument):
     """
     This function returns the stoppoint detials like atco_code, geometry, location and comman name
     """
     stop_points = []
     for stop in stops:
+        system = doc.get_location_system(stop)
         locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
         flx_zone_locations = []
         atco_code = stop.get_element(["AtcoCode"]).text
@@ -488,7 +489,10 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
             )
             vj_departure_time = departure_time
             if dead_run_time:
-                departure_time = departure_time + pd.to_timedelta(dead_run_time.text)
+                parsed_dead_run_time = isodate.parse_duration(dead_run_time.text)
+                departure_time = departure_time + pd.to_timedelta(
+                    parsed_dead_run_time.total_seconds(), unit="s"
+                )
 
             journey_pattern_ref_element = vehicle_journey.get_element_or_none(
                 ["JourneyPatternRef"]
@@ -539,7 +543,12 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                     ).text
                     run_time_element = links.get_element_or_none(["RunTime"])
                     if run_time_element:
-                        run_time = pd.to_timedelta(run_time_element.text)
+                        parsed_run_time_element = isodate.parse_duration(
+                            run_time_element.text
+                        )
+                        run_time = pd.to_timedelta(
+                            parsed_run_time_element.total_seconds(), unit="s"
+                        )
                     else:
                         run_time = pd.NaT
                     from_wait_time_element = links.get_element_or_none(["From"])

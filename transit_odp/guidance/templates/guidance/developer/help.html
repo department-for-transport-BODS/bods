@@ -1,9 +1,7 @@
 {% extends "guidance/developer/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-  <h1 data-qa="issues-header" class="govuk-heading-l">{% trans 'Data issues' %}</h1>
+  <h1 data-qa="issues-header" class="govuk-heading-l">{% trans "Data issues" %}</h1>
   <p class="govuk-body">
     {% blocktrans %}
     To report any issues found within the data please find the detail page for that
@@ -13,17 +11,12 @@
     iteratively improved within the service, and the transport ecosystem.
     {% endblocktrans %}
   </p>
-
   <p class="govuk-body">
-  {% trans 'Contact' %}
-    <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">
-      bodshelpdesk@kpmg.co.uk
-    </a>
+    {% trans "Contact" %}
+    <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>
     {% blocktrans %}
     for any queries or questions you might have if it is not already answered within
     the developer documentation. We also welcome constructive feedback about the service.
     {% endblocktrans %}
   </p>
-
-
 {% endblock %}

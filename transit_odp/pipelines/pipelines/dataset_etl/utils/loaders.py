@@ -1,8 +1,8 @@
 """ loaders.py utility functions for loading data into the BODS database."""
 import logging
 from collections import namedtuple
+
 import pandas as pd
-import numpy as np
 
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.transmodel.models import Service, ServicePattern, ServicePatternStop
@@ -147,6 +147,12 @@ def add_service_pattern_to_service_pattern_stops(
             sequence_number = record["sequence_number"]
             if not sequence_number:
                 sequence_number = record["order"]
+
+            if "auto_sequence_number" in record:
+                auto_sequence_number = record["auto_sequence_number"]
+            else:
+                auto_sequence_number = None
+
             yield ServicePatternStop(
                 service_pattern_id=service_pattern_id,
                 sequence_number=sequence_number,
@@ -157,6 +163,7 @@ def add_service_pattern_to_service_pattern_stops(
                 txc_common_name=record["common_name"],
                 vehicle_journey_id=vehicle_journey_id,
                 stop_activity_id=record["activity_id"],
+                auto_sequence_number=auto_sequence_number,
             )
 
     stops = list(_inner())

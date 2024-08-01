@@ -80,8 +80,6 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     # Departure time for flexible stops is null
     if stops_atcos["departure_time"].isna().any():
         is_flexible_departure_time = True
-    else:
-        stops_atcos["is_timing_status"] = True
 
     use_vehicle_journey_runtime = False
     # run_time_vj is set only when run_time is found in VehicleJourney element
@@ -155,7 +153,12 @@ def transform_service_pattern_stops(
     service_pattern_to_service_links: pd.DataFrame,
     stop_points: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Create service pattern stops sequence data which is ordered as per the stops mapped in journey pattern and journey pattern sections"""
+    """
+    Create service pattern stops sequence data which is ordered as per
+    the stops mapped in journey pattern and journey pattern sections.
+
+    Additionally, adding logic to handle populating 'auto_sequence_number'.
+    """
     columns = ["file_id", "service_pattern_id"]
     if "vehicle_journey_code" in service_pattern_to_service_links.columns:
         columns.append("vehicle_journey_code")
@@ -182,6 +185,12 @@ def transform_service_pattern_stops(
     service_pattern_stops.set_index(
         ["file_id"], append=True, verify_integrity=True, inplace=True
     )
+
+    if "vehicle_journey_code" in service_pattern_stops.columns:
+        service_pattern_stops["auto_sequence_number"] = service_pattern_stops.groupby(
+            ["file_id", "vehicle_journey_code", "service_pattern_id"]
+        ).cumcount()
+
     return service_pattern_stops
 
 

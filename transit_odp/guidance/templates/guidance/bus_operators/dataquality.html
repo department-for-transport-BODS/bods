@@ -1,60 +1,57 @@
 {% extends "guidance/bus_operators/base.html" %}
-
 {% load i18n %}
 {% load filters %}
-
 {% block extra_content %}
-
-    <h1 data-qa="data-quality-header" class="govuk-heading-l">{% trans 'Data quality' %}</h1>
-    <table data-qa="requirements-table" class="govuk-table">
-        <thead data-qa="requirements-table-header" class="govuk-table__head">
-            <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Data required</th>
-                <th scope="col" class="govuk-table__header">Data format required</th>
-                <th scope="col" class="govuk-table__header">Method</th>
-            </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-            <tr data-qa="timetable-row" class="govuk-table__row">
-                <td class="govuk-table__cell">Timetable</td>
-                <td class="govuk-table__cell">TransXChange Version 2.4 profile v1.1a</td>
-                <td class="govuk-table__cell">
-                    <p class="govuk-body">Validation against TxC-PTI 1.1a profile</p>
-                    <p class="govuk-body">Data Quality report</p>
-                </td>
-            </tr>
-            <tr data-qa="bus-location-row" class="govuk-table__row">
-                <td class="govuk-table__cell">Bus location</td>
-                <td class="govuk-table__cell">DfT BODS SIRI-VM profile</td>
-                <td class="govuk-table__cell">Validation against DfT BODS SIRI-VM profile</td>
-            </tr>
-            <tr data-qa="basic-fares-row" class="govuk-table__row">
-                <td class="govuk-table__cell">Basic fares</td>
-                <td class="govuk-table__cell">UK NeTEx 1.10</td>
-                <td class="govuk-table__cell">Validation against schema</td>
-            </tr>
-            <tr data-qa="complex-fares-row" class="govuk-table__row">
-                <td class="govuk-table__cell">Complex fares</td>
-                <td class="govuk-table__cell">UK NeTEx 1.10</td>
-                <td class="govuk-table__cell">Validation against schema</td>
-            </tr>
-            <tr data-qa="complex-fares-row" class="govuk-table__row">
-                <td class="govuk-table__cell">Matching bus Location to timetables data</td>
-                <td class="govuk-table__cell">DfT BODS SIRI-VM profile and its corresponding TransXChange Version 2.4 TxC-PTI 1.1.a data</td>
-                <td class="govuk-table__cell">Validation against SIRI-VM PTI and data matching v1.1</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <p class="govuk-body">
-        {% blocktrans %}
+  <h1 data-qa="data-quality-header" class="govuk-heading-l">{% trans "Data quality" %}</h1>
+  <table data-qa="requirements-table" class="govuk-table">
+    <thead data-qa="requirements-table-header" class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Data required</th>
+        <th scope="col" class="govuk-table__header">Data format required</th>
+        <th scope="col" class="govuk-table__header">Method</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr data-qa="timetable-row" class="govuk-table__row">
+        <td class="govuk-table__cell">Timetable</td>
+        <td class="govuk-table__cell">TransXChange Version 2.4 profile v1.1a</td>
+        <td class="govuk-table__cell">
+          <p class="govuk-body">Validation against TxC-PTI 1.1a profile</p>
+          <p class="govuk-body">Data Quality report</p>
+        </td>
+      </tr>
+      <tr data-qa="bus-location-row" class="govuk-table__row">
+        <td class="govuk-table__cell">Bus location</td>
+        <td class="govuk-table__cell">DfT BODS SIRI-VM profile</td>
+        <td class="govuk-table__cell">Validation against DfT BODS SIRI-VM profile</td>
+      </tr>
+      <tr data-qa="basic-fares-row" class="govuk-table__row">
+        <td class="govuk-table__cell">Basic fares</td>
+        <td class="govuk-table__cell">UK NeTEx 1.10</td>
+        <td class="govuk-table__cell">Validation against schema</td>
+      </tr>
+      <tr data-qa="complex-fares-row" class="govuk-table__row">
+        <td class="govuk-table__cell">Complex fares</td>
+        <td class="govuk-table__cell">UK NeTEx 1.10</td>
+        <td class="govuk-table__cell">Validation against schema</td>
+      </tr>
+      <tr data-qa="complex-fares-row" class="govuk-table__row">
+        <td class="govuk-table__cell">Matching bus Location to timetables data</td>
+        <td class="govuk-table__cell">
+          DfT BODS SIRI-VM profile and its corresponding TransXChange Version 2.4 TxC-PTI 1.1.a data
+        </td>
+        <td class="govuk-table__cell">Validation against SIRI-VM PTI and data matching v1.1</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="govuk-body">
+    {% blocktrans %}
             Data quality checks are provided on the data supplied to the service to provide feedback on the data to help operators identify and understand issues within their data. The issues identified may prevent a data consumer using and sharing their data with passengers. High data quality is expected for all data published on the service. It reduces the barriers to entry for innovators and consumers when using bus open data. High quality data enables trust to be created between passengers and the public transport network.
         {% endblocktrans %}
-    </p>
-
-    <h2 class="govuk-heading-m">Timetables data</h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <h2 class="govuk-heading-m">Timetables data</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             TransXChange data undergoes two sets of checks. In the first validation stage,
             it is checked that it adheres to the TxC 2.4 schema and the PTI profile v1.1.
             The TxC 2.4 schema is the basic data standard mandated by DfT, and the PTI
@@ -64,663 +61,627 @@
             information on the differences between the TxC 2.4 schema and the PTI profile
             v1.1 can be found
         {% endblocktrans %}
-        <a class="govuk-link"
-            href="{{ pti_link_on_bods }}"
-            target="_blank">here</a>.
-    </p>
-
-    <p class="govuk-body">
-        {% trans "From" %}
-        {{ pti_enforced_date|date:"l jS F Y" }},
-        {% blocktrans %}
+    <a class="govuk-link" href="{{ pti_link_on_bods }}" target="_blank">here</a>.
+  </p>
+  <p class="govuk-body">
+    {% trans "From" %}
+    {{ pti_enforced_date|date:"l jS F Y" }},
+    {% blocktrans %}
             files non-compliant to the PTI profile 1.1 will be
             rejected upon submission.
         {% endblocktrans %}
-    </p>
-
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             The feedback as a result of the validation check in the first step of upload is provided to the user which is to be shared with their respective software suppliers to enable them to provide robust data that fits the profile. In the second review step, a further data quality check is conducted which produces a report for operators. The report provides observations about operator's data, highlighting common errors. Some observations are critical, meaning there is definitely an error within the data and the operator is expected to rectify the issue. Other observations are advisory as they may be false positives, as a result of the data structure. Operators should use these reports as suggested improvements in their timetables data.
         {% endblocktrans %}
-    </p>
-
-    <h2 class="govuk-heading-m">Bus location data</h2>
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans trimmed %}
-                SIRI-VM data is taken into a central AVL system, where it is harmonised to produce a
-                consistent SIRI-VM 2.0 output of bus location data for open data consumers.
-            {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans trimmed %}
-                We have introduced a SIRI-VM validator to BODS to ensure the highest data
-                standards are provided to consumers. The validator has two parts: one that
-                checks first for the schema and the second part checks for mandatory fields
-                specified within the
-            {% endblocktrans %}
-        {% endfilter %}
-        <a class="govuk-link"
-            href="https://www.gov.uk/government/publications/technical-guidance-publishing-location-data-using-the-bus-open-data-service-siri-vm"
-            target="_blank">{% trans "DfT BODS profile" %}</a>.
-        {% filter force_escape %}
-            {% blocktrans trimmed %}
-                For the schema check, if the feed fails it, the feed will be put in an
-                ‘inactive’ status. The validator will run 1 randomised check per day (excluding
-                buses running from 12am-5am) and will check 1000 packets or 10 minutes from a
-                feed each day (this number is configurable until deemed sensible).
-            {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
-        {% filter force_escape %}
-            {% blocktrans trimmed %}
-                Given the level of industry readiness in terms of providing consistent SIRI-VM
-                data, there will be no blocking of feeds as long as they are valid SIRI (and
-                don't fail the schema). However BODS compliance tags will be attached to
-                showcase if they are: 'compliant', 'non-compliant' or 'partially compliant'
-                using a 7-day rolling average. The validator will look at the last 7 days' worth
-                of SIRI-VM aggregate data and assign a compliance status accordingly.
-            {% endblocktrans %}
-        {% endfilter %}
-    </p>
-
-    <p class="govuk-body">
+  </p>
+  <h2 class="govuk-heading-m">Bus location data</h2>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans trimmed %}
+        SIRI-VM data is taken into a central AVL system, where it is harmonised to produce a
+        consistent SIRI-VM 2.0 output of bus location data for open data consumers.
+      {% endblocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans trimmed %}
+        We have introduced a SIRI-VM validator to BODS to ensure the highest data
+        standards are provided to consumers. The validator has two parts: one that
+        checks first for the schema and the second part checks for mandatory fields
+        specified within the
+      {% endblocktrans %}
+    {% endfilter %}
+    <a class="govuk-link"
+       href="https://www.gov.uk/government/publications/technical-guidance-publishing-location-data-using-the-bus-open-data-service-siri-vm"
+       target="_blank">{% trans "DfT BODS profile" %}</a>.
+    {% filter force_escape %}
+      {% blocktrans trimmed %}
+        For the schema check, if the feed fails it, the feed will be put in an
+        ‘inactive’ status. The validator will run 1 randomised check per day (excluding
+        buses running from 12am-5am) and will check 1000 packets or 10 minutes from a
+        feed each day (this number is configurable until deemed sensible).
+      {% endblocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% filter force_escape %}
+      {% blocktrans trimmed %}
+        Given the level of industry readiness in terms of providing consistent SIRI-VM
+        data, there will be no blocking of feeds as long as they are valid SIRI (and
+        don't fail the schema). However BODS compliance tags will be attached to
+        showcase if they are: 'compliant', 'non-compliant' or 'partially compliant'
+        using a 7-day rolling average. The validator will look at the last 7 days' worth
+        of SIRI-VM aggregate data and assign a compliance status accordingly.
+      {% endblocktrans %}
+    {% endfilter %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      A SIRI-VM feed will be deemed 'compliant' if all fields here are present more than
+      70% of the time for the last 7 days.
+    {% endblocktrans %}
+  </p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>Bearing</li>
+    <li>LineRef</li>
+    <li>OperatorRef</li>
+    <li>RecordedAtTime</li>
+    <li>ResponseTimestamp</li>
+    <li>VehicleJourneyRef</li>
+    <li>VehicleLocation (Lat, Long)</li>
+    <li>ProducerRef</li>
+    <li>DirectionRef</li>
+    <li>BlockRef</li>
+    <li>PublishedLineName</li>
+    <li>ValidUntilTime</li>
+    <li>DestinationRef</li>
+    <li>OriginName</li>
+    <li>OriginRef</li>
+    <li>VehicleRef</li>
+  </ul>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      A SIRI-VM feed will be deemed 'partially compliant' if it has all other mandatory
+      fields present but only have the following fields below missing 70% of the time in
+      the last 7 days.
+    {% endblocktrans %}
+  </p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>BlockRef</li>
+    <li>PublishedLineName</li>
+    <li>DestinationRef</li>
+    <li>OriginName</li>
+    <li>OriginRef</li>
+  </ul>
+  <p class="govuk-body">
+    {% blocktrans trimmed with threshold=siri_vm_lower_threshold|percentage %}
+      A SIRI-VM feed will be deemed 'non-compliant' if all fields below are not present
+      more than 70% of the time for the last 7 days. It can also be assigned a direct
+      non-compliant status if any one of the fields below fall under {{ threshold }}
+      population at the time of the daily validation check. This is because this would
+      count as a gross error in the data and would be highlighted to the publisher
+      right away.
+    {% endblocktrans %}
+  </p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>Bearing</li>
+    <li>LineRef</li>
+    <li>OperatorRef</li>
+    <li>RecordedAtTime</li>
+    <li>ResponseTimestamp</li>
+    <li>VehicleJourneyRef</li>
+    <li>VehicleLocation (Lat, Long)</li>
+    <li>ProducerRef</li>
+    <li>DirectionRef</li>
+    <li>VehicleRef</li>
+    <li>ValidUntilTime</li>
+  </ul>
+  <p class="govuk-body">{% trans "Other compliance statuses:" %}</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>
+      {% blocktrans trimmed %}
+        Undergoing validation: This status will be used for all newly added feeds in the
+        first 24 hours until initial checks are completed. It will also be used for all
+        compliant feeds for the first 7 days until the 'automated flow' rolling
+        validation logic becomes active.
+      {% endblocktrans %}
+    </li>
+    <li>
+      {% blocktrans trimmed %}
+        Awaiting publisher review: This status will be used for all feeds in the first 7
+        days after publishing if a critical or noncritical fields(s) has not been
+        provided by >70% of vehicles in a daily check.
+      {% endblocktrans %}
+    </li>
+    <li>
+      {% filter force_escape %}
         {% blocktrans trimmed %}
-            A SIRI-VM feed will be deemed 'compliant' if all fields here are present more than
-            70% of the time for the last 7 days.
+          Unavailable due to dormant feed: This status will be used for all feeds
+          which don’t have any vehicles running for 7 consecutive days and henceforth
+          have repeatedly evaded validation.
         {% endblocktrans %}
+      {% endfilter %}
+    </li>
+  </ul>
+  <p class="govuk-body">
+    <b>
+      {% trans "New feed validation process:" %}
+    </b>
+  </p>
+  <p id="new-feed-v-process"class="govuk-body">
+    {% blocktrans trimmed %}
+      When a new feed is added to BODS it will be validated in the following way:
+    {% endblocktrans %}
+  </p>
+  <ol class="govuk-list govuk-list--number">
+    <li class="govuk-!-padding-bottom-1">
+      {% blocktrans trimmed %}
+        24 hours after a new SIRI feed is added the validator will check against the
+        mandatory fields and if necessary, an error report will be sent to operators.
+      {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+      {% blocktrans trimmed %}
+        Over the subsequent 6 days when data is flowing through it will continue to run
+        randomised daily checks.
+      {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+      {% blocktrans trimmed %}
+        After Day 7: each day a fresh automated validation check will run and a
+        compliance status will be assigned on a 7-day rolling average.
+      {% endblocktrans %}
+    </li>
+  </ol>
+  <p class="govuk-body">
+    <b>
+      {% trans "Automated feed validation process:" %}
+    </b>
+  </p>
+  <ol class="govuk-list govuk-list--number">
+    <li class="govuk-!-padding-bottom-1">
+      {% blocktrans trimmed %}
+        The validator will run 1 randomised check per day (excluding buses running from
+        12am-5am).
+      {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+      {% blocktrans trimmed %}
+        The validator will check 1000 packets or 10 minutes from a feed each day (this
+        number is configurable until deemed sensible).
+      {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+      {% blocktrans trimmed %}
+        70% of vehicles on the feed need to be populating the mandatory fields to avoid
+        moving in to non/partial compliance error status (e.g that means 70% of
+        'Bearing' should be present in the last 7 days' worth of data, if not, it will
+        move to a non-compliant status).
+      {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+      {% blocktrans trimmed with threshold=siri_vm_lower_threshold|percentage %}
+        If the daily check has any non-compliant fields which are less than {{ threshold }}
+        populated (for each non-compliant feed), it will automatically move the
+        compliance status to 'non-compliant' as it is a gross error.
+      {% endblocktrans %}
+    </li>
+    <li class="govuk-!-padding-bottom-1">
+      {% blocktrans trimmed with threshold=siri_vm_lower_threshold|percentage %}
+        If the daily check has more than {{ threshold }} of non-compliant fields populated (for each
+        non-compliant feed), then the rolling average check will kick in and assign a
+        compliance status based on the last 7 days.
+      {% endblocktrans %}
+    </li>
+  </ol>
+  <h2 class="govuk-heading-m">{% trans "AVL to timetables matching" %}</h2>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      Validation of data against the SIRI-VM-PTI profile takes place in three stages:
+      the first two stages are the data schema and SIRI-VM-PTI compliant stages as described
+    {% endblocktrans %}
+    <a href="#new-feed-v-process" class="govuk-link">
+      {% trans "above" %}
+    .</a>
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      The third stage of validation of data against the SIRI-VM-PTI
+      profile is to test to ensure data specified in the SIRI-VM-PTI match the data
+      in timetable TXC-PTI profile.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      The matching validation is important to ensure
+      that the data can easily be used to produce a predicted or calculated arrival
+      time of bus at a bus stop.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      This requires data from the timetables and location
+      data services of BODS to be combined and if the data is not supplied in the
+      correct formats, then combining of the data is much harder and the quality of
+      information available to the passengers will be reduced.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      We've introduced AVL to timetables data quality matching checks to BODS to make sure high-quality
+      data are delivered for data consumers to provide accurate real time information
+      to passengers.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      To help achieve the matching of data it is key that in the
+      SIRI-VM-PTI data feed where there is an equivalent field in the TXC-PTI the
+      same content is used as specified in the
+    {% endblocktrans %}
+    <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf"
+       class="govuk-link"
+       rel="noreferrer noopener"
+       target="_blank">
+      {% trans "SIRI VM & Data Matching profile" %}
+    .</a>
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      This table identified the equivalent matching field in SIRI-VM and TxC-PTI data.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      The data in both the SIRI-VM-PTI and TXC-PTI fields MUST be an absolute match of text and formatting.
+    {% endblocktrans %}
+  </p>
+  <table class="govuk-table">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">{% trans "SIRI Field" %}</th>
+        <th scope="col" class="govuk-table__header">{% trans "TXC PTI Match" %}</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">LineRef</td>
+        <td class="govuk-table__cell">LineName</td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">OperatorRef</td>
+        <td class="govuk-table__cell">NationalOperatorCode</td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">DatedVehicleJourneyRef</td>
+        <td class="govuk-table__cell">TicketMachine/JourneyCode</td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">DirectionRef</td>
+        <td class="govuk-table__cell">JourneyPattern/Direction</td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">BlockRef</td>
+        <td class="govuk-table__cell">BlockNumber</td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">PublishedLineName</td>
+        <td class="govuk-table__cell">LineName</td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">DestinationRef</td>
+        <td class="govuk-table__cell">JourneyPatternTimingLink/To/StopPointRef</td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell">OriginRef</td>
+        <td class="govuk-table__cell">JourneyPatternTimingLink/From/StopPointRef</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="govuk-body">
+    <b>
+      {% trans "Automated matching process and report" %}
+    </b>
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      The matching validator will run a randomised collection of data per day (excluding buses running from 12am-5am)
+      and will test 1000 sampled packets or 10 minutes from a feed each day (this number is configurable until deemed sensible)
+      against the complete TxC dataset published on BODS.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      The report of the matching check is provided to publisher which is to be
+      shared with their technology suppliers to enable them to improve the quality matching content in their data.
+      The report is generated per feed every Monday (Sunday's activities are included in the report). It provides observations
+      about the quality of matching of an operator's SIRI VM and TxC data.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      Each feed matching report provides an overall
+      percentage score of how many SIRI-VM packets completely matched all required fields to TxC data
+      (this score excludes BlockRef as it is currently not a mandatory field in TxC-PTI). The report also shows a granular view
+      of how each required matching field in each collected SIRI packet matched accurately to each TxC fields.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      The report highlights matching errors, providing SIRI and TxC dataset details enabling operators to locate
+      the relevant dataset and address errors. Other observations such as the full list of SIRI packets collected and analysed,
+      or unable to analyse due to a gross errors are available in the report.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      The operator's overall matching score and 4-weeks archived reports, which calculate weekly
+      average mean score for all feeds per operator is available for operators to download at the 'Review My Published data'
+      Bus location dashboard on BODS.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      Weekly SIRI VM feed percentage matching score and report are available to download at
+      a SIRI VM feed level on BODS. More information on SIRI-VM PTI and Data matching can be found
+    {% endblocktrans %}
+    <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf"
+       class="govuk-link"
+       rel="noreferrer noopener"
+       target="_blank">
+      {% trans "here" %}
+    .</a>
+  </p>
+  <p class="govuk-body">
+    <b>
+      {% trans "Single journey matching logic" %}
+    </b>
+  </p>
+  <p class="govuk-body">
+    {% blocktrans trimmed %}
+      To be able to compare data for any given journey it is necessary to first identify a single
+      journey in both the SIRI and TxC datasets. The SIRI delivery is the starting point for the process.
+      More information on SIRI-VM PTI and Data matching can be found
+    {% endblocktrans %}
+    <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf"
+       class="govuk-link"
+       rel="noreferrer noopener"
+       target="_blank">
+      {% trans "here" %}
+    .</a>
+  </p>
+  <p class="govuk-body">
+    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 1" %}</p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% blocktrans trimmed %}
+        1.1: Using OperatorRef and LineRef from the SIRI data locate the TxC files that contain data for the operator and line.
+        There may be multiple files.
+      {% endblocktrans %}
     </p>
-
-    <ul class="govuk-list govuk-list--bullet">
-        <li>Bearing</li>
-        <li>LineRef</li>
-        <li>OperatorRef</li>
-        <li>RecordedAtTime</li>
-        <li>ResponseTimestamp</li>
-        <li>VehicleJourneyRef</li>
-        <li>VehicleLocation (Lat, Long)</li>
-        <li>ProducerRef</li>
-        <li>DirectionRef</li>
-        <li>BlockRef</li>
-        <li>PublishedLineName</li>
-        <li>ValidUntilTime</li>
-        <li>DestinationRef</li>
-        <li>OriginName</li>
-        <li>OriginRef</li>
-        <li>VehicleRef</li>
-    </ul>
-
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            A SIRI-VM feed will be deemed 'partially compliant' if it has all other mandatory
-            fields present but only have the following fields below missing 70% of the time in
-            the last 7 days.
-        {% endblocktrans %}
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% blocktrans trimmed %}
+        1.2: Check which of the files contain data valid for the date of the SIRI data.
+        This will require checking the OperatingPeriod to find data which is valid for the date being tested.
+      {% endblocktrans %}
     </p>
-
-    <ul class="govuk-list govuk-list--bullet">
-        <li>BlockRef</li>
-        <li>PublishedLineName</li>
-        <li>DestinationRef</li>
-        <li>OriginName</li>
-        <li>OriginRef</li>
-    </ul>
-
-    <p class="govuk-body">
-
-        {% blocktrans trimmed with threshold=siri_vm_lower_threshold|percentage %}
-            A SIRI-VM feed will be deemed 'non-compliant' if all fields below are not present
-            more than 70% of the time for the last 7 days. It can also be assigned a direct
-            non-compliant status if any one of the fields below fall under {{threshold}}
-            population at the time of the daily validation check. This is because this would
-            count as a gross error in the data and would be highlighted to the publisher
-            right away.
-        {% endblocktrans %}
-    </p>
-
-    <ul class="govuk-list govuk-list--bullet">
-        <li>Bearing</li>
-        <li>LineRef</li>
-        <li>OperatorRef</li>
-        <li>RecordedAtTime</li>
-        <li>ResponseTimestamp</li>
-        <li>VehicleJourneyRef</li>
-        <li>VehicleLocation (Lat, Long)</li>
-        <li>ProducerRef</li>
-        <li>DirectionRef</li>
-        <li>VehicleRef</li>
-        <li>ValidUntilTime</li>
-    </ul>
-
-    <p class="govuk-body">
-        {% trans "Other compliance statuses:" %}
-    </p>
-
-    <ul class="govuk-list govuk-list--bullet">
-        <li>
-            {% blocktrans trimmed %}
-                Undergoing validation: This status will be used for all newly added feeds in the
-                first 24 hours until initial checks are completed. It will also be used for all
-                compliant feeds for the first 7 days until the 'automated flow' rolling
-                validation logic becomes active.
-            {% endblocktrans %}
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% blocktrans trimmed %}
+        1.3: If there is more than one data set with a file with a TXC that contains the OperatorRef and LineRef then stop processing.
+      {% endblocktrans %}
+      <ul class="govuk-list govuk-list--number">
+        <li class="govuk-body govuk-!-padding-left-5">
+          {% trans "If files are found in more than one dataset then stop processing." %}
         </li>
-        <li>
-            {% blocktrans trimmed %}
-                Awaiting publisher review: This status will be used for all feeds in the first 7
-                days after publishing if a critical or noncritical fields(s) has not been
-                provided by >70% of vehicles in a daily check.
-            {% endblocktrans %}
-        </li>
-        <li>
-            {% filter force_escape %}
-                {% blocktrans trimmed %}
-                    Unavailable due to dormant feed: This status will be used for all feeds
-                    which don’t have any vehicles running for 7 consecutive days and henceforth
-                    have repeatedly evaded validation.
-                {% endblocktrans %}
-            {% endfilter %}
-        </li>
-    </ul>
-
-    <p class="govuk-body">
-        <b>{% trans "New feed validation process:" %}</b>
-    </p>
-
-    <p id="new-feed-v-process"class="govuk-body">
-        {% blocktrans trimmed %}
-            When a new feed is added to BODS it will be validated in the following way:
-        {% endblocktrans %}
-    </p>
-
-    <ol class="govuk-list govuk-list--number">
-        <li class="govuk-!-padding-bottom-1">
-            {% blocktrans trimmed %}
-                24 hours after a new SIRI feed is added the validator will check against the
-                mandatory fields and if necessary, an error report will be sent to operators.
-            {% endblocktrans %}
-        </li>
-        <li class="govuk-!-padding-bottom-1">
-            {% blocktrans trimmed %}
-                Over the subsequent 6 days when data is flowing through it will continue to run
-                randomised daily checks.
-            {% endblocktrans %}
-        </li>
-        <li class="govuk-!-padding-bottom-1">
-            {% blocktrans trimmed %}
-                After Day 7: each day a fresh automated validation check will run and a
-                compliance status will be assigned on a 7-day rolling average.
-            {% endblocktrans %}
-        </li>
-    </ol>
-
-    <p class="govuk-body">
-        <b>{% trans "Automated feed validation process:" %}</b>
-    </p>
-
-    <ol class="govuk-list govuk-list--number">
-        <li class="govuk-!-padding-bottom-1">
-            {% blocktrans trimmed %}
-                The validator will run 1 randomised check per day (excluding buses running from
-                12am-5am).
-            {% endblocktrans %}
-        </li>
-        <li class="govuk-!-padding-bottom-1">
-            {% blocktrans trimmed %}
-                The validator will check 1000 packets or 10 minutes from a feed each day (this
-                number is configurable until deemed sensible).
-            {% endblocktrans %}
-        </li>
-        <li class="govuk-!-padding-bottom-1">
-            {% blocktrans trimmed %}
-                70% of vehicles on the feed need to be populating the mandatory fields to avoid
-                moving in to non/partial compliance error status (e.g that means 70% of
-                'Bearing' should be present in the last 7 days' worth of data, if not, it will
-                move to a non-compliant status).
-            {% endblocktrans %}
-        </li>
-        <li class="govuk-!-padding-bottom-1">
-            {% blocktrans trimmed with threshold=siri_vm_lower_threshold|percentage %}
-                If the daily check has any non-compliant fields which are less than {{threshold}}
-                populated (for each non-compliant feed), it will automatically move the
-                compliance status to 'non-compliant' as it is a gross error.
-            {% endblocktrans %}
-        </li>
-        <li class="govuk-!-padding-bottom-1">
-            {% blocktrans trimmed with threshold=siri_vm_lower_threshold|percentage %}
-                If the daily check has more than {{threshold}} of non-compliant fields populated (for each
-                non-compliant feed), then the rolling average check will kick in and assign a
-                compliance status based on the last 7 days.
-            {% endblocktrans %}
-        </li>
-    </ol>
-
-    <h2 class="govuk-heading-m">{% trans 'AVL to timetables matching' %}</h2>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            Validation of data against the SIRI-VM-PTI profile takes place in three stages:
-            the first two stages are the data schema and SIRI-VM-PTI compliant stages as described
-        {% endblocktrans %}
-        <a href="#new-feed-v-process" class="govuk-link">{% trans "above" %}.</a>
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            The third stage of validation of data against the SIRI-VM-PTI
-            profile is to test to ensure data specified in the SIRI-VM-PTI match the data
-            in timetable TXC-PTI profile.
-        {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            The matching validation is important to ensure
-            that the data can easily be used to produce a predicted or calculated arrival
-            time of bus at a bus stop.
-        {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            This requires data from the timetables and location
-            data services of BODS to be combined and if the data is not supplied in the
-            correct formats, then combining of the data is much harder and the quality of
-            information available to the passengers will be reduced.
-        {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            We've introduced AVL to timetables data quality matching checks to BODS to make sure high-quality
-            data are delivered for data consumers to provide accurate real time information
-            to passengers.
-        {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            To help achieve the matching of data it is key that in the
-            SIRI-VM-PTI data feed where there is an equivalent field in the TXC-PTI the
-            same content is used as specified in the
-        {% endblocktrans %}
-        <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf" class="govuk-link" rel="noreferrer noopener" target="_blank">{% trans "SIRI VM & Data Matching profile" %}.</a>
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            This table identified the equivalent matching field in SIRI-VM and TxC-PTI data.
-        {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            The data in both the SIRI-VM-PTI and TXC-PTI fields MUST be an absolute match of text and formatting.
-        {% endblocktrans %}
-    </p>
-
-    <table class="govuk-table">
-        <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">{% trans "SIRI Field" %}</th>
-                <th scope="col" class="govuk-table__header">{% trans "TXC PTI Match" %}</th>
-            </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell">LineRef</td>
-                <td class="govuk-table__cell">LineName</td>
-            </tr>
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell">OperatorRef</td>
-                <td class="govuk-table__cell">NationalOperatorCode</td>
-            </tr>
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell">DatedVehicleJourneyRef</td>
-                <td class="govuk-table__cell">TicketMachine/JourneyCode</td>
-            </tr>
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell">DirectionRef</td>
-                <td class="govuk-table__cell">JourneyPattern/Direction</td>
-            </tr>
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell">BlockRef</td>
-                <td class="govuk-table__cell">BlockNumber</td>
-            </tr>
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell">PublishedLineName</td>
-                <td class="govuk-table__cell">LineName</td>
-            </tr>
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell">DestinationRef</td>
-                <td class="govuk-table__cell">JourneyPatternTimingLink/To/StopPointRef</td>
-            </tr>
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell">OriginRef</td>
-                <td class="govuk-table__cell">JourneyPatternTimingLink/From/StopPointRef</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <p class="govuk-body">
-        <b>{% trans 'Automated matching process and report' %}</b>
-    </p>
-
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            The matching validator will run a randomised collection of data per day (excluding buses running from 12am-5am)
-            and will test 1000 sampled packets or 10 minutes from a feed each day (this number is configurable until deemed sensible)
-            against the complete TxC dataset published on BODS.
-        {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            The report of the matching check is provided to publisher which is to be
-            shared with their technology suppliers to enable them to improve the quality matching content in their data.
-            The report is generated per feed every Monday (Sunday's activities are included in the report). It provides observations
-            about the quality of matching of an operator's SIRI VM and TxC data.
-        {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            Each feed matching report provides an overall
-            percentage score of how many SIRI-VM packets completely matched all required fields to TxC data
-            (this score excludes BlockRef as it is currently not a mandatory field in TxC-PTI). The report also shows a granular view
-            of how each required matching field in each collected SIRI packet matched accurately to each TxC fields.
-        {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            The report highlights matching errors, providing SIRI and TxC dataset details enabling operators to locate
-            the relevant dataset and address errors. Other observations such as the full list of SIRI packets collected and analysed,
-            or unable to analyse due to a gross errors are available in the report.
-        {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            The operator's overall matching score and 4-weeks archived reports, which calculate weekly
-            average mean score for all feeds per operator is available for operators to download at the 'Review My Published data'
-            Bus location dashboard on BODS.
-        {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            Weekly SIRI VM feed percentage matching score and report are available to download at
-            a SIRI VM feed level on BODS. More information on SIRI-VM PTI and Data matching can be found
-        {% endblocktrans %}
-        <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf" class="govuk-link" rel="noreferrer noopener" target="_blank">{% trans "here" %}.</a>
-    </p>
-
-    <p class="govuk-body">
-        <b>{% trans 'Single journey matching logic' %}</b>
-    </p>
-
-    <p class="govuk-body">
-        {% blocktrans trimmed %}
-            To be able to compare data for any given journey it is necessary to first identify a single
-            journey in both the SIRI and TxC datasets. The SIRI delivery is the starting point for the process.
-            More information on SIRI-VM PTI and Data matching can be found
-        {% endblocktrans %}
-        <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf" class="govuk-link" rel="noreferrer noopener" target="_blank">{% trans "here" %}.</a>
-    </p>
-
-    <p class="govuk-body">
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% trans "Step 1" %}
-        </p>
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% blocktrans trimmed %}
-                1.1: Using OperatorRef and LineRef from the SIRI data locate the TxC files that contain data for the operator and line.
-                There may be multiple files.
-            {% endblocktrans %}
-        </p>
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% blocktrans trimmed %}
-                1.2: Check which of the files contain data valid for the date of the SIRI data.
-                This will require checking the OperatingPeriod to find data which is valid for the date being tested.
-            {% endblocktrans %}
-        </p>
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% blocktrans trimmed %}
-                1.3: If there is more than one data set with a file with a TXC that contains the OperatorRef and LineRef then stop processing.
-            {% endblocktrans %}
-            <ul class="govuk-list govuk-list--number">
+        <li class="govuk-body govuk-!-padding-left-5">{% trans "If file(s) found, continue to step 2." %}</li>
+        <li class="govuk-body govuk-!-padding-left-5">
+          {% trans "If no file found then mark the vehicle journey as failed to be analysed." %}
+          <ul class="govuk-list govuk-list--alpha">
+            <li class="govuk-body govuk-!-padding-left-5">
+              {% trans "Errors for this step" %}
+              <ul class="govuk-list govuk-list--bullet">
                 <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If files are found in more than one dataset then stop processing." %}
+                  1.1: "No published TXC files found matching NOC {noc} and line name {line_name}"
                 </li>
                 <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If file(s) found, continue to step 2." %}
+                  1.2: “No timetables found with VehicleActivity date in OperatingPeriod”
                 </li>
-                <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If no file found then mark the vehicle journey as failed to be analysed." %}
-                    <ul class="govuk-list govuk-list--alpha">
-                        <li class="govuk-body govuk-!-padding-left-5">
-                            {% trans "Errors for this step" %}
-                            <ul class="govuk-list govuk-list--bullet">
-                                <li class="govuk-body govuk-!-padding-left-5">
-                                    1.1: "No published TXC files found matching NOC {noc} and line name {line_name}"
-                                </li>
-                                <li class="govuk-body govuk-!-padding-left-5">
-                                    1.2: “No timetables found with VehicleActivity date in OperatingPeriod”
-                                </li>
-                                <li class="govuk-body govuk-!-padding-left-5">
-                                    1.3: "Matched OperatorRef and LineRef in more than one dataset"
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </p>
+                <li class="govuk-body govuk-!-padding-left-5">1.3: "Matched OperatorRef and LineRef in more than one dataset"</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </p>
-
-    <p class="govuk-body">
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% trans "Step 2" %}
-        </p>
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% blocktrans trimmed %}
-                2.1: From the Step 1 subset of TxC files search each file for any that contain a JourneyCode that matches with the
-                DatedVehicleJourneyRef from the SIRI journey.
-            {% endblocktrans %}
-            <ul class="govuk-list govuk-list--number">
+  </p>
+  <p class="govuk-body">
+    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 2" %}</p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% blocktrans trimmed %}
+        2.1: From the Step 1 subset of TxC files search each file for any that contain a JourneyCode that matches with the
+        DatedVehicleJourneyRef from the SIRI journey.
+      {% endblocktrans %}
+      <ul class="govuk-list govuk-list--number">
+        <li class="govuk-body govuk-!-padding-left-5">
+          {% trans "If file(s) found with matching JourneyCodes, continue to step 3." %}
+        </li>
+        <li class="govuk-body govuk-!-padding-left-5">
+          {% trans "If no file found then mark the vehicle journey as failed to be analysed." %}
+          <ul class="govuk-list govuk-list--alpha">
+            <li class="govuk-body govuk-!-padding-left-5">
+              {% trans "Errors for this step" %}
+              <ul class="govuk-list govuk-list--bullet">
                 <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If file(s) found with matching JourneyCodes, continue to step 3." %}
+                  2.1: “No vehicle journeys found with JourneyCode {vehicle_journey_ref}“
                 </li>
-                <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If no file found then mark the vehicle journey as failed to be analysed." %}
-                    <ul class="govuk-list govuk-list--alpha">
-                        <li class="govuk-body govuk-!-padding-left-5">
-                            {% trans "Errors for this step" %}
-                            <ul class="govuk-list govuk-list--bullet">
-                                <li class="govuk-body govuk-!-padding-left-5">
-                                    2.1: “No vehicle journeys found with JourneyCode {vehicle_journey_ref}“
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </p>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </p>
-
-    <p class="govuk-body">
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% trans "Step 3" %}
-        </p>
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% blocktrans trimmed %}
-                3.1: From the Step 2 subset of TxC files search each file for an OperatingProfile that is appropriate
-                for the date of the SIRI data - type of day for date being tested. For example 1 April 2022 was a Friday.
-            {% endblocktrans %}
-            <ul class="govuk-list govuk-list--number">
+  </p>
+  <p class="govuk-body">
+    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 3" %}</p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% blocktrans trimmed %}
+        3.1: From the Step 2 subset of TxC files search each file for an OperatingProfile that is appropriate
+        for the date of the SIRI data - type of day for date being tested. For example 1 April 2022 was a Friday.
+      {% endblocktrans %}
+      <ul class="govuk-list govuk-list--number">
+        <li class="govuk-body govuk-!-padding-left-5">
+          {% trans "If file(s) found with a matching OperatingProfile, continue to step 4." %}
+        </li>
+        <li class="govuk-body govuk-!-padding-left-5">
+          {% trans "If no matching OperatingProfile is found, then mark the vehicle journey as failed to be analysed." %}
+          <ul class="govuk-list govuk-list--alpha">
+            <li class="govuk-body govuk-!-padding-left-5">
+              {% trans "Errors for this step" %}
+              <ul class="govuk-list govuk-list--bullet">
                 <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If file(s) found with a matching OperatingProfile, continue to step 4." %}
+                  3.1: "No vehicle journeys found with OperatingProfile applicable to VehicleActivity date"
                 </li>
-                <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If no matching OperatingProfile is found, then mark the vehicle journey as failed to be analysed." %}
-                    <ul class="govuk-list govuk-list--alpha">
-                        <li class="govuk-body govuk-!-padding-left-5">
-                            {% trans "Errors for this step" %}
-                            <ul class="govuk-list govuk-list--bullet">
-                                <li class="govuk-body govuk-!-padding-left-5">
-                                    3.1: "No vehicle journeys found with OperatingProfile applicable to VehicleActivity date"
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </p>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </p>
-
-    <p class="govuk-body">
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% trans "Step 4" %}
-        </p>
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% blocktrans trimmed %}
-                From the Step 3 subset of TxC files use the file with the highest RevisionNumber that is valid for the date
-                of the SIRI data to find the correct file.
-            {% endblocktrans %}
-            <ul class="govuk-list govuk-list--alpha">
-                <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If only one file is identified after filtering by RevisionNumber, move to step 5." %}
-                </li>
-                <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If there is more than one file remaining after reading the RevisionNumber, mark they vehicle journey as failed to be analysed." %}
-                </li>
-            </ul>
-        </p>
+  </p>
+  <p class="govuk-body">
+    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 4" %}</p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      {% blocktrans trimmed %}
+        From the Step 3 subset of TxC files use the file with the highest RevisionNumber that is valid for the date
+        of the SIRI data to find the correct file.
+      {% endblocktrans %}
+      <ul class="govuk-list govuk-list--alpha">
+        <li class="govuk-body govuk-!-padding-left-5">
+          {% trans "If only one file is identified after filtering by RevisionNumber, move to step 5." %}
+        </li>
+        <li class="govuk-body govuk-!-padding-left-5">
+          {% trans "If there is more than one file remaining after reading the RevisionNumber, mark they vehicle journey as failed to be analysed." %}
+        </li>
+      </ul>
     </p>
-
+  </p>
+  <p class="govuk-body">
+    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 5" %}</p>
     <p class="govuk-body">
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% trans "Step 5" %}
-        </p>
-        <p class="govuk-body">
-            {% blocktrans trimmed %}
-                There may be more than one matching JourneyCode within a TxC
-                if it is used for example for journeys operating on weekdays and weekends, or those relating to a serviced organisation.
-            {% endblocktrans %}
-        </p>
-        <p class="govuk-body">
-            {% blocktrans trimmed %}
-                5.1: Search within the file to find the JourneyCode(s) with an OperatingProfile that is valid for the date being tested.
-                For those journeys which reference a serviced organisation, the logic will establish whether the ServicedOrganisation is
-                working on the day of the Siri journey to find the appropriate instance of the JourneyCode.
-            {% endblocktrans %}
-        </p>
-        <p class="govuk-body">
-            {% blocktrans trimmed %}
-                If the serviced organisation is working on that day, there should be only one JourneyCode with the combination
-                of the operating profile, ServicedOrganisation and DaysofOperation.
-            {% endblocktrans %}
-        </p>
-        <p class="govuk-body">
-            {% blocktrans trimmed %}
-                5.2: If the serviced organisation is not working on that day, there should be only one JourneyCode with the combination
-                of the operating profile, ServicedOrganisation and DaysofNonOperation.
-            {% endblocktrans %}
-        </p>
-        <p class="govuk-body">
-            {% blocktrans trimmed %}
-                5.3: If there is no serviced organisation data for the JourneyCode with an appropriate operating profile, there should be only one JourneyCode.
-            {% endblocktrans %}
-            <ul class="govuk-list govuk-list--number">
-                <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If a single JourneyCode is identified, move to step 6." %}
+      {% blocktrans trimmed %}
+        There may be more than one matching JourneyCode within a TxC
+        if it is used for example for journeys operating on weekdays and weekends, or those relating to a serviced organisation.
+      {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+      {% blocktrans trimmed %}
+        5.1: Search within the file to find the JourneyCode(s) with an OperatingProfile that is valid for the date being tested.
+        For those journeys which reference a serviced organisation, the logic will establish whether the ServicedOrganisation is
+        working on the day of the Siri journey to find the appropriate instance of the JourneyCode.
+      {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+      {% blocktrans trimmed %}
+        If the serviced organisation is working on that day, there should be only one JourneyCode with the combination
+        of the operating profile, ServicedOrganisation and DaysofOperation.
+      {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+      {% blocktrans trimmed %}
+        5.2: If the serviced organisation is not working on that day, there should be only one JourneyCode with the combination
+        of the operating profile, ServicedOrganisation and DaysofNonOperation.
+      {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+      {% blocktrans trimmed %}
+        5.3: If there is no serviced organisation data for the JourneyCode with an appropriate operating profile, there should be only one JourneyCode.
+      {% endblocktrans %}
+      <ul class="govuk-list govuk-list--number">
+        <li class="govuk-body govuk-!-padding-left-5">{% trans "If a single JourneyCode is identified, move to step 6." %}</li>
+        <li class="govuk-body govuk-!-padding-left-5">
+          {% trans "If there is more than one valid JourneyCode found, and" %}
+          <ul class="govuk-list govuk-list--alpha">
+            <li class="govuk-body govuk-!-padding-left-5">
+              If there is only one TxC that is found at this point, then mark the vehicle journey as failed to be analysed.
+              <ul class="govuk-list govuk-list--bullet">
+                <li>
+                  Error for step 2a: “Found more than one matching vehicle journey in a single timetables file belonging to a single service code“
                 </li>
-                <li class="govuk-body govuk-!-padding-left-5">
-                    {% trans "If there is more than one valid JourneyCode found, and" %}
-                    <ul class="govuk-list govuk-list--alpha">
-                        <li class="govuk-body govuk-!-padding-left-5">
-                            If there is only one TxC that is found at this point, then mark the vehicle journey as failed to be analysed.
-                            <ul class="govuk-list govuk-list--bullet">
-                                <li>
-                                    Error for step 2a: “Found more than one matching vehicle journey in a single timetables file belonging to a single service code“
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="govuk-body govuk-!-padding-left-5">
-                            If there is more than one TxC that is found at this point but each TxC has the same service code, then mark the vehicle journey as failed to be analysed.
-                            <ul class="govuk-list govuk-list--bullet">
-                                <li>
-                                    Error for step 2b: “Found more than one matching vehicle journey in timetables belonging to a single service code“
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="govuk-body govuk-!-padding-left-5">
-                            If there is more than one TxC that is found at this point and there is more than one service code in the TxC files,
-                            then do not include this in the score for the operator. (i.e. remove this AVL message from the count of ‘Total vehicleActivities analysed’
-                            messages and the uncountedvehicles.csv)
-                            <ul class="govuk-list govuk-list--bullet">
-                                <li>
-                                    No errors for this step: The row for this will be removed from uncountedvehicleactivities.csv.
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+              </ul>
+            </li>
+            <li class="govuk-body govuk-!-padding-left-5">
+              If there is more than one TxC that is found at this point but each TxC has the same service code, then mark the vehicle journey as failed to be analysed.
+              <ul class="govuk-list govuk-list--bullet">
+                <li>
+                  Error for step 2b: “Found more than one matching vehicle journey in timetables belonging to a single service code“
                 </li>
-            </ul>
-        </p>
+              </ul>
+            </li>
+            <li class="govuk-body govuk-!-padding-left-5">
+              If there is more than one TxC that is found at this point and there is more than one service code in the TxC files,
+              then do not include this in the score for the operator. (i.e. remove this AVL message from the count of ‘Total vehicleActivities analysed’
+              messages and the uncountedvehicles.csv)
+              <ul class="govuk-list govuk-list--bullet">
+                <li>No errors for this step: The row for this will be removed from uncountedvehicleactivities.csv.</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </p>
-
+  </p>
+  <p class="govuk-body">
+    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 6" %}</p>
     <p class="govuk-body">
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% trans "Step 6" %}
-        </p>
-        <p class="govuk-body">
-            {% blocktrans trimmed %}
-                Once a single JourneyCode with an appropriate OperatingPeriod and OperatingProfile is identified testing
-                can progress to the remaining pairs of values described earlier in this document.
-            {% endblocktrans %}
-        </p>
-        <p class="govuk-body">
-            {% blocktrans trimmed %}
-                If DatedVehicleJourneyRef from the selected SIRI delivery is unable to be matched to a single
-                JourneyCode in a TxC file then the analysis should fail for all data types.
-            {% endblocktrans %}
-        </p>
+      {% blocktrans trimmed %}
+        Once a single JourneyCode with an appropriate OperatingPeriod and OperatingProfile is identified testing
+        can progress to the remaining pairs of values described earlier in this document.
+      {% endblocktrans %}
     </p>
-
     <p class="govuk-body">
-        <p class="govuk-body govuk-!-margin-bottom-0">
-            {% trans "Step 7" %}
-        </p>
-        <p class="govuk-body">
-            {% trans "It will be necessary to identify the correct direction, destination and origin information for the full journey details being tested." %}
-        </p>
-        <p class="govuk-body">
-            {% blocktrans trimmed %}
-                Start with identifying the JourneyPattern for the journeys Direction. Knowing the JourneyPattern allows identification all
-                JourneyPatternSection used in the JourneyPattern. Knowing the JourneyPatternSection allows the first and last sections to be identified.
-                These are required to locate the origin and destination information.
-            {% endblocktrans %}
-        </p>
-        <p class="govuk-body">
-            {% trans "The OriginRef is the StopPointRef in the From element of the first JourneyPatternSection of the JourneyPattern." %}
-        </p>
-        <p class="govuk-body">
-            {% trans "The DestinationRef is the StopPointRef in the To element of the last JourneyPatternSection of the JourneyPattern." %}
-        </p>
-        <p class="govuk-body">
-            {% blocktrans trimmed %}
-                To identify the direction:
-                Find the direction associated with the JourneyPattern referenced in the isolated JourneyCode.
-            {% endblocktrans %}
-
-        </p>
-        <p class="govuk-body">
-            {% blocktrans trimmed %}
-                To identify the block:
-                Find the BlockNumber associated with the isolated JourneyCode.
-            {% endblocktrans %}
-        </p>
+      {% blocktrans trimmed %}
+        If DatedVehicleJourneyRef from the selected SIRI delivery is unable to be matched to a single
+        JourneyCode in a TxC file then the analysis should fail for all data types.
+      {% endblocktrans %}
     </p>
-
-    <h2 class="govuk-heading-m">Fares data</h2>
+  </p>
+  <p class="govuk-body">
+    <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 7" %}</p>
     <p class="govuk-body">
-        {% blocktrans %}
+      {% trans "It will be necessary to identify the correct direction, destination and origin information for the full journey details being tested." %}
+    </p>
+    <p class="govuk-body">
+      {% blocktrans trimmed %}
+        Start with identifying the JourneyPattern for the journeys Direction. Knowing the JourneyPattern allows identification all
+        JourneyPatternSection used in the JourneyPattern. Knowing the JourneyPatternSection allows the first and last sections to be identified.
+        These are required to locate the origin and destination information.
+      {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+      {% trans "The OriginRef is the StopPointRef in the From element of the first JourneyPatternSection of the JourneyPattern." %}
+    </p>
+    <p class="govuk-body">
+      {% trans "The DestinationRef is the StopPointRef in the To element of the last JourneyPatternSection of the JourneyPattern." %}
+    </p>
+    <p class="govuk-body">
+      {% blocktrans trimmed %}
+        To identify the direction:
+        Find the direction associated with the JourneyPattern referenced in the isolated JourneyCode.
+      {% endblocktrans %}
+    </p>
+    <p class="govuk-body">
+      {% blocktrans trimmed %}
+        To identify the block:
+        Find the BlockNumber associated with the isolated JourneyCode.
+      {% endblocktrans %}
+    </p>
+  </p>
+  <h2 class="govuk-heading-m">Fares data</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             NeTEx data is validated against their respective schemas, to check if it is in the expected format. As this format is new to the UK, more data quality checks may be enabled over time.
         {% endblocktrans %}
-    </p>
-
+  </p>
 {% endblock %}

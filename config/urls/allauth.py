@@ -1,5 +1,4 @@
 from django.urls import include, path, re_path
-
 from transit_odp.users.views.account import (
     EmailView,
     PasswordChangeDoneView,

@@ -1,88 +1,80 @@
 {% extends "users/base.html" %}
-
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'User details' %}
+  {% trans "User details" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'User management' 'users:manage' pk=user.organisation_id %}
-    {% breadcrumb_url 'User detail' 'users:manage-user-detail' pk=user.organisation_id %}
+  {{ block.super }}
+  {% breadcrumb_url 'User management' 'users:manage' pk=user.organisation_id %}
+  {% breadcrumb_url 'User detail' 'users:manage-user-detail' pk=user.organisation_id %}
 {% endblock %}
-
-
 {% block title_text %}{{ object.email }}{% endblock %}
-
 {% block inner %}
-    <h2 class="govuk-heading-m">{% trans 'User detail' %}</h2>
-    <table class="govuk-table manage-users-table">
-        <tbody class="govuk-table__body govuk-body-m">
-
-            <tr class="govuk-table__row govuk-body-m" style="border-top:1px solid #bfc1c3">
-                <td class="govuk-table__cell govuk-!-width-one-quarter">
-                    <b>{% trans 'Status' %}</b>
-                </td>
-                <td class="govuk-table__cell">
-                    {% if object.is_active %}
-                        Active
-                    {% else %}
-                        Inactive
-                    {% endif %}
-                </td>
-                <td class="govuk-table__cell"></td>
-            </tr>
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell govuk-!-width-one-quarter">
-                    <b>{% trans 'Username' %}</b>
-                </td>
-                <td class="govuk-table__cell">{{ object.username }}<td>
-                    <td class="govuk-table__cell"></td>
-                </tr>
-                    <tr class="govuk-table__row">
-                        <td class="govuk-table__cell govuk-!-width-one-quarter">
-                            <b>{% trans 'User type' %}</b></td>
-                        <td class="govuk-table__cell">
-                            <span class="dont-break-out">
-                                {% trans object.pretty_account_name %}
-                            </span>
-                        </td>
-                        <td class="govuk-table__cell"></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            {% if object.is_single_org_user %}
-                {% if object.id != request.user.id %}
-                    {% if object.is_active %}
-                        <div class="button-holder">
-                            <a class="govuk-button govuk-button--secondary"
-                                href="{% url 'users:manage-user-edit' pk=object.id host host.name %}"
-                                role="button">{% trans 'Edit' %}
-                            </a>
-                            <a class="govuk-button govuk-button--warning"
-                                href="{% url 'users:archive' pk=object.id host host.name %}" role="button">
-                                {% trans 'Deactivate' %}
-                            </a>
-                        </div>
-                    {% else %}
-                        <a class="govuk-button"
-                            href="{% url 'users:activate' pk=object.id host host.name %}" role="button">
-                            {% trans 'Activate' %}
-                        </a>
-                    {% endif %}
-                {% endif %}
-            {% elif object.is_agent_user %}
-                {% if invite %}
-                    <a class="govuk-button govuk-button--warning"
-                        href="{% url 'users:agent-remove' pk=invite.id host host.name %}"
-                        role="button">
-                        {% trans 'Remove' %}
-                    </a>
-                {% else %}
-                    <p class="govuk-body">{% trans "No invitation found" %}</p>
-                {% endif %}
-            {% endif %}
+  <h2 class="govuk-heading-m">{% trans "User detail" %}</h2>
+  <table class="govuk-table manage-users-table">
+    <tbody class="govuk-table__body govuk-body-m">
+      <tr class="top-border govuk-table__row govuk-body-m">
+        <td class="govuk-table__cell govuk-!-width-one-quarter">
+          <b>
+            {% trans "Status" %}
+          </b>
+        </td>
+        <td class="govuk-table__cell">
+          {% if object.is_active %}
+            Active
+          {% else %}
+            Inactive
+          {% endif %}
+        </td>
+        <td class="govuk-table__cell"></td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell govuk-!-width-one-quarter">
+          <b>
+            {% trans "Username" %}
+          </b>
+        </td>
+        <td class="govuk-table__cell">{{ object.username }}</td>
+        <td class="govuk-table__cell"></td>
+      </tr>
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell govuk-!-width-one-quarter">
+          <b>
+            {% trans "User type" %}
+          </b>
+        </td>
+        <td class="govuk-table__cell">
+          <span class="dont-break-out">{% trans object.pretty_account_name %}</span>
+        </td>
+        <td class="govuk-table__cell"></td>
+      </tr>
+    </tbody>
+  </table>
+  {% if object.is_single_org_user %}
+    {% if object.id != request.user.id %}
+      {% if object.is_active %}
+        <div class="button-holder">
+          <a class="govuk-button govuk-button--secondary"
+             href="{% url 'users:manage-user-edit' pk=object.id host host.name %}"
+             role="button">{% trans "Edit" %}</a>
+          <a class="govuk-button govuk-button--warning" href="{% url 'users:archive' pk=object.id host host.name %}" role="button">
+            {% trans "Deactivate" %}
+          </a>
+        </div>
+      {% else %}
+        <a class="govuk-button" href="{% url 'users:activate' pk=object.id host host.name %}" role="button">
+          {% trans "Activate" %}
+        </a>
+      {% endif %}
+    {% endif %}
+  {% elif object.is_agent_user %}
+    {% if invite %}
+      <a class="govuk-button govuk-button--warning"
+         href="{% url 'users:agent-remove' pk=invite.id host host.name %}"
+         role="button">{% trans "Remove" %}</a>
+    {% else %}
+      <p class="govuk-body">{% trans "No invitation found" %}</p>
+    {% endif %}
+  {% endif %}
 {% endblock %}

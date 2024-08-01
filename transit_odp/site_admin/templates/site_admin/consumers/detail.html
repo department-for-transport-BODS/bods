@@ -1,87 +1,78 @@
 {% extends "site_admin/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Data consumers' 'users:consumer-list' host hosts.admin %}
-    {% breadcrumb_url user.email 'users:consumer-detail' pk=user.id host hosts.admin %}
+  {{ block.super }}
+  {% breadcrumb_url 'Data consumers' 'users:consumer-list' host hosts.admin %}
+  {% breadcrumb_url user.email 'users:consumer-detail' pk=user.id host hosts.admin %}
 {% endblock %}
-
 {% block title_tag %}
-    {% trans 'Data consumers' %}
+  {% trans "Data consumers" %}
 {% endblock %}
-
 {% block content %}
-    <div class="govuk-width-container">
-        <div class="govuk-grid-row">
-            <h1 class="govuk-heading-xl">{{user.email}}</h1>
-        </div>
-        <div class="govuk-grid-row">
-            <h2 class="govuk-heading-m">Consumer detail</h2>
-            <table class="govuk-table">
-                <thead class="govuk-table__head">
-                    <tr class="govuk-table__row">
-                        <th scope="col" class="govuk-table__header govuk-!-width-one-quarter"></th>
-                        <th scope="col" class="govuk-table__header govuk-!-width-two-thirds"></th>
-                        <th scope="col" ></th>
-                    </tr>
-                </thead>
-                <tbody class="govuk-table__body">
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Name</th>
-                        <td class="govuk-table__cell" colspan="2">{{user.first_name}} {{user.last_name}} </td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Organisation</th>
-                        <td class="govuk-table__cell" colspan="2">{{user.dev_organisation}}</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Description of use</th>
-                        <td class="govuk-table__cell" colspan="2">{{user.description}}</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Email</th>
-                        <td class="govuk-table__cell" colspan="2">{{user.email}}</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Last Active</th>
-                        <td class="govuk-table__cell" colspan="2">{{user.last_login}}</td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">User Research Communication</th>
-                        <td class="govuk-table__cell" colspan="2">
-                            {% if user.settings.opt_in_user_research %}
-                                Yes
-                            {% else %}
-                                No
-                            {% endif %}
-                        </td>
-                    </tr>
-                    <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">Notes</th>
-                        <td class="govuk-table__cell dont-break-out">
-                            {{user.notes}}
-                        </td>
-                        <td class="govuk-table__cell" style="vertical-align:middle">
-                            <a class="govuk-link govuk-!-font-size-24 govuk-!-margin-4"
-                                href="{% url 'users:edit-consumer-notes' pk=user.id host host.name %}">
-                                Edit
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            {% if user.is_active %}
-                <a class="govuk-button govuk-button--warning" data-module="govuk-button"
-                    href="{% url 'users:revoke-consumer' pk=user.id host host.name %}">
-                    Revoke Access
-                </a>
-            {% endif %}
-        </div>
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <h1 class="govuk-heading-xl">{{ user.email }}</h1>
     </div>
+    <div class="govuk-grid-row">
+      <h2 class="govuk-heading-m">Consumer detail</h2>
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header govuk-!-width-one-quarter"></th>
+            <th scope="col" class="govuk-table__header govuk-!-width-two-thirds"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Name</th>
+            <td class="govuk-table__cell" colspan="2">{{ user.first_name }} {{ user.last_name }}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Organisation</th>
+            <td class="govuk-table__cell" colspan="2">{{ user.dev_organisation }}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Description of use</th>
+            <td class="govuk-table__cell" colspan="2">{{ user.description }}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Email</th>
+            <td class="govuk-table__cell" colspan="2">{{ user.email }}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Last Active</th>
+            <td class="govuk-table__cell" colspan="2">{{ user.last_login }}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">User Research Communication</th>
+            <td class="govuk-table__cell" colspan="2">
+              {% if user.settings.opt_in_user_research %}
+                Yes
+              {% else %}
+                No
+              {% endif %}
+            </td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">Notes</th>
+            <td class="govuk-table__cell dont-break-out">{{ user.notes }}</td>
+            <td class="govuk-table__cell v-mid-l">
+              <a class="govuk-link govuk-!-font-size-24 govuk-!-margin-4"
+                 href="{% url 'users:edit-consumer-notes' pk=user.id host host.name %}">Edit</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      {% if user.is_active %}
+        <a class="govuk-button govuk-button--warning"
+           data-module="govuk-button"
+           href="{% url 'users:revoke-consumer' pk=user.id host host.name %}">Revoke Access</a>
+      {% endif %}
+    </div>
+  </div>
 {% endblock %}

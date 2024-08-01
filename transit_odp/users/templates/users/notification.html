@@ -1,53 +1,47 @@
-{% extends 'page.html' %}
-
+{% extends "page.html" %}
 {% load static %}
 {% load i18n %}
-
 {% block breadcrumb.content %}
   {{ block.super }}
   <li class="govuk-breadcrumbs__list-item">
-    <a class="govuk-breadcrumbs__link" href="{% url 'users:settings' host hosts.data %}">
-      {% trans 'Settings' %}
-    </a>
+    <a class="govuk-breadcrumbs__link" href="{% url 'users:settings' host hosts.data %}">{% trans "Settings" %}</a>
   </li>
   <li class="govuk-breadcrumbs__list-item">
     <a class="govuk-breadcrumbs__link" href="{% url 'users:feeds-manage' host hosts.data %}">
-      {% trans 'Manage data sets' %}
+      {% trans "Manage data sets" %}
     </a>
   </li>
-  <li class="govuk-breadcrumbs__list-item" aria-current="page">{% trans 'Mute notifications' %}</li>
+  <li class="govuk-breadcrumbs__list-item" aria-current="page">{% trans "Mute notifications" %}</li>
 {% endblock %}
-
 {% block backlink %}
   {% url 'users:feeds-manage' host hosts.data as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
-
 {% block content %}
   <div class="govuk-grid-row">
-
-    <h1 class="govuk-heading-l">{% trans 'Notifications for data sets' %}</h1>
-
+    <h1 class="govuk-heading-l">{% trans "Notifications for data sets" %}</h1>
     <div class="govuk-panel app-panel--confirmation-nofill">
       <h1 class="govuk-panel__title">
-        Notifications successfully {% if mute_notifications %} muted {% else %} unmuted {% endif %}
+        Notifications successfully
+        {% if mute_notifications %}
+          muted
+        {% else %}
+          unmuted
+        {% endif %}
       </h1>
       <div class="govuk-panel__body">
-
-        {% if mute_notifications %} You'll no longer receive notifications.
+        {% if mute_notifications %}
+          You'll no longer receive notifications.
         {% else %}
           You'll receive notifications each time the subscribed data sets are updated.
         {% endif %}
         You can mange data set notifications in your account
         <a class="govuk-link" href="{% url 'users:feeds-manage' host hosts.data %}">settings</a>.
-
       </div>
     </div>
-
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
     <a role="button" class="govuk-button" href="{% url 'users:feeds-manage' host hosts.data %}">
-      {{ _('Back to notifications') }}
+      {{ _("Back to notifications") }}
     </a>
   </div>
-
 {% endblock %}

@@ -1,19 +1,16 @@
 {% load i18n %}
-
 <div class="search-result">
-    <div class="search-result__heading">
-      <a class='govuk-link' href="{% url 'operator-detail' item.id host hosts.data %}">
-        {{ item.name }}
-      </a>
-    </div>
-    <ul class="key-value-list">
-      <li>
-        <span class="item__key">
-          {% filter force_escape %}
-            {% trans 'Date registered:' %}
-          {% endfilter %}
-        </span>
-        <span class="item__value">{{ item.created|date:"j F Y" }}</span>
-      </li>
-    </ul>
+  <div class="search-result__heading">
+    <a class="govuk-link" href="{% url 'operator-detail' item.id host hosts.data %}">{{ item.name }}</a>
+  </div>
+  <ul class="key-value-list">
+    <li>
+      <span class="item__key">
+        {% filter force_escape %}
+          {% trans "Date registered:" %}
+        {% endfilter %}
+      </span>
+      <span class="item__value">{{ item.created|date:"j F Y" }}</span>
+    </li>
+  </ul>
 </div>

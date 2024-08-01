@@ -1,77 +1,81 @@
-{% extends 'browse/base.html' %}
-
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'All fares data' %}
+  {% trans "All fares data" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
-    {% breadcrumb_url 'All Fares Data' 'download-fares' host hosts.data %}
+  {{ block.super }}
+  {% breadcrumb_url 'Download All Data' 'downloads' host hosts.data %}
+  {% breadcrumb_url 'All Fares Data' 'download-fares' host hosts.data %}
 {% endblock %}
-
-{% block heading.title.text %}{% trans 'All fares data' %}{% endblock %}
-
+{% block heading.title.text %}
+  {% trans "All fares data" %}
+{% endblock %}
 {% block secondary.title %}
-    <h3 class="govuk-heading-l">{% trans 'Download file' %}</h3>
-    <p class="govuk-body">
-        {% blocktrans %}
-            You can download all the active fares data cached on the service
-            as of today by clicking the link below. Fares data is provided
-            in a NeTEx format within a compressed ZIP file.
-        {% endblocktrans %}
-    </p>
-    <ul class="govuk-list">
-        <li>
-            <b>{% trans 'Format' %}:</b>
-            {% trans 'NeTEx' %} {% include "browse/snippets/help_modals/netex.html" %}
-        </li>
-        <li><b>{% trans 'Mode' %}:</b> {% trans 'Bus' %}</li>
-        <li><b>{% trans 'File type' %}:</b> {% trans 'ZIP file' %}</li>
-        <li>
-            <b>{% trans 'Update frequency' %}:</b>
-            {% trans 'Daily around 6:00 am GMT' %}
-        </li>
-    </ul>
+  <h3 class="govuk-heading-l">{% trans "Download file" %}</h3>
+  <p class="govuk-body">
+    {% blocktrans %}
+      You can download all the active fares data cached on the service
+      as of today by clicking the link below. Fares data is provided
+      in a NeTEx format within a compressed ZIP file.
+    {% endblocktrans %}
+  </p>
+  <ul class="govuk-list">
+    <li>
+      <b>
+        {% trans "Format" %}
+      :</b>
+      {% trans "NeTEx" %}
+      {% include "browse/snippets/help_modals/netex.html" %}
+    </li>
+    <li>
+      <b>
+        {% trans "Mode" %}
+      :</b>
+      {% trans "Bus" %}
+    </li>
+    <li>
+      <b>
+        {% trans "File type" %}
+      :</b>
+      {% trans "ZIP file" %}
+    </li>
+    <li>
+      <b>
+        {% trans "Update frequency" %}
+      :</b>
+      {% trans "Daily around 6:00 am GMT" %}
+    </li>
+  </ul>
 {% endblock %}
-
 {% block heading.subtitle %}
-    <p class="govuk-body govuk-!-margin-bottom-0">
-        {% if show_bulk_archive_url %}
-            <a class="govuk-link" href="{% url 'downloads-fares-bulk' host hosts.data %}"
-                onClick="addGATagEvent()">
-                {% trans 'Download all fares data  ' %}
-            </a>
-        {% else %}
-            {% blocktrans %}
-                Bulk download is not yet available. Please check back later.
-            {% endblocktrans %}
-        {% endif %}
-    </p>
+  <p class="govuk-body govuk-!-margin-bottom-0">
+    {% if show_bulk_archive_url %}
+      <a class="govuk-link" href="{% url 'downloads-fares-bulk' host hosts.data %}" onClick="addGATagEvent()">
+        {% trans "Download all fares data " %}
+      </a>
+    {% else %}
+      {% blocktrans %}
+        Bulk download is not yet available. Please check back later.
+      {% endblocktrans %}
+    {% endif %}
+  </p>
 {% endblock %}
-
 {% block heading.secondary %}
-    {% include "browse/snippets/download_secondary_links.html" %}
+  {% include "browse/snippets/download_secondary_links.html" %}
 {% endblock %}
-
-{% block inner %}
-    <div class="govuk-grid-row govuk-!-margin-top-9">
-    </div>
-{% endblock %}
-
+{% block inner %}<div class="govuk-grid-row govuk-!-margin-top-9"></div>{% endblock %}
 {% block scripts %}
-    {{ block.super }}
-    <script>
-        function addGATagEvent() {
-            gtag('event', 'Download all event', {
-                'event_category': 'link',
-                'event_label': 'bulk download fares',
-                'event_action': 'download'
-            });
-        }
-    </script>
+  {{ block.super }}
+  <script>
+    function addGATagEvent() {
+        gtag('event', 'Download all event', {
+            'event_category': 'link',
+            'event_label': 'bulk download fares',
+            'event_action': 'download'
+        });
+    }
+  </script>
 {% endblock %}

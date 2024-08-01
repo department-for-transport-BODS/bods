@@ -227,3 +227,26 @@ def test_df_fares_expected():
     assert row["Mode"] == "Bus"
     assert row["% AVL to Timetables feed matching score"] is None
     assert row["Latest matching report URL"] is None
+
+
+def test_get_overall_catalogue_dataframe_with_inactive_org():
+    active_org = OrganisationFactory(name="active_org", short_name="active_org")
+    inactive_org = OrganisationFactory(
+        name="inactive_org", short_name="inactive_org", is_active=False
+    )
+    dataset_1 = DatasetFactory(organisation=active_org)
+    dataset_2 = DatasetFactory(organisation=inactive_org)
+    dataset_revision_1 = DatasetRevisionFactory(dataset=dataset_1)
+    dataset_revision_2 = DatasetRevisionFactory(dataset=dataset_2)
+    TXCFileAttributesFactory(revision=dataset_revision_1)
+    TXCFileAttributesFactory(revision=dataset_revision_2)
+    DataCatalogueMetaDataFactory(
+        fares_metadata__revision__dataset__organisation=active_org,
+        fares_metadata__revision__is_published=True,
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata__revision__dataset__organisation=inactive_org,
+        fares_metadata__revision__is_published=True,
+    )
+    overall_catalogue_df = _get_overall_catalogue_dataframe()
+    assert inactive_org.name not in overall_catalogue_df["Operator"].to_list()

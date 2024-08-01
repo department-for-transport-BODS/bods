@@ -7,11 +7,11 @@ from transit_odp.api.views import (
     AVLDetailApiView,
     AVLGTFSRTApiView,
     AVLOpenApiView,
+    DisruptionsOpenApiView,
     FaresDatasetViewset,
     FaresOpenApiView,
     TimetablesApiView,
     TimetablesViewSet,
-    DisruptionsOpenApiView,
     v2,
 )
 from transit_odp.api.views.disruptions import DisruptionsApiView
