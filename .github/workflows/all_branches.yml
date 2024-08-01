@@ -16,16 +16,22 @@ defaults:
 
 jobs:
   all_features:
-    name: "all_features"
+    name: "Code Formatter Checking (All Branches)"
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: lint
+      - name: black
         uses: psf/black@stable
         with:
           options: "--check --config .black.toml"
           src: "."
           version: "22.3.0"
+
+      - name: djlint
+        id: djlint
+        run: |
+          pip install --upgrade djlint
+          djlint .

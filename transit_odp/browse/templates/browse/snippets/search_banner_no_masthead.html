@@ -1,13 +1,17 @@
 {% load i18n %}
 <div class="govuk-grid-column-one-half">
-  <h1 class="govuk-heading-xl app-masthead__title">
-    {% filter force_escape %}
-      {% blocktrans %}
+  {% if title %}
+    <h1 class="govuk-heading-xl app-masthead__title">
+      {% filter force_escape %}
+        {% blocktrans %}
         {{ title }}
       {% endblocktrans %}
-    {% endfilter %}
-  </h1>
-  <p id="search-description" class="govuk-body ">
+      {% endfilter %}
+    </h1>
+  {% else %}
+    <h1 class="govuk-heading-xl app-masthead__title" aria-hidden="true"></h1>
+  {% endif %}
+  <p id="search-description" class="govuk-body">
     {% filter force_escape %}
       {% blocktrans %}
         {{ description }}
@@ -15,7 +19,7 @@
     {% endfilter %}
   </p>
   <div class="searchbox autocomplete">
-    <input class="govuk-summary-list__row--no-border searchbox__input"
+    <input class="searchbox__input"
            id="search"
            name="q"
            aria-labelledby="search-description"

@@ -232,7 +232,41 @@ class UpdateRevisionPublishView(BaseTimetableReviewView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"is_update": True})
+        revision = self.object
+        is_new_data_quality_service_active = flag_is_active(
+            "", "is_new_data_quality_service_active"
+        )
+        kwargs[
+            "is_new_data_quality_service_active"
+        ] = is_new_data_quality_service_active
+
+        if is_new_data_quality_service_active:
+            report = (
+                Report.objects.filter(revision_id=revision.id)
+                .order_by("-created")
+                .filter(
+                    status__in=[
+                        ReportStatus.REPORT_GENERATED.value,
+                        ReportStatus.REPORT_GENERATION_FAILED.value,
+                    ]
+                )
+                .first()
+            )
+            report_id = report.id if report else None
+            summary = None
+            if report_id:
+                summary = Summary.get_report(report_id, revision.id)
+
+            context.update(
+                {
+                    "is_update": True,
+                    "report_id": report_id,
+                    "is_new_data_quality_service_active": is_new_data_quality_service_active,
+                    "summary": summary,
+                }
+            )
+        else:
+            context.update({"is_update": True})
         return context
 
     def get_success_url(self):

@@ -19,7 +19,11 @@
   <div class="app-masthead">
     <div class="govuk-width-container">
       <div class="govuk-!-margin-top-5">
-        <h1 class="govuk-heading-xl app-masthead__title">{% trans page_title %}</h1>
+        {% if page_title %}
+          <h1 class="govuk-heading-xl app-masthead__title">{% trans page_title %}</h1>
+        {% else %}
+          <h1 class="govuk-heading-xl app-masthead__title" aria-hidden="true"></h1>
+        {% endif %}
         <p class="govuk-body">{% trans "Publish, preview and manage your open data sets" %}</p>
         <div class="govuk-grid-row govuk-!-margin-top-6">
           <div class="govuk-grid-column-full">
