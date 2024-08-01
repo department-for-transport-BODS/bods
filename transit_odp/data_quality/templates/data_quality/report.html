@@ -10,7 +10,7 @@
       <div class="govuk-!-margin-bottom-4" style="display:flex;">
         <div class="govuk-!-font-size-48 govuk-list govuk-!-margin-0">
           {% if is_dqs_new_report %}
-          <span class="">Data quality report</span>
+          <span class="govuk-!-font-weight-bold">Data quality report</span>
           {% else %}          
           <span class="govuk-caption-xl">Data quality report</span>
           {% endif %}
@@ -18,11 +18,11 @@
         {% if is_dqs_new_report %}
           <div class="" style="align-content: center;">
             {% if warning_data.Critical.count == 0 %}
-              <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-weight-bold" style="align-content: center;">
+              <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16" style="align-content: center;">
                 NO CRITICAL ISSUES
               </span>
             {% else %}
-              <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-weight-bold" style="align-content: center;">
+              <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16" style="align-content: center;">
                 CRITICAL ISSUES
               </span>
             {% endif %}
@@ -64,9 +64,9 @@
 
               {% if is_dqs_new_report %}
               <p class="govuk-body-s govuk-!-font-weight-bold">
-                Affected
-                <br />
                 Bus service{{ bus_services_affected|pluralize:"s" }}
+                <br />
+                affected
               </p>
               {% else %}
               <p class="govuk-body-s govuk-!-font-weight-bold">

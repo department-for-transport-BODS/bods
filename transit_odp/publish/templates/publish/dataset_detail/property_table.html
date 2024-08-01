@@ -119,6 +119,12 @@
               {% trans "View data quality report" %}
             {% endfilter %}
           </a>
+          <br />
+          <a class="govuk-link"
+                 target="_blank"
+                 href="{% url 'dq:report-csv' pk1=pk1 pk=object.id report_id=report_id host hosts.publish %}">
+                {% trans "Download data quality report.csv" %}
+              </a>
         {% else %}
           {% filter force_escape %}
             {% trans "Generating..." %}

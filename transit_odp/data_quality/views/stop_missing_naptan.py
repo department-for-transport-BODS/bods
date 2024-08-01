@@ -9,15 +9,16 @@ from transit_odp.data_quality.tables import (
     StopMissingNaptanWarningTimingTable,
     StopMissingNaptanWarningVehicleTable,
 )
-from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.views.base import (
     TimingPatternsListBaseView,
     TwoTableDetailView,
 )
-from transit_odp.dqs.models import ObservationResults
-from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.constants import (
+    Checks,
+    StopNotInNaptanObservation as DQSStopNotInNaptanObservation,
+)
 from transit_odp.dqs.views.base import DQSWarningListBaseView
 from waffle import flag_is_active
 
@@ -54,14 +55,14 @@ class StopMissingNaptanListView(TimingPatternsListBaseView, DQSWarningListBaseVi
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.is_dqs_new_report:
+            self.data = DQSStopNotInNaptanObservation
+
         context.update(
             {
                 "title": self.data.title,
                 "definition": self.data.text,
-                "preamble": (
-                    "The following service(s) have been observed to have a stop that "
-                    "is not registered with NaPTAN."
-                ),
+                "preamble": self.data.preamble,
                 "resolve": self.data.resolve,
             }
         )

@@ -19,7 +19,7 @@
           <thead class="govuk-table__head govuk-!-font-weight-regular">
             <tr class="govuk-table__row">
               <th scope="col" class="govuk-table__header govuk-!-font-weight-bold govuk-!-width-one-half">
-                {% trans "Number of Observation" %}
+                {% trans "Number of Observation" %}{{ df.number_of_services_affected.sum |pluralize:"s" }}                
               </th>
               <th scope="col" class="govuk-table__header govuk-!-font-weight-bold">{% trans "Observation category" %}</th>
             </tr>

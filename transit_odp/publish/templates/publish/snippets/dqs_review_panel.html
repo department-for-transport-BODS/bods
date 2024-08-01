@@ -50,8 +50,7 @@
       </h2>
       <p class="govuk-body">
         {% blocktrans %}
-                            The data quality report goes beyond validation only and checks for
-                            additional data quality issues to help improve your data.
+        The data quality report identifies data quality issues beyond the validation checks. Please review any raised issues.
                         {% endblocktrans %}
       </p>
       <a class="govuk-link"
@@ -60,7 +59,15 @@
          rel="noopener"
          href="{% url 'dq-draft-report' pk1=pk1 pk=object.dataset.id host hosts.publish %}">
         {% trans "View data quality report" %}
-      </a>
+      </a>      
+      {% if report_id %}      
+      <br />
+      <a class="govuk-link"
+             target="_blank"
+             href="{% url 'dq:report-csv' pk1=pk1 pk=object.dataset.id report_id=report_id  host hosts.publish %}">
+            {% trans "Download data quality report.csv" %}
+          </a>
+      {% endif %}
       <table class="govuk-table govuk-!-margin-top-2">
         <tbody class="govuk-table__body">
           {% if dq_score %}
