@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from enum import Enum, unique
 from typing import Dict, Final, Optional
 
+
 class TaskResultsStatus(Enum):
     PENDING = "PENDING"
 
