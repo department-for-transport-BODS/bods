@@ -92,6 +92,7 @@ class CAVLService(ICAVLService):
         body = {
             "dataProducerEndpoint": url,
             "username": username,
+            "password": password,
             "description": description,
             "shortDescription": short_description,
         }
