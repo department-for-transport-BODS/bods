@@ -14,6 +14,7 @@ from transit_odp.data_quality.pti.constants import (
     OPERATION_DAYS,
     OTHER_PUBLIC_HOLIDAYS,
     SCOTTISH_BANK_HOLIDAYS,
+    OLD_HOLIDAYS_ALREADY_REMOVED,
 )
 from transit_odp.naptan.models import StopPoint
 from transit_odp.otc.utils import is_service_in_scotland
@@ -219,9 +220,13 @@ def validate_bank_holidays(context, bank_holidays):
             holidays += days
 
     # .getchildren() will return comments: this filters out the comments.
-    # It also removes occurrences of OTHER_PUBLIC_HOLIDAYS of which there may be many or
+    # It also removes occurrences of OTHER_PUBLIC_HOLIDAYS and OLD_HOLIDAYS_ALREADY_REMOVED of which there may be many or
     # none.
-    holidays = [h for h in holidays if h and h not in OTHER_PUBLIC_HOLIDAYS]
+    holidays = [
+        h
+        for h in holidays
+        if h and h not in OTHER_PUBLIC_HOLIDAYS + OLD_HOLIDAYS_ALREADY_REMOVED
+    ]
 
     # duplicate check
     if sorted(list(set(holidays))) != sorted(holidays):
