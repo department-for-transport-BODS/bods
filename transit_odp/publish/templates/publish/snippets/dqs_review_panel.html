@@ -59,14 +59,14 @@
          rel="noopener"
          href="{% url 'dq-draft-report' pk1=pk1 pk=object.dataset.id host hosts.publish %}">
         {% trans "View data quality report" %}
-      </a>      
-      {% if report_id %}      
-      <br />
-      <a class="govuk-link"
-             target="_blank"
-             href="{% url 'dq:report-csv' pk1=pk1 pk=object.dataset.id report_id=report_id  host hosts.publish %}">
-            {% trans "Download data quality report.csv" %}
-          </a>
+      </a>
+      {% if report_id %}
+        <br />
+        <a class="govuk-link"
+           target="_blank"
+           href="{% url 'dq:report-csv' pk1=pk1 pk=object.dataset.id report_id=report_id  host hosts.publish %}">
+          {% trans "Download data quality report.csv" %}
+        </a>
       {% endif %}
       <table class="govuk-table govuk-!-margin-top-2">
         <tbody class="govuk-table__body">

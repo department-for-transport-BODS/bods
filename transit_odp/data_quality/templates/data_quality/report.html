@@ -10,9 +10,9 @@
       <div class="govuk-!-margin-bottom-4 flex-container">
         <div class="govuk-!-font-size-48 govuk-list govuk-!-margin-0">
           {% if is_dqs_new_report %}
-          <span class="govuk-!-font-weight-bold">Data quality report</span>
-          {% else %}          
-          <span class="govuk-caption-xl">Data quality report</span>
+            <span class="govuk-!-font-weight-bold">Data quality report</span>
+          {% else %}
+            <span class="govuk-caption-xl">Data quality report</span>
           {% endif %}
         </div>
         {% if is_dqs_new_report %}
@@ -61,11 +61,11 @@
                 {% endif %}
               </p>
               {% if is_dqs_new_report %}
-              <p class="govuk-body-s govuk-!-font-weight-bold">
-                Bus service{{ bus_services_affected|pluralize:"s" }}
-                <br />
-                affected
-              </p>
+                <p class="govuk-body-s govuk-!-font-weight-bold">
+                  Bus service{{ bus_services_affected|pluralize:"s" }}
+                  <br />
+                  affected
+                </p>
               {% else %}
                 <p class="govuk-body-s govuk-!-font-weight-bold">Bus line{{ object.no_of_lines|pluralize:"s" }}</p>
               {% endif %}
