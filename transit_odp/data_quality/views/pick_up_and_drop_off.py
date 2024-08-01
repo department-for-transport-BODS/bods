@@ -25,8 +25,11 @@ from transit_odp.data_quality.views.base import (
     TimingPatternsListBaseView,
     TwoTableDetailView,
 )
-from transit_odp.dqs.models import ObservationResults
-from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.constants import (
+    Checks,
+    FirstStopSetDownOnlyObservation as DQSFirstStopSetDownOnlyObservation,
+    LastStopPickUpOnlyObservation as DQSLastStopPickUpOnlyObservation,
+)
 from transit_odp.dqs.views.base import DQSWarningListBaseView
 from waffle import flag_is_active
 
@@ -39,9 +42,6 @@ class LastStopPickUpListView(TimingPatternsListBaseView, DQSWarningListBaseView)
         if not self.is_new_data_quality_service_active:
             self.model = TimingDropOffWarning
             self.table_class = PickUpDropOffListTable
-        else:
-            self.model = ObservationResults
-            self.table_class = DQSWarningListBaseTable
 
     @property
     def is_new_data_quality_service_active(self):
@@ -59,14 +59,13 @@ class LastStopPickUpListView(TimingPatternsListBaseView, DQSWarningListBaseView)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.is_dqs_new_report:
+            self.data = DQSLastStopPickUpOnlyObservation
         context.update(
             {
                 "title": self.data.title,
                 "definition": self.data.text,
-                "preamble": (
-                    "The following service(s) have been observed to have last "
-                    "stop as pick up only."
-                ),
+                "preamble": self.data.preamble,
                 "resolve": self.data.resolve,
             }
         )
@@ -119,14 +118,14 @@ class FirstStopDropOffListView(TimingPatternsListBaseView, DQSWarningListBaseVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.is_dqs_new_report:
+            self.data = DQSFirstStopSetDownOnlyObservation
+
         context.update(
             {
                 "title": self.data.title,
                 "definition": self.data.text,
-                "preamble": (
-                    "The following timing pattern(s) have been observed to have first "
-                    "stop as set down only."
-                ),
+                "preamble": self.data.preamble,
                 "resolve": self.data.resolve,
             }
         )
