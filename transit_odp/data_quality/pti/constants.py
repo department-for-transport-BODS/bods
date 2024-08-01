@@ -5,6 +5,7 @@ from django.utils import timezone
 OPERATION_DAYS = ("DaysOfOperation", "DaysOfNonOperation")
 
 # holidays common for english and scottish
+
 BANK_HOLIDAYS_COMMON = [
     "ChristmasEve",
     "ChristmasDay",
@@ -36,6 +37,12 @@ BANK_HOLIDAYS_ONLY_SCOTTISH = [
 BANK_HOLIDAYS = BANK_HOLIDAYS_COMMON + BANK_HOLIDAYS_ONLY_ENGLISH
 SCOTTISH_BANK_HOLIDAYS = BANK_HOLIDAYS_COMMON + BANK_HOLIDAYS_ONLY_SCOTTISH
 OTHER_PUBLIC_HOLIDAYS = ["OtherPublicHoliday"]
+
+# old holidays, which may not come now
+OLD_HOLIDAYS_ALREADY_REMOVED = [
+    "StAndrewsDay",
+    "AugustBankHolidayScotland",
+]
 
 
 def get_important_note():
