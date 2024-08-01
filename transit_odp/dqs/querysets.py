@@ -187,7 +187,11 @@ class ObservationResultsQueryset(models.QuerySet):
                         output_field=CharField(),
                     ),
                     Value(" ("),
-                    F("service_pattern_stop__naptan_stop__atco_code"),
+                    Coalesce(
+                        F("service_pattern_stop__naptan_stop__atco_code"),
+                        F("service_pattern_stop__atco_code"),
+                        output_field=CharField(),
+                    ),
                     Value(")"),
                 ),
                 stop_type=F("service_pattern_stop__naptan_stop__stop_type"),
