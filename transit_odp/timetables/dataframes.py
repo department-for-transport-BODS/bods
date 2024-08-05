@@ -667,23 +667,24 @@ def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
     return pd.DataFrame(all_vehicle_journeys)
 
 
+def get_description(element):
+    """Helper function to extract text from an element or return an empty string."""
+    if element:
+        description = element.get_element_or_none("Description")
+        return description.text if description else ""
+    return ""
+
+
 def populate_lines(lines: list) -> list:
     lines_list = []
     for line in lines:
         line_id = line["id"]
         line_name = line.get_element(["LineName"]).text
-        outbound_description = line.get_element_or_none(["OutboundDescription"])
-        inbound_description = line.get_element_or_none(["InboundDescription"])
-
-        outbound_description = (
-            outbound_description.get_element("Description").text
-            if outbound_description
-            else ""
+        outbound_description = get_description(
+            line.get_element_or_none(["OutboundDescription"])
         )
-        inbound_description = (
-            inbound_description.get_element("Description").text
-            if inbound_description
-            else ""
+        inbound_description = get_description(
+            line.get_element_or_none(["InboundDescription"])
         )
 
         lines_list.append(
