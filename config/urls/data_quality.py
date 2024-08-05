@@ -1,5 +1,6 @@
 from django.urls import include, path
 
+from config.settings.base import register_django_axe_url
 from transit_odp.data_quality import views
 from transit_odp.dqs import views as DQSviews
 
@@ -365,5 +366,5 @@ urlpatterns = [
             ]
         ),
     ),
-    path("django_axe/", include("django_axe.urls")),
+    register_django_axe_url(),
 ]

@@ -1,6 +1,6 @@
-from django.conf import settings
 from django.urls import include, path
 
+from config.settings.base import register_django_axe_url
 from transit_odp.fares import views
 from transit_odp.fares.views.edit_description import (
     EditDraftRevisionDescriptionView,
@@ -136,7 +136,5 @@ urlpatterns = [
             ]
         ),
     ),
+    register_django_axe_url(),
 ]
-
-if "django_axe" in settings.INSTALLED_APPS and settings.DJANGO_AXE_ENABLED:
-    urlpatterns = [path("django_axe/", include("django_axe.urls"))] + urlpatterns

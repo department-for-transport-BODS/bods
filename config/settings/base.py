@@ -7,6 +7,7 @@ import os
 
 import environ
 from dateutil import parser
+from django.urls import include, path
 
 ROOT_DIR = (
     environ.Path(__file__) - 3
@@ -731,3 +732,8 @@ ACCOUNT_LOGIN_ATTEMPTS_LIMIT = env("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", default=5)
 ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = env("ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT", default=900)
 SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=False)
 SESSION_COOKIE_HTTPONLY = env.bool("SESSION_COOKIE_HTTPONLY", default=True)
+
+
+def register_django_axe_url():
+    if "django_axe" in INSTALLED_APPS and DJANGO_AXE_ENABLED:
+        return (path("django_axe/", include("django_axe.urls")),)

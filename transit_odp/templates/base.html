@@ -51,18 +51,18 @@
           <!-- Global site tag (gtag.js) - Google Analytics -->
           <script async src="https://www.googletagmanager.com/gtag/js?id={{GOOGLE_ANALYTICS_KEY}}"></script>
           <script>
-                        const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
-                        window.dataLayer = window.dataLayer || [];
-                        function gtag() {
-                            dataLayer.push(arguments);
-                        }
-                        gtag('js', new Date());
-                        gtag('config', gaToken);
+            const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+            gtag('config', gaToken);
           </script>
         {% else %}
           <script>
-                        const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
-                        window['ga-disable-' + gaToken] = true;
+            const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
+            window['ga-disable-' + gaToken] = true;
           </script>
         {% endif %}
       {% endblock %}
