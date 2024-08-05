@@ -4,7 +4,6 @@ from django.views import defaults as default_views
 from django.views.generic.base import TemplateView
 from rest_framework.authtoken import views
 
-from config.settings.base import register_django_axe_url
 from transit_odp.browse.views.base_views import (
     ApiSelectView,
     BrowseHomeView,
@@ -155,7 +154,7 @@ urlpatterns = [
     path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
     path("version/", VersionView.as_view(), name="version"),
     path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
-    register_django_axe_url(),
+    settings.DJANGO_AXE_ENABLED and path("django_axe/", include("django_axe.urls")),
 ]
 
 if settings.DEBUG:

@@ -2,7 +2,6 @@ from django.conf import settings
 from django.urls import include, path
 from django.views import defaults as default_views
 
-from config.settings.base import register_django_axe_url
 from transit_odp.avl.views.archive import PPCArchiveView
 from transit_odp.common.utils.custom_error_handlers import (
     page_not_found,
@@ -139,7 +138,7 @@ urlpatterns = [
     ),
     path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
     path("version/", VersionView.as_view(), name="version"),
-    register_django_axe_url(),
+    settings.DJANGO_AXE_ENABLED and path("django_axe/", include("django_axe.urls")),
 ]
 
 if settings.DEBUG:

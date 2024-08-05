@@ -4,7 +4,6 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 
-from config.settings.base import register_django_axe_url
 from transit_odp.browse.views.base_views import (
     GlobalFeedbackThankYouView,
     GlobalFeedbackView,
@@ -59,7 +58,7 @@ urlpatterns = [
     path("privacy-policy/", PrivacyPolicyView.as_view(), name="privacy-policy"),
     path("account/", include("config.urls.allauth")),
     path("changelog/", ChangelogView.as_view(), name="changelog"),
-    register_django_axe_url(),
+    settings.DJANGO_AXE_ENABLED and path("django_axe/", include("django_axe.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
