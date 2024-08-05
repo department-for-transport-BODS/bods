@@ -58,9 +58,9 @@ class MissingJourneyCodeDetailView(DQSWarningDetailBaseView):
         qs = self.get_queryset()
 
         context["title"] = title
-        context["subtitle"] = (
-            f"Service {line} has at least one journey with a missing journey code"
-        )
+        context[
+            "subtitle"
+        ] = f"Service {line} has at least one journey with a missing journey code"
         context["num_of_journeys"] = len(qs)
 
         context["table"] = MissingJourneyCodeTable(qs, page)

@@ -58,9 +58,9 @@ class DuplicateJourneyCodeDetailView(DQSWarningDetailBaseView):
         qs = self.get_queryset()
 
         context["title"] = title
-        context["subtitle"] = (
-            f"Service {line} has at least one journey with a duplicate journey code"
-        )
+        context[
+            "subtitle"
+        ] = f"Service {line} has at least one journey with a duplicate journey code"
         context["num_of_journeys"] = len(qs)
 
         context["table"] = DuplicateJourneyCodeTable(qs, page)
