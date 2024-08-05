@@ -394,15 +394,6 @@ def get_stop_activity_id(stop_activities, name):
     return matching_activity
 
 
-def get_timing_status_for_stop(stop_timing_status):
-    if stop_timing_status and stop_timing_status.text in [
-        "principalTimingPoint",
-        "PTP",
-    ]:
-        return True
-    return False
-
-
 def journey_pattern_sections_to_dataframe(sections, stop_activities):
     all_links = []
     if sections is not None:
@@ -417,16 +408,12 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                 from_stop_ref = from_stop.get_element(["StopPointRef"]).text
                 to_stop_ref = to_stop.get_element(["StopPointRef"]).text
                 to_stop_timing_status = link.get_element_or_none(["To", "TimingStatus"])
-                from_stop_timing_status = link.get_element_or_none(
-                    ["From", "TimingStatus"]
-                )
                 is_timing_status = False
-                if order == 0:
-                    is_timing_status = get_timing_status_for_stop(
-                        from_stop_timing_status
-                    )
-                else:
-                    is_timing_status = get_timing_status_for_stop(to_stop_timing_status)
+                if to_stop_timing_status and to_stop_timing_status.text in [
+                    "principalTimingPoint",
+                    "PTP",
+                ]:
+                    is_timing_status = True
                 timing_link_id = link["id"]
 
                 run_time = pd.NaT
