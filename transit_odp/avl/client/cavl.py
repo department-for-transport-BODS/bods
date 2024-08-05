@@ -71,9 +71,7 @@ class CAVLService(ICAVLService):
             logger.exception(
                 f"[CAVL] Couldn't delete feed <id={feed_id}>. Response: {self._get_error_response(e)}"
             )
-            return False
-
-        return response.status_code == HTTPStatus.NO_CONTENT
+            raise
 
     def update_feed(
         self,

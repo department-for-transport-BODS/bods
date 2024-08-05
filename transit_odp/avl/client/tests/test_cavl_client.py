@@ -118,13 +118,13 @@ class TestCAVLService:
             (
                 HTTPStatus.NO_CONTENT,
                 {},
-                True,
+                does_not_raise(),
                 ["DELETE http://www.dummy.com/subscriptions/1 204"],
             ),
             (
                 HTTPStatus.NOT_FOUND,
                 dict(errors=["Not found"]),
-                False,
+                pytest.raises(RequestException),
                 [
                     "DELETE http://www.dummy.com/subscriptions/1 404",
                     "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Not found']}",
@@ -133,7 +133,7 @@ class TestCAVLService:
             (
                 HTTPStatus.BAD_REQUEST,
                 dict(errors=["Bad request"]),
-                False,
+                pytest.raises(RequestException),
                 [
                     "DELETE http://www.dummy.com/subscriptions/1 400",
                     "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Bad request']}",
@@ -142,7 +142,7 @@ class TestCAVLService:
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 dict(errors=["Server error"]),
-                False,
+                pytest.raises(RequestException),
                 [
                     "DELETE http://www.dummy.com/subscriptions/1 500",
                     "[CAVL] Couldn't delete feed <id=1>. Response: {'errors': ['Server error']}",
@@ -164,9 +164,9 @@ class TestCAVLService:
         url = DUMMY_CAVL_URL + "/subscriptions/1"
         kwargs["m"].delete(url, json=response_mock, status_code=status)
 
-        result = cavl_service.delete_feed(feed_id=1)
+        with expected_result:
+            assert cavl_service.delete_feed(feed_id=1) is not None
 
-        assert result == expected_result
         assert [rec.message for rec in caplog.records] == expected_message
 
     @pytest.mark.parametrize(

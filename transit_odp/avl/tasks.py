@@ -298,8 +298,10 @@ def perform_feed_validation(adapter: PipelineAdapter, feed_id: int):
         time.sleep(CONFIG_API_WAIT_TIME)
         with transaction.atomic():
             cavl_service = CAVLService()
-            deleted = cavl_service.delete_feed(feed_id=feed_id)
-            if not deleted:
+
+            try:
+                cavl_service.delete_feed(feed_id=feed_id)
+            except RequestException:
                 adapter.error("Unable to de-register feed.")
                 return
 
