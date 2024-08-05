@@ -36,4 +36,6 @@ class Migration(migrations.Migration):
 
     dependencies = [("organisation", "0063_alter_organisation_admin_areas")]
 
-    operations = [migrations.RunPython(update_statuses_forward, update_statuses_backward)]
+    operations = [
+        migrations.RunPython(update_statuses_forward, update_statuses_backward)
+    ]
