@@ -38,6 +38,8 @@ URL_MAPPING = {
     "First stop is not a timing point": "first-stop-not-timing-point",
     "Last stop is not a timing point": "last-stop-not-timing-point",
     "Incorrect stop type": "incorrect-stop-type",
+    "Missing journey code": "missing-journey-code",
+    "Duplicate journey code": "duplicate-journey-code",
 }
 
 

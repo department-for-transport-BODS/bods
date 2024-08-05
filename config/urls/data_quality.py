@@ -365,5 +365,39 @@ urlpatterns = [
             ]
         ),
     ),
+    path(
+        "missing-journey-code/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.MissingJourneyCodeListView.as_view(),
+                    name="missing-journey-code-list",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.MissingJourneyCodeDetailView.as_view(),
+                    name="missing-journey-code-detail",
+                ),
+            ]
+        ),
+    ),
+    path(
+        "duplicate-journey-code/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.DuplicateJourneyCodeListView.as_view(),
+                    name="duplicate-journey-code-list",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.DuplicateJourneyCodeDetailView.as_view(),
+                    name="duplicate-journey-code-detail",
+                ),
+            ]
+        ),
+    ),
     path("django_axe/", include("django_axe.urls")),
 ]

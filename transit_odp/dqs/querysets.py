@@ -143,7 +143,7 @@ class ObservationResultsQueryset(models.QuerySet):
         line: str,
         is_stop_type: bool = False,
     ):
-        columns = ["journey_start_time", "direction", "stop_name"]
+        columns = ["journey_start_time", "direction", "stop_name", "journey_code"]
 
         if is_stop_type:
             columns.append("stop_type")
@@ -195,6 +195,7 @@ class ObservationResultsQueryset(models.QuerySet):
                     Value(")"),
                 ),
                 stop_type=F("service_pattern_stop__naptan_stop__stop_type"),
+                journey_code=F("vehicle_journey__journey_code"),
             )
             .values(*columns)
             .distinct()

@@ -7,6 +7,15 @@ from .timing_point import (
     DQSLastStopNotTimingPointDetailView,
 )
 from .stop_not_found import DQSStopMissingNaptanDetailView
+from .missing_journey_code import (
+    MissingJourneyCodeListView,
+    MissingJourneyCodeDetailView,
+)
+
+from .duplicate_journey_code import (
+    DuplicateJourneyCodeListView,
+    DuplicateJourneyCodeDetailView,
+)
 
 __all__ = [
     "DQSWarningDetailBaseView",
@@ -17,4 +26,8 @@ __all__ = [
     "DQSFirstStopNotTimingPointDetailView",
     "DQSLastStopNotTimingPointDetailView",
     "DQSStopMissingNaptanDetailView",
+    "MissingJourneyCodeListView",
+    "MissingJourneyCodeDetailView",
+    "DuplicateJourneyCodeListView",
+    "DuplicateJourneyCodeDetailView",
 ]

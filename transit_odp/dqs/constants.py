@@ -109,6 +109,8 @@ class Checks(Enum):
     StopNotFoundInNaptan = "Stop not found in NaPTAN"
     LastStopIsNotATimingPoint = "Last stop is not a timing point"
     FirstStopIsNotATimingPoint = "First stop is not a timing point"
+    MissingJourneyCode = "Missing journey code"
+    DuplicateJourneyCode = "Duplicate journey code"
 
 
 _ANCHOR: Final = '<a class="govuk-link" target="_blank" href="{0}">{0}</a>'
