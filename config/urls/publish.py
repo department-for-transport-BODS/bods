@@ -138,7 +138,7 @@ urlpatterns = [
     ),
     path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
     path("version/", VersionView.as_view(), name="version"),
-    settings.DJANGO_AXE_ENABLED and path("django_axe/", include("django_axe.urls")),
+    path("django_axe/", include("django_axe.urls")),
 ]
 
 if settings.DEBUG:
