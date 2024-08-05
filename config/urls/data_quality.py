@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path
 
 from transit_odp.data_quality import views
@@ -365,5 +366,5 @@ urlpatterns = [
             ]
         ),
     ),
-    path("django_axe/", include("django_axe.urls")),
+    settings.DJANGO_AXE_ENABLED and path("django_axe/", include("django_axe.urls")),
 ]
