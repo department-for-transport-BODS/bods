@@ -322,7 +322,7 @@ class FeedUploadForm(GOVUKModelForm):
 class SelectDataTypeForm(GOVUKForm):
     form_title = _("Choose data type")
     dataset_type = forms.ChoiceField(
-        label="Dataset Type",
+        label="",
         choices=[
             (1, _("Timetables")),
             (2, _("Automatic Vehicle Locations (AVL)")),
