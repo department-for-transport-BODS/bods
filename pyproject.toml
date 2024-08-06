@@ -64,7 +64,7 @@ tenacity = "~=8.2.3"
 whitenoise = "~=6.6.0"
 beautifulsoup4 = "^4.12.2"
 isodate = "^0.6.1"
-django-axe = "^0.5.11"
+django-axe = "^0.5.22"
 
 
 [tool.poetry.dev-dependencies]
