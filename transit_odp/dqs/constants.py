@@ -196,9 +196,8 @@ IncorrectNocObservation = Observation(
 
 StopNotInNaptanObservation = Observation(
     title="Stop not found in NaPTAN",
-    text=(""),
+    text="This observation identifies the use of stops that are not registered with NaPTAN. ",
     impacts=(
-        "This observation identifies the use of stops that are not registered with NaPTAN. "
         "NaPTAN provides a source for key stop information across different transport types "
         "to support consumers to provide accurate stop information to passengers."
         + _LINE_BREAK
@@ -541,9 +540,9 @@ NoTimingPointMoreThan15MinsObservation = Observation(
     impacts=(
         "Timing points are stops along a bus route where the bus is scheduled to arrive at a specific time. "
         + _LINE_BREAK
-        + "It is recommended by the Traffic Commissioner that services have a stop at least every 15 minutes. "
-        "It is important to ensure the departure times on published timetables is Incorrect departure times on"
-        " published timetables will cause disruption to passengers. "
+        + "It is recommended by the Traffic Commissioner that services have a stop at least every 15 minutes."
+        " It is important to ensure the departure times on published timetables is correct to avoid disruption"
+        "  to passengers."
     ),
     resolve=(""),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
