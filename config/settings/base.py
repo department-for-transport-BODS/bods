@@ -106,7 +106,7 @@ SESSION_COOKIE_DOMAIN = "." + PARENT_HOST
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Age of session cookies, in seconds
-SESSION_COOKIE_AGE = 72000  # set to 20 hours
+SESSION_COOKIE_AGE = 600  # set to 10 minutes
 
 # Whether to save the session data on every request
 SESSION_SAVE_EVERY_REQUEST = True
