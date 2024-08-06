@@ -7,6 +7,8 @@ from transit_odp.data_quality.models.warnings import (
     LineExpiredWarning,
     LineMissingBlockIDWarning,
 )
+from transit_odp.dqs.constants import Level, Category
+
 
 _ANCHOR: Final = '<a class="govuk-link" target="_blank" href="{0}">{0}</a>'
 _TRAVEL_LINE_ANCHOR = _ANCHOR.format(
@@ -17,20 +19,6 @@ _TRANSXCHANGE_ANCHOR: Final = _ANCHOR.format(
     "https://www.gov.uk/government/collections/transxchange"
 )
 _LINE_BREAK = "<br/><br/>"
-
-
-@unique
-class Level(Enum):
-    critical = "Critical"
-    advisory = "Advisory"
-
-
-@unique
-class Category(Enum):
-    stops = "Stops"
-    timing = "Timing"
-    journey = "Journey"
-    data_set = "Data set"
 
 
 class CheckBasis(Enum):
