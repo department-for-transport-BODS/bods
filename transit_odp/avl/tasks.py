@@ -27,7 +27,7 @@ from transit_odp.avl.constants import (
     PARTIALLY_COMPLIANT,
     UNDERGOING,
 )
-from transit_odp.avl.enums import AVL_FEED_DEPLOYING, AVL_FEED_DOWN, AVL_FEED_UP
+from transit_odp.avl.enums import AVLFeedStatus
 from transit_odp.avl.models import (
     AVLSchemaValidationReport,
     AVLValidationReport,
@@ -234,9 +234,9 @@ def task_monitor_avl_feeds():
         .exclude(live_revision__status__in=exclude_status)
     )
     revision_status_map = {
-        AVL_FEED_UP: FeedStatus.live.value,
-        AVL_FEED_DEPLOYING: FeedStatus.live.value,
-        AVL_FEED_DOWN: FeedStatus.error.value,
+        AVLFeedStatus.live.value: FeedStatus.live.value,
+        AVLFeedStatus.inactive.value: FeedStatus.live.value,
+        AVLFeedStatus.error.value: FeedStatus.error.value,
     }
 
     datasets.update(avl_feed_last_checked=timezone.now())
@@ -298,8 +298,10 @@ def perform_feed_validation(adapter: PipelineAdapter, feed_id: int):
         time.sleep(CONFIG_API_WAIT_TIME)
         with transaction.atomic():
             cavl_service = CAVLService()
-            deleted = cavl_service.delete_feed(feed_id=feed_id)
-            if not deleted:
+
+            try:
+                cavl_service.delete_feed(feed_id=feed_id)
+            except RequestException:
                 adapter.error("Unable to de-register feed.")
                 return
 

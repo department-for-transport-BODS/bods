@@ -7,7 +7,6 @@ from django.db.models import Count, Q
 from pydantic import BaseModel
 from requests.exceptions import RequestException
 
-from transit_odp.avl.enums import AVLFeedStatus
 from transit_odp.organisation.constants import (
     AVLType,
     FaresType,
@@ -24,7 +23,6 @@ from transit_odp.users.constants import (
 
 Expired = FeedStatus.expired.value
 Inactive = FeedStatus.inactive.value
-FeedUp = AVLFeedStatus.FEED_UP
 
 User = get_user_model()
 logger = getLogger(__name__)

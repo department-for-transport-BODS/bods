@@ -17,7 +17,7 @@ from transit_odp.avl.constants import (
     UPPER_THRESHOLD,
     VALIDATION_TERMINATED,
 )
-from transit_odp.avl.enums import AVL_FEED_DOWN, AVL_FEED_UP
+from transit_odp.avl.enums import AVLFeedStatus
 from transit_odp.avl.factories import (
     AVLSchemaValidationReportFactory,
     AVLValidationReportFactory,
@@ -627,7 +627,7 @@ def test_get_datafeeds_to_validate():
     THEN only the LIVE, published feeds are returned.
     WHEN get_datafeeds_to_validate is called.
     """
-    avl_statuses = Iterator([AVL_FEED_UP, AVL_FEED_DOWN])
+    avl_statuses = Iterator(AVLFeedStatus.choices())
     live_feeds = 10
     AVLDatasetRevisionFactory.create_batch(
         live_feeds, status=LIVE, dataset__avl_feed_status=avl_statuses

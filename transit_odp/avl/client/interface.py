@@ -25,11 +25,18 @@ class ICAVLService(Protocol):
             description: Description of the data feed (entered by user)
             short_description: Short description of the data feed (entered by user)
 
-        Returns: Boolean indicating the feed was added successfully.
+        Returns: Boolean indicating the feed was added successfully
         """
         ...
 
     def delete_feed(self, feed_id: int) -> bool:
+        """
+        Deletes the feed registered in CAVL by the ID
+        Args:
+            feed_id:
+
+        Returns: Boolean indicating the feed was deleted successfully
+        """
         ...
 
     def update_feed(

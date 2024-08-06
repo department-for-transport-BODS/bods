@@ -5,7 +5,7 @@ from typing import Optional, Sequence
 import requests
 from django.conf import settings
 from django.utils import timezone
-from requests.exceptions import RequestException, ConnectionError
+from requests.exceptions import RequestException
 
 from transit_odp.avl.client.interface import ICAVLService
 from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
@@ -15,9 +15,15 @@ logger = logging.getLogger(__name__)
 
 
 class CAVLService(ICAVLService):
-    CAVL_URL = settings.CAVL_URL
     AVL_URL = settings.AVL_PRODUCER_API_BASE_URL
     headers = {"x-api-key": settings.AVL_PRODUCER_API_KEY}
+
+    def _get_error_response(exception: RequestException) -> str:
+        return (
+            exception.response.json()
+            if hasattr(exception.response, "json")
+            else "(empty)"
+        )
 
     def register_feed(
         self,
@@ -47,36 +53,25 @@ class CAVLService(ICAVLService):
             )
             response.raise_for_status()
         except RequestException as e:
-            error_response = (
-                e.response.json() if hasattr(e.response, "json") else "(empty)"
-            )
             logger.exception(
-                f"[CAVL] Couldn't register feed <id={feed_id}>. Response: {error_response}"
+                f"[CAVL] Couldn't register feed <id={feed_id}>. Response: {self._get_error_response(e)}"
             )
             raise
 
         return response.status_code == HTTPStatus.CREATED
 
     def delete_feed(self, feed_id: int) -> bool:
-        api_url = self.CAVL_URL + f"/feed/{feed_id}"
+        api_url = self.AVL_URL + f"/subscriptions/{feed_id}"
         response = None
 
         try:
-            response = requests.delete(api_url, timeout=30)
+            response = requests.delete(api_url, timeout=30, headers=self.headers)
             response.raise_for_status()
-        except ConnectionError:
-            logger.exception(f"[CAVL] Couldn't delete feed <id={feed_id}>")
-            return False
-        except RequestException:
-            if response is not None and response.status_code == HTTPStatus.NOT_FOUND:
-                logger.error(
-                    f"[CAVL] Dataset {feed_id} => Does not exist in CAVL Service."
-                )
-            else:
-                logger.exception(f"[CAVL] Couldn't delete feed <id={feed_id}>")
-            return False
-
-        return response.status_code == HTTPStatus.NO_CONTENT
+        except RequestException as e:
+            logger.exception(
+                f"[CAVL] Couldn't delete feed <id={feed_id}>. Response: {self._get_error_response(e)}"
+            )
+            raise
 
     def update_feed(
         self,
@@ -103,37 +98,38 @@ class CAVLService(ICAVLService):
             )
             response.raise_for_status()
         except RequestException as e:
-            error_response = (
-                e.response.json() if hasattr(e.response, "json") else "(empty)"
-            )
             logger.exception(
-                f"[CAVL] Couldn't update feed <id={feed_id}>. Response: {error_response}"
+                f"[CAVL] Couldn't update feed <id={feed_id}>. Response: {self._get_error_response(e)}"
             )
             raise
 
         return response.status_code == HTTPStatus.NO_CONTENT
 
-    def get_feed(self, feed_id: int) -> Optional[Feed]:
-        api_url = self.CAVL_URL + f"/feed/{feed_id}"
+    def get_feed(self, feed_id: int) -> Feed:
+        api_url = self.AVL_URL + f"/subscriptions/{feed_id}"
 
         try:
-            response = requests.get(api_url, timeout=30)
+            response = requests.get(api_url, timeout=30, headers=self.headers)
             response.raise_for_status()
-        except RequestException:
-            logger.exception(f"[CAVL] Couldn't fetch feed <id={feed_id}>")
+        except RequestException as e:
+            logger.exception(
+                f"[CAVL] Couldn't fetch feed <id={feed_id}>. Response: {self._get_error_response(e)}"
+            )
             return None
 
         if response.status_code == HTTPStatus.OK:
             return Feed(**response.json())
 
     def get_feeds(self) -> Sequence[Feed]:
-        api_url = self.CAVL_URL + "/feed"
+        api_url = self.AVL_URL + "/subscriptions"
 
         try:
-            response = requests.get(api_url, timeout=30)
+            response = requests.get(api_url, timeout=30, headers=self.headers)
             response.raise_for_status()
-        except RequestException:
-            logger.exception("[CAVL] Couldn't fetch feeds")
+        except RequestException as e:
+            logger.exception(
+                f"[CAVL] Couldn't fetch feeds. Response: {self._get_error_response(e)}"
+            )
             return []
 
         if response.status_code == HTTPStatus.OK:
@@ -156,11 +152,8 @@ class CAVLService(ICAVLService):
             )
             response.raise_for_status()
         except RequestException as e:
-            error_response = (
-                e.response.json() if hasattr(e.response, "json") else "(empty)"
-            )
             logger.exception(
-                f"[CAVL] Couldn't validate feed <url={url}>. Response: {error_response}"
+                f"[CAVL] Couldn't validate feed <url={url}>. Response: {self._get_error_response(e)}"
             )
             raise
 
