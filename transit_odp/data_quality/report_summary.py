@@ -40,6 +40,7 @@ URL_MAPPING = {
     "Incorrect stop type": "incorrect-stop-type",
     "Missing journey code": "missing-journey-code",
     "Duplicate journey code": "duplicate-journey-code",
+    "Incorrect licence number": "incorrect-licence-number",
 }
 
 
@@ -189,6 +190,9 @@ class Summary(BaseModel):
             bus_services_affected = cls.qet_service_code_line_name_unique_combinations(
                 df
             )
+            pd.set_option("display.max_rows", None)
+            pd.set_option("display.max_columns", None)
+            print(df)
             df = df[
                 [
                     "importance",
@@ -246,6 +250,7 @@ class Summary(BaseModel):
                         }
                     )
 
+            print(f"warning_data: {warning_data}")
             return cls(
                 data=warning_data,
                 count=count,

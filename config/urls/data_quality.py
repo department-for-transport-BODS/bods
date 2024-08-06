@@ -399,5 +399,22 @@ urlpatterns = [
             ]
         ),
     ),
+    path(
+        "incorrect-licence-number/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.IncorrectLicenceNumberListView.as_view(),
+                    name="incorrect-licence-number-list",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.IncorrectLicenceNumberDetailView.as_view(),
+                    name="incorrect-licence-number-detail",
+                ),
+            ]
+        ),
+    ),
     path("django_axe/", include("django_axe.urls")),
 ]

@@ -17,6 +17,11 @@ from .duplicate_journey_code import (
     DuplicateJourneyCodeDetailView,
 )
 
+from .incorrect_licence_number import (
+    IncorrectLicenceNumberListView,
+    IncorrectLicenceNumberDetailView,
+)
+
 __all__ = [
     "DQSWarningDetailBaseView",
     "DQSWarningListBaseView",
@@ -30,4 +35,6 @@ __all__ = [
     "MissingJourneyCodeDetailView",
     "DuplicateJourneyCodeListView",
     "DuplicateJourneyCodeDetailView",
+    "IncorrectLicenceNumberListView",
+    "IncorrectLicenceNumberDetailView",
 ]
