@@ -82,6 +82,7 @@ class XMLValidator(FileValidator):
     def __init__(self, source, max_file_size=5e9, schema=None):
         super().__init__(source, max_file_size=max_file_size)
         self.schema = schema
+        self.violations = []
 
     def dangerous_xml_check(self):
         try:
@@ -109,7 +110,7 @@ class XMLValidator(FileValidator):
         if self.is_too_large():
             raise FileTooLarge(self.source.name)
         self.dangerous_xml_check()
-        self.get_document()
+        return self.get_violations()
 
     def get_document(self):
         """Parses `file` returning an lxml element object.
@@ -133,9 +134,21 @@ class XMLValidator(FileValidator):
             raise XMLSyntaxError(self.source.name, message=err.msg) from err
         return doc
 
+    def get_violations(self):
+        violations = []
+        if self.is_file:
+            self.source.seek(0)
+        doc = etree.parse(self.source)
+        is_valid = self.schema.validate(doc)
+        if not is_valid:
+            for error in self.schema.error_log:
+                self.violations.append(error)
+        return self.violations
+
 
 def validate_xml_files_in_zip(zip_file, schema=None):
     """Validate all the xml files in a zip archive."""
+    violations = []
     context = DatasetPipelineLoggerContext(component_name="FaresPipeline")
     adapter = PipelineAdapter(logger, {"context": context})
     with zipfile.ZipFile(zip_file) as zout:
@@ -145,10 +158,11 @@ def validate_xml_files_in_zip(zip_file, schema=None):
         for index, name in enumerate(filenames, 1):
             adapter.info(f"XML Validation of file {index} of {total_files} - {name}.")
             with zout.open(name) as xmlout:
-                XMLValidator(xmlout, schema=lxml_schema).validate()
+                violations += (XMLValidator(xmlout, schema=lxml_schema).validate())
                 adapter.info(
                     f"Completed XML Validation of file {index} of {total_files} - {name}."
                 )
+    return violations
 
 
 def get_lxml_schema(schema):

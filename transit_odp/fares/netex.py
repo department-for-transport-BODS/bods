@@ -198,7 +198,7 @@ class NeTExDocument:
         all_atco_codes_list = [
             element_id.split(":")[-1] for element_id in stop_point_ids_list
         ]
-        valid_atco_codes_list = [code[:3] for code in all_atco_codes_list if code != ""]
+        valid_atco_codes_list = [code[:3] for code in all_atco_codes_list if code != "" and code[:3].isnumeric()]
 
         return valid_atco_codes_list
 
