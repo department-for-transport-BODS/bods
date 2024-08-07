@@ -4,6 +4,7 @@ from string import ascii_letters
 import pytest
 from django_hosts.resolvers import reverse
 
+
 import config
 from transit_odp.site_admin.models import CHAR_LEN, APIRequest
 from transit_odp.users.factories import UserFactory
@@ -97,3 +98,23 @@ def test_api_request_middleware_remove_api_key(client_factory):
     assert request.requestor == user
     assert request.path_info == "/api/v1/fares/dataset/"
     assert request.query_string == "noc=BLAH&status=active"
+
+
+def test_security_headers(client_factory):
+    host = config.hosts.DATA_HOST
+    url = reverse("home", host=host)
+    client = client_factory(host=host)
+    user = UserFactory()
+    client.force_login(user=user)
+    response = client.get(
+        url, {"noc": "BLAH", "api_key": user.auth_token.key, "status": "active"}
+    )
+    assert response["Clear-Site-Data"] == '"storage", "executionContexts"'
+    assert (
+        response["Permissions-Policy"]
+        == "geolocation=(self), microphone=(self), camera=(self)"
+    )
+    assert (
+        response["Content-Security-Policy"]
+        == "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; frame-src 'none';"
+    )

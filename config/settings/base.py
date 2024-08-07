@@ -234,6 +234,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django_hosts.middleware.HostsRequestMiddleware",
     "transit_odp.common.middleware.DefaultHostMiddleware",
+    "transit_odp.common.middleware.SecurityHeadersMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
