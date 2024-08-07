@@ -1,3 +1,5 @@
+from django.utils.deprecation import MiddlewareMixin
+
 from transit_odp.common.utils import remove_query_string_param
 from transit_odp.site_admin.models import CHAR_LEN, APIRequest
 
@@ -54,4 +56,44 @@ class APILoggerMiddleware:
                 requestor=user, path_info=path_info, query_string=query_string
             )
 
+        return response
+
+
+class SecurityHeadersMiddleware(MiddlewareMixin):
+    """
+    Middleware for adding security-related HTTP headers to responses.
+
+    This middleware sets various HTTP security headers to enhance the security of
+    the application by controlling how resources are loaded and interacted with.
+
+    Headers added by this middleware:
+    - Clear-Site-Data: Instructs the browser to clear storage, and execution contexts
+      when the response is received.
+    - Permissions-Policy: Controls the permissions for accessing sensitive features
+      such as geolocation, microphone, and camera, restricting them to the same origin.
+    - Content-Security-Policy: Defines a policy to prevent various types of attacks
+      by restricting the sources from which resources such as scripts, styles, and images
+      can be loaded.
+    """
+
+    def process_response(self, request, response):
+        """
+        Processes the outgoing response before it is sent to the client.
+        """
+        response["Clear-Site-Data"] = '"storage", "executionContexts"'
+
+        response[
+            "Permissions-Policy"
+        ] = "geolocation=(self), microphone=(self), camera=(self)"
+
+        response["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self'; "
+            "style-src 'self'; "
+            "img-src 'self'; "
+            "connect-src 'self'; "
+            "font-src 'self'; "
+            "object-src 'none'; "
+            "frame-src 'none';"
+        )
         return response
