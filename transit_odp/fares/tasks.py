@@ -164,7 +164,6 @@ def task_run_fares_validation(task_id):
     # ValidationException that contains a code and message, we just grab the
     # generic exception and update the task with the exception code.
     # All the exception codes match those in DatasetETLTaskResult.
-    #try:
     schema = get_netex_schema()
     if zipfile.is_zipfile(file_):
         adapter.info("Validating fares zip file.")
@@ -180,7 +179,9 @@ def task_run_fares_validation(task_id):
 
     if len(violations) > 0:
         schema_violations = [
-            SchemaViolation.from_violation(revision_id=revision.id, violation=TXCSchemaViolation.from_error(v))
+            SchemaViolation.from_violation(
+                revision_id=revision.id, violation=TXCSchemaViolation.from_error(v)
+            )
             for v in violations
         ]
 
@@ -188,9 +189,7 @@ def task_run_fares_validation(task_id):
             # 'Update data' flow allows validation to occur multiple times
             # lets just delete any 'old' observations.
             revision.schema_violations.all().delete()
-            SchemaViolation.objects.bulk_create(
-                schema_violations, batch_size=2000
-            )
+            SchemaViolation.objects.bulk_create(schema_violations, batch_size=2000)
     task.update_progress(40)
     revision.upload_file = file_
     revision.save()

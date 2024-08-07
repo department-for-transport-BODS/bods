@@ -33,7 +33,17 @@ class DatasetFaresValidator:
                     adapter.info(
                         f"Fares Validation of file {index} of {file_count} - {name}."
                     )
-                    if not name.startswith("__") and not SchemaViolation.objects.filter(filename=name.split("/")[-1].replace("[","%5B").replace("]","%5D").replace(":","%3A").replace(" ","%20"), revision_id=revision).exists():
+                    if (
+                        not name.startswith("__")
+                        and not SchemaViolation.objects.filter(
+                            filename=name.split("/")[-1]
+                            .replace("[", "%5B")
+                            .replace("]", "%5D")
+                            .replace(":", "%3A")
+                            .replace(" ", "%20"),
+                            revision_id=revision,
+                        ).exists()
+                    ):
                         with zf.open(name) as f:
                             yield f
                             adapter.info(

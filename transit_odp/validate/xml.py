@@ -158,7 +158,7 @@ def validate_xml_files_in_zip(zip_file, schema=None):
         for index, name in enumerate(filenames, 1):
             adapter.info(f"XML Validation of file {index} of {total_files} - {name}.")
             with zout.open(name) as xmlout:
-                violations += (XMLValidator(xmlout, schema=lxml_schema).validate())
+                violations += XMLValidator(xmlout, schema=lxml_schema).validate()
                 adapter.info(
                     f"Completed XML Validation of file {index} of {total_files} - {name}."
                 )
