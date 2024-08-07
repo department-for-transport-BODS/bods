@@ -43,6 +43,7 @@ class Observation:
     check_basis: CheckBasis = None
     resolve: str = None
     preamble: str = None
+    is_active: bool = True
 
     @property
     def type(self):

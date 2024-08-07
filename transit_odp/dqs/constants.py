@@ -171,7 +171,7 @@ IncorrectNocObservation = Observation(
     title="Incorrect NOC",
     text=(
         "This observation identifies where the National Operator Code (NOC) used in the data"
-        " is not registered to the your Organisation profile."
+        " is not registered to your BODS Organisation profile."
     ),
     impacts=(
         "NOCs are used by data consumers to know which operator is running the service, and to"
