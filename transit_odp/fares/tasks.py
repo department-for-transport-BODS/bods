@@ -5,9 +5,12 @@ import zipfile
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.db import transaction
 from django.utils import timezone
 from waffle import flag_is_active
 
+from transit_odp.data_quality.models import SchemaViolation
+from transit_odp.timetables.transxchange import TXCSchemaViolation
 from transit_odp.common.loggers import (
     DatasetPipelineLoggerContext,
     MonitoringLoggerContext,
@@ -161,28 +164,33 @@ def task_run_fares_validation(task_id):
     # ValidationException that contains a code and message, we just grab the
     # generic exception and update the task with the exception code.
     # All the exception codes match those in DatasetETLTaskResult.
-    try:
-        schema = get_netex_schema()
-        if zipfile.is_zipfile(file_):
-            adapter.info("Validating fares zip file.")
-            with ZippedValidator(file_) as validator:
-                validator.validate()
-            adapter.info("Validating fares NeTEx file.")
-            validate_xml_files_in_zip(file_, schema=schema)
-            adapter.info("Completed validating fares NeTEx file.")
-        else:
-            adapter.info("Validating fares NeTEx file.")
-            NeTExValidator(file_, schema=schema).validate()
-            adapter.info("Completed validating fares NeTEx file.")
-    except ValidationException as exc:
-        adapter.error(exc.message, exc_info=True)
-        task.to_error("dataset_validate", exc.code)
-        task.additional_info = exc.message
-        task.save()
-        raise PipelineException(exc.message) from exc
-    except Exception as exc:
-        task.handle_general_pipeline_exception(exc, adapter)
+    #try:
+    schema = get_netex_schema()
+    if zipfile.is_zipfile(file_):
+        adapter.info("Validating fares zip file.")
+        with ZippedValidator(file_) as validator:
+            validator.validate()
+        adapter.info("Validating fares NeTEx file.")
+        violations = validate_xml_files_in_zip(file_, schema=schema)
+        adapter.info("Completed validating fares NeTEx file.")
+    else:
+        adapter.info("Validating fares NeTEx file.")
+        violations = NeTExValidator(file_, schema=schema).validate()
+        adapter.info("Completed validating fares NeTEx file.")
 
+    if len(violations) > 0:
+        schema_violations = [
+            SchemaViolation.from_violation(revision_id=revision.id, violation=TXCSchemaViolation.from_error(v))
+            for v in violations
+        ]
+
+        with transaction.atomic():
+            # 'Update data' flow allows validation to occur multiple times
+            # lets just delete any 'old' observations.
+            revision.schema_violations.all().delete()
+            SchemaViolation.objects.bulk_create(
+                schema_violations, batch_size=2000
+            )
     task.update_progress(40)
     revision.upload_file = file_
     revision.save()
