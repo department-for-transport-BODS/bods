@@ -165,18 +165,15 @@ class ObservationResultsQueryset(models.QuerySet):
         revision_id: int,
         service: str,
         line: str,
-        is_stop_type: bool = False,
     ):
         columns = [
             "journey_start_time",
             "direction",
             "stop_name",
             "journey_code",
+            "stop_type",
             "details",
         ]
-
-        if is_stop_type:
-            columns.append("stop_type")
 
         qs = (
             self.filter(

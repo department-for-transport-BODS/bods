@@ -41,6 +41,9 @@ class DQSWarningDetailsBaseTable(GovUkTable):
         self.details = tables.Column(
             verbose_name="Details", attrs={"column_key": "details"}
         )
+        self.stop_type = tables.Column(
+            verbose_name="Stop type", attrs={"column_key": "stop_type"}
+        )
         self.columns = [
             self.journey_start_time,
             self.direction,
