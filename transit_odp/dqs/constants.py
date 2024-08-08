@@ -184,7 +184,7 @@ IncorrectNocObservation = Observation(
     title=Checks.IncorrectNoc.value,
     text=(
         "This observation identifies where the National Operator Code (NOC) used in the data"
-        " is not registered to the your Organisation profile."
+        " is not registered to your BODS Organisation profile."
     ),
     impacts=(
         "NOCs are used by data consumers to know which operator is running the service, and to"
@@ -209,9 +209,8 @@ IncorrectNocObservation = Observation(
 
 StopNotInNaptanObservation = Observation(
     title=Checks.StopNotFoundInNaptan.value,
-    text=(""),
+    text="This observation identifies the use of stops that are not registered with NaPTAN. ",
     impacts=(
-        "This observation identifies the use of stops that are not registered with NaPTAN. "
         "NaPTAN provides a source for key stop information across different transport types "
         "to support consumers to provide accurate stop information to passengers."
         + _LINE_BREAK
