@@ -21,6 +21,10 @@ from .incorrect_licence_number import (
     IncorrectLicenceNumberListView,
     IncorrectLicenceNumberDetailView,
 )
+from .no_timing_point_more_than_15_mins import (
+    NoTimingPointMoreThan15MinsListView,
+    NoTimingPointMoreThan15MinsDetailView,
+)
 
 __all__ = [
     "DQSWarningDetailBaseView",
@@ -37,4 +41,6 @@ __all__ = [
     "DuplicateJourneyCodeDetailView",
     "IncorrectLicenceNumberListView",
     "IncorrectLicenceNumberDetailView",
+    "NoTimingPointMoreThan15MinsListView",
+    "NoTimingPointMoreThan15MinsDetailView",
 ]

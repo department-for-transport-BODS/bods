@@ -407,11 +407,23 @@ urlpatterns = [
                     "",
                     view=DQSviews.IncorrectLicenceNumberListView.as_view(),
                     name="incorrect-licence-number-list",
+                )
+            ]
+        ),
+    ),
+    path(
+        "no-timing-point-more-than-15-mins/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.NoTimingPointMoreThan15MinsListView.as_view(),
+                    name="no-timing-point-more-than-15-mins-list",
                 ),
                 path(
                     "detail/",
-                    view=DQSviews.IncorrectLicenceNumberDetailView.as_view(),
-                    name="incorrect-licence-number-detail",
+                    view=DQSviews.NoTimingPointMoreThan15MinsDetailView.as_view(),
+                    name="no-timing-point-more-than-15-mins-detail",
                 ),
             ]
         ),

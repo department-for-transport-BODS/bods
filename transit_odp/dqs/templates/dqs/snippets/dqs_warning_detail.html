@@ -1,5 +1,6 @@
 {% load django_tables2 %}
 {% load i18n %}
+{% load parse_dictionary %}
 {% block table-wrapper %}
   <div>
     {% block table %}
@@ -23,36 +24,20 @@
             {% for row in table.paginated_rows %}
               {% block table.tbody.row %}
                 <tr class="govuk-table__row {{ row.attrs.class }}">
-                  {% for column, cell in row.items %}
-                  
-                    {% if table.columns|length >=  forloop.counter  %}
-                        {% if forloop.first %}
-                          <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
-                            {% if column.localize == None %}
-                              {{ cell }}
-                            {% else %}
-                              {% if column.localize %}
-                                {{ cell|localize }}
-                              {% else %}
-                                {{ cell|unlocalize }}
-                              {% endif %}
-                            {% endif %}
-                          </td>
+                  {% for column in table.columns %}
+                    
+                    <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
+                      {% if column.localize == None %}
+                        {{  row|get_value_from_dict:column.attrs.column_key }}
+                      {% else %}
+                        {% if column.localize %}
+                          {{ row|get_value_from_dict:column.attrs.column_key|localize }}
                         {% else %}
-                          <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
-                            {% if column.localize == None %}
-                              {{ cell }}
-                            {% else %}
-                              {% if column.localize %}
-                                {{ cell|localize }}
-                              {% else %}
-                                {{ cell|unlocalize }}
-                              {% endif %}
-                            {% endif %}
-                          </td>
+                          {{ row|get_value_from_dict:column.attrs.column_key|unlocalize }}
                         {% endif %}
-                    {% endif %}
-                  {% endfor %}
+                      {% endif %}
+                    </td>
+                  {% endfor %}                  
                 </tr>
               {% endblock table.tbody.row %}
             {% empty %}

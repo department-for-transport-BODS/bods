@@ -43,12 +43,35 @@ class ObservationResultsQueryset(models.QuerySet):
     This queryset class is to include all querysets related to the Observation Results model
     """
 
-    def get_observations(self, report_id: int, check: Checks, revision_id: int) -> list:
+    def get_observations(
+        self, report_id: int, check: Checks, revision_id: int, col_name="noc"
+    ) -> list:
         """
         Filter for observation results for the report and revision of the specific Checks
         """
 
-        columns = ["observation", "service_code", "line_name", "message", "dqs_details"]
+        if col_name == "noc":
+            col_value = F(
+                "taskresults__transmodel_txcfileattributes__national_operator_code",
+            )
+        elif col_name == "lic":
+            col_value = F(
+                "taskresults__transmodel_txcfileattributes__licence_number",
+            )
+        else:
+            col_value = Value(
+                "",
+                output_field=TextField(),
+            )
+
+        columns = [
+            "observation",
+            "service_code",
+            "line_name",
+            "message",
+            "dqs_details",
+            "is_details_link",
+        ]
 
         qs = (
             self.filter(
@@ -73,9 +96,7 @@ class ObservationResultsQueryset(models.QuerySet):
                     ),
                 ),
                 dqs_details=Concat(
-                    F(
-                        "taskresults__transmodel_txcfileattributes__national_operator_code",
-                    ),
+                    col_value,
                     Value(
                         " is specified in the dataset but not assigned to your "
                         "organisation",
@@ -83,6 +104,7 @@ class ObservationResultsQueryset(models.QuerySet):
                     ),
                     output_field=TextField(),
                 ),
+                is_details_link=Value(False, output_field=BooleanField()),
             )
             .values(*columns)
         )
@@ -108,6 +130,7 @@ class ObservationResultsQueryset(models.QuerySet):
             "dqs_details",
             "revision_id",
             "is_published",
+            "is_details_link",
         ]
 
         qs = (
@@ -127,6 +150,7 @@ class ObservationResultsQueryset(models.QuerySet):
                 dqs_details=Value(dqs_details, output_field=TextField()),
                 revision_id=Value(revision_id, output_field=TextField()),
                 is_published=Value(is_published, output_field=BooleanField()),
+                is_details_link=Value(True, output_field=BooleanField()),
             )
             .values(*columns)
             .distinct()
@@ -143,7 +167,13 @@ class ObservationResultsQueryset(models.QuerySet):
         line: str,
         is_stop_type: bool = False,
     ):
-        columns = ["journey_start_time", "direction", "stop_name", "journey_code"]
+        columns = [
+            "journey_start_time",
+            "direction",
+            "stop_name",
+            "journey_code",
+            "details",
+        ]
 
         if is_stop_type:
             columns.append("stop_type")

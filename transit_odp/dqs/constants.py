@@ -111,6 +111,7 @@ class Checks(Enum):
     FirstStopIsNotATimingPoint = "First stop is not a timing point"
     MissingJourneyCode = "Missing journey code"
     DuplicateJourneyCode = "Duplicate journey code"
+    NoTimingPointMoreThan15Mins = "No timing point more than 15 mins"
 
 
 _ANCHOR: Final = '<a class="govuk-link" target="_blank" href="{0}">{0}</a>'
@@ -406,7 +407,7 @@ CancelledServiceAppearingActiveObservation = Observation(
     ),
     resolve=(""),
     preamble="The following service(s) have been observed to not have the duplicate journey code.",
-    list_url_name="dq:duplicate-journey-code-list",
+    list_url_name="dq:cancelled-service-appearing-active-list",
     level=Level.critical,
     category=Category.data_set,
     is_active=False,
@@ -445,7 +446,7 @@ ServicedOrganisationOutOfDateObservation = Observation(
     ),
     resolve=(""),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    list_url_name="dq:serviced-organisation-out-of-date-list",
     level=Level.advisory,
     category=Category.data_set,
     is_active=False,
@@ -468,7 +469,7 @@ ServiceNumberNotMatchingRegistrationObservation = Observation(
     ),
     resolve=(""),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    list_url_name="dq:service-number-not-matching-registration-list",
     level=Level.advisory,
     category=Category.data_set,
     is_active=False,
@@ -487,7 +488,7 @@ MissingDataObservation = Observation(
     ),
     resolve=(""),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    list_url_name="dq:missing-data-list",
     level=Level.advisory,
     category=Category.data_set,
     is_active=False,
@@ -509,7 +510,7 @@ MissingBusWorkingNumberObservation = Observation(
     ),
     resolve=(""),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    list_url_name="dq:missing-bus-working-number-list",
     level=Level.advisory,
     category=Category.journey,
     is_active=False,
@@ -527,7 +528,7 @@ DuplicateJourneysObservation = Observation(
     ),
     resolve=(""),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    list_url_name="dq:duplicate-journeys-list",
     level=Level.advisory,
     category=Category.journey,
     is_active=False,
@@ -536,19 +537,25 @@ DuplicateJourneysObservation = Observation(
 NoTimingPointMoreThan15MinsObservation = Observation(
     title="No timing point for more than 15 minutes",
     text=(
-        "This observation identifies journeys where the interval between a pair of timing points is more"
-        " than 15 minutes."
+        "This observation identifies journeys where the interval between a pair of consecutive timing"
+        " points is more than 15 minutes. "
     ),
     impacts=(
         "Timing points are stops along a bus route where the bus is scheduled to arrive at a specific time. "
         + _LINE_BREAK
-        + "It is recommended by the Traffic Commissioner that services have a stop at least every 15 minutes. "
-        "It is important to ensure the departure times on published timetables is Incorrect departure times on"
-        " published timetables will cause disruption to passengers. "
+        + "It is recommended by the Traffic Commissioner that services have a stop at least every 15 minutes."
+        " It is important to ensure the departure times on published timetables is correct to avoid disruption"
+        " to passengers. "
     ),
-    resolve=(""),
-    preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    resolve=(
+        "Please investigate the observations found for the below service(s) and make the necessary updates"
+        " to the departure times on your scheduling tool if required."
+    ),
+    preamble=(
+        "The following service(s) have been observed to have at least one journey with a pair of timings"
+        " points of more than 15 minutes."
+    ),
+    list_url_name="dq:no-timing-point-more-than-15-mins-list",
     level=Level.advisory,
     category=Category.timing,
     is_active=False,

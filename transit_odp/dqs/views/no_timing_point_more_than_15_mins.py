@@ -1,7 +1,8 @@
-from transit_odp.dqs.constants import Checks, IncorrectLicenceNumberObservation
-from transit_odp.dqs.tables.duplicate_journey_code import DuplicateJourneyCodeTable
+from transit_odp.dqs.constants import Checks, NoTimingPointMoreThan15MinsObservation
+from transit_odp.dqs.tables.no_timing_point_more_than_15_mins import (
+    NoTimingPointMoreThan15MinsCodeTable,
+)
 from transit_odp.dqs.views.base import DQSWarningListBaseView, DQSWarningDetailBaseView
-
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Checks
 from transit_odp.dqs.views.base import DQSWarningDetailBaseView
@@ -9,18 +10,18 @@ from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
 from transit_odp.dqs.models import Report
 
 
-class IncorrectLicenceNumberListView(DQSWarningListBaseView):
-    data = IncorrectLicenceNumberObservation
+class NoTimingPointMoreThan15MinsListView(DQSWarningListBaseView):
+    data = NoTimingPointMoreThan15MinsObservation
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._is_dqs_new_report = None
 
-    check = Checks.DuplicateJourneyCode
+    check = Checks.NoTimingPointMoreThan15Mins
+    dqs_details = "There is at least one journey with a pair of timing points of more than 15 minutes"
 
     def get_queryset(self):
 
-        self.col_name = "lic"
         return super().get_queryset()
 
     def get_context_data(self, **kwargs):
@@ -42,8 +43,8 @@ class IncorrectLicenceNumberListView(DQSWarningListBaseView):
         return {}
 
 
-class IncorrectLicenceNumberDetailView(DQSWarningDetailBaseView):
-    data = IncorrectLicenceNumberObservation
+class NoTimingPointMoreThan15MinsDetailView(DQSWarningDetailBaseView):
+    data = NoTimingPointMoreThan15MinsObservation
     model = ObservationResults
     table_class = DQSWarningDetailsBaseTable
     paginate_by = 10
@@ -59,11 +60,11 @@ class IncorrectLicenceNumberDetailView(DQSWarningDetailBaseView):
 
         context["title"] = title
         context["subtitle"] = (
-            f"Service {line} has at least one journey with an incorrect licence number"
+            f"Service {line} has at least one journey with a duplicate journey code"
         )
         context["num_of_journeys"] = len(qs)
 
-        context["table"] = DuplicateJourneyCodeTable(qs, page)
+        context["table"] = NoTimingPointMoreThan15MinsCodeTable(qs, page)
         return context
 
     def get_queryset(self):
@@ -75,7 +76,7 @@ class IncorrectLicenceNumberDetailView(DQSWarningDetailBaseView):
         if not len(qs):
             return qs
         revision_id = qs[0].revision_id
-        self.check = Checks.DuplicateJourneyCode
+        self.check = Checks.NoTimingPointMoreThan15Mins
 
         qs = ObservationResults.objects.get_observations_details(
             report_id, self.check, revision_id, service, line
