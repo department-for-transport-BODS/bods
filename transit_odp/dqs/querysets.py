@@ -43,12 +43,26 @@ class ObservationResultsQueryset(models.QuerySet):
     This queryset class is to include all querysets related to the Observation Results model
     """
 
-    def get_observations(self, report_id: int, check: Checks, revision_id: int) -> list:
+    def get_observations(
+        self,
+        report_id: int,
+        check: Checks,
+        revision_id: int,
+        is_published: bool = False,
+    ) -> list:
         """
         Filter for observation results for the report and revision of the specific Checks
         """
 
-        columns = ["observation", "service_code", "line_name", "message", "dqs_details"]
+        columns = [
+            "observation",
+            "service_code",
+            "line_name",
+            "message",
+            "dqs_details",
+            "revision_id",
+            "is_published",
+        ]
 
         qs = (
             self.filter(
@@ -83,6 +97,8 @@ class ObservationResultsQueryset(models.QuerySet):
                     ),
                     output_field=TextField(),
                 ),
+                revision_id=Value(revision_id, output_field=TextField()),
+                is_published=Value(is_published, output_field=BooleanField()),
             )
             .values(*columns)
         )
