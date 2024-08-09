@@ -51,7 +51,7 @@ class ObservationResultsQueryset(models.QuerySet):
         is_published: bool = False,
         dqs_details: str = None,
         is_details_link: bool = True,
-        col_name: str = "noc",
+        col_name: str = "",
     ) -> list:
         """
         Filter for observation results for the report and revision of the specific Checks

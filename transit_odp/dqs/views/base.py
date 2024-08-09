@@ -12,6 +12,7 @@ from transit_odp.dqs.models import Report
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
 
+
 class DQSWarningListBaseView(SingleTableView):
     template_name = "data_quality/warning_list.html"
     table_class = DQSWarningListBaseTable

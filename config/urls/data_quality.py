@@ -136,7 +136,7 @@ urlpatterns = [
                 path(
                     "detail/",
                     view=DQSviews.LastStopPickUpDetailView.as_view(),
-                    name="last-stop-pick-up-only-detail",
+                    name="dqs-last-stop-pick-up-only-detail",
                 ),
             ]
         ),
@@ -158,7 +158,7 @@ urlpatterns = [
                 path(
                     "detail/",
                     view=DQSviews.FirstStopSetDownDetailView.as_view(),
-                    name="last-stop-pick-up-only-detail",
+                    name="dqs-first-stop-set-down-only-detail",
                 ),
             ]
         ),
@@ -180,7 +180,7 @@ urlpatterns = [
                 path(
                     "detail/",
                     view=DQSviews.LastStopNotTimingPointDetailView.as_view(),
-                    name="last-stop-not-timing-point-detail",
+                    name="dqs-last-stop-not-timing-point-detail",
                 ),
             ]
         ),
@@ -202,7 +202,7 @@ urlpatterns = [
                 path(
                     "detail/",
                     view=DQSviews.FirstStopNotTimingPointDetailView.as_view(),
-                    name="last-stop-pick-up-only-detail",
+                    name="dqs-first-stop-not-timing-point-detail",
                 ),
             ]
         ),
@@ -224,7 +224,7 @@ urlpatterns = [
                 path(
                     "detail/",
                     view=DQSviews.StopMissingNaptanDetailView.as_view(),
-                    name="stop-missing-naptan-detail",
+                    name="dqs-stop-missing-naptan-detail",
                 ),
             ]
         ),
@@ -331,7 +331,7 @@ urlpatterns = [
                 path(
                     "detail/",
                     view=DQSviews.IncorrectStopTypeDetailView.as_view(),
-                    name="incorrect-stop-type-detail",
+                    name="dqs-incorrect-stop-type-detail",
                 ),
             ]
         ),
