@@ -25,10 +25,9 @@
               {% block table.tbody.row %}
                 <tr class="govuk-table__row {{ row.attrs.class }}">
                   {% for column in table.columns %}
-                    
                     <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
                       {% if column.localize == None %}
-                        {{  row|get_value_from_dict:column.attrs.column_key }}
+                        {{ row|get_value_from_dict:column.attrs.column_key }}
                       {% else %}
                         {% if column.localize %}
                           {{ row|get_value_from_dict:column.attrs.column_key|localize }}
@@ -37,7 +36,7 @@
                         {% endif %}
                       {% endif %}
                     </td>
-                  {% endfor %}                  
+                  {% endfor %}
                 </tr>
               {% endblock table.tbody.row %}
             {% empty %}
