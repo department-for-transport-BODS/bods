@@ -11,7 +11,6 @@ from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
 from transit_odp.validate import XMLValidator
 
-
 _NETEX_NAMESPACE_PREFIX = "netex"
 _NETEX_NAMESPACE = "http://www.netex.org.uk/netex"
 NETEX_SCHEMA_URL = "http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd"
@@ -261,21 +260,17 @@ class NeTExDocument:
 
 
 def process_document(xmlout):
-    doc = NeTExDocument(xmlout)
-    return doc
+    return NeTExDocument(xmlout)
 
 
 def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
     """Returns a list NeTExDocuments from a zip file."""
-    docs = []
     with zipfile.ZipFile(zipfile_) as zout:
         filenames = [name for name in zout.namelist() if name.endswith("xml")]
         for name in filenames:
             if not name.startswith("__"):
                 with zout.open(name) as xmlout:
-                    doc = process_document(xmlout)
-                    docs.append(doc)
-    return docs
+                    yield process_document(xmlout)
 
 
 def get_documents_from_file(source) -> List[NeTExDocument]:
@@ -283,8 +278,7 @@ def get_documents_from_file(source) -> List[NeTExDocument]:
     if zipfile.is_zipfile(source):
         return get_documents_from_zip(source)
     else:
-        doc = NeTExDocument(source)
-        return [doc]
+        yield NeTExDocument(source)
 
 
 def get_netex_schema() -> etree.XMLSchema:
