@@ -4,7 +4,13 @@ from typing import List
 
 from django.views.generic import TemplateView
 
-from transit_odp.data_quality.constants import OBSERVATIONS, Level, Observation
+from transit_odp.data_quality.constants import OBSERVATIONS
+from transit_odp.dqs.constants import (
+    OBSERVATIONS as DQSOBSERVATIONS,
+    Level,
+    Observation,
+)
+from waffle import flag_is_active
 
 
 @dataclass
@@ -24,13 +30,21 @@ def get_glossary_category_by_level(observations: List[Observation], level: Level
 class DataQualityGlossaryView(TemplateView):
     template_name = "data_quality/definitions.html"
 
+    @property
+    def is_dqs_new_report(self):
+        return flag_is_active("", "is_new_data_quality_service_active")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        critical = get_glossary_category_by_level(OBSERVATIONS, Level.critical)
+        observations = OBSERVATIONS
+        if self.is_dqs_new_report:
+            observations = DQSOBSERVATIONS
+
+        critical = get_glossary_category_by_level(observations, Level.critical)
         critical_count = sum(len(c.observations) for c in critical)
 
-        advisory = get_glossary_category_by_level(OBSERVATIONS, Level.advisory)
+        advisory = get_glossary_category_by_level(observations, Level.advisory)
         advisory_count = sum(len(c.observations) for c in advisory)
 
         context.update(

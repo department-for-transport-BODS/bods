@@ -33,9 +33,9 @@
             <h2 class="govuk-heading-l">Critical observations ({{ critical_count }})</h2>
             <p class="govuk-body">
               {% blocktrans %}
-                                These observations are considered critical in terms of data quality.
-                                An operator should aim to have zero critical observations in their data.
-                            {% endblocktrans %}
+                  These observations are considered critical in terms of data quality.
+                  An operator should aim to have zero critical observations in their data.
+              {% endblocktrans %}
             </p>
             {% for category in critical_observations %}
               {% include "data_quality/snippets/glossary_accordion.html" with category=category counter=forloop.counter type="critical" %}
@@ -47,11 +47,9 @@
             <h2 class="govuk-heading-l">Advisory observations ({{ advisory_count }})</h2>
             <p class="govuk-body">
               {% blocktrans %}
-                                These observations suggest there may be an error in the data.
-                                However, for some types of services these may be intended by the operator.
-                                Please check that these are intentional and check for new advisory
-                                observations that may still indicate an issue with the data.
-                            {% endblocktrans %}
+                These observations are considered advisory in terms of data quality and suggest there may be an issue in
+                 the data. Please review the issues and make the necessary corrections to resolve these if required.
+              {% endblocktrans %}
             </p>
             {% for category in advisory_observations %}
               {% include "data_quality/snippets/glossary_accordion.html" with category=category counter=forloop.counter type="advisory" %}
