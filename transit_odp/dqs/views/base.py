@@ -20,6 +20,8 @@ class DQSWarningListBaseView(SingleTableView):
     check: Checks = Checks.DefaultCheck
     dqs_details: str = None
     _is_dqs_new_report = None
+    is_details_link = True
+    col_name = ""
 
     @property
     def is_dqs_new_report(self):
@@ -48,14 +50,15 @@ class DQSWarningListBaseView(SingleTableView):
         if qs_revision:
             is_published = qs_revision.is_published
 
-        if self.dqs_details:
-            return self.model.objects.get_observations_grouped(
-                report_id, self.check, revision_id, self.dqs_details, is_published
-            )
-
         return self.model.objects.get_observations(
-            report_id, self.check, revision_id, self.col_name
-        ).distinct()
+            report_id,
+            self.check,
+            revision_id,
+            is_published,
+            self.dqs_details,
+            self.is_details_link,
+            self.col_name,
+        )
 
     def get_table_kwargs(self):
         pass
