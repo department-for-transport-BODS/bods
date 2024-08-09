@@ -9,32 +9,26 @@ from django.db import transaction
 from django.utils import timezone
 from waffle import flag_is_active
 
-from transit_odp.data_quality.models import SchemaViolation
-from transit_odp.timetables.transxchange import TXCSchemaViolation
+from transit_odp.common.constants import CSVFileName
 from transit_odp.common.loggers import (
     DatasetPipelineLoggerContext,
     MonitoringLoggerContext,
     PipelineAdapter,
 )
+from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
+from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.fares.extract import ExtractionError, NeTExDocumentsExtractor
 from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
-from transit_odp.fares.netex import (
-    NeTExValidator,
-    get_documents_from_file,
-    get_netex_schema,
-)
+from transit_odp.fares.netex import NeTExValidator, get_netex_schema
 from transit_odp.fares.transform import NeTExDocumentsTransformer, TransformationError
-from transit_odp.fares.utils import (
-    get_etl_task_or_pipeline_exception,
-)
-from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
-from transit_odp.common.constants import CSVFileName
+from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation.constants import FaresType
 from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision
 from transit_odp.organisation.updaters import update_dataset
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
+from transit_odp.timetables.transxchange import TXCSchemaViolation
 from transit_odp.validate import (
     DataDownloader,
     DownloadException,
@@ -43,7 +37,6 @@ from transit_odp.validate import (
     ZippedValidator,
 )
 from transit_odp.validate.xml import validate_xml_files_in_zip
-
 
 logger = logging.getLogger(__name__)
 
@@ -223,18 +216,16 @@ def task_run_fares_etl(task_id):
     """Task for extracting metadata from NeTEx file/s."""
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
+    extracted_data = []
 
     context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
     adapter = PipelineAdapter(logger, {"context": context})
 
-    file_ = revision.upload_file
-    docs = get_documents_from_file(file_)
-
     task.update_progress(60)
     try:
         adapter.info("Creating fares extractor.")
-        extractor = NeTExDocumentsExtractor(docs)
-        extracted_data = extractor.to_dict()
+        extractor = NeTExDocumentsExtractor(revision)
+        extracted_data = extractor.extract()
     except ExtractionError as exc:
         adapter.error("Metadata extraction failed.", exc_info=True)
         task.to_error("dataset_etl", exc.code)
@@ -400,7 +391,7 @@ def task_rerun_fares_validation_specific_datasets():
     fares_datasets = Dataset.objects.filter(id__in=_ids).get_active()
 
     if not fares_datasets:
-        logger.info(f"No active datasets found in BODS with these dataset IDs")
+        logger.info("No active datasets found in BODS with these dataset IDs")
         return
 
     processed_count = 0
