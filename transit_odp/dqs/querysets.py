@@ -43,12 +43,44 @@ class ObservationResultsQueryset(models.QuerySet):
     This queryset class is to include all querysets related to the Observation Results model
     """
 
-    def get_observations(self, report_id: int, check: Checks, revision_id: int) -> list:
+    def get_observations(
+        self,
+        report_id: int,
+        check: Checks,
+        revision_id: int,
+        is_published: bool = False,
+        dqs_details: str = None,
+        is_details_link: bool = True,
+        col_name: str = "",
+    ) -> list:
         """
         Filter for observation results for the report and revision of the specific Checks
         """
 
-        columns = ["observation", "service_code", "line_name", "message", "dqs_details"]
+        columns = [
+            "observation",
+            "service_code",
+            "line_name",
+            "message",
+            "dqs_details",
+            "revision_id",
+            "is_published",
+            "is_details_link",
+        ]
+
+        if col_name == "noc":
+            col_value = F(
+                "taskresults__transmodel_txcfileattributes__national_operator_code",
+            )
+        elif col_name == "lic":
+            col_value = F(
+                "taskresults__transmodel_txcfileattributes__licence_number",
+            )
+        else:
+            col_value = Value(
+                "",
+                output_field=TextField(),
+            )
 
         qs = (
             self.filter(
@@ -72,61 +104,22 @@ class ObservationResultsQueryset(models.QuerySet):
                         "taskresults__transmodel_txcfileattributes__service_code",
                     ),
                 ),
-                dqs_details=Concat(
-                    F(
-                        "taskresults__transmodel_txcfileattributes__national_operator_code",
-                    ),
-                    Value(
-                        " is specified in the dataset but not assigned to your "
-                        "organisation",
+                dqs_details=(
+                    Concat(
+                        col_value,
+                        Value(
+                            " is specified in the dataset but not assigned to your "
+                            "organisation",
+                            output_field=TextField(),
+                        ),
                         output_field=TextField(),
-                    ),
-                    output_field=TextField(),
+                    )
+                    if not dqs_details
+                    else Value(dqs_details, output_field=TextField())
                 ),
-            )
-            .values(*columns)
-        )
-
-        return qs
-
-    def get_observations_grouped(
-        self,
-        report_id: int,
-        check: Checks,
-        revision_id: int,
-        dqs_details: str = "Message in details",
-        is_published: bool = False,
-    ) -> list:
-        """
-        Filter for observation results for the report and revision of the specific check and ingesting the message
-        """
-
-        columns = [
-            "service_code",
-            "line_name",
-            "message",
-            "dqs_details",
-            "revision_id",
-            "is_published",
-        ]
-
-        qs = (
-            self.filter(
-                taskresults__dataquality_report_id=report_id,
-                taskresults__checks__observation=check.value,
-                taskresults__dataquality_report__revision_id=revision_id,
-            )
-            .annotate(
-                service_code=F(
-                    "taskresults__transmodel_txcfileattributes__service_code"
-                ),
-                line_name=F(
-                    "taskresults__transmodel_txcfileattributes__service_txcfileattributes__name"
-                ),
-                message=Value("", output_field=TextField()),
-                dqs_details=Value(dqs_details, output_field=TextField()),
                 revision_id=Value(revision_id, output_field=TextField()),
                 is_published=Value(is_published, output_field=BooleanField()),
+                is_details_link=Value(is_details_link, output_field=BooleanField()),
             )
             .values(*columns)
             .distinct()
@@ -141,12 +134,15 @@ class ObservationResultsQueryset(models.QuerySet):
         revision_id: int,
         service: str,
         line: str,
-        is_stop_type: bool = False,
     ):
-        columns = ["journey_start_time", "direction", "stop_name"]
-
-        if is_stop_type:
-            columns.append("stop_type")
+        columns = [
+            "journey_start_time",
+            "direction",
+            "stop_name",
+            "journey_code",
+            "stop_type",
+            "details",
+        ]
 
         qs = (
             self.filter(
@@ -195,6 +191,7 @@ class ObservationResultsQueryset(models.QuerySet):
                     Value(")"),
                 ),
                 stop_type=F("service_pattern_stop__naptan_stop__stop_type"),
+                journey_code=F("vehicle_journey__journey_code"),
             )
             .values(*columns)
             .distinct()

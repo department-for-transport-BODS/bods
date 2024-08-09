@@ -394,6 +394,15 @@ def get_stop_activity_id(stop_activities, name):
     return matching_activity
 
 
+def get_timing_status_for_stop(stop_timing_status):
+    if stop_timing_status and stop_timing_status.text in [
+        "principalTimingPoint",
+        "PTP",
+    ]:
+        return True
+    return False
+
+
 def journey_pattern_sections_to_dataframe(sections, stop_activities):
     all_links = []
     if sections is not None:
@@ -408,12 +417,16 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                 from_stop_ref = from_stop.get_element(["StopPointRef"]).text
                 to_stop_ref = to_stop.get_element(["StopPointRef"]).text
                 to_stop_timing_status = link.get_element_or_none(["To", "TimingStatus"])
+                from_stop_timing_status = link.get_element_or_none(
+                    ["From", "TimingStatus"]
+                )
                 is_timing_status = False
-                if to_stop_timing_status and to_stop_timing_status.text in [
-                    "principalTimingPoint",
-                    "PTP",
-                ]:
-                    is_timing_status = True
+                if order == 0:
+                    is_timing_status = get_timing_status_for_stop(
+                        from_stop_timing_status
+                    )
+                else:
+                    is_timing_status = get_timing_status_for_stop(to_stop_timing_status)
                 timing_link_id = link["id"]
 
                 run_time = pd.NaT
@@ -667,23 +680,24 @@ def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
     return pd.DataFrame(all_vehicle_journeys)
 
 
+def get_description(element):
+    """Helper function to extract text from an element or return an empty string."""
+    if element:
+        description = element.get_element_or_none("Description")
+        return description.text if description else ""
+    return ""
+
+
 def populate_lines(lines: list) -> list:
     lines_list = []
     for line in lines:
         line_id = line["id"]
         line_name = line.get_element(["LineName"]).text
-        outbound_description = line.get_element_or_none(["OutboundDescription"])
-        inbound_description = line.get_element_or_none(["InboundDescription"])
-
-        outbound_description = (
-            outbound_description.get_element("Description").text
-            if outbound_description
-            else ""
+        outbound_description = get_description(
+            line.get_element_or_none(["OutboundDescription"])
         )
-        inbound_description = (
-            inbound_description.get_element("Description").text
-            if inbound_description
-            else ""
+        inbound_description = get_description(
+            line.get_element_or_none(["InboundDescription"])
         )
 
         lines_list.append(
