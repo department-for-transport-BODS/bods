@@ -11,18 +11,18 @@ from transit_odp.data_quality.tables import (
     StopIncorrectTypeWarningTimingTable,
     StopIncorrectTypeWarningVehicleTable,
 )
-from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.views.base import (
     JourneyListBaseView,
     TwoTableDetailView,
 )
-from transit_odp.dqs.models import ObservationResults
-from transit_odp.dqs.constants import Checks
 
+from transit_odp.dqs.constants import (
+    Checks,
+    IncorrectStopTypeObservation as DQSIncorrectStopTypeObservation,
+)
 from transit_odp.dqs.views.base import DQSWarningListBaseView
-
 from waffle import flag_is_active
 
 
@@ -34,9 +34,6 @@ class IncorrectStopTypeListView(JourneyListBaseView, DQSWarningListBaseView):
         if not self.is_new_data_quality_service_active:
             self.model = JourneyStopInappropriateWarning
             self.table_class = StopIncorrectTypeListTable
-        else:
-            self.model = ObservationResults
-            self.table_class = DQSWarningListBaseTable
 
     @property
     def is_new_data_quality_service_active(self):
@@ -54,14 +51,15 @@ class IncorrectStopTypeListView(JourneyListBaseView, DQSWarningListBaseView):
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
+        if self.is_dqs_new_report:
+            self.data = DQSIncorrectStopTypeObservation
         context = super().get_context_data(**kwargs)
+
         context.update(
             {
                 "title": self.data.title,
                 "definition": self.data.text,
-                "preamble": (
-                    "The following service(s) have been observed to not have the correct stop type."
-                ),
+                "preamble": self.data.preamble,
                 "extra_info": self.data.extra_info,
                 "resolve": self.data.resolve,
             }

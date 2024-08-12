@@ -286,9 +286,7 @@ fieldset {
 .indented-text {
   padding-left: 0.9375em;
 }
-.tall-section {
-  height: 14rem;
-}
+
 .end-justified {
   justify-content: end;
 }
@@ -338,4 +336,12 @@ fieldset {
 .shifted-tag-top-3 {
   position: relative;
   top: -3px;
+}
+
+.content-center {
+  align-content: center;
+}
+
+.push-right {
+  float: right;
 }

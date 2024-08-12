@@ -1902,10 +1902,6 @@
           <DaysOfNonOperation>
             <ChristmasDay />
             <BoxingDay />
-            <StAndrewsDayHoliday />
-            <GoodFriday />
-            <NewYearsDay />
-            <LateSummerBankHolidayNotScotland />
             <MayDay />
             <EasterMonday />
             <SpringBank />

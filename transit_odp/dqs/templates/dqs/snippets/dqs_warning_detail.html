@@ -8,14 +8,11 @@
           <caption class="govuk-table__caption {{ table.attrs.caption.class |default_if_none:"" }}">{{ table.caption }}</caption>
         {% endif %}
         {% block table.thead %}
-      
           {% if table.show_header %}
             <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:"" }}">
               <tr class="govuk-table__row">
-                {% for column in table.columns %}                
-                  <th aria-sort="none" role="columnheader" scope="col" class="govuk-table__header">
-                      {{ column.header }}                    
-                  </th>
+                {% for column in table.columns %}
+                  <th aria-sort="none" role="columnheader" scope="col" class="govuk-table__header">{{ column.header }}</th>
                 {% endfor %}
               </tr>
             </thead>
@@ -26,7 +23,7 @@
             {% for row in table.paginated_rows %}
               {% block table.tbody.row %}
                 <tr class="govuk-table__row {{ row.attrs.class }}">
-                  {% for column, cell in row.items %}                  
+                  {% for column, cell in row.items %}
                     {% if forloop.first %}
                       <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
                         {% if column.localize == None %}

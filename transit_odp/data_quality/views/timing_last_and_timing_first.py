@@ -18,18 +18,18 @@ from transit_odp.data_quality.tables import (
 )
 
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
-from transit_odp.data_quality.tables.base import (
-    TimingPatternListTable,
-    DQSWarningListBaseTable,
-)
+from transit_odp.data_quality.tables.base import TimingPatternListTable
 
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.views.base import (
     TimingPatternsListBaseView,
     TwoTableDetailView,
 )
-from transit_odp.dqs.models import ObservationResults
-from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.constants import (
+    Checks,
+    FirstStopNotTimingPointObservation as DQSFirstStopNotTimingPointObservation,
+    LastStopNotTimingPointObservation as DQSLastStopNotTimingPointObservation,
+)
 from transit_odp.dqs.views.base import DQSWarningListBaseView
 from waffle import flag_is_active
 
@@ -58,15 +58,15 @@ class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseVi
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
+        if self.is_dqs_new_report:
+            self.data = DQSLastStopNotTimingPointObservation
         context = super().get_context_data(**kwargs)
+
         context.update(
             {
                 "title": self.data.title,
                 "definition": self.data.text,
-                "preamble": (
-                    "Last stop in the following timing pattern(s) have been observed "
-                    "to not have timing points."
-                ),
+                "preamble": self.data.preamble,
                 "resolve": self.data.resolve,
             }
         )
@@ -122,15 +122,15 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseV
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
+        if self.is_dqs_new_report:
+            self.data = DQSFirstStopNotTimingPointObservation
         context = super().get_context_data(**kwargs)
+
         context.update(
             {
                 "title": self.data.title,
                 "definition": self.data.text,
-                "preamble": (
-                    "The following service(s) have been observed to not have the first stop set "
-                    "as a timing point."
-                ),
+                "preamble": self.data.preamble,
                 "resolve": self.data.resolve,
             }
         )

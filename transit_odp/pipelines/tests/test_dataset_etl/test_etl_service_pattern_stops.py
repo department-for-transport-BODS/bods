@@ -46,7 +46,7 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
         self.assertIn("run_time", extracted.vehicle_journeys.columns)
         self.assertIn("departure_time", extracted.vehicle_journeys.columns)
         self.assertEqual(
-            27,
+            54,
             extracted_timing_links[
                 extracted_timing_links["is_timing_status"] == True
             ].shape[0],
@@ -86,7 +86,7 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
 
         self.assertNotIn("common_name", transformed.stop_points.columns)
         self.assertEqual(
-            1247,
+            2632,
             transformed_service_pattern_stops[
                 transformed_service_pattern_stops["is_timing_status"] == True
             ].shape[0],
@@ -149,7 +149,7 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
         self.assertIn("run_time", extracted.vehicle_journeys.columns)
         self.assertIn("departure_time", extracted.vehicle_journeys.columns)
         self.assertEqual(
-            44,
+            45,
             extracted_timing_links[
                 extracted_timing_links["is_timing_status"] == True
             ].shape[0],
@@ -196,7 +196,7 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
 
         self.assertNotIn("common_name", transformed.stop_points.columns)
         self.assertEqual(
-            330,
+            352,
             transformed_service_pattern_stops[
                 transformed_service_pattern_stops["is_timing_status"] == True
             ].shape[0],

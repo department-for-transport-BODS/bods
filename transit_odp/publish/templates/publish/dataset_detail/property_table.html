@@ -104,7 +104,7 @@
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
-      {% if dq_score  or new_dqs_report %}
+      {% if dq_score or new_dqs_report %}
         <p class="govuk-!-margin-top-0 govuk-!-margin-bottom-1">
           {% include "snippets/data_quality_row.html" with rag=dq_score warning_data=warning_data %}
         </p>
@@ -118,6 +118,12 @@
             {% filter force_escape %}
               {% trans "View data quality report" %}
             {% endfilter %}
+          </a>
+          <br />
+          <a class="govuk-link"
+             target="_blank"
+             href="{% url 'dq:report-csv' pk1=pk1 pk=object.id report_id=report_id host hosts.publish %}">
+            {% trans "Download data quality report.csv" %}
           </a>
         {% else %}
           {% filter force_escape %}

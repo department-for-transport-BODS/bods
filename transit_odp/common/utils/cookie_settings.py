@@ -19,6 +19,7 @@ def set_cookie(response, key, value, days_expire=7):
         expires=expires,
         domain=settings.SESSION_COOKIE_DOMAIN,
         secure=settings.SESSION_COOKIE_SECURE or None,
+        httponly=settings.SESSION_COOKIE_HTTPONLY or None,
     )
 
 

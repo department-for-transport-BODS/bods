@@ -2,10 +2,10 @@
 name: Run Unit Test
 on:
   pull_request:
-      types: [ opened, synchronize, reopened ]
-      branches:
-        - dev
-        - main
+    types: [opened, synchronize, reopened]
+    branches:
+      - dev
+      - main
 
 env:
   ECR_PYTHON_DEPENDENCIES_REPO: python_dependencies
@@ -96,7 +96,7 @@ jobs:
         id: login_ecr
         uses: aws-actions/amazon-ecr-login@v2
         with:
-          mask-password: 'false'
+          mask-password: "false"
 
       - name: Get region with underscores
         id: get_region_underscores
@@ -192,8 +192,6 @@ jobs:
       docker_password: ${{ steps.login_ecr.outputs[format('docker_password_{0}_dkr_ecr_{1}_amazonaws_com', steps.login_aws.outputs.aws-account-id, steps.get_region_underscores.outputs.REGION_UNDERSCORES)] }}
       python_dependencies_image: ${{ format( '{0}/{1}:{2}', steps.login_ecr.outputs.registry, env.ECR_PYTHON_DEPENDENCIES_REPO, ( steps.check_for_pr_change.outputs.changed == 'false' && steps.check_for_head_change.outputs.changed == 'false' && steps.check_image_existence.outputs.python_dependencies_dev_exists == 'true' && github.base_ref == 'dev') && 'dev' || steps.sanitise_branch_name.outputs.branch ) }}
 
-
-
   run_unit_tests:
     if: |
       (
@@ -279,6 +277,7 @@ jobs:
       - name: "Run Tests"
         id: run_tests
         run: |
+          pip install --upgrade typing-extensions
           pytest -vv --junitxml=junit_report.xml || [ $? = 1 ]
 
       - name: Pytest coverage comment

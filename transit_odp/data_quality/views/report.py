@@ -25,13 +25,10 @@ class DraftReportOverviewView(OrgUserViewMixin, RedirectView, WithDraftRevision)
     def get_latest_report(self):
         revision_id = self.get_revision_id()
         try:
-            report = Report.objects.filter(revision_id=revision_id).latest()
-            if report:
-                return report
-            else:
-                return DataQualityReport.objects.filter(
-                    revision_id=revision_id
-                ).latest()
+            report = Report.objects.filter(revision_id=revision_id)
+            if not report:
+                report = DataQualityReport.objects.filter(revision_id=revision_id)
+            return report.latest()
         except Exception as e:
             raise Http404
 
@@ -65,6 +62,7 @@ class ReportOverviewView(DetailView):
         result = (
             super()
             .get_queryset()
+            .add_number_of_lines()
             .filter(revision__dataset_id=dataset_id)
             .select_related("summary")
         )
