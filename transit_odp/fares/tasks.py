@@ -1,7 +1,9 @@
 import logging
+import os
 import uuid
 import zipfile
 
+import psutil
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -41,6 +43,18 @@ from transit_odp.validate.xml import validate_xml_files_in_zip
 logger = logging.getLogger(__name__)
 
 DT_FORMAT = "%Y-%m-%d_%H-%M-%S"
+
+
+def measure_memory(func):
+    def wrapper(*args, **kwargs):
+        process = psutil.Process(os.getpid())
+        before = process.memory_info().rss
+        result = func(*args, **kwargs)
+        after = process.memory_info().rss
+        print(f"Memory used by {func.__name__}: {after - before} bytes")
+        return result
+
+    return wrapper
 
 
 @shared_task(bind=True)
@@ -211,6 +225,7 @@ def task_set_fares_validation_result(task_id):
     task.update_progress(50)
 
 
+@measure_memory
 @shared_task
 def task_run_fares_etl(task_id):
     """Task for extracting metadata from NeTEx file/s."""
@@ -249,29 +264,25 @@ def task_run_fares_etl(task_id):
 
     adapter.info("Loading fares metadata.")
     naptan_stop_ids = transformed_data.pop("naptan_stop_ids")
-    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
-    if is_fares_validator_active:
-        fares_data_catlogue = transformed_data.pop("fares_data_catalogue")
+    fares_data_catlogue = transformed_data.pop("fares_data_catalogue")
     # Load metadata
     # This block can be moved to a load module when we extract/load more metadata
     # like localities, admin areas
     transformed_data["revision"] = revision
 
-    if is_fares_validator_active:
-        # For 'Update data' flow which allows validation to occur multiple times
-        metadata_ids_list = DatasetMetadata.objects.filter(
-            revision_id=revision.id
-        ).values_list("id")
-        FaresMetadata.objects.filter(datasetmetadata_ptr__in=metadata_ids_list).delete()
+    # For 'Update data' flow which allows validation to occur multiple times
+    metadata_ids_list = DatasetMetadata.objects.filter(
+        revision_id=revision.id
+    ).values_list("id")
+    FaresMetadata.objects.filter(datasetmetadata_ptr__in=metadata_ids_list).delete()
 
     adapter.info("Creating fares data catalogue metadata.")
     fares_metadata = FaresMetadata.objects.create(**transformed_data)
-    if is_fares_validator_active:
-        for element in fares_data_catlogue:
-            element.update({"fares_metadata_id": fares_metadata.id})
-            # For 'Update data' flow
-            DataCatalogueMetaData.objects.filter(**element).delete()
-            DataCatalogueMetaData.objects.create(**element)
+    for element in fares_data_catlogue:
+        element.update({"fares_metadata_id": fares_metadata.id})
+        # For 'Update data' flow
+        DataCatalogueMetaData.objects.filter(**element).delete()
+        DataCatalogueMetaData.objects.create(**element)
     fares_metadata.stops.add(*naptan_stop_ids)
     adapter.info("Fares metadata loaded.")
 

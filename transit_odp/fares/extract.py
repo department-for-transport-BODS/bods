@@ -1,13 +1,9 @@
 import zipfile
-from typing import List
 
 from celery.utils.log import get_task_logger
 
 from transit_odp.fares.netex import NeTExDocument, get_documents_from_zip
 from transit_odp.pipelines import exceptions
-from transit_odp.pipelines.pipelines.dataset_etl.utils.models import FaresExtractedData
-
-NeTExDocuments = List[NeTExDocument]
 
 logger = get_task_logger(__name__)
 
@@ -22,7 +18,7 @@ class ExtractionError(Exception):
 
 
 class FaresDataCatalogueExtractor:
-    def __init__(self, documents: NeTExDocuments):
+    def __init__(self, documents: NeTExDocument):
         self.documents = documents
 
     @property
@@ -55,6 +51,102 @@ class FaresDataCatalogueExtractor:
             return to_date_text_list[0]
         except IndexError:
             return None
+
+    @property
+    def national_operator_code(self):
+        try:
+            path = [
+                "CompositeFrame[not(contains(@id, 'METADATA'))]",
+                "frames",
+                "ResourceFrame",
+                "organisations",
+                "Operator",
+                "PublicCode",
+            ]
+            national_operator_code_list = (
+                self.documents.get_multiple_attr_text_from_xpath(path)
+            )
+
+            if national_operator_code_list:
+                return national_operator_code_list
+            return []
+        except IndexError:
+            return []
+
+    @property
+    def tariff_basis(self):
+        try:
+            path = ["Tariff", "TariffBasis"]
+            tariff_basis_list = self.documents.get_multiple_attr_text_from_xpath(path)
+            if tariff_basis_list:
+                return list(dict.fromkeys(tariff_basis_list))
+            return []
+        except IndexError:
+            return []
+
+    @property
+    def product_type(self):
+        try:
+            path = ["fareProducts", "PreassignedFareProduct", "ProductType"]
+            product_type_list = self.documents.get_multiple_attr_text_from_xpath(path)
+
+            if product_type_list:
+                return list(dict.fromkeys(product_type_list))
+            return []
+        except IndexError:
+            return []
+
+    @property
+    def product_name(self):
+        try:
+            path = ["fareProducts", "PreassignedFareProduct", "Name"]
+            product_name_list = self.documents.get_multiple_attr_text_from_xpath(path)
+
+            if product_name_list:
+                return list(dict.fromkeys(product_name_list))
+            return []
+        except IndexError:
+            return []
+
+    @property
+    def user_type(self):
+        try:
+            path = [
+                "FareStructureElement",
+                "GenericParameterAssignment",
+                "limitations",
+                "UserProfile",
+                "UserType",
+            ]
+            user_type_list = self.documents.get_multiple_attr_text_from_xpath(path)
+
+            if user_type_list:
+                return list(dict.fromkeys(user_type_list))
+            return []
+        except IndexError:
+            return []
+
+    @property
+    def line_id(self):
+        try:
+            path = ["lines", "Line"]
+            line_ids_list = self.documents.get_multiple_attr_ids_from_xpath(path)
+            if line_ids_list:
+                return list(dict.fromkeys(line_ids_list))
+            return []
+        except IndexError:
+            return []
+
+    @property
+    def line_name(self):
+        try:
+            path = ["lines", "Line", "PublicCode"]
+            line_name_list = self.documents.get_multiple_attr_text_from_xpath(path)
+            if line_name_list:
+                return list(dict.fromkeys(line_name_list))
+            return []
+        except IndexError:
+            return []
 
     @property
     def atco_area(self):
@@ -92,8 +184,9 @@ class FaresDataCatalogueExtractor:
 class NeTExDocumentsExtractor:
     def __init__(self, revision):
         # self.documents = documents
-        self.doc = NeTExDocuments
+        self.doc = NeTExDocument
         self.file_obj = revision.upload_file
+        self.fares_catalogue_extracted_data = []
 
     def _attr_from_documents(self, attr):
         """Iterates over all documents and gets `attr`."""
@@ -104,13 +197,11 @@ class NeTExDocumentsExtractor:
         """Gets the total counts of an `attr` in all documents."""
         return len(self._attr_from_documents(attr))
 
-    def _get_user_type_count(self, attr):
+    def _get_user_type(self, attr):
         """Gets the total count of distinct UserType in all documents"""
         lists_user_types = self._attr_from_documents(attr)
-        distinct_user_types = set(
-            [value for sublist in lists_user_types for value in sublist]
-        )
-        return len(distinct_user_types)
+        distinct_user_types = set(lists_user_types)
+        return distinct_user_types
 
     # @property
     # def schema_version(self):
@@ -119,16 +210,6 @@ class NeTExDocumentsExtractor:
     @property
     def schema_version(self):
         return float(self.doc.get_netex_version())
-
-    @property
-    def fare_zones(self):
-        attr = "fare_zones"
-        return self._attr_from_documents(attr)
-
-    @property
-    def sales_offer_packages(self):
-        attr = "sales_offer_packages"
-        return self._attr_from_documents(attr)
 
     @property
     def num_of_lines(self):
@@ -153,7 +234,7 @@ class NeTExDocumentsExtractor:
     @property
     def num_of_user_profiles(self):
         attr = "user_profiles"
-        return self._get_user_type_count(attr)
+        return self._get_user_type(attr)
 
     @property
     def valid_from(self):
@@ -177,127 +258,50 @@ class NeTExDocumentsExtractor:
 
     @property
     def num_of_trip_products(self):
-        trip_products_list = self.doc.get_number_of_trip_products()
-        return trip_products_list
+        trip_products_list = []
+        product_type_list = self.doc.get_product_types()
+        trip_product_values = [
+            "singleTrip",
+            "dayReturnTrip",
+            "periodReturnTrip",
+            "timeLimitedSingleTrip",
+            "ShortTrip",
+        ]
+        for product_type in product_type_list:
+            if getattr(product_type, "text") in trip_product_values:
+                trip_products_list.append(getattr(product_type, "text"))
+        return set(trip_products_list)
 
     @property
     def num_of_pass_products(self):
-        pass_products_list = self.doc.get_number_of_pass_products()
-        return pass_products_list
+        pass_products_list = []
+        product_type_list = self.doc.get_product_types()
+        pass_product_values = ["dayPass", "periodPass"]
+
+        for product_type in product_type_list:
+            if getattr(product_type, "text") in pass_product_values:
+                pass_products_list.append(getattr(product_type, "text"))
+        return set(pass_products_list)
 
     @property
-    def national_operator_code(self):
-        try:
-            path = [
-                "CompositeFrame[not(contains(@id, 'METADATA'))]",
-                "frames",
-                "ResourceFrame",
-                "organisations",
-                "Operator",
-                "PublicCode",
-            ]
-            national_operator_code_list = self.doc.get_multiple_attr_text_from_xpath(
-                path
-            )
+    def fares_data_catalogue(self):
+        fares_catalogue = FaresDataCatalogueExtractor(self.doc)
+        self.fares_catalogue_extracted_data.append(fares_catalogue.to_dict())
+        return self.fares_catalogue_extracted_data
 
-            if national_operator_code_list:
-                return national_operator_code_list
-            return []
-        except IndexError:
-            return []
-
-    @property
-    def line_id(self):
-        try:
-            path = ["lines", "Line"]
-            line_ids_list = self.doc.get_multiple_attr_ids_from_xpath(path)
-            if line_ids_list:
-                return list(dict.fromkeys(line_ids_list))
-            return []
-        except IndexError:
-            return []
-
-    @property
-    def line_name(self):
-        try:
-            path = ["lines", "Line", "PublicCode"]
-            line_name_list = self.doc.get_multiple_attr_text_from_xpath(path)
-            if line_name_list:
-                return list(dict.fromkeys(line_name_list))
-            return []
-        except IndexError:
-            return []
-
-    @property
-    def tariff_basis(self):
-        try:
-            path = ["Tariff", "TariffBasis"]
-            tariff_basis_list = self.doc.get_multiple_attr_text_from_xpath(path)
-            if tariff_basis_list:
-                return list(dict.fromkeys(tariff_basis_list))
-            return []
-        except IndexError:
-            return []
-
-    @property
-    def product_type(self):
-        try:
-            path = ["fareProducts", "PreassignedFareProduct", "ProductType"]
-            product_type_list = self.doc.get_multiple_attr_text_from_xpath(path)
-
-            if product_type_list:
-                return list(dict.fromkeys(product_type_list))
-            return []
-        except IndexError:
-            return []
-
-    @property
-    def product_name(self):
-        try:
-            path = ["fareProducts", "PreassignedFareProduct", "Name"]
-            product_name_list = self.doc.get_multiple_attr_text_from_xpath(path)
-
-            if product_name_list:
-                return list(dict.fromkeys(product_name_list))
-            return []
-        except IndexError:
-            return []
-
-    @property
-    def user_type(self):
-        try:
-            path = [
-                "FareStructureElement",
-                "GenericParameterAssignment",
-                "limitations",
-                "UserProfile",
-                "UserType",
-            ]
-            user_type_list = self.doc.get_multiple_attr_text_from_xpath(path)
-
-            if user_type_list:
-                return list(dict.fromkeys(user_type_list))
-            return []
-        except IndexError:
-            return []
-
-    # @property
-    # def fares_data_catalogue(self):
-    #     fares_catalogue_extracted_data = []
-    #     for doc in self.documents:
-    #         fares_catalogue = FaresDataCatalogueExtractor(doc)
-    #         fares_catalogue_extracted_data.append(fares_catalogue.to_dict())
-    #     return fares_catalogue_extracted_data
-
-    def extract(self) -> FaresExtractedData:
+    def extract(self):
         """
         Processes a zip file.
         """
         extracts_sum = []
+        extracts_distinct_count = []
         extracts_min = []
         extracts_max = []
         extracts_list = []
+        extracts_fares_data_catalogue = []
+
         final_dictionary_sum = dict()
+        final_dictionary_dictinct_count = dict()
         final_dictionary_min = dict()
         final_dictionary_max = dict()
         final_dictionary_list = dict()
@@ -309,9 +313,12 @@ class NeTExDocumentsExtractor:
                 documents = get_documents_from_zip(self.file_obj)
                 for self.doc in documents:
                     extracts_sum.append(self.to_dict_sum())
+                    extracts_distinct_count.append(self.to_dict_distinct_count())
                     extracts_min.append(self.to_dict_min())
                     extracts_max.append(self.to_dict_max())
-                    print("extracts_max>>> ", extracts_max)
+                    extracts_fares_data_catalogue.append(
+                        self.to_dict_fares_data_catalogue()
+                    )
                     extracts_list.append(self.to_dict_list())
             except zipfile.BadZipFile as e:
                 raise exceptions.FileError(filename=self.file_obj.name) from e
@@ -319,6 +326,7 @@ class NeTExDocumentsExtractor:
                 raise
             except Exception as e:
                 raise exceptions.PipelineException from e
+
             for validation_dict in extracts_sum:
                 if final_dictionary_sum:
                     final_dictionary_sum = {
@@ -327,7 +335,22 @@ class NeTExDocumentsExtractor:
                     }
                 else:
                     final_dictionary_sum = validation_dict.copy()
-            # print("final_dictionary_sum>>>> ", final_dictionary_sum)
+
+            for validation_dict in extracts_distinct_count:
+                if final_dictionary_dictinct_count:
+                    final_dictionary_dictinct_count = {
+                        x: validation_dict.get(x, 0).union(
+                            final_dictionary_dictinct_count.get(x, 0)
+                        )
+                        for x in set(final_dictionary_dictinct_count).union(
+                            validation_dict
+                        )
+                    }
+                else:
+                    final_dictionary_dictinct_count = validation_dict.copy()
+
+            for key, value in final_dictionary_dictinct_count.items():
+                final_dictionary_dictinct_count[key] = len(value)
 
             for validation_dict in extracts_min:
                 if final_dictionary_min:
@@ -339,15 +362,17 @@ class NeTExDocumentsExtractor:
                     }
                 else:
                     final_dictionary_min = validation_dict.copy()
-            # print("final_dictionary_min>>>> ", final_dictionary_min)
 
-            # for validation_dict in extracts_max:
-            #     if final_dictionary_max:
-            #         final_dictionary_max = {x: max(validation_dict.get(x, 0), final_dictionary_max.get(x, 0))
-            #             for x in set(final_dictionary_max).union(validation_dict)}
-            #     else:
-            #         final_dictionary_max = validation_dict.copy()
-            # print("final_dictionary_max>>>> ", final_dictionary_max)
+            for validation_dict in extracts_max:
+                if final_dictionary_max:
+                    final_dictionary_max = {
+                        x: max(
+                            validation_dict.get(x, 0), final_dictionary_max.get(x, 0)
+                        )
+                        for x in set(final_dictionary_max).union(validation_dict)
+                    }
+                else:
+                    final_dictionary_max = validation_dict.copy()
 
             for validation_dict in extracts_list:
                 if final_dictionary_list:
@@ -362,59 +387,43 @@ class NeTExDocumentsExtractor:
                     }
                 else:
                     final_dictionary_list = validation_dict.copy()
-            # print("final_dictionary_list>>>> ", final_dictionary_list)
 
             final_final_dictionary = {
                 **final_dictionary_sum,
+                **final_dictionary_dictinct_count,
                 **final_dictionary_min,
                 **final_dictionary_list,
+                **extracts_fares_data_catalogue[-1],
             }
-            print("final_final_dictionary>>> ", final_final_dictionary)
             return final_final_dictionary
+
+    def get_attr_for_dict(self, keys):
+        try:
+            data = {key: getattr(self, key) for key in keys}
+        except ValueError as err:
+            msg = "Unable to extract data from NeTEx file."
+            raise ExtractionError(msg) from err
+
+        return data
 
     def to_dict_min(self):
         keys = [
             "schema_version",
             "valid_from",
         ]
-        try:
-            data = {key: getattr(self, key) for key in keys}
-        except ValueError as err:
-            msg = "Unable to extract data from NeTEx file."
-            raise ExtractionError(msg) from err
-
-        return data
+        return self.get_attr_for_dict(keys)
 
     def to_dict_max(self):
         keys = [
             "valid_to",
         ]
-        try:
-            data = {key: getattr(self, key) for key in keys}
-        except ValueError as err:
-            msg = "Unable to extract data from NeTEx file."
-            raise ExtractionError(msg) from err
-
-        return data
+        return self.get_attr_for_dict(keys)
 
     def to_dict_list(self):
         keys = [
             "stop_point_refs",
-            "national_operator_code",
-            "line_id",
-            "line_name",
-            "tariff_basis",
-            "product_type",
-            "product_name",
-            "user_type",
         ]
-        try:
-            data = {key: getattr(self, key) for key in keys}
-        except ValueError as err:
-            msg = "Unable to extract data from NeTEx file."
-            raise ExtractionError(msg) from err
-
-        return data
+        return self.get_attr_for_dict(keys)
 
     def to_dict_sum(self):
         keys = [
@@ -422,42 +431,19 @@ class NeTExDocumentsExtractor:
             "num_of_fare_zones",
             "num_of_sales_offer_packages",
             "num_of_fare_products",
+        ]
+        return self.get_attr_for_dict(keys)
+
+    def to_dict_distinct_count(self):
+        keys = [
             "num_of_user_profiles",
             "num_of_trip_products",
             "num_of_pass_products",
         ]
-        #         "schema_version",
-        #         "num_of_lines",
-        #         "num_of_fare_zones",
-        #         "num_of_sales_offer_packages",
-        #         "num_of_fare_products",
-        #         "num_of_user_profiles",
-        #         "num_of_trip_products",
-        #         "num_of_pass_products",
-        #         "valid_from",
-        #         "valid_to",
-        #         "stop_point_refs",
-        # # keys = [
-        #     "schema_version",
-        #     "fare_zones",
-        #     "sales_offer_packages",
-        #     "fare_products",
-        #     "user_profiles",
-        #     "valid_from",
-        #     "valid_to",
-        #     "stop_point_refs",
-        #     "national_operator_code",
-        #     "line_id",
-        #     "line_name",
-        #     "tariff_basis",
-        #     "product_type",
-        #     "product_name"
-        #     "user_type",
-        # ]
-        try:
-            data = {key: getattr(self, key) for key in keys}
-        except ValueError as err:
-            msg = "Unable to extract data from NeTEx file."
-            raise ExtractionError(msg) from err
+        return self.get_attr_for_dict(keys)
 
-        return data
+    def to_dict_fares_data_catalogue(self):
+        keys = [
+            "fares_data_catalogue",
+        ]
+        return self.get_attr_for_dict(keys)
