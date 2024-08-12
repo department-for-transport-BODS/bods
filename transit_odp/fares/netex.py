@@ -1,11 +1,14 @@
+import os
 import zipfile
 from typing import List
 
+import psutil
 from dateutil.parser import parse as parse_datetime_str
 from django.conf import settings
 from lxml import etree
 
 from transit_odp.common.xmlelements import XMLElement
+from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.pipelines.constants import SchemaCategory
 from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
@@ -16,6 +19,18 @@ _NETEX_NAMESPACE = "http://www.netex.org.uk/netex"
 NETEX_SCHEMA_URL = "http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd"
 NETEX_SCHEMA_ZIP_URL = settings.NETEX_SCHEMA_ZIP_URL
 NETEX_XSD_PATH = settings.NETEX_XSD_PATH
+
+
+def measure_memory(func):
+    def wrapper(*args, **kwargs):
+        process = psutil.Process(os.getpid())
+        before = process.memory_info().rss
+        result = func(*args, **kwargs)
+        after = process.memory_info().rss
+        print(f"Memory used by {func.__name__}: {after - before} bytes")
+        return result
+
+    return wrapper
 
 
 class NeTExValidator(XMLValidator):
@@ -145,32 +160,6 @@ class NeTExDocument:
         xpath = ["fareProducts", "PreassignedFareProduct", "ProductType"]
         return list(self.find_anywhere(xpath))
 
-    def get_products_count(self, product_value_list):
-        count = 0
-        product_type_list = self.get_product_types()
-
-        for product_type in product_type_list:
-            if getattr(product_type, "text") in product_value_list:
-                count += 1
-
-        return count
-
-    def get_number_of_trip_products(self):
-        trip_product_values = [
-            "singleTrip",
-            "dayReturnTrip",
-            "periodReturnTrip",
-            "timeLimitedSingleTrip",
-            "ShortTrip",
-        ]
-        trip_product_count = self.get_products_count(trip_product_values)
-        return trip_product_count
-
-    def get_number_of_pass_products(self):
-        pass_product_values = ["dayPass", "periodPass"]
-        pass_product_count = self.get_products_count(pass_product_values)
-        return pass_product_count
-
     def get_earliest_tariff_from_date(self):
         xpath = ["Tariff", "validityConditions", "ValidBetween", "FromDate"]
         elements = self.find_anywhere(xpath)
@@ -259,18 +248,27 @@ class NeTExDocument:
         return refs
 
 
-def process_document(xmlout):
-    return NeTExDocument(xmlout)
-
-
-def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
+@measure_memory
+def get_documents_from_zip(revision_) -> List[NeTExDocument]:
     """Returns a list NeTExDocuments from a zip file."""
-    with zipfile.ZipFile(zipfile_) as zout:
-        filenames = [name for name in zout.namelist() if name.endswith("xml")]
+    with zipfile.ZipFile(revision_.upload_file) as zout:
+        filenames = [
+            name
+            for name in zout.namelist()
+            if name.endswith("xml")
+            and not name.startswith("__")
+            and not SchemaViolation.objects.filter(
+                filename=name.split("/")[-1]
+                .replace("[", "%5B")
+                .replace("]", "%5D")
+                .replace(":", "%3A")
+                .replace(" ", "%20"),
+                revision_id=revision_,
+            ).exists()
+        ]
         for name in filenames:
-            if not name.startswith("__"):
-                with zout.open(name) as xmlout:
-                    yield process_document(xmlout)
+            with zout.open(name) as xmlout:
+                yield NeTExDocument(xmlout)
 
 
 def get_documents_from_file(source) -> List[NeTExDocument]:

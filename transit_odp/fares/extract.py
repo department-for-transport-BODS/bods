@@ -1,11 +1,25 @@
+import os
 import zipfile
 
+import psutil
 from celery.utils.log import get_task_logger
 
 from transit_odp.fares.netex import NeTExDocument, get_documents_from_zip
 from transit_odp.pipelines import exceptions
 
 logger = get_task_logger(__name__)
+
+
+def measure_memory(func):
+    def wrapper(*args, **kwargs):
+        process = psutil.Process(os.getpid())
+        before = process.memory_info().rss
+        result = func(*args, **kwargs)
+        after = process.memory_info().rss
+        print(f"Memory used by {func.__name__}: {after - before} bytes")
+        return result
+
+    return wrapper
 
 
 class ExtractionError(Exception):
@@ -185,7 +199,7 @@ class NeTExDocumentsExtractor:
     def __init__(self, revision):
         # self.documents = documents
         self.doc = NeTExDocument
-        self.file_obj = revision.upload_file
+        self.revision = revision
         self.fares_catalogue_extracted_data = []
 
     def _attr_from_documents(self, attr):
@@ -289,6 +303,7 @@ class NeTExDocumentsExtractor:
         self.fares_catalogue_extracted_data.append(fares_catalogue.to_dict())
         return self.fares_catalogue_extracted_data
 
+    @measure_memory
     def extract(self):
         """
         Processes a zip file.
@@ -306,11 +321,11 @@ class NeTExDocumentsExtractor:
         final_dictionary_max = dict()
         final_dictionary_list = dict()
 
-        if zipfile.is_zipfile(self.file_obj):
-            logger.info(f"Extracting zip file {self.file_obj.name}")
+        if zipfile.is_zipfile(self.revision.upload_file):
+            logger.info(f"Extracting zip file {self.revision.upload_file.name}")
             try:
                 # with zipfile.ZipFile(self.file_obj.file, "r") as z:
-                documents = get_documents_from_zip(self.file_obj)
+                documents = get_documents_from_zip(self.revision)
                 for self.doc in documents:
                     extracts_sum.append(self.to_dict_sum())
                     extracts_distinct_count.append(self.to_dict_distinct_count())
@@ -321,7 +336,9 @@ class NeTExDocumentsExtractor:
                     )
                     extracts_list.append(self.to_dict_list())
             except zipfile.BadZipFile as e:
-                raise exceptions.FileError(filename=self.file_obj.name) from e
+                raise exceptions.FileError(
+                    filename=self.revision.upload_file.name
+                ) from e
             except exceptions.PipelineException:
                 raise
             except Exception as e:
@@ -364,15 +381,20 @@ class NeTExDocumentsExtractor:
                     final_dictionary_min = validation_dict.copy()
 
             for validation_dict in extracts_max:
-                if final_dictionary_max:
-                    final_dictionary_max = {
-                        x: max(
-                            validation_dict.get(x, 0), final_dictionary_max.get(x, 0)
-                        )
-                        for x in set(final_dictionary_max).union(validation_dict)
-                    }
-                else:
-                    final_dictionary_max = validation_dict.copy()
+                try:
+                    if final_dictionary_max:
+                        final_dictionary_max = {
+                            x: max(
+                                validation_dict.get(x, 0),
+                                final_dictionary_max.get(x, 0),
+                            )
+                            for x in set(final_dictionary_max).union(validation_dict)
+                        }
+                    else:
+                        final_dictionary_max = validation_dict.copy()
+                except TypeError:
+                    for key in list(validation_dict.keys()):
+                        final_dictionary_max[key] = None
 
             for validation_dict in extracts_list:
                 if final_dictionary_list:
@@ -388,14 +410,15 @@ class NeTExDocumentsExtractor:
                 else:
                     final_dictionary_list = validation_dict.copy()
 
-            final_final_dictionary = {
+            final_extracts_dictionary = {
                 **final_dictionary_sum,
                 **final_dictionary_dictinct_count,
                 **final_dictionary_min,
+                **final_dictionary_max,
                 **final_dictionary_list,
                 **extracts_fares_data_catalogue[-1],
             }
-            return final_final_dictionary
+            return final_extracts_dictionary
 
     def get_attr_for_dict(self, keys):
         try:
