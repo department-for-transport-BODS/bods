@@ -601,13 +601,13 @@ WECA_PARAM_R = env("WECA_PARAM_R", default="WECA_PARAM_R")
 # -------------------------------------------------------------------------------
 EP_API_URL = env(
     "EP_API_URL",
-    default="https://djzdv19waj3wh.cloudfront.net/api/v1/search",
+    default="EP_API_URL",
 )
 EP_CLIENT_ID = env("EP_CLIENT_ID", default="EP_CLIENT_ID")
 EP_CLIENT_SECRET = env("EP_CLIENT_SECRET", default="EP_CLIENT_SECRET")
 EP_AUTH_URL = env(
     "EP_AUTH_URL",
-    default="https://dev-pdbrd.auth.eu-west-2.amazoncognito.com/oauth2/token",
+    default="EP_AUTH_URL",
 )
 
 COACH_ATCO_FILE_S3_URL = env("COACH_ATCO_FILE_S3_URL", default="#")
