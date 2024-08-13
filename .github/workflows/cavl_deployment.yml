@@ -43,7 +43,7 @@ jobs:
 
     - id: set-version-number
       run: |
-        TEXT=$(cat ./version.txt)
+        TEXT=$(cat ./version-cavl.txt)
         echo "version=${TEXT//'%'/'%25'}" >> $GITHUB_OUTPUT
 
     - id: echo-version
