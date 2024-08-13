@@ -43,8 +43,8 @@ jobs:
 
     - id: set-version-number
       run: |
-        TEXT=$(cat ./version-cavl.txt)
-        echo "::set-output name=version::${TEXT//'%'/'%25'}"
+        TEXT=$(cat ./version.txt)
+        echo "version=${TEXT//'%'/'%25'}" >> $GITHUB_OUTPUT
 
     - id: echo-version
       run: |
@@ -57,7 +57,7 @@ jobs:
         ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }} 
         IMAGE_TAG: ${{ steps.set-version-number.outputs.version }}
       run: |
-        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
         if docker manifest inspect $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG >/dev/null; then
             echo "The image $IMAGE_TAG already exists in the $ECR_REPOSITORY Repository"
             exit 1
@@ -65,14 +65,22 @@ jobs:
             echo "Build and push docker image with that tag $IMAGE_TAG "
         fi
     
+    - name: Base Image Changes
+      uses: dorny/paths-filter@v2
+      id: base-image-changes
+      with:
+        filters: |
+          django_base:
+           - ./docker/production/django_base/Dockerfile
+
     - name: Build, tag, and push base image to Amazon ECR
-      id: build-base-image
+      if: steps.base-image-changes.outputs.django_base == 'true'
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}
-      run: |
-        echo "::set-output name=base_image::$ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }}"
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }} -f ./docker/production/django_base/Dockerfile .
+        ECR_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}  
+      run: |    
+        echo "base_image=$ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }}" >> $GITHUB_OUTPUT
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }} -t $ECR_REGISTRY/$ECR_REPOSITORY:latest -f ./docker/production/django_base/Dockerfile .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
     - name: Build, tag, and push image to Amazon ECR
@@ -80,8 +88,9 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+        ECR_BASE_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}  
       run: |
-        docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg BASE_IMAGE=${{ steps.build-base-image.outputs.base_image }} .
+        docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg BASE_IMAGE=$ECR_REGISTRY/$ECR_BASE_REPOSITORY:latest .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
     - name: Logout of Amazon ECR
