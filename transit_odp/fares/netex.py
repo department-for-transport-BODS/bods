@@ -271,12 +271,12 @@ def get_documents_from_zip(revision_) -> List[NeTExDocument]:
                 yield NeTExDocument(xmlout)
 
 
-def get_documents_from_file(source) -> List[NeTExDocument]:
+def get_documents_from_file(revision) -> List[NeTExDocument]:
     """Returns a list of NeTExDocuments from a file or filepath."""
-    if zipfile.is_zipfile(source):
-        return get_documents_from_zip(source)
+    if zipfile.is_zipfile(revision.upload_file):
+        return get_documents_from_zip(revision)
     else:
-        yield NeTExDocument(source)
+        return [NeTExDocument(revision.upload_file)]
 
 
 def get_netex_schema() -> etree.XMLSchema:

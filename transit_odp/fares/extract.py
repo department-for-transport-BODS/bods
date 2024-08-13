@@ -4,7 +4,7 @@ import zipfile
 import psutil
 from celery.utils.log import get_task_logger
 
-from transit_odp.fares.netex import NeTExDocument, get_documents_from_zip
+from transit_odp.fares.netex import NeTExDocument, get_documents_from_file
 from transit_odp.pipelines import exceptions
 
 logger = get_task_logger(__name__)
@@ -197,7 +197,6 @@ class FaresDataCatalogueExtractor:
 
 class NeTExDocumentsExtractor:
     def __init__(self, revision):
-        # self.documents = documents
         self.doc = NeTExDocument
         self.revision = revision
         self.fares_catalogue_extracted_data = []
@@ -216,10 +215,6 @@ class NeTExDocumentsExtractor:
         lists_user_types = self._attr_from_documents(attr)
         distinct_user_types = set(lists_user_types)
         return distinct_user_types
-
-    # @property
-    # def schema_version(self):
-    #     return min(doc.get_netex_version() for doc in self.documents)
 
     @property
     def schema_version(self):
@@ -321,104 +316,94 @@ class NeTExDocumentsExtractor:
         final_dictionary_max = dict()
         final_dictionary_list = dict()
 
-        if zipfile.is_zipfile(self.revision.upload_file):
-            logger.info(f"Extracting zip file {self.revision.upload_file.name}")
-            try:
-                # with zipfile.ZipFile(self.file_obj.file, "r") as z:
-                documents = get_documents_from_zip(self.revision)
-                for self.doc in documents:
-                    extracts_sum.append(self.to_dict_sum())
-                    extracts_distinct_count.append(self.to_dict_distinct_count())
-                    extracts_min.append(self.to_dict_min())
-                    extracts_max.append(self.to_dict_max())
-                    extracts_fares_data_catalogue.append(
-                        self.to_dict_fares_data_catalogue()
+        documents = get_documents_from_file(self.revision)
+        try:
+            for self.doc in documents:
+                extracts_sum.append(self.to_dict_sum())
+                extracts_distinct_count.append(self.to_dict_distinct_count())
+                extracts_min.append(self.to_dict_min())
+                extracts_max.append(self.to_dict_max())
+                extracts_fares_data_catalogue.append(
+                    self.to_dict_fares_data_catalogue()
+                )
+                extracts_list.append(self.to_dict_list())
+        except zipfile.BadZipFile as e:
+            raise exceptions.FileError(filename=self.revision.upload_file.name) from e
+        except exceptions.PipelineException:
+            raise
+        except Exception as e:
+            raise exceptions.PipelineException from e
+
+        for validation_dict in extracts_sum:
+            if final_dictionary_sum:
+                final_dictionary_sum = {
+                    x: validation_dict.get(x, 0) + final_dictionary_sum.get(x, 0)
+                    for x in set(final_dictionary_sum).union(validation_dict)
+                }
+            else:
+                final_dictionary_sum = validation_dict.copy()
+
+        for validation_dict in extracts_distinct_count:
+            if final_dictionary_dictinct_count:
+                final_dictionary_dictinct_count = {
+                    x: validation_dict.get(x, 0).union(
+                        final_dictionary_dictinct_count.get(x, 0)
                     )
-                    extracts_list.append(self.to_dict_list())
-            except zipfile.BadZipFile as e:
-                raise exceptions.FileError(
-                    filename=self.revision.upload_file.name
-                ) from e
-            except exceptions.PipelineException:
-                raise
-            except Exception as e:
-                raise exceptions.PipelineException from e
+                    for x in set(final_dictionary_dictinct_count).union(validation_dict)
+                }
+            else:
+                final_dictionary_dictinct_count = validation_dict.copy()
 
-            for validation_dict in extracts_sum:
-                if final_dictionary_sum:
-                    final_dictionary_sum = {
-                        x: validation_dict.get(x, 0) + final_dictionary_sum.get(x, 0)
-                        for x in set(final_dictionary_sum).union(validation_dict)
+        for key, value in final_dictionary_dictinct_count.items():
+            final_dictionary_dictinct_count[key] = len(value)
+
+        for validation_dict in extracts_min:
+            if final_dictionary_min:
+                final_dictionary_min = {
+                    x: min(validation_dict.get(x, 0), final_dictionary_min.get(x, 0))
+                    for x in set(final_dictionary_min).union(validation_dict)
+                }
+            else:
+                final_dictionary_min = validation_dict.copy()
+
+        for validation_dict in extracts_max:
+            try:
+                if final_dictionary_max:
+                    final_dictionary_max = {
+                        x: max(
+                            validation_dict.get(x, 0),
+                            final_dictionary_max.get(x, 0),
+                        )
+                        for x in set(final_dictionary_max).union(validation_dict)
                     }
                 else:
-                    final_dictionary_sum = validation_dict.copy()
+                    final_dictionary_max = validation_dict.copy()
+            except TypeError:
+                for key in list(validation_dict.keys()):
+                    final_dictionary_max[key] = None
 
-            for validation_dict in extracts_distinct_count:
-                if final_dictionary_dictinct_count:
-                    final_dictionary_dictinct_count = {
-                        x: validation_dict.get(x, 0).union(
-                            final_dictionary_dictinct_count.get(x, 0)
-                        )
-                        for x in set(final_dictionary_dictinct_count).union(
-                            validation_dict
-                        )
-                    }
-                else:
-                    final_dictionary_dictinct_count = validation_dict.copy()
+        for validation_dict in extracts_list:
+            if final_dictionary_list:
+                final_dictionary_list = {
+                    x: list(
+                        set(validation_dict.get(x, 0) + final_dictionary_list.get(x, 0))
+                    )
+                    for x in set(final_dictionary_list).union(validation_dict)
+                }
+            else:
+                final_dictionary_list = validation_dict.copy()
+        for key, value in final_dictionary_list.items():
+            final_dictionary_list[key] = sorted(value)
 
-            for key, value in final_dictionary_dictinct_count.items():
-                final_dictionary_dictinct_count[key] = len(value)
-
-            for validation_dict in extracts_min:
-                if final_dictionary_min:
-                    final_dictionary_min = {
-                        x: min(
-                            validation_dict.get(x, 0), final_dictionary_min.get(x, 0)
-                        )
-                        for x in set(final_dictionary_min).union(validation_dict)
-                    }
-                else:
-                    final_dictionary_min = validation_dict.copy()
-
-            for validation_dict in extracts_max:
-                try:
-                    if final_dictionary_max:
-                        final_dictionary_max = {
-                            x: max(
-                                validation_dict.get(x, 0),
-                                final_dictionary_max.get(x, 0),
-                            )
-                            for x in set(final_dictionary_max).union(validation_dict)
-                        }
-                    else:
-                        final_dictionary_max = validation_dict.copy()
-                except TypeError:
-                    for key in list(validation_dict.keys()):
-                        final_dictionary_max[key] = None
-
-            for validation_dict in extracts_list:
-                if final_dictionary_list:
-                    final_dictionary_list = {
-                        x: list(
-                            set(
-                                validation_dict.get(x, 0)
-                                + final_dictionary_list.get(x, 0)
-                            )
-                        )
-                        for x in set(final_dictionary_list).union(validation_dict)
-                    }
-                else:
-                    final_dictionary_list = validation_dict.copy()
-
-            final_extracts_dictionary = {
-                **final_dictionary_sum,
-                **final_dictionary_dictinct_count,
-                **final_dictionary_min,
-                **final_dictionary_max,
-                **final_dictionary_list,
-                **extracts_fares_data_catalogue[-1],
-            }
-            return final_extracts_dictionary
+        final_extracts_dictionary = {
+            **final_dictionary_sum,
+            **final_dictionary_dictinct_count,
+            **final_dictionary_min,
+            **final_dictionary_max,
+            **final_dictionary_list,
+            **extracts_fares_data_catalogue[-1],
+        }
+        return final_extracts_dictionary
 
     def get_attr_for_dict(self, keys):
         try:
