@@ -34,7 +34,7 @@ class TestEPClient:
         # Arrange
         mock_auth.return_value.token = "test_token"
         dummy_response = get_ep_data
-        mock_get.return_value.json.return_value = dummy_response
+        mock_get.return_value.json.return_value = dummy_response["Results"]
         mock_get.return_value.status_code = 200
         client = EPClient()
 
