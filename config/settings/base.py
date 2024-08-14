@@ -106,7 +106,7 @@ SESSION_COOKIE_DOMAIN = "." + PARENT_HOST
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Age of session cookies, in seconds
-SESSION_COOKIE_AGE = 72000  # set to 20 hours
+SESSION_COOKIE_AGE = 600  # set to 10 minutes
 
 # Whether to save the session data on every request
 SESSION_SAVE_EVERY_REQUEST = True
@@ -602,13 +602,13 @@ WECA_PARAM_R = env("WECA_PARAM_R", default="WECA_PARAM_R")
 # -------------------------------------------------------------------------------
 EP_API_URL = env(
     "EP_API_URL",
-    default="https://djzdv19waj3wh.cloudfront.net/api/v1/search",
+    default="https://ep_api.url",
 )
 EP_CLIENT_ID = env("EP_CLIENT_ID", default="EP_CLIENT_ID")
 EP_CLIENT_SECRET = env("EP_CLIENT_SECRET", default="EP_CLIENT_SECRET")
 EP_AUTH_URL = env(
     "EP_AUTH_URL",
-    default="https://dev-pdbrd.auth.eu-west-2.amazoncognito.com/oauth2/token",
+    default="https://ep_auth.url",
 )
 
 COACH_ATCO_FILE_S3_URL = env("COACH_ATCO_FILE_S3_URL", default="#")
