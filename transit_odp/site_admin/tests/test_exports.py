@@ -589,14 +589,14 @@ class TestDailyConsumerRequestCSV:
         assert (timetables, fares, avls) == ("0", "0", "0")
 
         _, consumer_id, _, api, timetables, fares, avls = second
-        assert consumer_id == str(super_user.id)
-        assert api == "5"
-        assert timetables == "3"
+        assert consumer_id == str(requestuser.id)
+        assert api == "0"
+        assert timetables == "1"
         assert (avls, fares) == ("0", "0")
 
         _, consumer_id, _, api, timetables, fares, avls = third
-        assert consumer_id == str(requestuser.id)
-        assert timetables == "1"
+        assert consumer_id == str(super_user.id)
+        assert timetables == "3"
         assert (fares, avls) == ("0", "0")
 
     def test_download_requests_from_multiple_users(self):
