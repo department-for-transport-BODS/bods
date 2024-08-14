@@ -10,12 +10,11 @@
           <span class="govuk-accordion__section-button"
                 id="accordion-default-heading-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}"
                 aria-controls="accordion-default-content-{{ warning.title|lower|slugify }}-{{ counter }}-{{ forloop.counter }}">
-            {{ warning.title }} 
-
+            {{ warning.title }}
             {% if not warning.is_active %}
-            <div class="push-right">
-            <span class="govuk-tag govuk-tag--grey govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">COMING SOON</span>            
-            </div>
+              <div class="push-right">
+                <span class="govuk-tag govuk-tag--grey govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">COMING SOON</span>
+              </div>
             {% endif %}
           </span>
         </h2>
