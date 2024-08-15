@@ -70,7 +70,7 @@ class SQSClientWrapper:
 
         except Exception as e:
             logger.info(f"DQS-SQS:General exception when listing queues: {e}")
-
+            raise
         try:
             if "QueueUrls" in response:
                 queue_urls = response["QueueUrls"]
