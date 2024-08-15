@@ -729,9 +729,9 @@ class NotificationBase:
             f"<id={dataset_id} >"
         )
         feed_status = (
-            "No vehicle activity"
-            if dataset_status == AVLFeedStatus.error.value
-            else "Published"
+            "Published"
+            if dataset_status == AVLFeedStatus.live.value
+            else "No vehicle activity"
         )
 
         last_updated = localize_datetime_and_convert_to_string(updated_time)

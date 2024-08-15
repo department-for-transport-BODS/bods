@@ -235,7 +235,7 @@ def task_monitor_avl_feeds():
     )
     revision_status_map = {
         AVLFeedStatus.live.value: FeedStatus.live.value,
-        AVLFeedStatus.inactive.value: FeedStatus.live.value,
+        AVLFeedStatus.inactive.value: FeedStatus.inactive.value,
         AVLFeedStatus.error.value: FeedStatus.error.value,
     }
 
