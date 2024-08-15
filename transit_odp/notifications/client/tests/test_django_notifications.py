@@ -354,7 +354,7 @@ class TestDjangoNotification:
             operator_name=self.organisation_name,
             short_description="test description",
             subscriber_email=self.contact_email,
-            dataset_status=AVLFeedStatus.error.value,
+            dataset_status=AVLFeedStatus.live.value,
             updated_time=now(),
         )
         [m] = mailoutbox

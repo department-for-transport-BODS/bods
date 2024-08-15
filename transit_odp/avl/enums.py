@@ -6,9 +6,9 @@ from transit_odp.common.utils.choice_enum import ChoiceEnum
 # TODO: for Python 3.11 use StrEnum class instead of (str, Enum)
 @unique
 class AVLFeedStatus(ChoiceEnum):
-    live = "live"
-    error = "error"
-    inactive = "inactive"
+    live = "FEED_UP"
+    inactive = "FEED_DOWN"
+    error = "SYSTEM_ERROR"
 
 
 @unique

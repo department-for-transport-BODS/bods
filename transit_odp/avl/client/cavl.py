@@ -9,6 +9,7 @@ from requests.exceptions import RequestException
 
 from transit_odp.avl.client.interface import ICAVLService
 from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
+from transit_odp.avl.enums import AVLFeedStatus
 
 
 logger = logging.getLogger(__name__)
@@ -118,7 +119,14 @@ class CAVLService(ICAVLService):
             return None
 
         if response.status_code == HTTPStatus.OK:
-            return Feed(**response.json())
+            feed = Feed(**response.json())
+            api_status_map = {
+                "live": AVLFeedStatus.live.value,
+                "inactive": AVLFeedStatus.inactive.value,
+                "error": AVLFeedStatus.error.value,
+            }
+            feed.status = api_status_map[feed.status]
+            return feed
 
     def get_feeds(self) -> Sequence[Feed]:
         api_url = self.AVL_URL + "/subscriptions"
@@ -133,7 +141,15 @@ class CAVLService(ICAVLService):
             return []
 
         if response.status_code == HTTPStatus.OK:
-            return [Feed(**j) for j in response.json()]
+            feeds = [Feed(**j) for j in response.json()]
+            api_status_map = {
+                "live": AVLFeedStatus.live.value,
+                "inactive": AVLFeedStatus.inactive.value,
+                "error": AVLFeedStatus.error.value,
+            }
+            for feed in feeds:
+                feed.status = api_status_map[feed.status]
+            return feeds
 
     def validate_feed(
         self, url: str, username: str, password: str, **kwargs

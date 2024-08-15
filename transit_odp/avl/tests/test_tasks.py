@@ -142,7 +142,7 @@ def test_no_change(mocker, mailoutbox):
     assert len(mailoutbox) == 0
     assert (
         Dataset.objects.filter(
-            dataset_type=AVLType, avl_feed_status=AVLFeedStatus.error.value
+            dataset_type=AVLType, avl_feed_status=AVLFeedStatus.inactive.value
         ).count()
         == 0
     )
