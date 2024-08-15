@@ -1,0 +1,3867 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TransXChange xmlns="http://www.transxchange.org.uk/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CreationDateTime="2024-06-18T13:05:55"
+  ModificationDateTime="2024-06-18T13:15:55" Modification="revise" RevisionNumber="1"
+  FileName="FLIX-Flixbus-UKN603-Manchester-Paris.xml" SchemaVersion="2.4"
+  RegistrationDocument="false"
+  xsi:schemaLocation="http://www.transxchange.org.uk/ http://www.transxchange.org.uk/schema/2.4/TransXChange_general.xsd">
+  <StopPoints>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>999014AA766B</AtcoCode>
+      <Descriptor>
+        <CommonName>Dover (DFDS Ferry)</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0047158</NptgLocalityRef>
+        <LocalityName>Dover</LocalityName>
+        <Location>
+          <Translation>
+            <Easting>633910</Easting>
+            <Northing>141970</Northing>
+            <Longitude>1.34172</Longitude>
+            <Latitude>51.12922</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>999020B022A8</AtcoCode>
+      <Descriptor>
+        <CommonName>Calais (Irish Ferries)</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0047176</NptgLocalityRef>
+        <LocalityName>St Margarets at Cliffe</LocalityName>
+        <Location>
+          <Translation>
+            <Easting>672439</Easting>
+            <Northing>126606</Northing>
+            <Longitude>1.87957</Longitude>
+            <Latitude>50.97437</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>99905B2A7B8E</AtcoCode>
+      <Descriptor>
+        <CommonName>Birmingham Summer Row- Great Charles Street</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>N0072556</NptgLocalityRef>
+        <LocalityName>Centenary Square</LocalityName>
+        <Location>
+          <Translation>
+            <Easting>406468</Easting>
+            <Northing>287028</Northing>
+            <Longitude>-1.90619</Longitude>
+            <Latitude>52.481141</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>9990A0A50227</AtcoCode>
+      <Descriptor>
+        <CommonName>Cambridge (Trumpington Park and Ride)</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0000819</NptgLocalityRef>
+        <LocalityName>Trumpington</LocalityName>
+        <Location>
+          <Translation>
+            <Easting>544261</Easting>
+            <Northing>254220</Northing>
+            <Longitude>0.107904</Longitude>
+            <Latitude>52.167398</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>9990DCC13E03</AtcoCode>
+      <Descriptor>
+        <CommonName>Calais (P&amp;O Ferry)</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0047176</NptgLocalityRef>
+        <LocalityName>St Margarets at Cliffe</LocalityName>
+        <Location>
+          <Translation>
+            <Easting>672373</Easting>
+            <Northing>126624</Northing>
+            <Longitude>1.87865</Longitude>
+            <Latitude>50.97456</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>9990DCC31F56</AtcoCode>
+      <Descriptor>
+        <CommonName>Folkestone (Eurotunnel)</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0015221</NptgLocalityRef>
+        <LocalityName>Peene</LocalityName>
+        <Location>
+          <Translation>
+            <Easting>618685</Easting>
+            <Northing>137572</Northing>
+            <Longitude>1.121821</Longitude>
+            <Latitude>51.09574</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>9990DCC32234</AtcoCode>
+      <Descriptor>
+        <CommonName>Calais (Eurotunnel)</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0047176</NptgLocalityRef>
+        <LocalityName>St Margarets at Cliffe</LocalityName>
+        <Location>
+          <Translation>
+            <Easting>667946</Easting>
+            <Northing>122012</Northing>
+            <Longitude>1.812342</Longitude>
+            <Latitude>50.93526</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>9990DCC5426B</AtcoCode>
+      <Descriptor>
+        <CommonName>Paris (Bercy Seine)</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0015176</NptgLocalityRef>
+        <LocalityName>Dungeness</LocalityName>
+        <Location>
+          <Latitude>48.835318</Latitude>
+          <Longitude>2.380519</Longitude>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>9990DCC54F0B</AtcoCode>
+      <Descriptor>
+        <CommonName>Dover (P&amp;O Ferry)</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0047158</NptgLocalityRef>
+        <LocalityName>Dover</LocalityName>
+        <Location>
+          <Translation>
+            <Easting>633800</Easting>
+            <Northing>141948</Northing>
+            <Longitude>1.34014</Longitude>
+            <Latitude>51.12907</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>9990DD0464FB</AtcoCode>
+      <Descriptor>
+        <CommonName>Dover (Irish Ferries)</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0047158</NptgLocalityRef>
+        <LocalityName>Dover</LocalityName>
+        <Location>
+          <Translation>
+            <Easting>633871</Easting>
+            <Northing>141942</Northing>
+            <Longitude>1.34115</Longitude>
+            <Latitude>51.12898</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <StopPoint CreationDateTime="1970-01-01T01:00:00">
+      <AtcoCode>9990EEEA5A9B</AtcoCode>
+      <Descriptor>
+        <CommonName>Calais (DFDS Ferry)</CommonName>
+      </Descriptor>
+      <Place>
+        <NptgLocalityRef>E0047176</NptgLocalityRef>
+        <LocalityName>St Margarets at Cliffe</LocalityName>
+        <Location>
+          <Translation>
+            <Easting>672475</Easting>
+            <Northing>126599</Northing>
+            <Longitude>1.88008</Longitude>
+            <Latitude>50.97429</Latitude>
+          </Translation>
+        </Location>
+      </Place>
+      <StopClassification>
+        <StopType>busCoachTrolleyOnStreetPoint</StopType>
+        <OnStreet>
+          <Bus>
+            <BusStopType>MKD</BusStopType>
+            <TimingStatus>principalTimingPoint</TimingStatus>
+            <MarkedPoint>
+              <Bearing>
+                <CompassPoint>N</CompassPoint>
+              </Bearing>
+            </MarkedPoint>
+          </Bus>
+        </OnStreet>
+      </StopClassification>
+      <AdministrativeAreaRef>999</AdministrativeAreaRef>
+      <Public>true</Public>
+    </StopPoint>
+    <AnnotatedStopPointRef>
+      <StopPointRef>490010374F</StopPointRef>
+      <CommonName>North Greenwich Station</CommonName>
+      <Indicator>Stop F</Indicator>
+      <LocalityName>North Greenwich</LocalityName>
+      <LocalityQualifier>London</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>490019793S</StopPointRef>
+      <CommonName>Stratford City Bus Station</CommonName>
+      <Indicator>Stop S</Indicator>
+      <LocalityName>Stratford New Town</LocalityName>
+      <LocalityQualifier>Stratford</LocalityQualifier>
+    </AnnotatedStopPointRef>
+    <AnnotatedStopPointRef>
+      <StopPointRef>1800SHIC0G1</StopPointRef>
+      <CommonName>Shudehill Interchange</CommonName>
+      <Indicator>Stand G</Indicator>
+      <LocalityName>Shudehill</LocalityName>
+      <LocalityQualifier>Manchester City Centre</LocalityQualifier>
+    </AnnotatedStopPointRef>
+  </StopPoints>
+  <RouteSections>
+    <RouteSection id="RS1">
+      <RouteLink id="RL1">
+        <From>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL2">
+        <From>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL3">
+        <From>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490010374F</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL4">
+        <From>
+          <StopPointRef>490010374F</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL5">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL6">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS2">
+      <RouteLink id="RL7">
+        <From>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL8">
+        <From>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL9">
+        <From>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490010374F</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL10">
+        <From>
+          <StopPointRef>490010374F</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL11">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL12">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL13">
+        <From>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS3">
+      <RouteLink id="RL14">
+        <From>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL15">
+        <From>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL16">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL17">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL18">
+        <From>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL19">
+        <From>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS4">
+      <RouteLink id="RL20">
+        <From>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL21">
+        <From>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL22">
+        <From>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490010374F</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL23">
+        <From>
+          <StopPointRef>490010374F</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL24">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS5">
+      <RouteLink id="RL25">
+        <From>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL26">
+        <From>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL27">
+        <From>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL28">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL29">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS6">
+      <RouteLink id="RL30">
+        <From>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC13E03</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL31">
+        <From>
+          <StopPointRef>9990DCC13E03</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC54F0B</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL32">
+        <From>
+          <StopPointRef>9990DCC54F0B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490010374F</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL33">
+        <From>
+          <StopPointRef>490010374F</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL34">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL35">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL36">
+        <From>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS7">
+      <RouteLink id="RL37">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL38">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL39">
+        <From>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL40">
+        <From>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS8">
+      <RouteLink id="RL41">
+        <From>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC32234</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL42">
+        <From>
+          <StopPointRef>9990DCC32234</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL43">
+        <From>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490010374F</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL44">
+        <From>
+          <StopPointRef>490010374F</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL45">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL46">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL47">
+        <From>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS9">
+      <RouteLink id="RL48">
+        <From>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL49">
+        <From>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL50">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL51">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC54F0B</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL52">
+        <From>
+          <StopPointRef>9990DCC54F0B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC13E03</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL53">
+        <From>
+          <StopPointRef>9990DCC13E03</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS10">
+      <RouteLink id="RL54">
+        <From>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL55">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL56">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL57">
+        <From>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL58">
+        <From>
+          <StopPointRef>999020B022A8</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS11">
+      <RouteLink id="RL59">
+        <From>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL60">
+        <From>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL61">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL62">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL63">
+        <From>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC32234</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL64">
+        <From>
+          <StopPointRef>9990DCC32234</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS12">
+      <RouteLink id="RL65">
+        <From>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL66">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL67">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>999014AA766B</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL68">
+        <From>
+          <StopPointRef>999014AA766B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990EEEA5A9B</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL69">
+        <From>
+          <StopPointRef>9990EEEA5A9B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS13">
+      <RouteLink id="RL70">
+        <From>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL71">
+        <From>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL72">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL73">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>999014AA766B</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL74">
+        <From>
+          <StopPointRef>999014AA766B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990EEEA5A9B</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL75">
+        <From>
+          <StopPointRef>9990EEEA5A9B</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+    <RouteSection id="RS14">
+      <RouteLink id="RL76">
+        <From>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL77">
+        <From>
+          <StopPointRef>9990A0A50227</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>490019793S</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL78">
+        <From>
+          <StopPointRef>490019793S</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL79">
+        <From>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC32234</StopPointRef>
+        </To>
+      </RouteLink>
+      <RouteLink id="RL80">
+        <From>
+          <StopPointRef>9990DCC32234</StopPointRef>
+        </From>
+        <To>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+        </To>
+      </RouteLink>
+    </RouteSection>
+  </RouteSections>
+  <Routes>
+    <Route id="R1">
+      <Description>Paris (Bercy Seine) - Birmingham Summer Row- Great Charles Street</Description>
+      <RouteSectionRef>RS1</RouteSectionRef>
+    </Route>
+    <Route id="R2">
+      <Description>Paris (Bercy Seine) - Shudehill Interchange</Description>
+      <RouteSectionRef>RS2</RouteSectionRef>
+    </Route>
+    <Route id="R3">
+      <Description>Shudehill Interchange - Paris (Bercy Seine)</Description>
+      <RouteSectionRef>RS3</RouteSectionRef>
+    </Route>
+    <Route id="R4">
+      <Description>Paris (Bercy Seine) - Cambridge (Trumpington Park and Ride)</Description>
+      <RouteSectionRef>RS4</RouteSectionRef>
+    </Route>
+    <Route id="R5">
+      <Description>Paris (Bercy Seine) - Birmingham Summer Row- Great Charles Street</Description>
+      <RouteSectionRef>RS5</RouteSectionRef>
+    </Route>
+    <Route id="R6">
+      <Description>Paris (Bercy Seine) - Shudehill Interchange</Description>
+      <RouteSectionRef>RS6</RouteSectionRef>
+    </Route>
+    <Route id="R7">
+      <Description>Cambridge (Trumpington Park and Ride) - Paris (Bercy Seine)</Description>
+      <RouteSectionRef>RS7</RouteSectionRef>
+    </Route>
+    <Route id="R8">
+      <Description>Paris (Bercy Seine) - Shudehill Interchange</Description>
+      <RouteSectionRef>RS8</RouteSectionRef>
+    </Route>
+    <Route id="R9">
+      <Description>Shudehill Interchange - Paris (Bercy Seine)</Description>
+      <RouteSectionRef>RS9</RouteSectionRef>
+    </Route>
+    <Route id="R10">
+      <Description>Birmingham Summer Row- Great Charles Street - Paris (Bercy Seine)</Description>
+      <RouteSectionRef>RS10</RouteSectionRef>
+    </Route>
+    <Route id="R11">
+      <Description>Shudehill Interchange - Paris (Bercy Seine)</Description>
+      <RouteSectionRef>RS11</RouteSectionRef>
+    </Route>
+    <Route id="R12">
+      <Description>Birmingham Summer Row- Great Charles Street - Paris (Bercy Seine)</Description>
+      <RouteSectionRef>RS12</RouteSectionRef>
+    </Route>
+    <Route id="R13">
+      <Description>Shudehill Interchange - Paris (Bercy Seine)</Description>
+      <RouteSectionRef>RS13</RouteSectionRef>
+    </Route>
+    <Route id="R14">
+      <Description>Birmingham Summer Row- Great Charles Street - Paris (Bercy Seine)</Description>
+      <RouteSectionRef>RS14</RouteSectionRef>
+    </Route>
+  </Routes>
+  <JourneyPatternSections>
+    <JourneyPatternSection id="JPS1">
+      <JourneyPatternTimingLink id="JPTL1">
+        <From id="JPSU1" SequenceNumber="1">
+          <Activity>pickUp</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU2" SequenceNumber="2">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL1</RouteLinkRef>
+        <RunTime>PT3H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL2">
+        <From id="JPSU3" SequenceNumber="2">
+          <WaitTime>PT2H30M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU4" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL2</RouteLinkRef>
+        <RunTime>PT1H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL3">
+        <From id="JPSU5" SequenceNumber="5">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU6" SequenceNumber="8">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490010374F</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL3</RouteLinkRef>
+        <RunTime>PT1H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL4">
+        <From id="JPSU7" SequenceNumber="8">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490010374F</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU8" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL4</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL5">
+        <From id="JPSU9" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU10" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL5</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL6">
+        <From id="JPSU11" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU12" SequenceNumber="13">
+          <Activity>setDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL6</RouteLinkRef>
+        <RunTime>PT2H5M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS2">
+      <JourneyPatternTimingLink id="JPTL7">
+        <From id="JPSU13" SequenceNumber="1">
+          <Activity>pickUp</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU14" SequenceNumber="2">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL7</RouteLinkRef>
+        <RunTime>PT3H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL8">
+        <From id="JPSU15" SequenceNumber="2">
+          <WaitTime>PT2H30M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU16" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL8</RouteLinkRef>
+        <RunTime>PT1H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL9">
+        <From id="JPSU17" SequenceNumber="5">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU18" SequenceNumber="8">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490010374F</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL9</RouteLinkRef>
+        <RunTime>PT1H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL10">
+        <From id="JPSU19" SequenceNumber="8">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490010374F</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU20" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL10</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL11">
+        <From id="JPSU21" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU22" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL11</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL12">
+        <From id="JPSU23" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU24" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL12</RouteLinkRef>
+        <RunTime>PT2H5M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL13">
+        <From id="JPSU25" SequenceNumber="13">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU26" SequenceNumber="14">
+          <Activity>setDown</Activity>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL13</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS3">
+      <JourneyPatternTimingLink id="JPTL14">
+        <From id="JPSU27" SequenceNumber="14">
+          <Activity>pickUp</Activity>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU28" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL14</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL15">
+        <From id="JPSU29" SequenceNumber="13">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU30" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL15</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL16">
+        <From id="JPSU31" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU32" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL16</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL17">
+        <From id="JPSU33" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU34" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL17</RouteLinkRef>
+        <RunTime>PT2H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL18">
+        <From id="JPSU35" SequenceNumber="5">
+          <WaitTime>PT2H15M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU36" SequenceNumber="2">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL18</RouteLinkRef>
+        <RunTime>PT1H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL19">
+        <From id="JPSU37" SequenceNumber="2">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU38" SequenceNumber="1">
+          <Activity>setDown</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL19</RouteLinkRef>
+        <RunTime>PT3H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS4">
+      <JourneyPatternTimingLink id="JPTL20">
+        <From id="JPSU39" SequenceNumber="1">
+          <Activity>pickUp</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU40" SequenceNumber="2">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL20</RouteLinkRef>
+        <RunTime>PT3H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL21">
+        <From id="JPSU41" SequenceNumber="2">
+          <WaitTime>PT2H30M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU42" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL21</RouteLinkRef>
+        <RunTime>PT1H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL22">
+        <From id="JPSU43" SequenceNumber="5">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU44" SequenceNumber="8">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490010374F</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL22</RouteLinkRef>
+        <RunTime>PT1H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL23">
+        <From id="JPSU45" SequenceNumber="8">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490010374F</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU46" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL23</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL24">
+        <From id="JPSU47" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU48" SequenceNumber="12">
+          <Activity>setDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL24</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS5">
+      <JourneyPatternTimingLink id="JPTL25">
+        <From id="JPSU49" SequenceNumber="1">
+          <Activity>pickUp</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU50" SequenceNumber="2">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL25</RouteLinkRef>
+        <RunTime>PT3H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL26">
+        <From id="JPSU51" SequenceNumber="2">
+          <WaitTime>PT2H0M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU52" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL26</RouteLinkRef>
+        <RunTime>PT1H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL27">
+        <From id="JPSU53" SequenceNumber="5">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU54" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL27</RouteLinkRef>
+        <RunTime>PT2H15M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL28">
+        <From id="JPSU55" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU56" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL28</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL29">
+        <From id="JPSU57" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU58" SequenceNumber="13">
+          <Activity>setDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL29</RouteLinkRef>
+        <RunTime>PT2H5M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS6">
+      <JourneyPatternTimingLink id="JPTL30">
+        <From id="JPSU59" SequenceNumber="1">
+          <Activity>pickUp</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU60" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC13E03</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL30</RouteLinkRef>
+        <RunTime>PT3H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL31">
+        <From id="JPSU61" SequenceNumber="3">
+          <WaitTime>PT2H0M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC13E03</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU62" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC54F0B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL31</RouteLinkRef>
+        <RunTime>PT1H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL32">
+        <From id="JPSU63" SequenceNumber="6">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC54F0B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU64" SequenceNumber="8">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490010374F</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL32</RouteLinkRef>
+        <RunTime>PT1H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL33">
+        <From id="JPSU65" SequenceNumber="8">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490010374F</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU66" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL33</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL34">
+        <From id="JPSU67" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU68" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL34</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL35">
+        <From id="JPSU69" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU70" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL35</RouteLinkRef>
+        <RunTime>PT2H5M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL36">
+        <From id="JPSU71" SequenceNumber="13">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU72" SequenceNumber="14">
+          <Activity>setDown</Activity>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL36</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS7">
+      <JourneyPatternTimingLink id="JPTL37">
+        <From id="JPSU73" SequenceNumber="12">
+          <Activity>pickUp</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU74" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL37</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL38">
+        <From id="JPSU75" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU76" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL38</RouteLinkRef>
+        <RunTime>PT2H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL39">
+        <From id="JPSU77" SequenceNumber="5">
+          <WaitTime>PT2H0M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU78" SequenceNumber="2">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL39</RouteLinkRef>
+        <RunTime>PT1H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL40">
+        <From id="JPSU79" SequenceNumber="2">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU80" SequenceNumber="1">
+          <Activity>setDown</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL40</RouteLinkRef>
+        <RunTime>PT3H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS8">
+      <JourneyPatternTimingLink id="JPTL41">
+        <From id="JPSU81" SequenceNumber="1">
+          <Activity>pickUp</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU82" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC32234</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL41</RouteLinkRef>
+        <RunTime>PT3H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL42">
+        <From id="JPSU83" SequenceNumber="4">
+          <WaitTime>PT2H0M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC32234</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU84" SequenceNumber="7">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL42</RouteLinkRef>
+        <RunTime>PT0H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL43">
+        <From id="JPSU85" SequenceNumber="7">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU86" SequenceNumber="8">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490010374F</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL43</RouteLinkRef>
+        <RunTime>PT1H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL44">
+        <From id="JPSU87" SequenceNumber="8">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490010374F</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU88" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL44</RouteLinkRef>
+        <RunTime>PT0H25M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL45">
+        <From id="JPSU89" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU90" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL45</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL46">
+        <From id="JPSU91" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU92" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL46</RouteLinkRef>
+        <RunTime>PT2H5M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL47">
+        <From id="JPSU93" SequenceNumber="13">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU94" SequenceNumber="14">
+          <Activity>setDown</Activity>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL47</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS9">
+      <JourneyPatternTimingLink id="JPTL48">
+        <From id="JPSU95" SequenceNumber="14">
+          <Activity>pickUp</Activity>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU96" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL48</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL49">
+        <From id="JPSU97" SequenceNumber="13">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU98" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL49</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL50">
+        <From id="JPSU99" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU100" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL50</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL51">
+        <From id="JPSU101" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU102" SequenceNumber="6">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC54F0B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL51</RouteLinkRef>
+        <RunTime>PT2H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL52">
+        <From id="JPSU103" SequenceNumber="6">
+          <WaitTime>PT2H0M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC54F0B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU104" SequenceNumber="3">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC13E03</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL52</RouteLinkRef>
+        <RunTime>PT1H50M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL53">
+        <From id="JPSU105" SequenceNumber="3">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC13E03</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU106" SequenceNumber="1">
+          <Activity>setDown</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL53</RouteLinkRef>
+        <RunTime>PT3H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS10">
+      <JourneyPatternTimingLink id="JPTL54">
+        <From id="JPSU107" SequenceNumber="13">
+          <Activity>pickUp</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU108" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL54</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL55">
+        <From id="JPSU109" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU110" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL55</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL56">
+        <From id="JPSU111" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU112" SequenceNumber="5">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL56</RouteLinkRef>
+        <RunTime>PT2H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL57">
+        <From id="JPSU113" SequenceNumber="5">
+          <WaitTime>PT2H0M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DD0464FB</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU114" SequenceNumber="2">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL57</RouteLinkRef>
+        <RunTime>PT1H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL58">
+        <From id="JPSU115" SequenceNumber="2">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999020B022A8</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU116" SequenceNumber="1">
+          <Activity>setDown</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL58</RouteLinkRef>
+        <RunTime>PT3H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS11">
+      <JourneyPatternTimingLink id="JPTL59">
+        <From id="JPSU117" SequenceNumber="14">
+          <Activity>pickUp</Activity>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU118" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL59</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL60">
+        <From id="JPSU119" SequenceNumber="13">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU120" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL60</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL61">
+        <From id="JPSU121" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU122" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL61</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL62">
+        <From id="JPSU123" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU124" SequenceNumber="7">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL62</RouteLinkRef>
+        <RunTime>PT2H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL63">
+        <From id="JPSU125" SequenceNumber="7">
+          <WaitTime>PT2H35M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU126" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC32234</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL63</RouteLinkRef>
+        <RunTime>PT0H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL64">
+        <From id="JPSU127" SequenceNumber="4">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC32234</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU128" SequenceNumber="1">
+          <Activity>setDown</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL64</RouteLinkRef>
+        <RunTime>PT3H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS12">
+      <JourneyPatternTimingLink id="JPTL65">
+        <From id="JPSU129" SequenceNumber="13">
+          <Activity>pickUp</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU130" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL65</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL66">
+        <From id="JPSU131" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU132" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL66</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL67">
+        <From id="JPSU133" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU134" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999014AA766B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL67</RouteLinkRef>
+        <RunTime>PT2H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL68">
+        <From id="JPSU135" SequenceNumber="10">
+          <WaitTime>PT2H0M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999014AA766B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU136" SequenceNumber="9">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990EEEA5A9B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL68</RouteLinkRef>
+        <RunTime>PT1H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL69">
+        <From id="JPSU137" SequenceNumber="9">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990EEEA5A9B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU138" SequenceNumber="1">
+          <Activity>setDown</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL69</RouteLinkRef>
+        <RunTime>PT3H40M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS13">
+      <JourneyPatternTimingLink id="JPTL70">
+        <From id="JPSU139" SequenceNumber="14">
+          <Activity>pickUp</Activity>
+          <StopPointRef>1800SHIC0G1</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU140" SequenceNumber="13">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL70</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL71">
+        <From id="JPSU141" SequenceNumber="13">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU142" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL71</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL72">
+        <From id="JPSU143" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU144" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL72</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL73">
+        <From id="JPSU145" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU146" SequenceNumber="10">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999014AA766B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL73</RouteLinkRef>
+        <RunTime>PT2H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL74">
+        <From id="JPSU147" SequenceNumber="10">
+          <WaitTime>PT2H0M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>999014AA766B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU148" SequenceNumber="9">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990EEEA5A9B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL74</RouteLinkRef>
+        <RunTime>PT1H30M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL75">
+        <From id="JPSU149" SequenceNumber="9">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990EEEA5A9B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU150" SequenceNumber="1">
+          <Activity>setDown</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL75</RouteLinkRef>
+        <RunTime>PT3H45M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+    <JourneyPatternSection id="JPS14">
+      <JourneyPatternTimingLink id="JPTL76">
+        <From id="JPSU151" SequenceNumber="13">
+          <Activity>pickUp</Activity>
+          <StopPointRef>99905B2A7B8E</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU152" SequenceNumber="12">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL76</RouteLinkRef>
+        <RunTime>PT2H10M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL77">
+        <From id="JPSU153" SequenceNumber="12">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990A0A50227</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU154" SequenceNumber="11">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL77</RouteLinkRef>
+        <RunTime>PT1H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL78">
+        <From id="JPSU155" SequenceNumber="11">
+          <WaitTime>PT0H10M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>490019793S</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU156" SequenceNumber="7">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL78</RouteLinkRef>
+        <RunTime>PT2H0M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL79">
+        <From id="JPSU157" SequenceNumber="7">
+          <WaitTime>PT2H0M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC31F56</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU158" SequenceNumber="4">
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC32234</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL79</RouteLinkRef>
+        <RunTime>PT0H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+      <JourneyPatternTimingLink id="JPTL80">
+        <From id="JPSU159" SequenceNumber="4">
+          <WaitTime>PT0H5M0S</WaitTime>
+          <Activity>pickUpAndSetDown</Activity>
+          <StopPointRef>9990DCC32234</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </From>
+        <To id="JPSU160" SequenceNumber="1">
+          <Activity>setDown</Activity>
+          <StopPointRef>9990DCC5426B</StopPointRef>
+          <TimingStatus>principalTimingPoint</TimingStatus>
+        </To>
+        <RouteLinkRef>RL80</RouteLinkRef>
+        <RunTime>PT3H35M0S</RunTime>
+      </JourneyPatternTimingLink>
+    </JourneyPatternSection>
+  </JourneyPatternSections>
+  <Operators>
+    <Operator id="FLIX" Modification="new" RevisionNumber="0">
+      <NationalOperatorCode>FLIX</NationalOperatorCode>
+      <OperatorShortName>Flixbus</OperatorShortName>
+      <TradingName>Flixbus</TradingName>
+      <LicenceNumber>None</LicenceNumber>
+      <PrimaryMode>coach</PrimaryMode>
+    </Operator>
+  </Operators>
+  <Services>
+    <Service RevisionNumber="0">
+      <ServiceCode>UZ000FLIX:UKN603</ServiceCode>
+      <PrivateCode>UKN603</PrivateCode>
+      <Lines>
+        <Line id="FLIX:UZ000FLIX:UKN603:UKN603">
+          <LineName>UKN603</LineName>
+          <OutboundDescription>
+            <Origin>Manchester</Origin>
+            <Destination>Paris</Destination>
+            <Description>Manchester - Birmingham - Cambridge - London - Paris</Description>
+          </OutboundDescription>
+          <InboundDescription>
+            <Origin>Paris</Origin>
+            <Destination>Manchester</Destination>
+            <Description>Paris - London - Cambridge - Birmingham - Manchester</Description>
+          </InboundDescription>
+        </Line>
+      </Lines>
+      <OperatingPeriod>
+        <StartDate>2024-06-10</StartDate>
+        <EndDate>2024-07-10</EndDate>
+      </OperatingPeriod>
+      <RegisteredOperatorRef>FLIX</RegisteredOperatorRef>
+      <Mode>coach</Mode>
+      <PublicUse>true</PublicUse>
+      <StandardService>
+        <Origin>Manchester</Origin>
+        <Destination>Paris</Destination>
+        <JourneyPattern id="JP1">
+          <DestinationDisplay>Paris (Bercy Seine) - Birmingham Summer Row- Great Charles Street</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>outbound</Direction>
+          <Description>Paris (Bercy Seine) - Birmingham Summer Row- Great Charles Street</Description>
+          <RouteRef>R1</RouteRef>
+          <JourneyPatternSectionRefs>JPS1</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP2">
+          <DestinationDisplay>Paris (Bercy Seine) - Shudehill Interchange</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>outbound</Direction>
+          <Description>Paris (Bercy Seine) - Shudehill Interchange</Description>
+          <RouteRef>R2</RouteRef>
+          <JourneyPatternSectionRefs>JPS2</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP3">
+          <DestinationDisplay>Shudehill Interchange - Paris (Bercy Seine)</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Shudehill Interchange - Paris (Bercy Seine)</Description>
+          <RouteRef>R3</RouteRef>
+          <JourneyPatternSectionRefs>JPS3</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP4">
+          <DestinationDisplay>Paris (Bercy Seine) - Cambridge (Trumpington Park and Ride)</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>outbound</Direction>
+          <Description>Paris (Bercy Seine) - Cambridge (Trumpington Park and Ride)</Description>
+          <RouteRef>R4</RouteRef>
+          <JourneyPatternSectionRefs>JPS4</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP5">
+          <DestinationDisplay>Paris (Bercy Seine) - Birmingham Summer Row- Great Charles Street</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>outbound</Direction>
+          <Description>Paris (Bercy Seine) - Birmingham Summer Row- Great Charles Street</Description>
+          <RouteRef>R5</RouteRef>
+          <JourneyPatternSectionRefs>JPS5</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP6">
+          <DestinationDisplay>Paris (Bercy Seine) - Shudehill Interchange</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>outbound</Direction>
+          <Description>Paris (Bercy Seine) - Shudehill Interchange</Description>
+          <RouteRef>R6</RouteRef>
+          <JourneyPatternSectionRefs>JPS6</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP7">
+          <DestinationDisplay>Cambridge (Trumpington Park and Ride) - Paris (Bercy Seine)</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Cambridge (Trumpington Park and Ride) - Paris (Bercy Seine)</Description>
+          <RouteRef>R7</RouteRef>
+          <JourneyPatternSectionRefs>JPS7</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP8">
+          <DestinationDisplay>Paris (Bercy Seine) - Shudehill Interchange</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>outbound</Direction>
+          <Description>Paris (Bercy Seine) - Shudehill Interchange</Description>
+          <RouteRef>R8</RouteRef>
+          <JourneyPatternSectionRefs>JPS8</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP9">
+          <DestinationDisplay>Shudehill Interchange - Paris (Bercy Seine)</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Shudehill Interchange - Paris (Bercy Seine)</Description>
+          <RouteRef>R9</RouteRef>
+          <JourneyPatternSectionRefs>JPS9</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP10">
+          <DestinationDisplay>Birmingham Summer Row- Great Charles Street - Paris (Bercy Seine)</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Birmingham Summer Row- Great Charles Street - Paris (Bercy Seine)</Description>
+          <RouteRef>R10</RouteRef>
+          <JourneyPatternSectionRefs>JPS10</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP11">
+          <DestinationDisplay>Shudehill Interchange - Paris (Bercy Seine)</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Shudehill Interchange - Paris (Bercy Seine)</Description>
+          <RouteRef>R11</RouteRef>
+          <JourneyPatternSectionRefs>JPS11</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP12">
+          <DestinationDisplay>Birmingham Summer Row- Great Charles Street - Paris (Bercy Seine)</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Birmingham Summer Row- Great Charles Street - Paris (Bercy Seine)</Description>
+          <RouteRef>R12</RouteRef>
+          <JourneyPatternSectionRefs>JPS12</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP13">
+          <DestinationDisplay>Shudehill Interchange - Paris (Bercy Seine)</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Shudehill Interchange - Paris (Bercy Seine)</Description>
+          <RouteRef>R13</RouteRef>
+          <JourneyPatternSectionRefs>JPS13</JourneyPatternSectionRefs>
+        </JourneyPattern>
+        <JourneyPattern id="JP14">
+          <DestinationDisplay>Birmingham Summer Row- Great Charles Street - Paris (Bercy Seine)</DestinationDisplay>
+          <OperatorRef>FLIX</OperatorRef>
+          <Direction>inbound</Direction>
+          <Description>Birmingham Summer Row- Great Charles Street - Paris (Bercy Seine)</Description>
+          <RouteRef>R14</RouteRef>
+          <JourneyPatternSectionRefs>JPS14</JourneyPatternSectionRefs>
+        </JourneyPattern>
+      </StandardService>
+    </Service>
+  </Services>
+  <VehicleJourneys>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2050102024-PQB#BMD-00-0-VJ1</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>1</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ1</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP1</JourneyPatternRef>
+      <DepartureTime>20:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2050092024-PQB#MHI-00-0-VJ2</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>2</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Thursday />
+            <Friday />
+            <Saturday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ2</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>20:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2050082024-PQB#MHI-00-0-VJ3</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>3</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Tuesday />
+            <Wednesday />
+            <Thursday />
+            <Friday />
+            <Saturday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ3</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>20:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2050082024-PQB#BMD-00-0-VJ4</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>4</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ4</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP1</JourneyPatternRef>
+      <DepartureTime>20:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2050072024-PQB#MHI-00-0-VJ5</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>5</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Tuesday />
+            <Friday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ5</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>20:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2050062024-PQB#MHI-00-0-VJ6</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>6</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Tuesday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ6</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>20:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-1950092024-PQB#MHI-00-0-VJ7</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>7</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Thursday />
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ7</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>19:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-1915092024-PQB#MHI-00-0-VJ8</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>8</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ8</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>19:15:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2050102024-PQB#MHI-00-0-VJ9</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>9</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Thursday />
+            <Friday />
+            <Saturday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ9</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>20:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1740082024-MHI#PQB-00-1-VJ10</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>10</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Thursday />
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ10</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP3</JourneyPatternRef>
+      <DepartureTime>17:40:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2050072024-PQB#CTPR-00-0-VJ11</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>11</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ11</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP4</JourneyPatternRef>
+      <DepartureTime>20:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2120062024-PQB#BMD-00-0-VJ12</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>12</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ12</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP5</JourneyPatternRef>
+      <DepartureTime>21:20:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2150102024-PQB#MHI-00-0-VJ13</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>13</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Thursday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ13</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>21:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2120072024-PQB#BMD-00-0-VJ14</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>14</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ14</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP1</JourneyPatternRef>
+      <DepartureTime>21:20:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2120072024-PQB#MHI-00-0-VJ15</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>15</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Wednesday />
+            <Friday />
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ15</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>21:20:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2120082024-PQB#BMD-00-0-VJ16</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>16</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ16</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP1</JourneyPatternRef>
+      <DepartureTime>21:20:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2120082024-PQB#MHI-00-0-VJ17</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>17</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Tuesday />
+            <Saturday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ17</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>21:20:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2150062024-PQB#MHI-00-0-VJ18</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>18</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Wednesday />
+            <Thursday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ18</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP6</JourneyPatternRef>
+      <DepartureTime>21:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2150082024-PQB#MHI-00-0-VJ19</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>19</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Wednesday />
+            <Thursday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ19</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP6</JourneyPatternRef>
+      <DepartureTime>21:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2150112024-PQB#MHI-00-0-VJ20</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>20</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Thursday />
+            <Friday />
+            <Saturday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ20</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>21:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2150122024-PQB#MHI-00-0-VJ21</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>21</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Thursday />
+            <Friday />
+            <Saturday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ21</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>21:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-3-0005072024-CTPR#PQB-00-1-VJ22</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>22</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ22</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP7</JourneyPatternRef>
+      <DepartureTime>00:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-4-2250072024-PQB#MHI-00-0-VJ23</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>23</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ23</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP8</JourneyPatternRef>
+      <DepartureTime>22:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1740072024-MHI#PQB-00-1-VJ24</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>24</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Thursday />
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ24</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP3</JourneyPatternRef>
+      <DepartureTime>17:40:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2120062024-PQB#MHI-00-0-VJ25</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>25</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Friday />
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ25</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP2</JourneyPatternRef>
+      <DepartureTime>21:20:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1740062024-MHI#PQB-00-1-VJ26</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>26</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Thursday />
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ26</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP3</JourneyPatternRef>
+      <DepartureTime>17:40:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-2-2150072024-PQB#MHI-00-0-VJ27</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>27</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Wednesday />
+            <Thursday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ27</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP6</JourneyPatternRef>
+      <DepartureTime>21:50:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1725112024-MHI#PQB-00-1-VJ28</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>28</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Wednesday />
+            <Thursday />
+            <Friday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ28</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>17:25:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1520082024-BMD#PQB-00-1-VJ29</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>29</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ29</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP10</JourneyPatternRef>
+      <DepartureTime>15:20:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1530092024-MHI#PQB-00-1-VJ30</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>30</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Friday />
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ30</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP11</JourneyPatternRef>
+      <DepartureTime>15:30:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1540062024-BMD#PQB-00-1-VJ31</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>31</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ31</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP12</JourneyPatternRef>
+      <DepartureTime>15:40:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1600082024-MHI#PQB-00-1-VJ32</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>32</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ32</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP11</JourneyPatternRef>
+      <DepartureTime>16:00:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1605062024-MHI#PQB-00-1-VJ33</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>33</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ33</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP11</JourneyPatternRef>
+      <DepartureTime>16:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1605072024-MHI#PQB-00-1-VJ34</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>34</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ34</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP11</JourneyPatternRef>
+      <DepartureTime>16:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1725122024-MHI#PQB-00-1-VJ35</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>35</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Wednesday />
+            <Thursday />
+            <Friday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ35</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>17:25:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1605092024-MHI#PQB-00-1-VJ36</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>36</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ36</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP11</JourneyPatternRef>
+      <DepartureTime>16:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1605102024-MHI#PQB-00-1-VJ37</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>37</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ37</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP11</JourneyPatternRef>
+      <DepartureTime>16:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1625062024-MHI#PQB-00-1-VJ38</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>38</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Tuesday />
+            <Wednesday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ38</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>16:25:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1625082024-MHI#PQB-00-1-VJ39</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>39</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Tuesday />
+            <Wednesday />
+            <Thursday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ39</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>16:25:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1625092024-MHI#PQB-00-1-VJ40</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>40</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Wednesday />
+            <Thursday />
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ40</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>16:25:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1625072024-MHI#PQB-00-1-VJ41</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>41</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Tuesday />
+            <Wednesday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ41</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>16:25:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1635072024-MHI#PQB-00-1-VJ42</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>42</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Thursday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ42</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>16:35:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1725102024-MHI#PQB-00-1-VJ43</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>43</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Wednesday />
+            <Thursday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ43</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>17:25:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1705122024-MHI#PQB-00-1-VJ44</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>44</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ44</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP11</JourneyPatternRef>
+      <DepartureTime>17:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1705112024-MHI#PQB-00-1-VJ45</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>45</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ45</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP11</JourneyPatternRef>
+      <DepartureTime>17:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1625102024-MHI#PQB-00-1-VJ46</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>46</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Wednesday />
+            <Thursday />
+            <Friday />
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ46</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP9</JourneyPatternRef>
+      <DepartureTime>16:25:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1705062024-MHI#PQB-00-1-VJ47</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>47</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Wednesday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ47</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP3</JourneyPatternRef>
+      <DepartureTime>17:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1700102024-BMD#PQB-00-1-VJ48</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>48</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ48</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP10</JourneyPatternRef>
+      <DepartureTime>17:00:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1705092024-MHI#PQB-00-1-VJ49</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>49</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Sunday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ49</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP11</JourneyPatternRef>
+      <DepartureTime>17:05:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1655082024-MHI#PQB-00-1-VJ50</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>50</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Friday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ50</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP13</JourneyPatternRef>
+      <DepartureTime>16:55:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1655072024-MHI#PQB-00-1-VJ51</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>51</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ51</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP13</JourneyPatternRef>
+      <DepartureTime>16:55:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1645072024-BMD#PQB-00-1-VJ52</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>52</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ52</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP14</JourneyPatternRef>
+      <DepartureTime>16:45:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1635082024-MHI#PQB-00-1-VJ53</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>53</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Monday />
+            <Thursday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ53</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP11</JourneyPatternRef>
+      <DepartureTime>16:35:00</DepartureTime>
+    </VehicleJourney>
+    <VehicleJourney>
+      <PrivateCode>UKN603-1-1700082024-BMD#PQB-00-1-VJ54</PrivateCode>
+      <OperatorRef>FLIX</OperatorRef>
+      <Operational>
+        <TicketMachine>
+          <JourneyCode>54</JourneyCode>
+        </TicketMachine>
+      </Operational>
+      <OperatingProfile>
+        <RegularDayType>
+          <DaysOfWeek>
+            <Saturday />
+          </DaysOfWeek>
+        </RegularDayType>
+        <SpecialDaysOperation>
+        </SpecialDaysOperation>
+      </OperatingProfile>
+      <CommercialBasis>notContracted</CommercialBasis>
+      <VehicleJourneyCode>VJ54</VehicleJourneyCode>
+      <ServiceRef>UZ000FLIX:UKN603</ServiceRef>
+      <LineRef>FLIX:UZ000FLIX:UKN603:UKN603</LineRef>
+      <JourneyPatternRef>JP10</JourneyPatternRef>
+      <DepartureTime>17:00:00</DepartureTime>
+    </VehicleJourney>
+  </VehicleJourneys>
+</TransXChange>

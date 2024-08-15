@@ -287,9 +287,14 @@ class TransXChangeExtractor:
         return stop_point_refs_to_dataframe(refs)
 
     def extract_provisional_stops(self):
-        system = self.doc.get_location_system()
+        """
+        Extracts provisional stop points from a document and returns them as a DataFrame.
+
+        Returns:
+        - A pandas DataFrame containing provisional stop points extracted from the document.
+        """
         stop_points = self.doc.get_stop_points()
-        return provisional_stops_to_dataframe(stop_points, system=system)
+        return provisional_stops_to_dataframe(stop_points, self.doc)
 
     def extract_journey_patterns(self):
         services = self.doc.get_services()

@@ -1,36 +1,32 @@
 {% extends "site_admin/base.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'Overview' %}
+  {% trans "Overview" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Data monitoring' 'bods-metrics' host hosts.admin %}
-    {% breadcrumb_url 'Overview' 'overview-metrics' host host.name %}
+  {{ block.super }}
+  {% breadcrumb_url 'Data monitoring' 'bods-metrics' host hosts.admin %}
+  {% breadcrumb_url 'Overview' 'overview-metrics' host host.name %}
 {% endblock %}
-
 {% block content %}
-    <div class="govuk-width-container">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-xl">
-                    {% blocktrans %}
-                        This feature is coming soon
-                    {% endblocktrans %}
-                </h1>
-                <p class="govuk-body">
-                    {% blocktrans %}
-                        This feature will be available soon. In the
-                        meantime, please return to the previous page
-                        for the download option.
-                    {% endblocktrans %}
-                </p>
-            </div>
-        </div>
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
+          {% blocktrans %}
+            This feature is coming soon
+          {% endblocktrans %}
+        </h1>
+        <p class="govuk-body">
+          {% blocktrans %}
+            This feature will be available soon. In the
+            meantime, please return to the previous page
+            for the download option.
+          {% endblocktrans %}
+        </p>
+      </div>
     </div>
+  </div>
 {% endblock %}

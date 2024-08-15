@@ -1,53 +1,49 @@
-{% extends 'page.html' %}
-
+{% extends "page.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
-{% block styles %}
-    {{ block.super }}
-{% endblock %}
-
+{% block styles %}{{ block.super }}{% endblock %}
 {% block title_tag %}
-    {% trans 'Guidance' %}
+  {% trans "Guidance" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Guidance' 'guidance:operators-home' host hosts.publish %}
+  {{ block.super }}
+  {% breadcrumb_url 'Guidance' 'guidance:operators-home' host hosts.publish %}
 {% endblock %}
-
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">{% trans 'Guidance' %}</h1>
-            <p class="govuk-body-l">
-                {% blocktrans %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{% trans "Guidance" %}</h1>
+      <p class="govuk-body-l">
+        {% blocktrans %}
                     What you need to know to get started. Find guidance and support
                     material tailored to your needs.
-                {% endblocktrans %} </p>
-            <p class="govuk-body-m">
-                <a class="govuk-link"
-                    href="{% url 'guidance:support-developer' host hosts.data %}">{% trans 'Developer documentation' %}</a>
-            </p>
-            <p class="govuk-body-m">
-                <a class="govuk-link" href="https://www.gov.uk/government/consultations/bus-services-act-2017-bus-open-data"
-                    target="_blank">
-                    {% trans 'About open bus data service' %}</a>
-            </p>
-        </div>
-        <hr class="govuk-section-break govuk-section-break--l govuk-section-break">
-
-        <div class="govuk-grid-column-one-third">
-            <h2 class="govuk-heading-m">{% trans 'Interested in publisher requirements?' %}</h2>
-            <p class="govuk-body">
-                <a class="govuk-link"
-                    href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{% trans 'Bus operator requirements' %}</a>
-            </p>
-            <p class="govuk-body">
-                <a class="govuk-link"
-                    href="{% url 'guidance:support-local_authorities' host hosts.publish %}">{% trans 'Local authority requirements' %}</a>
-            </p>
-        </div>
+                {% endblocktrans %}
+      </p>
+      <p class="govuk-body-m">
+        <a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}">
+          {% trans "Developer documentation" %}
+        </a>
+      </p>
+      <p class="govuk-body-m">
+        <a class="govuk-link"
+           href="https://www.gov.uk/government/consultations/bus-services-act-2017-bus-open-data"
+           target="_blank">{% trans "About open bus data service" %}</a>
+      </p>
     </div>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break" />
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">{% trans "Interested in publisher requirements?" %}</h2>
+      <p class="govuk-body">
+        <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">
+          {% trans "Bus operator requirements" %}
+        </a>
+      </p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="{% url 'guidance:support-local_authorities' host hosts.publish %}">
+          {% trans "Local authority requirements" %}
+        </a>
+      </p>
+    </div>
+  </div>
 {% endblock %}

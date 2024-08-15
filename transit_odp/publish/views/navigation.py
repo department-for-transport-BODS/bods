@@ -9,7 +9,9 @@ from config.hosts import PUBLISH_HOST
 from transit_odp.common.views import BaseTemplateView
 from transit_odp.organisation.constants import AVLType, FaresType, TimetableType
 from transit_odp.publish.forms import SelectDataTypeForm
-from transit_odp.publish.requires_attention import get_requires_attention_data
+from transit_odp.publish.requires_attention import (
+    get_requires_attention_line_level_data,
+)
 from transit_odp.publish.tables import AgentOrganisationsTable
 from transit_odp.users.models import User
 from transit_odp.users.views.mixins import OrgUserViewMixin
@@ -83,7 +85,7 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
                 "organisation_id": record.organisation_id,
                 "organisation": record.organisation.name,
                 "requires_attention": len(
-                    get_requires_attention_data(record.organisation_id)
+                    get_requires_attention_line_level_data(record.organisation_id)
                 ),
             }
             for record in self.get_queryset()

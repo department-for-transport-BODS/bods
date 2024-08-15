@@ -1,8 +1,6 @@
 import logging
-import csv
-from io import StringIO
+import json
 import pandas as pd
-import numpy as np
 from transit_odp.pipelines.constants import SchemaCategory
 from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
@@ -17,11 +15,10 @@ from pydantic import BaseModel, ValidationError, Field
 from typing import List, Optional
 from datetime import datetime, timedelta
 
-from transit_odp.common.utils.s3_bucket_connection import get_s3_bucket_storage
+from transit_odp.common.utils.aws_common import get_s3_bucket_storage
 
 from transit_odp.transmodel.models import BankHolidays
 from typing import Tuple, Dict
-from datetime import time
 
 logger = logging.getLogger(__name__)
 
@@ -30,44 +27,6 @@ def get_transxchange_schema():
     definition = SchemaDefinition.objects.get(category=SchemaCategory.TXC)
     schema_loader = SchemaLoader(definition, TXC_XSD_PATH)
     return schema_loader.schema
-
-
-def read_delete_datasets_file_from_s3():
-    try:
-        storage = get_s3_bucket_storage()
-        file_name = "delete_datasets.csv"
-
-        if not storage.exists(file_name):
-            logger.warning(f"{file_name} does not exist in the S3 bucket.")
-            return []
-
-        file = storage._open(file_name)
-        content = file.read().decode()
-        file.close()
-
-        # Remove BOM character if present
-        if content.startswith("\ufeff"):
-            content = content.lstrip("\ufeff")
-
-        csv_file = StringIO(content)
-        reader = csv.DictReader(csv_file)
-        dataset_ids = [
-            int(row["Dataset ID"]) for row in reader if row["Dataset ID"].strip()
-        ]
-
-        if dataset_ids:
-            logger.info(
-                f"Successfully read {len(dataset_ids)} dataset IDs from {file_name} in S3."
-            )
-        else:
-            logger.warning(
-                f"{file_name} in S3 is empty or does not contain valid dataset IDs."
-            )
-
-        return dataset_ids
-    except Exception as e:
-        logger.error(f"Error reading {file_name} from S3: {str(e)}")
-        raise
 
 
 class HolidaysNonSubstituteEnum(Enum):
@@ -107,6 +66,21 @@ class Division(BaseModel):
 class APIBankHolidays(BaseModel):
     england_and_wales: Division = Field(alias="england-and-wales")
     scotland: Division
+
+
+class QueuePayloadItem:
+    def __init__(self, file_id, check_id, result_id, queue_name):
+        self.file_id = file_id
+        self.check_id = check_id
+        self.result_id = result_id
+        self.queue_name = queue_name
+
+    def to_dict(self):
+        return {
+            "file_id": self.file_id,
+            "check_id": self.check_id,
+            "result_id": self.result_id,
+        }
 
 
 def get_json_data(url):
@@ -521,3 +495,23 @@ def get_updated_columns(df: pd.DataFrame) -> pd.Series:
     with the string '-'.
     """
     return ["-" if "-missing_journey_code" in col else col for col in df.columns]
+
+
+def create_queue_payload(pending_checks: list) -> dict:
+    """
+    Create JSON payload as queue items for remote queues for lambdas.
+    """
+    queue_payload = {}
+    for index, check in enumerate(pending_checks):
+        payload_item = {
+            "file_id": check.transmodel_txcfileattributes.id,
+            "check_id": check.checks.id,
+            "result_id": check.id,
+        }
+        queue_name = check.queue_name
+        if queue_name not in queue_payload:
+            queue_payload[queue_name] = []
+        message = {"Id": f"message-{index}", "MessageBody": json.dumps(payload_item)}
+        queue_payload[queue_name].append(message)
+
+    return queue_payload

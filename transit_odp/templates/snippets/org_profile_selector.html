@@ -1,5 +1,4 @@
 {% load i18n %}
-
 <h3 class="govuk-heading-m">Select operator</h3>
 <div class="select-wrapper org-select govuk-!-margin-bottom-7">
   <select class="govuk-!-width-full govuk-select"
@@ -8,13 +7,9 @@
           data-qa="operator-select"
           aria-label="Select organisation"
           onchange="window.location.assign(this.value)">
-
     {% for org in user.organisations.all %}
       {% url 'users:organisation-profile' pk=org.id host hosts.publish as nav_url %}
-      <option value="{{ nav_url }}"
-        {% if nav_url == current_url %}selected{% endif %}>
-        {{org.name}}
-      </option>
+      <option value="{{ nav_url }}" {% if nav_url == current_url %}selected{% endif %}>{{ org.name }}</option>
     {% endfor %}
   </select>
 </div>

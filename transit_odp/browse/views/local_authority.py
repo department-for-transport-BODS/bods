@@ -14,6 +14,7 @@ from transit_odp.browse.common import (
     get_weca_services_register_numbers,
     get_weca_traveline_region_map,
     ui_ltas_string,
+    get_in_scope_in_season_lta_service_numbers,
 )
 from transit_odp.browse.lta_column_headers import (
     header_accessor_data,
@@ -31,6 +32,7 @@ from transit_odp.otc.models import UILta
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
     get_requires_attention_data_lta,
+    get_requires_attention_data_lta_line_level_length,
     get_txc_map_lta,
     get_line_level_txc_map_lta,
     is_stale,
@@ -227,19 +229,12 @@ class LocalAuthorityView(BaseListView):
         for lta in all_ltas_current_page:
             lta_list = lta_list_per_ui_ltas[lta.ui_lta_name_trimmed]
             setattr(lta, "auth_ids", [x.id for x in lta_list])
-
-            otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta_list)
-            if otc_qs:
-                context["total_in_scope_in_season_services"] = otc_qs
-            else:
-                context["total_in_scope_in_season_services"] = 0
-            requires_attention_data_qs = get_requires_attention_data_lta(lta_list)
-            if requires_attention_data_qs:
-                context[
-                    "total_services_requiring_attention"
-                ] = requires_attention_data_qs
-            else:
-                context["total_services_requiring_attention"] = 0
+            context["total_in_scope_in_season_services"] = len(
+                get_in_scope_in_season_lta_service_numbers(lta_list)
+            )
+            context[
+                "total_services_requiring_attention"
+            ] = get_requires_attention_data_lta_line_level_length(lta_list)
 
             try:
                 context["services_require_attention_percentage"] = round(
@@ -310,15 +305,13 @@ class LocalAuthorityDetailView(BaseDetailView):
         for combined_authority_id in combined_authority_ids:
             lta_objs.append(self.model.objects.get(id=combined_authority_id))
 
-        otc_qs = OTCService.objects.get_in_scope_in_season_lta_services(lta_objs)
-        if otc_qs:
-            context["total_in_scope_in_season_services"] = otc_qs
-        else:
-            context["total_in_scope_in_season_services"] = 0
-
-        context["total_services_requiring_attention"] = get_requires_attention_data_lta(
-            lta_objs
+        context["total_in_scope_in_season_services"] = len(
+            get_in_scope_in_season_lta_service_numbers(lta_objs)
         )
+
+        context[
+            "total_services_requiring_attention"
+        ] = get_requires_attention_data_lta_line_level_length(lta_objs)
 
         try:
             context["services_require_attention_percentage"] = round(

@@ -21,7 +21,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
 )
 from datetime import datetime, timedelta
 from typing import Dict, Any, Union
-from transit_odp.transmodel.models import StopActivity
+from transit_odp.timetables.transxchange import TransXChangeDocument
 
 logger = logging.getLogger(__name__)
 
@@ -247,7 +247,7 @@ def get_geometry_from_location(system, location):
             northing = location.get_element(["Translation", "Northing"]).text
         else:
             easting = location.get_element(["Easting"]).text
-            northing = location.get_element(["Easting"]).text
+            northing = location.get_element(["Northing"]).text
         geometry = (
             grid_gemotry_from_str(easting, northing) if easting and northing else None
         )
@@ -265,12 +265,13 @@ def get_geometry_from_location(system, location):
     return geometry
 
 
-def provisional_stops_to_dataframe(stops, system=None):
+def provisional_stops_to_dataframe(stops, doc: TransXChangeDocument):
     """
     This function returns the stoppoint detials like atco_code, geometry, location and comman name
     """
     stop_points = []
     for stop in stops:
+        system = doc.get_location_system(stop)
         locality_id = stop.get_element(["Place", "NptgLocalityRef"]).text
         flx_zone_locations = []
         atco_code = stop.get_element(["AtcoCode"]).text
@@ -393,6 +394,15 @@ def get_stop_activity_id(stop_activities, name):
     return matching_activity
 
 
+def get_timing_status_for_stop(stop_timing_status):
+    if stop_timing_status and stop_timing_status.text in [
+        "principalTimingPoint",
+        "PTP",
+    ]:
+        return True
+    return False
+
+
 def journey_pattern_sections_to_dataframe(sections, stop_activities):
     all_links = []
     if sections is not None:
@@ -407,12 +417,16 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                 from_stop_ref = from_stop.get_element(["StopPointRef"]).text
                 to_stop_ref = to_stop.get_element(["StopPointRef"]).text
                 to_stop_timing_status = link.get_element_or_none(["To", "TimingStatus"])
+                from_stop_timing_status = link.get_element_or_none(
+                    ["From", "TimingStatus"]
+                )
                 is_timing_status = False
-                if to_stop_timing_status and to_stop_timing_status.text in [
-                    "principalTimingPoint",
-                    "PTP",
-                ]:
-                    is_timing_status = True
+                if order == 0:
+                    is_timing_status = get_timing_status_for_stop(
+                        from_stop_timing_status
+                    )
+                else:
+                    is_timing_status = get_timing_status_for_stop(to_stop_timing_status)
                 timing_link_id = link["id"]
 
                 run_time = pd.NaT
@@ -488,7 +502,10 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
             )
             vj_departure_time = departure_time
             if dead_run_time:
-                departure_time = departure_time + pd.to_timedelta(dead_run_time.text)
+                parsed_dead_run_time = isodate.parse_duration(dead_run_time.text)
+                departure_time = departure_time + pd.to_timedelta(
+                    parsed_dead_run_time.total_seconds(), unit="s"
+                )
 
             journey_pattern_ref_element = vehicle_journey.get_element_or_none(
                 ["JourneyPatternRef"]
@@ -539,7 +556,12 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                     ).text
                     run_time_element = links.get_element_or_none(["RunTime"])
                     if run_time_element:
-                        run_time = pd.to_timedelta(run_time_element.text)
+                        parsed_run_time_element = isodate.parse_duration(
+                            run_time_element.text
+                        )
+                        run_time = pd.to_timedelta(
+                            parsed_run_time_element.total_seconds(), unit="s"
+                        )
                     else:
                         run_time = pd.NaT
                     from_wait_time_element = links.get_element_or_none(["From"])
@@ -658,23 +680,24 @@ def flexible_vehicle_journeys_to_dataframe(flexible_vechicle_journeys):
     return pd.DataFrame(all_vehicle_journeys)
 
 
+def get_description(element):
+    """Helper function to extract text from an element or return an empty string."""
+    if element:
+        description = element.get_element_or_none("Description")
+        return description.text if description else ""
+    return ""
+
+
 def populate_lines(lines: list) -> list:
     lines_list = []
     for line in lines:
         line_id = line["id"]
         line_name = line.get_element(["LineName"]).text
-        outbound_description = line.get_element_or_none(["OutboundDescription"])
-        inbound_description = line.get_element_or_none(["InboundDescription"])
-
-        outbound_description = (
-            outbound_description.get_element("Description").text
-            if outbound_description
-            else ""
+        outbound_description = get_description(
+            line.get_element_or_none(["OutboundDescription"])
         )
-        inbound_description = (
-            inbound_description.get_element("Description").text
-            if inbound_description
-            else ""
+        inbound_description = get_description(
+            line.get_element_or_none(["InboundDescription"])
         )
 
         lines_list.append(

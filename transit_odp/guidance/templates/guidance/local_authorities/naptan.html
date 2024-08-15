@@ -1,12 +1,9 @@
-
 {% extends "guidance/local_authorities/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-    <h1 data-qa="naptan-header" class="govuk-heading-l">{% trans 'NaPTAN stop data' %}</h1>
-    <p class="govuk-body">
-        {% blocktrans %}
+  <h1 data-qa="naptan-header" class="govuk-heading-l">{% trans "NaPTAN stop data" %}</h1>
+  <p class="govuk-body">
+    {% blocktrans %}
             The Bus Open Data Regulations include a statutory requirement for local
             transport authorities to maintain and update data in the National Public
             Transport Access Node (NaPTAN) dataset for bus stops and stations. In practice,
@@ -14,9 +11,9 @@
             the Department for Transport database when new bus stops are added, temporary
             stops are added or bus stops are either moved or removed.
         {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             Local transport authorities will also have a statutory duty to ensure that the
             National Public Transport Access Nodes (NaPTAN) data is accurate and up to date
             for their local area. Many local transport authorities are already voluntarily
@@ -26,25 +23,22 @@
             transport authorities to begin reviewing their NaPTAN datasets and addressing
             any data quality issues, before the requirements come into effect next year.
         {% endblocktrans %}
-    </p>
-
-    <h2 data-qa="dft-header" class="govuk-heading-l">{% trans 'DfT support' %}</h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <h2 data-qa="dft-header" class="govuk-heading-l">{% trans "DfT support" %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             In preparation of the statutory requirements that will be coming into action next
             year. The DfT is offering a free service whereby local authorities can get in
             contact with
         {% endblocktrans %}
-
-        <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>,
-
-        {% blocktrans %}
+    <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>,
+    {% blocktrans %}
             to request a spreadsheet that contains potential NaPTAN corrections for the
             areas that you are responsible for.
         {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             The potential corrections involve a three-step process: (1) cross referencing the
             NaPTAN database with Passengers Bus Stop Checker and looking for differences in the
             bearing data; (2) the algorithm then interacts with Google APIs to further check
@@ -52,6 +46,5 @@
             corrections that are likely due to naming conventions from different sources of data
             rather than improvements to the dataset.
         {% endblocktrans %}
-    </p>
-
+  </p>
 {% endblock %}

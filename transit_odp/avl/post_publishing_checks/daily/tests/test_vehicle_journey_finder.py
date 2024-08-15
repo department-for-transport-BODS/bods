@@ -213,6 +213,21 @@ def test_filter_by_days_of_operation():
     assert txc_vehicle_journeys[0].vehicle_journey["SequenceNumber"] == "1"
 
 
+def test_filter_by_days_of_operation_different_org_ref():
+    txc_filename = str(DATA_DIR / "vehicle_journeys9.xml")
+    txc_xml = TransXChangeDocument(txc_filename)
+    vehicle_journeys = txc_xml.get_vehicle_journeys()
+    txc_vehicle_journeys = [TxcVehicleJourney(vj, txc_xml) for vj in vehicle_journeys]
+    # Set recorded at date within serviced org working days
+    recorded_at_time = datetime.date.fromisoformat("2023-04-18")
+    vehicle_journey_finder = VehicleJourneyFinder()
+    vehicle_journey_finder.filter_by_days_of_operation(
+        recorded_at_time, txc_vehicle_journeys, ValidationResult()
+    )
+
+    assert len(txc_vehicle_journeys) == 2
+
+
 def test_filter_by_days_of_operation_service_inherited():
     txc_filename = str(DATA_DIR / "vehicle_journeys7.xml")
     txc_xml = TransXChangeDocument(txc_filename)
@@ -284,37 +299,6 @@ def test_filter_by_service_code(txc_files, expected_result, expected_error):
         assert result.errors == expected_error
 
 
-def test_get_service_org_xml_string():
-    txc_filenames = [
-        str(DATA_DIR / xml)
-        for xml in (
-            "vehicle_journeys.xml",
-            "vehicle_journeys4.xml",
-        )
-    ]
-    expected_service_org_xml_string = """<ServicedOrganisationDayType xmlns="http://www.transxchange.org.uk/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-          <DaysOfOperation>
-            <WorkingDays>
-              <ServicedOrganisationRef>KPMG</ServicedOrganisationRef>
-            </WorkingDays>
-          </DaysOfOperation>
-        </ServicedOrganisationDayType>"""
-    txc_xml = [TransXChangeDocument(f) for f in txc_filenames]
-    txc_vehicle_journeys = [
-        TxcVehicleJourney(txc.get_vehicle_journeys()[0], txc) for txc in txc_xml
-    ]
-    vehicle_journey_finder = VehicleJourneyFinder()
-    service_org_xml_str_none = vehicle_journey_finder.get_service_org_xml_string(
-        txc_vehicle_journeys[0]
-    )
-    assert service_org_xml_str_none is None
-
-    service_org_xml_str_not_none = vehicle_journey_finder.get_service_org_xml_string(
-        txc_vehicle_journeys[1]
-    )
-    assert service_org_xml_str_not_none.strip() == expected_service_org_xml_string
-
-
 def test_filter_by_published_line_name():
     txc_filenames = [
         str(DATA_DIR / xml) for xml in ("vehicle_journeys_same_journey_code.xml",)
@@ -334,6 +318,7 @@ def test_filter_by_published_line_name():
     )
     assert len(txc_vehicle_journey) == 1
     assert txc_vehicle_journey[0].vehicle_journey["SequenceNumber"] == "1"
+    assert len(result.transxchange_attribute(TransXChangeField.OPERATING_PROFILES)) == 1
 
 
 def test_filter_by_published_line_name_no_matching_lineref():
@@ -356,6 +341,7 @@ def test_filter_by_published_line_name_no_matching_lineref():
     assert result.errors[ErrorCategory.GENERAL] == [
         "No published TxC files found with vehicle journey LineRef that matches with the PublishedLineName"
     ]
+    assert len(result.transxchange_attribute(TransXChangeField.OPERATING_PROFILES)) == 1
     assert txc_vehicle_journey is None
 
 
@@ -369,6 +355,7 @@ def test_get_service_org_ref_and_days_of_operation():
         service_org_ref,
         days_of_non_operation,
         days_of_operation,
+        service_org_ref_dict,
     ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
         txc_vehicle_journeys[0]
     )
@@ -376,6 +363,7 @@ def test_get_service_org_ref_and_days_of_operation():
     assert service_org_ref == "KPMG"
     assert days_of_non_operation is None
     assert days_of_operation is not None
+    assert "KPMG" in service_org_ref_dict["days_of_operation"]
 
 
 def test_get_service_org_ref_and_days_of_non_operation():
@@ -388,6 +376,7 @@ def test_get_service_org_ref_and_days_of_non_operation():
         service_org_ref,
         days_of_non_operation,
         days_of_operation,
+        service_org_ref_dict,
     ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
         txc_vehicle_journeys[0]
     )

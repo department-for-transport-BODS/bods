@@ -1,40 +1,35 @@
 {% extends "guidance/developer/base.html" %}
-
 {% load i18n %}
-
 {% block extra_content %}
-    <h2 data-qa="operator-header" class="govuk-heading-l">
-        {% trans 'Getting data by operator' %}
-    </h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  <h2 data-qa="operator-header" class="govuk-heading-l">{% trans "Getting data by operator" %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             For all data types you can apply the NOC query parameter. This will limit results to data published by that operator, including any other NOC associated with that operator on this service.
         {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             Download the
         {% endblocktrans %}
-        <a class="govuk-link" href="{% url 'download-catalogue' host hosts.data %}">data catalogue</a>
-        {% blocktrans %}
+    <a class="govuk-link" href="{% url 'download-catalogue' host hosts.data %}">data catalogue</a>
+    {% blocktrans %}
             to see the relationship between operators and NOC on this service.
         {% endblocktrans %}
-    </p>
-    <h2 data-qa="operator-header" class="govuk-heading-l">
-        {% trans 'Getting data by location' %}
-    </h2>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <h2 data-qa="operator-header" class="govuk-heading-l">{% trans "Getting data by location" %}</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
             To get data for a specific location you can use the boundingBox parameter. For
             bus location data this will limit the data to vehicles within the prescribed
             area at that point in time. For timetables are fares if any data is within the
             boundingBox, the whole data set will be returned.
         {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-        {% blocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
             For more information on API query parameters please go to the
         {% endblocktrans %}
-        <a class="govuk-link" href="?section=apireference">API reference</a>.
-    </p>
-{% endblock %}.
+    <a class="govuk-link" href="?section=apireference">API reference</a>.
+  </p>
+{% endblock %}
+.

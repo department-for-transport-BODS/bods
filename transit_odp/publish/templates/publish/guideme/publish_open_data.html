@@ -1,20 +1,18 @@
 {% load i18n %}
 <a class="govuk-link govuk-!-font-size-19" href="{% url 'redirect-publish' host hosts.publish %}">
-    {% trans 'Publish data' %}
+  {% trans "Publish data" %}
 </a>
-
 <p class="govuk-body">
-    {% blocktrans %}
+  {% blocktrans %}
         Make your data open by publishing Timetable, Location and Fare data.
     {% endblocktrans %}
 </p>
-
-<a class="govuk-link govuk-!-font-size-19" href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
-    {% trans 'Understanding validation checks' %}
+<a class="govuk-link govuk-!-font-size-19"
+   href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
+  {% trans "Understanding validation checks" %}
 </a>
-
 <p class="govuk-body">
-    {% blocktrans %}
+  {% blocktrans %}
         Read the guidance on post publishing validation and data quality reports to
         understand how to interpret and action them.
     {% endblocktrans %}

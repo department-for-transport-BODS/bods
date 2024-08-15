@@ -1,4 +1,3 @@
-from django.urls import include, re_path
 from rest_framework.routers import DefaultRouter
 
 from transit_odp.api.app import views
@@ -12,6 +11,7 @@ router = DefaultRouter()
 #  * /dataset/:id/live/...
 #  * /dataset/:id/draft/...
 router.register(r"revision", views.DatasetRevisionViewSet, "revision")
+router.register(r"dqs_revision", views.DQSDatasetRevisionViewSet, "dqs_revision")
 
 # APIs for rendering map data
 router.register(r"stop_point", views.StopViewSet, "stop")
@@ -28,6 +28,4 @@ router.register(
     "disruption_detail_map_data",
 )
 
-urlpatterns = [
-    re_path("", include(router.urls)),
-]
+urlpatterns = router.get_urls()

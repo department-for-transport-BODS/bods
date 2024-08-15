@@ -1,41 +1,29 @@
 {% extends "page.html" %}
-
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
-
 {% block title_tag %}
-  {% if form.errors %}{% trans 'Error: ' %}{% endif %}
-  {% trans 'Edit organisation details' %}
+  {% if form.errors %}
+    {% trans "Error: " %}
+  {% endif %}
+  {% trans "Edit organisation details" %}
 {% endblock %}
-
 {# Breadcrumb #}
-{% block breadcrumb.content %}
-{% endblock %}
-
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% url 'users:organisation-profile' pk=user.organisation.id host hosts.publish as backlink %}
-  {% include 'snippets/backlink.html' with url=backlink %}
+  {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
-
 {% block content %}
-   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">
-          {% trans 'Edit organisation detail' %}
-        </h1>
-    </div>
-  </div>
-
-    {# Main Section #}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        {% crispy form %}
+      <h1 class="govuk-heading-xl">{% trans "Edit organisation detail" %}</h1>
     </div>
-
-    <div class="govuk-grid-column-one-third">
-      {% include "common/snippets/organisation_helpful_links.html" %}
-    </div>
+  </div>
+  {# Main Section #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">{% crispy form %}</div>
+    <div class="govuk-grid-column-one-third">{% include "common/snippets/organisation_helpful_links.html" %}</div>
   </div>
 {% endblock %}

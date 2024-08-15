@@ -19,11 +19,11 @@ from transit_odp.browse.views.guide_me import BrowseGuideMeView
 from transit_odp.browse.views.local_authority import (
     LocalAuthorityDetailView,
     LocalAuthorityExportView,
-    LocalAuthorityView,
     LocalAuthorityLineLevelExportView,
+    LocalAuthorityView,
 )
 from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
-from transit_odp.common.views import ComingSoonView, VersionView
+from transit_odp.common.views import CoachDownloadView, ComingSoonView, VersionView
 from transit_odp.users.urls import AGENT_PATHS
 from transit_odp.users.views.account import (
     DatasetManageView,
@@ -153,6 +153,8 @@ urlpatterns = [
     ),
     path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
     path("version/", VersionView.as_view(), name="version"),
+    path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
+    path("django_axe/", include("django_axe.urls")),
 ]
 
 if settings.DEBUG:

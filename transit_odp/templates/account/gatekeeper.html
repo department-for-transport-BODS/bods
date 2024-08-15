@@ -1,29 +1,21 @@
-{% extends 'account/base.html' %}
-
+{% extends "account/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block breadcrumb.content %}
-  {% with account_base_no_link=True %}
-    {{ block.super }}
-  {% endwith %}
+  {% with account_base_no_link=True %}{{ block.super }}{% endwith %}
 {% endblock %}
-
 {% block content %}
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">{% trans 'Access Open Bus Data' %}</h1>
+      <h1 class="govuk-heading-l">{% trans "Access Open Bus Data" %}</h1>
       <p class="govuk-body">
         {% blocktrans %}
           You can preview available data without an account but to publish or use open bus data you need to create
           an account or sign in.
         {% endblocktrans %}
       </p>
-      <a role="button" class="govuk-button" href="{% url 'account_signup' host host.name %}">
-        {{ _('Create account') }}
-      </a>
+      <a role="button" class="govuk-button" href="{% url 'account_signup' host host.name %}">{{ _("Create account") }}</a>
       <p class="govuk-body">
         {% url 'account_login' host host.name as signin_url %}
         {% blocktrans %}
@@ -33,6 +25,4 @@
       </p>
     </div>
   </div>
-
-
 {% endblock %}

@@ -1,5 +1,3 @@
-@import "../../variables";
-
 .range-filter {
   list-style: none;
   margin: 0 0 2rem 0;
@@ -10,7 +8,7 @@
   font-family: "nta", Arial, sans-serif;
   font-size: 1.125rem;
 
-  > li {
+  >li {
     margin: 0;
     padding: 0;
 
@@ -33,6 +31,7 @@
     width: 100%;
     padding: govuk-spacing(1);
   }
+
   .checkbox-filter__annotation {
     color: govuk-colour("dark-grey");
   }

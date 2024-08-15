@@ -1,60 +1,59 @@
-{% extends 'browse/base.html' %}
-
+{% extends "browse/base.html" %}
 {% load static %}
 {% load i18n %}
 {% load breadcrumbs %}
-
 {% block title_tag %}
-    {% trans 'Try API Service' %}
+  {% trans "Try API Service" %}
 {% endblock %}
-
 {% block breadcrumb.content %}
-    {{ block.super }}
-    {% breadcrumb_url 'Try API Service' 'api-select' host hosts.data %}
+  {{ block.super }}
+  {% breadcrumb_url 'Try API Service' 'api-select' host hosts.data %}
 {% endblock %}
-
 {% block heading.title.text %}
-    {% trans 'Try API Service' %}
-
+  {% trans "Try API Service" %}
 {% endblock %}
-
 {% block heading.subtitle %}
-    <div class="govuk-!-padding-right-9">
-        <p class="govuk-body govuk-!-padding-bottom-3">
-            {% blocktrans %}
-                You can experiment with our interactive API services, to familiarise yourself
-                with the data supplied. Please append your API_Key from your
-            {% endblocktrans %}
-            <a href="{% url 'users:settings' host hosts.data %}">{% filter force_escape %}{% trans 'Account Settings' %}{% endfilter %}</a>
-            {% blocktrans %}
-                page and query parameters to your API requests.
-            {% endblocktrans %}
-        </p>
-        <ul class="govuk-list app-list--nav govuk-!-font-size-19">
-            <li class="govuk-!-margin-bottom-4">
-                <a class="govuk-link-bold" href="{% url 'api:timetableopenapi' host hosts.data %}">
-                    {% trans 'Timetables data API' %}
-                </a>
-            </li>
-            <li class="govuk-!-margin-bottom-4">
-                <a class="govuk-link-bold" href="{% url 'api:avlopenapi' host hosts.data %}">
-                    {% trans 'Location data API' %}
-                </a>
-            </li>
-            <li class="govuk-!-margin-bottom-4">
-                <a class="govuk-link-bold" href="{% url 'api:faresopenapi' host hosts.data %}">
-                    {% filter force_escape %}{% trans 'Fares data API' %}{% endfilter %}
-                </a>
-            </li>
-            <li class="govuk-!-margin-bottom-4">
-                <a class="govuk-link-bold" href="{% url 'api:disruptionsopenapi' host hosts.data %}">
-                    {% filter force_escape %}{% trans 'Disruption data API' %}{% endfilter %}
-                </a>
-            </li>
-        </ul>
-    </div>
+  <div class="govuk-!-padding-right-9">
+    <p class="govuk-body govuk-!-padding-bottom-3">
+      {% blocktrans %}
+        You can experiment with our interactive API services, to familiarise yourself
+        with the data supplied. Please append your API_Key from your
+      {% endblocktrans %}
+      <a href="{% url 'users:settings' host hosts.data %}">
+        {% filter force_escape %}
+          {% trans "Account Settings" %}
+        {% endfilter %}
+      </a>
+      {% blocktrans %}
+        page and query parameters to your API requests.
+      {% endblocktrans %}
+    </p>
+    <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+      <li class="govuk-!-margin-bottom-4">
+        <a class="govuk-link-bold" href="{% url 'api:timetableopenapi' host hosts.data %}">
+          {% trans "Timetables data API" %}
+        </a>
+      </li>
+      <li class="govuk-!-margin-bottom-4">
+        <a class="govuk-link-bold" href="{% url 'api:avlopenapi' host hosts.data %}">{% trans "Location data API" %}</a>
+      </li>
+      <li class="govuk-!-margin-bottom-4">
+        <a class="govuk-link-bold" href="{% url 'api:faresopenapi' host hosts.data %}">
+          {% filter force_escape %}
+            {% trans "Fares data API" %}
+          {% endfilter %}
+        </a>
+      </li>
+      <li class="govuk-!-margin-bottom-4">
+        <a class="govuk-link-bold" href="{% url 'api:disruptionsopenapi' host hosts.data %}">
+          {% filter force_escape %}
+            {% trans "Disruption data API" %}
+          {% endfilter %}
+        </a>
+      </li>
+    </ul>
+  </div>
 {% endblock %}
-
 {% block heading.secondary %}
-    {% include "browse/snippets/download_secondary_links.html" %}
+  {% include "browse/snippets/download_secondary_links.html" %}
 {% endblock %}

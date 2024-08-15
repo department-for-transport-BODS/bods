@@ -7,6 +7,8 @@ from transit_odp.data_quality.models.warnings import (
     LineExpiredWarning,
     LineMissingBlockIDWarning,
 )
+from transit_odp.dqs.constants import Level, Category
+
 
 _ANCHOR: Final = '<a class="govuk-link" target="_blank" href="{0}">{0}</a>'
 _TRAVEL_LINE_ANCHOR = _ANCHOR.format(
@@ -16,20 +18,7 @@ _TRAVEL_LINE_ANCHOR = _ANCHOR.format(
 _TRANSXCHANGE_ANCHOR: Final = _ANCHOR.format(
     "https://www.gov.uk/government/collections/transxchange"
 )
-
-
-@unique
-class Level(Enum):
-    critical = "Critical"
-    advisory = "Advisory"
-
-
-@unique
-class Category(Enum):
-    stops = "Stops"
-    timing = "Timing"
-    journey = "Journey"
-    data_set = "Data set"
+_LINE_BREAK = "<br/><br/>"
 
 
 class CheckBasis(Enum):
@@ -52,6 +41,9 @@ class Observation:
     impacts: str = None
     weighting: float = None
     check_basis: CheckBasis = None
+    resolve: str = None
+    preamble: str = None
+    is_active: bool = True
 
     @property
     def type(self):
@@ -59,7 +51,7 @@ class Observation:
 
 
 IncorrectNocObservation = Observation(
-    title="Incorrect NOC code",
+    title="Incorrect NOC",
     text=(
         "Operators can find their organisation’s NOC by browsing the Traveline NOC "
         "database here:"
@@ -73,6 +65,7 @@ IncorrectNocObservation = Observation(
         "and to match their data across data types. This ability improves "
         "the quality of information available to passengers."
     ),
+    preamble="The following data sets have been observed to have incorrect national operator code(s).",
     model=models.IncorrectNOCWarning,
     list_url_name="dq:incorrect-noc-list",
     level=Level.critical,
@@ -117,6 +110,7 @@ MissingBlockNumber = Observation(
     check_basis=CheckBasis.lines,
 )
 
+# TODO: DQSMIGRATION: Move to dqs module
 StopNotInNaptanObservation = Observation(
     title="Stop(s) are not found in NaPTAN",
     text=(
@@ -143,6 +137,7 @@ StopNotInNaptanObservation = Observation(
         "data inputted is correctly detailed and can be referenced to the NaPTAN "
         "database. "
     ),
+    preamble="The following timing pattern(s) have been observed to have stops that are not in NaPTAN.",
     model=models.StopMissingNaptanWarning,
     list_url_name="dq:stop-missing-naptan-list",
     level=Level.critical,
@@ -150,6 +145,7 @@ StopNotInNaptanObservation = Observation(
     weighting=0.12,
     check_basis=CheckBasis.stops,
 )
+
 FirstStopSetDownOnlyObservation = Observation(
     title="First stop is found to be set down only",
     text=(
@@ -163,6 +159,7 @@ FirstStopSetDownOnlyObservation = Observation(
         "stop correctly "
         "to passengers, disrupting their journeys. "
     ),
+    preamble="The following timing pattern(s) have been observed to have first stop as set down only.",
     model=models.TimingPickUpWarning,
     list_url_name="dq:first-stop-set-down-only-list",
     category=Category.stops,
@@ -170,6 +167,7 @@ FirstStopSetDownOnlyObservation = Observation(
     weighting=0.10,
     check_basis=CheckBasis.timing_patterns,
 )
+
 LastStopPickUpOnlyObservation = Observation(
     title="Last stop is found to be pick up only",
     text=(
@@ -184,6 +182,7 @@ LastStopPickUpOnlyObservation = Observation(
         "correctly "
         "to passengers, disrupting their journeys. "
     ),
+    preamble="The following timing pattern(s) have been observed to have last stop as pick up only.",
     model=models.TimingDropOffWarning,
     list_url_name="dq:last-stop-pick-up-only-list",
     level=Level.critical,
@@ -229,6 +228,7 @@ StopsRepeatedObservation = Observation(
     level=Level.advisory,
     category=Category.stops,
 )
+
 IncorrectStopTypeObservation = Observation(
     title="Incorrect stop type",
     text=(
@@ -246,6 +246,7 @@ IncorrectStopTypeObservation = Observation(
         "the correct "
         "location to board services, particularly when planning multimodal journeys. "
     ),
+    preamble="Following timing pattern(s) have been observed to have incorrect stop type.",
     model=models.JourneyStopInappropriateWarning,
     list_url_name="dq:incorrect-stop-type-list",
     level=Level.critical,
@@ -276,6 +277,7 @@ IncorrectStopTypeObservation = Observation(
     weighting=0.10,
     check_basis=CheckBasis.stops,
 )
+
 FirstStopNotTimingPointObservation = Observation(
     title="First stop is not a timing point",
     text=(
@@ -302,11 +304,13 @@ FirstStopNotTimingPointObservation = Observation(
         "particularly negative "
         "for low digital passengers who rely on hard copy timetables. "
     ),
+    preamble="First stop in the following timing pattern(s) have been observed to not have timing points.",
     model=models.TimingFirstWarning,
     list_url_name="dq:first-stop-not-timing-point-list",
     level=Level.advisory,
     category=Category.timing,
 )
+
 LastStopNotTimingPointObservation = Observation(
     title="Last stop is not a timing point",
     text=(
@@ -333,6 +337,7 @@ LastStopNotTimingPointObservation = Observation(
         "particularly negative "
         "for low digital passengers who rely on hard copy timetables. "
     ),
+    preamble="Last stop in the following timing pattern(s) have been observed to not have timing points.",
     model=models.TimingLastWarning,
     list_url_name="dq:last-stop-not-timing-point-list",
     level=Level.advisory,

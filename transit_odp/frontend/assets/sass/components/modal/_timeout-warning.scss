@@ -1,5 +1,3 @@
-@import "govuk-frontend/govuk/helpers/spacing";
-
 .govuk-timeout-warning {
   display: none;
   @include govuk-responsive-padding(6);
@@ -52,6 +50,6 @@
   display: none;
 }
 
-.tabular-numbers {
-  font-family: $govuk-font-family-tabular;
-}
+// .tabular-numbers {
+//   font-family: $govuk-font-family-tabular;
+// }

@@ -30,6 +30,7 @@ from transit_odp.users.views.mixins import OrgAdminViewMixin
 pytestmark = pytest.mark.django_db
 
 
+@pytest.mark.django_db
 class TestManageView:
     host = config.hosts.PUBLISH_HOST
 
@@ -122,6 +123,7 @@ class TestManageView:
         )  # this is tests more thoroughly in test_user_list
 
 
+@pytest.mark.django_db
 class TestInviteView:
     host = config.hosts.PUBLISH_HOST
     url = reverse("users:invite", host=config.hosts.PUBLISH_HOST)
@@ -277,6 +279,7 @@ class TestInviteView:
         assert adapter.unstash_invite_email(request) == "test@test.com"
 
 
+@pytest.mark.django_db
 class TestResendInviteView:
     host = config.hosts.PUBLISH_HOST
 
@@ -378,6 +381,7 @@ class TestResendInviteView:
         assert list(qs) == invitations
 
 
+@pytest.mark.django_db
 class TestResendInviteSuccessView:
     host = config.hosts.PUBLISH_HOST
 
@@ -400,6 +404,7 @@ class TestResendInviteSuccessView:
         ]
 
 
+@pytest.mark.django_db
 class TestUserIsActiveView:
     host = config.hosts.PUBLISH_HOST
 
@@ -502,6 +507,7 @@ class TestUserIsActiveView:
         assert ordered(qs) == ordered(staff)
 
 
+@pytest.mark.django_db
 class TestUserDetailView:
     host = config.hosts.PUBLISH_HOST
 
@@ -564,6 +570,7 @@ class TestUserDetailView:
             assert response.status_code == 404
 
 
+@pytest.mark.django_db
 class TestUserEditView:
     host = config.hosts.PUBLISH_HOST
 
@@ -711,6 +718,7 @@ class TestUserEditView:
         assert response.status_code == 302
 
 
+@pytest.mark.django_db
 class TestAgentUserResponses:
     host = config.hosts.PUBLISH_HOST
 

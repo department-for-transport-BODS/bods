@@ -1,7 +1,5 @@
 <p {{ flat_attrs }}>
-    {% for widget in field.subwidgets %}
-        {% if widget.data.selected and forloop.counter0 != 0 %}
-            {{ widget.choice_label }}/
-        {% endif %}
-    {% endfor %}
+  {% for widget in field.subwidgets %}
+    {% if widget.data.selected and forloop.counter0 != 0 %}{{ widget.choice_label }}/{% endif %}
+  {% endfor %}
 </p>

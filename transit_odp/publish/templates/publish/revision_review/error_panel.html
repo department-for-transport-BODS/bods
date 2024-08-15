@@ -1,26 +1,25 @@
 {% load i18n %}
-
-  <h2 class="govuk-heading-l govuk-!-padding-top-5">
-      {{ object.name }}
-  </h2>
-
-<div class="govuk-error-summary govuk-!-margin-bottom-0" aria-labelledby="error-summary-title" role="alert"
-     tabindex="-1" data-module="govuk-error-summary">
+<h2 class="govuk-heading-l govuk-!-padding-top-5">{{ object.name }}</h2>
+<div class="govuk-error-summary govuk-!-margin-bottom-0"
+     aria-labelledby="error-summary-title"
+     role="alert"
+     tabindex="-1"
+     data-module="govuk-error-summary">
   <h2 class="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
-      {% trans 'Supplied data set has failed to upload' %}
+    {% trans "Supplied data set has failed to upload" %}
   </h2>
-
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list ">
-          <li class="app-error-summary__item" style="text-decoration: none">{{ severe_error.description }}</li>
+      <li class="app-error-summary__item no-underline-l">{{ severe_error.description }}</li>
     </ul>
   </div>
 </div>
 <div class="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
-<a role="button" class="govuk-button govuk-!-margin-bottom-0"
-       href="{% if is_update %}{% url 'update-modify' pk1=pk1 pk=object.dataset_id host hosts.publish %}
-                          {% else %}{% url 'upload-modify' pk1=pk1 pk=object.dataset_id host hosts.publish %} {% endif %}">
-        {{ _('Publish correct data set') }}
-</a></div>
+  <a role="button"
+     class="govuk-button govuk-!-margin-bottom-0"
+     href="{% if is_update %}{% url 'update-modify' pk1=pk1 pk=object.dataset_id host hosts.publish %} {% else %}{% url 'upload-modify' pk1=pk1 pk=object.dataset_id host hosts.publish %} {% endif %}">
+    {{ _("Publish correct data set") }}
+  </a>
+</div>
 {% include "publish/snippets/error_summary_table.html" %}
-{% include 'publish/revision_review/delete_component.html' %}
+{% include "publish/revision_review/delete_component.html" %}

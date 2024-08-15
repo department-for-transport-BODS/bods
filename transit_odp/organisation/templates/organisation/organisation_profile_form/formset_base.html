@@ -1,54 +1,46 @@
 {% load crispy_forms_tags %}
-
-{% block error_message %}
-{% endblock %}
-
+{% block error_message %}{% endblock %}
 <div class="govuk-form-group{% if formset.has_error %} govuk-form-group--error{% endif %}">
   <table class="govuk-table">
     <caption class="govuk-table__caption app-noc-table__caption">
-      {% block caption %}
-      {% endblock %}
+      {% block caption %}{% endblock %}
     </caption>
     <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header" style="display:none">NOC</th>
-      <th scope="col" class="govuk-table__header" style="display:none">Action</th>
-    </tr>
+      <tr class="govuk-table__row">
+        <th scope="col" class="js-hidden govuk-table__header">NOC</th>
+        <th scope="col" class="js-hidden govuk-table__header">Action</th>
+      </tr>
     </thead>
     <tbody class="govuk-table__body" id="id_{{ formset.prefix }}-formset">
-    {% for form in formset %}
-      {% if forloop.counter <= formset.min_num or forloop.counter <= formset.initial_forms|length or form.cleaned_data %}
-        {# show the form in the following conditions #}
-        {# at least the minimum number of nested forms specified #}
-        {# are already in the database #}
-        {# have been returned by the backend (probably failures) #}
-        {% crispy form %}
-      {% endif %}
-      {# The others are going to be the ones that have been instantiated by the user #}
-      {# but then deleted #}
-    {% endfor %}
+      {% for form in formset %}
+        {% if forloop.counter <= formset.min_num or forloop.counter <= formset.initial_forms|length or form.cleaned_data %}
+          {# show the form in the following conditions #}
+          {# at least the minimum number of nested forms specified #}
+          {# are already in the database #}
+          {# have been returned by the backend (probably failures) #}
+          {% crispy form %}
+        {% endif %}
+        {# The others are going to be the ones that have been instantiated by the user #}
+        {# but then deleted #}
+      {% endfor %}
     </tbody>
     <tfoot>
-    <tr>
-      <td colspan="2" class="govuk-!-padding-top-2">
-        {% block add_button %}
-        {% endblock %}
-      </td>
-    </tr>
+      <tr>
+        <td colspan="2" class="govuk-!-padding-top-2">
+          {% block add_button %}{% endblock %}
+        </td>
+      </tr>
     </tfoot>
   </table>
 </div>
-
-<div id="id_{{ formset.prefix }}-EMPTY_FORM" style="display:none">
-    {# Would be nice to use HTML 5's template element here but not supported by IE11 #}
+<div class="js-hidden" id="id_{{ formset.prefix }}-EMPTY_FORM">
+  {# Would be nice to use HTML 5's template element here but not supported by IE11 #}
   <table>
     <tbody>
-    {% crispy formset.empty_form formset.empty_form.helper %}
+      {% crispy formset.empty_form formset.empty_form.helper %}
     </tbody>
   </table>
 </div>
-
-
 <script>
     window.addEventListener("load", function () {
         let licenceRequiredCheckboxSelector = '[id^="id_licence_required"]';
@@ -86,7 +78,7 @@
         // The invalid form will be rerendered with the previous state. We need to reset the DELETE inputs since
         // there is no way for the user to untick the input once checked
         {% for form in formset %}
-          {% if forloop.counter <= formset.initial_forms|length  or form.cleaned_data %}
+          {% if forloop.counter <= formset.initial_forms|length or form.cleaned_data %}
             document.getElementById('id_{{form.prefix}}-DELETE').value = null;
           {% endif %}
         {% endfor %}

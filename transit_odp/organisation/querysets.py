@@ -27,7 +27,7 @@ from django.db.models import (
     Value,
     When,
 )
-from django.db.models.expressions import Exists
+from django.db.models.expressions import Exists, RawSQL
 from django.db.models.functions import (
     Cast,
     Coalesce,
@@ -60,7 +60,6 @@ from transit_odp.organisation.constants import (
 )
 from transit_odp.organisation.view_models import GlobalFeedStats
 from transit_odp.users.constants import AccountType
-from django.db.models.expressions import RawSQL
 
 User = get_user_model()
 ANONYMOUS = "Anonymous"
@@ -1005,9 +1004,13 @@ class DatasetQuerySet(models.QuerySet):
             ),
         )
 
+    def get_active_organisation(self):
+        return self.exclude(organisation__is_active=False)
+
     def get_overall_data_catalogue_annotations(self):
         return (
             self.get_published()
+            .get_active_organisation()
             .add_organisation_name()
             .add_live_filename()
             .add_live_name()
@@ -1163,6 +1166,22 @@ class DatasetRevisionQuerySet(models.QuerySet):
             )
         )
 
+    def get_fares_stuck_revisions(self):
+        now = timezone.now()
+        yesterday = now - timedelta(days=1)
+        return (
+            self.add_latest_task_status()
+            .add_latest_task_progress()
+            .filter(
+                dataset__dataset_type=FaresType,
+                latest_task_progress__lt=100,
+                created__lt=yesterday,
+            )
+            .exclude(
+                latest_task_status__in=["FAILURE", "SUCCESS"],
+            )
+        )
+
 
 class TXCFileAttributesQuerySet(models.QuerySet):
     def get_active_revisions(self):
@@ -1239,6 +1258,9 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             )
         )
 
+    def get_active_organisation(self):
+        return self.exclude(revision__dataset__organisation__is_active=False)
+
     def add_organisation_name(self):
         return self.annotate(
             organisation_name=F("revision__dataset__organisation__name")
@@ -1279,6 +1301,7 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .add_bods_compliant()
             .add_dq_score()
             .add_revision_details()
+            .get_active_organisation()
             .add_organisation_name()
             .add_string_lines()
             .order_by(
@@ -1298,6 +1321,7 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .add_bods_compliant()
             .add_dq_score()
             .add_revision_details()
+            .get_active_organisation()
             .add_organisation_name()
             .add_string_lines()
             .add_split_linenames()
@@ -1354,6 +1378,12 @@ class TXCFileAttributesQuerySet(models.QuerySet):
         return (
             self.add_effective_stale_date_last_modified_date().add_effective_stale_date_end_date()  # noqa: E501
         )
+
+    def for_revision(self, revision_id: int) -> list:
+        """Returns TXCFileAttributes objects for a revision."""
+        return self.filter(
+            service_txcfileattributes__revision_id=revision_id
+        ).distinct()
 
 
 class ConsumerFeedbackQuerySet(models.QuerySet):
