@@ -77,13 +77,10 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
             task_id=self.request.id,
         )
 
-        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
-
         task_download_fares_file(task.id)
         task_run_antivirus_check(task.id)
         task_run_fares_validation(task.id)
-        if is_fares_validator_active:
-            task_set_fares_validation_result(task.id)
+        task_set_fares_validation_result(task.id)
         task_run_fares_etl(task.id)
 
         task.update_progress(100)
@@ -161,6 +158,7 @@ def task_run_antivirus_check(task_id: int):
 @shared_task
 def task_run_fares_validation(task_id):
     """Task to validate a fares file."""
+    violations = []
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
     context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)

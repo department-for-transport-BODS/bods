@@ -26,6 +26,7 @@ class FileTooLarge(XMLValidationException):
 class XMLSyntaxError(XMLValidationException):
     code = "XML_SYNTAX_ERROR"
     message_template = "File {filename} is not valid XML."
+    line = ""
 
 
 class DangerousXML(XMLValidationException):
@@ -93,11 +94,16 @@ class XMLValidator(FileValidator):
             # DefusedXml wraps ExpatErrors in ParseErrors, requires extra step to
             # get actual error message
             if isinstance(err.msg, Exception):
-                raise XMLSyntaxError(self.source.name, message=err.msg.args[0]) from err
+                self.violations.append(
+                    XMLSyntaxError(self.source.name, message=err.msg.args[0])
+                )
             else:
-                raise XMLSyntaxError(self.source.name, message=err.msg) from err
-        except DefusedXmlException as err:
-            raise DangerousXML(self.source.name) from err
+                self.violations.append(
+                    XMLSyntaxError(self.source.name, message=err.msg, line=err.lineno)
+                )
+        except DefusedXmlException:
+            self.violations.append(DangerousXML(self.source.name))
+        return self.violations
 
     def validate(self):
         """Validates the XML file.
@@ -108,9 +114,11 @@ class XMLValidator(FileValidator):
             XMLSyntaxError: if the file cannot be parsed.
         """
         if self.is_too_large():
-            raise FileTooLarge(self.source.name)
-        self.dangerous_xml_check()
-        return self.get_violations()
+            self.violations.append(FileTooLarge(self.source.name))
+            return self.violations
+        if len(self.dangerous_xml_check()) > 0:
+            return self.violations
+        return self.get_document()
 
     def get_document(self):
         """Parses `file` returning an lxml element object.
@@ -131,19 +139,26 @@ class XMLValidator(FileValidator):
         try:
             doc = etree.parse(self.source, parser)
         except etree.XMLSyntaxError as err:
-            raise XMLSyntaxError(self.source.name, message=err.msg) from err
-        return doc
+            self.violations.append(
+                XMLSyntaxError(self.source.name, message=err.msg, line=err.lineno)
+            )
+        return self.violations
 
     def get_violations(self):
-        violations = []
         if self.is_file:
             self.source.seek(0)
-        doc = etree.parse(self.source)
-        is_valid = self.schema.validate(doc)
-        if not is_valid:
-            for error in self.schema.error_log:
-                self.violations.append(error)
-        return self.violations
+        try:
+            doc = etree.parse(self.source)
+            is_valid = self.schema.validate(doc)
+            if not is_valid:
+                for error in self.schema.error_log:
+                    self.violations.append(error)
+            return self.violations
+        except Exception as err:
+            self.violations.append(
+                XMLSyntaxError(self.source.name, message=err.msg, line=err.lineno)
+            )
+            return self.violations
 
 
 def validate_xml_files_in_zip(zip_file, schema=None):
@@ -152,7 +167,11 @@ def validate_xml_files_in_zip(zip_file, schema=None):
     context = DatasetPipelineLoggerContext(component_name="FaresPipeline")
     adapter = PipelineAdapter(logger, {"context": context})
     with zipfile.ZipFile(zip_file) as zout:
-        filenames = [name for name in zout.namelist() if name.endswith("xml")]
+        filenames = [
+            name
+            for name in zout.namelist()
+            if name.endswith("xml") and not name.startswith("__")
+        ]
         lxml_schema = get_lxml_schema(schema)
         total_files = len(filenames)
         for index, name in enumerate(filenames, 1):

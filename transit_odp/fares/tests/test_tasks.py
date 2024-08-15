@@ -3,8 +3,6 @@ from pathlib import Path
 import pytest
 from django.core.files import File
 from django.utils import timezone
-from lxml.etree import XMLSchemaParseError
-from waffle.testutils import override_flag
 
 from transit_odp.fares.extract import ExtractionError
 from transit_odp.fares.tasks import (
@@ -14,16 +12,17 @@ from transit_odp.fares.tasks import (
     task_run_fares_validation,
     task_set_fares_validation_result,
 )
+from transit_odp.fares.tests.conftest import FIXTURES
 from transit_odp.naptan.factories import StopPointFactory
 from transit_odp.naptan.models import StopPoint
 from transit_odp.organisation.constants import FeedStatus
+from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.validate import DownloadException, FileScanner
 from transit_odp.validate.antivirus import SuspiciousFile
 from transit_odp.validate.tests.utils import create_text_file, create_zip_file
-from transit_odp.validate.xml import XMLSyntaxError
 
 pytestmark = pytest.mark.django_db
 
@@ -85,67 +84,29 @@ def test_validate_xml_files_from_zip_exception(mocker, tmp_path):
     with open(testzip, "rb") as zout:
         task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
 
-    zip_validator = "transit_odp.fares.tasks.validate_xml_files_in_zip"
     schema = "transit_odp.fares.tasks.get_netex_schema"
     mocker.patch(schema, return_value=None)
-    mocker.patch(
-        zip_validator,
-        side_effect=XMLSyntaxError(task.revision.upload_file.name),
-    )
-    with pytest.raises(PipelineException):
-        task_run_fares_validation(task.id)
+    task_run_fares_validation(task.id)
 
     task.refresh_from_db()
-    assert task.error_code == task.XML_SYNTAX_ERROR
-
-
-def test_validate_xml_files_from_zip_general_exception(mocker, tmp_path):
-    """Given a zip file with an invalid xml a PipelineException is raised."""
-
-    file1 = tmp_path / "file1.xml"
-    testzip = tmp_path / "testzip.zip"
-    create_text_file(file1, "not xml")
-    create_zip_file(testzip, [file1])
-
-    with open(testzip, "rb") as zout:
-        task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
-
-    zip_validator = "transit_odp.fares.tasks.validate_xml_files_in_zip"
-    schema = "transit_odp.fares.tasks.get_netex_schema"
-    mocker.patch(schema, return_value=None)
-    mocker.patch(
-        zip_validator,
-        side_effect=XMLSchemaParseError(task.revision.upload_file.name),
-    )
-    with pytest.raises(PipelineException):
-        task_run_fares_validation(task.id)
-
-    task.refresh_from_db()
-    assert task.error_code == task.SYSTEM_ERROR
+    assert len(task.revision.schema_violations.all()) == 1
 
 
 def test_xml_validation_error(mocker, tmp_path):
     """Given an invalid xml a PipelineException should be raised."""
 
-    expected = (
-        "Element 'html': No matching global declaration available "
-        "for the validation root."
-    )
-    netex_validator = "transit_odp.fares.tasks.NeTExValidator.validate"
+    file1 = tmp_path / "file1.xml"
+    create_text_file(file1, "<html></hml>")
     schema = "transit_odp.fares.tasks.get_netex_schema"
-    task = create_task(revision__upload_file__data=b"<html></html>")
-    mocker.patch(
-        netex_validator,
-        side_effect=XMLSyntaxError(task.revision.upload_file.name, message=expected),
-    )
+    with open(file1, "rb") as zout:
+        task = create_task(revision__upload_file=File(zout, name="file1.xml"))
+
     mocker.patch(schema, return_value=None)
 
-    with pytest.raises(PipelineException) as exc_info:
-        task_run_fares_validation(task.id)
+    task_run_fares_validation(task.id)
 
     task.refresh_from_db()
-    assert task.error_code == task.XML_SYNTAX_ERROR
-    assert str(exc_info.value) == expected
+    assert len(task.revision.schema_violations.all()) == 1
 
 
 def test_antivirus_scan_exception(mocker, tmp_path):
@@ -177,7 +138,7 @@ def test_task_run_fares_etl_exception(mocker):
     msg = "Unable to extract metadata from file"
     mocker.patch(extractor, side_effect=ExtractionError(msg))
 
-    get_docs = "transit_odp.fares.tasks.get_documents_from_file"
+    get_docs = "transit_odp.fares.netex.get_documents_from_file"
     mocker.patch(get_docs, return_value=[mocker.Mock()])
 
     task = create_task(revision__upload_file=None)
@@ -188,16 +149,18 @@ def test_task_run_fares_etl_exception(mocker):
     assert task.error_code == task.SYSTEM_ERROR
 
 
-@override_flag("is_fares_validator_active", active=True)
-def test_task_run_fares_etl_flag_active(mocker, netexdocuments):
+def test_task_run_fares_etl(mocker):
     StopPointFactory.create(id=1, atco_code="3290YYA00077")
     StopPointFactory.create(id=2, atco_code="3290YYA00359")
     StopPointFactory.create(id=3, atco_code="3290YYA01609")
     StopPointFactory.create(id=4, atco_code="3290YYA00103")
 
-    get_docs = "transit_odp.fares.tasks.get_documents_from_file"
-    mocker.patch(get_docs, return_value=netexdocuments)
-    task = create_task(revision__upload_file=None)
+    filename = "sample.zip"
+    zip_filepath = str(FIXTURES.joinpath(filename))
+    revision = DatasetRevisionFactory(
+        upload_file__from_path=zip_filepath, upload_file__filename=filename
+    )
+    task = create_task(revision=revision)
     task_run_fares_etl(task.id)
     task.refresh_from_db()
     assert task.revision.metadata.faresmetadata.schema_version == "1.1"
