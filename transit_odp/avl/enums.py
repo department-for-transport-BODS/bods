@@ -9,11 +9,6 @@ class AVLFeedStatus(ChoiceEnum):
     live = "FEED_UP"
     inactive = "FEED_DOWN"
     error = "SYSTEM_ERROR"
-    api_status_map = {
-        live,
-        inactive,
-        error,
-    }
 
 
 @unique

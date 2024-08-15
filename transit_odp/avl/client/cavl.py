@@ -120,7 +120,12 @@ class CAVLService(ICAVLService):
 
         if response.status_code == HTTPStatus.OK:
             feed = Feed(**response.json())
-            feed.status = AVLFeedStatus.api_status_map[feed.status]
+            api_status_map = {
+                "live": AVLFeedStatus.live.value,
+                "inactive": AVLFeedStatus.inactive.value,
+                "error": AVLFeedStatus.error.value,
+            }
+            feed.status = api_status_map[feed.status]
             return feed
 
     def get_feeds(self) -> Sequence[Feed]:
@@ -137,8 +142,13 @@ class CAVLService(ICAVLService):
 
         if response.status_code == HTTPStatus.OK:
             feeds = [Feed(**j) for j in response.json()]
+            api_status_map = {
+                "live": AVLFeedStatus.live.value,
+                "inactive": AVLFeedStatus.inactive.value,
+                "error": AVLFeedStatus.error.value,
+            }
             for feed in feeds:
-                feed.status = AVLFeedStatus.api_status_map[feed.status]
+                feed.status = api_status_map[feed.status]
             return feeds
 
     def validate_feed(
