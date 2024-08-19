@@ -445,5 +445,17 @@ urlpatterns = [
             ]
         ),
     ),
+    path(
+        "cancelled-service-appearing-active/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.CancelledServiceAppearingActiveListView.as_view(),
+                    name="cancelled-service-appearing-active-list",
+                ),
+            ]
+        ),
+    ),
     path("django_axe/", include("django_axe.urls")),
 ]

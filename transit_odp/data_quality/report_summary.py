@@ -46,7 +46,7 @@ URL_MAPPING = {
     Checks.MissingBusWorkingNumber.value: "missing-bus-working-number",
     Checks.MissingStop.value: "missing-stops",
     Checks.SameStopFoundMultipleTimes.value: "#",
-    Checks.CancelledServiceAppearingActive.value: "#",
+    Checks.CancelledServiceAppearingActive.value: "cancelled-service-appearing-active",
     Checks.ServicedOrganisationOutOfDate.value: "#",
     Checks.ServiceNumberNotMatchingRegistration.value: "#",
     Checks.MissingData.value: "#",
