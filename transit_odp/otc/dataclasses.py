@@ -5,6 +5,8 @@ from django.utils.timezone import make_aware
 from pydantic import ConfigDict, Field, field_validator
 from pydantic.main import BaseModel
 
+from transit_odp.otc.common import format_service_number
+
 
 class Registration(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
@@ -135,35 +137,8 @@ class Registration(BaseModel):
     def combine_service_numbers(cls, v, values):
         values = hasattr(values, "data") and values.data or values
         other_service_number = values.get("other_service_number", "")
-        if not other_service_number:
-            return v
 
-        # Function to split a string at different delimiters and return a list ofnumbers
-        def split_at_delimiters(s):
-            delimiters = [",", " ", "-", "|"]
-            numbers = []
-            current_number = ""
-            for char in s:
-                if char in delimiters:
-                    if current_number.strip():
-                        numbers.append(current_number.strip())
-                    current_number = ""
-                else:
-                    current_number += char
-            if current_number.strip():
-                numbers.append(current_number.strip())
-            return numbers
-
-        service_numbers = split_at_delimiters(v) if v else []
-        other_service_numbers = (
-            split_at_delimiters(other_service_number) if other_service_number else []
-        )
-
-        combined_service_numbers = list(
-            OrderedDict.fromkeys(service_numbers + other_service_numbers)
-        )
-        result = "|".join(combined_service_numbers)
-        return result
+        return format_service_number(v, other_service_number)
 
 
 class Licence(BaseModel):

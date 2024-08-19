@@ -1,4 +1,5 @@
 """ loaders.py utility functions for loading data into the BODS database."""
+
 import logging
 from collections import namedtuple
 
@@ -136,7 +137,8 @@ def add_service_pattern_to_localities_and_admin_area(df):
 def add_service_pattern_to_service_pattern_stops(
     df: pd.DataFrame, service_patterns: pd.DataFrame
 ) -> list[ServicePatternStop]:
-    """Load data onto service pattern stop after mapping service patterns and vehicle journey"""
+    """Load data onto service pattern stop after mapping service patterns and
+    vehicle journey"""
 
     logger.info("Adding service_pattern to service pattern stops")
 
@@ -144,14 +146,8 @@ def add_service_pattern_to_service_pattern_stops(
         for record in df.to_dict("records"):
             service_pattern_id = record.get("db_service_pattern_id", None)
             vehicle_journey_id = record.get("id", None)
-            sequence_number = record["sequence_number"]
-            if not sequence_number:
-                sequence_number = record["order"]
-
-            if "auto_sequence_number" in record:
-                auto_sequence_number = record["auto_sequence_number"]
-            else:
-                auto_sequence_number = None
+            sequence_number = record["sequence_number"] or record["order"]
+            auto_sequence_number = record.get("auto_sequence_number", None)
 
             yield ServicePatternStop(
                 service_pattern_id=service_pattern_id,
