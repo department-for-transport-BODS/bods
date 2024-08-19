@@ -8,7 +8,6 @@ from django.utils import timezone
 from requests.exceptions import RequestException
 
 from transit_odp.avl.client.interface import ICAVLService
-from transit_odp.avl.constants import AVL_API_STATUS_MAP
 from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
 from transit_odp.avl.enums import AVLFeedStatus
 
@@ -116,9 +115,7 @@ class CAVLService(ICAVLService):
             raise
 
         if response.status_code == HTTPStatus.OK:
-            feed = Feed(**response.json())
-            feed.status = AVL_API_STATUS_MAP.get(feed.status)
-            return feed
+            return Feed(**response.json())
 
     def get_feeds(self) -> Sequence[Feed]:
         api_url = self.AVL_URL + "/subscriptions"
@@ -133,10 +130,7 @@ class CAVLService(ICAVLService):
             raise
 
         if response.status_code == HTTPStatus.OK:
-            feeds = [Feed(**j) for j in response.json()]
-            for feed in feeds:
-                feed.status = AVL_API_STATUS_MAP.get(feed.status)
-            return feeds
+            return [Feed(**j) for j in response.json()]
 
     def validate_feed(
         self, url: str, username: str, password: str, **kwargs

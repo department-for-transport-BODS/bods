@@ -226,7 +226,7 @@ def task_monitor_avl_feeds():
         logger.warning("No AVL data feeds to monitor")
         return
 
-    feed_status_map = {feed.id: feed.status.value for feed in feeds}
+    feed_status_map = {feed.id: feed.status for feed in feeds}
     exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
     datasets = (
         Dataset.objects.select_related("live_revision", "contact")
