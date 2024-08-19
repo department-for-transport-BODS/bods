@@ -1,5 +1,7 @@
 from django.conf import settings
 
+from transit_odp.avl.enums import AVLFeedStatus
+
 UNDERGOING = "Undergoing validation"
 PARTIALLY_COMPLIANT = "Partially compliant"
 AWAITING_REVIEW = "Awaiting publisher review"
@@ -28,3 +30,9 @@ NEEDS_ATTENTION_STATUSES = [
 
 LOWER_THRESHOLD = settings.AVL_LOWER_THRESHOLD
 UPPER_THRESHOLD = 0.7
+
+AVL_API_STATUS_MAP = {
+    "live": AVLFeedStatus.live.value,
+    "inactive": AVLFeedStatus.inactive.value,
+    "error": AVLFeedStatus.error.value,
+}
