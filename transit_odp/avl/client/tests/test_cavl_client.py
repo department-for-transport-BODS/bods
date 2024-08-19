@@ -84,11 +84,11 @@ class TestCAVLService:
     )
     def test_register_feed(
         self,
-        caplog: CapLog,
+        caplog,
         cavl_service: CAVLService,
         status: int,
         response_mock,
-        expected_result: bool,
+        expected_result,
         expected_message: list[str],
         **kwargs
     ) -> None:
@@ -97,17 +97,14 @@ class TestCAVLService:
         kwargs["m"].post(url, json=response_mock, status_code=status)
 
         with expected_result:
-            assert (
-                cavl_service.register_feed(
-                    feed_id=1,
-                    publisher_id=1,
-                    url="dummy_url",
-                    username="dummy_u",
-                    password="dummy_p",
-                    description="dummy_description",
-                    short_description="dummy_short_description",
-                )
-                is not None
+            cavl_service.register_feed(
+                feed_id=1,
+                publisher_id=1,
+                url="dummy_url",
+                username="dummy_u",
+                password="dummy_p",
+                description="dummy_description",
+                short_description="dummy_short_description",
             )
 
         assert [rec.message for rec in caplog.records] == expected_message
@@ -152,11 +149,11 @@ class TestCAVLService:
     )
     def test_delete_feed(
         self,
-        caplog: CapLog,
+        caplog,
         cavl_service: CAVLService,
         status: int,
         response_mock,
-        expected_result: bool,
+        expected_result,
         expected_message: list[str],
         **kwargs
     ) -> None:
@@ -165,7 +162,7 @@ class TestCAVLService:
         kwargs["m"].delete(url, json=response_mock, status_code=status)
 
         with expected_result:
-            assert cavl_service.delete_feed(feed_id=1) is not None
+            cavl_service.delete_feed(feed_id=1)
 
         assert [rec.message for rec in caplog.records] == expected_message
 
@@ -209,11 +206,11 @@ class TestCAVLService:
     )
     def test_update_feed(
         self,
-        caplog: CapLog,
+        caplog,
         cavl_service: CAVLService,
         status: int,
-        response_mock: dict,
-        expected_result: bool,
+        response_mock,
+        expected_result,
         expected_message: list[str],
         **kwargs
     ) -> None:
@@ -223,40 +220,51 @@ class TestCAVLService:
         kwargs["m"].put(url, json=response_mock, status_code=status)
 
         with expected_result:
-            assert (
-                cavl_service.update_feed(1, "dummy", "dummy", "dummy", "dummy", "dummy")
-                is not None
-            )
+            cavl_service.update_feed(1, "dummy", "dummy", "dummy", "dummy", "dummy")
 
         assert [rec.message for rec in caplog.records] == expected_message
+
+    @pytest.fixture
+    def test_get_feed_response(
+        self, caplog, cavl_service: CAVLService, **kwargs
+    ) -> None:
+        caplog.set_level(logging.DEBUG)
+        url = DUMMY_CAVL_URL + "/subscriptions/1"
+        kwargs["m"].get(
+            url,
+            json=dict(
+                id="1",
+                publisherId="1",
+                status="live",
+                apiKey="1",
+            ),
+            status_code=HTTPStatus.OK,
+        )
+
+        result = cavl_service.get_feed(1)
+
+        assert result == Feed(
+            id="1",
+            publisher_id="1",
+            status=AVLFeedStatus.live.value,
+            last_avl_data_received_date_time=None,
+            heartbeat_last_received_date_time=None,
+            service_start_datetime=None,
+            service_end_datetime=None,
+            api_key="1",
+        )
+
+        assert [rec.message for rec in caplog.records] == [
+            "GET http://www.dummy.com/subscriptions/1 200"
+        ]
 
     @pytest.mark.parametrize(
         "status, response_mock, expected_result, expected_message",
         [
             (
-                HTTPStatus.OK,
-                dict(
-                    id="1",
-                    publisherId="1",
-                    status=AVLFeedStatus.live.value,
-                    apiKey="1",
-                ),
-                Feed(
-                    id="1",
-                    publisher_id="1",
-                    status=AVLFeedStatus.live.value,
-                    last_avl_data_received_date_time=None,
-                    heartbeat_last_received_date_time=None,
-                    service_start_datetime=None,
-                    service_end_datetime=None,
-                    api_key="1",
-                ),
-                ["GET http://www.dummy.com/subscriptions/1 200"],
-            ),
-            (
                 HTTPStatus.NOT_FOUND,
                 dict(errors=["Not found"]),
-                None,
+                pytest.raises(RequestException),
                 [
                     "GET http://www.dummy.com/subscriptions/1 404",
                     "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Not found']}",
@@ -265,7 +273,7 @@ class TestCAVLService:
             (
                 HTTPStatus.BAD_REQUEST,
                 dict(errors=["Bad request"]),
-                None,
+                pytest.raises(RequestException),
                 [
                     "GET http://www.dummy.com/subscriptions/1 400",
                     "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Bad request']}",
@@ -274,7 +282,7 @@ class TestCAVLService:
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 dict(errors=["Server error"]),
-                None,
+                pytest.raises(RequestException),
                 [
                     "GET http://www.dummy.com/subscriptions/1 500",
                     "[CAVL] Couldn't fetch feed <id=1>. Response: {'errors': ['Server error']}",
@@ -282,9 +290,9 @@ class TestCAVLService:
             ),
         ],
     )
-    def test_get_feed(
+    def test_get_feed_exceptions(
         self,
-        caplog: CapLog,
+        caplog,
         cavl_service: CAVLService,
         status: int,
         response_mock,
@@ -296,58 +304,72 @@ class TestCAVLService:
         url = DUMMY_CAVL_URL + "/subscriptions/1"
         kwargs["m"].get(url, json=response_mock, status_code=status)
 
-        result = cavl_service.get_feed(1)
+        with expected_result:
+            cavl_service.get_feed(1)
 
-        assert result == expected_result
         assert [rec.message for rec in caplog.records] == expected_message
+
+    @pytest.fixture
+    def test_get_feeds_response(
+        self, caplog, cavl_service: CAVLService, **kwargs
+    ) -> None:
+        caplog.set_level(logging.DEBUG)
+        url = DUMMY_CAVL_URL + "/subscriptions"
+        kwargs["m"].get(
+            url,
+            json=[
+                dict(
+                    id="1",
+                    publisherId="1",
+                    status="live",
+                    apiKey="1",
+                ),
+                dict(
+                    id="2",
+                    publisherId="1",
+                    status="inactive",
+                    apiKey="2",
+                ),
+            ],
+            status_code=HTTPStatus.OK,
+        )
+
+        result = cavl_service.get_feeds()
+
+        assert result == [
+            Feed(
+                id="1",
+                publisher_id="1",
+                status=AVLFeedStatus.live.value,
+                last_avl_data_received_date_time=None,
+                heartbeat_last_received_date_time=None,
+                service_start_datetime=None,
+                service_end_datetime=None,
+                api_key="1",
+            ),
+            Feed(
+                id="2",
+                publisher_id="1",
+                status=AVLFeedStatus.inactive.value,
+                last_avl_data_received_date_time=None,
+                heartbeat_last_received_date_time=None,
+                service_start_datetime=None,
+                service_end_datetime=None,
+                api_key="2",
+            ),
+        ]
+
+        assert [rec.message for rec in caplog.records] == [
+            "GET http://www.dummy.com/subscriptions 200"
+        ]
 
     @pytest.mark.parametrize(
         "status, response_mock, expected_result, expected_message",
         [
             (
-                HTTPStatus.OK,
-                [
-                    dict(
-                        id="1",
-                        publisherId="1",
-                        status=AVLFeedStatus.live.value,
-                        apiKey="1",
-                    ),
-                    dict(
-                        id="2",
-                        publisherId="1",
-                        status=AVLFeedStatus.live.value,
-                        apiKey="2",
-                    ),
-                ],
-                [
-                    Feed(
-                        id="1",
-                        publisher_id="1",
-                        status=AVLFeedStatus.live.value,
-                        last_avl_data_received_date_time=None,
-                        heartbeat_last_received_date_time=None,
-                        service_start_datetime=None,
-                        service_end_datetime=None,
-                        api_key="1",
-                    ),
-                    Feed(
-                        id="2",
-                        publisher_id="1",
-                        status=AVLFeedStatus.live.value,
-                        last_avl_data_received_date_time=None,
-                        heartbeat_last_received_date_time=None,
-                        service_start_datetime=None,
-                        service_end_datetime=None,
-                        api_key="2",
-                    ),
-                ],
-                ["GET http://www.dummy.com/subscriptions 200"],
-            ),
-            (
                 HTTPStatus.NOT_FOUND,
                 dict(errors=["Not found"]),
-                [],
+                pytest.raises(RequestException),
                 [
                     "GET http://www.dummy.com/subscriptions 404",
                     "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Not found']}",
@@ -356,7 +378,7 @@ class TestCAVLService:
             (
                 HTTPStatus.BAD_REQUEST,
                 dict(errors=["Bad request"]),
-                [],
+                pytest.raises(RequestException),
                 [
                     "GET http://www.dummy.com/subscriptions 400",
                     "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Bad request']}",
@@ -365,7 +387,7 @@ class TestCAVLService:
             (
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 dict(errors=["Server error"]),
-                [],
+                pytest.raises(RequestException),
                 [
                     "GET http://www.dummy.com/subscriptions 500",
                     "[CAVL] Couldn't fetch feeds. Response: {'errors': ['Server error']}",
@@ -373,9 +395,9 @@ class TestCAVLService:
             ),
         ],
     )
-    def test_get_feeds(
+    def test_get_feeds_exceptions(
         self,
-        caplog: CapLog,
+        caplog,
         cavl_service: CAVLService,
         status: int,
         response_mock,
@@ -387,14 +409,14 @@ class TestCAVLService:
         url = DUMMY_CAVL_URL + "/subscriptions"
         kwargs["m"].get(url, json=response_mock, status_code=status)
 
-        result = cavl_service.get_feeds()
+        with expected_result:
+            cavl_service.get_feeds()
 
-        assert result == expected_result
         assert [rec.message for rec in caplog.records] == expected_message
 
     @pytest.fixture
     def test_validate_feed(
-        self, caplog: CapLog, cavl_service: CAVLService, mock_datetime_now, **kwargs
+        self, caplog, cavl_service: CAVLService, mock_datetime_now, **kwargs
     ) -> None:
         caplog.set_level(logging.WARNING)
         url = DUMMY_CAVL_URL + "/feed/verify"
@@ -451,10 +473,10 @@ class TestCAVLService:
     )
     def test_validate_feed_exception(
         self,
-        caplog: CapLog,
+        caplog,
         cavl_service: CAVLService,
         status: int,
-        response_mock: dict,
+        response_mock,
         expected_message: list[str],
         **kwargs
     ) -> None:
@@ -468,59 +490,6 @@ class TestCAVLService:
 
         assert [rec.message for rec in caplog.records] == expected_message
 
-    @pytest.mark.parametrize(
-        "method, http_method, endpoint, parameters, expected_log, expected_result",
-        [
-            (
-                "delete_feed",
-                "delete",
-                "/subscriptions/1",
-                [1],
-                ["[CAVL] Couldn't delete feed <id=1>"],
-                False,
-            ),
-            (
-                "get_feed",
-                "get",
-                "/subscriptions/1",
-                [1],
-                ["[CAVL] Couldn't fetch feed <id=1>. Response: (empty)"],
-                None,
-            ),
-            (
-                "get_feeds",
-                "get",
-                "/subscriptions",
-                [],
-                ["[CAVL] Couldn't fetch feeds. Response: (empty)"],
-                [],
-            ),
-        ],
-    )
-    def test_methods_exception_handling(
-        self,
-        caplog: CapLog,
-        cavl_service: CAVLService,
-        method: str,
-        http_method: str,
-        endpoint: str,
-        parameters: list,
-        expected_log: list[str],
-        expected_result: Union[bool, None, list],
-        **kwargs
-    ) -> None:
-        url = DUMMY_CAVL_URL + endpoint
-
-        getattr(kwargs["m"], http_method)(url, exc=requests.exceptions.ConnectTimeout)
-
-        result = getattr(cavl_service, method)(*parameters)
-
-        assert result == expected_result
-        assert [rec.message for rec in caplog.records] == expected_log
-
-    # Modified exception handling tests for new AVL service as we are now raising an error instead of returning
-    # False. As other CAVL service functions migrate to the new AVL service we will populate the below test case to
-    # replace the old test case above
     @pytest.mark.parametrize(
         "method, http_method, endpoint, parameters, expected_log, expected_result",
         [
@@ -540,18 +509,42 @@ class TestCAVLService:
                 ["[CAVL] Couldn't update feed <id=1>. Response: (empty)"],
                 pytest.raises(ConnectTimeout),
             ),
+            (
+                "delete_feed",
+                "delete",
+                "/subscriptions/1",
+                [1],
+                ["[CAVL] Couldn't delete feed <id=1>. Response: (empty)"],
+                pytest.raises(ConnectTimeout),
+            ),
+            (
+                "get_feeds",
+                "get",
+                "/subscriptions",
+                [],
+                ["[CAVL] Couldn't fetch feeds. Response: (empty)"],
+                pytest.raises(ConnectTimeout),
+            ),
+            (
+                "get_feed",
+                "get",
+                "/subscriptions/1",
+                [1],
+                ["[CAVL] Couldn't fetch feed <id=1>. Response: (empty)"],
+                pytest.raises(ConnectTimeout),
+            ),
         ],
     )
-    def test_methods_exception_handling_new_avl(
+    def test_methods_exception_handling(
         self,
-        caplog: CapLog,
+        caplog,
         cavl_service: CAVLService,
         method: str,
         http_method: str,
         endpoint: str,
         parameters: list,
         expected_log: list[str],
-        expected_result: Union[bool, None, list],
+        expected_result,
         **kwargs
     ) -> None:
         url = DUMMY_CAVL_URL + endpoint
@@ -559,6 +552,6 @@ class TestCAVLService:
         getattr(kwargs["m"], http_method)(url, exc=requests.exceptions.ConnectTimeout)
 
         with expected_result:
-            assert getattr(cavl_service, method)(*parameters) is not None
+            getattr(cavl_service, method)(*parameters)
 
         assert [rec.message for rec in caplog.records] == expected_log

@@ -19,6 +19,7 @@ class CAVLService(ICAVLService):
     AVL_URL = settings.AVL_PRODUCER_API_BASE_URL
     headers = {"x-api-key": settings.AVL_PRODUCER_API_KEY}
 
+    @staticmethod
     def _get_error_response(exception: RequestException) -> str:
         return (
             exception.response.json()
@@ -59,11 +60,8 @@ class CAVLService(ICAVLService):
             )
             raise
 
-        return response.status_code == HTTPStatus.CREATED
-
     def delete_feed(self, feed_id: int) -> bool:
         api_url = self.AVL_URL + f"/subscriptions/{feed_id}"
-        response = None
 
         try:
             response = requests.delete(api_url, timeout=30, headers=self.headers)
@@ -104,8 +102,6 @@ class CAVLService(ICAVLService):
             )
             raise
 
-        return response.status_code == HTTPStatus.NO_CONTENT
-
     def get_feed(self, feed_id: int) -> Feed:
         api_url = self.AVL_URL + f"/subscriptions/{feed_id}"
 
@@ -116,17 +112,10 @@ class CAVLService(ICAVLService):
             logger.exception(
                 f"[CAVL] Couldn't fetch feed <id={feed_id}>. Response: {self._get_error_response(e)}"
             )
-            return None
+            raise
 
         if response.status_code == HTTPStatus.OK:
-            feed = Feed(**response.json())
-            api_status_map = {
-                "live": AVLFeedStatus.live.value,
-                "inactive": AVLFeedStatus.inactive.value,
-                "error": AVLFeedStatus.error.value,
-            }
-            feed.status = api_status_map[feed.status]
-            return feed
+            return Feed(**response.json())
 
     def get_feeds(self) -> Sequence[Feed]:
         api_url = self.AVL_URL + "/subscriptions"
@@ -138,18 +127,10 @@ class CAVLService(ICAVLService):
             logger.exception(
                 f"[CAVL] Couldn't fetch feeds. Response: {self._get_error_response(e)}"
             )
-            return []
+            raise
 
         if response.status_code == HTTPStatus.OK:
-            feeds = [Feed(**j) for j in response.json()]
-            api_status_map = {
-                "live": AVLFeedStatus.live.value,
-                "inactive": AVLFeedStatus.inactive.value,
-                "error": AVLFeedStatus.error.value,
-            }
-            for feed in feeds:
-                feed.status = api_status_map[feed.status]
-            return feeds
+            return [Feed(**j) for j in response.json()]
 
     def validate_feed(
         self, url: str, username: str, password: str, **kwargs
