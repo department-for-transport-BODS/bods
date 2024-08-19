@@ -101,11 +101,13 @@ def get_dqs_report_from_s3(report_filename):
 def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
     """Read csv from S3 bucket and return a list of dataset ids and dataset revision ids"""
     try:
+        bucket_name = getattr(
+            settings, "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME", None
+        )
         storage = get_s3_bucket_storage()
-
-        if not storage.exists(csv_file_name):
-            logger.warning(f"{csv_file_name} does not exist in the S3 bucket.")
-            return [], None
+        storage.connection.meta.client.head_object(
+            Bucket=bucket_name, Key=csv_file_name
+        )
 
         file = storage._open(csv_file_name)
         content = file.read().decode()
@@ -141,6 +143,21 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
             ]
 
         return _ids, _id_type
+
+    except botocore.exceptions.ClientError as e:
+        error_code = e.response["Error"]["Code"]
+        if error_code == "403":
+            logger.error(
+                f"Permission denied (403) when accessing the S3 bucket: {bucket_name}"
+            )
+            return HttpResponse(
+                "Permission denied when accessing the S3 bucket", status=403
+            )
+        else:
+            logger.error(
+                f"Error (Code: {error_code}) connecting to S3 bucket {bucket_name}: {str(e)}"
+            )
+            raise
 
     except Exception as e:
         logger.error(f"Error reading {csv_file_name} from S3: {str(e)}")
