@@ -258,11 +258,7 @@ def get_documents_from_zip(revision_) -> List[NeTExDocument]:
             if name.endswith("xml")
             and not name.startswith("__")
             and not SchemaViolation.objects.filter(
-                filename=name.split("/")[-1]
-                .replace("[", "%5B")
-                .replace("]", "%5D")
-                .replace(":", "%3A")
-                .replace(" ", "%20"),
+                filename=name.split("/")[-1],
                 revision_id=revision_,
             ).exists()
         ]

@@ -9,7 +9,6 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.utils import timezone
-from waffle import flag_is_active
 
 from transit_odp.common.constants import CSVFileName
 from transit_odp.common.loggers import (
@@ -159,6 +158,7 @@ def task_run_antivirus_check(task_id: int):
 def task_run_fares_validation(task_id):
     """Task to validate a fares file."""
     violations = []
+    total_files = 0
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
     context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
@@ -172,12 +172,14 @@ def task_run_fares_validation(task_id):
     schema = get_netex_schema()
     if zipfile.is_zipfile(file_):
         adapter.info("Validating fares zip file.")
+        print("length of file>>> ", len(file_))
         with ZippedValidator(file_) as validator:
             validator.validate()
         adapter.info("Validating fares NeTEx file.")
-        violations = validate_xml_files_in_zip(file_, schema=schema)
+        violations, total_files = validate_xml_files_in_zip(file_, schema=schema)
         adapter.info("Completed validating fares NeTEx file.")
     else:
+        total_files = 1
         adapter.info("Validating fares NeTEx file.")
         violations = NeTExValidator(file_, schema=schema).validate()
         adapter.info("Completed validating fares NeTEx file.")
@@ -195,6 +197,15 @@ def task_run_fares_validation(task_id):
             # lets just delete any 'old' observations.
             revision.schema_violations.all().delete()
             SchemaViolation.objects.bulk_create(schema_violations, batch_size=2000)
+    else:
+        revision.schema_violations.all().delete()
+    if len(schema_violations) == total_files:
+        adapter.error(ValidationException.message, exc_info=True)
+        task.to_error("dataset_validate", ValidationException.code)
+        task.additional_info = ValidationException.message
+        task.save()
+        raise PipelineException(ValidationException.message)
+
     task.update_progress(40)
     revision.upload_file = file_
     revision.save()

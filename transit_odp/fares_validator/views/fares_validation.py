@@ -7,9 +7,9 @@ from typing import BinaryIO, Iterable, List
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.common.types import JSONFile
+from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.data_quality.pti.models import Violation
 from transit_odp.fares_validator.views.validators import FaresValidator
-from transit_odp.data_quality.models import SchemaViolation
 
 FARES_SCHEMA = Path(__file__).parent.parent / "schema" / "fares_schema.json"
 
@@ -27,23 +27,20 @@ class DatasetFaresValidator:
         adapter = PipelineAdapter(logger, {"context": context})
         if zipfile.is_zipfile(file):
             with zipfile.ZipFile(file) as zf:
-                names = [n for n in zf.namelist() if n.endswith(".xml")]
+                names = [
+                    n
+                    for n in zf.namelist()
+                    if n.endswith(".xml")
+                    and not SchemaViolation.objects.filter(
+                        filename=n.split("/")[-1], revision_id=revision
+                    ).exists()
+                ]
                 file_count = len(names)
                 for index, name in enumerate(names, start=1):
                     adapter.info(
                         f"Fares Validation of file {index} of {file_count} - {name}."
                     )
-                    if (
-                        not name.startswith("__")
-                        and not SchemaViolation.objects.filter(
-                            filename=name.split("/")[-1]
-                            .replace("[", "%5B")
-                            .replace("]", "%5D")
-                            .replace(":", "%3A")
-                            .replace(" ", "%20"),
-                            revision_id=revision,
-                        ).exists()
-                    ):
+                    if not name.startswith("__"):  # check to be removed
                         with zf.open(name) as f:
                             yield f
                             adapter.info(

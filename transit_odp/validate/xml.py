@@ -181,7 +181,7 @@ def validate_xml_files_in_zip(zip_file, schema=None):
                 adapter.info(
                     f"Completed XML Validation of file {index} of {total_files} - {name}."
                 )
-    return violations
+    return violations, total_files
 
 
 def get_lxml_schema(schema):
