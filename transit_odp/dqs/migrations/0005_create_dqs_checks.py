@@ -19,9 +19,9 @@ class Migration(migrations.Migration):
             "INSERT INTO dqs_checks(observation, importance, category, queue_name) VALUES ('"
             + Checks.CancelledServiceAppearingActive.value
             + "', '"
-            + Level.advisory.value
+            + Level.critical.value
             + "', '"
-            + Category.timing.value
+            + Category.data_set.value
             + "', '"
             + queue_name
             + "')"
