@@ -28,6 +28,10 @@ from .missing_bus_working_number import (
     MissingBusWorkingNumberDetailView,
 )
 
+from .cancelled_service_apprearing_active import (
+    CancelledServiceAppearingActiveListView,
+)
+
 __all__ = [
     "DQSWarningDetailBaseView",
     "DQSWarningListBaseView",
@@ -46,4 +50,5 @@ __all__ = [
     "NoTimingPointMoreThan15MinsDetailView",
     "MissingBusWorkingNumberListView",
     "MissingBusWorkingNumberDetailView",
+    "CancelledServiceAppearingActiveListView",
 ]
