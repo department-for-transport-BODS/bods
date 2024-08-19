@@ -200,11 +200,11 @@ def task_run_fares_validation(task_id):
     else:
         revision.schema_violations.all().delete()
     if len(schema_violations) == total_files:
-        adapter.error(ValidationException.message, exc_info=True)
-        task.to_error("dataset_validate", ValidationException.code)
-        task.additional_info = ValidationException.message
+        adapter.error(f"Validation failed for {file_.name}", exc_info=True)
+        task.to_error("dataset_validate", "VALIDATION_FAILED")
+        task.additional_info = f"Validation failed for {file_.name}"
         task.save()
-        raise PipelineException(ValidationException.message)
+        raise PipelineException(f"Validation failed for {file_.name}")
 
     task.update_progress(40)
     revision.upload_file = file_

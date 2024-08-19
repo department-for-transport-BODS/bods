@@ -118,9 +118,9 @@ class XMLValidator(FileValidator):
             return self.violations
         if len(self.dangerous_xml_check()) > 0:
             return self.violations
-        return self.get_document()
+        return self.validate_xml()
 
-    def get_document(self):
+    def validate_xml(self):
         """Parses `file` returning an lxml element object.
         If `schema` is not None then `file` is validated against the schema.
 
@@ -143,22 +143,6 @@ class XMLValidator(FileValidator):
                 XMLSyntaxError(self.source.name, message=err.msg, line=err.lineno)
             )
         return self.violations
-
-    def get_violations(self):
-        if self.is_file:
-            self.source.seek(0)
-        try:
-            doc = etree.parse(self.source)
-            is_valid = self.schema.validate(doc)
-            if not is_valid:
-                for error in self.schema.error_log:
-                    self.violations.append(error)
-            return self.violations
-        except Exception as err:
-            self.violations.append(
-                XMLSyntaxError(self.source.name, message=err.msg, line=err.lineno)
-            )
-            return self.violations
 
 
 def validate_xml_files_in_zip(zip_file, schema=None):

@@ -62,7 +62,7 @@
             {% endblocktrans %}
               <br />
               <br />
-              <a class="govuk-link" href="{% url 'review-fares-csv' pk2 host hosts.publish %}">Download schema validation report</a>
+              <a class="govuk-link" href="{% url 'fares:review-fares-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download schema validation report</a>
               <br />
             </p>
             <p class="govuk-body govuk-!-margin-bottom-0">
