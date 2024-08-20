@@ -79,7 +79,7 @@ class EPClient:
         Send Request to EP API Endpoint
         Response will be returned in the JSON format
         """
-        url = f"{settings.EP_API_URL}?active=true"
+        url = f"{settings.EP_API_URL}?latestOnly=Yes&activeOnly=Yes"
         headers = {
             "Authorization": f"Bearer {self.ep_auth.token}",
         }
@@ -106,7 +106,8 @@ class EPClient:
             logger.warning(f"Empty Response, API return {HTTPStatus.NO_CONTENT}")
             return self.default_response()
         try:
-            return APIResponse(**response.json())
+            wrapped_response = {"Results": response.json()}
+            return APIResponse(**wrapped_response)
         except ValidationError as exc:
             logger.error("Validation error in EP API response")
             logger.error(f"Response JSON: {response.text}")
