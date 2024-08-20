@@ -199,7 +199,7 @@ def task_run_fares_validation(task_id):
             SchemaViolation.objects.bulk_create(schema_violations, batch_size=2000)
     else:
         revision.schema_violations.all().delete()
-    if len(schema_violations) == total_files:
+    if len(violations) == total_files:
         adapter.error(f"Validation failed for {file_.name}", exc_info=True)
         task.to_error("dataset_validate", "VALIDATION_FAILED")
         task.additional_info = f"Validation failed for {file_.name}"
