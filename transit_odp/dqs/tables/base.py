@@ -23,15 +23,27 @@ class DQSWarningDetailsBaseTable(GovUkTable):
             attrs={
                 "a": {"class": "govuk-link"},
                 "th": {"class": "govuk-table__header", "width": "40%"},
+                "column_key": "journey_start_time",
             },
         )
         self.direction = tables.Column(
             verbose_name="Direction",
             orderable=False,
             empty_values=(),
-            attrs={"is_link": True},
+            attrs={"column_key": "direction"},
         )
-        self.stop_name = tables.Column(verbose_name="Stop name")
+        self.stop_name = tables.Column(
+            verbose_name="Stop name", attrs={"column_key": "stop_name"}
+        )
+        self.journey_code = tables.Column(
+            verbose_name="Journey code", attrs={"column_key": "journey_code"}
+        )
+        self.details = tables.Column(
+            verbose_name="Details", attrs={"column_key": "details"}
+        )
+        self.stop_type = tables.Column(
+            verbose_name="Stop type", attrs={"column_key": "stop_type"}
+        )
         self.columns = [
             self.journey_start_time,
             self.direction,

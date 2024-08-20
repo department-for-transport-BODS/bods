@@ -2,8 +2,9 @@ from .base import DQSWarningDetailsBaseTable
 import django_tables2 as tables
 
 
-class IncorrectStopTypeTable(DQSWarningDetailsBaseTable):
+class DuplicateJourneyCodeTable(DQSWarningDetailsBaseTable):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
-        self.columns.append(self.stop_type)
+        self.stop_name.verbose_name = "First stop"
+        self.columns.append(self.journey_code)

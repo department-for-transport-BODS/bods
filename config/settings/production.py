@@ -44,7 +44,7 @@ SESSION_COOKIE_SECURE = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-httponly
 SESSION_COOKIE_HTTPONLY = True
 # https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-SESSION_COOKIE_AGE
-SESSION_COOKIE_AGE = 30 * 60  # set to 30 minutes
+SESSION_COOKIE_AGE = 600  # set to 10 minutes
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-secure
 CSRF_COOKIE_SECURE = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly

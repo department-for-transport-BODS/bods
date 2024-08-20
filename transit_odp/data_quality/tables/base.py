@@ -253,11 +253,11 @@ class DQSWarningListBaseTable(GovUkTable):
     line_name = tables.Column(verbose_name="Line Name", visible=True)
     revision_id = tables.Column(verbose_name="Revision Id", visible=True)
     is_published = tables.Column(verbose_name="Is Published", visible=True)
+    is_details_link = tables.Column(verbose_name="Is Details Link", visible=True)
 
     class Meta:
 
         attrs = {
-            "tbody": {"is_details_link": True},
             "th": {"class": "govuk-table__header"},
         }
         sequence = ("message", "dqs_details")

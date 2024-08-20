@@ -105,6 +105,7 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
             settings, "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME", None
         )
         storage = get_s3_bucket_storage()
+
         storage.connection.meta.client.head_object(
             Bucket=bucket_name, Key=csv_file_name
         )

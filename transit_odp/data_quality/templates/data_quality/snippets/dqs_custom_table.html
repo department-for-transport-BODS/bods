@@ -35,14 +35,10 @@
                     {% endif %}
                   </td>
                   <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
-                    {% if table.attrs.tbody.is_details_link %}
-                      {% if "incorrect-noc" in request.path %}
+                    {% if row.cells.is_details_link %}
+                      <a href="{{ request.build_absolute_uri }}detail?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
                         {{ row.cells.dqs_details }}
-                      {% else %}
-                        <a href="{{ request.build_absolute_uri }}detail?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
-                          {{ row.cells.dqs_details }}
-                        </a>
-                      {% endif %}
+                      </a>
                     {% else %}
                       {{ row.cells.dqs_details }}
                     {% endif %}
