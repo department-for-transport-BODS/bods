@@ -87,20 +87,23 @@ class SQSClientWrapper:
                             # Max allowed batch size by SQS is 10
                             for i in range(0, len(messages), batch_size):
                                 batch = messages[i : i + batch_size]
-                            response_send_messages = self.sqs_client.send_message_batch(
-                                QueueUrl=queue_url, Entries=batch
-                            )
-
-                            for success in response_send_messages.get("Successful", []):
-                                logger.info(
-                                    f"DQS-SQS:Message sent to {queue_url}: {success['MessageId']}"
+                                response_send_messages = (
+                                    self.sqs_client.send_message_batch(
+                                        QueueUrl=queue_url, Entries=batch
+                                    )
                                 )
 
-                            for error in response_send_messages.get("Failed", []):
-                                logger.info(
-                                    f"DQS-SQS:Failed to send message to {queue_url}: {error['MessageId'] if 'MessageId' in error else error['Id']} - {error['Message']}"
-                                )
+                                for success in response_send_messages.get(
+                                    "Successful", []
+                                ):
+                                    logger.info(
+                                        f"DQS-SQS:Message sent to {queue_url}: {success['MessageId']}"
+                                    )
 
+                                for error in response_send_messages.get("Failed", []):
+                                    logger.info(
+                                        f"DQS-SQS:Failed to send message to {queue_url}: {error['MessageId'] if 'MessageId' in error else error['Id']} - {error['Message']}"
+                                    )
                         except Exception as e:
                             logger.error(
                                 f"DQS-SQS:Error sending message to {queue_name}: {e}"
