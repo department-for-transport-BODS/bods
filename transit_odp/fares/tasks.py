@@ -172,7 +172,6 @@ def task_run_fares_validation(task_id):
     schema = get_netex_schema()
     if zipfile.is_zipfile(file_):
         adapter.info("Validating fares zip file.")
-        print("length of file>>> ", len(file_))
         with ZippedValidator(file_) as validator:
             validator.validate()
         adapter.info("Validating fares NeTEx file.")

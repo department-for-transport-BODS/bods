@@ -86,7 +86,8 @@ def test_validate_xml_files_from_zip_exception(mocker, tmp_path):
 
     schema = "transit_odp.fares.tasks.get_netex_schema"
     mocker.patch(schema, return_value=None)
-    task_run_fares_validation(task.id)
+    with pytest.raises(PipelineException):
+        task_run_fares_validation(task.id)
 
     task.refresh_from_db()
     assert len(task.revision.schema_violations.all()) == 1
@@ -103,7 +104,8 @@ def test_xml_validation_error(mocker, tmp_path):
 
     mocker.patch(schema, return_value=None)
 
-    task_run_fares_validation(task.id)
+    with pytest.raises(PipelineException):
+        task_run_fares_validation(task.id)
 
     task.refresh_from_db()
     assert len(task.revision.schema_violations.all()) == 1

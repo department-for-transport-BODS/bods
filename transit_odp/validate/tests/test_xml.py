@@ -7,10 +7,7 @@ from transit_odp.validate.tests.utils import (
     create_text_file,
     create_zip_file,
 )
-from transit_odp.validate.xml import (
-    XMLValidator,
-    validate_xml_files_in_zip,
-)
+from transit_odp.validate.xml import XMLValidator, validate_xml_files_in_zip
 
 TEST_SCHEMA = """<?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -66,7 +63,7 @@ def test_get_document(tmp_path):
 
     with open(file1, "rb") as f:
         validator = XMLValidator(f)
-        op = validator.get_document()
+        op = validator.validate_xml()
         assert len(op) == 0
 
 
@@ -81,7 +78,7 @@ def test_get_document_with_schema(tmp_path):
 
     with open(file1, "rb") as f, open(schema1, "rb") as schema:
         validator = XMLValidator(f, schema=schema)
-        op = validator.get_document()
+        op = validator.validate_xml()
         assert len(op) == 0
 
 
@@ -96,7 +93,7 @@ def test_get_document_with_schema_exception(tmp_path):
 
     with open(file1, "rb") as f, open(schema1, "rb") as schema:
         validator = XMLValidator(f, schema=schema)
-        op = validator.get_document()
+        op = validator.validate_xml()
         assert op[0].filename == str(file1)
 
 
@@ -108,7 +105,8 @@ def test_get_document_exception(tmp_path):
 
     with open(file1, "rb") as f:
         validator = XMLValidator(f)
-        op = validator.get_document()
+        op = validator.validate_xml()
+        assert len(op) == 1
 
 
 def test_dangerouse_xml_exception(tmp_path, mocker):
@@ -153,8 +151,9 @@ def test_validate_xmls_from_zip_valid(tmp_path):
     zip_filename = tmp_path / "zipfile.zip"
     create_zip_file(zip_filename, filenames)
     with open(zip_filename, "rb") as zout:
-        op = validate_xml_files_in_zip(zout)
+        op, total_files = validate_xml_files_in_zip(zout)
         assert len(op) == 0
+        assert total_files == 2
 
 
 def test_validate_xmls_from_zip_invalid_file(tmp_path):
@@ -172,5 +171,6 @@ def test_validate_xmls_from_zip_invalid_file(tmp_path):
     str_filename = str(not_xml_file)
 
     with open(zip_filename, "rb") as zout:
-        op = validate_xml_files_in_zip(zout)
+        op, total_files = validate_xml_files_in_zip(zout)
         assert op[0].filename.split("/")[-1] == str_filename.split("/")[-1]
+        assert total_files == 3
