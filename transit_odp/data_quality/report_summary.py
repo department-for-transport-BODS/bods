@@ -18,7 +18,7 @@ from waffle import flag_is_active
 
 from transit_odp.data_quality.constants import OBSERVATIONS, Category, Level
 from transit_odp.data_quality.models import DataQualityReportSummary
-from transit_odp.dqs.constants import BUS_SERVICES_AFFECTED_SUBSET, ReportStatus
+from transit_odp.dqs.constants import BUS_SERVICES_AFFECTED_SUBSET, ReportStatus, Checks
 from transit_odp.dqs.models import ObservationResults
 
 CRITICAL_INTRO = (
@@ -32,12 +32,25 @@ ADVISORY_INTRO = (
 )
 
 URL_MAPPING = {
-    "First stop is set down only": "drop-off-only",
-    "Last stop is pick up only": "pick-up-only",
-    "Stop not found in NaPTAN": "stop-not-in-naptan",
-    "First stop is not a timing point": "first-stop-not-timing-point",
-    "Last stop is not a timing point": "last-stop-not-timing-point",
-    "Incorrect stop type": "incorrect-stop-type",
+    Checks.FirstStopIsSetDown.value: "drop-off-only",
+    Checks.LastStopIsPickUpOnly.value: "pick-up-only",
+    Checks.StopNotFoundInNaptan.value: "stop-not-in-naptan",
+    Checks.FirstStopIsNotATimingPoint.value: "first-stop-not-timing-point",
+    Checks.LastStopIsNotATimingPoint.value: "last-stop-not-timing-point",
+    Checks.IncorrectStopType.value: "incorrect-stop-type",
+    Checks.MissingJourneyCode.value: "missing-journey-code",
+    Checks.DuplicateJourneyCode.value: "duplicate-journey-code",
+    Checks.IncorrectLicenceNumber.value: "incorrect-licence-number",
+    Checks.IncorrectNoc.value: "incorrect-noc",
+    Checks.NoTimingPointMoreThan15Mins.value: "no-timing-point-more-than-15-mins",
+    Checks.MissingBusWorkingNumber.value: "missing-bus-working-number",
+    Checks.MissingStop.value: "missing-stops",
+    Checks.SameStopFoundMultipleTimes.value: "#",
+    Checks.CancelledServiceAppearingActive.value: "#",
+    Checks.ServicedOrganisationOutOfDate.value: "#",
+    Checks.ServiceNumberNotMatchingRegistration.value: "#",
+    Checks.MissingData.value: "#",
+    Checks.DuplicateJourneys.value: "duplicate-journeys",
 }
 
 

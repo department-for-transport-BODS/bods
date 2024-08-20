@@ -38,6 +38,8 @@ class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
             qs = super().get_queryset()
             return qs.add_message()
 
+        self.col_name = "noc"
+        self.is_details_link = False
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_table_kwargs(self):
