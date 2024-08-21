@@ -55,6 +55,6 @@
 {% block scripts %}
   {{ block.super }}
   {% if not error %}
-    <script>BODSFrontend.initOrgMap("{{ api_root }}", "{{ org_id }}", "{{ disruption_id }}");</script>
+    <script nonce="{{request.csp_nonce}}">BODSFrontend.initOrgMap("{{ api_root }}", "{{ org_id }}", "{{ disruption_id }}");</script>
   {% endif %}
 {% endblock %}

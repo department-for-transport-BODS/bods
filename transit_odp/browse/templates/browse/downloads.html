@@ -231,7 +231,7 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script>
+  <script nonce="{{request.csp_nonce}}">
         function addGATagEvent(obj) {
             gtag('event', 'Download coach data events', {
                 'event_category': 'link',

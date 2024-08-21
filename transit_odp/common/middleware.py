@@ -68,32 +68,18 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
 
     Headers added by this middleware:
     - Clear-Site-Data: Instructs the browser to clear storage, and execution contexts
-      when the response is received.
+      when the response is received and user is anonymous.
     - Permissions-Policy: Controls the permissions for accessing sensitive features
       such as geolocation, microphone, and camera, restricting them to the same origin.
-    - Content-Security-Policy: Defines a policy to prevent various types of attacks
-      by restricting the sources from which resources such as scripts, styles, and images
-      can be loaded.
     """
 
     def process_response(self, request, response):
         """
         Processes the outgoing response before it is sent to the client.
         """
-        response["Clear-Site-Data"] = '"storage", "executionContexts"'
-
-        response[
-            "Permissions-Policy"
-        ] = "geolocation=(self), microphone=(self), camera=(self)"
-
-        response["Content-Security-Policy"] = (
-            "default-src 'self'; "
-            "script-src 'self'; "
-            "style-src 'self'; "
-            "img-src 'self'; "
-            "connect-src 'self'; "
-            "font-src 'self'; "
-            "object-src 'none'; "
-            "frame-src 'none';"
+        if request.user.is_anonymous:
+            response["Clear-Site-Data"] = "*"
+        response["Permissions-Policy"] = (
+            "geolocation=(self), microphone=(self), camera=(self)"
         )
         return response

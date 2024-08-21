@@ -33,7 +33,7 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script>
+  <script nonce="{{request.csp_nonce}}">
       BODSFrontend.initWarningDetailMap(
           "{{ api_root }}",
           "{{ service_pattern_id }}",
