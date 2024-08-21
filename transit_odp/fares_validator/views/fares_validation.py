@@ -5,11 +5,7 @@ from logging import getLogger
 from pathlib import Path
 from typing import BinaryIO, Iterable, List
 
-from transit_odp.common.loggers import (
-    DatasetPipelineLoggerContext,
-    PipelineAdapter,
-    get_dataset_adapter_from_revision,
-)
+from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.common.types import JSONFile
 from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.data_quality.pti.models import Violation
@@ -44,12 +40,11 @@ class DatasetFaresValidator:
                     adapter.info(
                         f"Fares Validation of file {index} of {file_count} - {name}."
                     )
-                    if not name.startswith("__"):  # check to be removed
-                        with zf.open(name) as f:
-                            yield f
-                            adapter.info(
-                                f"Completed Fares Validation of file {index} of {file_count} - {name}."
-                            )
+                    with zf.open(name) as f:
+                        yield f
+                        adapter.info(
+                            f"Completed Fares Validation of file {index} of {file_count} - {name}."
+                        )
         else:
             adapter.info(f"Fares Validation of single file {file}.")
             file.seek(0)
