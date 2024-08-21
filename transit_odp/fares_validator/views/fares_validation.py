@@ -40,7 +40,7 @@ class DatasetFaresValidator:
                     adapter.info(
                         f"Fares Validation of file {index} of {file_count} - {name}."
                     )
-                    if not name.startswith("__"): 
+                    if not name.startswith("__"):
                         with zf.open(name) as f:
                             yield f
                             adapter.info(
