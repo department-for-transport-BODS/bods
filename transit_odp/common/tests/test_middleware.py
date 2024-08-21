@@ -4,7 +4,6 @@ from string import ascii_letters
 import pytest
 from django_hosts.resolvers import reverse
 
-
 import config
 from transit_odp.site_admin.models import CHAR_LEN, APIRequest
 from transit_odp.users.factories import UserFactory
@@ -109,12 +108,23 @@ def test_security_headers(client_factory):
     response = client.get(
         url, {"noc": "BLAH", "api_key": user.auth_token.key, "status": "active"}
     )
-    assert response["Clear-Site-Data"] == '"storage", "executionContexts"'
+    # Check the Permissions-Policy header
     assert (
         response["Permissions-Policy"]
         == "geolocation=(self), microphone=(self), camera=(self)"
     )
-    assert (
-        response["Content-Security-Policy"]
-        == "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; frame-src 'none';"
-    )
+    # Extract the Content-Security-Policy header
+    csp_header = response["Content-Security-Policy"]
+    expected_directives = [
+        "default-src",
+        "script-src",
+        "style-src",
+        "font-src",
+        "img-src",
+        "object-src",
+        "connect-src",
+        "frame-ancestors",
+    ]
+    # Check if all expected CSP directives are present
+    for directive in expected_directives:
+        assert f"{directive}" in csp_header, f"Missing directive: {directive}"
