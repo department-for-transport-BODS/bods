@@ -4,6 +4,7 @@ from django.db import migrations
 from transit_odp.dqs.constants import Checks, Level, Category
 from django.conf import settings
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
