@@ -29,7 +29,7 @@ from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRev
 from transit_odp.organisation.updaters import update_dataset
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
-from transit_odp.timetables.transxchange import TXCSchemaViolation
+from transit_odp.timetables.transxchange import BaseSchemaViolation
 from transit_odp.validate import (
     DataDownloader,
     DownloadException,
@@ -183,11 +183,10 @@ def task_run_fares_validation(task_id):
         violations = NeTExValidator(file_, schema=schema).validate()
         adapter.info("Completed validating fares NeTEx file.")
 
+    adapter.info(f"{len(violations)} schema violations found")
     if len(violations) > 0:
         schema_violations = [
-            SchemaViolation.from_violation(
-                revision_id=revision.id, violation=TXCSchemaViolation.from_error(v)
-            )
+            SchemaViolation.from_violation(revision_id=revision.id, violation=BaseSchemaViolation.from_error(v))
             for v in violations
         ]
 

@@ -14,7 +14,7 @@ from transit_odp.publish.views.timetable.download import DatasetDownloadView
 
 NETEX_SCHEMA_URL = "http://netex.uk/netex/schema/1.09c/xsd/NeTEx_publication.xsd"
 FARES_URL = "http://naptan.dft.gov.uk/transxchange/schema/schemas.html"
-FARES_REF = f"Please refer to the 2.4 TxC schema document: {NETEX_SCHEMA_URL}"
+FARES_REF = f"Please refer to the schema document: {NETEX_SCHEMA_URL}"
 
 
 class DownloadFaresFileView(DatasetDownloadView):
