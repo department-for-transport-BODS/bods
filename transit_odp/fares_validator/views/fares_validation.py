@@ -22,7 +22,7 @@ class DatasetFaresValidator:
 
     def iter_get_files(self, file, revision) -> Iterable[BinaryIO]:
         context = DatasetPipelineLoggerContext(
-            component_name="FaresPipeline", object_id=revision
+            component_name="FaresPipeline", object_id=revision.dataset.id
         )
         adapter = PipelineAdapter(logger, {"context": context})
         if zipfile.is_zipfile(file):

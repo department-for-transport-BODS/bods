@@ -175,7 +175,9 @@ def task_run_fares_validation(task_id):
         with ZippedValidator(file_) as validator:
             validator.validate()
         adapter.info("Validating fares NeTEx file.")
-        violations, total_files = validate_xml_files_in_zip(file_, schema=schema)
+        violations, total_files = validate_xml_files_in_zip(
+            file_, schema=schema, dataset=revision.dataset.id
+        )
         adapter.info("Completed validating fares NeTEx file.")
     else:
         total_files = 1
@@ -186,7 +188,9 @@ def task_run_fares_validation(task_id):
     adapter.info(f"{len(violations)} schema violations found")
     if len(violations) > 0:
         schema_violations = [
-            SchemaViolation.from_violation(revision_id=revision.id, violation=BaseSchemaViolation.from_error(v))
+            SchemaViolation.from_violation(
+                revision_id=revision.id, violation=BaseSchemaViolation.from_error(v)
+            )
             for v in violations
         ]
 
