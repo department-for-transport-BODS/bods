@@ -40,11 +40,12 @@ class DatasetFaresValidator:
                     adapter.info(
                         f"Fares Validation of file {index} of {file_count} - {name}."
                     )
-                    with zf.open(name) as f:
-                        yield f
-                        adapter.info(
-                            f"Completed Fares Validation of file {index} of {file_count} - {name}."
-                        )
+                    if not name.startswith("__"): 
+                        with zf.open(name) as f:
+                            yield f
+                            adapter.info(
+                                f"Completed Fares Validation of file {index} of {file_count} - {name}."
+                            )
         else:
             adapter.info(f"Fares Validation of single file {file}.")
             file.seek(0)
