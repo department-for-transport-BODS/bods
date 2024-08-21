@@ -72,9 +72,23 @@ class ObservationResultsQueryset(models.QuerySet):
             col_value = F(
                 "taskresults__transmodel_txcfileattributes__national_operator_code",
             )
+            col_text = (
+                " is specified in the dataset but not assigned to your organisation"
+            )
         elif col_name == "lic":
             col_value = F(
                 "taskresults__transmodel_txcfileattributes__licence_number",
+            )
+            col_text = (
+                " is specified in the dataset but not assigned to your organisation"
+            )
+        elif col_name == "cancelled_service":
+            col_value = F(
+                "taskresults__transmodel_txcfileattributes__service_code",
+            )
+            col_text = (
+                " is specified in the data set but is not registered with a local bus"
+                " registrations authority"
             )
         else:
             col_value = Value(
@@ -108,8 +122,7 @@ class ObservationResultsQueryset(models.QuerySet):
                     Concat(
                         col_value,
                         Value(
-                            " is specified in the dataset but not assigned to your "
-                            "organisation",
+                            col_text,
                             output_field=TextField(),
                         ),
                         output_field=TextField(),
