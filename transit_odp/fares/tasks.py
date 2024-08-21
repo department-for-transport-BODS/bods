@@ -135,7 +135,9 @@ def task_download_fares_file(task_id: int):
 def task_run_antivirus_check(task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
-    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    context = DatasetPipelineLoggerContext(
+        component_name="FaresPipeline", object_id=revision.dataset.id
+    )
     adapter = PipelineAdapter(logger, {"context": context})
     file_ = revision.upload_file
     try:
@@ -161,7 +163,9 @@ def task_run_fares_validation(task_id):
     total_files = 0
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
-    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    context = DatasetPipelineLoggerContext(
+        component_name="FaresPipeline", object_id=revision.dataset.id
+    )
     adapter = PipelineAdapter(logger, {"context": context})
 
     file_ = revision.upload_file
@@ -218,7 +222,9 @@ def task_set_fares_validation_result(task_id):
     """Task to set validation errors in a fares file/s."""
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
-    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    context = DatasetPipelineLoggerContext(
+        component_name="FaresPipeline", object_id=revision.dataset.id
+    )
     adapter = PipelineAdapter(logger, {"context": context})
 
     file_ = revision.upload_file
@@ -244,7 +250,9 @@ def task_run_fares_etl(task_id):
     revision = task.revision
     extracted_data = []
 
-    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    context = DatasetPipelineLoggerContext(
+        component_name="FaresPipeline", object_id=revision.dataset.id
+    )
     adapter = PipelineAdapter(logger, {"context": context})
 
     task.update_progress(60)

@@ -5,7 +5,11 @@ from logging import getLogger
 from pathlib import Path
 from typing import BinaryIO, Iterable, List
 
-from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
+from transit_odp.common.loggers import (
+    DatasetPipelineLoggerContext,
+    PipelineAdapter,
+    get_dataset_adapter_from_revision,
+)
 from transit_odp.common.types import JSONFile
 from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.data_quality.pti.models import Violation
@@ -22,7 +26,7 @@ class DatasetFaresValidator:
 
     def iter_get_files(self, file, revision) -> Iterable[BinaryIO]:
         context = DatasetPipelineLoggerContext(
-            component_name="FaresPipeline", object_id=revision.dataset.id
+            class_name="Revision", component_name="FaresPipeline", object_id=revision
         )
         adapter = PipelineAdapter(logger, {"context": context})
         if zipfile.is_zipfile(file):

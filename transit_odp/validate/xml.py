@@ -148,7 +148,9 @@ class XMLValidator(FileValidator):
 def validate_xml_files_in_zip(zip_file, schema=None, dataset=-1):
     """Validate all the xml files in a zip archive."""
     violations = []
-    context = DatasetPipelineLoggerContext(object_id=dataset)
+    context = DatasetPipelineLoggerContext(
+        component_name="FaresPipeline", object_id=dataset
+    )
     adapter = PipelineAdapter(logger, {"context": context})
     with zipfile.ZipFile(zip_file) as zout:
         filenames = [
