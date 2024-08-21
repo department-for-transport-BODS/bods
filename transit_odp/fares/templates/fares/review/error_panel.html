@@ -17,12 +17,16 @@
         </p>
         <p class="govuk-body govuk-!-margin-bottom-0">
           {% blocktrans %}
-                  The fares data supplied is non-compliant. You can publish this
-                  dataset now, however it is important to address the issues
-                  highlighted in the report with your supplier. Please contact
-                  the helpdesk if there are any items on the report which your
-                  supplier cannot help you with.
-              {% endblocktrans %}
+            The fares data supplied is non-compliant and cannot be
+            submitted to BODS as per the
+          {% endblocktrans %}
+          <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
+            {% trans "guidance." %}
+          </a>
+          {% blocktrans %}
+            To pass the validation please address all outstanding issues in the
+            validation report.
+          {% endblocktrans %}
         </p>
       </div>
     </div>
