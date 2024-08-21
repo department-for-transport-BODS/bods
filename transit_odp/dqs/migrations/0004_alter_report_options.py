@@ -7,6 +7,7 @@ from django.conf import settings
 
 AWS_ENVIRONMENT = settings.AWS_ENVIRONMENT.lower()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
