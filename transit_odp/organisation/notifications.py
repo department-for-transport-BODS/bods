@@ -3,7 +3,7 @@ from django.utils import timezone
 
 from transit_odp.notifications import get_notifications
 from transit_odp.notifications.client import INotifications
-from transit_odp.organisation.models import Dataset, DatasetRevision
+from transit_odp.organisation.models import Dataset
 from transit_odp.users.models import AgentUserInvite
 
 notifier: INotifications = get_notifications()
@@ -41,31 +41,6 @@ def send_feed_monitor_fail_final_try_notification(dataset: Dataset):
             contact_email=subscriber.email,
             operator_name=dataset.organisation.name,
             last_updated=now,
-        )
-
-
-# This notification email has been removed
-def send_feed_changed_notification(dataset: Dataset):
-    if not dataset.contact.is_agent_user and dataset.contact.is_active:
-        notifier.send_data_endpoint_changed_notification(
-            dataset_id=dataset.id,
-            dataset_name=dataset.live_revision.name,
-            short_description=dataset.live_revision.short_description,
-            feed_detail_link=dataset.feed_detail_url,
-            contact_email=dataset.contact.email,
-        )
-
-    agents = dataset.organisation.agentuserinvite_set.filter(
-        status=AgentUserInvite.ACCEPTED, agent__is_active=True
-    )
-    for agent in agents:
-        notifier.send_agent_data_endpoint_changed_notification(
-            dataset_id=dataset.id,
-            dataset_name=dataset.live_revision.name,
-            short_description=dataset.live_revision.short_description,
-            feed_detail_link=dataset.feed_detail_url,
-            operator_name=dataset.organisation.name,
-            contact_email=agent.email,
         )
 
 
@@ -167,37 +142,4 @@ def send_endpoint_validation_error_notification(dataset, task_name):
             report_link=report_link,
             contact_email=dataset.contact.email,
             with_pti_violations=has_pti_errors,
-        )
-
-
-# This notification email has been removed
-def send_report_available_notifications(revision: DatasetRevision):
-    contact = revision.dataset.contact
-    dataset = revision.dataset
-
-    if dataset.live_revision:
-        live_revisions_published_date = dataset.live_revision.published_at
-    else:
-        live_revisions_published_date = None
-
-    if contact.is_agent_user:
-        notifier.send_agent_reports_are_available_notification(
-            dataset_id=revision.dataset_id,
-            dataset_name=revision.name,
-            operator_name=revision.dataset.organisation.name,
-            short_description=revision.short_description,
-            comments=revision.comment,
-            draft_link=revision.draft_url,
-            published_at=live_revisions_published_date,
-            contact_email=contact.email,
-        )
-    else:
-        notifier.send_reports_are_available_notification(
-            dataset_id=revision.dataset_id,
-            dataset_name=revision.name,
-            short_description=revision.short_description,
-            comments=revision.comment,
-            draft_link=revision.draft_url,
-            published_at=live_revisions_published_date,
-            contact_email=contact.email,
         )
