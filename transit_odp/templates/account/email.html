@@ -55,7 +55,7 @@
 {% endblock %}
 {% block javascript %}
   {{ block.super }}
-  <script type="text/javascript">
+  <script nonce="{{request.csp_nonce}}" type="text/javascript">
       (function() {
           var message = "{% trans "
           Do you really want to remove the selected email address ? " %}";
