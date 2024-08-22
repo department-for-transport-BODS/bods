@@ -47,13 +47,13 @@
         {% if new_dqs_report %}
           {% include "snippets/data_quality_row.html" with warning_data=summary %}
           <br />
-        <a class="govuk-link"
-           target="_blank"
-           rel="noopener"
-           rel="noreferrer"
-           href="{% url 'dq:overview' pk1=object.organisation.id pk=object.id report_id=report_id host hosts.publish %}">
-          {% trans "View data quality report" %}
-        </a>
+          <a class="govuk-link"
+             target="_blank"
+             rel="noopener"
+             rel="noreferrer"
+             href="{% url 'dq:overview' pk1=object.organisation.id pk=object.id report_id=report_id host hosts.publish %}">
+            {% trans "View data quality report" %}
+          </a>
         {% else %}
           <div class="stacked">
             {% trans "Data quality" %}
@@ -63,8 +63,14 @@
         {% endif %}
       </td>
       <td class="govuk-table__cell">
-        
-      </td>
+        {% if not new_dqs_report %}
+        <a class="govuk-link"
+        target="_blank" rel="noopener" rel="noreferrer"
+        href="{% url 'dq:overview' pk1=object.organisation.id pk=object.id report_id=report_id host hosts.publish %}">
+        {% trans 'View data quality report' %}
+        </a>
+        {% endif %}
+  </td>
     </tr>
   {% endif %}
   <tr class="govuk-table__row">
