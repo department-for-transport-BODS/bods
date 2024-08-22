@@ -138,9 +138,7 @@ def get_service_in_scotland_from_db(service_ref: str) -> bool:
     is_scottish = False
     if service_obj and service_obj.traveline_region:
         regions = service_obj.traveline_region.split("|")
-        if not set(regions).isdisjoint(ENGLISH_TRAVELINE_REGIONS):
-            is_scottish = False
-        elif sorted(SCOTLAND_TRAVELINE_REGIONS) == sorted(regions):
+        if sorted(SCOTLAND_TRAVELINE_REGIONS) == sorted(regions):
             is_scottish = True
 
     service_name_in_cache = f"{service_ref.replace(':', '-')}-scottish-region"
