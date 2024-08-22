@@ -135,8 +135,8 @@ urlpatterns = [
                 ),
                 path(
                     "detail/",
-                    view=DQSviews.DQSLastStopPickUpDetailView.as_view(),
-                    name="last-stop-pick-up-only-detail",
+                    view=DQSviews.LastStopPickUpDetailView.as_view(),
+                    name="dqs-last-stop-pick-up-only-detail",
                 ),
             ]
         ),
@@ -157,8 +157,8 @@ urlpatterns = [
                 ),
                 path(
                     "detail/",
-                    view=DQSviews.DQSFirstStopSetDownDetailView.as_view(),
-                    name="last-stop-pick-up-only-detail",
+                    view=DQSviews.FirstStopSetDownDetailView.as_view(),
+                    name="dqs-first-stop-set-down-only-detail",
                 ),
             ]
         ),
@@ -179,8 +179,8 @@ urlpatterns = [
                 ),
                 path(
                     "detail/",
-                    view=DQSviews.DQSLastStopNotTimingPointDetailView.as_view(),
-                    name="last-stop-not-timing-point-detail",
+                    view=DQSviews.LastStopNotTimingPointDetailView.as_view(),
+                    name="dqs-last-stop-not-timing-point-detail",
                 ),
             ]
         ),
@@ -201,8 +201,8 @@ urlpatterns = [
                 ),
                 path(
                     "detail/",
-                    view=DQSviews.DQSFirstStopNotTimingPointDetailView.as_view(),
-                    name="last-stop-pick-up-only-detail",
+                    view=DQSviews.FirstStopNotTimingPointDetailView.as_view(),
+                    name="dqs-first-stop-not-timing-point-detail",
                 ),
             ]
         ),
@@ -223,8 +223,8 @@ urlpatterns = [
                 ),
                 path(
                     "detail/",
-                    view=DQSviews.DQSStopMissingNaptanDetailView.as_view(),
-                    name="stop-missing-naptan-detail",
+                    view=DQSviews.StopMissingNaptanDetailView.as_view(),
+                    name="dqs-stop-missing-naptan-detail",
                 ),
             ]
         ),
@@ -330,8 +330,8 @@ urlpatterns = [
                 ),
                 path(
                     "detail/",
-                    view=DQSviews.DQSIncorrectStopTypeDetailView.as_view(),
-                    name="incorrect-stop-type-detail",
+                    view=DQSviews.IncorrectStopTypeDetailView.as_view(),
+                    name="dqs-incorrect-stop-type-detail",
                 ),
             ]
         ),
@@ -361,6 +361,98 @@ urlpatterns = [
                     "<uuid:warning_pk>/",
                     view=views.LineMissingBlockIDDetailView.as_view(),
                     name="line-missing-block-id-detail",
+                ),
+            ]
+        ),
+    ),
+    path(
+        "missing-journey-code/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.MissingJourneyCodeListView.as_view(),
+                    name="missing-journey-code-list",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.MissingJourneyCodeDetailView.as_view(),
+                    name="missing-journey-code-detail",
+                ),
+            ]
+        ),
+    ),
+    path(
+        "duplicate-journey-code/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.DuplicateJourneyCodeListView.as_view(),
+                    name="duplicate-journey-code-list",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.DuplicateJourneyCodeDetailView.as_view(),
+                    name="duplicate-journey-code-detail",
+                ),
+            ]
+        ),
+    ),
+    path(
+        "incorrect-licence-number/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.IncorrectLicenceNumberListView.as_view(),
+                    name="incorrect-licence-number-list",
+                )
+            ]
+        ),
+    ),
+    path(
+        "no-timing-point-more-than-15-mins/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.NoTimingPointMoreThan15MinsListView.as_view(),
+                    name="no-timing-point-more-than-15-mins-list",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.NoTimingPointMoreThan15MinsDetailView.as_view(),
+                    name="no-timing-point-more-than-15-mins-detail",
+                ),
+            ]
+        ),
+    ),
+    path(
+        "missing-bus-working-number/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.MissingBusWorkingNumberListView.as_view(),
+                    name="missing-bus-working-number-list",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.MissingBusWorkingNumberDetailView.as_view(),
+                    name="missing-bus-working-number-detail",
+                ),
+            ]
+        ),
+    ),
+    path(
+        "cancelled-service-appearing-active/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.CancelledServiceAppearingActiveListView.as_view(),
+                    name="cancelled-service-appearing-active-list",
                 ),
             ]
         ),

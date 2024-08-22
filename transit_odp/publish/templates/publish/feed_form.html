@@ -51,7 +51,7 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script>
+  <script nonce="{{request.csp_nonce}}">
     var input = document.getElementById("id_upload_file");
     var select_message = document.getElementById("file-select-success");
     if (input) {

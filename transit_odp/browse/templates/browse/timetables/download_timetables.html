@@ -155,7 +155,7 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script>
+  <script nonce="{{request.csp_nonce}}">
     function addGATagEvent(obj) {
         gtag('event', 'Download all event', {
             'event_category': 'link',

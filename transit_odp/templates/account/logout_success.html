@@ -17,5 +17,15 @@
   <p class="govuk-body-l">
     <a class="govuk-link" href="{% url 'home' host host.name %}">{% trans "Return to the homepage" %}</a>
   </p>
+  <script nonce="{{request.csp_nonce}}">if ('caches' in window) {
+    caches.keys().then((names) => {
+        names.forEach((name) => {
+            caches.delete(name);
+        });
+    });
+  }
+  localStorage.clear();
+  sessionStorage.clear();
+  </script>
 {% endblock %}
 {% block inner_secondary %}{% endblock %}

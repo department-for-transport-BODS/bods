@@ -15,7 +15,9 @@
       <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{% trans "Which journeys have been affected?" %}</h1>
       <div class="total_vehicles">
         <span class="govuk-heading-xl govuk-!-margin-0">{{ num_of_journeys }}</span>
-        <span class="govuk-body-s">Total journeys affected
+        <span class="govuk-body-s">Total vehicle journeys
+          <br />
+          affected
           {% if start_date %}from {{ start_date|date:"d/m/Y" }}{% endif %}
         </span>
       </div>
@@ -29,7 +31,7 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script>
+  <script nonce="{{request.csp_nonce}}">
       BODSFrontend.initWarningDetailMap("{{ api_root }}", "{{ service_pattern_id }}", "{{ stop_ids }}", "{{ effected_stop_ids }}", "{{ service_link_ids }}");
   </script>
 {% endblock %}
