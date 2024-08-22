@@ -1,25 +1,11 @@
-import os
 import zipfile
 
-import psutil
 from celery.utils.log import get_task_logger
 
 from transit_odp.fares.netex import NeTExDocument, get_documents_from_file
 from transit_odp.pipelines import exceptions
 
 logger = get_task_logger(__name__)
-
-
-def measure_memory(func):
-    def wrapper(*args, **kwargs):
-        process = psutil.Process(os.getpid())
-        before = process.memory_info().rss
-        result = func(*args, **kwargs)
-        after = process.memory_info().rss
-        print(f"Memory used by {func.__name__}: {after - before} bytes")
-        return result
-
-    return wrapper
 
 
 class ExtractionError(Exception):
@@ -298,7 +284,6 @@ class NeTExDocumentsExtractor:
         self.fares_catalogue_extracted_data.append(fares_catalogue.to_dict())
         return self.fares_catalogue_extracted_data
 
-    @measure_memory
     def extract(self):
         """
         Processes a zip file.

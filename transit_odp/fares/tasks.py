@@ -1,9 +1,7 @@
 import logging
-import os
 import uuid
 import zipfile
 
-import psutil
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -42,18 +40,6 @@ from transit_odp.validate.xml import validate_xml_files_in_zip
 logger = logging.getLogger(__name__)
 
 DT_FORMAT = "%Y-%m-%d_%H-%M-%S"
-
-
-def measure_memory(func):
-    def wrapper(*args, **kwargs):
-        process = psutil.Process(os.getpid())
-        before = process.memory_info().rss
-        result = func(*args, **kwargs)
-        after = process.memory_info().rss
-        print(f"Memory used by {func.__name__}: {after - before} bytes")
-        return result
-
-    return wrapper
 
 
 @shared_task(bind=True)
@@ -242,7 +228,6 @@ def task_set_fares_validation_result(task_id):
     task.update_progress(50)
 
 
-@measure_memory
 @shared_task
 def task_run_fares_etl(task_id):
     """Task for extracting metadata from NeTEx file/s."""
