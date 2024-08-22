@@ -69,7 +69,7 @@
 {% block inner %}<div class="govuk-grid-row govuk-!-margin-top-9"></div>{% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script>
+  <script nonce="{{request.csp_nonce}}">
     function addGATagEvent() {
         gtag('event', 'Download all event', {
             'event_category': 'link',

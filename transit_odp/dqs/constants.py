@@ -50,7 +50,7 @@ class Checks(Enum):
     FirstStopIsNotATimingPoint = "First stop is not a timing point"
     MissingJourneyCode = "Missing journey code"
     DuplicateJourneyCode = "Duplicate journey code"
-    NoTimingPointMoreThan15Mins = "No timing point more than 15 mins"
+    NoTimingPointMoreThan15Mins = "No timing point for more than 15 mins"
     MissingBusWorkingNumber = "Missing bus working number"
     MissingStop = "Missing stop"
     SameStopFoundMultipleTimes = "Same stop found multiple times"
