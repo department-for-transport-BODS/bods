@@ -183,6 +183,7 @@ class FaresDataCatalogueExtractor:
 
 class NeTExDocumentsExtractor:
     def __init__(self, revision):
+        # Initializing self.doc to NetExDocument for ease of understanding
         self.doc = NeTExDocument
         self.revision = revision
         self.fares_catalogue_extracted_data = []
@@ -301,6 +302,8 @@ class NeTExDocumentsExtractor:
         final_dictionary_max = dict()
         final_dictionary_list = dict()
 
+        # Get generator object of NetExDocument and create a list of
+        # dictionaries for each kind of property to be extracted
         documents = get_documents_from_file(self.revision)
         try:
             for self.doc in documents:

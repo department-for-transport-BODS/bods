@@ -62,11 +62,16 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
             task_id=self.request.id,
         )
 
-        task_download_fares_file(task.id)
-        task_run_antivirus_check(task.id)
-        task_run_fares_validation(task.id)
-        task_set_fares_validation_result(task.id)
-        task_run_fares_etl(task.id)
+        context = DatasetPipelineLoggerContext(
+            component_name="FaresPipeline", object_id=revision.dataset.id
+        )
+        adapter = PipelineAdapter(logger, {"context": context})
+
+        task_download_fares_file(task.id, adapter)
+        task_run_antivirus_check(task.id, adapter)
+        task_run_fares_validation(task.id, adapter)
+        task_set_fares_validation_result(task.id, adapter)
+        task_run_fares_etl(task.id, adapter)
 
         task.update_progress(100)
         revision.refresh_from_db()
@@ -80,13 +85,9 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
 
 
 @shared_task
-def task_download_fares_file(task_id: int):
+def task_download_fares_file(task_id: int, adapter):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
-    context = DatasetPipelineLoggerContext(
-        component_name="FaresPipeline", object_id=revision.dataset.id
-    )
-    adapter = PipelineAdapter(logger, {"context": context})
 
     task.update_progress(10)
     if revision.url_link:
@@ -118,13 +119,9 @@ def task_download_fares_file(task_id: int):
     task.update_progress(20)
 
 
-def task_run_antivirus_check(task_id: int):
+def task_run_antivirus_check(task_id: int, adapter):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
-    context = DatasetPipelineLoggerContext(
-        component_name="FaresPipeline", object_id=revision.dataset.id
-    )
-    adapter = PipelineAdapter(logger, {"context": context})
     file_ = revision.upload_file
     try:
         scanner = FileScanner(settings.CLAMAV_HOST, settings.CLAMAV_PORT)
@@ -143,16 +140,12 @@ def task_run_antivirus_check(task_id: int):
 
 
 @shared_task
-def task_run_fares_validation(task_id):
+def task_run_fares_validation(task_id, adapter):
     """Task to validate a fares file."""
     violations = []
     total_files = 0
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
-    context = DatasetPipelineLoggerContext(
-        component_name="FaresPipeline", object_id=revision.dataset.id
-    )
-    adapter = PipelineAdapter(logger, {"context": context})
 
     file_ = revision.upload_file
     # All the exceptions in the `validate` module are derived from a generic
@@ -204,14 +197,10 @@ def task_run_fares_validation(task_id):
 
 
 @shared_task
-def task_set_fares_validation_result(task_id):
+def task_set_fares_validation_result(task_id, adapter):
     """Task to set validation errors in a fares file/s."""
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
-    context = DatasetPipelineLoggerContext(
-        component_name="FaresPipeline", object_id=revision.dataset.id
-    )
-    adapter = PipelineAdapter(logger, {"context": context})
 
     file_ = revision.upload_file
 
@@ -229,16 +218,11 @@ def task_set_fares_validation_result(task_id):
 
 
 @shared_task
-def task_run_fares_etl(task_id):
+def task_run_fares_etl(task_id, adapter):
     """Task for extracting metadata from NeTEx file/s."""
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
     extracted_data = []
-
-    context = DatasetPipelineLoggerContext(
-        component_name="FaresPipeline", object_id=revision.dataset.id
-    )
-    adapter = PipelineAdapter(logger, {"context": context})
 
     task.update_progress(60)
     try:
