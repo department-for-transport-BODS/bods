@@ -43,10 +43,10 @@
 {% block scripts %}
   {{ block.super }}
   {% if loading %}
-    <script>new BODSFrontend.ProgressIndicator({{ object.dataset_id }});</script>
+    <script nonce="{{request.csp_nonce}}">new BODSFrontend.ProgressIndicator({{ object.dataset_id }});</script>
   {% elif not error %}
     {#    TODO: change this, when we have metadata to populate on map #}
-    <script>
+    <script nonce="{{request.csp_nonce}}">
       {# Initialise map #}
       BODSFrontend.initFaresDetailMap("{{ properties.api_root }}", {{  object.id }});
     </script>

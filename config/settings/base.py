@@ -143,6 +143,7 @@ THIRD_PARTY_APPS = [
     "django_celery_results",
     "waffle",
     "django_axe.apps.DjangoAxeConfig",
+    "csp",
 ]
 LOCAL_APPS = [
     "transit_odp.api.apps.ApiConfig",
@@ -229,11 +230,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
+    "csp.middleware.CSPMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django_hosts.middleware.HostsRequestMiddleware",
     "transit_odp.common.middleware.DefaultHostMiddleware",
+    "transit_odp.common.middleware.SecurityHeadersMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -738,3 +741,20 @@ ACCOUNT_LOGIN_ATTEMPTS_LIMIT = env("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", default=5)
 ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = env("ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT", default=900)
 SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=False)
 SESSION_COOKIE_HTTPONLY = env.bool("SESSION_COOKIE_HTTPONLY", default=True)
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = (
+    "'self'",
+    "'unsafe-inline'",
+    "https://www.googletagmanager.com",
+    "https://ajax.googleapis.com/ajax/libs/jquery",
+)
+CSP_STYLE_SRC = ("'self'",)
+CSP_IMG_SRC = (
+    "'self'",
+    "data:",
+)
+CSP_CONNECT_SRC = ("'self'",)
+CSP_FONT_SRC = ("'self'",)
+CSP_OBJECT_SRC = ("'none'",)
+CSP_FRAME_ANCESTORS = ("'self'",)

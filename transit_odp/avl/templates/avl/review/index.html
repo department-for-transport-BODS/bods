@@ -42,5 +42,7 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  {% if loading %}<script>new BODSFrontend.ProgressIndicator({{ object.dataset_id }});</script>{% endif %}
+  {% if loading %}
+    <script nonce="{{request.csp_nonce}}">new BODSFrontend.ProgressIndicator({{ object.dataset_id }});</script>
+  {% endif %}
 {% endblock %}

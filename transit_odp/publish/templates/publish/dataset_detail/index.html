@@ -29,6 +29,6 @@
 {% block scripts %}
   {{ block.super }}
   {% if status == 'success' %}
-    <script>BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }});</script>
+    <script nonce="{{request.csp_nonce}}">BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }});</script>
   {% endif %}
 {% endblock %}

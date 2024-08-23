@@ -50,7 +50,7 @@ class Checks(Enum):
     FirstStopIsNotATimingPoint = "First stop is not a timing point"
     MissingJourneyCode = "Missing journey code"
     DuplicateJourneyCode = "Duplicate journey code"
-    NoTimingPointMoreThan15Mins = "No timing point more than 15 mins"
+    NoTimingPointMoreThan15Mins = "No timing point for more than 15 mins"
     MissingBusWorkingNumber = "Missing bus working number"
     MissingStop = "Missing stop"
     SameStopFoundMultipleTimes = "Same stop found multiple times"
@@ -407,16 +407,24 @@ MissingJourneyCodeObservation = Observation(
 CancelledServiceAppearingActiveObservation = Observation(
     title=Checks.CancelledServiceAppearingActive.value,
     text=(
-        "This observation identifies services that have been cancelled with the responsible bus"
-        " registrations authority, but the published data indicate that they are running."
+        "This observation identifies services that have been cancelled or is not registered with"
+        " the responsible local bus registrations authority, but the published data indicate that"
+        " they are running. "
     ),
     impacts=(
         "Services that are no longer running will appear on journey planning apps causing major"
         " disruption to passengers and impacting passenger satisfaction. Operators must ensure the"
         " published data accurately reflects the status of their registered services. "
     ),
-    resolve=(""),
-    preamble="The following service(s) have been observed to not have the duplicate journey code.",
+    resolve=(
+        "If the service is no longer running, please remove the published file from the uploaded"
+        " data set, or end date the file equal to the date the service stopped running. This can"
+        " be done on your timetables scheduling tool."
+        + _LINE_BREAK
+        + "If the service is running, please contact the responsible local bus registrations authority"
+        " to register the bus service."
+    ),
+    preamble="The following service(s) have been observed to not be registered with a local bus registrations authority.",
     list_url_name="dq:cancelled-service-appearing-active-list",
     level=Level.critical,
     category=Category.data_set,

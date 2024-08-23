@@ -51,7 +51,7 @@
     </tbody>
   </table>
 </div>
-<script>
+<script nonce="{{request.csp_nonce}}">
   window.addEventListener("load", function () {
       const form = document.getElementById("table-formset");
       new BODSFrontend.FormSet(form);

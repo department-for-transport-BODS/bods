@@ -20,9 +20,9 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script>BODSFrontend.initAPIDocs('#swagger-ui', "{% static "openapi/avl.yml" %}")</script>
-  <script>
+  <script nonce="{{request.csp_nonce}}" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script nonce="{{request.csp_nonce}}">BODSFrontend.initAPIDocs('#swagger-ui', "{% static "openapi/avl.yml" %}")</script>
+  <script nonce="{{request.csp_nonce}}">
         function bindExecuteButtonClickEvent() {
 
             const executeButton = document.querySelector('button.execute');
