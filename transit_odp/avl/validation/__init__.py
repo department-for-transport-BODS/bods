@@ -15,7 +15,7 @@ GET = "GET"
 
 
 def get_validation_client():
-    return ValidationClient(url=settings.CAVL_VALIDATION_URL)
+    return ValidationClient(url=settings.AVL_PRODUCER_API_BASE_URL)
 
 
 class ValidationClient:
@@ -72,7 +72,7 @@ class ValidationClient:
         Returns:
             SchemaValidationResponse or None
         """
-        endpoint = self.url + f"/schema/{feed_id}"
+        endpoint = self.url + f"/subscriptions/{feed_id}/validate-profile"
         data = self._make_request(GET, endpoint, timeout=DEFAULT_TIMEOUT)
 
         if data is not None:
