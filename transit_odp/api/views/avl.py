@@ -118,7 +118,7 @@ def _get_gtfs_rt_response(url: str, query_params: QueryDict):
     return content, response_status
 
 
-def _get_consumer_api_response(url: str, query_params: QueryDict, headers: object):
+def _get_consumer_api_response(url: str, query_params: QueryDict):
     """Gets response from CAVL consumer api.
 
     Args:
@@ -143,7 +143,7 @@ def _get_consumer_api_response(url: str, query_params: QueryDict, headers: objec
             return content, response_status
 
     try:
-        response = requests.get(url, params=params, headers=headers, timeout=60)
+        response = requests.get(url, params=params, timeout=60)
     except RequestException:
         return content, response_status
 
