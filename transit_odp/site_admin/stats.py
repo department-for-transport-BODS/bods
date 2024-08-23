@@ -29,9 +29,6 @@ logger = getLogger(__name__)
 
 
 class ConsumerAPIStats(BaseModel):
-    version: str
-    query_time: float
-    num_of_gtfs_rt_vehicles: int
     num_of_siri_vehicles: int
 
 
@@ -119,7 +116,7 @@ def get_service_code_counts():
 
 
 def get_siri_vm_vehicle_counts() -> int:
-    stats_url = settings.CAVL_CONSUMER_URL + "/stats"
+    stats_url = settings.AVL_CONSUMER_API_BASE_URL + "/stats"
     vehicle_counts = 0
 
     try:
