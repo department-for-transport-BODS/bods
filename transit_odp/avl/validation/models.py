@@ -35,10 +35,11 @@ class Header(BaseModel):
         plugin: The plugin that recorded the packet.
     """
 
+    # TODO DEANNA - update timeStamp name when PR merged on warehouse side
+
     packet_name: str
-    timestamp: int
+    timeStamp: datetime
     feed_id: int
-    plugin: str
 
 
 class Identifier(BaseModel):
@@ -55,11 +56,13 @@ class Identifier(BaseModel):
         vehicle_ref: The VehicleRef value.
     """
 
+    # TODO DEANNA - update recordedAtTime when PR merged
+
     item_identifier: Optional[str] = None
     line_ref: Optional[str] = None
     name: str
     operator_ref: Optional[str] = None
-    recorded_at_time: Optional[datetime] = None
+    recordedAtTime: Optional[datetime] = None
     vehicle_journey_ref: Optional[str] = None
     vehicle_ref: Optional[str] = None
 
@@ -70,18 +73,16 @@ class Error(BaseModel):
 
     Args:
         level: Whether the error is critical or non-critical.
-        context: The packet element that has the issue.
         details: Details of the error.
         identifier: The Identifier object used to identify the element.
     """
 
     level: str
-    context: str
     details: str
     identifier: Identifier
 
 
-class Result(BaseModel):
+class Errors(BaseModel):
     """
     The result of a packet analysis.
 
@@ -111,8 +112,8 @@ class ValidationSummary(BaseModel):
     critical_error_count: int
     non_critical_error_count: int
     vehicle_activity_count: int
-    critical_score: float
-    non_critical_score: float
+    critical_score: Optional[float] = None
+    non_critical_score: Optional[float] = None
 
 
 class ValidationResponse(BaseModel):
@@ -129,7 +130,7 @@ class ValidationResponse(BaseModel):
     feed_id: int
     packet_count: int
     validation_summary: ValidationSummary
-    results: List[Result]
+    errors: List[Errors]
 
 
 class SchemaError(BaseModel):

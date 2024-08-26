@@ -8,7 +8,7 @@ from transit_odp.avl.validation.models import (
     Header,
     Identifier,
     Observation,
-    Result,
+    Errors,
     SchemaError,
     SchemaValidationResponse,
     ValidationResponse,
@@ -104,7 +104,7 @@ class ErrorFactory(Factory):
         model = Error
 
 
-class ResultFactory(Factory):
+class ErrorsFactory(Factory):
     """
     The result of a packet analysis.
 
@@ -117,7 +117,7 @@ class ResultFactory(Factory):
     errors = []
 
     class Meta:
-        model = Result
+        model = Errors
 
 
 class ValidationSummaryFactory(Factory):
@@ -152,13 +152,13 @@ class ValidationResponseFactory(Factory):
         feed_id: The id of the feed analysed.
         packet_count: The total number of packets analysed.
         validation_summary: A summary of the validation.
-        results: A list of the results of every packet in the analysis.
+        errors: A list of the results of every packet in the analysis.
     """
 
     feed_id = 1
     packet_count = 100
     validation_summary = SubFactory(ValidationSummaryFactory)
-    results = []
+    errors = []
 
     class Meta:
         model = ValidationResponse

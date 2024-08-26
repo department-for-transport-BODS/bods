@@ -57,7 +57,7 @@ class AVLValidationReport(models.Model):
     def from_validation_response(cls, revision_id: int, response: ValidationResponse):
         summary = response.validation_summary
         exporter = ValidationReportExporter(response)
-        if response.results:
+        if response.errors:
             file_ = ContentFile(
                 exporter.to_csv_string().encode(UTF8), name=exporter.get_filename()
             )

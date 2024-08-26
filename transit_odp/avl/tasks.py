@@ -287,41 +287,48 @@ def task_cache_avl_compliance_status():
 def perform_feed_validation(adapter: PipelineAdapter, feed_id: int):
     client = get_validation_client()
 
-    adapter.info("Validating feed against SIRI-VM schema.")
-    response = client.schema(feed_id=feed_id)
+    """
+    I-AVL Service: Schema validation report is no longer generated. Schema validation checks happen at the same time
+    as the BODS SIRI profile check, schema validation errors will appear in the validation report.
 
-    if len(response.errors) > 0:
-        adapter.info("Feed failed SIRI-VM schema validation.")
-        feed = AVLDataset.objects.get(id=feed_id)
-        revision = feed.live_revision
-        # Sleeping to give the config api time to be available
-        time.sleep(CONFIG_API_WAIT_TIME)
-        with transaction.atomic():
-            cavl_service = CAVLService()
+    Code has been kept in as we may want to reinstate the schema validation report at a later date.
+    """
 
-            try:
-                cavl_service.delete_feed(feed_id=feed_id)
-            except RequestException:
-                adapter.error("Unable to de-register feed.")
-                return
+    # adapter.info("Validating feed against SIRI-VM schema.")
+    # response = client.schema(feed_id=feed_id)
+    #
+    # if len(response.errors) > 0:
+    #     adapter.info("Feed failed SIRI-VM schema validation.")
+    #     feed = AVLDataset.objects.get(id=feed_id)
+    #     revision = feed.live_revision
+    #     # Sleeping to give the config api time to be available
+    #     time.sleep(CONFIG_API_WAIT_TIME)
+    #     with transaction.atomic():
+    #         cavl_service = CAVLService()
+    #
+    #         try:
+    #             cavl_service.delete_feed(feed_id=feed_id)
+    #         except RequestException:
+    #             adapter.error("Unable to de-register feed.")
+    #             return
+    #
+    #         AVLSchemaValidationReport.from_schema_validation_response(
+    #             revision_id=feed.live_revision_id, response=response
+    #         ).save()
+    #         revision.to_inactive()
+    #         revision.save()
+    #         send_avl_schema_check_fail(feed)
+    #
+    #     return
 
-            AVLSchemaValidationReport.from_schema_validation_response(
-                revision_id=feed.live_revision_id, response=response
-            ).save()
-            revision.to_inactive()
-            revision.save()
-            send_avl_schema_check_fail(feed)
-
-        return
-
-    adapter.info("Validating feed against BODS SIRI-VM profile.")
+    adapter.info("Validating feed against SIRI-VM profile.")
     feeds = AVLDataset.objects.filter(id=feed_id).add_old_avl_compliance_status()
     feed = feeds.get(id=feed_id)
     old_status = feed.old_avl_compliance
 
-    response = client.validate(feed_id=feed_id, sample_size=VALIDATION_SAMPLE_SIZE)
+    response = client.validate(feed_id=feed_id)
     if response is None:
-        adapter.error("BODS SIRI-VM profile validation failed.")
+        adapter.error("An error occurred when calling the I-AVL service to validate the datafeed.")
         return
 
     adapter.info("Creating AVLValidationReport.")
