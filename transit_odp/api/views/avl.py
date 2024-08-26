@@ -43,10 +43,7 @@ class AVLApiView(views.APIView):
     def get(self, request, format=None):
         """Get SIRI VM response from consumer API."""
         url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm"
-        headers = {"x-api-key": settings.AVL_CONSUMER_API_KEY}
-        content, status_code = _get_consumer_api_response(
-            url, request.query_params, headers
-        )
+        content, status_code = _get_consumer_api_response(url, request.query_params)
         return Response(content, status=status_code, content_type="text/xml")
 
 
@@ -59,7 +56,6 @@ class AVLDetailApiView(views.APIView):
     def get(self, request, pk=-1, format=None):
         """Get SIRI VM response from consumer API."""
         url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm?subscriptionId={pk}"
-        headers = {"x-api-key": settings.AVL_CONSUMER_API_KEY}
         try:
             Dataset.objects.get(pk=pk, dataset_type=DatasetType.AVL)
         except Dataset.DoesNotExist:
@@ -69,9 +65,7 @@ class AVLDetailApiView(views.APIView):
                 content, status=status.HTTP_404_NOT_FOUND, content_type="text/xml"
             )
 
-        content, status_code = _get_consumer_api_response(
-            url, request.query_params, headers
-        )
+        content, status_code = _get_consumer_api_response(url, request.query_params)
         return Response(content, status=status_code, content_type="text/xml")
 
 
@@ -124,7 +118,7 @@ def _get_gtfs_rt_response(url: str, query_params: QueryDict):
     return content, response_status
 
 
-def _get_consumer_api_response(url: str, query_params: QueryDict, headers: object):
+def _get_consumer_api_response(url: str, query_params: QueryDict):
     """Gets response from CAVL consumer api.
 
     Args:
@@ -149,7 +143,7 @@ def _get_consumer_api_response(url: str, query_params: QueryDict, headers: objec
             return content, response_status
 
     try:
-        response = requests.get(url, params=params, headers=headers, timeout=60)
+        response = requests.get(url, params=params, timeout=60)
     except RequestException:
         return content, response_status
 

@@ -126,12 +126,17 @@ def test_no_change(mocker, mailoutbox):
         dataset.contact.settings.save()
         data.append(
             Feed(
-                id=dataset.id,
-                publisher_id=dataset.contact.id,
+                id=str(dataset.id),
+                publisher_id=str(dataset.contact.id),
                 url="www.testurl.com/avl",
                 username=dataset.contact.username,
                 password="password",
                 status=dataset.avl_feed_status,
+                lastAvlDataReceivedDateTime=None,
+                heartbeatLastReceivedDateTime=None,
+                serviceStartDatetime=None,
+                serviceEndDatetime=None,
+                apiKey="test",
             )
         )
 

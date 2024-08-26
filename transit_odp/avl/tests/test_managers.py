@@ -627,7 +627,7 @@ def test_get_datafeeds_to_validate():
     THEN only the LIVE, published feeds are returned.
     WHEN get_datafeeds_to_validate is called.
     """
-    avl_statuses = Iterator(AVLFeedStatus.choices())
+    avl_statuses = Iterator([AVLFeedStatus.live.value, AVLFeedStatus.inactive.value])
     live_feeds = 10
     AVLDatasetRevisionFactory.create_batch(
         live_feeds, status=LIVE, dataset__avl_feed_status=avl_statuses
