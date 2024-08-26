@@ -35,10 +35,8 @@ class Header(BaseModel):
         plugin: The plugin that recorded the packet.
     """
 
-    # TODO DEANNA - update timeStamp name when PR merged on warehouse side
-
     packet_name: str
-    timeStamp: datetime
+    timestamp: str
     feed_id: int
 
 
@@ -56,13 +54,11 @@ class Identifier(BaseModel):
         vehicle_ref: The VehicleRef value.
     """
 
-    # TODO DEANNA - update recordedAtTime when PR merged
-
     item_identifier: Optional[str] = None
     line_ref: Optional[str] = None
     name: str
     operator_ref: Optional[str] = None
-    recordedAtTime: Optional[datetime] = None
+    recorded_at_time: Optional[str] = None
     vehicle_journey_ref: Optional[str] = None
     vehicle_ref: Optional[str] = None
 

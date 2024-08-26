@@ -53,14 +53,14 @@ class ValidationReportExporter:
             for error in result.errors:
                 identifier: Identifier = error.identifier
 
-                if identifier.recordedAtTime is not None:
-                    recorded_at_time = identifier.recordedAtTime
+                if identifier.recorded_at_time is not None:
+                    recorded_at_time = identifier.recorded_at_time
                 else:
                     recorded_at_time = ""
 
                 yield [
                     recorded_at_time,
-                    result.header.timeStamp,
+                    result.header.timestamp,
                     identifier.vehicle_ref,
                     identifier.operator_ref,
                     identifier.line_ref,

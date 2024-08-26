@@ -69,9 +69,10 @@ class ValidationClient:
         else:
             return None
 
-    # TODO REMOVE
     def schema(self, feed_id: int) -> SchemaValidationResponse:
         """
+        Not used with I-AVL service currently
+
         Calls the validate-profile endpoint for a given subscription. It will return the validation errors collated
         within the last 24 hours for a given data producer. Validation follows the rules defined in the SIRI 2.0 schema
 

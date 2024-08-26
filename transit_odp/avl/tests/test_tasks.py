@@ -440,34 +440,6 @@ def test_send_status_changed_email(get_client, mailoutbox):
     assert revision.avl_validation_reports.count() == report_count
 
 
-"""
-Schema validation report not currently generated as part of I-AVL service,
-left code in as it may be reinstated at a later date
-"""
-
-
-# @patch("transit_odp.avl.tasks.get_validation_client")
-# def test_send_schema_validation_passes(get_client, mailoutbox):
-#     user = UserFactory(account_type=OrgAdminType)
-#     user.settings.daily_compliance_check_alert = True
-#     user.settings.save()
-#     revision = AVLDatasetRevisionFactory(
-#         dataset__contact=user, dataset__organisation=user.organisations.first()
-#     )
-#     summary = ValidationSummaryFactory(
-#         critical_score=1, non_critical_score=1, vehicle_activity_count=1000
-#     )
-#     client = Mock()
-#     client.schema.return_value = SchemaValidationResponseFactory()
-#     client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
-#     get_client.return_value = client
-#
-#     assert AVLSchemaValidationReport.objects.count() == 0
-#     task_run_feed_validation(revision.dataset.id)
-#     assert len(mailoutbox) == 0
-#     assert AVLSchemaValidationReport.objects.count() == 0
-
-
 @patch("transit_odp.avl.tasks.get_validation_client")
 def test_feed_validation_can_handle_empty_response(get_client):
     user = UserFactory(account_type=OrgAdminType)
@@ -505,6 +477,27 @@ Schema validation report not currently generated as part of I-AVL service,
 left code in as it may be reinstated at a later date
 """
 
+
+# @patch("transit_odp.avl.tasks.get_validation_client")
+# def test_send_schema_validation_passes(get_client, mailoutbox):
+#     user = UserFactory(account_type=OrgAdminType)
+#     user.settings.daily_compliance_check_alert = True
+#     user.settings.save()
+#     revision = AVLDatasetRevisionFactory(
+#         dataset__contact=user, dataset__organisation=user.organisations.first()
+#     )
+#     summary = ValidationSummaryFactory(
+#         critical_score=1, non_critical_score=1, vehicle_activity_count=1000
+#     )
+#     client = Mock()
+#     client.schema.return_value = SchemaValidationResponseFactory()
+#     client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
+#     get_client.return_value = client
+#
+#     assert AVLSchemaValidationReport.objects.count() == 0
+#     task_run_feed_validation(revision.dataset.id)
+#     assert len(mailoutbox) == 0
+#     assert AVLSchemaValidationReport.objects.count() == 0
 
 # @patch("transit_odp.avl.tasks.CAVLService")
 # @patch("transit_odp.avl.tasks.get_validation_client")

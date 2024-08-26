@@ -25,7 +25,7 @@ from transit_odp.avl.models import PPCReportType
 from transit_odp.avl.validation.factories import (
     ErrorFactory,
     IdentifierFactory,
-    ResultFactory,
+    ErrorsFactory,
     SchemaErrorFactory,
     SchemaValidationResponseFactory,
     ValidationResponseFactory,
@@ -86,8 +86,8 @@ def test_validation_exporter_with_errors():
     error = ErrorFactory(
         level="Non-critical", details="Fake details", identifier=identifier
     )
-    result = ResultFactory(errors=[error])
-    response = ValidationResponseFactory(results=[result])
+    errors = ErrorsFactory(errors=[error])
+    response = ValidationResponseFactory(errors=[errors])
     exporter = ValidationReportExporter(response)
 
     scsv = exporter.to_csv_string()
@@ -102,8 +102,8 @@ def test_validation_exporter_with_errors():
     assert details == error.details
     assert refs == ""
     expected = [
-        identifier.recorded_at_time.isoformat(),
-        isoformat_from_time_ns(result.header.timestamp),
+        identifier.recorded_at_time,
+        errors.header.timestamp,
         identifier.vehicle_ref,
         identifier.operator_ref,
         identifier.line_ref,

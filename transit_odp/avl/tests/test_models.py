@@ -8,7 +8,7 @@ from transit_odp.avl.models import AVLSchemaValidationReport, AVLValidationRepor
 from transit_odp.avl.validation.factories import (
     ErrorFactory,
     IdentifierFactory,
-    ResultFactory,
+    ErrorsFactory,
     SchemaErrorFactory,
     SchemaValidationResponseFactory,
     ValidationResponseFactory,
@@ -46,10 +46,10 @@ def test_from_validation_response():
     error = ErrorFactory(
         level="Non-critical", details="Fake details", identifier=identifier
     )
-    result = ResultFactory(errors=[error])
+    errors = ErrorsFactory(errors=[error])
     response = ValidationResponseFactory(
         validation_summary=summary,
-        results=[result],
+        errors=[errors],
     )
     revision = AVLDatasetRevisionFactory()
     AVLValidationReport.from_validation_response(
