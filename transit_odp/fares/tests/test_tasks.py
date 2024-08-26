@@ -27,6 +27,14 @@ from transit_odp.validate.tests.utils import create_text_file, create_zip_file
 pytestmark = pytest.mark.django_db
 
 
+class FAKE_ADAPTER:
+    def info(self, message=None):
+        pass
+
+    def error(self, message=None, exc_info=False):
+        pass
+
+
 def create_task(**kwargs):
     """A helper function to return a DatasetETLTaskResult."""
     return DatasetETLTaskResultFactory(
@@ -42,7 +50,7 @@ def test_task_run_fares_validation_no_task():
     """Given a task_id that doesn't exist, throw a PipelineException."""
     task_id = -1
     with pytest.raises(PipelineException) as exc_info:
-        task_run_fares_validation(task_id)
+        task_run_fares_validation(task_id, FAKE_ADAPTER())
 
     expected = f"DatasetETLTaskResult {task_id} does not exist."
     assert str(exc_info.value) == expected
@@ -54,7 +62,7 @@ def test_task_run_fares_validation_download_exception(mocker):
     task = create_task(revision__upload_file=None, revision__url_link=url_link)
     mocker.patch(download_get, side_effect=DownloadException(url_link))
     with pytest.raises(PipelineException) as exc_info:
-        task_download_fares_file(task.id)
+        task_download_fares_file(task.id, FAKE_ADAPTER())
 
     task.refresh_from_db()
     assert task.error_code == task.SYSTEM_ERROR
@@ -65,7 +73,7 @@ def test_task_run_fares_validation_no_file_or_url():
     """Given task has no file or url_link."""
     task = create_task(revision__upload_file=None)
     with pytest.raises(PipelineException) as exc_info:
-        task_download_fares_file(task.id)
+        task_download_fares_file(task.id, FAKE_ADAPTER())
 
     expected = f"DatasetRevision {task.revision.id} doesn't contain a file."
     task.refresh_from_db()
@@ -87,7 +95,7 @@ def test_validate_xml_files_from_zip_exception(mocker, tmp_path):
     schema = "transit_odp.fares.tasks.get_netex_schema"
     mocker.patch(schema, return_value=None)
     with pytest.raises(PipelineException):
-        task_run_fares_validation(task.id)
+        task_run_fares_validation(task.id, FAKE_ADAPTER())
 
     task.refresh_from_db()
     assert len(task.revision.schema_violations.all()) == 1
@@ -105,7 +113,7 @@ def test_xml_validation_error(mocker, tmp_path):
     mocker.patch(schema, return_value=None)
 
     with pytest.raises(PipelineException):
-        task_run_fares_validation(task.id)
+        task_run_fares_validation(task.id, FAKE_ADAPTER())
 
     task.refresh_from_db()
     assert len(task.revision.schema_violations.all()) == 1
@@ -127,7 +135,7 @@ def test_antivirus_scan_exception(mocker, tmp_path):
     mocker.patch(validate, return_value=None)
 
     with pytest.raises(PipelineException) as exc_info:
-        task_run_antivirus_check(task.id)
+        task_run_antivirus_check(task.id, FAKE_ADAPTER())
 
     task.refresh_from_db()
     expected = f"Anti-virus alert triggered for file {task.revision.upload_file.name}."
@@ -145,7 +153,7 @@ def test_task_run_fares_etl_exception(mocker):
 
     task = create_task(revision__upload_file=None)
     with pytest.raises(PipelineException):
-        task_run_fares_etl(task.id)
+        task_run_fares_etl(task.id, FAKE_ADAPTER())
 
     task.refresh_from_db()
     assert task.error_code == task.SYSTEM_ERROR
@@ -163,7 +171,7 @@ def test_task_run_fares_etl(mocker):
         upload_file__from_path=zip_filepath, upload_file__filename=filename
     )
     task = create_task(revision=revision)
-    task_run_fares_etl(task.id)
+    task_run_fares_etl(task.id, FAKE_ADAPTER())
     task.refresh_from_db()
     assert task.revision.metadata.faresmetadata.schema_version == "1.1"
     assert task.revision.metadata.faresmetadata.num_of_lines == 2
@@ -208,7 +216,7 @@ def test_task_set_fares_validation_result_etl_exception():
     )
     with open(netex_filepath, "rb") as zout:
         task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
-    task_set_fares_validation_result(task.id)
+    task_set_fares_validation_result(task.id, FAKE_ADAPTER())
     task.refresh_from_db()
     assert len(task.revision.fares_validations.all()) == 8
     assert task.revision.fares_validation_result.count == 8
