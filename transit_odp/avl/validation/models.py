@@ -108,8 +108,8 @@ class ValidationSummary(BaseModel):
     critical_error_count: int
     non_critical_error_count: int
     vehicle_activity_count: int
-    critical_score: Optional[float] = None
-    non_critical_score: Optional[float] = None
+    critical_score: float
+    non_critical_score: float
 
 
 class ValidationResponse(BaseModel):
