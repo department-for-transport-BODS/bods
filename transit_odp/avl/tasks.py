@@ -326,7 +326,9 @@ def perform_feed_validation(adapter: PipelineAdapter, feed_id: int):
 
     response = client.validate(feed_id=feed_id)
     if response is None:
-        adapter.error("An error occurred when calling the I-AVL service to validate the datafeed.")
+        adapter.error(
+            "An error occurred when calling the I-AVL service to validate the datafeed."
+        )
         return
 
     adapter.info("Creating AVLValidationReport.")
