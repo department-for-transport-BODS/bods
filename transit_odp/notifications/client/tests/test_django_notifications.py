@@ -1,7 +1,7 @@
 import pytest
 from django.utils.timezone import now
 
-from transit_odp.avl.enums import AVL_FEED_DOWN
+from transit_odp.avl.enums import AVLFeedStatus
 from transit_odp.conftest import pti_enforced, pti_unenforced  # NOQA: F401
 from transit_odp.notifications.client.django_email import DjangoNotifier
 from transit_odp.organisation.constants import TimetableType
@@ -354,7 +354,7 @@ class TestDjangoNotification:
             operator_name=self.organisation_name,
             short_description="test description",
             subscriber_email=self.contact_email,
-            dataset_status=AVL_FEED_DOWN,
+            dataset_status=AVLFeedStatus.live.value,
             updated_time=now(),
         )
         [m] = mailoutbox

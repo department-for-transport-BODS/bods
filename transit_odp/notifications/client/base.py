@@ -9,7 +9,7 @@ from django_hosts.resolvers import reverse
 from pydantic import ConfigDict, validate_call
 
 import config.hosts
-from transit_odp.avl.enums import AVL_FEED_DOWN
+from transit_odp.avl.enums import AVLFeedStatus
 from transit_odp.common.utils.convert_datetime import (
     localize_datetime_and_convert_to_string,
 )
@@ -729,7 +729,9 @@ class NotificationBase:
             f"<id={dataset_id} >"
         )
         feed_status = (
-            "No vehicle activity" if dataset_status == AVL_FEED_DOWN else "Published"
+            "Published"
+            if dataset_status == AVLFeedStatus.live.value
+            else "No vehicle activity"
         )
 
         last_updated = localize_datetime_and_convert_to_string(updated_time)
