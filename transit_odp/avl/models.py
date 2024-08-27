@@ -8,12 +8,10 @@ from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField, ModificationDateTimeField
 
 from transit_odp.avl.csv.validation import (
-    SchemaValidationResponseExporter,
     ValidationReportExporter,
 )
 from transit_odp.avl.storage import get_sirivm_storage
 from transit_odp.avl.validation.models import (
-    SchemaValidationResponse,
     ValidationResponse,
 )
 from transit_odp.common.constants import UTF8
@@ -77,45 +75,6 @@ class AVLValidationReport(models.Model):
 
     class Meta:
         unique_together = ("revision", "created")
-
-
-class AVLSchemaValidationReport(models.Model):
-    revision = models.ForeignKey(
-        DatasetRevision,
-        on_delete=models.CASCADE,
-        related_name="avl_schema_validation_reports",
-        limit_choices_to=limit_to_query,
-    )
-    error_count = models.PositiveIntegerField(_("Number of schema errors"))
-    file = models.FileField(_("AVL schema validation report file"))
-    created = models.DateField(_("Creation date"))
-
-    class Meta:
-        unique_together = ("revision", "created")
-
-    def __str__(self):
-        return (
-            f"id={self.id}, revision_id={self.revision.id}, "
-            f"filename={self.file.name!r}, "
-            f"error_count={self.error_count}, "
-            f"created={self.created.isoformat()}"
-        )
-
-    @classmethod
-    def from_schema_validation_response(
-        cls, revision_id: int, response: SchemaValidationResponse
-    ):
-        error_count = len(response.errors)
-        exporter = SchemaValidationResponseExporter(response)
-        file_ = ContentFile(
-            exporter.to_csv_string().encode(UTF8), name=exporter.get_filename()
-        )
-        return cls(
-            revision_id=revision_id,
-            error_count=error_count,
-            file=file_,
-            created=timezone.now().date(),
-        )
 
 
 class CAVLValidationTaskResult(TaskResult):

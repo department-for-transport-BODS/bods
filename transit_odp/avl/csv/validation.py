@@ -5,8 +5,6 @@ from typing import Iterator, List
 
 from transit_odp.avl.validation.models import (
     Identifier,
-    SchemaError,
-    SchemaValidationResponse,
     ValidationResponse,
 )
 
@@ -22,8 +20,6 @@ HEADERS = (
     "Details",
     "Reference",
 )
-
-SCHEMA_HEADERS = ("Packet Timestamp", "Message", "Element")
 
 NANO = 1_000_000_000
 
@@ -74,33 +70,4 @@ class ValidationReportExporter:
     def get_filename(self):
         now = datetime.now().date()
         filename = f"BODS_ValidationReport_{now:%d%m%y}_{self.response.feed_id}.csv"
-        return filename
-
-
-class SchemaValidationResponseExporter:
-    def __init__(self, response: SchemaValidationResponse):
-        self.response = response
-
-    def to_csv_string(self):
-        csvfile = io.StringIO()
-        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-        writer.writerow(SCHEMA_HEADERS)
-        for error in self.response.errors:
-            writer.writerow(self.get_row(error))
-        output = csvfile.getvalue()
-        csvfile.close()
-        return output
-
-    def get_row(self, error: SchemaError):
-        return [
-            isoformat_from_time_ns(self.response.timestamp),
-            error.message,
-            error.path,
-        ]
-
-    def get_filename(self):
-        now = datetime.now().date()
-        filename = (
-            f"BODS_SchemaValidationReport_{now:%d%m%y}_{self.response.feed_id}.csv"
-        )
         return filename

@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List, Optional
 
 from pydantic import BaseModel
@@ -127,43 +126,3 @@ class ValidationResponse(BaseModel):
     packet_count: int
     validation_summary: ValidationSummary
     errors: List[Errors]
-
-
-class SchemaError(BaseModel):
-    """
-    A schema validation error.
-
-    Args:
-        domain_name: The xml domain name.
-        filename: The xml filename.
-        level_name: The name of the error level.
-        line: The line the error occurs on.
-        message: The error message.
-        path: The path to the element that has the issue.
-        type_name: The type of error.
-    """
-
-    domain_name: str
-    filename: str
-    level_name: str
-    line: int
-    message: str
-    path: str
-    type_name: str
-
-
-class SchemaValidationResponse(BaseModel):
-    """
-    A validation response
-
-    Args:
-        feed_id: The id of the feed.
-        is_valid: True if the packet has no schema issues, False otherwise.
-        timestamp: The timestamp of when Real Time processed the packet
-        errors: A list of all the schema validation errors.
-    """
-
-    feed_id: int
-    is_valid: bool
-    timestamp: int
-    errors: List[SchemaError]

@@ -12,8 +12,6 @@ from transit_odp.avl.constants import UPPER_THRESHOLD
 from transit_odp.avl.csv.catalogue import _get_avl_data_catalogue
 from transit_odp.avl.csv.validation import (
     HEADERS,
-    SCHEMA_HEADERS,
-    SchemaValidationResponseExporter,
     ValidationReportExporter,
     isoformat_from_time_ns,
 )
@@ -26,8 +24,6 @@ from transit_odp.avl.validation.factories import (
     ErrorFactory,
     IdentifierFactory,
     ErrorsFactory,
-    SchemaErrorFactory,
-    SchemaValidationResponseFactory,
     ValidationResponseFactory,
 )
 from transit_odp.organisation.constants import AVLType
@@ -128,65 +124,6 @@ def test_get_filename():
     exporter = ValidationReportExporter(response)
 
     assert exporter.get_filename() == f"BODS_ValidationReport_{today}_{feed_id}.csv"
-
-
-@freeze_time("2021-01-01")
-def test_schema_exporter_get_filename():
-    """
-    GIVEN a validation response with a particular feed id
-    WHEN a SchemaValidationReportExporter is created and get_filename is called
-    THEN the filename returned should be in the format
-         BODS_SchemaValidationReport_DDMMYYYY_feedID.csv
-    """
-    feed_id = 345
-    today = f"{datetime.now():%d%m%y}"
-    response = SchemaValidationResponseFactory(feed_id=feed_id)
-    exporter = SchemaValidationResponseExporter(response)
-
-    expected_filename = f"BODS_SchemaValidationReport_{today}_{feed_id}.csv"
-    assert exporter.get_filename() == expected_filename
-
-
-def test_schema_validation_exporter_no_errors():
-    """
-    GIVEN a SchemaValidationResponse object with no errors
-    WHEN I create a SchemaValidationReportExporter and call to_csv_string
-    THEN I am returned a valid csv formatted string with only the header row
-    """
-    response = SchemaValidationResponseFactory()
-    exporter = SchemaValidationResponseExporter(response)
-
-    scsv = exporter.to_csv_string()
-
-    f = StringIO(scsv)
-    reader = csv.reader(f)
-    rows = [r for r in reader]
-    assert len(rows) == 1
-    assert rows[0] == list(SCHEMA_HEADERS)
-
-
-def test_schema_validation_exporter_with_errors():
-    """
-    GIVEN a SchemaValidationResponse object with errors
-    WHEN I create a SchemaValidationReportExporter and call to_csv_string
-    THEN I am returned a valid csv formatted string with a header and error rows
-    """
-    errors = [SchemaErrorFactory()]
-    response = SchemaValidationResponseFactory(errors=errors)
-    exporter = SchemaValidationResponseExporter(response)
-
-    scsv = exporter.to_csv_string()
-
-    f = StringIO(scsv)
-    reader = csv.reader(f)
-    rows = [r for r in reader]
-    assert len(rows) == 2
-    assert rows[0] == list(SCHEMA_HEADERS)
-
-    error = rows[1]
-    assert error[0] == isoformat_from_time_ns(response.timestamp)
-    assert error[1] == response.errors[0].message
-    assert error[2] == response.errors[0].path
 
 
 def test_data_catalogue_csv():

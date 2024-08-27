@@ -7,7 +7,6 @@ from requests.exceptions import RequestException
 
 from transit_odp.avl.validation.constants import DEFAULT_TIMEOUT
 from transit_odp.avl.validation.models import (
-    SchemaValidationResponse,
     ValidationResponse,
 )
 
@@ -68,32 +67,3 @@ class ValidationClient:
 
         else:
             return None
-
-    def schema(self, feed_id: int) -> SchemaValidationResponse:
-        """
-        Not used with I-AVL service currently
-
-        Calls the validate-profile endpoint for a given subscription. It will return the validation errors collated
-        within the last 24 hours for a given data producer. Validation follows the rules defined in the SIRI 2.0 schema
-
-        Args:
-            feed_id: The id of the data feed to validate.
-
-        Returns:
-            SchemaValidationResponse or None
-        """
-        endpoint = self.url + f"/subscriptions/{feed_id}/validate-profile"
-        headers = {"x-api-key": settings.AVL_PRODUCER_API_KEY}
-
-        data = self._make_request(
-            GET, endpoint, timeout=DEFAULT_TIMEOUT, headers=headers
-        )
-
-        if data is not None:
-            return SchemaValidationResponse(**data)
-        else:
-            # We just want to return a rubbish response and signal to the caller
-            # that it's rubbish using a 0 timestamp and empty errors list
-            return SchemaValidationResponse(
-                feed_id=feed_id, is_valid=True, timestamp=0, errors=[]
-            )
