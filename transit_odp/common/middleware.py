@@ -79,7 +79,7 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
         """
         if request.user.is_anonymous:
             response["Clear-Site-Data"] = '"cookies", "storage", "cache"'
-        response["Permissions-Policy"] = (
-            "geolocation=(self), microphone=(self), camera=(self)"
-        )
+        response[
+            "Permissions-Policy"
+        ] = "geolocation=(self), microphone=(self), camera=(self)"
         return response
