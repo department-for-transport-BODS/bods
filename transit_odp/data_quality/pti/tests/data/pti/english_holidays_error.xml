@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TransXChange xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SchemaVersion="2.4" CreationDateTime="2018-05-05T15:07:30" ModificationDateTime="2021-10-26T18:31:46" Modification="revise" RevisionNumber="7" FileName="COMT_85_COMTPK00035565585_20210831_-_22b717c9-deab-44d8-bc0e-7afba4bf5970.xml" xmlns="http://www.transxchange.org.uk/">
+<TransXChange xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SchemaVersion="2.4" CreationDateTime="2018-05-05T15:07:30" ModificationDateTime="2021-10-26T18:31:46" Modification="revise" RevisionNumber="7" FileName="COMT_85_COMTPK00035575585_20210831_-_22b717c9-deab-44d8-bc0e-7afba4bf5970.xml" xmlns="http://www.transxchange.org.uk/">
   <ServicedOrganisations>
     <ServicedOrganisation>
       <OrganisationCode>NSDO</OrganisationCode>
@@ -1849,14 +1849,14 @@
       <NationalOperatorCode>COMT</NationalOperatorCode>
       <OperatorCode>COMT</OperatorCode>
       <OperatorShortName>Compass Travel</OperatorShortName>
-      <LicenceNumber>PK0003556</LicenceNumber>
+      <LicenceNumber>PK0003557</LicenceNumber>
     </Operator>
   </Operators>
   <Services>
     <Service>
-      <ServiceCode>PK0003556:55</ServiceCode>
+      <ServiceCode>PK0003557:55</ServiceCode>
       <Lines>
-        <Line id="COMT:PK0003556:55:85">
+        <Line id="COMT:PK0003557:55:85">
           <LineName>85</LineName>
           <OutboundDescription>
             <Description>Arundel to Chichester via Fontwell</Description>
@@ -1942,8 +1942,8 @@
         </TicketMachine>
       </Operational>
       <VehicleJourneyCode>vj_1</VehicleJourneyCode>
-      <ServiceRef>PK0003556:55</ServiceRef>
-      <LineRef>COMT:PK0003556:55:85</LineRef>
+      <ServiceRef>PK0003557:55</ServiceRef>
+      <LineRef>COMT:PK0003557:55:85</LineRef>
       <JourneyPatternRef>jp_1</JourneyPatternRef>
       <DepartureTime>07:55:00</DepartureTime>
     </VehicleJourney>
@@ -1955,8 +1955,8 @@
         </TicketMachine>
       </Operational>
       <VehicleJourneyCode>vj_2</VehicleJourneyCode>
-      <ServiceRef>PK0003556:55</ServiceRef>
-      <LineRef>COMT:PK0003556:55:85</LineRef>
+      <ServiceRef>PK0003557:55</ServiceRef>
+      <LineRef>COMT:PK0003557:55:85</LineRef>
       <JourneyPatternRef>jp_2</JourneyPatternRef>
       <DepartureTime>14:50:00</DepartureTime>
     </VehicleJourney>
