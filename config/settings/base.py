@@ -757,4 +757,5 @@ CSP_IMG_SRC = (
 CSP_CONNECT_SRC = ("'self'", "https://*.mapbox.com")
 CSP_FONT_SRC = ("'self'",)
 CSP_OBJECT_SRC = ("'none'",)
+CSP_FRAME_ANCESTORS = ("'self'",)
 CSP_WORKER_SRC = ("'self'", "blob:")

@@ -123,6 +123,7 @@ def test_security_headers(client_factory):
         "img-src",
         "object-src",
         "connect-src",
+        "frame-ancestors",
         "worker-src",
     ]
     # Check if all expected CSP directives are present
