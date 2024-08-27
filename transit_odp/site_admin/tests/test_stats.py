@@ -323,10 +323,7 @@ def test_get_siri_vm_vehicle_counts():
         response = Mock(status_code=200)
         expected_siri_vm_count = 18561
         response.json.return_value = {
-            "num_of_gtfs_rt_vehicles": 18692,
             "num_of_siri_vehicles": expected_siri_vm_count,
-            "query_time": 0.023499011993408203,
-            "version": "0.8.3",
         }
         requests.get.return_value = response
         result = get_siri_vm_vehicle_counts()

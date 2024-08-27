@@ -15,7 +15,7 @@ from requests import RequestException
 from requests.exceptions import ConnectionError, ReadTimeout
 
 from transit_odp.avl.dataclasses import Feed
-from transit_odp.avl.enums import AVL_FEED_DOWN, AVL_FEED_UP
+from transit_odp.avl.enums import AVLFeedStatus
 from transit_odp.avl.factories import (
     AVLValidationReportFactory,
     CAVLValidationTaskResultFactory,
@@ -115,7 +115,10 @@ def test_no_change(mocker, mailoutbox):
         user.settings.save()
 
     datasets = DatasetFactory.create_batch(
-        3, dataset_type=AVLType, avl_feed_status=AVL_FEED_UP, subscribers=subscribers
+        3,
+        dataset_type=AVLType,
+        avl_feed_status=AVLFeedStatus.live.value,
+        subscribers=subscribers,
     )
     data = []
     for dataset in datasets:
@@ -123,12 +126,17 @@ def test_no_change(mocker, mailoutbox):
         dataset.contact.settings.save()
         data.append(
             Feed(
-                id=dataset.id,
-                publisher_id=dataset.contact.id,
+                id=str(dataset.id),
+                publisher_id=str(dataset.contact.id),
                 url="www.testurl.com/avl",
                 username=dataset.contact.username,
                 password="password",
                 status=dataset.avl_feed_status,
+                lastAvlDataReceivedDateTime=None,
+                heartbeatLastReceivedDateTime=None,
+                serviceStartDatetime=None,
+                serviceEndDatetime=None,
+                apiKey="test",
             )
         )
 
@@ -139,7 +147,7 @@ def test_no_change(mocker, mailoutbox):
     assert len(mailoutbox) == 0
     assert (
         Dataset.objects.filter(
-            dataset_type=AVLType, avl_feed_status=AVL_FEED_DOWN
+            dataset_type=AVLType, avl_feed_status=AVLFeedStatus.inactive.value
         ).count()
         == 0
     )

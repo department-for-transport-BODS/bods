@@ -27,7 +27,7 @@ from transit_odp.avl.constants import (
     PARTIALLY_COMPLIANT,
     UNDERGOING,
 )
-from transit_odp.avl.enums import AVL_FEED_DEPLOYING, AVL_FEED_DOWN, AVL_FEED_UP
+from transit_odp.avl.enums import AVLFeedStatus
 from transit_odp.avl.models import (
     AVLSchemaValidationReport,
     AVLValidationReport,
@@ -116,7 +116,7 @@ def task_validate_avl_feed(task_id: str):
 
 @shared_task(bind=True)
 def task_create_sirivm_zipfile(self):
-    URL = f"{settings.CAVL_CONSUMER_URL}/datafeed"
+    URL = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm"
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     start = time.time()
     try:
@@ -176,7 +176,7 @@ def task_create_gtfsrt_zipfile():
 def task_create_sirivm_tfl_zipfile(self):
     start = time.time()
     logger.info(f"Starting to create sirivm_tfl_zipfile with url")
-    url = f"{settings.CAVL_CONSUMER_URL}/datafeed"
+    url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm?downloadTfl=true"
     params = {"operatorRef": "TFLO"}
     now = timezone.now().strftime("%Y-%m-%d_%H%M%S")
     try:
@@ -224,7 +224,7 @@ def task_monitor_avl_feeds():
         logger.warning("No AVL data feeds to monitor")
         return
 
-    feed_status_map = {feed.id: feed.status.value for feed in feeds}
+    feed_status_map = {feed.id: feed.status for feed in feeds}
     exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
     datasets = (
         Dataset.objects.select_related("live_revision", "contact")
@@ -232,9 +232,9 @@ def task_monitor_avl_feeds():
         .exclude(live_revision__status__in=exclude_status)
     )
     revision_status_map = {
-        AVL_FEED_UP: FeedStatus.live.value,
-        AVL_FEED_DEPLOYING: FeedStatus.live.value,
-        AVL_FEED_DOWN: FeedStatus.error.value,
+        AVLFeedStatus.live.value: FeedStatus.live.value,
+        AVLFeedStatus.inactive.value: FeedStatus.inactive.value,
+        AVLFeedStatus.error.value: FeedStatus.error.value,
     }
 
     datasets.update(avl_feed_last_checked=timezone.now())
@@ -296,8 +296,10 @@ def perform_feed_validation(adapter: PipelineAdapter, feed_id: int):
         time.sleep(CONFIG_API_WAIT_TIME)
         with transaction.atomic():
             cavl_service = CAVLService()
-            deleted = cavl_service.delete_feed(feed_id=feed_id)
-            if not deleted:
+
+            try:
+                cavl_service.delete_feed(feed_id=feed_id)
+            except RequestException:
                 adapter.error("Unable to de-register feed.")
                 return
 
