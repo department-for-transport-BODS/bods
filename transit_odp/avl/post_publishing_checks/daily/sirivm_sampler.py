@@ -29,9 +29,9 @@ class SiriHeader(dict):
     def from_siri_packet(cls, siri: Siri):
         siri_header = cls()
         siri_header[SirivmField.VERSION] = siri.version
-        siri_header[
-            SirivmField.RESPONSE_TIMESTAMP_SD
-        ] = siri.service_delivery.response_timestamp
+        siri_header[SirivmField.RESPONSE_TIMESTAMP_SD] = (
+            siri.service_delivery.response_timestamp
+        )
         siri_header[SirivmField.PRODUCER_REF] = siri.service_delivery.producer_ref
         vmd = siri.service_delivery.vehicle_monitoring_delivery
         siri_header[SirivmField.RESPONSE_TIMESTAMP_VMD] = vmd.response_timestamp
@@ -43,9 +43,11 @@ class SiriHeader(dict):
 
 class SirivmSampler:
     def get_siri_vm_data_feed_by_id(self, feed_id: int) -> Optional[bytes]:
-        url = f"{settings.CAVL_CONSUMER_URL}/datafeed/{feed_id}/"
+        url = f"{settings.AVL_PRODUCER_API_BASE_URL}/subscriptions/{feed_id}"
+        headers = {"x-api-key": settings.AVL_PRODUCER_API_KEY}
+
         try:
-            response = requests.get(url, timeout=60)
+            response = requests.get(url, timeout=60, headers=headers)
         except requests.RequestException:
             logger.exception(f"Error requesting {url}")
             return None
