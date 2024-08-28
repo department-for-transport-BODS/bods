@@ -43,7 +43,8 @@ class SiriHeader(dict):
 
 class SirivmSampler:
     def get_siri_vm_data_feed_by_id(self, feed_id: int) -> Optional[bytes]:
-        url = f"{settings.CAVL_CONSUMER_URL}/datafeed/{feed_id}/"
+        url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm?subscriptionId={feed_id}"
+
         try:
             response = requests.get(url, timeout=60)
         except requests.RequestException:
