@@ -10,11 +10,11 @@ from django.views import View
 from transit_odp.browse.common import (
     LTACSVHelper,
     get_all_naptan_atco_df,
+    get_in_scope_in_season_lta_service_numbers,
     get_service_traveline_regions,
     get_weca_services_register_numbers,
     get_weca_traveline_region_map,
     ui_ltas_string,
-    get_in_scope_in_season_lta_service_numbers,
 )
 from transit_odp.browse.lta_column_headers import (
     header_accessor_data,
@@ -31,10 +31,9 @@ from transit_odp.otc.models import Service as OTCService
 from transit_odp.otc.models import UILta
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
-    get_requires_attention_data_lta,
+    get_line_level_txc_map_lta,
     get_requires_attention_data_lta_line_level_length,
     get_txc_map_lta,
-    get_line_level_txc_map_lta,
     is_stale,
 )
 
