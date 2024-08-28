@@ -522,7 +522,7 @@ BANK_HOLIDAY_API_URL = env(
 # Google Analytics Key
 GOOGLE_ANALYTICS_KEY = env("GOOGLE_ANALYTICS_KEY", default="")
 
-# Central AVL Service
+# Central AVL Service (OLD - Ito)
 # ------------------------------------------------------------------------------
 CAVL_URL = env("CAVL_URL")
 CAVL_CONSUMER_URL = env("CAVL_CONSUMER_URL")
@@ -625,6 +625,12 @@ DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
 # ------------------------------------------------------------------------------
 GTFS_API_BASE_URL = env("GTFS_API_BASE_URL", default="")
 
+# AVL API
+# ------------------------------------------------------------------------------
+AVL_CONSUMER_API_BASE_URL = env("AVL_CONSUMER_API_BASE_URL", default="")
+AVL_PRODUCER_API_BASE_URL = env("AVL_PRODUCER_API_BASE_URL", default="")
+AVL_PRODUCER_API_KEY = env("AVL_PRODUCER_API_KEY", default="")
+AVL_IP_ADDRESS_LIST = env("AVL_IP_ADDRESS_LIST", default="")
 
 # S3 bucket name for Dataset maintenance
 # ------------------------------------------------------------------------------
@@ -742,12 +748,14 @@ CSP_SCRIPT_SRC = (
     "https://www.googletagmanager.com",
     "https://ajax.googleapis.com/ajax/libs/jquery",
 )
-CSP_STYLE_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
 CSP_IMG_SRC = (
     "'self'",
     "data:",
+    "blob:",
 )
-CSP_CONNECT_SRC = ("'self'",)
+CSP_CONNECT_SRC = ("'self'", "https://*.mapbox.com")
 CSP_FONT_SRC = ("'self'",)
 CSP_OBJECT_SRC = ("'none'",)
 CSP_FRAME_ANCESTORS = ("'self'",)
+CSP_WORKER_SRC = ("'self'", "blob:")

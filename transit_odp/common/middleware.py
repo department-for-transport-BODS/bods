@@ -78,7 +78,7 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
         Processes the outgoing response before it is sent to the client.
         """
         if request.user.is_anonymous:
-            response["Clear-Site-Data"] = "*"
+            response["Clear-Site-Data"] = '"cookies", "storage", "cache"'
         response[
             "Permissions-Policy"
         ] = "geolocation=(self), microphone=(self), camera=(self)"
