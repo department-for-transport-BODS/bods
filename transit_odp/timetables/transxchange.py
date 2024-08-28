@@ -22,7 +22,7 @@ WSG84_LOCATION = "WGS84"
 PRINCIPAL_TIMING_POINTS = ["PTP", "principalTimingPoint"]
 
 
-class TXCSchemaViolation(BaseModel):
+class BaseSchemaViolation(BaseModel):
     filename: str
     line: int
     details: str

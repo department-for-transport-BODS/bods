@@ -16,7 +16,7 @@ from transit_odp.data_quality.pti.report import PTIReport
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.timetables.transxchange import (
     TXCPostSchemaViolation,
-    TXCSchemaViolation,
+    BaseSchemaViolation,
 )
 
 
@@ -193,7 +193,7 @@ class SchemaViolation(models.Model):
         )
 
     @classmethod
-    def from_violation(cls, revision_id: int, violation: TXCSchemaViolation):
+    def from_violation(cls, revision_id: int, violation: BaseSchemaViolation):
         return cls(
             revision_id=revision_id,
             filename=violation.filename,
