@@ -7,6 +7,8 @@ from transit_odp.fares_validator.views.fares_validation import get_fares_validat
 
 DATA_DIR = Path(__file__).parent / "data"
 
+pytestmark = pytest.mark.django_db
+
 
 @pytest.mark.parametrize(
     (
