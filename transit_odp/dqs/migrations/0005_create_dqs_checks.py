@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("dqs", "0004_alter_report_options"),
     ]
-    queue_name = f"dqs-{AWS_ENVIRONMENT}-cancelled-service-appearing-active"
+    queue_name = f"dqs-{AWS_ENVIRONMENT}-cancelled-service-appearing-active-queue"
 
     operations = [
         migrations.RunSQL(
