@@ -102,7 +102,9 @@ class OTCAPIClient:
             logger.error(f"Validation Error: {exc}")
         return APIResponse()
 
-    def get_latest_variations_since(self, when: datetime) -> List[Registration]:
+    def get_latest_variations_since(
+        self, when: datetime, latestVariation=True
+    ) -> List[Registration]:
         variations = []
         today = timezone.now().date()
         day_of_last_update = when.date()
@@ -113,7 +115,9 @@ class OTCAPIClient:
                 f"Requesting all variations updated on {updated_on} from OTC API"
             )
             response = self._make_request(
-                page=1, lastModifiedOn=updated_on.isoformat(), latestVariation=True
+                page=1,
+                lastModifiedOn=updated_on.isoformat(),
+                latestVariation=latestVariation,
             )
             variations += response.bus_search
 
@@ -121,7 +125,7 @@ class OTCAPIClient:
                 response = self._make_request(
                     page=page,
                     lastModifiedOn=updated_on.isoformat(),
-                    latestVariation=True,
+                    latestVariation=latestVariation,
                 )
                 variations += response.bus_search
 
