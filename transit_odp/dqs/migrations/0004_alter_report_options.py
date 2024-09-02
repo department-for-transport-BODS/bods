@@ -9,7 +9,6 @@ AWS_ENVIRONMENT = settings.AWS_ENVIRONMENT.lower()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("dqs", "0003_alter_observationresults_service_pattern_stop_and_more"),
     ]
