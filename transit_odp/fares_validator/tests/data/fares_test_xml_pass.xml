@@ -121,12 +121,6 @@
           <fareZones>
             <FareZone id="fs@157" version="1.0">
               <Name>Wigginton, Mill Lane</Name>
-              <members>
-                <ScheduledStopPointRef ref="atco:3290YYA00545" version="any">Wigginton Mill Lane, Wigginton, Mill Lane</ScheduledStopPointRef>
-                <ScheduledStopPointRef ref="atco:3290YYA00544" version="any">Wigginton Pond, Wigginton, Mill Lane</ScheduledStopPointRef>
-                <ScheduledStopPointRef ref="atco:3290YYA00773" version="any">Black Horse, Wigginton, Mill Lane</ScheduledStopPointRef>
-                <ScheduledStopPointRef ref="atco:3290YYA00774" version="any">yuhj</ScheduledStopPointRef>
-              </members>
             </FareZone>
             <FareZone id="fs@67" version="1.0">
               <Name>Haxby Village</Name>
