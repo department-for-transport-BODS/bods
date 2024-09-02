@@ -76,6 +76,9 @@ class DatasetPTIValidator:
         with path.open("r") as schema_file:
             return cls(schema_file)
 
+    def get_failed_violation_filenames(self):
+        return self._validator.failed_violations_filenames
+
 
 def get_pti_validator() -> DatasetPTIValidator:
     """

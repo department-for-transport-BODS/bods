@@ -264,9 +264,10 @@ class TXCRevisionValidator:
 
 
 class PostSchemaValidator:
-    def __init__(self, file_names=None):
+    def __init__(self, file_names=None, failed_validation_filenames=[]):
         self.file_names = file_names
         self.violations = []
+        self.failed_validation_filenames = failed_validation_filenames
 
     def check_file_names_pii_information(self):
         """
@@ -276,11 +277,12 @@ class PostSchemaValidator:
         result = []
         file_names = self.file_names
         for file_name in file_names:
-            file_name_pii_check = re.findall("\\\\", file_name)
-            if len(file_name_pii_check) > 0:
-                result.append(False)
-            else:
-                result.append(True)
+            if file_name not in self.failed_validation_filenames:
+                file_name_pii_check = re.findall("\\\\", file_name)
+                if len(file_name_pii_check) > 0:
+                    result.append(False)
+                else:
+                    result.append(True)
         return result
 
     def get_violations(self):
