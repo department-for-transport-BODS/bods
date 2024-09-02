@@ -119,15 +119,6 @@ MESSAGE_OBSERVATION_FARE_ZONE_MISSING = (
 MESSAGE_OBSERVATION_FARE_ZONES_NAME_MISSING = (
     "Element 'Name' is missing or empty within the element 'FareZone'"
 )
-MESSAGE_OBSERVATION_FARE_ZONES_MEMBERS_MISSING = (
-    "Element 'members' is missing within the element 'FareZone'"
-)
-MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_REF_MISSING = (
-    "Element 'ScheduledStopPointRef' is missing within the element 'members'"
-)
-MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_TEXT_MISSING = (
-    "Value missing within element 'ScheduledStopPointRef'"
-)
 MESSAGE_OBSERVATION_ROUND_TRIP_MISSING = (
     "Element 'RoundTrip' is missing within ''limitations''"
 )
