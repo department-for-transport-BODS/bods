@@ -102,9 +102,37 @@ class OTCAPIClient:
             logger.error(f"Validation Error: {exc}")
         return APIResponse()
 
+    def get_all_variation_updated_since(
+        self, last_checked: datetime
+    ) -> List[Registration]:
+        """Get list of all the services for which any variation is updated (lastest or older)
+        between last_checked and today
+
+        Args:
+            last_checked (datetime): Date from when we will start the check
+
+        Returns:
+            List[Registration]: list of services updated
+        """
+        return self.get_latest_variations_since(last_checked, False)
+
     def get_latest_variations_since(
         self, when: datetime, latestVariation=True
     ) -> List[Registration]:
+        """Get list of all the services updated based on the latestVariation check
+        If latest variation check is true, get all the services for which latest variation is modified
+        between when and today
+
+        If latest variation check is false get all the services for which any variation (latest or old) is modified
+        between when and today
+
+        Args:
+            when (datetime): Date from when we will start the check
+            latestVariation (bool, optional): Parameter to check which variation change we are looking for. Defaults to True.
+
+        Returns:
+            List[Registration]: List of services
+        """
         variations = []
         today = timezone.now().date()
         day_of_last_update = when.date()
