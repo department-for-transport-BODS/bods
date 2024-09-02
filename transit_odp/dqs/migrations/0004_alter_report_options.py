@@ -9,12 +9,11 @@ AWS_ENVIRONMENT = settings.AWS_ENVIRONMENT.lower()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("dqs", "0003_alter_observationresults_service_pattern_stop_and_more"),
     ]
 
-    queue_name = f"dqs-{AWS_ENVIRONMENT}-no-timing-point-more-than-15-mins"
+    queue_name = f"dqs-{AWS_ENVIRONMENT}-no-timing-point-more-than-15-mins-queue"
 
     operations = [
         migrations.RunSQL(

@@ -240,11 +240,12 @@ def task_monitor_avl_feeds():
     datasets.update(avl_feed_last_checked=timezone.now())
     update_list = []
     for dataset in datasets:
-        avl_feed_status = feed_status_map.get(dataset.id)
+        avl_feed_status = feed_status_map.get(str(dataset.id))
+
         if avl_feed_status is None:
             continue
         if dataset.avl_feed_status != avl_feed_status:
-            new_status = feed_status_map[dataset.id]
+            new_status = feed_status_map[str(dataset.id)]
             dataset.avl_feed_status = new_status
             dataset.live_revision.status = revision_status_map.get(
                 new_status, FeedStatus.error.value
