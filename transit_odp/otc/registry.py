@@ -101,7 +101,6 @@ class Registry:
         regs_to_update_lta = []
         registrations = []
 
-
         for reg in self._client.get_latest_variations_since(when):
             registrations.append(reg)
             regs_to_update_lta.append(reg)
