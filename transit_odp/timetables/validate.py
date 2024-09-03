@@ -47,15 +47,30 @@ REVISION_NUMBER_OBSERVATION = Observation(
 
 
 class DatasetTXCValidator:
-    def __init__(self):
+    def __init__(self, revision: DatasetRevision):
         self._schema = get_transxchange_schema()
+        self._revision = revision
+        self._failed_violation_filenames = []
 
-    def iter_get_files(self, revision: DatasetRevision):
-        context = DatasetPipelineLoggerContext(object_id=revision.dataset_id)
+    def get_file_name(self):
+        file_ = self._revision.upload_file
+        return file_.name
+
+    def get_number_of_files_uploaded(self):
+        file_ = self._revision.upload_file
+        total_files = 1
+        if self._revision.is_file_zip:
+            with zipfile.ZipFile(file_) as zf:
+                names = [n for n in zf.namelist() if n.endswith(".xml")]
+                total_files = len(names)
+        return total_files
+
+    def iter_get_files(self):
+        context = DatasetPipelineLoggerContext(object_id=self._revision.dataset_id)
         adapter = PipelineAdapter(logger, {"context": context})
 
-        file_ = revision.upload_file
-        if revision.is_file_zip:
+        file_ = self._revision.upload_file
+        if self._revision.is_file_zip:
             adapter.info(f"Processing zip file {file_.name}.")
             with zipfile.ZipFile(file_) as zf:
                 names = [n for n in zf.namelist() if n.endswith(".xml")]
@@ -69,15 +84,19 @@ class DatasetTXCValidator:
             file_.seek(0)
             yield file_
 
-    def get_violations(self, revision: DatasetRevision):
+    def get_violations(self):
         violations = []
-        for file_ in self.iter_get_files(revision=revision):
+        for file_ in self.iter_get_files():
             doc = etree.parse(file_)
             is_valid = self._schema.validate(doc)
             if not is_valid:
                 for error in self._schema.error_log:
                     violations.append(BaseSchemaViolation.from_error(error))
+                    self._failed_violation_filenames.append(error.filename)
         return violations
+
+    def get_failed_violations_filenames(self):
+        return set(self._failed_violation_filenames)
 
 
 class TimetableFileValidator:
@@ -264,10 +283,9 @@ class TXCRevisionValidator:
 
 
 class PostSchemaValidator:
-    def __init__(self, file_names=None, failed_validation_filenames=[]):
+    def __init__(self, file_names=None):
         self.file_names = file_names
         self.violations = []
-        self.failed_validation_filenames = failed_validation_filenames
 
     def check_file_names_pii_information(self):
         """
@@ -277,12 +295,11 @@ class PostSchemaValidator:
         result = []
         file_names = self.file_names
         for file_name in file_names:
-            if file_name not in self.failed_validation_filenames:
-                file_name_pii_check = re.findall("\\\\", file_name)
-                if len(file_name_pii_check) > 0:
-                    result.append(False)
-                else:
-                    result.append(True)
+            file_name_pii_check = re.findall("\\\\", file_name)
+            if len(file_name_pii_check) > 0:
+                result.append(False)
+            else:
+                result.append(True)
         return result
 
     def get_violations(self):
@@ -290,6 +307,7 @@ class PostSchemaValidator:
         Returns any revision violations.
         """
         result = self.check_file_names_pii_information()
+        print(f"result --->: {result}")
         if not all(result):
             self.violations.append(PII_ERROR)
         return self.violations

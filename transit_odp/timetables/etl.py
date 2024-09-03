@@ -34,7 +34,7 @@ logger = get_task_logger(__name__)
 
 
 class TransXChangePipeline:
-    def __init__(self, revision, failed_validations_filenames: list = []):
+    def __init__(self, revision):
         self.revision = revision
         self.start_time = datetime.datetime.now()
         self.file_obj = revision.upload_file
@@ -43,7 +43,6 @@ class TransXChangePipeline:
         self.service_link_cache = create_service_link_cache(revision.id)
         self.service_cache: Dict[str, Service] = {}
         self.stop_activity_cache = get_stop_activities()
-        self.failed_validations_filenames = failed_validations_filenames
 
     def run(self):
         """
@@ -65,7 +64,7 @@ class TransXChangePipeline:
         """Extraction step which extract the data from the xml file"""
         logger.info("Begin extraction step")
         filename = self.file_obj.file.name
-        txc_files = get_txc_files(self.revision.id, self.failed_validations_filenames)
+        txc_files = get_txc_files(self.revision.id)
         if self.file_obj.file.name.endswith("zip"):
             extractor = TransXChangeZipExtractor(
                 self.file_obj, self.start_time, self.stop_activity_cache, txc_files
