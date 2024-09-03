@@ -104,7 +104,6 @@ class PTIValidationResult(models.Model):
         cls,
         revision: DatasetRevision,
         violations: List[Violation],
-        filenames: Optional[str],
     ):
         """
         Creates a PTIValidationResult from a DatasetRevision and a list of Violations.
@@ -126,7 +125,6 @@ class PTIValidationResult(models.Model):
             revision_id=revision.id,
             count=len(violations),
             report=report,
-            filenames=filenames,
         )
 
 

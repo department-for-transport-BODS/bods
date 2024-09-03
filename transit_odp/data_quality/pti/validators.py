@@ -611,13 +611,12 @@ class PTIValidator:
     ) -> None:
         for rule in observation.rules:
             result = element.xpath(rule.test, namespaces=self.namespaces)
-            filename = unquote(Path(element.base).name)
             if not result:
                 name = element.xpath("local-name(.)", namespaces=self.namespaces)
                 violation = Violation(
                     line=element.sourceline,
                     name=name,
-                    filename=filename,
+                    filename=unquote(Path(element.base).name),
                     observation=observation,
                     element_text=element.text,
                 )
