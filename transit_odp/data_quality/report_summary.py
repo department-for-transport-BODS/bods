@@ -42,7 +42,7 @@ URL_MAPPING = {
     Checks.DuplicateJourneyCode.value: "duplicate-journey-code",
     Checks.IncorrectLicenceNumber.value: "incorrect-licence-number",
     Checks.IncorrectNoc.value: "incorrect-noc",
-    Checks.NoTimingPointMoreThan15Mins.value: "no-timing-point-more-than-15-mins",
+    Checks.NoTimingPointMoreThan15Minutes.value: "no-timing-point-more-than-15-minutes",
     Checks.MissingBusWorkingNumber.value: "missing-bus-working-number",
     Checks.MissingStop.value: "missing-stops",
     Checks.SameStopFoundMultipleTimes.value: "#",
