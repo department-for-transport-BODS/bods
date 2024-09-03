@@ -91,7 +91,7 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
 
         jobs = [
             task_dataset_download.signature(args),
-            # task_scan_timetables.signature(args),
+            task_scan_timetables.signature(args),
             task_timetable_file_check.signature(args),
             task_timetable_schema_check.signature(args),
             task_post_schema_check.signature(args),
@@ -100,11 +100,10 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
         ]
 
         if is_new_data_quality_service_active:
-            # jobs.append(task_dataset_etl.signature(args))
-            # jobs.append(task_data_quality_service.signature(args))
-            pass
+            jobs.append(task_dataset_etl.signature(args))
+            jobs.append(task_data_quality_service.signature(args))
         else:
-            # jobs.append(task_dqs_upload.signature(args))
+            jobs.append(task_dqs_upload.signature(args))
             jobs.append(task_dataset_etl.signature(args))
 
         # Adding the final step for ETL
@@ -259,18 +258,17 @@ def task_post_schema_check(revision_id: int, task_id: int):
     revision = DatasetRevision.objects.get(id=revision_id)
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting post schema validation check.")
-    schema_invalid_filenames = set(
+    schema_failed_filenames = set(
         list(
             SchemaViolation.objects.filter(revision=revision_id).values_list(
                 "filename", flat=True
             )
         )
     )
-    print(f"schema validation failed filenames: {schema_invalid_filenames}")
     violations = []
     parser = TransXChangeDatasetParser(revision.upload_file)
     file_names_list = parser.get_file_names()
-    validator = PostSchemaValidator(file_names_list, schema_invalid_filenames)
+    validator = PostSchemaValidator(file_names_list, schema_failed_filenames)
     violations += validator.get_violations()
     adapter.info(f"{len(violations)} violations found.")
 
@@ -301,30 +299,27 @@ def task_extract_txc_file_data(revision_id: int, task_id: int):
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Extracting TXC attributes from individual files.")
 
-    schema_invalid_filenames = set(
+    schema_failed_filenames = set(
         list(
             SchemaViolation.objects.filter(revision=revision_id).values_list(
                 "filename", flat=True
             )
         )
     )
-    post_schema_invalid_filenames = set(
+    post_schema_failed_filenames = set(
         list(
             PostSchemaViolation.objects.filter(revision=revision_id).values_list(
                 "filename", flat=True
             )
         )
     )
-    post_schema_invalid_filenames = post_schema_invalid_filenames.union(
-        schema_invalid_filenames
-    )
-    print(
-        f"schema failed and post schema failed filenames: {post_schema_invalid_filenames} in task_extract_txc_file_data"
+    post_schema_failed_filenames = post_schema_failed_filenames.union(
+        schema_failed_filenames
     )
     try:
         # If we're in the update flow lets clear out "old" files.
         revision.txc_file_attributes.all().delete()
-        parser = TransXChangeDatasetParser(revision.upload_file)
+        parser = TransXChangeDatasetParser(revision.upload_file, post_schema_failed_filenames)
         files = [
             TXCFile.from_txc_document(doc, use_path_filename=True)
             for doc in parser.get_documents()
@@ -355,8 +350,6 @@ def task_pti_validation(revision_id: int, task_id: int):
     try:
         pti = get_pti_validator()
         violations = pti.get_violations(revision=revision)
-        validation_failed_filenames = set(pti.get_failed_violation_filenames())
-        print(f"PTI validations failed filenames: {validation_failed_filenames}")
         revision_validator = TXCRevisionValidator(revision)
         violations += revision_validator.get_violations()
         adapter.info(f"{len(violations)} violations found.")
@@ -369,8 +362,7 @@ def task_pti_validation(revision_id: int, task_id: int):
             PTIValidationResult.objects.filter(revision_id=revision.id).delete()
             PTIValidationResult.from_pti_violations(
                 revision=revision,
-                violations=violations,
-                filenames=",".join(validation_failed_filenames),
+                violations=violations
             ).save()
             task.update_progress(50)
             revision.save()

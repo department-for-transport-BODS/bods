@@ -538,7 +538,6 @@ class PTIValidator:
 
         self.namespaces = self.schema.header.namespaces
         self.violations = []
-        self.failed_violations_filenames = []
 
         self.fns = etree.FunctionNamespace(None)
         self.register_function("bool", cast_to_bool)
@@ -623,7 +622,6 @@ class PTIValidator:
                     element_text=element.text,
                 )
                 self.add_violation(violation)
-                self.failed_violations_filenames.append(filename)
                 break
 
     def check_service_type(self, document):

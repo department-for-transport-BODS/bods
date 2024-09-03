@@ -86,7 +86,6 @@ class PTIValidationResult(models.Model):
     count = models.IntegerField(help_text=_("Number of PTI violations."))
     report = models.FileField(validators=[FileExtensionValidator([".zip"])])
     created = CreationDateTimeField(_("created"))
-    filenames = models.TextField(blank=True, null=True)
 
     @property
     def is_compliant(self):
