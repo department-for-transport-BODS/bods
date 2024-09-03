@@ -101,7 +101,9 @@ class PTIValidationResult(models.Model):
 
     @classmethod
     def from_pti_violations(
-        cls, revision: DatasetRevision, violations: List[Violation]
+        cls,
+        revision: DatasetRevision,
+        violations: List[Violation],
     ):
         """
         Creates a PTIValidationResult from a DatasetRevision and a list of Violations.
@@ -119,7 +121,11 @@ class PTIValidationResult(models.Model):
         results = PTIReport(pti_report_ending, violations)
         zip_filename = f"pti_validation_revision_{revision.id}.zip"
         report = File(results.to_zip_as_bytes(), name=zip_filename)
-        return cls(revision_id=revision.id, count=len(violations), report=report)
+        return cls(
+            revision_id=revision.id,
+            count=len(violations),
+            report=report,
+        )
 
 
 class PTIObservation(models.Model):
