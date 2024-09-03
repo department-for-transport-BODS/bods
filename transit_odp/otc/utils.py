@@ -3,15 +3,13 @@ import logging
 from io import StringIO
 from typing import List, Optional
 
-from transit_odp.common.utils.s3_bucket_connection import get_s3_bodds_bucket_storage
-from transit_odp.organisation.constants import (
-    ENGLISH_TRAVELINE_REGIONS,
-    SCOTLAND_TRAVELINE_REGIONS,
-)
-from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority
-from transit_odp.otc.models import UILta, Service
+from django.conf import settings
 from django.core.cache import cache
 
+from transit_odp.common.utils.s3_bucket_connection import get_s3_bodds_bucket_storage
+from transit_odp.organisation.constants import SCOTLAND_TRAVELINE_REGIONS
+from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority
+from transit_odp.otc.models import Service, UILta
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +21,11 @@ def read_local_authority_comparison_file_from_s3_bucket():
     needed for the task.
     """
     try:
-        logger.info("Connecting to S3 bucket and retrieving csv file")
+        logger.info("Connecting to S3 bucket and retrieving csv file.")
         storage = get_s3_bodds_bucket_storage()
         csv_data = []
-        file_name = "Local Authority Comparison (5).csv"
+        file_name = getattr(settings, "LOCAL_AUTHORITY_COMPARISON_FILE_NAME", None)
+        logger.info(f"Retrieving {file_name} from S3 bucket.")
 
         if not storage.exists(file_name):
             logger.warning(f"{file_name} does not exist in the S3 bucket.")
