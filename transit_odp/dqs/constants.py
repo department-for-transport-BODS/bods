@@ -377,7 +377,10 @@ DuplicateJourneyCodeObservation = Observation(
         " to match the timetables data to the equivalent location data for that service to provide passengers with"
         " predicted or calculated arrival time of a bus at a stop."
     ),
-    resolve=(""),
+    resolve=(
+        "Please enter a unique journey code on your scheduling tool for vehicle journeys operated by the same"
+        " bus service and on the same day(s)."
+    ),
     preamble="The following service(s) have been observed to not have the duplicate journey code.",
     list_url_name="dq:duplicate-journey-code-list",
     level=Level.critical,
