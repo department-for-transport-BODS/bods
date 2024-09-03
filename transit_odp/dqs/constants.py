@@ -381,7 +381,7 @@ DuplicateJourneyCodeObservation = Observation(
         "Please enter a unique journey code on your scheduling tool for vehicle journeys operated by the same"
         " bus service and on the same day(s)."
     ),
-    preamble="The following service(s) have been observed to not have the duplicate journey code.",
+    preamble="The following service(s) have been observed to have at least one journey that has a duplicate journey code.",
     list_url_name="dq:duplicate-journey-code-list",
     level=Level.critical,
     category=Category.journey,
