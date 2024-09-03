@@ -155,8 +155,18 @@ def task_run_fares_validation(task_id, adapter):
     schema = get_netex_schema()
     if zipfile.is_zipfile(file_):
         adapter.info("Validating fares zip file.")
-        with ZippedValidator(file_) as validator:
-            validator.validate()
+        try:
+            with ZippedValidator(file_) as validator:
+                validator.validate()
+        except ValidationException as exc:
+            adapter.error(exc.message, exc_info=True)
+            task.to_error("dataset_validate", exc.code)
+            task.additional_info = exc.message
+            task.save()
+            raise PipelineException(exc.message) from exc
+        except Exception as exc:
+            task.handle_general_pipeline_exception(exc, adapter)
+
         adapter.info("Validating fares NeTEx file.")
         violations, total_files = validate_xml_files_in_zip(
             file_, schema=schema, dataset=revision.dataset.id
@@ -186,7 +196,7 @@ def task_run_fares_validation(task_id, adapter):
         revision.schema_violations.all().delete()
     if len(violations) == total_files:
         adapter.error(f"Validation failed for {file_.name}", exc_info=True)
-        task.to_error("dataset_validate", "VALIDATION_FAILED")
+        task.to_error("dataset_validate", DatasetETLTaskResult.SCHEMA_ERROR)
         task.additional_info = f"Validation failed for {file_.name}"
         task.save()
         raise PipelineException(f"Validation failed for {file_.name}")
