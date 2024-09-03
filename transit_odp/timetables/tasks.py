@@ -295,6 +295,16 @@ def task_post_schema_check(revision_id: int, task_id: int):
             PostSchemaViolation.objects.bulk_create(
                 schema_violations, batch_size=BATCH_SIZE
             )
+    if len(file_names_list) == len(validator.get_failed_validation_filenames()):
+        message = f"Validation task: task_post_schema_check, failed for {revision.upload_file.name}"
+        adapter.error(message, exc_info=True)
+        task.to_error(
+            "post_schema_dataset_validate", DatasetETLTaskResult.POST_SCHEMA_ERROR
+        )
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message)
+
     adapter.info("Completed post schema validation check.")
     return revision_id
 

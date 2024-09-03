@@ -286,6 +286,7 @@ class PostSchemaValidator:
     def __init__(self, file_names=None):
         self.file_names = file_names
         self.violations = []
+        self.failed_validation_filenames = set()
 
     def check_file_names_pii_information(self):
         """
@@ -298,6 +299,7 @@ class PostSchemaValidator:
             file_name_pii_check = re.findall("\\\\", file_name)
             if len(file_name_pii_check) > 0:
                 result.append(False)
+                self.failed_validation_filenames.add(file_name)
             else:
                 result.append(True)
         return result
@@ -307,7 +309,9 @@ class PostSchemaValidator:
         Returns any revision violations.
         """
         result = self.check_file_names_pii_information()
-        print(f"result --->: {result}")
         if not all(result):
             self.violations.append(PII_ERROR)
         return self.violations
+
+    def get_failed_validation_filenames(self):
+        return self.failed_validation_filenames
