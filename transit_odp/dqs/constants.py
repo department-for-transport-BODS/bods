@@ -50,7 +50,7 @@ class Checks(Enum):
     FirstStopIsNotATimingPoint = "First stop is not a timing point"
     MissingJourneyCode = "Missing journey code"
     DuplicateJourneyCode = "Duplicate journey code"
-    NoTimingPointMoreThan15Mins = "No timing point for more than 15 mins"
+    NoTimingPointMoreThan15Minutes = "No timing point for more than 15 minutes"
     MissingBusWorkingNumber = "Missing bus working number"
     MissingStop = "Missing stop"
     SameStopFoundMultipleTimes = "Same stop found multiple times"
@@ -377,8 +377,11 @@ DuplicateJourneyCodeObservation = Observation(
         " to match the timetables data to the equivalent location data for that service to provide passengers with"
         " predicted or calculated arrival time of a bus at a stop."
     ),
-    resolve=(""),
-    preamble="The following service(s) have been observed to not have the duplicate journey code.",
+    resolve=(
+        "Please enter a unique journey code on your scheduling tool for vehicle journeys operated by the same"
+        " bus service and on the same day(s)."
+    ),
+    preamble="The following service(s) have been observed to have at least one journey that has a duplicate journey code.",
     list_url_name="dq:duplicate-journey-code-list",
     level=Level.critical,
     category=Category.journey,
@@ -559,7 +562,7 @@ DuplicateJourneysObservation = Observation(
 )
 
 NoTimingPointMoreThan15MinsObservation = Observation(
-    title=Checks.NoTimingPointMoreThan15Mins.value,
+    title=Checks.NoTimingPointMoreThan15Minutes.value,
     text=(
         "This observation identifies journeys where the interval between a pair of consecutive timing"
         " points is more than 15 minutes. "
@@ -579,7 +582,7 @@ NoTimingPointMoreThan15MinsObservation = Observation(
         "The following service(s) have been observed to have at least one journey with a pair of timings"
         " points of more than 15 minutes."
     ),
-    list_url_name="dq:no-timing-point-more-than-15-mins-list",
+    list_url_name="dq:no-timing-point-more-than-15-minutes-list",
     level=Level.advisory,
     category=Category.timing,
     is_active=False,
