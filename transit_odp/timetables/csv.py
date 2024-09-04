@@ -1,5 +1,6 @@
 import datetime
 from collections import OrderedDict
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -739,6 +740,15 @@ def add_requires_attention_column(
         (requires_attention_unpublished) | (requires_attention_published), "Yes", "No"
     )
     return df
+
+
+def cast_boolean_to_string(value: Optional[bool]) -> str:
+    if value:
+        return "YES"
+    elif value is None:
+        return ""
+    else:
+        return "NO"
 
 
 def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
