@@ -5,32 +5,32 @@ BODS transxchange models.
 
 import logging
 from collections import OrderedDict
+from datetime import datetime
 from typing import Iterator, List
-from django.db.models.query import QuerySet
 
 import geopandas
 import pandas as pd
+from django.db.models.query import QuerySet
 from shapely.geometry import Point
-from datetime import datetime
 
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.transmodel.models import (
+    BankHolidays,
+    BookingArrangements,
     FlexibleServiceOperationPeriod,
     NonOperatingDatesExceptions,
     OperatingDatesExceptions,
+    OperatingProfile,
     Service,
+    ServicedOrganisations,
+    ServicedOrganisationVehicleJourney,
+    ServicedOrganisationWorkingDays,
     ServiceLink,
     ServicePattern,
-    ServicedOrganisationWorkingDays,
     StopActivity,
     StopPoint,
-    BookingArrangements,
     VehicleJourney,
-    ServicedOrganisations,
-    OperatingProfile,
-    ServicedOrganisationVehicleJourney,
-    BankHolidays,
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
@@ -114,9 +114,11 @@ def filter_redundant_files(df: pd.DataFrame) -> pd.DataFrame:
     return df_filtered[["id", "filename"]]
 
 
-def get_txc_files(revision_id: int) -> pd.DataFrame:
+def get_txc_files(revision_id: int, failed_validation_filesnames) -> pd.DataFrame:
     """Returns the valid txc files that should be processed for timetable visualiser based on their service code and operating start date"""
-    txc_files = TXCFileAttributes.objects.filter(revision_id=revision_id)
+    txc_files = TXCFileAttributes.objects.filter(revision_id=revision_id).exclude(
+        filename__in=failed_validation_filesnames
+    )
     df_txc_files = create_txc_file_attributes_df(txc_files)
     columns = [
         "id",

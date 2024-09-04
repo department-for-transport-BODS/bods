@@ -1,11 +1,10 @@
+import itertools
 import uuid
-
 from logging import getLogger
 from pathlib import Path
 from urllib.parse import unquote
 
 import celery
-import itertools
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -13,23 +12,27 @@ from django.db import DatabaseError, IntegrityError, transaction
 from django.utils import timezone
 from waffle import flag_is_active
 
+from transit_odp.common.constants import CSVFileName
 from transit_odp.common.loggers import (
     MonitoringLoggerContext,
     PipelineAdapter,
     get_dataset_adapter_from_revision,
 )
+from transit_odp.common.utils.aws_common import SQSClientWrapper
+from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
 from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.data_quality.models.report import (
     PostSchemaViolation,
+    PTIObservation,
     PTIValidationResult,
 )
-from transit_odp.data_quality.tasks import upload_dataset_to_dqs, update_dqs_task_status
+from transit_odp.data_quality.tasks import update_dqs_task_status, upload_dataset_to_dqs
+from transit_odp.dqs.models import Checks, Report, TaskResults
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
+from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import Dataset, DatasetRevision, TXCFileAttributes
 from transit_odp.organisation.updaters import update_dataset
-from transit_odp.organisation.constants import TimetableType
-from transit_odp.common.constants import CSVFileName
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.dataclasses.transxchange import TXCFile
@@ -38,11 +41,10 @@ from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.pti import get_pti_validator
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 from transit_odp.timetables.utils import (
+    create_queue_payload,
     get_bank_holidays,
     get_holidays_records_to_insert,
-    create_queue_payload,
 )
-from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     PostSchemaValidator,
@@ -50,14 +52,12 @@ from transit_odp.timetables.validate import (
     TXCRevisionValidator,
 )
 from transit_odp.transmodel.models import BankHolidays
-from transit_odp.dqs.models import Report, Checks, TaskResults
 from transit_odp.validate import (
     DataDownloader,
     DownloadException,
     FileScanner,
     ValidationException,
 )
-from transit_odp.common.utils.aws_common import SQSClientWrapper
 
 logger = getLogger(__name__)
 
@@ -381,49 +381,44 @@ def task_pti_validation(revision_id: int, task_id: int):
 
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting PTI Profile validation.")
-    try:
-        valid_txc_files = list(
-            TXCFileAttributes.objects.filter(revision=revision.id).values_list(
-                "filename", flat=True
-            )
+
+    valid_txc_files = list(
+        TXCFileAttributes.objects.filter(revision=revision.id).values_list(
+            "filename", flat=True
         )
+    )
 
-        if not valid_txc_files:
-            message = f"Validation task: task_pti_validation, no file to process, zip file: {revision.upload_file.name}"
-            adapter.error(message, exc_info=True)
-            task.to_error(
-                "task_pti_validation", DatasetETLTaskResult.NO_FILE_TO_PROCESS
-            )
-            task.additional_info = message
-            task.update_progress(100)
-            raise PipelineException(message)
-
-        pti = get_pti_validator(valid_txc_files)
-        violations = pti.get_violations(revision=revision)
-        revision_validator = TXCRevisionValidator(revision)
-        violations += revision_validator.get_violations()
-        adapter.info(f"{len(violations)} violations found.")
-
-        with transaction.atomic():
-            # 'Update data' flow allows validation to occur multiple times
-            # lets just delete any 'old' observations.
-            # TODO remove once pti observations have been transitioned to pti results
-            revision.pti_observations.all().delete()
-            PTIValidationResult.objects.filter(revision_id=revision.id).delete()
-            PTIValidationResult.from_pti_violations(
-                revision=revision, violations=violations
-            ).save()
-            task.update_progress(50)
-            revision.save()
-    except ValidationException as exc:
-        message = "PTI Validation failed."
+    if not valid_txc_files:
+        message = f"Validation task: task_pti_validation, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)
-        task.to_error("dataset_validate", exc.code)
+        task.to_error("task_pti_validation", DatasetETLTaskResult.NO_FILE_TO_PROCESS)
         task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
-    except Exception as exc:
-        task.handle_general_pipeline_exception(exc, adapter)
+        task.update_progress(100)
+        raise PipelineException(message)
+
+    pti = get_pti_validator()
+    violations = pti.get_violations(revision=revision)
+    revision_validator = TXCRevisionValidator(revision)
+    violations += revision_validator.get_violations()
+    adapter.info(f"{len(violations)} violations found.")
+
+    with transaction.atomic():
+        # 'Update data' flow allows validation to occur multiple times
+        # lets just delete any 'old' observations.
+        # TODO remove once pti observations have been transitioned to pti results
+        revision.pti_observations.all().delete()
+        pti_violations = [
+            PTIObservation.from_violation(revision_id=revision_id, violation=v)
+            for v in violations
+        ]
+        PTIObservation.objects.bulk_create(pti_violations, batch_size=BATCH_SIZE)
+
+        PTIValidationResult.objects.filter(revision_id=revision.id).delete()
+        PTIValidationResult.from_pti_violations(
+            revision=revision, violations=violations
+        ).save()
+        task.update_progress(50)
+        revision.save()
 
     adapter.info("Finished PTI Profile validation.")
     return revision_id
@@ -441,9 +436,17 @@ def task_dataset_etl(revision_id: int, task_id: int):
     revision = task.revision
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting ETL pipeline task.")
+
+    pti_invalid_filenames = set(
+        list(
+            PTIObservation.objects.filter(revision=revision_id).values_list(
+                "filename", flat=True
+            )
+        )
+    )
     try:
         task.update_progress(60)
-        pipeline = TransXChangePipeline(revision)
+        pipeline = TransXChangePipeline(revision, pti_invalid_filenames)
         extracted = pipeline.extract()
         adapter.info("Data successfully extracted.")
         task.update_progress(70)
