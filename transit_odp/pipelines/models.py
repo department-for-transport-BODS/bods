@@ -126,6 +126,7 @@ class DatasetETLTaskResult(TaskResult):
     POST_SCHEMA_ERROR = "POST_SCHEMA_ERROR"
     DATASET_EXPIRED = "DATASET_EXPIRED"
     SUSPICIOUS_FILE = "SUSPICIOUS_FILE"
+    NO_FILE_TO_PROCESS = "NO_FILE_TO_PROCESS"
 
     # This error code indicates an error that is likely not the user's fault
     SYSTEM_ERROR = "SYSTEM_ERROR"

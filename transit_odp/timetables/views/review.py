@@ -8,6 +8,8 @@ from transit_odp.data_quality.report_summary import Summary
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
+from transit_odp.data_quality.models import SchemaViolation
+from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.dqs.models import Report
 from transit_odp.dqs.constants import ReportStatus
@@ -79,6 +81,16 @@ class BaseTimetableReviewView(ReviewBaseView):
         revision = self.get_object()
         tasks = revision.data_quality_tasks
         loading = self.is_loading()
+
+        is_schema_violation = (
+            SchemaViolation.objects.filter(revision=revision.id).count() > 0
+        )
+        is_post_schema_violation = (
+            PostSchemaViolation.objects.filter(revision=revision.id).count() > 0
+        )
+        is_pti_violation = (
+            PTIObservation.objects.filter(revision=revision.id).count() > 0
+        )
 
         show_update = (
             self.object.is_pti_compliant() and tasks.get_latest_status() == "SUCCESS"
@@ -153,7 +165,16 @@ class BaseTimetableReviewView(ReviewBaseView):
             system_error = ERROR_CODE_LOOKUP.get(DatasetETLTaskResult.SYSTEM_ERROR)
             error_context = ERROR_CODE_LOOKUP.get(revision.error_code, system_error)
             context.update({"severe_error": error_context})
-        context.update({"error": has_error})
+        print(f"is_post_schema_violation: {is_post_schema_violation}")
+        print(f"is_schema_violation: {is_schema_violation}")
+        context.update(
+            {
+                "error": has_error,
+                "is_post_schema_violation": is_post_schema_violation,
+                "is_schema_violation": is_schema_violation,
+                "is_pti_violation": is_pti_violation,
+            }
+        )
 
         return context
 

@@ -52,10 +52,6 @@ class DatasetTXCValidator:
         self._revision = revision
         self._failed_violation_filenames = []
 
-    def get_file_name(self):
-        file_ = self._revision.upload_file
-        return file_.name
-
     def get_number_of_files_uploaded(self):
         file_ = self._revision.upload_file
         total_files = 1
