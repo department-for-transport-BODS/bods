@@ -493,7 +493,8 @@ class TransXChangeDatasetParser:
         if self.is_zipfile():
             with TransXChangeZip(self._source) as zip_:
                 for doc in zip_.iter_doc():
-                    yield doc
+                    if doc.get_file_name() not in self.failed_validations_filename:
+                        yield doc
         else:
             yield TransXChangeDocument(self._source)
 
@@ -501,7 +502,7 @@ class TransXChangeDatasetParser:
         if self.is_zipfile():
             with TransXChangeZip(self._source) as zip_:
                 for doc in zip_.iter_doc():
-                    if doc not in self.failed_validations_filename:
+                    if doc.get_file_name() not in self.failed_validations_filename:
                         yield doc
         else:
             yield TransXChangeDocument(self._source)
