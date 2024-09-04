@@ -1,52 +1,41 @@
 {% extends "publish/snippets/pti_panel/base.html" %}
 {% load i18n %}
 {% block pti_panel_content %}
-  {% if is_schema_violation %}
-    <h2 class="govuk-heading-m">3a Validation check - Failed</h2>
-    <p class="govuk-body">
-      {% blocktrans %}
+  <h2 class="govuk-heading-m">3a Validation check - Failed</h2>
+  <p class="govuk-body">
+    {% blocktrans %}
       The validation report checks for compliance against the mandated
       TxC 2.4 v1.1 profile.
     {% endblocktrans %}
-    </p>
+  </p>
+  {% if is_schema_violation %}
     <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download schema validation report</a>
-    </p>
-    <p class="govuk-body">
-      {% blocktrans %}
-      The timetables data supplied is non-compliant and cannot be submitted to BODS as
-      per the
-    {% endblocktrans %}
-      <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
-        {% trans "guidance." %}
-      </a>
-      {% blocktrans %}
-      To pass the validation please address all outstanding issues in the validation report.
-    {% endblocktrans %}
+      <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download Schema validation report</a>
     </p>
   {% endif %}
   {% if is_post_schema_violation %}
-    <h2 class="govuk-heading-m">3a Validation check - Failed</h2>
     <p class="govuk-body">
-      {% blocktrans %}
-            The validation report checks for compliance against the mandated
-            TxC 2.4 v1.1 profile.
-        {% endblocktrans %}
-    </p>
-    <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'review-post-schema-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download post schema validation report</a>
-    </p>
-    <p class="govuk-body">
-      {% blocktrans %}
-            The timetables data supplied is non-compliant and cannot be submitted to BODS as
-            per the
-        {% endblocktrans %}
-      <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
-        {% trans "guidance." %}
-      </a>
-      {% blocktrans %}
-            To pass the validation please address all outstanding issues in the validation report.
-        {% endblocktrans %}
+      <a class="govuk-link" href="{% url 'review-post-schema-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download Post Schema validation report</a>
     </p>
   {% endif %}
+  {% if has_pti_observations %}
+    <p class="govuk-body">
+      <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download PTI validation report</a>
+    </p>
+  {% endif %}
+  <p class="govuk-body">
+    {% blocktrans %}
+      The timetables data supplied is non-compliant. It does not meet
+      the data format required as specified in the
+    {% endblocktrans %}
+    <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
+      {% trans "guidance" %}
+    </a>
+    {% trans "and from" %}
+    {{ pti_enforced_date|date:"jS F Y" }}
+    {% blocktrans %}
+      it will be rejected from BODS. To pass the validation please address all
+      outstanding issues in the validation report.
+    {% endblocktrans %}
+  </p>
 {% endblock %}
