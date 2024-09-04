@@ -470,6 +470,17 @@ class ServiceQuerySet(QuerySet):
         else:
             return None
 
+    def get_operator_id(self, service_id: int):
+        from transit_odp.otc.models import Operator as OTCOperator
+
+        operator_id = self.filter(id=service_id).values_list("operator_id", flat=True)
+
+        otc_operator_id = OTCOperator.objects.filter(id__in=operator_id).values_list(
+            "operator_id", flat=True
+        )
+
+        return otc_operator_id
+
     def add_otc_stale_date(self):
         return self.annotate(
             effective_stale_date_otc_effective_date=TruncDate(
