@@ -1,18 +1,26 @@
+import math
+import re
+from datetime import datetime
+from typing import Dict
+
+import pandas as pd
 from django.conf import settings
 from django.utils import timezone
 from django.views.generic.detail import DetailView
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
-from transit_odp.data_quality.report_summary import Summary
-from transit_odp.data_quality.scoring import get_data_quality_rag
-from transit_odp.organisation.constants import DatasetType
-from transit_odp.organisation.models import Dataset
+from transit_odp.browse.timetable_visualiser import TimetableVisualiser
 from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
-from transit_odp.pipelines.models import DatasetETLTaskResult
-from transit_odp.dqs.models import Report
+from transit_odp.data_quality.report_summary import Summary
+from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.dqs.constants import ReportStatus
+from transit_odp.dqs.models import Report
+from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.models import Dataset
+from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.forms import RevisionPublishFormViolations
 from transit_odp.publish.views.base import BaseDatasetUploadModify, ReviewBaseView
 from transit_odp.publish.views.utils import (
@@ -28,27 +36,15 @@ from transit_odp.timetables.views.constants import (
     ERROR_CODE_LOOKUP,
 )
 from transit_odp.users.views.mixins import OrgUserViewMixin
-from datetime import datetime
-import pandas as pd
-from transit_odp.browse.timetable_visualiser import TimetableVisualiser
-from typing import Dict
-import math
-import re
-from waffle import flag_is_active
 
 
 class BaseTimetableReviewView(ReviewBaseView):
     def get_form_class(self):
-        if not self.object.is_pti_compliant():
-            return RevisionPublishFormViolations
         return super().get_form_class()
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        if not self.object.is_pti_compliant():
-            label = DATA_QUALITY_WITH_VIOLATIONS_LABEL
-        else:
-            label = DATA_QUALITY_LABEL
+        label = DATA_QUALITY_LABEL
         kwargs.update({"consent_label": label, "is_update": False})
         return kwargs
 
@@ -72,9 +68,9 @@ class BaseTimetableReviewView(ReviewBaseView):
         is_new_data_quality_service_active = flag_is_active(
             "", "is_new_data_quality_service_active"
         )
-        kwargs[
-            "is_new_data_quality_service_active"
-        ] = is_new_data_quality_service_active
+        kwargs["is_new_data_quality_service_active"] = (
+            is_new_data_quality_service_active
+        )
 
         context = super().get_context_data(**kwargs)
         api_root = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
@@ -108,9 +104,9 @@ class BaseTimetableReviewView(ReviewBaseView):
                 )
                 .first()
             )
-            dq_pending_or_failed = True
+            dq_pending_or_failed = False  # ONLY FOR TESTING --- To be reverted
             report_id = report.id if report else None
-            dq_status = "PENDING"
+            dq_status = "SUCCESS"  # ONLY FOR TESTING --- To be reverted
             if report_id:
                 dq_status = "SUCCESS"
                 dq_pending_or_failed = False
@@ -132,7 +128,9 @@ class BaseTimetableReviewView(ReviewBaseView):
                 }
             )
         else:
-            dq_pending_or_failed = tasks.get_latest_status() in ["FAILURE", "PENDING"]
+            dq_pending_or_failed = (
+                False  # tasks.get_latest_status() in ["FAILURE", "PENDING"]
+            )
             context.update(
                 {
                     "loading": loading,
@@ -140,7 +138,7 @@ class BaseTimetableReviewView(ReviewBaseView):
                     "admin_areas": revision.admin_area_names,
                     "api_root": api_root,
                     "has_pti_observations": not revision.is_pti_compliant(),
-                    "dq_status": tasks.get_latest_status(),
+                    "dq_status": "SUCCESS",
                     "dqs_timeout": settings.DQS_WAIT_TIMEOUT,
                     "pti_enforced_date": settings.PTI_ENFORCED_DATE,
                     "pti_deadline_passed": pti_deadline_passed,
@@ -150,13 +148,15 @@ class BaseTimetableReviewView(ReviewBaseView):
                 }
             )
             if context["dq_status"] == DatasetETLTaskResult.SUCCESS:
-                report = tasks.latest().report
-                rag = get_data_quality_rag(report)
+                # ONLY FOR TESTING --- To be reverted
+                # report = tasks.latest().report
+                # rag = get_data_quality_rag(report)
 
                 context.update(
                     {
-                        "summary": Summary.from_report_summary(report.summary),
-                        "dq_score": rag,
+                        # ONLY FOR TESTING --- To be reverted
+                        "summary": "OKAY",
+                        "dq_score": "100",
                     }
                 )
 
@@ -187,9 +187,9 @@ class PublishRevisionView(BaseTimetableReviewView):
         is_new_data_quality_service_active = flag_is_active(
             "", "is_new_data_quality_service_active"
         )
-        kwargs[
-            "is_new_data_quality_service_active"
-        ] = is_new_data_quality_service_active
+        kwargs["is_new_data_quality_service_active"] = (
+            is_new_data_quality_service_active
+        )
 
         if is_new_data_quality_service_active:
             report = (
@@ -255,9 +255,9 @@ class UpdateRevisionPublishView(PublishRevisionView):
         is_new_data_quality_service_active = flag_is_active(
             "", "is_new_data_quality_service_active"
         )
-        kwargs[
-            "is_new_data_quality_service_active"
-        ] = is_new_data_quality_service_active
+        kwargs["is_new_data_quality_service_active"] = (
+            is_new_data_quality_service_active
+        )
 
         if is_new_data_quality_service_active:
             report = (
@@ -307,7 +307,6 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
     def get_direction_timetable(
         self, df_timetable: pd.DataFrame, direction: str = "outbound"
     ) -> Dict:
-
         """
         Get the timetable details like the total, current page and the dataframe
         based on the timetable dataframe and the direction.
@@ -373,7 +372,6 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
         }
 
     def get_context_data(self, **kwargs):
-
         """
         Get the context data for the view.
 

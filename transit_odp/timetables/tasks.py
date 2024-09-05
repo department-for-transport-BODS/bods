@@ -278,6 +278,7 @@ def task_post_schema_check(revision_id: int, task_id: int):
     violations = []
     parser = TransXChangeDatasetParser(revision.upload_file, schema_failed_filenames)
     file_names_list = parser.get_file_names()
+    adapter.info(f"post schema task has {len(file_names_list)} files to check")
     if not file_names_list:
         message = f"Validation task: task_post_schema_check, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)
@@ -296,7 +297,7 @@ def task_post_schema_check(revision_id: int, task_id: int):
         failed_filenames = validator.get_failed_validation_filenames()
         schema_violations = [
             PostSchemaViolation.from_violation(
-                revision=revision, filename=filename.replace("\\", "")
+                revision=revision, filename=filename.split("\\")[-1]
             )
             for filename in failed_filenames
         ]
@@ -349,6 +350,7 @@ def task_extract_txc_file_data(revision_id: int, task_id: int):
             TXCFile.from_txc_document(doc, use_path_filename=True)
             for doc in parser.get_documents()
         ]
+        adapter.info(f"txc file attribute ETL has {len(files)} files to process")
         if not files:
             message = f"Validation task: task_extract_txc_file_data, no file to process, zip file: {revision.upload_file.name}"
             adapter.error(message, exc_info=True)
@@ -387,6 +389,7 @@ def task_pti_validation(revision_id: int, task_id: int):
             "filename", flat=True
         )
     )
+    adapter.info(f"PTI task has {len(valid_txc_files)} files to process")
     if not valid_txc_files:
         message = f"Validation task: task_pti_validation, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)

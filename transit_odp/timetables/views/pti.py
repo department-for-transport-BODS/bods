@@ -10,7 +10,6 @@ from django.views.generic.detail import DetailView
 
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.data_quality.models import PTIObservation, SchemaViolation
-from transit_odp.timetables.views.post_schema import PostSchemaCSV
 from transit_odp.data_quality.pti.constants import (
     NO_REF,
     REF_PREFIX,
@@ -19,6 +18,7 @@ from transit_odp.data_quality.pti.constants import (
     get_important_note,
 )
 from transit_odp.organisation.models import Dataset
+from transit_odp.timetables.views.post_schema import PostSchemaCSV
 
 TXC_NOTE = (
     "You need to update your data to 2.4 TxC schema in order to upload data to BODS."
@@ -113,6 +113,13 @@ class BaseViolationsCSVFileView(DetailView):
                     zin.writestr("txc_observations.csv", output)
 
             if revision.post_schema_violations.count() > 0:
+                csv_export = PostSchemaCSV(revision)
+                output = csv_export.to_string()
+                csv_filename = "publisher_errors.csv"
+                if csv_export.count() > 0:
+                    zin.writestr(csv_filename, output)
+
+            if revision.pti_observations.count() > 0:
                 pti_report_filename = (
                     f"BODS_TXC_validation_{revision.dataset.organisation.name}"
                     f"_{revision.dataset_id}"
@@ -122,13 +129,6 @@ class BaseViolationsCSVFileView(DetailView):
                 output = builder.to_string()
                 if builder.count() > 0:
                     zin.writestr(pti_report_filename, output)
-
-            if revision.pti_observations.count() > 0:
-                csv_export = PostSchemaCSV(revision)
-                output = csv_export.to_string()
-                csv_filename = "publisher_errors.csv"
-                if csv_export.count() > 0:
-                    zin.writestr(csv_filename, output)
 
         buffer_.seek(0)
         response = FileResponse(buffer_)
