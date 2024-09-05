@@ -66,6 +66,8 @@ class TransXChangePipeline:
         logger.info("Begin extraction step")
         filename = self.file_obj.file.name
         txc_files = get_txc_files(self.revision.id, self.failed_validations_files)
+        if txc_files.empty:
+            raise exceptions.NoValidFileToProcess(filename)
         if self.file_obj.file.name.endswith("zip"):
             extractor = TransXChangeZipExtractor(
                 self.file_obj, self.start_time, self.stop_activity_cache, txc_files

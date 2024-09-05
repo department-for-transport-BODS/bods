@@ -33,7 +33,7 @@ from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import Dataset, DatasetRevision, TXCFileAttributes
 from transit_odp.organisation.updaters import update_dataset
-from transit_odp.pipelines.exceptions import PipelineException
+from transit_odp.pipelines.exceptions import PipelineException, NoValidFileToProcess
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.dataclasses.transxchange import TXCFile
 from transit_odp.timetables.etl import TransXChangePipeline
@@ -387,7 +387,6 @@ def task_pti_validation(revision_id: int, task_id: int):
             "filename", flat=True
         )
     )
-
     if not valid_txc_files:
         message = f"Validation task: task_pti_validation, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)
@@ -396,7 +395,7 @@ def task_pti_validation(revision_id: int, task_id: int):
         task.update_progress(100)
         raise PipelineException(message)
 
-    pti = get_pti_validator()
+    pti = get_pti_validator(valid_txc_files)
     violations = pti.get_violations(revision=revision)
     revision_validator = TXCRevisionValidator(revision)
     violations += revision_validator.get_violations()
@@ -437,12 +436,29 @@ def task_dataset_etl(revision_id: int, task_id: int):
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting ETL pipeline task.")
 
+    schema_failed_filenames = set(
+        list(
+            SchemaViolation.objects.filter(revision=revision_id).values_list(
+                "filename", flat=True
+            )
+        )
+    )
+    post_schema_failed_filenames = set(
+        list(
+            PostSchemaViolation.objects.filter(revision=revision_id).values_list(
+                "filename", flat=True
+            )
+        )
+    )
     pti_invalid_filenames = set(
         list(
             PTIObservation.objects.filter(revision=revision_id).values_list(
                 "filename", flat=True
             )
         )
+    )
+    pti_invalid_filenames = pti_invalid_filenames.union(
+        post_schema_failed_filenames, schema_failed_filenames
     )
     try:
         task.update_progress(60)
@@ -456,6 +472,13 @@ def task_dataset_etl(revision_id: int, task_id: int):
         pipeline.load(transformed)
         adapter.info("Data successfully loaded into BODS.")
         task.update_progress(90)
+    except NoValidFileToProcess as exp:
+        message = f"Validation task: task_dataset_etl, no file to process, zip file: {revision.upload_file.name}"
+        adapter.error(message, exc_info=True)
+        task.to_error("task_dataset_etl", DatasetETLTaskResult.NO_FILE_TO_PROCESS)
+        task.additional_info = message
+        task.update_progress(100)
+        raise PipelineException(message)
     except Exception as exc:
         task.handle_general_pipeline_exception(
             exc,
