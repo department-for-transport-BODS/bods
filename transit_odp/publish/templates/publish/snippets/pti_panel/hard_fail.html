@@ -8,19 +8,9 @@
       TxC 2.4 v1.1 profile.
     {% endblocktrans %}
   </p>
-  {% if is_schema_violation %}
+  {% if is_schema_violation or is_post_schema_violation or is_pti_violation %}
     <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download Schema validation report</a>
-    </p>
-  {% endif %}
-  {% if is_post_schema_violation %}
-    <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'review-post-schema-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download Post Schema validation report</a>
-    </p>
-  {% endif %}
-  {% if is_pti_violation %}
-    <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download PTI validation report</a>
+      <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download validation report</a>
     </p>
   {% endif %}
   <p class="govuk-body">
