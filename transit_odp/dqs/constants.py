@@ -445,7 +445,13 @@ IncorrectLicenceNumberObservation = Observation(
         " and to match the data with bus location and fares data. This ability improves the quality"
         " of information available to passengers."
     ),
-    resolve=(""),
+    resolve=(
+        "Please check the licence number in your data is correct for your organisation and"
+        " is assigned to your Organisation profile."
+        + _LINE_BREAK
+        + "Operators can assign a licence number to their account by going to My account"
+        " (in the top right-hand side of the dashboard) and choosing Organisation profile."
+    ),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
     list_url_name="dq:incorrect-licence-number-list",
     level=Level.advisory,
