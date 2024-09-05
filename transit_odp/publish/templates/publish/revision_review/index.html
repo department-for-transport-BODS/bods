@@ -25,7 +25,7 @@
     <div class="govuk-grid-column-two-thirds">
       {% if loading %}
         {% include "publish/revision_review/loading.html" %}
-      {% elif object.error_code == "NO_FILE_TO_PROCESS" %}
+      {% elif object.error_code == "NO_VALID_FILE_TO_PROCESS" %}
         {% include "publish/revision_review/no_file_to_process.html" %}
       {% elif error %}
         {% include "publish/revision_review/error_panel.html" %}

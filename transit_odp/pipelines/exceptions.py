@@ -47,7 +47,7 @@ class NoDataFoundError(FileError):
 
 
 class NoValidFileToProcess(FileError):
-    """The zip file contained no TransXChange data"""
+    """The zip file contained no valid TransXChange data"""
 
 
 # XML Parse Errors

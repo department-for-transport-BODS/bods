@@ -250,10 +250,9 @@ def task_timetable_schema_check(revision_id: int, task_id: int):
         message = f"Validation task: task_timetable_schema_check, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)
         task.to_error(
-            "task_timetable_schema_check", DatasetETLTaskResult.NO_FILE_TO_PROCESS
+            "task_timetable_schema_check", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS
         )
         task.additional_info = message
-        task.update_progress(100)
         raise PipelineException(message)
     return revision_id
 
@@ -282,9 +281,10 @@ def task_post_schema_check(revision_id: int, task_id: int):
     if not file_names_list:
         message = f"Validation task: task_post_schema_check, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)
-        task.to_error("task_post_schema_check", DatasetETLTaskResult.NO_FILE_TO_PROCESS)
+        task.to_error(
+            "task_post_schema_check", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS
+        )
         task.additional_info = message
-        task.update_progress(100)
         raise PipelineException(message)
 
     validator = PostSchemaValidator(file_names_list)
@@ -353,10 +353,10 @@ def task_extract_txc_file_data(revision_id: int, task_id: int):
             message = f"Validation task: task_extract_txc_file_data, no file to process, zip file: {revision.upload_file.name}"
             adapter.error(message, exc_info=True)
             task.to_error(
-                "task_extract_txc_file_data", DatasetETLTaskResult.NO_FILE_TO_PROCESS
+                "task_extract_txc_file_data",
+                DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS,
             )
             task.additional_info = message
-            task.update_progress(100)
             raise PipelineException(message)
 
         attributes = [
@@ -390,9 +390,10 @@ def task_pti_validation(revision_id: int, task_id: int):
     if not valid_txc_files:
         message = f"Validation task: task_pti_validation, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)
-        task.to_error("task_pti_validation", DatasetETLTaskResult.NO_FILE_TO_PROCESS)
+        task.to_error(
+            "task_pti_validation", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS
+        )
         task.additional_info = message
-        task.update_progress(100)
         raise PipelineException(message)
 
     pti = get_pti_validator(valid_txc_files)
@@ -475,9 +476,8 @@ def task_dataset_etl(revision_id: int, task_id: int):
     except NoValidFileToProcess as exp:
         message = f"Validation task: task_dataset_etl, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)
-        task.to_error("task_dataset_etl", DatasetETLTaskResult.NO_FILE_TO_PROCESS)
+        task.to_error("task_dataset_etl", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS)
         task.additional_info = message
-        task.update_progress(100)
         raise PipelineException(message)
     except Exception as exc:
         task.handle_general_pipeline_exception(

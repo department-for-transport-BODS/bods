@@ -417,12 +417,18 @@ class TransXChangeExtractor:
 
 class TransXChangeZipExtractor:
     def __init__(
-        self, file_obj, start_time, stop_activity_cache, txc_files=pd.DataFrame()
+        self,
+        file_obj,
+        start_time,
+        stop_activity_cache,
+        txc_files=pd.DataFrame(),
+        failed_validation_files: list = [],
     ):
         self.file_obj = file_obj
         self.start_time = start_time
         self.stop_activity_cache = stop_activity_cache
         self.df_txc_files = txc_files
+        self.failed_validation_files = failed_validation_files
 
     def extract(self) -> ExtractedData:
         """
@@ -444,14 +450,20 @@ class TransXChangeZipExtractor:
         This function extracts the timetable data and iterates over xml file in a single zip file.
         """
         extracts = []
-        filenames = [info.filename for info in z.infolist() if not info.is_dir()]
+        filenames = [
+            info.filename
+            for info in z.infolist()
+            if not info.is_dir() and info.filename
+        ]
         file_count = len(filenames)
         logger.info(f"Total files in zip: {file_count}")
 
         for i, filename in enumerate(filenames):
-            logger.info(f"Extracting: {filename}")
-
-            if filename.endswith(".xml"):
+            if (
+                filename.endswith(".xml")
+                and filename not in self.failed_validation_files
+            ):
+                logger.info(f"Extracting: {filename}")
                 with z.open(filename, "r") as f:
                     file_obj = File(f, name=filename)
                     extractor = TransXChangeExtractor(
@@ -462,6 +474,10 @@ class TransXChangeZipExtractor:
                     )
                     extracted = extractor.extract()
                     extracts.append(extracted)
+            else:
+                logger.info(
+                    f"skipping: {filename} as file has failed the validation checks"
+                )
 
         return ExtractedData(
             services=concat_and_dedupe((extract.services for extract in extracts)),

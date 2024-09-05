@@ -165,8 +165,6 @@ class BaseTimetableReviewView(ReviewBaseView):
             system_error = ERROR_CODE_LOOKUP.get(DatasetETLTaskResult.SYSTEM_ERROR)
             error_context = ERROR_CODE_LOOKUP.get(revision.error_code, system_error)
             context.update({"severe_error": error_context})
-        print(f"is_post_schema_violation: {is_post_schema_violation}")
-        print(f"is_schema_violation: {is_schema_violation}")
         context.update(
             {
                 "error": has_error,

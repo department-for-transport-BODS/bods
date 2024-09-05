@@ -70,7 +70,11 @@ class TransXChangePipeline:
             raise exceptions.NoValidFileToProcess(filename)
         if self.file_obj.file.name.endswith("zip"):
             extractor = TransXChangeZipExtractor(
-                self.file_obj, self.start_time, self.stop_activity_cache, txc_files
+                self.file_obj,
+                self.start_time,
+                self.stop_activity_cache,
+                txc_files,
+                self.failed_validations_files,
             )
         elif self.file_obj.file.name.endswith("xml"):
             extractor = TransXChangeExtractor(
