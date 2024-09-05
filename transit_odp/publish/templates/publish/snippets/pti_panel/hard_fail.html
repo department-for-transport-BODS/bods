@@ -18,7 +18,7 @@
       <a class="govuk-link" href="{% url 'review-post-schema-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download Post Schema validation report</a>
     </p>
   {% endif %}
-  {% if has_pti_observations %}
+  {% if is_pti_violation %}
     <p class="govuk-body">
       <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download PTI validation report</a>
     </p>
