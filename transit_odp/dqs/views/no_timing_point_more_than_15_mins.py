@@ -13,8 +13,8 @@ class NoTimingPointMoreThan15MinsListView(DQSWarningListBaseView):
         self._is_dqs_new_report = None
 
     check = Checks.NoTimingPointMoreThan15Minutes
-    dqs_details = "There is at least one journey with a pair of timing points of more than 15 minutes"
 
+    dqs_details = "There is at least one timing point more than 15 minutes away from the previous timing point"
     def get_queryset(self):
         return super().get_queryset()
 
