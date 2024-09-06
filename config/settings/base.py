@@ -754,8 +754,13 @@ CSP_IMG_SRC = (
     "data:",
     "blob:",
 )
-CSP_CONNECT_SRC = ("'self'", "https://*.mapbox.com")
+CSP_CONNECT_SRC = (
+    "'self'",
+    "https://*.mapbox.com",
+    "https://data*bus-data.dft.gov.uk/*",
+)
 CSP_FONT_SRC = ("'self'",)
 CSP_OBJECT_SRC = ("'none'",)
 CSP_FRAME_ANCESTORS = ("'self'",)
 CSP_WORKER_SRC = ("'self'", "blob:")
+SECURE_CONTENT_TYPE_NOSNIFF = True
