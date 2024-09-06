@@ -109,6 +109,7 @@ class Summary(BaseModel):
             "journey_start_time",
             "direction",
             "stop_name",
+            "is_suppressed",
         ]
         data = (
             ObservationResults.objects.filter(
@@ -208,6 +209,7 @@ class Summary(BaseModel):
                     "journey_start_time",
                     "direction",
                     "stop_name",
+                    "is_suppressed",
                 ]
             ]
             df.drop_duplicates(inplace=True)
@@ -217,6 +219,7 @@ class Summary(BaseModel):
                 warning_data[level.value]["count"] = len(
                     df[df["importance"] == level.value]
                 )
+            df.to_csv("dataframe.csv")
 
             df = (
                 df.groupby(["observation", "category", "importance"])
