@@ -33,7 +33,7 @@ from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import Dataset, DatasetRevision, TXCFileAttributes
 from transit_odp.organisation.updaters import update_dataset
-from transit_odp.pipelines.exceptions import PipelineException, NoValidFileToProcess
+from transit_odp.pipelines.exceptions import NoValidFileToProcess, PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.dataclasses.transxchange import TXCFile
 from transit_odp.timetables.etl import TransXChangePipeline
@@ -296,9 +296,7 @@ def task_post_schema_check(revision_id: int, task_id: int):
     if len(violations) > 0:
         failed_filenames = validator.get_failed_validation_filenames()
         schema_violations = [
-            PostSchemaViolation.from_violation(
-                revision=revision, filename=filename.split("\\")[-1]
-            )
+            PostSchemaViolation.from_violation(revision=revision, filename=filename)
             for filename in failed_filenames
         ]
 
