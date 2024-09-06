@@ -757,7 +757,8 @@ CSP_IMG_SRC = (
 CSP_CONNECT_SRC = (
     "'self'",
     "https://*.mapbox.com",
-    "https://data*bus-data.dft.gov.uk/*",
+    "http://*.localhost:8000",
+    "https://*.bus-data.dft.gov.uk",
 )
 CSP_FONT_SRC = ("'self'",)
 CSP_OBJECT_SRC = ("'none'",)
