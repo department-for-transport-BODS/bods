@@ -585,8 +585,8 @@ NoTimingPointMoreThan15MinsObservation = Observation(
         " to the departure times on your scheduling tool if required."
     ),
     preamble=(
-        "The following service(s) have been observed to have at least one journey with a pair of timings"
-        " points of more than 15 minutes."
+        "The following service(s) have been observed to have at least one journey with a timing point more than"
+        " 15 minutes away from the previous timing point."
     ),
     list_url_name="dq:no-timing-point-more-than-15-minutes-list",
     level=Level.advisory,
