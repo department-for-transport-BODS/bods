@@ -295,7 +295,7 @@ class PostSchemaValidator:
             file_name_pii_check = re.findall("\\\\", file_name)
             if len(file_name_pii_check) > 0:
                 result.append(False)
-                self.failed_validation_filenames.add(file_name)
+                self.failed_validation_filenames.add(file_name.replace("\\\\", ""))
             else:
                 result.append(True)
         return result

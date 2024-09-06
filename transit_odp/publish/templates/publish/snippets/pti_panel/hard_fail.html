@@ -8,11 +8,9 @@
       TxC 2.4 v1.1 profile.
     {% endblocktrans %}
   </p>
-  {% if is_schema_violation or is_post_schema_violation or is_pti_violation %}
-    <p class="govuk-body">
-      <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download validation report</a>
-    </p>
-  {% endif %}
+  <p class="govuk-body">
+    <a class="govuk-link" href="{% url 'review-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download validation report</a>
+  </p>
   <p class="govuk-body">
     {% blocktrans %}
       The timetables data supplied is non-compliant. It does not meet
