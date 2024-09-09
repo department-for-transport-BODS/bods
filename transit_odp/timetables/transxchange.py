@@ -506,10 +506,7 @@ class TransXChangeDatasetParser:
         if self.is_zipfile():
             with TransXChangeZip(self._source) as zip_:
                 for doc in zip_.iter_doc():
-                    if (
-                        doc.get_file_name().split("\\")[-1]
-                        not in self.failed_validations_filename
-                    ):
+                    if doc.name.split("/")[-1] not in self.failed_validations_filename:
                         yield doc
         else:
             if self._source.name not in self.failed_validations_filename:

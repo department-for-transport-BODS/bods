@@ -279,8 +279,8 @@ class TXCRevisionValidator:
 
 
 class PostSchemaValidator:
-    def __init__(self, file_names=None):
-        self.file_names = file_names
+    def __init__(self, doc_list=None):
+        self.doc_list = doc_list
         self.violations = []
         self.failed_validation_filenames = set()
 
@@ -290,12 +290,11 @@ class PostSchemaValidator:
         element has personal identifiable information (PII).
         """
         result = []
-        file_names = self.file_names
-        for file_name in file_names:
-            file_name_pii_check = re.findall("\\\\", file_name)
+        for doc in self.doc_list:
+            file_name_pii_check = re.findall("\\\\", doc.get_file_name())
             if len(file_name_pii_check) > 0:
                 result.append(False)
-                self.failed_validation_filenames.add(file_name.replace("\\\\", ""))
+                self.failed_validation_filenames.add(doc.name.split("/")[-1])
             else:
                 result.append(True)
         return result
