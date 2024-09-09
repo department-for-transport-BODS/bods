@@ -296,7 +296,9 @@ def task_post_schema_check(revision_id: int, task_id: int):
     if len(violations) > 0:
         failed_filenames = validator.get_failed_validation_filenames()
         schema_violations = [
-            PostSchemaViolation.from_violation(revision=revision, filename=filename)
+            PostSchemaViolation.from_violation(
+                revision=revision, filename=filename.split("\\")[-1]
+            )
             for filename in failed_filenames
         ]
 
