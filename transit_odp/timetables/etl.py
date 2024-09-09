@@ -1,5 +1,8 @@
 import datetime
+import io
 from typing import Dict
+import zipfile
+from django.core.files.base import ContentFile
 
 from celery.utils.log import get_task_logger
 from django.db import transaction
@@ -61,6 +64,31 @@ class TransXChangePipeline:
         self.revision.service_patterns.all().delete()
         self.revision.save()
 
+    def filter_and_repackage_zip(self, intial_zip_file, files_to_remove):
+        output_zip_stream = io.BytesIO()
+        with zipfile.ZipFile(intial_zip_file, "r") as input_zip:
+            with zipfile.ZipFile(output_zip_stream, "w") as output_zip:
+                for file_info in input_zip.infolist():
+                    if (
+                        file_info.filename.endswith(".xml")
+                        and file_info.filename not in files_to_remove
+                    ):
+                        with input_zip.open(file_info.filename) as file:
+                            file_data = file.read()
+                            output_zip.writestr(file_info.filename, file_data)
+        output_zip_stream.seek(0)
+        return output_zip_stream
+
+    def replace_zip_file(self, revision, failed_filenames):
+        intial_zip_file = revision.upload_file
+        new_zip_stream = self.filter_and_repackage_zip(
+            intial_zip_file, failed_filenames
+        )
+        new_zip_content = ContentFile(
+            new_zip_stream.read(), name=revision.upload_file.name
+        )
+        revision.upload_file.save(revision.upload_file.name, new_zip_content, save=True)
+
     def extract(self) -> ExtractedData:
         """Extraction step which extract the data from the xml file"""
         logger.info("Begin extraction step")
@@ -69,6 +97,9 @@ class TransXChangePipeline:
         if txc_files.empty:
             raise exceptions.NoValidFileToProcess(filename)
         if self.file_obj.file.name.endswith("zip"):
+            if self.failed_validations_files:
+                self.replace_zip_file(self.revision, self.failed_validations_files)
+                logger.info("Recreated zip file by removing failed violations file.")
             extractor = TransXChangeZipExtractor(
                 self.file_obj,
                 self.start_time,
