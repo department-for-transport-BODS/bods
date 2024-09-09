@@ -442,21 +442,21 @@ def task_dataset_etl(revision_id: int, task_id: int):
 
     schema_failed_filenames = set(
         list(
-            SchemaViolation.objects.filter(revision=revision_id).values_list(
+            SchemaViolation.objects.filter(revision=revision.id).values_list(
                 "filename", flat=True
             )
         )
     )
     post_schema_failed_filenames = set(
         list(
-            PostSchemaViolation.objects.filter(revision=revision_id).values_list(
+            PostSchemaViolation.objects.filter(revision=revision.id).values_list(
                 "filename", flat=True
             )
         )
     )
     pti_invalid_filenames = set(
         list(
-            PTIObservation.objects.filter(revision=revision_id).values_list(
+            PTIObservation.objects.filter(revision=revision.id).values_list(
                 "filename", flat=True
             )
         )
