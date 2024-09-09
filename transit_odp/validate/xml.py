@@ -26,6 +26,7 @@ class FileTooLarge(XMLValidationException):
 class XMLSyntaxError(XMLValidationException):
     code = "XML_SYNTAX_ERROR"
     message_template = "File {filename} is not valid XML."
+    line = ""
 
 
 class DangerousXML(XMLValidationException):
@@ -82,6 +83,7 @@ class XMLValidator(FileValidator):
     def __init__(self, source, max_file_size=5e9, schema=None):
         super().__init__(source, max_file_size=max_file_size)
         self.schema = schema
+        self.violations = []
 
     def dangerous_xml_check(self):
         try:
@@ -92,11 +94,16 @@ class XMLValidator(FileValidator):
             # DefusedXml wraps ExpatErrors in ParseErrors, requires extra step to
             # get actual error message
             if isinstance(err.msg, Exception):
-                raise XMLSyntaxError(self.source.name, message=err.msg.args[0]) from err
+                self.violations.append(
+                    XMLSyntaxError(self.source.name, message=err.msg.args[0])
+                )
             else:
-                raise XMLSyntaxError(self.source.name, message=err.msg) from err
-        except DefusedXmlException as err:
-            raise DangerousXML(self.source.name) from err
+                self.violations.append(
+                    XMLSyntaxError(self.source.name, message=err.msg, line=err.lineno)
+                )
+        except DefusedXmlException:
+            self.violations.append(DangerousXML(self.source.name))
+        return self.violations
 
     def validate(self):
         """Validates the XML file.
@@ -107,11 +114,13 @@ class XMLValidator(FileValidator):
             XMLSyntaxError: if the file cannot be parsed.
         """
         if self.is_too_large():
-            raise FileTooLarge(self.source.name)
-        self.dangerous_xml_check()
-        self.get_document()
+            self.violations.append(FileTooLarge(self.source.name))
+            return self.violations
+        if len(self.dangerous_xml_check()) > 0:
+            return self.violations
+        return self.validate_xml()
 
-    def get_document(self):
+    def validate_xml(self):
         """Parses `file` returning an lxml element object.
         If `schema` is not None then `file` is validated against the schema.
 
@@ -130,25 +139,35 @@ class XMLValidator(FileValidator):
         try:
             doc = etree.parse(self.source, parser)
         except etree.XMLSyntaxError as err:
-            raise XMLSyntaxError(self.source.name, message=err.msg) from err
-        return doc
+            self.violations.append(
+                XMLSyntaxError(self.source.name, message=err.msg, line=err.lineno)
+            )
+        return self.violations
 
 
-def validate_xml_files_in_zip(zip_file, schema=None):
+def validate_xml_files_in_zip(zip_file, schema=None, dataset=-1):
     """Validate all the xml files in a zip archive."""
-    context = DatasetPipelineLoggerContext(component_name="FaresPipeline")
+    violations = []
+    context = DatasetPipelineLoggerContext(
+        component_name="FaresPipeline", object_id=dataset
+    )
     adapter = PipelineAdapter(logger, {"context": context})
     with zipfile.ZipFile(zip_file) as zout:
-        filenames = [name for name in zout.namelist() if name.endswith("xml")]
+        filenames = [
+            name
+            for name in zout.namelist()
+            if name.endswith("xml") and not name.startswith("__")
+        ]
         lxml_schema = get_lxml_schema(schema)
         total_files = len(filenames)
         for index, name in enumerate(filenames, 1):
             adapter.info(f"XML Validation of file {index} of {total_files} - {name}.")
             with zout.open(name) as xmlout:
-                XMLValidator(xmlout, schema=lxml_schema).validate()
+                violations += XMLValidator(xmlout, schema=lxml_schema).validate()
                 adapter.info(
                     f"Completed XML Validation of file {index} of {total_files} - {name}."
                 )
+    return violations, total_files
 
 
 def get_lxml_schema(schema):

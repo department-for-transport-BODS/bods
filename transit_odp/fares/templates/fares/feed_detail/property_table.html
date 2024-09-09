@@ -48,11 +48,11 @@
       <td colspan="2" class="govuk-table__cell">
         <div class="govuk-warning-text stacked govuk-!-margin-bottom-0">
           <span class="govuk-warning-text__icon content-box" aria-hidden="true">!</span>
-          <span class="app-step-nav-related app-task-list__items">{% trans "Non compliant" %}</span>
-          {% if show_report_link %}
-            <a class="govuk-link govuk-!-margin-left-6" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
-          {% endif %}
+          <span class="app-step-nav-related_white-top-border app-task-list__items_bottom-padding">{% trans "Non compliant" %}</span>
         </div>
+        {% if show_report_link %}
+          <a class="govuk-link govuk-!-margin-left-6" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
+        {% endif %}
       </td>
     {% else %}
       <td colspan="2" class="govuk-table__cell">

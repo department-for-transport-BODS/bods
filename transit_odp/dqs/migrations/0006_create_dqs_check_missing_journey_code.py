@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("dqs", "0005_create_dqs_checks"),
     ]
-    queue_name = f"dqs-{AWS_ENVIRONMENT}-missing-journey-code"
+    queue_name = f"dqs-{AWS_ENVIRONMENT}-missing-journey-code-queue"
 
     operations = [
         migrations.RunSQL(

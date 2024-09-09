@@ -10,7 +10,7 @@ from transit_odp.data_quality.pti.models import Observation, Violation
 from transit_odp.organisation.models import DatasetRevision, TXCFileAttributes
 from transit_odp.timetables.constants import PII_ERROR
 from transit_odp.timetables.proxies import TimetableDatasetRevision
-from transit_odp.timetables.transxchange import TXCSchemaViolation
+from transit_odp.timetables.transxchange import BaseSchemaViolation
 from transit_odp.timetables.utils import get_transxchange_schema
 from transit_odp.validate.xml import FileValidator, XMLValidator
 from transit_odp.validate.zip import ZippedValidator
@@ -76,7 +76,7 @@ class DatasetTXCValidator:
             is_valid = self._schema.validate(doc)
             if not is_valid:
                 for error in self._schema.error_log:
-                    violations.append(TXCSchemaViolation.from_error(error))
+                    violations.append(BaseSchemaViolation.from_error(error))
         return violations
 
 

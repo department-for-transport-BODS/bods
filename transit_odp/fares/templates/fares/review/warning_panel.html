@@ -1,0 +1,85 @@
+{% load i18n %}
+<h2 class="govuk-heading-l govuk-!-padding-top-5">{{ object.name }}</h2>
+<div class="govuk-!-margin-top-6" id="preview-section">
+  {# Fares Validator Section - Succes/Fail Message #}
+  <div class="app-dqs-panel govuk-!-margin-bottom-7">
+    <div class="app-dqs-panel__body">
+      <div class="app-dqs-panel__success">
+        <h2 class="govuk-heading-m">3a Validation Check - Failed</h2>
+        <p class="govuk-body">
+          {% blocktrans %}
+                The validation report checks for compliance against the NeTEx schema.
+              {% endblocktrans %}
+          <br />
+          <br />
+          <a class="govuk-link" href="{% url 'fares:review-fares-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download schema validation report</a>
+          <br />
+        </p>
+        <p class="govuk-body govuk-!-margin-bottom-0">
+          {% blocktrans %}
+            The fares data supplied is non-compliant and cannot be
+            submitted to BODS as per the
+          {% endblocktrans %}
+          <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
+            {% trans "guidance." %}
+          </a>
+          {% blocktrans %}
+            To pass the validation please address all outstanding issues in the
+            validation report.
+          {% endblocktrans %}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
+  <a role="button"
+     class="govuk-button govuk-!-margin-bottom-0"
+     href="{% url 'fares:upload-modify' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
+    {{ _("Publish correct data set") }}
+  </a>
+</div>
+<table class="govuk-table dataset-property-table">
+  <tbody class="govuk-table__body">
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header">{% trans "Name" %}</th>
+      <td class="govuk-table__cell dont-break-out">{% trans properties.name %}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header">{% trans "Owner" %}</th>
+      <td class="govuk-table__cell">{% trans properties.owner_name %}</td>
+    </tr>
+    <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header">{% trans "Last updated" %}</th>
+      <td class="govuk-table__cell">
+        <div class="flex-between">
+          <span>
+            {# Note we use last modified time rather than published_at since the revision won't be published yet #}
+            {{ properties.last_modified|date:"j M Y H:i" }}
+            {% trans "by " %}
+            {{ properties.last_modified_user|default_if_none:'System' }}
+          </span>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<h3 class="govuk-heading-m">{% trans "What should I do next?" %}</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+      You can re-upload a different data set file again. Please ensure that your provided data format is correct and
+      that your data set file contains valid data.
+    {% endblocktrans %}
+</p>
+<p class="govuk-body app-!-text-muted govuk-!-font-size-19">
+  {% blocktrans %}
+      Accepted file formats include .xml (Netex).
+    {% endblocktrans %}
+</p>
+<div class="btn-group-justified">
+  <a role="button"
+     class="govuk-button govuk-button--secondary"
+     href="{% url 'fares:revision-delete' pk=object.dataset_id pk1=pk1 host hosts.publish %}">
+    {{ _("Delete data") }}
+  </a>
+</div>
