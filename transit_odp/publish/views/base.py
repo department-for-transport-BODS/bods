@@ -1,7 +1,10 @@
+import io
+import zipfile
 from collections import OrderedDict
 from typing import List, Tuple, Type
 
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from django.db.models.query_utils import Q
@@ -21,6 +24,8 @@ import config.hosts
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
+from transit_odp.data_quality.models import SchemaViolation
+from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.notifications import get_notifications
 from transit_odp.organisation.constants import DatasetType, FeedStatus
@@ -193,9 +198,69 @@ class ReviewBaseView(OrgUserViewMixin, BaseUpdateView):
                 % {"verbose_name": DatasetRevision._meta.verbose_name}
             )
 
+    def filter_and_repackage_zip(self, intial_zip_file, files_to_remove):
+        output_zip_stream = io.BytesIO()
+        with zipfile.ZipFile(intial_zip_file, "r") as input_zip:
+            with zipfile.ZipFile(output_zip_stream, "w") as output_zip:
+                for file_info in input_zip.infolist():
+                    if (
+                        file_info.filename.endswith(".xml")
+                        and file_info.filename not in files_to_remove
+                    ):
+                        with input_zip.open(file_info.filename) as file:
+                            file_data = file.read()
+                            output_zip.writestr(file_info.filename, file_data)
+        output_zip_stream.seek(0)
+        return output_zip_stream
+
+    def replace_zip_file(self, revision, failed_filenames):
+        intial_zip_file = revision.upload_file
+        new_zip_stream = self.filter_and_repackage_zip(
+            intial_zip_file, failed_filenames
+        )
+        new_zip_content = ContentFile(
+            new_zip_stream.read(), name=revision.upload_file.name
+        )
+        revision.upload_file.save(revision.upload_file.name, new_zip_content, save=True)
+
+    def get_failed_validation_filenames(self, revision):
+        schema_failed_filenames = set(
+            list(
+                SchemaViolation.objects.filter(revision=revision.id).values_list(
+                    "filename", flat=True
+                )
+            )
+        )
+        post_schema_failed_filenames = set(
+            list(
+                PostSchemaViolation.objects.filter(revision=revision.id).values_list(
+                    "filename", flat=True
+                )
+            )
+        )
+        pti_invalid_filenames = set(
+            list(
+                PTIObservation.objects.filter(revision=revision.id).values_list(
+                    "filename", flat=True
+                )
+            )
+        )
+        pti_invalid_filenames = pti_invalid_filenames.union(
+            post_schema_failed_filenames, schema_failed_filenames
+        )
+        return pti_invalid_filenames
+
     def form_valid(self, form):
         revision = self.get_object()
         if not revision.is_published:
+            if (
+                revision.dataset.dataset_type == DatasetType.TIMETABLE
+                and revision.upload_file.name.endswith(".zip")
+            ):
+                failed_violation_filenames = self.get_failed_validation_filenames(
+                    revision
+                )
+                self.replace_zip_file(revision, failed_violation_filenames)
             revision.publish(self.request.user)
         return HttpResponseRedirect(self.get_success_url())
 

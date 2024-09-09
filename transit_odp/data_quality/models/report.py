@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField
 
+from transit_odp.timetables.constants import PII_ERROR
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.models.managers import DataQualityReportManager
 from transit_odp.data_quality.pti.models import Violation
@@ -230,9 +231,5 @@ class PostSchemaViolation(models.Model):
         )
 
     @classmethod
-    def from_violation(cls, revision: object, violation: TXCPostSchemaViolation):
-        return cls(
-            revision_id=revision.id,
-            filename=revision.upload_file.name,
-            details=violation,
-        )
+    def from_violation(cls, revision: object, filename: str):
+        return cls(revision_id=revision.id, filename=filename, details=PII_ERROR)

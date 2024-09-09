@@ -1,7 +1,13 @@
 import logging
+import math
+import re
 from collections import namedtuple
 from datetime import datetime, timedelta
+from io import BytesIO
+from typing import Dict
 
+import pandas as pd
+import requests
 from allauth.account.adapter import get_adapter
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -15,26 +21,31 @@ from django.utils.translation import gettext as _
 from django.views.generic import CreateView, DetailView, TemplateView, UpdateView
 from django.views.generic.detail import BaseDetailView
 from django_hosts import reverse
+from requests import RequestException
+from rest_framework import status
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.browse.constants import LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
 from transit_odp.browse.filters import TimetableSearchFilter
 from transit_odp.browse.forms import ConsumerFeedbackForm
 from transit_odp.browse.tables import DatasetPaginatorTable
+from transit_odp.browse.timetable_visualiser import TimetableVisualiser
 from transit_odp.browse.views.base_views import (
     BaseSearchView,
     BaseTemplateView,
     ChangeLogView,
 )
-from transit_odp.browse.timetable_visualiser import TimetableVisualiser
 from transit_odp.common.downloaders import GTFSFileDownloader
-from transit_odp.common.services import get_gtfs_bucket_service
 from transit_odp.common.forms import ConfirmationForm
+from transit_odp.common.services import get_gtfs_bucket_service
 from transit_odp.common.view_mixins import (
     BaseDownloadFileView,
     DownloadView,
     ResourceCounterMixin,
 )
+from transit_odp.data_quality.models import SchemaViolation
+from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
 from transit_odp.data_quality.report_summary import Summary
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.notifications import get_notifications
@@ -56,15 +67,6 @@ from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
 from transit_odp.transmodel.models import BookingArrangements, Service
 from transit_odp.users.constants import SiteAdminType
-import pandas as pd
-from typing import Dict
-import math
-import re
-from waffle import flag_is_active
-import requests
-from requests import RequestException
-from rest_framework import status
-from io import BytesIO
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -92,7 +94,34 @@ class DatasetDetailView(DetailView):
 
     def get_distinct_dataset_txc_attributes(self, revision_id):
         txc_attributes = {}
-        txc_file_attributes = TXCFileAttributes.objects.filter(revision_id=revision_id)
+        schema_failed_filenames = set(
+            list(
+                SchemaViolation.objects.filter(revision=revision_id).values_list(
+                    "filename", flat=True
+                )
+            )
+        )
+        post_schema_failed_filenames = set(
+            list(
+                PostSchemaViolation.objects.filter(revision=revision_id).values_list(
+                    "filename", flat=True
+                )
+            )
+        )
+        pti_invalid_filenames = set(
+            list(
+                PTIObservation.objects.filter(revision=revision_id).values_list(
+                    "filename", flat=True
+                )
+            )
+        )
+        pti_invalid_filenames = pti_invalid_filenames.union(
+            post_schema_failed_filenames, schema_failed_filenames
+        )
+
+        txc_file_attributes = TXCFileAttributes.objects.filter(
+            revision_id=revision_id
+        ).exclude(filename__in=pti_invalid_filenames)
 
         for file_attribute in txc_file_attributes:
             licence_number = (

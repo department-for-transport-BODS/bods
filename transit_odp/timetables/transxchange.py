@@ -493,18 +493,27 @@ class TransXChangeDatasetParser:
         if self.is_zipfile():
             with TransXChangeZip(self._source) as zip_:
                 for doc in zip_.iter_doc():
-                    yield doc
+                    if (
+                        doc.get_file_name().replace("\\", "")
+                        not in self.failed_validations_filename
+                    ):
+                        yield doc
         else:
-            yield TransXChangeDocument(self._source)
+            if self._source.name not in self.failed_validations_filename:
+                yield TransXChangeDocument(self._source)
 
     def get_documents(self) -> Iterator[TransXChangeDocument]:
         if self.is_zipfile():
             with TransXChangeZip(self._source) as zip_:
                 for doc in zip_.iter_doc():
-                    if doc not in self.failed_validations_filename:
+                    if (
+                        doc.get_file_name().split("\\")[-1]
+                        not in self.failed_validations_filename
+                    ):
                         yield doc
         else:
-            yield TransXChangeDocument(self._source)
+            if self._source.name not in self.failed_validations_filename:
+                yield TransXChangeDocument(self._source)
 
     def get_transxchange_versions(self) -> List[TransXChangeElement]:
         return [doc.get_transxchange_version() for doc in self.get_documents()]
