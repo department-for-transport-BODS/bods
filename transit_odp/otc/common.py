@@ -65,11 +65,14 @@ def process_service_number(string: str) -> List:
     """
     if not string:
         return []
+    
+    if has_only_hyphen_delimiter(string):
+        return [string]
 
     if "(" in string or ")" in string:
         return process_brackets(string)
     else:
-        delimiters = [",", ":", "|"]
+        delimiters = [",", ":", "|", "-"]
         if string[0].isdigit():
             if (
                 has_only_space_delimiter(string)
@@ -82,8 +85,12 @@ def process_service_number(string: str) -> List:
 
 
 def has_only_space_delimiter(s):
-    delimiters = [",", ":", "|"]
+    delimiters = [",", ":", "|", "-"]
     return " " in s and all(d not in s for d in delimiters)
+
+def has_only_hyphen_delimiter(s):
+    delimiters = [",", ":", "|"]
+    return "-" in s and all(d not in s for d in delimiters)
 
 
 def format_service_number(service_number: str, other_service_number: str) -> str:
