@@ -13,6 +13,8 @@ def process_brackets(text: str) -> List:
     """
     if text.count("(") == 1:
         prefix, suffix = text.split("(", 1)
+        if "," not in suffix:
+            return [text]
         suffix = suffix.rstrip(")")
         parts = [f"{prefix.strip()} {part.strip()}" for part in suffix.split(",")]
         return parts

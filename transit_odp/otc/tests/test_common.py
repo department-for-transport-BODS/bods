@@ -12,6 +12,7 @@ test_data_sets = [
     ("L1:L2", "L1|L2"),
     ("192 Rural Rider", "193 Rural Rider"),
     ("WYN", "Wyn"),
+    ("Ring & Ride (Coventry)", ""),
 ]
 
 expected_results = [
@@ -24,6 +25,7 @@ expected_results = [
     "L1|L2",
     "192 Rural Rider|193 Rural Rider",
     "WYN",
+    "Ring & Ride (Coventry)",
 ]
 
 
