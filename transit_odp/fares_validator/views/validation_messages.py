@@ -1,6 +1,7 @@
 """
 This is to manage all the custom error messages from the validator functions
 """
+
 MESSAGE_OBSERVATION_TYPE_OF_FRAME_REF_MISSING = (
     "'TypeOfFrameRef' 'ref' attribute is missing from 'FareFrame'"
 )
@@ -86,9 +87,6 @@ MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_ID_FORMAT = (
     "Attribute 'id' of element 'ScheduledStopPoint' should be in 'atco:xxxx' format"
 )
 MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_NAME_MISSING = "From 'scheduledStopPoints' element in ServiceFrame, element 'Name' is missing or empty"
-MESSAGE_OBSERVATION_SCHEDULED_STOP_POINTS_MISSING = (
-    "Element 'scheduledStopPoints' is missing"
-)
 MESSAGE_OBSERVATION_LINE_MISSING = "Mandatory element 'Line' in ServiceFrame is missing"
 MESSAGE_OBSERVATION_NAME_MISSING = (
     "From 'Line' element in ServiceFrame, element 'Name' is missing or empty"
@@ -99,7 +97,6 @@ MESSAGE_OBSERVATION_PUBLICCODE_MISSING = (
 MESSAGE_OBSERVATION_OPERATORREF_MISSING = (
     "From 'Line' element in ServiceFrame, element'OperatorRef' is missing"
 )
-MESSAGE_OBSERVATION_LINES_MISSING = "Element 'lines' is missing in ServiceFrame"
 MESSAGE_OBSERVATION_SERVICEFRAME_TYPE_OF_FRAME_REF_MISSING = (
     "If 'ServiceFrame' is present, mandatory element 'TypeOfFrameRef' "
     "should be included and TypeOfFrameRef should include UK_PI_NETWORK"
@@ -121,6 +118,15 @@ MESSAGE_OBSERVATION_FARE_ZONE_MISSING = (
 )
 MESSAGE_OBSERVATION_FARE_ZONES_NAME_MISSING = (
     "Element 'Name' is missing or empty within the element 'FareZone'"
+)
+MESSAGE_OBSERVATION_FARE_ZONES_MEMBERS_MISSING = (
+    "Element 'members' is missing within the element 'FareZone'"
+)
+MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_REF_MISSING = (
+    "Element 'ScheduledStopPointRef' is missing within the element 'members'"
+)
+MESSAGE_OBSERVATION_SCHEDULED_STOP_POINT_TEXT_MISSING = (
+    "Value missing within element 'ScheduledStopPointRef'"
 )
 MESSAGE_OBSERVATION_ROUND_TRIP_MISSING = (
     "Element 'RoundTrip' is missing within ''limitations''"

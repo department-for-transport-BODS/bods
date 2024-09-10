@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL(
             "INSERT INTO dqs_checks(observation, importance, category, queue_name) VALUES ('"
-            + Checks.NoTimingPointMoreThan15Minutes.value
+            + Checks.NoTimingPointMoreThan15Mins.value
             + "', '"
             + Level.advisory.value
             + "', '"

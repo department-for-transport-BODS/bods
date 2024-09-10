@@ -29,7 +29,7 @@ class NoTimingPointMoreThan15MinsDetailView(DQSWarningDetailBaseView):
     def get_context_data(self, **kwargs):
 
         self._table_name = NoTimingPointMoreThan15MinsCodeTable
-        self.check = Checks.NoTimingPointMoreThan15Minutes
+        self.check = Checks.NoTimingPointMoreThan15Mins
         line = self.request.GET.get("line")
 
         context = super().get_context_data(**kwargs)

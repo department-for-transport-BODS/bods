@@ -51,6 +51,9 @@
         },
         {
           "test": "is_name_present_in_fare_frame(.)"
+        },
+        {
+          "test": "is_members_scheduled_point_ref_present_in_fare_frame(.)"
         }
       ]
     },

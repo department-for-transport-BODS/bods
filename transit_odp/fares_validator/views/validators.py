@@ -46,6 +46,7 @@ from transit_odp.fares_validator.views.functions import (
     is_generic_parameter_limitations_present,
     is_individual_time_interval_present_in_tariffs,
     is_lines_present_in_service_frame,
+    is_members_scheduled_point_ref_present_in_fare_frame,
     is_name_present_in_fare_frame,
     is_schedule_stop_points,
     is_service_frame_present,
@@ -177,6 +178,10 @@ class FaresValidator:
         )
         self.register_function(
             "is_name_present_in_fare_frame", is_name_present_in_fare_frame
+        )
+        self.register_function(
+            "is_members_scheduled_point_ref_present_in_fare_frame",
+            is_members_scheduled_point_ref_present_in_fare_frame,
         )
         self.register_function(
             "check_composite_frame_valid_between", check_composite_frame_valid_between

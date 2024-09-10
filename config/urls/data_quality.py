@@ -412,18 +412,18 @@ urlpatterns = [
         ),
     ),
     path(
-        "no-timing-point-more-than-15-minutes/",
+        "no-timing-point-more-than-15-mins/",
         include(
             [
                 path(
                     "",
                     view=DQSviews.NoTimingPointMoreThan15MinsListView.as_view(),
-                    name="no-timing-point-more-than-15-minutes-list",
+                    name="no-timing-point-more-than-15-mins-list",
                 ),
                 path(
                     "detail/",
                     view=DQSviews.NoTimingPointMoreThan15MinsDetailView.as_view(),
-                    name="no-timing-point-more-than-15-minutes-detail",
+                    name="no-timing-point-more-than-15-mins-detail",
                 ),
             ]
         ),
