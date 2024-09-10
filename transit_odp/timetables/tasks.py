@@ -277,9 +277,8 @@ def task_post_schema_check(revision_id: int, task_id: int):
     )
     violations = []
     parser = TransXChangeDatasetParser(revision.upload_file, schema_failed_filenames)
-    file_names_list = parser.get_file_names()
-    adapter.info(f"post schema task has {len(file_names_list)} files to check")
-    if not file_names_list:
+    doc_list = parser.get_documents()
+    if not doc_list:
         message = f"Validation task: task_post_schema_check, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)
         task.to_error(
@@ -288,7 +287,7 @@ def task_post_schema_check(revision_id: int, task_id: int):
         task.additional_info = message
         raise PipelineException(message)
 
-    validator = PostSchemaValidator(file_names_list)
+    validator = PostSchemaValidator(doc_list)
     violations += validator.get_violations()
 
     adapter.info(f"{len(violations)} violations found.")
@@ -296,9 +295,7 @@ def task_post_schema_check(revision_id: int, task_id: int):
     if len(violations) > 0:
         failed_filenames = validator.get_failed_validation_filenames()
         schema_violations = [
-            PostSchemaViolation.from_violation(
-                revision=revision, filename=filename.split("\\")[-1]
-            )
+            PostSchemaViolation.from_violation(revision=revision, filename=filename)
             for filename in failed_filenames
         ]
 

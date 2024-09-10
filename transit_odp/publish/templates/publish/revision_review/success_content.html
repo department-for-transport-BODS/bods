@@ -2,7 +2,9 @@
 {% load crispy_forms_tags %}
 {# Report Section #}
 {% if is_schema_violation or is_post_schema_violation or is_pti_violation %}
-  {% include "publish/snippets/pti_panel/hard_fail.html" %}
+  {% include "publish/snippets/pti_panel/soft_fail.html" %}
+{% else %}
+  {% include "publish/snippets/pti_panel/pass.html" %}
 {% endif %}
 {# DQS Report Section #}
 {% include "publish/snippets/dqs_review_panel.html" %}
