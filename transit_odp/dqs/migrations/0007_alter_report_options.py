@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("dqs", "0006_create_dqs_check_missing_journey_code"),
     ]

@@ -6,6 +6,4 @@ class NoTimingPointMoreThan15MinsCodeTable(DQSWarningDetailsBaseTable):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
-        self.columns.remove(self.stop_name)
-        self.details.verbose_name = "Timing point link"
-        self.columns.append(self.details)
+        self.stop_name.verbose_name = "Timing point"

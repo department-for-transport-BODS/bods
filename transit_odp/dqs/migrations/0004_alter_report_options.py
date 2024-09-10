@@ -9,7 +9,6 @@ AWS_ENVIRONMENT = settings.AWS_ENVIRONMENT.lower()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("dqs", "0003_alter_observationresults_service_pattern_stop_and_more"),
     ]
@@ -19,7 +18,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL(
             "INSERT INTO dqs_checks(observation, importance, category, queue_name) VALUES ('"
-            + Checks.NoTimingPointMoreThan15Mins.value
+            + Checks.NoTimingPointMoreThan15Minutes.value
             + "', '"
             + Level.advisory.value
             + "', '"
