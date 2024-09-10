@@ -8,12 +8,14 @@ from freezegun import freeze_time
 from requests import Response
 
 from transit_odp.data_quality.models.report import PTIValidationResult
+from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
     DatasetFactory,
     DatasetRevisionFactory,
     OrganisationFactory,
+    TXCFileAttributesFactory,
 )
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
@@ -31,12 +33,32 @@ from transit_odp.validate import DownloadException, FileScanner
 from transit_odp.validate.antivirus import SuspiciousFile
 from transit_odp.validate.tests.utils import create_text_file, create_zip_file
 from transit_odp.validate.xml import XMLSyntaxError
+from transit_odp.timetables.transxchange import BaseSchemaViolation
 
 pytestmark = pytest.mark.django_db
 
 TASK_MODULE = "transit_odp.timetables.tasks"
 HERE = Path(__file__)
 DATA = HERE.parent / "data"
+
+
+class DatasetTXCValidatorFactory:
+    def __init__(self, revision):
+        self.revision = revision
+
+    def get_violations(self):
+        return [
+            BaseSchemaViolation(
+                filename="failed_violation.xml", line=12, details="Invalid schema"
+            )
+        ]
+
+    def get_number_of_files_uploaded(self):
+        return 1
+
+
+def create_mock_datasettxcfilevalitor():
+    return DatasetTXCValidatorFactory(None)
 
 
 @pytest.fixture
@@ -75,15 +97,16 @@ def _add_revision(dataset, **kwargs):
         **kwargs,
     )
     DatasetETLTaskResultFactory(revision=revision)
+    return revision
 
 
 def add_live_revision(dataset, txc_version=2.1):
-    _add_revision(dataset, txc_version=txc_version)
+    return _add_revision(dataset, txc_version=txc_version)
 
 
 def add_draft_revision(dataset, txc_version=2.1, **kwargs):
     status = kwargs.pop("status", FeedStatus.success.value)
-    _add_revision(
+    return _add_revision(
         dataset,
         txc_version=txc_version,
         is_published=False,
@@ -189,15 +212,14 @@ def test_run_timetable_txc_schema_validation_exception(mocker, tmp_path):
         task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
 
     zip_validator = TASK_MODULE + ".DatasetTXCValidator"
-    mocker.patch(
-        zip_validator,
-        side_effect=Exception("Exception thrown"),
-    )
-    with pytest.raises(PipelineException):
-        task_timetable_schema_check(task.revision.id, task.id)
+    mocker.patch(zip_validator, return_value=create_mock_datasettxcfilevalitor())
 
-    task.refresh_from_db()
-    assert task.error_code == task.SCHEMA_ERROR
+    task_timetable_schema_check(task.revision.id, task.id)
+    schemaviolation_objects = SchemaViolation.objects.filter(
+        revision_id=task.revision.id
+    )
+    assert schemaviolation_objects.count() == 1
+    assert schemaviolation_objects.first().filename == "failed_violation.xml"
 
 
 def test_run_task_post_schema_check_exception(mocker, tmp_path):
@@ -304,12 +326,13 @@ def test_file_check_validation_exception(mocker):
 def test_task_pti_validation():
     upload_file_path = DATA / "3_pti_pass.zip"
     dataset = DatasetFactory(live_revision=None)
-    add_draft_revision(
+    revision = add_draft_revision(
         dataset,
         txc_version=2.2,
         upload_file__from_path=upload_file_path,
         status=FeedStatus.indexing.value,
     )
+    TXCFileAttributesFactory(revision=revision)
     revision = dataset.revisions.first()
 
     task = revision.etl_results.first()
