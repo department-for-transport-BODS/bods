@@ -442,6 +442,10 @@ def task_pti_validation(revision_id: int, task_id: int):
         PTIValidationResult.from_pti_violations(
             revision=revision, violations=violations
         ).save()
+
+        TXCFileAttributes.objects.filter(
+            revision=revision.id, filename__in=[pv.filename for pv in pti_violations]
+        ).delete()
         task.update_progress(50)
         revision.save()
 
@@ -459,6 +463,20 @@ def task_dataset_etl(revision_id: int, task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+
+    valid_txc_files = list(
+        TXCFileAttributes.objects.filter(revision=revision.id).values_list(
+            "filename", flat=True
+        )
+    )
+    adapter.info(f"ETL task has {len(valid_txc_files)} files to process")
+    if not valid_txc_files:
+        message = f"ETL task: task_dataset_etl, no file to process, zip file: {revision.upload_file.name}"
+        adapter.error(message, exc_info=True)
+        task.to_error("task_dataset_etl", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS)
+        task.additional_info = message
+        raise PipelineException(message)
+
     adapter.info("Starting ETL pipeline task.")
 
     schema_failed_filenames = set(
