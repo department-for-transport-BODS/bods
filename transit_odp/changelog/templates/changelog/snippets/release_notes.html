@@ -1,4 +1,27 @@
 {% load i18n %}
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "September 2024 (1.40.0)" %}</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    Security enhancements to limit the length of a session to 10 minutes.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Enable BODS to ingest locally managed registrations from Enhanced Partnerships.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Improve the Fares publish process to only reject files from a zip that fail the schema check, instead of rejecting the entire zip.
+    {% endblocktrans %}
+  </li>
+</ul>
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "August 2024 (1.39.0)" %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}
