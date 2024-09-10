@@ -3,46 +3,33 @@ from dateutil.parser import parse as parse_datetime_str
 
 from transit_odp.fares.netex import NeTExDocument, get_documents_from_file
 from transit_odp.fares.tests.conftest import FIXTURES
-from transit_odp.organisation.factories import DatasetRevisionFactory
 
 
-@pytest.mark.django_db
 def test_get_netex_document_from_zip_file():
     expected = []
-    actual_timestamp_list = []
-    length_actual = 0
-    zip_filepath = str(FIXTURES.joinpath("sample.zip"))
-    xpath = ["PublicationRequest", "RequestTimestamp"]
-
-    revision = DatasetRevisionFactory(
-        upload_file__from_path=zip_filepath, upload_file__filename="sample.zip"
-    )
     sample_files = ["sample1.xml", "sample2.xml"]
     for sample in sample_files:
         netex_filepath = str(FIXTURES.joinpath(sample))
         with open(netex_filepath, "rb") as f:
             expected.append(NeTExDocument(f))
 
-    actual_generator = get_documents_from_file(revision)
-    for actual in actual_generator:
-        length_actual = length_actual + 1
-        actual_timestamp_list.append(actual.get_element(xpath).text)
+    zip_filepath = str(FIXTURES.joinpath("sample.zip"))
+    with open(zip_filepath, "rb") as f:
+        actual = get_documents_from_file(f)
 
-    assert len(expected) == length_actual
+    assert len(expected) == len(actual)
 
     # if files are the same then RequestTimestamp should be equal
+    xpath = ["PublicationRequest", "RequestTimestamp"]
     expected_timestamp = expected[0].get_element(xpath).text
-    actual_timestamp = actual_timestamp_list[0]
+    actual_timestamp = actual[0].get_element(xpath).text
     assert expected_timestamp == actual_timestamp
 
 
-@pytest.mark.django_db
 def test_get_netex_document_from_file():
     fullpath = FIXTURES.joinpath("sample1.xml")
-    revision = DatasetRevisionFactory(
-        upload_file__from_path=fullpath, upload_file__filename="sample1.xml"
-    )
-    actual = get_documents_from_file(revision)
+    with open(fullpath, "rb") as f:
+        actual = get_documents_from_file(f)
 
     assert len(actual) == 1
     xpath = ["PublicationRequest", "RequestTimestamp"]
@@ -122,6 +109,25 @@ def test_get_multiple_attr_ids_from_xpath(netexdocument):
 def test_get_product_types(netexdocument):
     actual = netexdocument.get_product_types()
     expected = []
+    assert expected == actual
+
+
+def test_get_products_count(netexdocument):
+    product_types = netexdocument.get_product_types()
+    actual = netexdocument.get_products_count(product_types)
+    expected = 0
+    assert expected == actual
+
+
+def test_get_number_of_trip_products(netexdocument):
+    actual = netexdocument.get_number_of_trip_products()
+    expected = 0
+    assert expected == actual
+
+
+def test_get_number_of_pass_products(netexdocument):
+    actual = netexdocument.get_number_of_pass_products()
+    expected = 0
     assert expected == actual
 
 

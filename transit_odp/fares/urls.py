@@ -1,10 +1,6 @@
 from django.urls import include, path
 
 from transit_odp.fares import views
-from transit_odp.fares.views.download import (
-    PublishedSchemaViolationsCSVFileView,
-    ReviewSchemaViolationsCSVFileView,
-)
 from transit_odp.fares.views.edit_description import (
     EditDraftRevisionDescriptionView,
     EditLiveRevisionDescriptionView,
@@ -29,11 +25,6 @@ urlpatterns = [
                     name="feed-detail",
                 ),
                 path(
-                    "fares-csv-published",
-                    view=PublishedSchemaViolationsCSVFileView.as_view(),
-                    name="review-fares-csv",
-                ),
-                path(
                     "review/",
                     include(
                         [
@@ -46,11 +37,6 @@ urlpatterns = [
                                 "update",
                                 view=views.FaresDatasetUploadModify.as_view(),
                                 name="upload-modify",
-                            ),
-                            path(
-                                "fares-csv",
-                                view=ReviewSchemaViolationsCSVFileView.as_view(),
-                                name="review-fares-csv",
                             ),
                         ]
                     ),
