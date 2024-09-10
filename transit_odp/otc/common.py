@@ -65,7 +65,7 @@ def process_service_number(string: str) -> List:
     """
     if not string:
         return []
-    
+
     if has_only_hyphen_delimiter(string):
         return [string]
 
@@ -87,6 +87,7 @@ def process_service_number(string: str) -> List:
 def has_only_space_delimiter(s):
     delimiters = [",", ":", "|", "-"]
     return " " in s and all(d not in s for d in delimiters)
+
 
 def has_only_hyphen_delimiter(s):
     delimiters = [",", ":", "|"]
