@@ -385,7 +385,7 @@ DuplicateJourneyCodeObservation = Observation(
     list_url_name="dq:duplicate-journey-code-list",
     level=Level.critical,
     category=Category.journey,
-    is_active=False,
+    is_active=True,
 )
 
 MissingJourneyCodeObservation = Observation(
@@ -404,7 +404,7 @@ MissingJourneyCodeObservation = Observation(
     list_url_name="dq:missing-journey-code-list",
     level=Level.critical,
     category=Category.journey,
-    is_active=False,
+    is_active=True,
 )
 
 CancelledServiceAppearingActiveObservation = Observation(
@@ -431,7 +431,7 @@ CancelledServiceAppearingActiveObservation = Observation(
     list_url_name="dq:cancelled-service-appearing-active-list",
     level=Level.critical,
     category=Category.data_set,
-    is_active=False,
+    is_active=True,
 )
 
 IncorrectLicenceNumberObservation = Observation(
@@ -456,7 +456,7 @@ IncorrectLicenceNumberObservation = Observation(
     list_url_name="dq:incorrect-licence-number-list",
     level=Level.advisory,
     category=Category.data_set,
-    is_active=False,
+    is_active=True,
 )
 
 ServicedOrganisationOutOfDateObservation = Observation(
@@ -546,7 +546,7 @@ MissingBusWorkingNumberObservation = Observation(
     list_url_name="dq:missing-bus-working-number-list",
     level=Level.advisory,
     category=Category.journey,
-    is_active=False,
+    is_active=True,
 )
 
 DuplicateJourneysObservation = Observation(
@@ -591,7 +591,7 @@ NoTimingPointMoreThan15MinsObservation = Observation(
     list_url_name="dq:no-timing-point-more-than-15-minutes-list",
     level=Level.advisory,
     category=Category.timing,
-    is_active=False,
+    is_active=True,
 )
 
 OBSERVATIONS = (
