@@ -14,6 +14,7 @@
               <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header">Service ({{ table.paginated_rows|length }})</th>
                 <th scope="col" class="govuk-table__header">Details</th>
+                <th scope="col" class="govuk-table__header">Suppress All Observations</th>
               </tr>
             </thead>
           {% endif %}
@@ -41,6 +42,17 @@
                       </a>
                     {% else %}
                       {{ row.cells.dqs_details }}
+                    {% endif %}
+                  </td>
+                  <td class="govuk-table__cell">
+                    {% if row.cells.is_published %}
+                      <a href="{% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
+                        {{ row.cells.line_name }} - {{ row.cells.service_code }}
+                      </a>
+                    {% else %}
+                      <a href="{% url 'revision-line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}&revision_id={{ row.cells.revision_id }}">
+                        Suppress Status
+                      </a>
                     {% endif %}
                   </td>
                 </tr>

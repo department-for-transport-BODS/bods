@@ -224,14 +224,13 @@ class Summary(BaseModel):
             df = (
                 df.groupby(["observation", "category", "importance"])
                 .agg(
-                    {
-                        "journey_start_time": "size",
-                    }
-                )
-                .rename(
-                    columns={
-                        "journey_start_time": "number_of_services_affected",
-                    }
+                    number_of_services_affected=("journey_start_time", "size"),
+                    number_of_suppressed_observation=(
+                        "is_suppressed",
+                        lambda is_suppressed_series: (
+                            is_suppressed_series == True
+                        ).sum(),
+                    ),
                 )
                 .reset_index()
             )
