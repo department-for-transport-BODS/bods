@@ -101,31 +101,12 @@ class Registry:
         regs_to_update_lta = []
         registrations = []
 
-        for reg in self._client.get_latest_variations_since(when):
-            registrations.append(reg)
-            regs_to_update_lta.append(reg)
-
-        old_modified_services = []
-
-        logger.info("Checking for services with old variations modification.")
-        for reg in self._client.get_latest_variations_since(when, False):
-            if reg not in registrations:
-                old_modified_services.append(reg.registration_number)
-
-        logger.info(
-            f"Found {len(old_modified_services)} services with old variation modification."
-        )
-        logger.info(
-            f"For following registration numbers old variation was updated {old_modified_services}"
-        )
-
-        if len(old_modified_services):
-            services_to_check += old_modified_services
-
-        services_to_check = list(set(services_to_check))
         for reg in self._client.get_latest_variations_by_registration_code(
             services_to_check
         ):
+            registrations.append(reg)
+
+        for reg in self._client.get_latest_variations_since(when):
             if reg not in registrations:
                 registrations.append(reg)
                 regs_to_update_lta.append(reg)

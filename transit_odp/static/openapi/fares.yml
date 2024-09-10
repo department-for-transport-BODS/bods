@@ -43,7 +43,7 @@ paths:
             type: array
             items:
               type: string
-            example: [CAMT, LYNX]
+            example: [SBLB, SCMN]
           style: form
           explode: false
 
