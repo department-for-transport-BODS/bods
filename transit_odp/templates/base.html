@@ -31,7 +31,7 @@
     <body class="govuk-template__body govuk-body">
       {% cookielaw_banner %}
       {% csrf_token %}
-      <script>
+      <script nonce="{{request.csp_nonce}}">
                 document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');
       </script>
       {% block skiplink %}
@@ -40,17 +40,17 @@
       {% block page %}{% endblock %}
       {% block scripts %}
         {{ GOOGLE_ANALYTICS_KEY | json_script:"ga-data" }}
-        <script>var mapboxKey = '{{MAPBOX_KEY}}'</script>
-        <script src="{% static 'frontend/vendor.bundle.js' %}"></script>
-        <script src="{% static 'frontend/main.bundle.js' %}"></script>
-        <script>
+        <script nonce="{{request.csp_nonce}}">var mapboxKey = '{{MAPBOX_KEY}}'</script>
+        <script nonce="{{request.csp_nonce}}" src="{% static 'frontend/vendor.bundle.js' %}"></script>
+        <script nonce="{{request.csp_nonce}}" src="{% static 'frontend/main.bundle.js' %}"></script>
+        <script nonce="{{request.csp_nonce}}">
                     new BODSFrontend.MyAccountMenu();
                     BODSFrontend.initAll();
         </script>
         {% if not request.COOKIES.keys|is_value_in_dict:'cookie_policy' %}
           <!-- Global site tag (gtag.js) - Google Analytics -->
-          <script async src="https://www.googletagmanager.com/gtag/js?id={{GOOGLE_ANALYTICS_KEY}}"></script>
-          <script>
+          <script nonce="{{request.csp_nonce}}" async src="https://www.googletagmanager.com/gtag/js?id={{GOOGLE_ANALYTICS_KEY}}"></script>
+          <script nonce="{{request.csp_nonce}}">
                         const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
                         window.dataLayer = window.dataLayer || [];
                         function gtag() {
@@ -60,7 +60,7 @@
                         gtag('config', gaToken);
           </script>
         {% else %}
-          <script>
+          <script nonce="{{request.csp_nonce}}">
                         const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
                         window['ga-disable-' + gaToken] = true;
           </script>

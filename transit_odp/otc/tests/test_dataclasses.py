@@ -49,10 +49,10 @@ test_data_sets = [
 
 expected_results = [
     "642",
-    "642|231|678|Park|&|Ride",
+    "642|231|678|Park & Ride",
     "642|231|678|435|456|21",
-    "642|231,678",
-    "Cotgrave|Connection|878N|23H|909|POP",
+    "642|231|678",
+    "Cotgrave Connection|878N|23H|909|POP",
 ]
 
 

@@ -97,3 +97,35 @@ def test_api_request_middleware_remove_api_key(client_factory):
     assert request.requestor == user
     assert request.path_info == "/api/v1/fares/dataset/"
     assert request.query_string == "noc=BLAH&status=active"
+
+
+def test_security_headers(client_factory):
+    host = config.hosts.DATA_HOST
+    url = reverse("home", host=host)
+    client = client_factory(host=host)
+    user = UserFactory()
+    client.force_login(user=user)
+    response = client.get(
+        url, {"noc": "BLAH", "api_key": user.auth_token.key, "status": "active"}
+    )
+    # Check the Permissions-Policy header
+    assert (
+        response["Permissions-Policy"]
+        == "geolocation=(self), microphone=(self), camera=(self)"
+    )
+    # Extract the Content-Security-Policy header
+    csp_header = response["Content-Security-Policy"]
+    expected_directives = [
+        "default-src",
+        "script-src",
+        "style-src",
+        "font-src",
+        "img-src",
+        "object-src",
+        "connect-src",
+        "frame-ancestors",
+        "worker-src",
+    ]
+    # Check if all expected CSP directives are present
+    for directive in expected_directives:
+        assert f"{directive}" in csp_header, f"Missing directive: {directive}"

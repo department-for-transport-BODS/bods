@@ -43,7 +43,7 @@ paths:
             type: array
             items:
               type: string
-            example: [SCGH, SCLI]
+            example: [SBLB, SCMN]
           style: form
           explode: false
 

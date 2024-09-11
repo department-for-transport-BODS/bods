@@ -44,7 +44,7 @@ SESSION_COOKIE_SECURE = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-httponly
 SESSION_COOKIE_HTTPONLY = True
 # https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-SESSION_COOKIE_AGE
-SESSION_COOKIE_AGE = 30 * 60  # set to 30 minutes
+SESSION_COOKIE_AGE = 600  # set to 10 minutes
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-secure
 CSRF_COOKIE_SECURE = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly
@@ -61,7 +61,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
 SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=False)
 # https://docs.djangoproject.com/en/dev/ref/middleware/#x-content-type-options-nosniff
 SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
-    "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=False
+    "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=True
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-browser-xss-filter
 SECURE_BROWSER_XSS_FILTER = False
@@ -98,6 +98,7 @@ AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
 
 # Bucket for local authority CSV file
 AWS_BODDS_XSD_SCHEMA_BUCKET_NAME = env("AWS_BODDS_XSD_SCHEMA_BUCKET_NAME")
+LOCAL_AUTHORITY_COMPARISON_FILE_NAME = env("LOCAL_AUTHORITY_COMPARISON_FILE_NAME")
 
 # STATIC
 # ------------------------

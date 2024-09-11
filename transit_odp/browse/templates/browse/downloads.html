@@ -203,13 +203,13 @@
       </p>
       <p class="govuk-body">
         {% blocktrans %}
-          Download coach data in ATCO.cif or TxC2.4 format.
+          Download coach data in ATCO-CIF or TxC 2.4 PTI.
         {% endblocktrans %}
       </p>
       <ul class="govuk-list">
         <li>
           <b>{% trans "Format" %}:</b>
-          {% trans "TxC2.4/ATCO.cif" %}
+          {% trans "TxC2.4 PTI/ATCO.CIF" %}
         </li>
         <li>
           <b>{% trans "Mode" %}:</b> {% trans "Coach" %}
@@ -231,7 +231,7 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script>
+  <script nonce="{{request.csp_nonce}}">
         function addGATagEvent(obj) {
             gtag('event', 'Download coach data events', {
                 'event_category': 'link',

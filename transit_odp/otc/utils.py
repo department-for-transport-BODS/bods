@@ -3,14 +3,15 @@ import logging
 from io import StringIO
 from typing import List, Optional
 
-from transit_odp.common.utils.s3_bucket_connection import get_s3_bodds_bucket_storage
-from transit_odp.organisation.constants import (
-    ENGLISH_TRAVELINE_REGIONS,
-    SCOTLAND_TRAVELINE_REGIONS,
-)
-from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority
-from transit_odp.otc.models import UILta, Service
+import botocore
+from django.conf import settings
+from django.core.cache import cache
+from django.http import HttpResponse
 
+from transit_odp.common.utils.s3_bucket_connection import get_s3_bodds_bucket_storage
+from transit_odp.organisation.constants import SCOTLAND_TRAVELINE_REGIONS
+from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority
+from transit_odp.otc.models import Service, UILta
 
 logger = logging.getLogger(__name__)
 
@@ -22,16 +23,19 @@ def read_local_authority_comparison_file_from_s3_bucket():
     needed for the task.
     """
     try:
-        logger.info("Connecting to S3 bucket and retrieving csv file")
-        storage = get_s3_bodds_bucket_storage()
+        logger.info("Connecting to S3 bucket.")
+
         csv_data = []
-        file_name = "Local Authority Comparison (5).csv"
+        bucket_name = getattr(settings, "AWS_BODDS_XSD_SCHEMA_BUCKET_NAME", None)
+        csv_file_name = getattr(settings, "LOCAL_AUTHORITY_COMPARISON_FILE_NAME", None)
+        storage = get_s3_bodds_bucket_storage()
 
-        if not storage.exists(file_name):
-            logger.warning(f"{file_name} does not exist in the S3 bucket.")
-            return []
+        logger.info(f"Retrieving '{csv_file_name}' from S3 bucket.")
+        storage.connection.meta.client.head_object(
+            Bucket=bucket_name, Key=csv_file_name
+        )
 
-        file = storage._open(file_name)
+        file = storage._open(csv_file_name)
         content = file.read().decode()
         file.close()
 
@@ -50,15 +54,29 @@ def read_local_authority_comparison_file_from_s3_bucket():
             csv_data.append(csv_row)
 
         if csv_data:
-            logger.info(f"Successfully read {len(csv_data)} LTAs from {file_name}.")
+            logger.info(f"Successfully read {len(csv_data)} LTAs from {csv_file_name}.")
         else:
             logger.warning(
-                f"Issue in reading {file_name} from S3 bucket - file may be empty."
+                f"Issue in reading {csv_file_name} from S3 bucket - file may be empty."
             )
 
         return csv_data
+    except botocore.exceptions.ClientError as e:
+        error_code = e.response["Error"]["Code"]
+        if error_code == "403":
+            logger.error(
+                f"Permission denied (403) when accessing the S3 bucket: {bucket_name}"
+            )
+            return HttpResponse(
+                "Permission denied when accessing the S3 bucket", status=403
+            )
+        else:
+            logger.error(
+                f"Error (Code: {error_code}) connecting to S3 bucket {bucket_name}: {str(e)}"
+            )
+            raise
     except Exception as e:
-        logger.error(f"Error reading {file_name} from S3: {str(e)}")
+        logger.error(f"Error reading {csv_file_name} from S3: {str(e)}")
         raise
 
 
@@ -105,6 +123,17 @@ def check_missing_csv_lta_names(csv_data: List[dict]) -> set:
 
 
 def is_service_in_scotland(service_ref: str) -> bool:
+    service_name_in_cache = f"{service_ref.replace(':', '-')}-scottish-region"
+    value_in_cache = cache.get(service_name_in_cache, None)
+
+    if value_in_cache is not None:
+        logger.info(f"{service_ref} PTI validation For region found in cache")
+        return value_in_cache
+
+    return get_service_in_scotland_from_db(service_ref)
+
+
+def get_service_in_scotland_from_db(service_ref: str) -> bool:
     """Check weather a service is from the scotland region or not
     If any of the english regions is present service will be considered as english
     If only scottish is present then service will be considered as scottish
@@ -115,6 +144,7 @@ def is_service_in_scotland(service_ref: str) -> bool:
     Returns:
         bool: True/False if service is in scotland
     """
+    logger.info(f"{service_ref} PTI validation For region checking in database")
     service_obj = (
         Service.objects.filter(registration_number=service_ref.replace(":", "/"))
         .add_traveline_region_weca()
@@ -122,10 +152,12 @@ def is_service_in_scotland(service_ref: str) -> bool:
         .add_traveline_region_details()
         .first()
     )
+    is_scottish = False
     if service_obj and service_obj.traveline_region:
         regions = service_obj.traveline_region.split("|")
-        if not set(regions).isdisjoint(ENGLISH_TRAVELINE_REGIONS):
-            return False
-        return sorted(SCOTLAND_TRAVELINE_REGIONS) == sorted(regions)
+        if sorted(SCOTLAND_TRAVELINE_REGIONS) == sorted(regions):
+            is_scottish = True
 
-    return False
+    service_name_in_cache = f"{service_ref.replace(':', '-')}-scottish-region"
+    cache.set(service_name_in_cache, is_scottish, timeout=7200)
+    return is_scottish

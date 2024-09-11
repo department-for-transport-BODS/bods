@@ -15,114 +15,6 @@ class ReportStatus(Enum):
     REPORT_GENERATION_FAILED = "REPORT_GENERATION_FAILED"
 
 
-CHECKS_DATA = [
-    {
-        "observation": "Incorrect NOC",
-        "importance": "Critical",
-        "category": "Data set",
-        "queue_name": "incorrect-noc-queue",
-    },
-    {
-        "observation": "First stop is set down only",
-        "importance": "Critical",
-        "category": "Stop",
-        "queue_name": "first-stop-is-set-down-only-queue",
-    },
-    {
-        "observation": "Last stop is pick up only",
-        "importance": "Critical",
-        "category": "Stop",
-        "queue_name": "last-stop-is-pickup-only-queue",
-    },
-    {
-        "observation": "First stop is not a timing point",
-        "importance": "Critical",
-        "category": "Timing",
-        "queue_name": "first-stop-is-not-a-timing-point-queue",
-    },
-    {
-        "observation": "Last stop is not a timing point",
-        "importance": "Critical",
-        "category": "Timing",
-        "queue_name": "last-stop-is-not-a-timing-point-queue",
-    },
-    {
-        "observation": "Incorrect stop type",
-        "importance": "Critical",
-        "category": "Stop",
-        "queue_name": "incorrect-stop-type-queue",
-    },
-    {
-        "observation": "Missing journey code",
-        "importance": "Critical",
-        "category": "Journey",
-        "queue_name": "missing-journey-code-queue",
-    },
-    {
-        "observation": "Duplicate journey code",
-        "importance": "Critical",
-        "category": "Journey",
-        "queue_name": "duplicate-journey-code-queue",
-    },
-    {
-        "observation": "Missing bus working number",
-        "importance": "Advisory",
-        "category": "Journey",
-        "queue_name": "missing-bus-working-number-queue",
-    },
-    {
-        "observation": "Missing stop",
-        "importance": "Advisory",
-        "category": "Stop",
-        "queue_name": "missing-stop-queue",
-    },
-    {
-        "observation": "Stop not found in NaPTAN",
-        "importance": "Critical",
-        "category": "Stop",
-        "queue_name": "stop-not-found-in-naptan-queue",
-    },
-    {
-        "observation": "Same stop found multiple times",
-        "importance": "Advisory",
-        "category": "Stop",
-        "queue_name": "same-stop-found-multiple-times-queue",
-    },
-    {
-        "observation": "Incorrect licence number",
-        "importance": "Critical",
-        "category": "Data set",
-        "queue_name": "incorrect-licence-number-queue",
-    },
-]
-
-
-BUS_SERVICES_AFFECTED_SUBSET = ["service_code", "line_name"]
-
-
-class Checks(Enum):
-    DefaultCheck = ""
-    IncorrectNoc = "Incorrect NOC"
-    FirstStopIsSetDown = "First stop is set down only"
-    LastStopIsPickUpOnly = "Last stop is pick up only"
-    IncorrectStopType = "Incorrect stop type"
-    StopNotFoundInNaptan = "Stop not found in NaPTAN"
-    LastStopIsNotATimingPoint = "Last stop is not a timing point"
-    FirstStopIsNotATimingPoint = "First stop is not a timing point"
-    MissingJourneyCode = "Missing journey code"
-
-
-_ANCHOR: Final = '<a class="govuk-link" target="_blank" href="{0}">{0}</a>'
-_TRAVEL_LINE_ANCHOR = _ANCHOR.format(
-    "https://www.travelinedata.org.uk/traveline-open-data/"
-    "transport-operations/browse/"
-)
-_TRANSXCHANGE_ANCHOR: Final = _ANCHOR.format(
-    "https://www.gov.uk/government/collections/transxchange"
-)
-_LINE_BREAK = "<br/><br/>"
-
-
 @unique
 class Level(Enum):
     critical = "Critical"
@@ -144,6 +36,127 @@ class CheckBasis(Enum):
     timing_patterns = "timing_patterns"
     vehicle_journeys = "vehicle_journeys"
     data_set = "data_set"
+
+
+class Checks(Enum):
+    DefaultCheck = ""
+    IncorrectNoc = "Incorrect NOC"
+    IncorrectLicenceNumber = "Incorrect licence number"
+    FirstStopIsSetDown = "First stop is set down only"
+    LastStopIsPickUpOnly = "Last stop is pick up only"
+    IncorrectStopType = "Incorrect stop type"
+    StopNotFoundInNaptan = "Stop not found in NaPTAN"
+    LastStopIsNotATimingPoint = "Last stop is not a timing point"
+    FirstStopIsNotATimingPoint = "First stop is not a timing point"
+    MissingJourneyCode = "Missing journey code"
+    DuplicateJourneyCode = "Duplicate journey code"
+    NoTimingPointMoreThan15Minutes = "No timing point for more than 15 minutes"
+    MissingBusWorkingNumber = "Missing bus working number"
+    MissingStop = "Missing stop"
+    SameStopFoundMultipleTimes = "Same stop found multiple times"
+    CancelledServiceAppearingActive = (
+        "Cancelled service incorrectly appearing as active"
+    )
+    ServicedOrganisationOutOfDate = "Serviced organisation data is out of date"
+    ServiceNumberNotMatchingRegistration = "Service number does not match registration"
+    MissingData = "Missing data"
+    DuplicateJourneys = "Duplicate journeys"
+
+
+CHECKS_DATA = [
+    {
+        "observation": Checks.IncorrectNoc.value,
+        "importance": Level.critical.value,
+        "category": Category.data_set.value,
+        "queue_name": "incorrect-noc-queue",
+    },
+    {
+        "observation": Checks.FirstStopIsSetDown.value,
+        "importance": Level.critical.value,
+        "category": Category.stops.value,
+        "queue_name": "first-stop-is-set-down-only-queue",
+    },
+    {
+        "observation": Checks.LastStopIsPickUpOnly.value,
+        "importance": Level.critical.value,
+        "category": Category.stops.value,
+        "queue_name": "last-stop-is-pickup-only-queue",
+    },
+    {
+        "observation": Checks.FirstStopIsNotATimingPoint.value,
+        "importance": Level.critical.value,
+        "category": Category.timing.value,
+        "queue_name": "first-stop-is-not-a-timing-point-queue",
+    },
+    {
+        "observation": Checks.LastStopIsNotATimingPoint.value,
+        "importance": Level.critical.value,
+        "category": Category.timing.value,
+        "queue_name": "last-stop-is-not-a-timing-point-queue",
+    },
+    {
+        "observation": Checks.IncorrectStopType.value,
+        "importance": Level.critical.value,
+        "category": Category.stops.value,
+        "queue_name": "incorrect-stop-type-queue",
+    },
+    {
+        "observation": Checks.MissingJourneyCode.value,
+        "importance": Level.critical.value,
+        "category": Category.journey.value,
+        "queue_name": "missing-journey-code-queue",
+    },
+    {
+        "observation": Checks.DuplicateJourneyCode.value,
+        "importance": Level.critical.value,
+        "category": Category.journey.value,
+        "queue_name": "duplicate-journey-code-queue",
+    },
+    {
+        "observation": Checks.MissingBusWorkingNumber.value,
+        "importance": Level.advisory.value,
+        "category": Category.journey.value,
+        "queue_name": "missing-bus-working-number-queue",
+    },
+    {
+        "observation": Checks.MissingStop.value,
+        "importance": Level.advisory.value,
+        "category": Category.stops.value,
+        "queue_name": "missing-stop-queue",
+    },
+    {
+        "observation": Checks.StopNotFoundInNaptan.value,
+        "importance": Level.critical.value,
+        "category": Category.stops.value,
+        "queue_name": "stop-not-found-in-naptan-queue",
+    },
+    {
+        "observation": Checks.SameStopFoundMultipleTimes.value,
+        "importance": Level.advisory.value,
+        "category": Category.stops.value,
+        "queue_name": "same-stop-found-multiple-times-queue",
+    },
+    {
+        "observation": Checks.IncorrectLicenceNumber.value,
+        "importance": Level.critical.value,
+        "category": Category.data_set.value,
+        "queue_name": "incorrect-licence-number-queue",
+    },
+]
+
+
+BUS_SERVICES_AFFECTED_SUBSET = ["service_code", "line_name"]
+
+
+_ANCHOR: Final = '<a class="govuk-link" target="_blank" href="{0}">{0}</a>'
+_TRAVEL_LINE_ANCHOR = _ANCHOR.format(
+    "https://www.travelinedata.org.uk/traveline-open-data/"
+    "transport-operations/browse/"
+)
+_TRANSXCHANGE_ANCHOR: Final = _ANCHOR.format(
+    "https://www.gov.uk/government/collections/transxchange"
+)
+_LINE_BREAK = "<br/><br/>"
 
 
 @dataclass
@@ -168,7 +181,7 @@ class Observation:
 
 
 IncorrectNocObservation = Observation(
-    title="Incorrect NOC",
+    title=Checks.IncorrectNoc.value,
     text=(
         "This observation identifies where the National Operator Code (NOC) used in the data"
         " is not registered to your BODS Organisation profile."
@@ -195,7 +208,7 @@ IncorrectNocObservation = Observation(
 )
 
 StopNotInNaptanObservation = Observation(
-    title="Stop not found in NaPTAN",
+    title=Checks.StopNotFoundInNaptan.value,
     text="This observation identifies the use of stops that are not registered with NaPTAN. ",
     impacts=(
         "NaPTAN provides a source for key stop information across different transport types "
@@ -220,7 +233,7 @@ StopNotInNaptanObservation = Observation(
 )
 
 FirstStopSetDownOnlyObservation = Observation(
-    title="First stop is set down only",
+    title=Checks.FirstStopIsSetDown.value,
     text=(
         "This observation identifies journeys where the first stop is designated as set down only, "
         "meaning the bus is not scheduled to pick up passengers at the first stop. "
@@ -242,7 +255,7 @@ FirstStopSetDownOnlyObservation = Observation(
 )
 
 LastStopPickUpOnlyObservation = Observation(
-    title="Last stop is pick up only",
+    title=Checks.LastStopIsPickUpOnly.value,
     text=(
         "This observation identifies journeys where the last stop is designated as pick up only,"
         " meaning the bus is not scheduled to set down passengers at the last stop."
@@ -264,7 +277,7 @@ LastStopPickUpOnlyObservation = Observation(
 )
 
 IncorrectStopTypeObservation = Observation(
-    title="Incorrect stop type",
+    title=Checks.IncorrectStopType.value,
     text=(
         "This observation identifies the use of stops that are not designated as bus stops within NaPTAN. "
         "Expected stop types are BCT, BCQ or BCS."
@@ -310,7 +323,7 @@ IncorrectStopTypeObservation = Observation(
 )
 
 FirstStopNotTimingPointObservation = Observation(
-    title="First stop is not a timing point",
+    title=Checks.FirstStopIsNotATimingPoint.value,
     text="This observation identifies journeys where the first stop is not set to be a timing point.",
     impacts=(
         "A timing point is a designated stop where the bus has been registered to depart from at "
@@ -332,7 +345,7 @@ FirstStopNotTimingPointObservation = Observation(
 )
 
 LastStopNotTimingPointObservation = Observation(
-    title="Last stop is not a timing point",
+    title=Checks.LastStopIsNotATimingPoint.value,
     text="This observation identifies journeys where the last stop is not set to be a timing point. ",
     impacts=(
         "A timing point is a designated stop where the bus has been registered to depart from at a specific time. "
@@ -354,7 +367,7 @@ LastStopNotTimingPointObservation = Observation(
 )
 
 DuplicateJourneyCodeObservation = Observation(
-    title="Duplicate journey code",
+    title=Checks.DuplicateJourneyCode.value,
     text=(
         "This observation identifies where there are more than one vehicle journey for the same bus service that"
         " operate on the same day(s) and have the same journey code."
@@ -364,16 +377,19 @@ DuplicateJourneyCodeObservation = Observation(
         " to match the timetables data to the equivalent location data for that service to provide passengers with"
         " predicted or calculated arrival time of a bus at a stop."
     ),
-    resolve=(""),
-    preamble="The following service(s) have been observed to not have the duplicate journey code.",
+    resolve=(
+        "Please enter a unique journey code on your scheduling tool for vehicle journeys operated by the same"
+        " bus service and on the same day(s)."
+    ),
+    preamble="The following service(s) have been observed to have at least one journey that has a duplicate journey code.",
     list_url_name="dq:duplicate-journey-code-list",
     level=Level.critical,
     category=Category.journey,
-    is_active=False,
+    is_active=True,
 )
 
 MissingJourneyCodeObservation = Observation(
-    title="Missing journey code",
+    title=Checks.MissingJourneyCode.value,
     text="This observation identifies vehicle journeys that are missing a journey code",
     impacts=(
         "Journey code is unique identifier of a vehicle journey. Without this, journey"
@@ -388,30 +404,38 @@ MissingJourneyCodeObservation = Observation(
     list_url_name="dq:missing-journey-code-list",
     level=Level.critical,
     category=Category.journey,
-    is_active=False,
+    is_active=True,
 )
 
 CancelledServiceAppearingActiveObservation = Observation(
-    title="Cancelled service incorrectly appearing as active",
+    title=Checks.CancelledServiceAppearingActive.value,
     text=(
-        "This observation identifies services that have been cancelled with the responsible bus"
-        " registrations authority, but the published data indicate that they are running."
+        "This observation identifies services that have been cancelled or is not registered with"
+        " the responsible local bus registrations authority, but the published data indicate that"
+        " they are running. "
     ),
     impacts=(
         "Services that are no longer running will appear on journey planning apps causing major"
         " disruption to passengers and impacting passenger satisfaction. Operators must ensure the"
         " published data accurately reflects the status of their registered services. "
     ),
-    resolve=(""),
-    preamble="The following service(s) have been observed to not have the duplicate journey code.",
-    list_url_name="dq:duplicate-journey-code-list",
+    resolve=(
+        "If the service is no longer running, please remove the published file from the uploaded"
+        " data set, or end date the file equal to the date the service stopped running. This can"
+        " be done on your timetables scheduling tool."
+        + _LINE_BREAK
+        + "If the service is running, please contact the responsible local bus registrations authority"
+        " to register the bus service."
+    ),
+    preamble="The following service(s) have been observed to not be registered with a local bus registrations authority.",
+    list_url_name="dq:cancelled-service-appearing-active-list",
     level=Level.critical,
     category=Category.data_set,
-    is_active=False,
+    is_active=True,
 )
 
 IncorrectLicenceNumberObservation = Observation(
-    title="Incorrect licence number",
+    title=Checks.IncorrectLicenceNumber.value,
     text=(
         "This observation identifies where licence numbers used in the data is not registered"
         " to your BODS Organisation profile."
@@ -421,16 +445,22 @@ IncorrectLicenceNumberObservation = Observation(
         " and to match the data with bus location and fares data. This ability improves the quality"
         " of information available to passengers."
     ),
-    resolve=(""),
+    resolve=(
+        "Please check the licence number in your data is correct for your organisation and"
+        " is assigned to your Organisation profile."
+        + _LINE_BREAK
+        + "Operators can assign a licence number to their account by going to My account"
+        " (in the top right-hand side of the dashboard) and choosing Organisation profile."
+    ),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
     list_url_name="dq:incorrect-licence-number-list",
     level=Level.advisory,
     category=Category.data_set,
-    is_active=False,
+    is_active=True,
 )
 
 ServicedOrganisationOutOfDateObservation = Observation(
-    title="Serviced organisation data is out of date",
+    title=Checks.ServicedOrganisationOutOfDate.value,
     text=(
         "This observation identifies services that have journeys operating during Serviced"
         " Organisation days that have passed."
@@ -443,14 +473,14 @@ ServicedOrganisationOutOfDateObservation = Observation(
     ),
     resolve=(""),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    list_url_name="dq:serviced-organisation-out-of-date-list",
     level=Level.advisory,
     category=Category.data_set,
     is_active=False,
 )
 
 ServiceNumberNotMatchingRegistrationObservation = Observation(
-    title="Service number does not match registration",
+    title=Checks.ServiceNumberNotMatchingRegistration.value,
     text=(
         "This observation identifies services published with a service number that does not match the"
         " bus registrations data."
@@ -466,14 +496,14 @@ ServiceNumberNotMatchingRegistrationObservation = Observation(
     ),
     resolve=(""),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    list_url_name="dq:service-number-not-matching-registration-list",
     level=Level.advisory,
     category=Category.data_set,
     is_active=False,
 )
 
 MissingDataObservation = Observation(
-    title="Missing data",
+    title=Checks.MissingData.value,
     text=(
         "This observation identifies services that have gaps or not providing data for at least 42 days"
         " ahead of today’s date. This does not include services that are due to be cancelled with the"
@@ -485,17 +515,17 @@ MissingDataObservation = Observation(
     ),
     resolve=(""),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    list_url_name="dq:missing-data-list",
     level=Level.advisory,
     category=Category.data_set,
     is_active=False,
 )
 
 MissingBusWorkingNumberObservation = Observation(
-    title="Missing bus workings number",
+    title=Checks.MissingBusWorkingNumber.value,
     text=(
-        "This observation identifies services running journeys within the next 14 days that are missing"
-        " a bus workings number."
+        "This observation identifies if the service is valid within the next 14 days, and when it is"
+        " valid it contains a bus workings number."
     ),
     impacts=(
         "Bus workings number, known as ‘BlockNumber’ in TransXChange, is most frequently populated using"
@@ -505,16 +535,22 @@ MissingBusWorkingNumberObservation = Observation(
         + "This is important to enable cross journey predictions for passengers, meaning if a vehicle is"
         " running late on one journey, the subsequent journeys are likely to be delayed as well. "
     ),
-    resolve=(""),
-    preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    resolve=(
+        "Please enter a unique journey code on your scheduling tool for vehicle journeys operated by the"
+        " same bus service and on the same day(s)."
+    ),
+    preamble=(
+        "The following service(s) have been observed to have at least one journey that is missing"
+        " a bus working number."
+    ),
+    list_url_name="dq:missing-bus-working-number-list",
     level=Level.advisory,
     category=Category.journey,
-    is_active=False,
+    is_active=True,
 )
 
 DuplicateJourneysObservation = Observation(
-    title="Duplicate journeys",
+    title=Checks.DuplicateJourneys.value,
     text=(
         "This observation identifies where journeys for the same service that have the same operating profile,"
         " departure times and route."
@@ -525,31 +561,37 @@ DuplicateJourneysObservation = Observation(
     ),
     resolve=(""),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    list_url_name="dq:duplicate-journeys-list",
     level=Level.advisory,
     category=Category.journey,
     is_active=False,
 )
 
 NoTimingPointMoreThan15MinsObservation = Observation(
-    title="No timing point for more than 15 minutes",
+    title=Checks.NoTimingPointMoreThan15Minutes.value,
     text=(
-        "This observation identifies journeys where the interval between a pair of timing points is more"
-        " than 15 minutes."
+        "This observation identifies journeys where the interval between a pair of consecutive timing"
+        " points is more than 15 minutes. "
     ),
     impacts=(
         "Timing points are stops along a bus route where the bus is scheduled to arrive at a specific time. "
         + _LINE_BREAK
         + "It is recommended by the Traffic Commissioner that services have a stop at least every 15 minutes."
         " It is important to ensure the departure times on published timetables is correct to avoid disruption"
-        "  to passengers."
+        " to passengers. "
     ),
-    resolve=(""),
-    preamble="The following service(s) have been observed to not have the correct licence numbers.",
-    list_url_name="dq:incorrect-licence-number-list",
+    resolve=(
+        "Please investigate the observations found for the below service(s) and make the necessary updates"
+        " to the departure times on your scheduling tool if required."
+    ),
+    preamble=(
+        "The following service(s) have been observed to have at least one journey with a timing point more than"
+        " 15 minutes away from the previous timing point."
+    ),
+    list_url_name="dq:no-timing-point-more-than-15-minutes-list",
     level=Level.advisory,
     category=Category.timing,
-    is_active=False,
+    is_active=True,
 )
 
 OBSERVATIONS = (

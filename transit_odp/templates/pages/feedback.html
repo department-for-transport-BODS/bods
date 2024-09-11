@@ -24,5 +24,5 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script>new BODSFrontend.CounterCharactersInTextBox("id_comment", "comment_char_count");</script>
+  <script nonce="{{request.csp_nonce}}">new BODSFrontend.CounterCharactersInTextBox("id_comment", "comment_char_count");</script>
 {% endblock %}
