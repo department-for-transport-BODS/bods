@@ -7,12 +7,11 @@ from django.utils import timezone
 from freezegun import freeze_time
 from requests import Response
 
-from transit_odp.data_quality.models.report import (
-    PTIValidationResult,
-    PostSchemaViolation,
-)
-from transit_odp.timetables.constants import PII_ERROR
 from transit_odp.data_quality.models import SchemaViolation
+from transit_odp.data_quality.models.report import (
+    PostSchemaViolation,
+    PTIValidationResult,
+)
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
@@ -24,26 +23,48 @@ from transit_odp.organisation.factories import (
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.models import DatasetETLTaskResult
+from transit_odp.timetables.constants import PII_ERROR
 from transit_odp.timetables.tasks import (
     task_dataset_download,
+    task_dataset_etl,
     task_post_schema_check,
     task_pti_validation,
     task_scan_timetables,
     task_timetable_file_check,
     task_timetable_schema_check,
 )
+from transit_odp.timetables.transxchange import BaseSchemaViolation
 from transit_odp.users.factories import OrgAdminFactory
 from transit_odp.validate import DownloadException, FileScanner
 from transit_odp.validate.antivirus import SuspiciousFile
 from transit_odp.validate.tests.utils import create_text_file, create_zip_file
 from transit_odp.validate.xml import XMLSyntaxError
-from transit_odp.timetables.transxchange import BaseSchemaViolation
 
 pytestmark = pytest.mark.django_db
 
 TASK_MODULE = "transit_odp.timetables.tasks"
 HERE = Path(__file__)
 DATA = HERE.parent / "data"
+
+
+class TransXChangeDatasetParserFactory:
+    def __init__(self, source, failed_validations_filename):
+        self.source = source
+        self.failed_validations_filename = failed_validations_filename
+
+    def get_documents(self):
+        return []
+
+
+class DatasetTXCValidatorFactory_No_Violation:
+    def __init__(self, revision):
+        self.revision = revision
+
+    def get_violations(self):
+        return []
+
+    def get_number_of_files_uploaded(self):
+        return 0
 
 
 class DatasetTXCValidatorFactory:
@@ -72,12 +93,24 @@ class PostSchemaValidatorFactory:
         return ["failed_postchema_violation.xml"]
 
 
-def create_mock_datasettxcfilevalitor():
+@pytest.fixture
+def mock_dataset_txc_validator():
     return DatasetTXCValidatorFactory(None)
 
 
-def create_mock_postschemavalidator():
+@pytest.fixture
+def mock_dataset_txc_validator_no_violation():
+    return DatasetTXCValidatorFactory_No_Violation(None)
+
+
+@pytest.fixture
+def mock_post_schema_validator():
     return PostSchemaValidatorFactory()
+
+
+@pytest.fixture
+def mock_trans_xchange_dataset_parser():
+    return TransXChangeDatasetParserFactory(None, None)
 
 
 @pytest.fixture
@@ -220,7 +253,9 @@ def test_download_timetable_no_file_or_url():
     assert task.error_code == task.SYSTEM_ERROR
 
 
-def test_run_timetable_txc_schema_validation_exception(mocker, tmp_path):
+def test_run_timetable_txc_schema_validation_violation_found(
+    mocker, tmp_path, mock_dataset_txc_validator
+):
     """
     Given a zip file with an invalid xml a violation entry
     would be inserted in schemaviolation table.
@@ -234,7 +269,7 @@ def test_run_timetable_txc_schema_validation_exception(mocker, tmp_path):
         task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
 
     zip_validator = TASK_MODULE + ".DatasetTXCValidator"
-    mocker.patch(zip_validator, return_value=create_mock_datasettxcfilevalitor())
+    mocker.patch(zip_validator, return_value=mock_dataset_txc_validator)
 
     task_timetable_schema_check(task.revision.id, task.id)
     schemaviolation_objects = SchemaViolation.objects.filter(
@@ -244,7 +279,33 @@ def test_run_timetable_txc_schema_validation_exception(mocker, tmp_path):
     assert schemaviolation_objects.first().filename == "failed_violation.xml"
 
 
-def test_run_task_post_schema_check_exception(mocker, tmp_path):
+def test_run_timetable_txc_schema_validation_exception(
+    mocker, tmp_path, mock_dataset_txc_validator_no_violation
+):
+    """
+    Given a zip file with an invalid xml a violation entry
+    and if there are no valid file in uploaded zip file
+    PipelineException would be raised
+    """
+
+    file1 = tmp_path / "file1.xml"
+    testzip = tmp_path / "testzip.zip"
+    create_text_file(file1, "not xml")
+    create_zip_file(testzip, [file1])
+    with open(testzip, "rb") as zout:
+        task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
+
+    zip_validator = TASK_MODULE + ".DatasetTXCValidator"
+    mocker.patch(zip_validator, return_value=mock_dataset_txc_validator_no_violation)
+
+    with pytest.raises(PipelineException) as exc_info:
+        task_timetable_schema_check(task.revision.id, task.id)
+
+    task.refresh_from_db()
+    assert task.error_code == task.NO_VALID_FILE_TO_PROCESS
+
+
+def test_run_task_post_schema_check(mocker, tmp_path, mock_post_schema_validator):
     """
     Given a zip file with an xml containing PII, violation
     entry will be recorded in table PostSchemaViolation table
@@ -263,7 +324,7 @@ def test_run_task_post_schema_check_exception(mocker, tmp_path):
     zip_validator = TASK_MODULE + ".PostSchemaValidator"
     mocker.patch(
         zip_validator,
-        return_value=create_mock_postschemavalidator(),
+        return_value=mock_post_schema_validator,
     )
     task_post_schema_check(task.revision.id, task.id)
 
@@ -271,6 +332,35 @@ def test_run_task_post_schema_check_exception(mocker, tmp_path):
         revision_id=task.revision.id
     )
     assert postschemaviolation_objects.count() == 1
+
+
+def test_run_task_post_schema_check_exception(
+    mocker, tmp_path, mock_trans_xchange_dataset_parser
+):
+    """
+    Given a zip file without any valid file, PipelineException is raised
+    """
+
+    file1 = tmp_path / "file1.xml"
+    testzip = tmp_path / "test_pii.zip"
+    create_text_file(
+        file1,
+        r'<TransXChange FileName="C:\Users\test\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml">',
+    )
+    create_zip_file(testzip, [file1])
+    with open(testzip, "rb") as zout:
+        task = create_task(revision__upload_file=File(zout, name="test_pii.zip"))
+
+    zip_validator = TASK_MODULE + ".TransXChangeDatasetParser"
+    mocker.patch(
+        zip_validator,
+        return_value=mock_trans_xchange_dataset_parser,
+    )
+    with pytest.raises(PipelineException) as exc_info:
+        task_post_schema_check(task.revision.id, task.id)
+
+    task.refresh_from_db()
+    assert task.error_code == task.NO_VALID_FILE_TO_PROCESS
 
 
 def test_antivirus_scan_exception(mocker, tmp_path):
@@ -362,3 +452,45 @@ def test_task_pti_validation():
     task_pti_validation(revision.id, task.id)
     result = PTIValidationResult.objects.get(revision=revision)
     assert result.count == 0
+
+
+def test_task_pti_validation_exception():
+    """
+    If there are no valid txcfile for the revision, PipelineException would be raised
+    """
+    upload_file_path = DATA / "3_pti_pass.zip"
+    dataset = DatasetFactory(live_revision=None)
+    revision = add_draft_revision(
+        dataset,
+        txc_version=2.2,
+        upload_file__from_path=upload_file_path,
+        status=FeedStatus.indexing.value,
+    )
+    revision = dataset.revisions.first()
+
+    task = revision.etl_results.first()
+    with pytest.raises(PipelineException) as exc_info:
+        task_pti_validation(revision.id, task.id)
+    task.refresh_from_db()
+    assert task.error_code == task.NO_VALID_FILE_TO_PROCESS
+
+
+def test_task_dataset_etl_exception():
+    """
+    If there are no valid txcfile for the revision, PipelineException would be raised
+    """
+    upload_file_path = DATA / "3_pti_pass.zip"
+    dataset = DatasetFactory(live_revision=None)
+    revision = add_draft_revision(
+        dataset,
+        txc_version=2.2,
+        upload_file__from_path=upload_file_path,
+        status=FeedStatus.indexing.value,
+    )
+    revision = dataset.revisions.first()
+
+    task = revision.etl_results.first()
+    with pytest.raises(PipelineException) as exc_info:
+        task_dataset_etl(revision.id, task.id)
+    task.refresh_from_db()
+    assert task.error_code == task.NO_VALID_FILE_TO_PROCESS
