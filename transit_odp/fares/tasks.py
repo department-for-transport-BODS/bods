@@ -5,29 +5,33 @@ import zipfile
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.db import transaction
 from django.utils import timezone
+from waffle import flag_is_active
 
-from transit_odp.common.constants import CSVFileName
 from transit_odp.common.loggers import (
     DatasetPipelineLoggerContext,
     MonitoringLoggerContext,
     PipelineAdapter,
 )
-from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
-from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.fares.extract import ExtractionError, NeTExDocumentsExtractor
 from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
-from transit_odp.fares.netex import NeTExValidator, get_netex_schema
+from transit_odp.fares.netex import (
+    NeTExValidator,
+    get_documents_from_file,
+    get_netex_schema,
+)
 from transit_odp.fares.transform import NeTExDocumentsTransformer, TransformationError
-from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
+from transit_odp.fares.utils import (
+    get_etl_task_or_pipeline_exception,
+)
+from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
+from transit_odp.common.constants import CSVFileName
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation.constants import FaresType
 from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision
 from transit_odp.organisation.updaters import update_dataset
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
-from transit_odp.timetables.transxchange import BaseSchemaViolation
 from transit_odp.validate import (
     DataDownloader,
     DownloadException,
@@ -36,6 +40,7 @@ from transit_odp.validate import (
     ZippedValidator,
 )
 from transit_odp.validate.xml import validate_xml_files_in_zip
+
 
 logger = logging.getLogger(__name__)
 
@@ -62,16 +67,14 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
             task_id=self.request.id,
         )
 
-        context = DatasetPipelineLoggerContext(
-            component_name="FaresPipeline", object_id=revision.dataset.id
-        )
-        adapter = PipelineAdapter(logger, {"context": context})
+        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
 
-        task_download_fares_file(task.id, adapter)
-        task_run_antivirus_check(task.id, adapter)
-        task_run_fares_validation(task.id, adapter)
-        task_set_fares_validation_result(task.id, adapter)
-        task_run_fares_etl(task.id, adapter)
+        task_download_fares_file(task.id)
+        task_run_antivirus_check(task.id)
+        task_run_fares_validation(task.id)
+        if is_fares_validator_active:
+            task_set_fares_validation_result(task.id)
+        task_run_fares_etl(task.id)
 
         task.update_progress(100)
         revision.refresh_from_db()
@@ -85,9 +88,13 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
 
 
 @shared_task
-def task_download_fares_file(task_id: int, adapter):
+def task_download_fares_file(task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
+    context = DatasetPipelineLoggerContext(
+        component_name="FaresPipeline", object_id=revision.dataset.id
+    )
+    adapter = PipelineAdapter(logger, {"context": context})
 
     task.update_progress(10)
     if revision.url_link:
@@ -119,9 +126,11 @@ def task_download_fares_file(task_id: int, adapter):
     task.update_progress(20)
 
 
-def task_run_antivirus_check(task_id: int, adapter):
+def task_run_antivirus_check(task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
+    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    adapter = PipelineAdapter(logger, {"context": context})
     file_ = revision.upload_file
     try:
         scanner = FileScanner(settings.CLAMAV_HOST, settings.CLAMAV_PORT)
@@ -140,66 +149,39 @@ def task_run_antivirus_check(task_id: int, adapter):
 
 
 @shared_task
-def task_run_fares_validation(task_id, adapter):
+def task_run_fares_validation(task_id):
     """Task to validate a fares file."""
-    violations = []
-    total_files = 0
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
+    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    adapter = PipelineAdapter(logger, {"context": context})
 
     file_ = revision.upload_file
     # All the exceptions in the `validate` module are derived from a generic
     # ValidationException that contains a code and message, we just grab the
     # generic exception and update the task with the exception code.
     # All the exception codes match those in DatasetETLTaskResult.
-    schema = get_netex_schema()
-    if zipfile.is_zipfile(file_):
-        adapter.info("Validating fares zip file.")
-        try:
+    try:
+        schema = get_netex_schema()
+        if zipfile.is_zipfile(file_):
+            adapter.info("Validating fares zip file.")
             with ZippedValidator(file_) as validator:
                 validator.validate()
-        except ValidationException as exc:
-            adapter.error(exc.message, exc_info=True)
-            task.to_error("dataset_validate", exc.code)
-            task.additional_info = exc.message
-            task.save()
-            raise PipelineException(exc.message) from exc
-        except Exception as exc:
-            task.handle_general_pipeline_exception(exc, adapter)
-
-        adapter.info("Validating fares NeTEx file.")
-        violations, total_files = validate_xml_files_in_zip(
-            file_, schema=schema, dataset=revision.dataset.id
-        )
-        adapter.info("Completed validating fares NeTEx file.")
-    else:
-        total_files = 1
-        adapter.info("Validating fares NeTEx file.")
-        violations = NeTExValidator(file_, schema=schema).validate()
-        adapter.info("Completed validating fares NeTEx file.")
-
-    adapter.info(f"{len(violations)} schema violations found")
-    if len(violations) > 0:
-        schema_violations = [
-            SchemaViolation.from_violation(
-                revision_id=revision.id, violation=BaseSchemaViolation.from_error(v)
-            )
-            for v in violations
-        ]
-
-        with transaction.atomic():
-            # 'Update data' flow allows validation to occur multiple times
-            # lets just delete any 'old' observations.
-            revision.schema_violations.all().delete()
-            SchemaViolation.objects.bulk_create(schema_violations, batch_size=2000)
-    else:
-        revision.schema_violations.all().delete()
-    if len(violations) == total_files:
-        adapter.error(f"Validation failed for {file_.name}", exc_info=True)
-        task.to_error("dataset_validate", DatasetETLTaskResult.SCHEMA_ERROR)
-        task.additional_info = f"Validation failed for {file_.name}"
+            adapter.info("Validating fares NeTEx file.")
+            validate_xml_files_in_zip(file_, schema=schema)
+            adapter.info("Completed validating fares NeTEx file.")
+        else:
+            adapter.info("Validating fares NeTEx file.")
+            NeTExValidator(file_, schema=schema).validate()
+            adapter.info("Completed validating fares NeTEx file.")
+    except ValidationException as exc:
+        adapter.error(exc.message, exc_info=True)
+        task.to_error("dataset_validate", exc.code)
+        task.additional_info = exc.message
         task.save()
-        raise PipelineException(f"Validation failed for {file_.name}")
+        raise PipelineException(exc.message) from exc
+    except Exception as exc:
+        task.handle_general_pipeline_exception(exc, adapter)
 
     task.update_progress(40)
     revision.upload_file = file_
@@ -207,10 +189,12 @@ def task_run_fares_validation(task_id, adapter):
 
 
 @shared_task
-def task_set_fares_validation_result(task_id, adapter):
+def task_set_fares_validation_result(task_id):
     """Task to set validation errors in a fares file/s."""
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
+    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    adapter = PipelineAdapter(logger, {"context": context})
 
     file_ = revision.upload_file
 
@@ -228,17 +212,22 @@ def task_set_fares_validation_result(task_id, adapter):
 
 
 @shared_task
-def task_run_fares_etl(task_id, adapter):
+def task_run_fares_etl(task_id):
     """Task for extracting metadata from NeTEx file/s."""
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
-    extracted_data = []
+
+    context = DatasetPipelineLoggerContext(object_id=revision.dataset.id)
+    adapter = PipelineAdapter(logger, {"context": context})
+
+    file_ = revision.upload_file
+    docs = get_documents_from_file(file_)
 
     task.update_progress(60)
     try:
         adapter.info("Creating fares extractor.")
-        extractor = NeTExDocumentsExtractor(revision)
-        extracted_data = extractor.extract()
+        extractor = NeTExDocumentsExtractor(docs)
+        extracted_data = extractor.to_dict()
     except ExtractionError as exc:
         adapter.error("Metadata extraction failed.", exc_info=True)
         task.to_error("dataset_etl", exc.code)
@@ -262,25 +251,29 @@ def task_run_fares_etl(task_id, adapter):
 
     adapter.info("Loading fares metadata.")
     naptan_stop_ids = transformed_data.pop("naptan_stop_ids")
-    fares_data_catlogue = transformed_data.pop("fares_data_catalogue")
+    is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+    if is_fares_validator_active:
+        fares_data_catlogue = transformed_data.pop("fares_data_catalogue")
     # Load metadata
     # This block can be moved to a load module when we extract/load more metadata
     # like localities, admin areas
     transformed_data["revision"] = revision
 
-    # For 'Update data' flow which allows validation to occur multiple times
-    metadata_ids_list = DatasetMetadata.objects.filter(
-        revision_id=revision.id
-    ).values_list("id")
-    FaresMetadata.objects.filter(datasetmetadata_ptr__in=metadata_ids_list).delete()
+    if is_fares_validator_active:
+        # For 'Update data' flow which allows validation to occur multiple times
+        metadata_ids_list = DatasetMetadata.objects.filter(
+            revision_id=revision.id
+        ).values_list("id")
+        FaresMetadata.objects.filter(datasetmetadata_ptr__in=metadata_ids_list).delete()
 
     adapter.info("Creating fares data catalogue metadata.")
     fares_metadata = FaresMetadata.objects.create(**transformed_data)
-    for element in fares_data_catlogue:
-        element.update({"fares_metadata_id": fares_metadata.id})
-        # For 'Update data' flow
-        DataCatalogueMetaData.objects.filter(**element).delete()
-        DataCatalogueMetaData.objects.create(**element)
+    if is_fares_validator_active:
+        for element in fares_data_catlogue:
+            element.update({"fares_metadata_id": fares_metadata.id})
+            # For 'Update data' flow
+            DataCatalogueMetaData.objects.filter(**element).delete()
+            DataCatalogueMetaData.objects.create(**element)
     fares_metadata.stops.add(*naptan_stop_ids)
     adapter.info("Fares metadata loaded.")
 
@@ -400,7 +393,7 @@ def task_rerun_fares_validation_specific_datasets():
     fares_datasets = Dataset.objects.filter(id__in=_ids).get_active()
 
     if not fares_datasets:
-        logger.info("No active datasets found in BODS with these dataset IDs")
+        logger.info(f"No active datasets found in BODS with these dataset IDs")
         return
 
     processed_count = 0
