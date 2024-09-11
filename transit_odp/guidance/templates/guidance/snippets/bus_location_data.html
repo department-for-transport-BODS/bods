@@ -1,0 +1,124 @@
+{% load i18n %}
+<p class="govuk-body">
+  {% filter force_escape %}
+    {% blocktrans trimmed %}
+      Bus location data from all participating operators is aggregated into a single
+      database for consumers to query and filter on in real-time. Data is exchanged using the SIRI-VM 2.0 format.
+    {% endblocktrans %}
+  {% endfilter %}
+</p>
+<p class="govuk-body">
+  {% filter force_escape %}
+    {% blocktrans trimmed %}
+      To ensure a high standard of data is provided to consumers, data is validated in two stages:
+      {% endblocktrans %}
+    {% endfilter %}
+      <ul class="govuk-list govuk-list--bullet">
+        <li>
+          The first stage performs SIRI-VM 2.0 XSD validation on all incoming data. XSD validation is
+          scoped to individual vehicle activities so that data is always accepted,
+          but any invalid AVL data is not available to consumers.
+        </li>
+        <li>
+          The second stage analyses all AVL data in the last 24 hours for a given feed, and checks how often required fields appear. The required fields are defined within the
+          <a class="govuk-link"
+     href="https://www.gov.uk/government/publications/technical-guidance-publishing-location-data-using-the-bus-open-data-service-siri-vm"
+     target="_blank">{% trans "DfT BODS profile" %}</a>.
+        </li>
+      </ul>
+</p>
+<p class="govuk-body">
+  {% filter force_escape %}
+    {% blocktrans trimmed %}
+      The second stage involves a check that assigns a BODS compliance tag to a feed as
+      'compliant', 'non-compliant' or 'partially compliant'.
+      For newly published feeds, the check runs 24 hours after publishing and daily thereafter.
+      At the 7th day, the daily check maintains a 7-day rolling average score and updates the tag each day accordingly.
+    {% endblocktrans %}
+  {% endfilter %}
+</p>
+<p class="govuk-body">
+  {% blocktrans trimmed %}
+    A SIRI-VM feed is deemed 'compliant' when all the following fields are present 70% of the time:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>Bearing</li>
+  <li>BlockRef</li>
+  <li>DestinationRef</li>
+  <li>DirectionRef</li>
+  <li>LineRef</li>
+  <li>OperatorRef</li>
+  <li>OriginName</li>
+  <li>OriginRef</li>
+  <li>ProducerRef</li>
+  <li>PublishedLineName</li>
+  <li>RecordedAtTime</li>
+  <li>ResponseTimestamp</li>
+  <li>ValidUntilTime</li>
+  <li>VehicleJourneyRef</li>
+  <li>VehicleLocation (Latitude)</li>
+  <li>VehicleLocation (Longitude)</li>
+  <li>VehicleRef</li>
+</ul>
+<p class="govuk-body">
+  {% blocktrans trimmed %}
+    A SIRI-VM feed is deemed 'partially compliant' when all the above fields are present but all of the following fields are not present 70% of the time:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>BlockRef</li>
+  <li>DestinationRef</li>
+  <li>OriginName</li>
+  <li>OriginRef</li>
+  <li>PublishedLineName</li>
+</ul>
+<p class="govuk-body">
+  {% blocktrans trimmed %}
+    A SIRI-VM feed is deemed 'non-compliant' when all the following fields are not present 70% of the time, or when any one of the fields
+    are not present {{ avl_compliance_lower_threshold }} of the time:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>Bearing</li>
+  <li>DirectionRef</li>
+  <li>LineRef</li>
+  <li>OperatorRef</li>
+  <li>ProducerRef</li>
+  <li>RecordedAtTime</li>
+  <li>ResponseTimestamp</li>
+  <li>ValidUntilTime</li>
+  <li>VehicleJourneyRef</li>
+  <li>VehicleLocation.Latitude</li>
+  <li>VehicleLocation.Longitude</li>
+  <li>VehicleRef</li>
+</ul>
+<p class="govuk-body">
+  {% blocktrans trimmed %}
+    A SIRI-VM feed marked as 'non-compliant' is highlighted to the publisher immediately.
+  {% endblocktrans %}
+</p>
+<p class="govuk-body">{% trans "Other compliance statuses:" %}</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans trimmed %}
+      Undergoing validation: used for newly added feeds in the
+      first 24 hours until initial checks are completed, and for
+       'compliant' feeds for the first 7 days until the rolling average takes effect.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans trimmed %}
+      Awaiting publisher review: used for 'partially-compliant' and 'non-compliant' feeds
+      for the first 7 days until the rolling average takes effect.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% filter force_escape %}
+      {% blocktrans trimmed %}
+        Unavailable due to dormant feed: used for feeds that have not had any recorded vehicles activities
+        for 7 consecutive days.
+      {% endblocktrans %}
+    {% endfilter %}
+  </li>
+</ul>
