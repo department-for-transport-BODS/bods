@@ -7,7 +7,11 @@ from django.utils import timezone
 from freezegun import freeze_time
 from requests import Response
 
-from transit_odp.data_quality.models.report import PTIValidationResult
+from transit_odp.data_quality.models.report import (
+    PTIValidationResult,
+    PostSchemaViolation,
+)
+from transit_odp.timetables.constants import PII_ERROR
 from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.organisation.constants import FeedStatus
@@ -57,8 +61,23 @@ class DatasetTXCValidatorFactory:
         return 1
 
 
+class PostSchemaValidatorFactory:
+    def __init__(self):
+        pass
+
+    def get_violations(self):
+        return [PII_ERROR]
+
+    def get_failed_validation_filenames(self):
+        return ["failed_postchema_violation.xml"]
+
+
 def create_mock_datasettxcfilevalitor():
     return DatasetTXCValidatorFactory(None)
+
+
+def create_mock_postschemavalidator():
+    return PostSchemaValidatorFactory()
 
 
 @pytest.fixture
@@ -202,7 +221,10 @@ def test_download_timetable_no_file_or_url():
 
 
 def test_run_timetable_txc_schema_validation_exception(mocker, tmp_path):
-    """Given a zip file with an invalid xml a PipelineException is raised."""
+    """
+    Given a zip file with an invalid xml a violation entry
+    would be inserted in schemaviolation table.
+    """
 
     file1 = tmp_path / "file1.xml"
     testzip = tmp_path / "testzip.zip"
@@ -224,8 +246,8 @@ def test_run_timetable_txc_schema_validation_exception(mocker, tmp_path):
 
 def test_run_task_post_schema_check_exception(mocker, tmp_path):
     """
-    Given a zip file with an xml containing PII,
-    a POST_SCHEMA_ERROR PipelineException is raised.
+    Given a zip file with an xml containing PII, violation
+    entry will be recorded in table PostSchemaViolation table
     """
 
     file1 = tmp_path / "file1.xml"
@@ -241,13 +263,14 @@ def test_run_task_post_schema_check_exception(mocker, tmp_path):
     zip_validator = TASK_MODULE + ".PostSchemaValidator"
     mocker.patch(
         zip_validator,
-        side_effect=Exception("Exception thrown"),
+        return_value=create_mock_postschemavalidator(),
     )
-    with pytest.raises(PipelineException):
-        task_post_schema_check(task.revision.id, task.id)
+    task_post_schema_check(task.revision.id, task.id)
 
-    task.refresh_from_db()
-    assert task.error_code == task.POST_SCHEMA_ERROR
+    postschemaviolation_objects = PostSchemaViolation.objects.filter(
+        revision_id=task.revision.id
+    )
+    assert postschemaviolation_objects.count() == 1
 
 
 def test_antivirus_scan_exception(mocker, tmp_path):
