@@ -100,8 +100,8 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_timetable_schema_check.signature(args),
             task_post_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
-            task_pti_validation.signature(args, immutable=True),
-            task_dataset_etl.signature(args, immutable=True),
+            task_pti_validation.signature(args),
+            task_dataset_etl.signature(args),
         ]
 
         if is_new_data_quality_service_active:
@@ -243,7 +243,7 @@ def task_timetable_file_check(revision_id: int, task_id: int):
 
 
 @shared_task(acks_late=True)
-def task_timetable_schema_check(new_file_hash: [], revision_id: int, task_id: int):
+def task_timetable_schema_check(new_file_hash: list, revision_id: int, task_id: int):
     """A task that validates the file/s in a dataset."""
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = DatasetRevision.objects.get(id=revision_id)
@@ -282,7 +282,7 @@ def task_timetable_schema_check(new_file_hash: [], revision_id: int, task_id: in
 
 
 @shared_task
-def task_post_schema_check(new_file_hash: [], revision_id: int, task_id: int):
+def task_post_schema_check(new_file_hash: list, revision_id: int, task_id: int):
     """
     Post schema checks, such as personal identifiable information (PII),
     publishing an already active dataset, and adding a service that
@@ -336,7 +336,7 @@ def task_post_schema_check(new_file_hash: [], revision_id: int, task_id: int):
 
 
 @shared_task()
-def task_extract_txc_file_data(new_file_hash: [], revision_id: int, task_id: int):
+def task_extract_txc_file_data(new_file_hash: list, revision_id: int, task_id: int):
     """
     Index the attributes and service code of every individual file in a dataset.
     """
@@ -399,7 +399,7 @@ def task_extract_txc_file_data(new_file_hash: [], revision_id: int, task_id: int
 
 
 @shared_task(acks_late=True)
-def task_pti_validation(revision_id: int, task_id: int):
+def task_pti_validation(new_file_hash: list, revision_id: int, task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = TimetableDatasetRevision.objects.get(id=revision_id)
 
@@ -450,10 +450,11 @@ def task_pti_validation(revision_id: int, task_id: int):
         revision.save()
 
     adapter.info("Finished PTI Profile validation.")
+    return new_file_hash
 
 
 @shared_task()
-def task_dataset_etl(revision_id: int, task_id: int):
+def task_dataset_etl(new_file_hash: list, revision_id: int, task_id: int):
     """A task that runs the ETL pipeline on a timetable dataset.
     N.B. this is just a proxy to `run_timetable_etl_pipeline` as part of a refactor.
     """
@@ -478,40 +479,24 @@ def task_dataset_etl(revision_id: int, task_id: int):
         raise PipelineException(message)
 
     adapter.info("Starting ETL pipeline task.")
-
-    schema_failed_filenames = set(
-        list(
-            SchemaViolation.objects.filter(revision=revision.id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
-    post_schema_failed_filenames = set(
-        list(
-            PostSchemaViolation.objects.filter(revision=revision.id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
-    pti_invalid_filenames = set(
-        list(
-            PTIObservation.objects.filter(revision=revision.id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
-    pti_invalid_filenames = pti_invalid_filenames.union(
-        post_schema_failed_filenames, schema_failed_filenames
-    )
     try:
         task.update_progress(60)
-        pipeline = TransXChangePipeline(revision, pti_invalid_filenames)
+        pipeline = TransXChangePipeline(revision)
         extracted = pipeline.extract()
         adapter.info("Data successfully extracted.")
         task.update_progress(70)
         transformed = pipeline.transform(extracted)
         adapter.info("Data successfully transformed.")
         task.update_progress(80)
+        live_file_hash = list(
+            TXCFileAttributes.objects.filter(
+                revision=revision.dataset.live_revision_id
+            ).values_list("hash", flat=True)
+        )
+        draft_file_hash = revision.get_txc_hashes()
+        historic_file_hash = live_file_hash - draft_file_hash
+        pipleine.load_live_data_in_df(historic_file_hash)
+
         pipeline.load(transformed)
         adapter.info("Data successfully loaded into BODS.")
         task.update_progress(90)

@@ -114,11 +114,9 @@ def filter_redundant_files(df: pd.DataFrame) -> pd.DataFrame:
     return df_filtered[["id", "filename"]]
 
 
-def get_txc_files(revision_id: int, failed_validation_filesnames) -> pd.DataFrame:
+def get_txc_files(revision_id: int) -> pd.DataFrame:
     """Returns the valid txc files that should be processed for timetable visualiser based on their service code and operating start date"""
-    txc_files = TXCFileAttributes.objects.filter(revision_id=revision_id).exclude(
-        filename__in=failed_validation_filesnames
-    )
+    txc_files = TXCFileAttributes.objects.filter(revision_id=revision_id)
     df_txc_files = create_txc_file_attributes_df(txc_files)
     columns = [
         "id",

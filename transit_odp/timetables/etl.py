@@ -1,10 +1,10 @@
 import datetime
 import io
-from typing import Dict
 import zipfile
-from django.core.files.base import ContentFile
+from typing import Dict
 
 from celery.utils.log import get_task_logger
+from django.core.files.base import ContentFile
 from django.db import transaction
 
 from transit_odp.pipelines import exceptions
@@ -25,6 +25,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.stats import (
     get_extracted_stats,
     get_transformed_stats,
 )
+from transit_odp.timetables.data_loader import TransmodelDataLoader
 from transit_odp.timetables.extract import (
     TransXChangeExtractor,
     TransXChangeZipExtractor,
@@ -37,7 +38,7 @@ logger = get_task_logger(__name__)
 
 
 class TransXChangePipeline:
-    def __init__(self, revision, failed_validations_files: list = []):
+    def __init__(self, revision):
         self.revision = revision
         self.start_time = datetime.datetime.now()
         self.file_obj = revision.upload_file
@@ -46,7 +47,6 @@ class TransXChangePipeline:
         self.service_link_cache = create_service_link_cache(revision.id)
         self.service_cache: Dict[str, Service] = {}
         self.stop_activity_cache = get_stop_activities()
-        self.failed_validations_files = failed_validations_files
 
     def run(self):
         """
@@ -93,7 +93,7 @@ class TransXChangePipeline:
         """Extraction step which extract the data from the xml file"""
         logger.info("Begin extraction step")
         filename = self.file_obj.file.name
-        txc_files = get_txc_files(self.revision.id, self.failed_validations_files)
+        txc_files = get_txc_files(self.revision.id)
         if txc_files.empty:
             raise exceptions.NoValidFileToProcess(filename)
         if self.file_obj.file.name.endswith("zip"):
@@ -153,6 +153,10 @@ class TransXChangePipeline:
         self.add_feed_associations()
         logger.info("Finished load step in.")
         return report
+
+    def load_live_data_in_df(historic_file_hash):
+        in_memory_loader = TransmodelDataLoader(historic_file_hash)
+        in_memory_loader.load(self.revision.dataset.live_revision_id)
 
     def add_localities(self):
         """Roll up localities and populate associations on DatasetRevision table
