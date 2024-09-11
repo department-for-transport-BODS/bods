@@ -6,6 +6,7 @@ from typing import List, Optional
 from lxml import etree
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
+from transit_odp.common.utils import sha1sum
 from transit_odp.data_quality.pti.models import Observation, Violation
 from transit_odp.organisation.models import DatasetRevision, TXCFileAttributes
 from transit_odp.timetables.constants import PII_ERROR
@@ -47,9 +48,10 @@ REVISION_NUMBER_OBSERVATION = Observation(
 
 
 class DatasetTXCValidator:
-    def __init__(self, revision: DatasetRevision):
+    def __init__(self, revision: DatasetRevision, new_file_hash: list = []):
         self._schema = get_transxchange_schema()
         self._revision = revision
+        self.new_file_hash = new_file_hash
         self._failed_violation_filenames = []
 
     def get_number_of_files_uploaded(self):
@@ -57,7 +59,11 @@ class DatasetTXCValidator:
         total_files = 1
         if self._revision.is_file_zip:
             with zipfile.ZipFile(file_) as zf:
-                names = [n for n in zf.namelist() if n.endswith(".xml")]
+                names = [
+                    n
+                    for n in zf.namelist()
+                    if n.endswith(".xml") and not n.startswith("__")
+                ]
                 total_files = len(names)
         return total_files
 
@@ -69,16 +75,23 @@ class DatasetTXCValidator:
         if self._revision.is_file_zip:
             adapter.info(f"Processing zip file {file_.name}.")
             with zipfile.ZipFile(file_) as zf:
-                names = [n for n in zf.namelist() if n.endswith(".xml")]
+                names = [
+                    n
+                    for n in zf.namelist()
+                    if n.endswith(".xml") and not n.startswith("__")
+                ]
                 total_files = len(names)
                 for index, name in enumerate(names, 1):
                     adapter.info(f"Validating file {index} of {total_files} - {name}.")
                     with zf.open(name) as f:
-                        yield f
+                        if sha1sum(f.read()) in self.new_file_hash:
+                            f.seek(0)
+                            yield f
         else:
             adapter.info(f"Getting file 1 of 1 - {file_.name}.")
-            file_.seek(0)
-            yield file_
+            if sha1sum(file_.read()) in new_file_hash:
+                file_.seek(0)
+                yield file_
 
     def get_violations(self):
         violations = []

@@ -87,16 +87,21 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             )
 
         adapter.info(f"Dataset {revision.dataset_id} - task {task.id}")
-        args = (task.id,)
+        args = (
+            revision.id,
+            task.id,
+        )
 
         jobs = [
             task_dataset_download.signature(args),
-            task_scan_timetables.signature(args),
-            task_timetable_file_check.signature(args),
+            task_scan_timetables.signature(args, immutable=True),
+            task_timetable_file_check.signature(args, immutable=True),
+            task_create_historic_and_new_hash_lists.signature(args, immutable=True),
             task_timetable_schema_check.signature(args),
             task_post_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
-            task_pti_validation.signature(args),
+            task_pti_validation.signature(args, immutable=True),
+            task_dataset_etl.signature(args, immutable=True),
         ]
 
         if is_new_data_quality_service_active:
@@ -113,7 +118,7 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             jobs.append(task_publish_revision.signature((revision_id,), immutable=True))
 
         workflow = celery.chain(*jobs)
-        return workflow.delay(revision.id)
+        return workflow.delay()
 
 
 @shared_task(ignore_result=True)
@@ -130,7 +135,7 @@ def task_populate_timing_point_count(revision_id: int) -> None:
 
 
 @shared_task()
-def task_dataset_download(revision_id: int, task_id: int) -> int:
+def task_dataset_download(revision_id: int, task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
@@ -166,11 +171,10 @@ def task_dataset_download(revision_id: int, task_id: int) -> int:
         raise PipelineException(message=message)
 
     task.update_progress(10)
-    return revision_id
 
 
 @shared_task()
-def task_scan_timetables(revision_id: int, task_id: int) -> int:
+def task_scan_timetables(revision_id: int, task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
@@ -190,11 +194,33 @@ def task_scan_timetables(revision_id: int, task_id: int) -> int:
 
     task.update_progress(20)
     adapter.info("Scanning complete. No viruses.")
-    return revision_id
 
 
 @shared_task(acks_late=True)
-def task_timetable_file_check(revision_id: int, task_id: int) -> int:
+def task_create_historic_and_new_hash_lists(revision_id: int, task_id: int):
+    revision = TimetableDatasetRevision.objects.get(id=revision_id)
+    new_file_hash = []
+    # if dataset.objects.filter(revision__id=revision_idrevision__dataset__live_revision_id).exists():
+    if revision.dataset.live_revision:
+        live_file_hash = list(
+            TXCFileAttributes.objects.filter(
+                revision=revision.dataset.live_revision_id
+            ).values_list("hash", flat=True)
+        )
+        draft_file_hash = revision.get_txc_hashes()
+
+        new_file_hash = draft_file_hash - live_file_hash
+        historic_file_hash = live_file_hash - draft_file_hash
+
+        return new_file_hash
+    else:
+        print("dataset does not have existing live version")
+        new_file_hash = revision.get_txc_hashes()
+        return new_file_hash
+
+
+@shared_task(acks_late=True)
+def task_timetable_file_check(revision_id: int, task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = DatasetRevision.objects.get(id=revision_id)
 
@@ -215,18 +241,16 @@ def task_timetable_file_check(revision_id: int, task_id: int) -> int:
     except Exception as exc:
         task.handle_general_pipeline_exception(exc, adapter)
 
-    return revision_id
-
 
 @shared_task(acks_late=True)
-def task_timetable_schema_check(revision_id: int, task_id: int):
+def task_timetable_schema_check(new_file_hash: [], revision_id: int, task_id: int):
     """A task that validates the file/s in a dataset."""
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = DatasetRevision.objects.get(id=revision_id)
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting timetable schema validation.")
     adapter.info("Checking for TXC schema violations.")
-    validator = DatasetTXCValidator(revision=revision)
+    validator = DatasetTXCValidator(revision=revision, new_file_hash=new_file_hash)
     violations = validator.get_violations()
     number_of_files_in_revision = validator.get_number_of_files_uploaded()
     adapter.info(f"{len(violations)} violations found")
@@ -254,11 +278,11 @@ def task_timetable_schema_check(revision_id: int, task_id: int):
         )
         task.additional_info = message
         raise PipelineException(message)
-    return revision_id
+    return new_file_hash
 
 
 @shared_task
-def task_post_schema_check(revision_id: int, task_id: int):
+def task_post_schema_check(new_file_hash: [], revision_id: int, task_id: int):
     """
     Post schema checks, such as personal identifiable information (PII),
     publishing an already active dataset, and adding a service that
@@ -276,7 +300,9 @@ def task_post_schema_check(revision_id: int, task_id: int):
         )
     )
     violations = []
-    parser = TransXChangeDatasetParser(revision.upload_file, schema_failed_filenames)
+    parser = TransXChangeDatasetParser(
+        revision.upload_file, schema_failed_filenames, new_file_hash
+    )
     doc_list = parser.get_documents()
     if not doc_list:
         message = f"Validation task: task_post_schema_check, no file to process, zip file: {revision.upload_file.name}"
@@ -306,11 +332,11 @@ def task_post_schema_check(revision_id: int, task_id: int):
                 schema_violations, batch_size=BATCH_SIZE
             )
     adapter.info("Completed post schema validation check.")
-    return revision_id
+    return new_file_hash
 
 
 @shared_task()
-def task_extract_txc_file_data(revision_id: int, task_id: int):
+def task_extract_txc_file_data(new_file_hash: [], revision_id: int, task_id: int):
     """
     Index the attributes and service code of every individual file in a dataset.
     """
@@ -341,7 +367,7 @@ def task_extract_txc_file_data(revision_id: int, task_id: int):
         # If we're in the update flow lets clear out "old" files.
         revision.txc_file_attributes.all().delete()
         parser = TransXChangeDatasetParser(
-            revision.upload_file, post_schema_failed_filenames
+            revision.upload_file, post_schema_failed_filenames, new_file_hash
         )
         files = [
             TXCFile.from_txc_document(doc, use_path_filename=True)
@@ -370,7 +396,6 @@ def task_extract_txc_file_data(revision_id: int, task_id: int):
         )
 
     task.update_progress(45)
-    return revision_id
 
 
 @shared_task(acks_late=True)
@@ -421,7 +446,6 @@ def task_pti_validation(revision_id: int, task_id: int):
         revision.save()
 
     adapter.info("Finished PTI Profile validation.")
-    return revision_id
 
 
 @shared_task()
@@ -489,7 +513,6 @@ def task_dataset_etl(revision_id: int, task_id: int):
     if not is_new_data_quality_service_active:
         update_dqs_task_status(task_id)
     adapter.info("Timetable ETL pipeline task completed.")
-    return revision_id
 
 
 @shared_task()

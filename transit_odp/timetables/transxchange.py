@@ -393,7 +393,7 @@ class TransXChangeDocument:
 class TransXChangeZip(ZippedValidator):
     """A class for working with a zip file containing transxchange files."""
 
-    def __init__(self, source):
+    def __init__(self, source, new_file_hash):
         if not hasattr(source, "seek"):
             f_ = open(source, "rb")
         else:
@@ -402,6 +402,7 @@ class TransXChangeZip(ZippedValidator):
         self._schema_21 = None
         self._schema_24 = None
         self.docs = []
+        self.new_file_hash = new_file_hash
 
     def get_transxchange_docs(self, validate=False):
         """Get all the TransXChangeDocuments in a zip file.
@@ -442,8 +443,9 @@ class TransXChangeZip(ZippedValidator):
 
         """
         with self.open(name) as f_:
-            doc = TransXChangeDocument(f_)
-        return doc
+            if sha1sum(f_.read()) in self.new_file_hash:
+                doc = TransXChangeDocument(f_)
+                return doc
 
     def validate_contents(self):
         """Validates the contents of the zip file.
@@ -482,9 +484,12 @@ class TransXChangeZip(ZippedValidator):
 class TransXChangeDatasetParser:
     """Class for iterating over transxchange file/s."""
 
-    def __init__(self, source, failed_validations_filename: list = []):
+    def __init__(
+        self, source, failed_validations_filename: list = [], new_file_hash: list = []
+    ):
         self._source = source
         self.failed_validations_filename = failed_validations_filename
+        self.new_file_hash = new_file_hash
 
     def is_zipfile(self) -> bool:
         return zipfile.is_zipfile(self._source)
@@ -504,7 +509,7 @@ class TransXChangeDatasetParser:
 
     def get_documents(self) -> Iterator[TransXChangeDocument]:
         if self.is_zipfile():
-            with TransXChangeZip(self._source) as zip_:
+            with TransXChangeZip(self._source, self.new_file_hash) as zip_:
                 for doc in zip_.iter_doc():
                     if doc.name.split("/")[-1] not in self.failed_validations_filename:
                         yield doc
