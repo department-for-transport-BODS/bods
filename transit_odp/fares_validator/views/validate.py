@@ -31,7 +31,7 @@ class FaresXmlValidator:
         response = ""
         file_obj = self.file
         fares_validator = fares_validation.get_fares_validator()
-        raw_violations = fares_validator.get_violations(file_obj, self.pk2)
+        raw_violations = fares_validator.get_violations(file_obj, self.pk1)
         violations = []
         [
             violations.append(violation)

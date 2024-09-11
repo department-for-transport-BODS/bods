@@ -1,13 +1,20 @@
 import pytest
 from defusedxml import DefusedXmlException
 from defusedxml.ElementTree import ParseError
+from lxml import etree
 
 from transit_odp.validate.tests.utils import (
     create_sparse_file,
     create_text_file,
     create_zip_file,
 )
-from transit_odp.validate.xml import XMLValidator, validate_xml_files_in_zip
+from transit_odp.validate.xml import (
+    DangerousXML,
+    FileTooLarge,
+    XMLSyntaxError,
+    XMLValidator,
+    validate_xml_files_in_zip,
+)
 
 TEST_SCHEMA = """<?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -39,20 +46,18 @@ def test_is_too_large(file_size, limit, expected, tmp_path):
 
 
 def test_file_too_large_exception(tmp_path):
+
     """Test file too large exception is correctly thrown."""
 
     file1 = tmp_path / "file.xml"
     create_sparse_file(file1, 100)
 
-    str_file = str(file1)
-    error_message = f"XML file {str_file} is too large."
-
     with open(file1, "rb") as f:
         validator = XMLValidator(f, max_file_size=10)
-        op = validator.validate()
+        with pytest.raises(FileTooLarge) as excinfo:
+            validator.validate()
 
-        assert op[0].filename == str_file
-        assert op[0].message == error_message
+        assert str(excinfo.value.filename) == str(file1)
 
 
 def test_get_document(tmp_path):
@@ -63,8 +68,8 @@ def test_get_document(tmp_path):
 
     with open(file1, "rb") as f:
         validator = XMLValidator(f)
-        op = validator.validate_xml()
-        assert len(op) == 0
+        doc = validator.get_document()
+        assert etree.tostring(doc).decode("utf-8") == xml_str
 
 
 def test_get_document_with_schema(tmp_path):
@@ -78,8 +83,8 @@ def test_get_document_with_schema(tmp_path):
 
     with open(file1, "rb") as f, open(schema1, "rb") as schema:
         validator = XMLValidator(f, schema=schema)
-        op = validator.validate_xml()
-        assert len(op) == 0
+        doc = validator.get_document()
+        assert etree.tostring(doc).decode("utf-8") == xml_str
 
 
 def test_get_document_with_schema_exception(tmp_path):
@@ -93,8 +98,8 @@ def test_get_document_with_schema_exception(tmp_path):
 
     with open(file1, "rb") as f, open(schema1, "rb") as schema:
         validator = XMLValidator(f, schema=schema)
-        op = validator.validate_xml()
-        assert op[0].filename == str(file1)
+        with pytest.raises(XMLSyntaxError):
+            validator.get_document()
 
 
 def test_get_document_exception(tmp_path):
@@ -105,8 +110,10 @@ def test_get_document_exception(tmp_path):
 
     with open(file1, "rb") as f:
         validator = XMLValidator(f)
-        op = validator.validate_xml()
-        assert len(op) == 1
+        with pytest.raises(XMLSyntaxError) as excinfo:
+            validator.get_document()
+
+        assert str(excinfo.value.filename) == str(file1)
 
 
 def test_dangerouse_xml_exception(tmp_path, mocker):
@@ -117,14 +124,12 @@ def test_dangerouse_xml_exception(tmp_path, mocker):
     file1 = tmp_path / "file1.xml"
     create_sparse_file(file1, file_size=int(1e2))
 
-    str_file = str(file1)
-    error_message = f"XML file {str_file} contains dangerous XML."
-
     with open(file1, "rb") as f:
         validator = XMLValidator(f)
-        op = validator.validate()
-        assert op[0].filename == str_file
-        assert op[0].message == error_message
+        with pytest.raises(DangerousXML) as excinfo:
+            validator.validate()
+
+        assert str(excinfo.value.filename) == str(file1)
 
 
 def test_parse_error_exception(tmp_path, mocker):
@@ -138,8 +143,10 @@ def test_parse_error_exception(tmp_path, mocker):
 
     with open(file1, "rb") as f:
         validator = XMLValidator(f)
-        op = validator.validate()
-        assert op[0].filename == str(file1)
+        with pytest.raises(XMLSyntaxError) as excinfo:
+            validator.validate()
+
+        assert str(excinfo.value.filename) == str(file1)
 
 
 def test_validate_xmls_from_zip_valid(tmp_path):
@@ -151,9 +158,7 @@ def test_validate_xmls_from_zip_valid(tmp_path):
     zip_filename = tmp_path / "zipfile.zip"
     create_zip_file(zip_filename, filenames)
     with open(zip_filename, "rb") as zout:
-        op, total_files = validate_xml_files_in_zip(zout)
-        assert len(op) == 0
-        assert total_files == 2
+        validate_xml_files_in_zip(zout)
 
 
 def test_validate_xmls_from_zip_invalid_file(tmp_path):
@@ -168,9 +173,6 @@ def test_validate_xmls_from_zip_invalid_file(tmp_path):
 
     zip_filename = tmp_path / "zipfile.zip"
     create_zip_file(zip_filename, filenames)
-    str_filename = str(not_xml_file)
-
     with open(zip_filename, "rb") as zout:
-        op, total_files = validate_xml_files_in_zip(zout)
-        assert op[0].filename.split("/")[-1] == str_filename.split("/")[-1]
-        assert total_files == 3
+        with pytest.raises(XMLSyntaxError):
+            validate_xml_files_in_zip(zout)

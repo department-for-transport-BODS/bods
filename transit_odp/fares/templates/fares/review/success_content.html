@@ -8,51 +8,12 @@
   <div class="app-dqs-panel govuk-!-margin-bottom-7">
     <div class="app-dqs-panel__body">
       <div class="app-dqs-panel__success">
-        {% if validator_error and schema_error %}
-          <h2 class="govuk-heading-m">Validation check - Failed</h2>
-          <p class="govuk-body">
-            {% blocktrans %}
-                The validation report checks for compliance against the NeTEx schema.
-            {% endblocktrans %}
-            <br />
-            <br />
-            <a class="govuk-link" href="{% url 'fares:review-fares-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download schema validation report</a>
-            <br />
-          </p>
-          {% blocktrans %}
-            Some of the files in the data supplied is non-compliant and cannot be
-            submitted to BODS as per the
-          {% endblocktrans %}
-          <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
-            {% trans "guidance." %}
-          </a>
-          {% blocktrans %}
-          To pass the validation please address all outstanding issues in the
-          validation report.
-          {% endblocktrans %}
-          <br />
-          <br />
-          {% blocktrans %}
-            The validation report checks for compliance against the mandated NeTEx Profile.
-          {% endblocktrans %}
-          <br />
-          <br />
-          <a class="govuk-link" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
-          <br />
-          <br />
-          {% blocktrans %}
-            The fares data supplied is non-compliant. You can publish this
-            dataset now, however it is important to address the issues
-            highlighted in the report with your supplier. Please contact
-            the helpdesk if there are any items on the report which your
-            supplier cannot help you with.
-          {% endblocktrans %}
-        {% elif validator_error and not schema_error %}
+        {% if validator_error %}
           <h2 class="govuk-heading-m">Validation Check - Failed</h2>
           <p class="govuk-body">
             {% blocktrans %}
-              The validation report checks for compliance against the mandated NeTEx Profile.
-            {% endblocktrans %}
+                                The validation report checks for compliance against the mandated NeTEx Profile.
+                            {% endblocktrans %}
             <br />
             <br />
             <a class="govuk-link" href="{% url 'transit_odp.fares_exporter' pk1 pk2 host hosts.publish %}">Download validation report</a>
@@ -60,36 +21,12 @@
           </p>
           <p class="govuk-body govuk-!-margin-bottom-0">
             {% blocktrans %}
-                The fares data supplied is non-compliant. You can publish this
-                dataset now, however it is important to address the issues
-                highlighted in the report with your supplier. Please contact
-                the helpdesk if there are any items on the report which your
-                supplier cannot help you with.
-            {% endblocktrans %}
-          </p>
-        {% elif not validator_error and schema_error %}
-          <h2 class="govuk-heading-m">Validation Check - Passed with issues</h2>
-          <p class="govuk-body">
-            {% blocktrans %}
-              The validation report checks for compliance against the NeTEx schema.
-            {% endblocktrans %}
-            <br />
-            <br />
-            <a class="govuk-link" href="{% url 'fares:review-fares-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download schema validation report</a>
-            <br />
-          </p>
-          <p class="govuk-body govuk-!-margin-bottom-0">
-            {% blocktrans %}
-              Some of the files in the data supplied is non-compliant and cannot be
-              submitted to BODS as per the
-            {% endblocktrans %}
-            <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
-              {% trans "guidance." %}
-            </a>
-            {% blocktrans %}
-              To pass the validation please address all outstanding issues in the
-              validation report.
-            {% endblocktrans %}
+                                The fares data supplied is non-compliant. You can publish this
+                                dataset now, however it is important to address the issues
+                                highlighted in the report with your supplier. Please contact
+                                the helpdesk if there are any items on the report which your
+                                supplier cannot help you with.
+                            {% endblocktrans %}
           </p>
         {% else %}
           <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Validation Check - Passed</h2>

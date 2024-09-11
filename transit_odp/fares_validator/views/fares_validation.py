@@ -7,7 +7,6 @@ from typing import BinaryIO, Iterable, List
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.common.types import JSONFile
-from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.data_quality.pti.models import Violation
 from transit_odp.fares_validator.views.validators import FaresValidator
 
@@ -22,19 +21,12 @@ class DatasetFaresValidator:
 
     def iter_get_files(self, file, revision) -> Iterable[BinaryIO]:
         context = DatasetPipelineLoggerContext(
-            class_name="Revision", component_name="FaresPipeline", object_id=revision
+            component_name="FaresPipeline", object_id=revision
         )
         adapter = PipelineAdapter(logger, {"context": context})
         if zipfile.is_zipfile(file):
             with zipfile.ZipFile(file) as zf:
-                names = [
-                    n
-                    for n in zf.namelist()
-                    if n.endswith(".xml")
-                    and not SchemaViolation.objects.filter(
-                        filename=n.split("/")[-1], revision_id=revision
-                    ).exists()
-                ]
+                names = [n for n in zf.namelist() if n.endswith(".xml")]
                 file_count = len(names)
                 for index, name in enumerate(names, start=1):
                     adapter.info(
