@@ -7,7 +7,6 @@ from requests.exceptions import RequestException
 
 from transit_odp.avl.validation.constants import DEFAULT_TIMEOUT
 from transit_odp.avl.validation.models import (
-    SchemaValidationResponse,
     ValidationResponse,
 )
 
@@ -15,7 +14,7 @@ GET = "GET"
 
 
 def get_validation_client():
-    return ValidationClient(url=settings.CAVL_VALIDATION_URL)
+    return ValidationClient(url=settings.AVL_PRODUCER_API_BASE_URL)
 
 
 class ValidationClient:
@@ -39,47 +38,32 @@ class ValidationClient:
         else:
             return None
 
-    def validate(
-        self, feed_id: int, sample_size: int = 50
-    ) -> Optional[ValidationResponse]:
+    def validate(self, feed_id: int) -> Optional[ValidationResponse]:
         """
-        Calls the AVL validate endpoint and returns the result of a validation.
+        Calls the validate-profile endpoint for a given subscription. It will return the validation errors collated
+        within the last 24 hours for a given data producer. Validation follows the rules defined in the SIRI 2.0 schema
 
         Args:
             feed_id: The data feed id to validate.
-            sample_size: The number of packets to use in the validation.
 
         Returns:
             ValidationResponse or None
         """
-        endpoint = self.url + f"/validate/{feed_id}"
-        params = {"sample_size": sample_size}
-        data = self._make_request(GET, endpoint, params=params, timeout=DEFAULT_TIMEOUT)
+        endpoint = self.url + f"/subscriptions/{feed_id}/validate-profile"
+
+        print(endpoint)
+        headers = {"x-api-key": settings.AVL_PRODUCER_API_KEY}
+        data = self._make_request(
+            GET, endpoint, timeout=DEFAULT_TIMEOUT, headers=headers
+        )
+
+        print("data", data)
 
         if data is not None:
-            return ValidationResponse(**data)
+            try:
+                return ValidationResponse(**data)
+            except ValueError as e:
+                print(e)
+
         else:
             return None
-
-    def schema(self, feed_id: int) -> SchemaValidationResponse:
-        """
-        Called the AVL schema validate endpoint and returns the result of a SIRI
-        VM 2.0 schema validation.
-
-        Args:
-            feed_id: The id of the data feed to validate.
-
-        Returns:
-            SchemaValidationResponse or None
-        """
-        endpoint = self.url + f"/schema/{feed_id}"
-        data = self._make_request(GET, endpoint, timeout=DEFAULT_TIMEOUT)
-
-        if data is not None:
-            return SchemaValidationResponse(**data)
-        else:
-            # We just want to return a rubbish response and signal to the caller
-            # that it's rubbish using a 0 timestamp and empty errors list
-            return SchemaValidationResponse(
-                feed_id=feed_id, is_valid=True, timestamp=0, errors=[]
-            )
