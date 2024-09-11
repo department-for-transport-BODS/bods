@@ -8,7 +8,7 @@ from transit_odp.avl.validation.models import (
     Header,
     Identifier,
     Observation,
-    Result,
+    Errors,
     SchemaError,
     SchemaValidationResponse,
     ValidationResponse,
@@ -46,13 +46,11 @@ class HeaderFactory(Factory):
         packet_name: The filename of the packet.
         timestamp: The timestamp of the packet.
         feed_id: The feed id of the packet.
-        plugin: The plugin that recorded the packet.
     """
 
     packet_name = "avl-internal-1000000"
-    timestamp = LazyFunction(time_ns)
+    timestamp = "2024-08-26T13:01:42+00:00"
     feed_id = 1
-    plugin = "avl-internal"
 
     class Meta:
         model = Header
@@ -76,7 +74,7 @@ class IdentifierFactory(Factory):
     line_ref = "Line1"
     name = "OriginRef"
     operator_ref = "Op1"
-    recorded_at_time = LazyFunction(lambda: datetime.now(timezone.utc))
+    recorded_at_time = "2024-08-26T13:01:42+00:00"
     vehicle_journey_ref = "JVRef1"
     vehicle_ref = "JR1"
 
@@ -90,13 +88,11 @@ class ErrorFactory(Factory):
 
     Args:
         level: Whether the error is critical or non-critical.
-        context: The packet element that has the issue.
         details: Details of the error.
         identifier: The Identifier object used to identify the element.
     """
 
     level = "Critical"
-    context = "//x:VehicleActivity"
     details = "This is a detail"
     identifier = SubFactory(IdentifierFactory)
 
@@ -104,7 +100,7 @@ class ErrorFactory(Factory):
         model = Error
 
 
-class ResultFactory(Factory):
+class ErrorsFactory(Factory):
     """
     The result of a packet analysis.
 
@@ -117,7 +113,7 @@ class ResultFactory(Factory):
     errors = []
 
     class Meta:
-        model = Result
+        model = Errors
 
 
 class ValidationSummaryFactory(Factory):
@@ -152,13 +148,13 @@ class ValidationResponseFactory(Factory):
         feed_id: The id of the feed analysed.
         packet_count: The total number of packets analysed.
         validation_summary: A summary of the validation.
-        results: A list of the results of every packet in the analysis.
+        errors: A list of the results of every packet in the analysis.
     """
 
     feed_id = 1
     packet_count = 100
     validation_summary = SubFactory(ValidationSummaryFactory)
-    results = []
+    errors = []
 
     class Meta:
         model = ValidationResponse

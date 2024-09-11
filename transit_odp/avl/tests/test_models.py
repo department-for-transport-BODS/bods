@@ -1,16 +1,13 @@
 import pytest
 
 from transit_odp.avl.csv.validation import (
-    SchemaValidationResponseExporter,
     ValidationReportExporter,
 )
-from transit_odp.avl.models import AVLSchemaValidationReport, AVLValidationReport
+from transit_odp.avl.models import AVLValidationReport
 from transit_odp.avl.validation.factories import (
     ErrorFactory,
     IdentifierFactory,
-    ResultFactory,
-    SchemaErrorFactory,
-    SchemaValidationResponseFactory,
+    ErrorsFactory,
     ValidationResponseFactory,
 )
 from transit_odp.avl.validation.models import ValidationSummary
@@ -46,10 +43,10 @@ def test_from_validation_response():
     error = ErrorFactory(
         level="Non-critical", details="Fake details", identifier=identifier
     )
-    result = ResultFactory(errors=[error])
+    errors = ErrorsFactory(errors=[error])
     response = ValidationResponseFactory(
         validation_summary=summary,
-        results=[result],
+        errors=[errors],
     )
     revision = AVLDatasetRevisionFactory()
     AVLValidationReport.from_validation_response(
@@ -64,26 +61,4 @@ def test_from_validation_response():
     assert report.critical_score == summary.critical_score
     assert report.non_critical_score == summary.non_critical_score
     assert report.vehicle_activity_count == summary.vehicle_activity_count
-    assert report.file.name == exporter.get_filename()
-
-
-def test_from_schema_validation_response():
-    """
-    GIVEN a SchemaValidationResponse object with 1 error
-    WHEN I create a SchemaValidationReportExporter and call to_csv_string
-    THEN I am returned a valid csv formatted string with 1 header and 1 error row
-    """
-
-    feed_id = 14
-    errors = [SchemaErrorFactory()]
-    response = SchemaValidationResponseFactory(feed_id=feed_id, errors=errors)
-    revision = AVLDatasetRevisionFactory(id=feed_id)
-    AVLSchemaValidationReport.from_schema_validation_response(
-        revision_id=revision.id, response=response
-    ).save()
-
-    exporter = SchemaValidationResponseExporter(response=response)
-    report = AVLSchemaValidationReport.objects.first()
-
-    assert report.error_count == len(errors)
     assert report.file.name == exporter.get_filename()

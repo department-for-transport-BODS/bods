@@ -29,9 +29,9 @@ class SiriHeader(dict):
     def from_siri_packet(cls, siri: Siri):
         siri_header = cls()
         siri_header[SirivmField.VERSION] = siri.version
-        siri_header[
-            SirivmField.RESPONSE_TIMESTAMP_SD
-        ] = siri.service_delivery.response_timestamp
+        siri_header[SirivmField.RESPONSE_TIMESTAMP_SD] = (
+            siri.service_delivery.response_timestamp
+        )
         siri_header[SirivmField.PRODUCER_REF] = siri.service_delivery.producer_ref
         vmd = siri.service_delivery.vehicle_monitoring_delivery
         siri_header[SirivmField.RESPONSE_TIMESTAMP_VMD] = vmd.response_timestamp

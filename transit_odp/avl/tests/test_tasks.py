@@ -12,26 +12,21 @@ from freezegun import freeze_time
 from mocket import Mocketizer
 from mocket.mockhttp import Entry
 from requests import RequestException
-from requests.exceptions import ConnectionError, ReadTimeout
 
 from transit_odp.avl.dataclasses import Feed
 from transit_odp.avl.enums import AVLFeedStatus
 from transit_odp.avl.factories import (
     AVLValidationReportFactory,
-    CAVLValidationTaskResultFactory,
 )
-from transit_odp.avl.models import AVLSchemaValidationReport, CAVLValidationTaskResult
+
 from transit_odp.avl.tasks import (
     task_create_sirivm_tfl_zipfile,
     task_create_sirivm_zipfile,
     task_monitor_avl_feeds,
     task_run_feed_validation,
-    task_validate_avl_feed,
     task_weekly_assimilate_post_publishing_check_reports,
 )
 from transit_odp.avl.validation.factories import (
-    SchemaErrorFactory,
-    SchemaValidationResponseFactory,
     ValidationResponseFactory,
     ValidationSummaryFactory,
 )
@@ -39,8 +34,6 @@ from transit_odp.organisation.constants import INACTIVE, LIVE, AVLType
 from transit_odp.organisation.factories import (
     AVLDatasetRevisionFactory,
     DatasetFactory,
-    DatasetMetadataFactory,
-    DatasetRevisionFactory,
 )
 from transit_odp.organisation.models import Dataset
 from transit_odp.users.constants import DeveloperType, OrgAdminType
@@ -214,9 +207,7 @@ def test_email_is_not_sent_on_no_errors(get_client, mailoutbox):
         non_critical_error_count=0,
     )
     client = Mock()
-    client.schema.return_value = SchemaValidationResponseFactory(
-        errors=[], timestamp=0, is_valid=True
-    )
+
     client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
     get_client.return_value = client
 
@@ -240,9 +231,7 @@ def test_send_pre_seven_days_action_required(get_client, mailoutbox):
         critical_score=0.9, critical_error_count=1, non_critical_error_count=0
     )
     client = Mock()
-    client.schema.return_value = SchemaValidationResponseFactory(
-        errors=[], timestamp=0, is_valid=True
-    )
+
     client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
     get_client.return_value = client
 
@@ -279,8 +268,6 @@ def test_send_flagged_non_compliant(get_client, mailoutbox):
         )
 
     client = Mock()
-    schema_report = SchemaValidationResponseFactory(errors=[], is_valid=True)
-    client.schema.return_value = schema_report
 
     summary = ValidationSummaryFactory(critical_score=0.5, non_critical_score=0.5)
     client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
@@ -349,9 +336,6 @@ def test_send_flagged_as_dormant(get_client, mailoutbox):
         vehicle_activity_count=0,
     )
     client = Mock()
-    client.schema.return_value = SchemaValidationResponseFactory(
-        errors=[], timestamp=0, is_valid=True
-    )
     client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
     get_client.return_value = client
 
@@ -387,9 +371,6 @@ def test_send_flagged_major_issue(get_client, mailoutbox):
     client = Mock()
     summary = ValidationSummaryFactory(critical_score=0.19, non_critical_score=0.5)
     response = ValidationResponseFactory(validation_summary=summary)
-    client.schema.return_value = SchemaValidationResponseFactory(
-        errors=[], is_valid=True
-    )
     client.validate.return_value = response
     get_client.return_value = client
 
@@ -426,9 +407,6 @@ def test_send_status_changed_email(get_client, mailoutbox):
         critical_score=0.6, non_critical_score=0.5, vehicle_activity_count=1000
     )
     client = Mock()
-    client.schema.return_value = SchemaValidationResponseFactory(
-        errors=[], is_valid=True
-    )
     client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
     get_client.return_value = client
     task_run_feed_validation(revision.dataset.id)
@@ -438,28 +416,6 @@ def test_send_status_changed_email(get_client, mailoutbox):
     assert mailoutbox[0].subject == expected_subject
     assert "The SIRI-VM compliance status has changed" in mailoutbox[0].body
     assert revision.avl_validation_reports.count() == report_count
-
-
-@patch("transit_odp.avl.tasks.get_validation_client")
-def test_send_schema_validation_passes(get_client, mailoutbox):
-    user = UserFactory(account_type=OrgAdminType)
-    user.settings.daily_compliance_check_alert = True
-    user.settings.save()
-    revision = AVLDatasetRevisionFactory(
-        dataset__contact=user, dataset__organisation=user.organisations.first()
-    )
-    summary = ValidationSummaryFactory(
-        critical_score=1, non_critical_score=1, vehicle_activity_count=1000
-    )
-    client = Mock()
-    client.schema.return_value = SchemaValidationResponseFactory()
-    client.validate.return_value = ValidationResponseFactory(validation_summary=summary)
-    get_client.return_value = client
-
-    assert AVLSchemaValidationReport.objects.count() == 0
-    task_run_feed_validation(revision.dataset.id)
-    assert len(mailoutbox) == 0
-    assert AVLSchemaValidationReport.objects.count() == 0
 
 
 @patch("transit_odp.avl.tasks.get_validation_client")
@@ -480,9 +436,7 @@ def test_feed_validation_can_handle_empty_response(get_client):
     )
 
     client = Mock()
-    client.schema.return_value = SchemaValidationResponseFactory(
-        is_valid=True, errors=[], timestamp=0
-    )
+
     client.validate.return_value = ValidationResponseFactory(
         packet_count=0, feed_id=revision.dataset_id, validation_summary=summary
     )
@@ -494,94 +448,6 @@ def test_feed_validation_can_handle_empty_response(get_client):
     report = revision.avl_validation_reports.first()
     assert report is not None
     assert not report.file
-
-
-@patch("transit_odp.avl.tasks.CAVLService")
-@patch("transit_odp.avl.tasks.get_validation_client")
-def test_send_schema_validation_fails(get_client, get_cavl, mailoutbox):
-    user = UserFactory(account_type=OrgAdminType)
-    user.settings.daily_compliance_check_alert = True
-    user.settings.save()
-    revision = AVLDatasetRevisionFactory(
-        dataset__contact=user, dataset__organisation=user.organisations.first()
-    )
-    errors = SchemaErrorFactory.create_batch(3)
-    response = SchemaValidationResponseFactory(is_valid=False, errors=errors)
-    client = Mock()
-    client.schema.return_value = response
-    get_client.return_value = client
-    cavl = Mock()
-    get_cavl.return_value = cavl
-
-    assert AVLSchemaValidationReport.objects.count() == 0
-    task_run_feed_validation(revision.dataset.id)
-    revision.refresh_from_db()
-    assert len(mailoutbox) == 1
-    assert mailoutbox[0].subject == "Error publishing data feed"
-    assert AVLSchemaValidationReport.objects.count() == 1
-    assert revision.status == INACTIVE
-    cavl.delete_feed.assert_called_once_with(feed_id=revision.dataset_id)
-
-
-@pytest.mark.parametrize("exception", [ConnectionError, ReadTimeout])
-@patch("transit_odp.avl.tasks.get_validation_client")
-@requests_mock.Mocker(kw="m")
-def test_send_schema_fails_with_request_exceptions(
-    get_client, exception, mailoutbox, **kwargs
-):
-    """
-    Simulate common connection problems with the config API
-    """
-    m = kwargs["m"]
-    matcher = re.compile(settings.CAVL_URL)
-    m.delete(matcher, exc=exception)
-    user = UserFactory(account_type=OrgAdminType)
-    revision = AVLDatasetRevisionFactory(
-        dataset__contact=user, dataset__organisation=user.organisations.first()
-    )
-    errors = SchemaErrorFactory.create_batch(3)
-    response = SchemaValidationResponseFactory(is_valid=False, errors=errors)
-    client = Mock()
-    client.schema.return_value = response
-    get_client.return_value = client
-
-    assert AVLSchemaValidationReport.objects.count() == 0
-    task_run_feed_validation(revision.dataset.id)
-    revision.refresh_from_db()
-    assert AVLSchemaValidationReport.objects.count() == 0
-    assert revision.status == LIVE
-    assert len(mailoutbox) == 0
-
-
-@patch("transit_odp.avl.tasks.get_validation_client")
-@requests_mock.Mocker(kw="m")
-def test_send_schema_fails_with_502_bad_gateway(get_client, mailoutbox, **kwargs):
-    """
-    Simulate a bad gateway response from the server.
-    """
-    m = kwargs["m"]
-    matcher = re.compile(settings.CAVL_URL)
-    m.delete(
-        matcher,
-        status_code=HTTPStatus.BAD_GATEWAY,
-        json={"message": "Internal server error"},
-    )
-    user = UserFactory(account_type=OrgAdminType)
-    revision = AVLDatasetRevisionFactory(
-        dataset__contact=user, dataset__organisation=user.organisations.first()
-    )
-    errors = SchemaErrorFactory.create_batch(3)
-    response = SchemaValidationResponseFactory(is_valid=False, errors=errors)
-    client = Mock()
-    client.schema.return_value = response
-    get_client.return_value = client
-
-    assert AVLSchemaValidationReport.objects.count() == 0
-    task_run_feed_validation(revision.dataset.id)
-    revision.refresh_from_db()
-    assert AVLSchemaValidationReport.objects.count() == 0
-    assert revision.status == LIVE
-    assert len(mailoutbox) == 0
 
 
 @freeze_time("2022-05-25")
