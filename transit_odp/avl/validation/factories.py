@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from time import time_ns
+from time import time_ns, strftime
 
 from factory import Factory, LazyFunction, SubFactory
 
@@ -9,8 +9,6 @@ from transit_odp.avl.validation.models import (
     Identifier,
     Observation,
     Errors,
-    SchemaError,
-    SchemaValidationResponse,
     ValidationResponse,
     ValidationSummary,
 )
@@ -49,7 +47,7 @@ class HeaderFactory(Factory):
     """
 
     packet_name = "avl-internal-1000000"
-    timestamp = "2024-08-26T13:01:42+00:00"
+    timestamp = datetime.now(timezone.utc).isoformat()
     feed_id = 1
 
     class Meta:
@@ -74,7 +72,7 @@ class IdentifierFactory(Factory):
     line_ref = "Line1"
     name = "OriginRef"
     operator_ref = "Op1"
-    recorded_at_time = "2024-08-26T13:01:42+00:00"
+    recorded_at_time = datetime.now(timezone.utc).isoformat()
     vehicle_journey_ref = "JVRef1"
     vehicle_ref = "JR1"
 
@@ -158,51 +156,3 @@ class ValidationResponseFactory(Factory):
 
     class Meta:
         model = ValidationResponse
-
-
-class SchemaErrorFactory(Factory):
-    """
-    A schema validation error factory.
-
-    Args:
-        domain_name: The xml domain name.
-        filename: The xml filename.
-        level_name: The name of the error level.
-        line: The line the error occurs on.
-        message: The error message.
-        path: The path to the element that has the issue.
-        type_name: The type of error.
-    """
-
-    domain_name = "SCHEMASV"
-    filename = "<string>"
-    level_name = "ERROR"
-    line = 1
-    message = (
-        "Element 'Siri': No matching global declaration "
-        "available for the validation root."
-    )
-    path = "/Siri"
-    type_name = "SCHEMAV_CVC_ELT_1"
-
-    class Meta:
-        model = SchemaError
-
-
-class SchemaValidationResponseFactory(Factory):
-    """
-    A schema validation response factory
-
-    Args:
-        feed_id: The id of the feed.
-        is_valid: True if the packet has no schema issues, False otherwise.
-        errors: A list of all the schema validation errors.
-    """
-
-    feed_id = 1
-    is_valid = True
-    timestamp = 1631603094
-    errors = []
-
-    class Meta:
-        model = SchemaValidationResponse

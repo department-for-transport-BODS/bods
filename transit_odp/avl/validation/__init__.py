@@ -57,8 +57,6 @@ class ValidationClient:
             GET, endpoint, timeout=DEFAULT_TIMEOUT, headers=headers
         )
 
-        print("data", data)
-
         if data is not None:
             try:
                 return ValidationResponse(**data)
