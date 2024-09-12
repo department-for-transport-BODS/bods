@@ -51,7 +51,6 @@ class ValidationClient:
         """
         endpoint = self.url + f"/subscriptions/{feed_id}/validate-profile"
 
-        print(endpoint)
         headers = {"x-api-key": settings.AVL_PRODUCER_API_KEY}
         data = self._make_request(
             GET, endpoint, timeout=DEFAULT_TIMEOUT, headers=headers
