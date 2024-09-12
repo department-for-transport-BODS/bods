@@ -748,12 +748,20 @@ CSP_SCRIPT_SRC = (
     "https://www.googletagmanager.com",
     "https://ajax.googleapis.com/ajax/libs/jquery",
 )
-CSP_STYLE_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
 CSP_IMG_SRC = (
     "'self'",
     "data:",
+    "blob:",
 )
-CSP_CONNECT_SRC = ("'self'",)
+CSP_CONNECT_SRC = (
+    "'self'",
+    "https://*.mapbox.com",
+    "http://*.localhost:8000",
+    "https://*.bus-data.dft.gov.uk",
+)
 CSP_FONT_SRC = ("'self'",)
 CSP_OBJECT_SRC = ("'none'",)
 CSP_FRAME_ANCESTORS = ("'self'",)
+CSP_WORKER_SRC = ("'self'", "blob:")
+SECURE_CONTENT_TYPE_NOSNIFF = True
