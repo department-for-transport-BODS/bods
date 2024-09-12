@@ -57,10 +57,7 @@ class ValidationClient:
         )
 
         if data is not None:
-            try:
-                return ValidationResponse(**data)
-            except ValueError as e:
-                print(e)
+            return ValidationResponse(**data)
 
         else:
             return None
