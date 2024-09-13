@@ -6,7 +6,6 @@ import factory
 from factory.django import DjangoModelFactory
 
 from transit_odp.avl.models import (
-    AVLSchemaValidationReport,
     AVLValidationReport,
     CAVLDataArchive,
     CAVLValidationTaskResult,
@@ -55,18 +54,6 @@ class AVLValidationReportFactory(DjangoModelFactory):
 
     class Meta:
         model = AVLValidationReport
-
-
-class AVLSchemaValidationReportFactory(DjangoModelFactory):
-    revision = factory.SubFactory(AVLDatasetRevisionFactory)
-    error_count = 1
-    file = factory.django.FileField(
-        filename="avl_report.csv", from_func=zipped_csv_file
-    )
-    created = datetime.now().date()
-
-    class Meta:
-        model = AVLSchemaValidationReport
 
 
 class CAVLValidationTaskResultFactory(TaskResultFactory):
