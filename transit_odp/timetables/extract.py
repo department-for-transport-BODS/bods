@@ -1,13 +1,13 @@
+import uuid
 import zipfile
 from datetime import datetime
-import uuid
+from pathlib import Path
 
 import pandas as pd
 from celery.utils.log import get_task_logger
 from django.core.files.base import File
 from shapely.geometry import Point
 from waffle import flag_is_active
-from pathlib import Path
 
 from transit_odp.common.utils.geometry import construct_geometry
 from transit_odp.common.utils.timestamps import extract_timestamp
@@ -21,20 +21,20 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.aggregations import (
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import ExtractedData
 from transit_odp.timetables.dataframes import (
+    booking_arrangements_to_dataframe,
+    flexible_journey_patterns_to_dataframe,
     flexible_operation_period_to_dataframe,
+    flexible_stop_points_from_journey_details,
+    flexible_vehicle_journeys_to_dataframe,
     journey_pattern_section_from_journey_pattern,
     journey_pattern_sections_to_dataframe,
     journey_patterns_to_dataframe,
-    provisional_stops_to_dataframe,
-    services_to_dataframe,
-    stop_point_refs_to_dataframe,
-    booking_arrangements_to_dataframe,
-    standard_vehicle_journeys_to_dataframe,
-    flexible_vehicle_journeys_to_dataframe,
-    serviced_organisations_to_dataframe,
-    flexible_journey_patterns_to_dataframe,
-    flexible_stop_points_from_journey_details,
     operating_profiles_to_dataframe,
+    provisional_stops_to_dataframe,
+    serviced_organisations_to_dataframe,
+    services_to_dataframe,
+    standard_vehicle_journeys_to_dataframe,
+    stop_point_refs_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -453,7 +453,9 @@ class TransXChangeZipExtractor:
         filenames = [
             info.filename
             for info in z.infolist()
-            if not info.is_dir() and info.filename
+            if not info.is_dir()
+            and info.filename
+            and not info.filename.startswith("__")
         ]
         file_count = len(filenames)
         logger.info(f"Total files in zip: {file_count}")

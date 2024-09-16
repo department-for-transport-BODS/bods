@@ -84,12 +84,14 @@ class DatasetTXCValidator:
                 for index, name in enumerate(names, 1):
                     adapter.info(f"Validating file {index} of {total_files} - {name}.")
                     with zf.open(name) as f:
-                        if sha1sum(f.read()) in self.new_file_hash:
+                        if (
+                            sha1sum(f.read()) in self.new_file_hash
+                        ):  # use file name instead of hash for comparison
                             f.seek(0)
                             yield f
         else:
             adapter.info(f"Getting file 1 of 1 - {file_.name}.")
-            if sha1sum(file_.read()) in new_file_hash:
+            if sha1sum(file_.read()) in self.new_file_hash:
                 file_.seek(0)
                 yield file_
 

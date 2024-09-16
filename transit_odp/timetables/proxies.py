@@ -28,13 +28,23 @@ class TimetableDatasetRevision(DatasetRevision):
         timetable_file = self.upload_file
         if zipfile.is_zipfile(timetable_file):
             with zipfile.ZipFile(timetable_file) as zf:
-                names = [n for n in zf.namelist() if n.endswith(".xml")]
+                names = [
+                    n
+                    for n in zf.namelist()
+                    if n.endswith(".xml") and not n.startswith("__")
+                ]
                 for name in names:
                     with zf.open(name) as f:
+                        f.seek(0)
                         yield f
         else:
             timetable_file.seek(0)
             yield timetable_file
 
     def get_txc_hashes(self) -> List[str]:
-        return [sha1sum(file_.read()) for file_ in self.get_txc_files()]
+        # return [sha1sum(file_.read()) for file_ in self.get_txc_files()]
+        hash_list = []
+        for file_ in self.get_txc_files():
+            hash_list.append(sha1sum(file_.read()))
+            file_.seek(0)
+        return hash_list

@@ -104,15 +104,15 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_dataset_etl.signature(args),
         ]
 
-        if is_new_data_quality_service_active:
-            jobs.append(task_dataset_etl.signature(args))
-            jobs.append(task_data_quality_service.signature(args))
-        else:
-            jobs.append(task_dqs_upload.signature(args))
-            jobs.append(task_dataset_etl.signature(args))
+        # if is_new_data_quality_service_active:
+        #     jobs.append(task_dataset_etl.signature(args))
+        #     jobs.append(task_data_quality_service.signature(args))
+        # else:
+        #     jobs.append(task_dqs_upload.signature(args))
+        #     jobs.append(task_dataset_etl.signature(args))
 
         # Adding the final step for ETL
-        jobs.append(task_dataset_etl_finalise.signature(args))
+        jobs.append(task_dataset_etl_finalise.signature(args, immutable=True))
 
         if do_publish:
             jobs.append(task_publish_revision.signature((revision_id,), immutable=True))
@@ -202,6 +202,7 @@ def task_create_historic_and_new_hash_lists(revision_id: int, task_id: int):
     new_file_hash = []
     # if dataset.objects.filter(revision__id=revision_idrevision__dataset__live_revision_id).exists():
     if revision.dataset.live_revision:
+        print("dataset has existing live version")
         live_file_hash = list(
             TXCFileAttributes.objects.filter(
                 revision=revision.dataset.live_revision_id
@@ -209,8 +210,10 @@ def task_create_historic_and_new_hash_lists(revision_id: int, task_id: int):
         )
         draft_file_hash = revision.get_txc_hashes()
 
-        new_file_hash = draft_file_hash - live_file_hash
-        historic_file_hash = live_file_hash - draft_file_hash
+        new_file_hash = []
+        for element in draft_file_hash:
+            if element not in live_file_hash:
+                new_file_hash.append(element)
 
         return new_file_hash
     else:
@@ -493,9 +496,14 @@ def task_dataset_etl(new_file_hash: list, revision_id: int, task_id: int):
                 revision=revision.dataset.live_revision_id
             ).values_list("hash", flat=True)
         )
-        draft_file_hash = revision.get_txc_hashes()
-        historic_file_hash = live_file_hash - draft_file_hash
-        pipleine.load_live_data_in_df(historic_file_hash)
+        revision_1 = TimetableDatasetRevision.objects.get(id=revision_id)
+        draft_file_hash = revision_1.get_txc_hashes()
+        historic_file_hash = []
+        for element in live_file_hash:
+            if element not in draft_file_hash:
+                historic_file_hash.append(element)
+
+        pipeline.load_live_data_in_df(historic_file_hash)
 
         pipeline.load(transformed)
         adapter.info("Data successfully loaded into BODS.")

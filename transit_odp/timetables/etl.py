@@ -38,7 +38,7 @@ logger = get_task_logger(__name__)
 
 
 class TransXChangePipeline:
-    def __init__(self, revision):
+    def __init__(self, revision, failed_validations_files: list = []):
         self.revision = revision
         self.start_time = datetime.datetime.now()
         self.file_obj = revision.upload_file
@@ -47,6 +47,7 @@ class TransXChangePipeline:
         self.service_link_cache = create_service_link_cache(revision.id)
         self.service_cache: Dict[str, Service] = {}
         self.stop_activity_cache = get_stop_activities()
+        self.failed_validations_files = failed_validations_files
 
     def run(self):
         """
@@ -154,7 +155,7 @@ class TransXChangePipeline:
         logger.info("Finished load step in.")
         return report
 
-    def load_live_data_in_df(historic_file_hash):
+    def load_live_data_in_df(self, historic_file_hash):
         in_memory_loader = TransmodelDataLoader(historic_file_hash)
         in_memory_loader.load(self.revision.dataset.live_revision_id)
 
