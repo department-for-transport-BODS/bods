@@ -2,6 +2,7 @@ import os
 from datetime import date, datetime
 from pathlib import Path
 from unittest import skip
+from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import pytest
@@ -11,10 +12,8 @@ from ddt import data, ddt, unpack
 from django.contrib.gis.geos import Point
 from django.core.files import File
 from django.test import TestCase
-from unittest.mock import patch, MagicMock
 from waffle.testutils import override_flag
 
-from waffle.testutils import override_flag
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.naptan.models import AdminArea, District, Locality, StopPoint
 from transit_odp.organisation.constants import FeedStatus
@@ -30,12 +29,12 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     get_stop_activities,
     get_txc_files,
 )
-from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
-    agg_service_pattern_sequences,
-)
-from transit_odp.pipelines.pipelines.dataset_etl.utils.models import TransformedData
 from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result import (
     ETLReport,
+)
+from transit_odp.pipelines.pipelines.dataset_etl.utils.models import TransformedData
+from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
+    agg_service_pattern_sequences,
 )
 from transit_odp.pipelines.tests.utils import check_frame_equal
 from transit_odp.timetables.extract import TransXChangeExtractor
@@ -102,7 +101,7 @@ class ExtractBaseTestCase(TestCase):
 
         self.doc, result = xml_toolkit.parse_xml_file(self.file_obj.file)
 
-        txc_files = get_txc_files(self.revision.id)
+        txc_files = get_txc_files(self.revision.id, [])
 
         self.trans_xchange_extractor = TransXChangeExtractor(
             self.file_obj,

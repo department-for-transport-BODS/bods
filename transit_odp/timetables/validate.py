@@ -279,7 +279,7 @@ class TXCRevisionValidator:
 
 
 class PostSchemaValidator:
-    def __init__(self, doc_list=None):
+    def __init__(self, doc_list=[]):
         self.doc_list = doc_list
         self.violations = []
         self.failed_validation_filenames = set()
