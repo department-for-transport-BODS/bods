@@ -244,6 +244,9 @@ def task_timetable_schema_check(revision_id: int, task_id: int):
                 SchemaViolation.objects.bulk_create(
                     schema_violations, batch_size=BATCH_SIZE
                 )
+                revision.modify_upload_file(
+                    list(set([sv.filename for sv in schema_violations]))
+                )
         adapter.info("Validation complete.")
         task.update_progress(40)
     else:
@@ -253,6 +256,7 @@ def task_timetable_schema_check(revision_id: int, task_id: int):
             "task_timetable_schema_check", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS
         )
         task.additional_info = message
+        task.save()
         raise PipelineException(message)
     return revision_id
 
@@ -268,15 +272,8 @@ def task_post_schema_check(revision_id: int, task_id: int):
     revision = DatasetRevision.objects.get(id=revision_id)
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting post schema validation check.")
-    schema_failed_filenames = set(
-        list(
-            SchemaViolation.objects.filter(revision=revision_id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
     violations = []
-    parser = TransXChangeDatasetParser(revision.upload_file, schema_failed_filenames)
+    parser = TransXChangeDatasetParser(revision.upload_file)
     doc_list = parser.get_documents()
     if not doc_list:
         message = f"Validation task: task_post_schema_check, no file to process, zip file: {revision.upload_file.name}"
@@ -285,6 +282,7 @@ def task_post_schema_check(revision_id: int, task_id: int):
             "task_post_schema_check", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS
         )
         task.additional_info = message
+        task.save()
         raise PipelineException(message)
 
     validator = PostSchemaValidator(doc_list)
@@ -305,6 +303,7 @@ def task_post_schema_check(revision_id: int, task_id: int):
             PostSchemaViolation.objects.bulk_create(
                 schema_violations, batch_size=BATCH_SIZE
             )
+            revision.modify_upload_file([sv.filename for sv in schema_violations])
     adapter.info("Completed post schema validation check.")
     return revision_id
 
@@ -319,30 +318,10 @@ def task_extract_txc_file_data(revision_id: int, task_id: int):
 
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Extracting TXC attributes from individual files.")
-
-    schema_failed_filenames = set(
-        list(
-            SchemaViolation.objects.filter(revision=revision_id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
-    post_schema_failed_filenames = set(
-        list(
-            PostSchemaViolation.objects.filter(revision=revision_id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
-    post_schema_failed_filenames = post_schema_failed_filenames.union(
-        schema_failed_filenames
-    )
     try:
         # If we're in the update flow lets clear out "old" files.
         revision.txc_file_attributes.all().delete()
-        parser = TransXChangeDatasetParser(
-            revision.upload_file, post_schema_failed_filenames
-        )
+        parser = TransXChangeDatasetParser(revision.upload_file)
         files = [
             TXCFile.from_txc_document(doc, use_path_filename=True)
             for doc in parser.get_documents()
@@ -356,6 +335,7 @@ def task_extract_txc_file_data(revision_id: int, task_id: int):
                 DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS,
             )
             task.additional_info = message
+            task.save()
             raise PipelineException(message)
 
         attributes = [
@@ -394,9 +374,10 @@ def task_pti_validation(revision_id: int, task_id: int):
             "task_pti_validation", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS
         )
         task.additional_info = message
+        task.save()
         raise PipelineException(message)
 
-    pti = get_pti_validator(valid_txc_files)
+    pti = get_pti_validator()
     violations = pti.get_violations(revision=revision)
     revision_validator = TXCRevisionValidator(revision)
     violations += revision_validator.get_violations()
@@ -421,6 +402,7 @@ def task_pti_validation(revision_id: int, task_id: int):
         TXCFileAttributes.objects.filter(
             revision=revision.id, filename__in=[pv.filename for pv in pti_violations]
         ).delete()
+        revision.modify_upload_file(list(set([pv.filename for pv in pti_violations])))
         task.update_progress(50)
         revision.save()
 
@@ -451,37 +433,13 @@ def task_dataset_etl(revision_id: int, task_id: int):
         adapter.error(message, exc_info=True)
         task.to_error("task_dataset_etl", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS)
         task.additional_info = message
+        task.save()
         raise PipelineException(message)
 
     adapter.info("Starting ETL pipeline task.")
-
-    schema_failed_filenames = set(
-        list(
-            SchemaViolation.objects.filter(revision=revision.id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
-    post_schema_failed_filenames = set(
-        list(
-            PostSchemaViolation.objects.filter(revision=revision.id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
-    pti_invalid_filenames = set(
-        list(
-            PTIObservation.objects.filter(revision=revision.id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
-    pti_invalid_filenames = pti_invalid_filenames.union(
-        post_schema_failed_filenames, schema_failed_filenames
-    )
     try:
         task.update_progress(60)
-        pipeline = TransXChangePipeline(revision, pti_invalid_filenames)
+        pipeline = TransXChangePipeline(revision)
         extracted = pipeline.extract()
         adapter.info("Data successfully extracted.")
         task.update_progress(70)

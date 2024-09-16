@@ -482,9 +482,8 @@ class TransXChangeZip(ZippedValidator):
 class TransXChangeDatasetParser:
     """Class for iterating over transxchange file/s."""
 
-    def __init__(self, source, failed_validations_filename: list = []):
+    def __init__(self, source):
         self._source = source
-        self.failed_validations_filename = failed_validations_filename
 
     def is_zipfile(self) -> bool:
         return zipfile.is_zipfile(self._source)
@@ -493,24 +492,17 @@ class TransXChangeDatasetParser:
         if self.is_zipfile():
             with TransXChangeZip(self._source) as zip_:
                 for doc in zip_.iter_doc():
-                    if (
-                        doc.get_file_name().replace("\\", "")
-                        not in self.failed_validations_filename
-                    ):
-                        yield doc
+                    yield doc
         else:
-            if self._source.name not in self.failed_validations_filename:
-                yield TransXChangeDocument(self._source)
+            yield TransXChangeDocument(self._source)
 
     def get_documents(self) -> Iterator[TransXChangeDocument]:
         if self.is_zipfile():
             with TransXChangeZip(self._source) as zip_:
                 for doc in zip_.iter_doc():
-                    if doc.name.split("/")[-1] not in self.failed_validations_filename:
-                        yield doc
+                    yield doc
         else:
-            if self._source.name not in self.failed_validations_filename:
-                yield TransXChangeDocument(self._source)
+            yield TransXChangeDocument(self._source)
 
     def get_transxchange_versions(self) -> List[TransXChangeElement]:
         return [doc.get_transxchange_version() for doc in self.get_documents()]
