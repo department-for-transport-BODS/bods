@@ -669,6 +669,7 @@ class ServiceCodeExemption(TimeStampedModel):
         blank=False,
         null=False,
         help_text="The part of the service code after the licence prefix",
+        max_length=50,
     )
     justification = models.CharField(
         blank=True,
