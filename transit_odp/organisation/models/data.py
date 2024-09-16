@@ -665,7 +665,7 @@ class ServiceCodeExemption(TimeStampedModel):
         help_text="Organisation licence",
         related_name="service_code_exemptions",
     )
-    registration_code = models.IntegerField(
+    registration_code = models.CharField(
         blank=False,
         null=False,
         help_text="The part of the service code after the licence prefix",
