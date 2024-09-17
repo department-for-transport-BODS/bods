@@ -4,11 +4,11 @@ from datetime import datetime, timedelta
 from django.db.models import Max
 from django.utils import timezone
 
+from transit_odp.data_quality.models import SchemaViolation
+from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
 from transit_odp.organisation.models import DatasetRevision, TXCFileAttributes
 from transit_odp.publish.constants import LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
 from transit_odp.transmodel.models import BookingArrangements, Service
-from transit_odp.data_quality.models import SchemaViolation
-from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
 
 
 def get_simulated_progress(start_time: datetime, max_minutes: timedelta):
@@ -23,34 +23,7 @@ def get_simulated_progress(start_time: datetime, max_minutes: timedelta):
 
 def get_distinct_dataset_txc_attributes(revision_id):
     txc_attributes = {}
-    schema_failed_filenames = set(
-        list(
-            SchemaViolation.objects.filter(revision=revision_id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
-    post_schema_failed_filenames = set(
-        list(
-            PostSchemaViolation.objects.filter(revision=revision_id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
-    pti_invalid_filenames = set(
-        list(
-            PTIObservation.objects.filter(revision=revision_id).values_list(
-                "filename", flat=True
-            )
-        )
-    )
-    pti_invalid_filenames = pti_invalid_filenames.union(
-        post_schema_failed_filenames, schema_failed_filenames
-    )
-
-    txc_file_attributes = TXCFileAttributes.objects.filter(
-        revision_id=revision_id
-    ).exclude(filename__in=pti_invalid_filenames)
+    txc_file_attributes = TXCFileAttributes.objects.filter(revision_id=revision_id)
 
     for file_attribute in txc_file_attributes:
         licence_number = (
