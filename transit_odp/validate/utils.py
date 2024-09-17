@@ -5,7 +5,6 @@ from typing import Optional
 
 def filter_and_repackage_zip(intial_zip_file, files_to_remove):
     output_zip_stream = io.BytesIO()
-    print("files_to_remove>>> ", files_to_remove)
     with zipfile.ZipFile(intial_zip_file, "r") as input_zip:
         with zipfile.ZipFile(output_zip_stream, "w") as output_zip:
             for file_info in input_zip.infolist():
