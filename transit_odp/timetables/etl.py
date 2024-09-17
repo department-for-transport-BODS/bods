@@ -1,10 +1,7 @@
 import datetime
-import io
-import zipfile
 from typing import Dict
 
 from celery.utils.log import get_task_logger
-from django.core.files.base import ContentFile
 from django.db import transaction
 
 from transit_odp.pipelines import exceptions
@@ -62,31 +59,6 @@ class TransXChangePipeline:
         self.revision.services.all().delete()
         self.revision.service_patterns.all().delete()
         self.revision.save()
-
-    def filter_and_repackage_zip(self, intial_zip_file, files_to_remove):
-        output_zip_stream = io.BytesIO()
-        with zipfile.ZipFile(intial_zip_file, "r") as input_zip:
-            with zipfile.ZipFile(output_zip_stream, "w") as output_zip:
-                for file_info in input_zip.infolist():
-                    if (
-                        file_info.filename.endswith(".xml")
-                        and file_info.filename.split("/")[-1] not in files_to_remove
-                    ):
-                        with input_zip.open(file_info.filename) as file:
-                            file_data = file.read()
-                            output_zip.writestr(file_info.filename, file_data)
-        output_zip_stream.seek(0)
-        return output_zip_stream
-
-    def replace_zip_file(self, revision, failed_filenames):
-        intial_zip_file = revision.upload_file
-        new_zip_stream = self.filter_and_repackage_zip(
-            intial_zip_file, failed_filenames
-        )
-        new_zip_content = ContentFile(
-            new_zip_stream.read(), name=revision.upload_file.name
-        )
-        revision.upload_file.save(revision.upload_file.name, new_zip_content, save=True)
 
     def extract(self) -> ExtractedData:
         """Extraction step which extract the data from the xml file"""
