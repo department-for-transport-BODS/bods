@@ -3,6 +3,23 @@ import zipfile
 from typing import Optional
 
 
+def filter_and_repackage_zip(intial_zip_file, files_to_remove):
+    output_zip_stream = io.BytesIO()
+    print("files_to_remove>>> ", files_to_remove)
+    with zipfile.ZipFile(intial_zip_file, "r") as input_zip:
+        with zipfile.ZipFile(output_zip_stream, "w") as output_zip:
+            for file_info in input_zip.infolist():
+                if (
+                    file_info.filename.endswith(".xml")
+                    and file_info.filename.split("/")[-1] not in files_to_remove
+                ):
+                    with input_zip.open(file_info.filename) as file:
+                        file_data = file.read()
+                        output_zip.writestr(file_info.filename, file_data)
+    output_zip_stream.seek(0)
+    return output_zip_stream
+
+
 def get_file_size(file_):
     """Returns the file_size"""
 

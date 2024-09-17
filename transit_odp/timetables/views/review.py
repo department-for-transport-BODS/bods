@@ -104,9 +104,9 @@ class BaseTimetableReviewView(ReviewBaseView):
                 )
                 .first()
             )
-            dq_pending_or_failed = False  # ONLY FOR TESTING --- To be reverted
+            dq_pending_or_failed = True
             report_id = report.id if report else None
-            dq_status = "SUCCESS"  # ONLY FOR TESTING --- To be reverted
+            dq_status = "PENDING"
             if report_id:
                 dq_status = "SUCCESS"
                 dq_pending_or_failed = False
@@ -128,9 +128,7 @@ class BaseTimetableReviewView(ReviewBaseView):
                 }
             )
         else:
-            dq_pending_or_failed = (
-                False  # tasks.get_latest_status() in ["FAILURE", "PENDING"]
-            )
+            dq_pending_or_failed = tasks.get_latest_status() in ["FAILURE", "PENDING"]
             context.update(
                 {
                     "loading": loading,
@@ -138,7 +136,7 @@ class BaseTimetableReviewView(ReviewBaseView):
                     "admin_areas": revision.admin_area_names,
                     "api_root": api_root,
                     "has_pti_observations": not revision.is_pti_compliant(),
-                    "dq_status": "SUCCESS",
+                    "dq_status": tasks.get_latest_status(),
                     "dqs_timeout": settings.DQS_WAIT_TIMEOUT,
                     "pti_enforced_date": settings.PTI_ENFORCED_DATE,
                     "pti_deadline_passed": pti_deadline_passed,
@@ -148,15 +146,13 @@ class BaseTimetableReviewView(ReviewBaseView):
                 }
             )
             if context["dq_status"] == DatasetETLTaskResult.SUCCESS:
-                # ONLY FOR TESTING --- To be reverted
-                # report = tasks.latest().report
-                # rag = get_data_quality_rag(report)
+                report = tasks.latest().report
+                rag = get_data_quality_rag(report)
 
                 context.update(
                     {
-                        # ONLY FOR TESTING --- To be reverted
-                        "summary": "OKAY",
-                        "dq_score": "100",
+                        "summary": Summary.from_report_summary(report.summary),
+                        "dq_score": rag,
                     }
                 )
 

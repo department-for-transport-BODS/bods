@@ -1,10 +1,10 @@
 import datetime
 import io
-from typing import Dict
 import zipfile
-from django.core.files.base import ContentFile
+from typing import Dict
 
 from celery.utils.log import get_task_logger
+from django.core.files.base import ContentFile
 from django.db import transaction
 
 from transit_odp.pipelines import exceptions
@@ -37,7 +37,7 @@ logger = get_task_logger(__name__)
 
 
 class TransXChangePipeline:
-    def __init__(self, revision, failed_validations_files: list = []):
+    def __init__(self, revision):
         self.revision = revision
         self.start_time = datetime.datetime.now()
         self.file_obj = revision.upload_file
@@ -46,7 +46,6 @@ class TransXChangePipeline:
         self.service_link_cache = create_service_link_cache(revision.id)
         self.service_cache: Dict[str, Service] = {}
         self.stop_activity_cache = get_stop_activities()
-        self.failed_validations_files = failed_validations_files
 
     def run(self):
         """
@@ -71,7 +70,7 @@ class TransXChangePipeline:
                 for file_info in input_zip.infolist():
                     if (
                         file_info.filename.endswith(".xml")
-                        and file_info.filename not in files_to_remove
+                        and file_info.filename.split("/")[-1] not in files_to_remove
                     ):
                         with input_zip.open(file_info.filename) as file:
                             file_data = file.read()
@@ -93,19 +92,15 @@ class TransXChangePipeline:
         """Extraction step which extract the data from the xml file"""
         logger.info("Begin extraction step")
         filename = self.file_obj.file.name
-        txc_files = get_txc_files(self.revision.id, self.failed_validations_files)
+        txc_files = get_txc_files(self.revision.id)
         if txc_files.empty:
             raise exceptions.NoValidFileToProcess(filename)
         if self.file_obj.file.name.endswith("zip"):
-            if self.failed_validations_files:
-                self.replace_zip_file(self.revision, self.failed_validations_files)
-                logger.info("Recreated zip file by removing failed violations file.")
             extractor = TransXChangeZipExtractor(
                 self.file_obj,
                 self.start_time,
                 self.stop_activity_cache,
                 txc_files,
-                self.failed_validations_files,
             )
         elif self.file_obj.file.name.endswith("xml"):
             extractor = TransXChangeExtractor(

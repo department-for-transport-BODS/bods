@@ -21,7 +21,6 @@ logger = getLogger(__name__)
 class DatasetPTIValidator:
     def __init__(self, schema: JSONFile, valid_txc_files=[]):
         self._validator = PTIValidator(schema)
-        self.valid_txc_files = valid_txc_files
 
     def iter_get_files(self, revision: DatasetRevision) -> Iterable[BinaryIO]:
         context = DatasetPipelineLoggerContext(object_id=revision.dataset_id)
@@ -37,14 +36,11 @@ class DatasetPTIValidator:
                 ]
                 file_count = len(names)
                 for index, name in enumerate(names, start=1):
-                    if name.split("/")[-1] in self.valid_txc_files:
-                        adapter.info(
-                            f"PTI Validation of file {index} of {file_count} - {name}."
-                        )
-                        with zf.open(name) as f:
-                            yield f
-                    else:
-                        adapter.info(f"Skipping PTI validation of file {name}.")
+                    adapter.info(
+                        f"PTI Validation of file {index} of {file_count} - {name}."
+                    )
+                    with zf.open(name) as f:
+                        yield f
         else:
             file_.seek(0)
             yield file_
@@ -85,10 +81,10 @@ class DatasetPTIValidator:
             return cls(schema_file)
 
 
-def get_pti_validator(valid_txc_files: list = []) -> DatasetPTIValidator:
+def get_pti_validator() -> DatasetPTIValidator:
     """
     Gets a PTI JSON Schema and returns a DatasetPTIValidator.
     """
     with PTI_PATH.open("r") as f:
-        pti = DatasetPTIValidator(f, valid_txc_files)
+        pti = DatasetPTIValidator(f)
     return pti

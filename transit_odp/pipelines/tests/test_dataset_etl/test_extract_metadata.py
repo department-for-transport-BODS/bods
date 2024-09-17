@@ -101,7 +101,7 @@ class ExtractBaseTestCase(TestCase):
 
         self.doc, result = xml_toolkit.parse_xml_file(self.file_obj.file)
 
-        txc_files = get_txc_files(self.revision.id, [])
+        txc_files = get_txc_files(self.revision.id)
 
         self.trans_xchange_extractor = TransXChangeExtractor(
             self.file_obj,

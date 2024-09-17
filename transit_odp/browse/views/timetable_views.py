@@ -94,34 +94,7 @@ class DatasetDetailView(DetailView):
 
     def get_distinct_dataset_txc_attributes(self, revision_id):
         txc_attributes = {}
-        schema_failed_filenames = set(
-            list(
-                SchemaViolation.objects.filter(revision=revision_id).values_list(
-                    "filename", flat=True
-                )
-            )
-        )
-        post_schema_failed_filenames = set(
-            list(
-                PostSchemaViolation.objects.filter(revision=revision_id).values_list(
-                    "filename", flat=True
-                )
-            )
-        )
-        pti_invalid_filenames = set(
-            list(
-                PTIObservation.objects.filter(revision=revision_id).values_list(
-                    "filename", flat=True
-                )
-            )
-        )
-        pti_invalid_filenames = pti_invalid_filenames.union(
-            post_schema_failed_filenames, schema_failed_filenames
-        )
-
-        txc_file_attributes = TXCFileAttributes.objects.filter(
-            revision_id=revision_id
-        ).exclude(filename__in=pti_invalid_filenames)
+        txc_file_attributes = TXCFileAttributes.objects.filter(revision_id=revision_id)
 
         for file_attribute in txc_file_attributes:
             licence_number = (

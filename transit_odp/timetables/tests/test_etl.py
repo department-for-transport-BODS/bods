@@ -1,11 +1,12 @@
-import zipfile
 import io
-from django.test import TestCase
-from django.core.files.base import ContentFile
+import zipfile
 
-from transit_odp.timetables.etl import TransXChangePipeline
-from transit_odp.organisation.factories import DatasetRevisionFactory
+from django.core.files.base import ContentFile
+from django.test import TestCase
+
 from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.factories import DatasetRevisionFactory
+from transit_odp.timetables.etl import TransXChangePipeline
 
 
 class TestFilterAndRepackageZip(TestCase):
@@ -13,9 +14,7 @@ class TestFilterAndRepackageZip(TestCase):
         self.revision = DatasetRevisionFactory(
             dataset__dataset_type=DatasetType.TIMETABLE.value
         )
-        self.instance = TransXChangePipeline(
-            revision=self.revision, failed_validations_files=[]
-        )
+        self.instance = TransXChangePipeline(revision=self.revision)
 
     def create_zip_with_files(self, file_contents):
         zip_stream = io.BytesIO()

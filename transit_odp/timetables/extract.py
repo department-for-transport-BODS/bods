@@ -1,13 +1,13 @@
+import uuid
 import zipfile
 from datetime import datetime
-import uuid
+from pathlib import Path
 
 import pandas as pd
 from celery.utils.log import get_task_logger
 from django.core.files.base import File
 from shapely.geometry import Point
 from waffle import flag_is_active
-from pathlib import Path
 
 from transit_odp.common.utils.geometry import construct_geometry
 from transit_odp.common.utils.timestamps import extract_timestamp
@@ -21,20 +21,20 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.aggregations import (
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import ExtractedData
 from transit_odp.timetables.dataframes import (
+    booking_arrangements_to_dataframe,
+    flexible_journey_patterns_to_dataframe,
     flexible_operation_period_to_dataframe,
+    flexible_stop_points_from_journey_details,
+    flexible_vehicle_journeys_to_dataframe,
     journey_pattern_section_from_journey_pattern,
     journey_pattern_sections_to_dataframe,
     journey_patterns_to_dataframe,
-    provisional_stops_to_dataframe,
-    services_to_dataframe,
-    stop_point_refs_to_dataframe,
-    booking_arrangements_to_dataframe,
-    standard_vehicle_journeys_to_dataframe,
-    flexible_vehicle_journeys_to_dataframe,
-    serviced_organisations_to_dataframe,
-    flexible_journey_patterns_to_dataframe,
-    flexible_stop_points_from_journey_details,
     operating_profiles_to_dataframe,
+    provisional_stops_to_dataframe,
+    serviced_organisations_to_dataframe,
+    services_to_dataframe,
+    standard_vehicle_journeys_to_dataframe,
+    stop_point_refs_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -422,13 +422,11 @@ class TransXChangeZipExtractor:
         start_time,
         stop_activity_cache,
         txc_files=pd.DataFrame(),
-        failed_validation_files: list = [],
     ):
         self.file_obj = file_obj
         self.start_time = start_time
         self.stop_activity_cache = stop_activity_cache
         self.df_txc_files = txc_files
-        self.failed_validation_files = failed_validation_files
 
     def extract(self) -> ExtractedData:
         """
@@ -459,10 +457,7 @@ class TransXChangeZipExtractor:
         logger.info(f"Total files in zip: {file_count}")
 
         for i, filename in enumerate(filenames):
-            if (
-                filename.endswith(".xml")
-                and filename not in self.failed_validation_files
-            ):
+            if filename.endswith(".xml") and not filename.startswith("__"):
                 logger.info(f"Extracting: {filename}")
                 with z.open(filename, "r") as f:
                     file_obj = File(f, name=filename)
