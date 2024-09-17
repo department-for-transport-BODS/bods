@@ -1,35 +1,17 @@
 {% load i18n %}
 <h2 class="govuk-heading-l govuk-!-padding-top-5">{{ object.name }}</h2>
-<div class="govuk-!-margin-top-6" id="preview-section">
-  {# Fares Validator Section - Succes/Fail Message #}
-  <div class="app-dqs-panel govuk-!-margin-bottom-7">
-    <div class="app-dqs-panel__body">
-      <div class="app-dqs-panel__success">
-        <h2 class="govuk-heading-m">3a Validation Check - Failed</h2>
-        <p class="govuk-body">
-          {% blocktrans %}
-                The validation report checks for compliance against the NeTEx schema.
-              {% endblocktrans %}
-          <br />
-          <br />
-          <a class="govuk-link" href="{% url 'fares:review-fares-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">Download schema validation report</a>
-          <br />
-        </p>
-        <p class="govuk-body govuk-!-margin-bottom-0">
-          {% blocktrans %}
-            The fares data supplied is non-compliant and cannot be
-            submitted to BODS as per the
-          {% endblocktrans %}
-          <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
-            {% trans "guidance." %}
-          </a>
-          {% blocktrans %}
-            To pass the validation please address all outstanding issues in the
-            validation report.
-          {% endblocktrans %}
-        </p>
-      </div>
-    </div>
+<div class="govuk-error-summary govuk-!-margin-bottom-0"
+     aria-labelledby="error-summary-title"
+     role="alert"
+     tabindex="-1"
+     data-module="govuk-error-summary">
+  <h2 class="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
+    {% trans "Supplied data set has failed to upload" %}
+  </h2>
+  <div class="govuk-error-summary__body">
+    <ul class="govuk-list govuk-error-summary__list ">
+      <li class="app-error-summary__item dont-break-out no-underline-l">{{ error.description | safe }}</li>
+    </ul>
   </div>
 </div>
 <div class="govuk-!-padding-bottom-7 govuk-!-padding-top-5">

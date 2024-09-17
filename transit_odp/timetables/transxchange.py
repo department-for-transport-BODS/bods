@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from transit_odp.common.utils import sha1sum
 from transit_odp.common.xmlelements import XMLElement
+from transit_odp.common.xmlelements.exceptions import NoElement
 from transit_odp.timetables.constants import (
     TRANSXCAHNGE_NAMESPACE,
     TRANSXCHANGE_NAMESPACE_PREFIX,
@@ -22,7 +23,7 @@ WSG84_LOCATION = "WGS84"
 PRINCIPAL_TIMING_POINTS = ["PTP", "principalTimingPoint"]
 
 
-class BaseSchemaViolation(BaseModel):
+class TXCSchemaViolation(BaseModel):
     filename: str
     line: int
     details: str
@@ -235,6 +236,15 @@ class TransXChangeDocument:
             List[TransXChangeElement]: A list of TransXChangeElement StopPoint elements.
         """
         xpath = ["StopPoints", "StopPoint"]
+        return self.find_anywhere(xpath)
+
+    def get_flexible_service(self):
+        """Get all the StopPoint elements in the TransXChangeDocument.
+
+        Returns:
+            List[TransXChangeElement]: A list of TransXChangeElement StopPoint elements.
+        """
+        xpath = ["Services", "Service", "FlexibleService"]
         return self.find_anywhere(xpath)
 
     def has_latitude(self, stop):

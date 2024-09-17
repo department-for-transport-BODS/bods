@@ -46,8 +46,9 @@ class TestFileValidation:
         """Tests a malformed xml file fails the pipeline"""
         path = str(DATA_DIR.joinpath("bad.xml"))
         with open(path, "rb") as fin:
-            op = XMLValidator(fin).validate()
-            assert op[0].filename == path
+            with pytest.raises(XMLSyntaxError) as exc_info:
+                XMLValidator(fin).validate()
+            assert exc_info.value.filename == path
 
     @pytest.mark.parametrize(
         "filename",
@@ -66,8 +67,9 @@ class TestFileValidation:
         """
         path = str(DATA_DIR.joinpath(filename))
         with open(path, "rb") as fin:
-            op = XMLValidator(fin).validate()
-            assert op[0].filename == path
+            with pytest.raises(DangerousXML) as exc_info:
+                XMLValidator(fin).validate()
+            assert exc_info.value.filename == path
 
 
 class TestPipeline:

@@ -8,9 +8,9 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
-from transit_odp.data_quality.models.report import SchemaViolation
 from transit_odp.fares.constants import ERROR_CODE_MAP
 from transit_odp.fares.forms import FaresFeedUploadForm
 from transit_odp.fares.tasks import task_run_fares_pipeline
@@ -105,11 +105,6 @@ class ReviewView(ReviewBaseView):
             return False
         return True
 
-    def get_schema_validation_error(self, revision_id):
-        if SchemaViolation.objects.filter(revision_id=revision_id).exists():
-            return True
-        return False
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         revision = self.object
@@ -123,32 +118,23 @@ class ReviewView(ReviewBaseView):
         # Get the error info
         context["error"] = self.get_error()
 
-        # Get the fares-validator error info
-        validator_error = None
-        if (
-            not is_loading
-            and context["error"] is None
-            and not self.get_validator_error(self.object.id)
-        ):
-            validator_error = False
-        else:
-            validator_error = True
+        is_fares_validator_active = flag_is_active(
+            self.request, "is_fares_validator_active"
+        )
+        if is_fares_validator_active:
+            # Get the fares-validator error info
+            validator_error = None
+            if (
+                not is_loading
+                and context["error"] is None
+                and not self.get_validator_error(self.object.id)
+            ):
+                validator_error = False
+            else:
+                validator_error = True
 
-        context["validator_error"] = validator_error
-
-        schema_error = None
-        if (
-            not is_loading
-            and context["error"] is None
-            and not self.get_schema_validation_error(self.object.id)
-        ):
-            schema_error = False
-        else:
-            schema_error = True
-
-        context["schema_error"] = schema_error
-
-        context["pk2"] = revision.id
+            context["validator_error"] = validator_error
+            context["pk2"] = revision.id
 
         api_root = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
 
@@ -204,25 +190,19 @@ class RevisionPublishSuccessView(OrgUserViewMixin, TemplateView):
         )
         return count_list
 
-    def get_schema_validation_error(self, dataset_id):
-        revision_id = list(
-            DatasetRevision.objects.filter(dataset_id=dataset_id).values_list(
-                "id", flat=True
-            )
-        )
-        if SchemaViolation.objects.filter(revision_id=revision_id[0]).exists():
-            return True
-        return False
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({"update": False, "pk1": self.kwargs["pk1"]})
-        count = self.get_count(self.kwargs["pk"])
+        is_fares_validator_active = flag_is_active(
+            self.request, "is_fares_validator_active"
+        )
+        if is_fares_validator_active:
+            count = self.get_count(self.kwargs["pk"])
 
-        if count[0] != 0:
-            context.update({"validator_error": True})
-        else:
-            context.update({"validator_error": False})
+            if count[0] != 0:
+                context.update({"validator_error": True})
+            else:
+                context.update({"validator_error": False})
 
         return context
 
