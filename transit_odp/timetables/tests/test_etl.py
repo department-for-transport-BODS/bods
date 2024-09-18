@@ -7,6 +7,7 @@ from django.test import TestCase
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.factories import DatasetRevisionFactory
 from transit_odp.timetables.etl import TransXChangePipeline
+from transit_odp.validate.utils import filter_and_repackage_zip
 
 
 class TestFilterAndRepackageZip(TestCase):
@@ -34,9 +35,7 @@ class TestFilterAndRepackageZip(TestCase):
 
         files_to_remove = ["failed_validations.xml"]
 
-        output_zip_stream = self.instance.filter_and_repackage_zip(
-            input_zip, files_to_remove
-        )
+        output_zip_stream = filter_and_repackage_zip(input_zip, files_to_remove)
 
         with zipfile.ZipFile(output_zip_stream, "r") as output_zip:
             self.assertIn("file3.xml", output_zip.namelist())
@@ -54,9 +53,7 @@ class TestFilterAndRepackageZip(TestCase):
         input_zip = self.create_zip_with_files(file_contents)
         files_to_remove = []
 
-        output_zip_stream = self.instance.filter_and_repackage_zip(
-            input_zip, files_to_remove
-        )
+        output_zip_stream = filter_and_repackage_zip(input_zip, files_to_remove)
 
         with zipfile.ZipFile(output_zip_stream, "r") as output_zip:
             self.assertIn("file1.xml", output_zip.namelist())
@@ -70,9 +67,7 @@ class TestFilterAndRepackageZip(TestCase):
         input_zip = self.create_zip_with_files(file_contents)
         files_to_remove = ["file1.xml", "file2.xml"]
 
-        output_zip_stream = self.instance.filter_and_repackage_zip(
-            input_zip, files_to_remove
-        )
+        output_zip_stream = filter_and_repackage_zip(input_zip, files_to_remove)
 
         with zipfile.ZipFile(output_zip_stream, "r") as output_zip:
             self.assertEqual(output_zip.namelist(), [])
@@ -85,9 +80,7 @@ class TestFilterAndRepackageZip(TestCase):
         input_zip = self.create_zip_with_files(file_contents)
         files_to_remove = []
 
-        output_zip_stream = self.instance.filter_and_repackage_zip(
-            input_zip, files_to_remove
-        )
+        output_zip_stream = filter_and_repackage_zip(input_zip, files_to_remove)
 
         with zipfile.ZipFile(output_zip_stream, "r") as output_zip:
             self.assertEqual(output_zip.namelist(), [])
@@ -100,9 +93,7 @@ class TestFilterAndRepackageZip(TestCase):
         input_zip.seek(0)
         files_to_remove = []
 
-        output_zip_stream = self.instance.filter_and_repackage_zip(
-            input_zip, files_to_remove
-        )
+        output_zip_stream = filter_and_repackage_zip(input_zip, files_to_remove)
 
         with zipfile.ZipFile(output_zip_stream, "r") as output_zip:
             self.assertEqual(output_zip.namelist(), [])
@@ -111,7 +102,7 @@ class TestFilterAndRepackageZip(TestCase):
         invalid_zip = io.BytesIO(b"not a zip file")
 
         with self.assertRaises(zipfile.BadZipFile):
-            self.instance.filter_and_repackage_zip(invalid_zip, [])
+            filter_and_repackage_zip(invalid_zip, [])
 
     def test_replace_zip_file(self):
         """
@@ -127,7 +118,7 @@ class TestFilterAndRepackageZip(TestCase):
 
         self.revision.upload_file = ContentFile(initial_zip.read(), name="test.zip")
 
-        self.instance.replace_zip_file(self.revision, files_to_remove)
+        self.revision.modify_upload_file(files_to_remove)
 
         new_zip_content = self.revision.upload_file.read()
         new_zip_stream = io.BytesIO(new_zip_content)
