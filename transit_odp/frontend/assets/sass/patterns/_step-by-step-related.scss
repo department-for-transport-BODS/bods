@@ -7,6 +7,12 @@
   margin-bottom: govuk-spacing(6);
 }
 
+.app-step-nav-related_white-top-border {
+  @include govuk-text-colour;
+  border-top: 2px solid govuk-colour("white");
+  margin-bottom: govuk-spacing(6);
+}
+
 .app-step-nav-related__heading {
   margin-top: govuk-spacing(3);
   margin-bottom: govuk-spacing(2);
