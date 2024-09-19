@@ -4,8 +4,6 @@ from datetime import datetime, timedelta
 from django.db.models import Max
 from django.utils import timezone
 
-from transit_odp.data_quality.models import SchemaViolation
-from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
 from transit_odp.organisation.models import DatasetRevision, TXCFileAttributes
 from transit_odp.publish.constants import LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
 from transit_odp.transmodel.models import BookingArrangements, Service

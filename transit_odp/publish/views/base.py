@@ -1,10 +1,7 @@
-import io
-import zipfile
 from collections import OrderedDict
 from typing import List, Tuple, Type
 
 from django.conf import settings
-from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from django.db.models.query_utils import Q
@@ -24,8 +21,6 @@ import config.hosts
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
-from transit_odp.data_quality.models import SchemaViolation
-from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.notifications import get_notifications
 from transit_odp.organisation.constants import DatasetType, FeedStatus

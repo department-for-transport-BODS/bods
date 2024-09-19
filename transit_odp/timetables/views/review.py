@@ -21,7 +21,6 @@ from transit_odp.dqs.models import Report
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
 from transit_odp.pipelines.models import DatasetETLTaskResult
-from transit_odp.publish.forms import RevisionPublishFormViolations
 from transit_odp.publish.views.base import BaseDatasetUploadModify, ReviewBaseView
 from transit_odp.publish.views.utils import (
     get_current_files,

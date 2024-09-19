@@ -4,18 +4,15 @@ import pytest
 
 from transit_odp.data_quality.models.report import PTIObservation, PTIValidationResult
 from transit_odp.data_quality.pti.factories import ViolationFactory
-from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     TXCFileAttributesFactory,
 )
-from transit_odp.organisation.models import DatasetRevision
 from transit_odp.pipelines.exceptions import PipelineException
-from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.pti import DatasetPTIValidator, get_pti_validator
 from transit_odp.timetables.tasks import task_pti_validation
-from transit_odp.validate.exceptions import ValidationException
+
 
 DATA_DIR = Path(__file__).parent / "data"
 

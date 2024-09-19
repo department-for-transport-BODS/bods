@@ -3,7 +3,6 @@ import math
 import re
 from collections import namedtuple
 from datetime import datetime, timedelta
-from io import BytesIO
 from typing import Dict
 
 import pandas as pd
@@ -14,7 +13,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.db.models import Max
-from django.http import FileResponse, Http404, HttpResponse, StreamingHttpResponse
+from django.http import FileResponse, Http404, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -22,7 +21,6 @@ from django.views.generic import CreateView, DetailView, TemplateView, UpdateVie
 from django.views.generic.detail import BaseDetailView
 from django_hosts import reverse
 from requests import RequestException
-from rest_framework import status
 from waffle import flag_is_active
 
 import config.hosts
@@ -44,8 +42,6 @@ from transit_odp.common.view_mixins import (
     DownloadView,
     ResourceCounterMixin,
 )
-from transit_odp.data_quality.models import SchemaViolation
-from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
 from transit_odp.data_quality.report_summary import Summary
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.notifications import get_notifications

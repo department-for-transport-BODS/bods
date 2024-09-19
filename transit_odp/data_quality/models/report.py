@@ -16,7 +16,6 @@ from transit_odp.data_quality.pti.models import Violation
 from transit_odp.data_quality.pti.report import PTIReport
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.timetables.transxchange import (
-    TXCPostSchemaViolation,
     TXCSchemaViolation,
 )
 
