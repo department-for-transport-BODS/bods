@@ -6,11 +6,11 @@ from django.conf import settings
 from lxml import etree
 
 from transit_odp.common.xmlelements import XMLElement
+from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.pipelines.constants import SchemaCategory
 from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
 from transit_odp.validate import XMLValidator
-
 
 _NETEX_NAMESPACE_PREFIX = "netex"
 _NETEX_NAMESPACE = "http://www.netex.org.uk/netex"
@@ -146,32 +146,6 @@ class NeTExDocument:
         xpath = ["fareProducts", "PreassignedFareProduct", "ProductType"]
         return list(self.find_anywhere(xpath))
 
-    def get_products_count(self, product_value_list):
-        count = 0
-        product_type_list = self.get_product_types()
-
-        for product_type in product_type_list:
-            if getattr(product_type, "text") in product_value_list:
-                count += 1
-
-        return count
-
-    def get_number_of_trip_products(self):
-        trip_product_values = [
-            "singleTrip",
-            "dayReturnTrip",
-            "periodReturnTrip",
-            "timeLimitedSingleTrip",
-            "ShortTrip",
-        ]
-        trip_product_count = self.get_products_count(trip_product_values)
-        return trip_product_count
-
-    def get_number_of_pass_products(self):
-        pass_product_values = ["dayPass", "periodPass"]
-        pass_product_count = self.get_products_count(pass_product_values)
-        return pass_product_count
-
     def get_earliest_tariff_from_date(self):
         xpath = ["Tariff", "validityConditions", "ValidBetween", "FromDate"]
         elements = self.find_anywhere(xpath)
@@ -198,7 +172,11 @@ class NeTExDocument:
         all_atco_codes_list = [
             element_id.split(":")[-1] for element_id in stop_point_ids_list
         ]
-        valid_atco_codes_list = [code[:3] for code in all_atco_codes_list if code != ""]
+        valid_atco_codes_list = [
+            code[:3]
+            for code in all_atco_codes_list
+            if code != "" and code[:3].isnumeric()
+        ]
 
         return valid_atco_codes_list
 
@@ -256,31 +234,30 @@ class NeTExDocument:
         return refs
 
 
-def process_document(xmlout):
-    doc = NeTExDocument(xmlout)
-    return doc
-
-
-def get_documents_from_zip(zipfile_) -> List[NeTExDocument]:
+def get_documents_from_zip(revision_) -> List[NeTExDocument]:
     """Returns a list NeTExDocuments from a zip file."""
-    docs = []
-    with zipfile.ZipFile(zipfile_) as zout:
-        filenames = [name for name in zout.namelist() if name.endswith("xml")]
+    with zipfile.ZipFile(revision_.upload_file) as zout:
+        filenames = [
+            name
+            for name in zout.namelist()
+            if name.endswith("xml")
+            and not name.startswith("__")
+            and not SchemaViolation.objects.filter(
+                filename=name.split("/")[-1],
+                revision_id=revision_,
+            ).exists()
+        ]
         for name in filenames:
-            if not name.startswith("__"):
-                with zout.open(name) as xmlout:
-                    doc = process_document(xmlout)
-                    docs.append(doc)
-    return docs
+            with zout.open(name) as xmlout:
+                yield NeTExDocument(xmlout)
 
 
-def get_documents_from_file(source) -> List[NeTExDocument]:
+def get_documents_from_file(revision) -> List[NeTExDocument]:
     """Returns a list of NeTExDocuments from a file or filepath."""
-    if zipfile.is_zipfile(source):
-        return get_documents_from_zip(source)
+    if zipfile.is_zipfile(revision.upload_file):
+        return get_documents_from_zip(revision)
     else:
-        doc = NeTExDocument(source)
-        return [doc]
+        return [NeTExDocument(revision.upload_file)]
 
 
 def get_netex_schema() -> etree.XMLSchema:
