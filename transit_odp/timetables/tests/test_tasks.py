@@ -33,7 +33,7 @@ from transit_odp.timetables.tasks import (
     task_timetable_file_check,
     task_timetable_schema_check,
 )
-from transit_odp.timetables.transxchange import TXCSchemaViolation
+from transit_odp.timetables.transxchange import BaseSchemaViolation
 from transit_odp.users.factories import OrgAdminFactory
 from transit_odp.validate import DownloadException, FileScanner
 from transit_odp.validate.antivirus import SuspiciousFile
@@ -73,7 +73,7 @@ class DatasetTXCValidatorFactory:
 
     def get_violations(self):
         return [
-            TXCSchemaViolation(
+            BaseSchemaViolation(
                 filename="failed_violation.xml", line=12, details="Invalid schema"
             )
         ]
