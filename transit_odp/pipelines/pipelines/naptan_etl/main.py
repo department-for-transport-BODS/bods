@@ -11,6 +11,7 @@ from transit_odp.pipelines.pipelines.naptan_etl.extract import (
     get_latest_nptg,
 )
 from transit_odp.pipelines.pipelines.naptan_etl.load import (
+    delete_existing_stops,
     load_existing_admin_areas,
     load_existing_localities,
     load_existing_stops,
@@ -52,6 +53,12 @@ def run():
     admin_areas_from_db = extract_admin_areas_from_db()
     extract_districts_from_db()
     localities_from_db = extract_localities_from_db()
+
+    # delete stops that are not found in NAPTAN.xml but present in database
+    stops_to_delete = stops_from_db.loc[
+        stops_from_db.index.difference(stops_naptan.index)
+    ]
+    delete_existing_stops(stops_to_delete)
 
     # Transform
     new_stops = get_new_data(stops_naptan, stops_from_db)
