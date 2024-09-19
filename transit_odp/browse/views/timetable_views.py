@@ -908,6 +908,7 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
 
     def get_download_file(self, id_=None):
         if self.is_new_gtfs_api_active:
+            print("I am getting here")
             id_ = self.kwargs.get("id", None)
             gtfs_file = _get_gtfs_file(id_)
         else:

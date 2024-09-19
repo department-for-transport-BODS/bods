@@ -33,7 +33,6 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
         published_at: str
         avl_compliance_status_cached: str
         avl_timetables_matching: Optional[str]
-        has_schema_violations: bool
         days_to_go: int
         first_error_date: datetime
         is_dummy: bool
@@ -45,7 +44,6 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
             .filter(
                 organisation_id=self.organisation.id,
             )
-            .add_has_schema_violation_reports()
             .add_avl_report_count()
             .add_first_error_date()
             .get_published()
@@ -117,7 +115,6 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
             published_at=revision.published_at,
             avl_compliance_status_cached=dataset.avl_compliance_status_cached,
             avl_timetables_matching=ppc_weekly_score,
-            has_schema_violations=dataset.has_schema_violations,
             days_to_go=7 - dataset.avl_report_count,
             first_error_date=dataset.first_error_date,
             is_dummy=dataset.is_dummy,
@@ -130,13 +127,6 @@ class ValidationFileDownloadView(BaseDetailView):
 
     def get(self, *args, **kwargs):
         return self.get_object().to_validation_reports_response()
-
-
-class SchemaValidationFileDownloadView(OrgUserViewMixin, BaseDetailView):
-    model = AVLDataset
-
-    def get(self, *args, **kwargs):
-        return self.get_object().to_schema_validation_response()
 
 
 class DownloadPPCWeeklyReportView(DetailView):
