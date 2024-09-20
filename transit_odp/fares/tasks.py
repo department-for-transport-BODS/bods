@@ -393,6 +393,7 @@ def task_rerun_fares_validation_specific_datasets():
     """
     csv_file_name = CSVFileName.RERUN_FARES_VALIDATION.value
     _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
+
     if not _ids and not _id_type == "dataset_ids":
         logger.info("No valid dataset IDs found in the file.")
         return
@@ -427,10 +428,13 @@ def task_rerun_fares_validation_specific_datasets():
             task = DatasetETLTaskResult.objects.create(
                 revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
             )
-
-            task_download_fares_file(task.id)
-            task_set_fares_validation_result(task.id)
-            task_run_fares_etl(task.id)
+            context = DatasetPipelineLoggerContext(
+                component_name="FaresPipeline", object_id=revision.dataset.id
+            )
+            adapter = PipelineAdapter(logger, {"context": context})
+            task_download_fares_file(task.id, adapter)
+            task_set_fares_validation_result(task.id, adapter)
+            task_run_fares_etl(task.id, adapter)
 
             task.update_progress(100)
             task.to_success()
