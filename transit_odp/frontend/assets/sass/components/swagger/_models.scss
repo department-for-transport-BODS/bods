@@ -99,6 +99,13 @@
     color: #666;
     font-weight: normal;
   }
+  .json-schema-2020-12:not(.json-schema-2020-12--embedded) {
+    > .json-schema-2020-12-head {
+      .json-schema-2020-12__title:first-of-type {
+        font-size: $font-base;
+      }
+    }
+  }
 }
 
 table.model {
@@ -172,7 +179,7 @@ section.models {
   }
 
   h4 {
-    font-size: $font-lg;
+    font-size: $font-base;
 
     display: flex;
     align-items: center;
@@ -199,10 +206,8 @@ section.models {
   }
 
   h5 {
-    font-size: $font-lg;
-
+    font-size: $font-base;
     margin: 0 0 10px 0;
-
     @include text_headline($section-models-h5-font-color);
   }
 
@@ -214,9 +219,7 @@ section.models {
   .model-container {
     margin: 0 20px 15px;
     position: relative;
-
     transition: all 0.5s;
-
     border-radius: 4px;
     background: rgba($section-models-model-container-background-color, 0.05);
 
@@ -248,7 +251,6 @@ section.models {
 .model-box {
   padding: 10px;
   display: inline-block;
-
   border-radius: 4px;
   background: rgba($section-models-model-box-background-color, 0.1);
 
@@ -263,7 +265,7 @@ section.models {
 }
 
 .model-title {
-  font-size: $font-lg;
+  font-size: $font-base;
 
   @include text_headline($section-models-model-title-font-color);
 
@@ -275,9 +277,8 @@ section.models {
 }
 
 .model-deprecated-warning {
-  font-size: $font-lg;
+  font-size: $font-base;
   font-weight: 600;
-
   margin-right: 1em;
 
   @include text_headline($_color-delete);

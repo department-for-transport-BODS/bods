@@ -1,9 +1,7 @@
 .errors-wrapper {
   margin: 20px;
   padding: 10px 20px;
-
   animation: scaleUp 0.5s;
-
   border: 2px solid $_color-delete;
   border-radius: 4px;
   background: rgba($_color-delete, 0.1);
@@ -15,7 +13,6 @@
   .errors {
     h4 {
       font-size: $font-md;
-
       margin: 0;
     }
 
@@ -39,14 +36,11 @@
 
   hgroup {
     display: flex;
-
     align-items: center;
 
     h4 {
       font-size: 20px;
-
       margin: 0;
-
       flex: 1;
       @include text_headline();
     }
@@ -56,13 +50,11 @@
 @keyframes scaleUp {
   0% {
     transform: scale(0.8);
-
     opacity: 0;
   }
 
   100% {
     transform: scale(1);
-
     opacity: 1;
   }
 }

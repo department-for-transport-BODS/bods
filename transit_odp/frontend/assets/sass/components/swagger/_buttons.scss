@@ -1,11 +1,8 @@
 .btn {
   font-size: $font-md;
   font-weight: bold;
-
   padding: 5px 23px;
-
   transition: all 0.3s;
-
   border: 2px solid $btn-border-color;
   border-radius: 4px;
   background: transparent;
@@ -14,7 +11,7 @@
   @include text_headline();
 
   &.btn-sm {
-    font-size: 1.1875rem;
+    font-size: $font-lg;
     padding: 4px 23px;
   }
 
@@ -36,16 +33,13 @@
 
   &.authorize {
     line-height: 1;
-
     display: inline;
-
     color: $btn-authorize-font-color;
     border-color: $btn-authorize-border-color;
     background-color: $btn-authorize-background-color;
 
     span {
       float: left;
-
       padding: 4px 20px 0 0;
     }
 
@@ -63,7 +57,6 @@
 
 .btn-group {
   display: flex;
-
   padding: 30px;
 
   .btn {
@@ -81,7 +74,6 @@
 
 .authorization__btn {
   padding: 0 0 0 10px;
-
   border: none;
   background: none;
 
@@ -104,7 +96,7 @@
   cursor: pointer;
 
   &:focus {
-    outline: auto;
+    outline: none;
   }
 }
 
@@ -130,7 +122,6 @@
 
   svg {
     transition: all 0.3s;
-
     fill: $expand-methods-svg-fill-color;
   }
 }

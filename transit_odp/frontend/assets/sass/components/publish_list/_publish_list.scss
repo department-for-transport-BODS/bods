@@ -26,10 +26,12 @@
       @include govuk-font($size: 16);
       color: inherit;
     }
+
     a.review-stat__link:visited {
       color: unset;
     }
   }
+
   .review-stat:last-child {
     margin-right: unset;
   }

@@ -4,7 +4,7 @@
 
 @mixin text_code($color: $text-code-default-font-color) {
   font-family: monospace;
-  font-weight: 600;
+  font-weight: 400;
   color: $color;
 }
 

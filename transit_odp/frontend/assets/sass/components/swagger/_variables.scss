@@ -16,7 +16,7 @@ $gray-900: lighten($black, 18.75%); // #303030
 
 $cod-gray: #1b1b1b;
 $agate-gray: #333333;
-$bright-gray: #3b4151;
+$bright-gray: $black;
 $mako-gray: #41444e;
 $waterloo-gray: #7d8492;
 $alto-gray: #d9d9d9;
@@ -53,10 +53,12 @@ $_color-head: govuk-colour("purple");
 $_color-patch: #50e3c2;
 $_color-disabled: #ebebeb;
 $_color-options: govuk-colour("blue");
-$font-sm: 12px;
-$font-md: 14px;
-$font-lg: 16px;
-$font-xl: 18px;
+$font-xs: 0.5rem; // 10px converted to rem
+$font-sm: 0.75rem; // 12px converted to rem
+$font-md: 0.875rem; // 14px converted to rem
+$font-base: 1rem; // 16px converted to rem
+$font-lg: 1.125rem; // 18px converted to rem
+$font-xl: 1.1875rem; // 24px converted to rem
 
 $tag-green: govuk-tint(govuk-colour("green"), 80%);
 $tag-gray: govuk-tint(govuk-colour("dark-grey"), 85%);
@@ -132,7 +134,7 @@ $info-title-small-pre-font-color: $white;
 $opblock-border-color: $black;
 $opblock-box-shadow-color: $black;
 
-$opblock-tag-border-bottom-color: $bright-gray;
+$opblock-tag-border-bottom-color: $black;
 $opblock-tag-background-color-hover: $black;
 
 $opblock-tab-header-tab-item-active-h4-span-after-background-color: $gray-400;

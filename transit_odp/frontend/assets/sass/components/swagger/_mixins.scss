@@ -3,7 +3,7 @@
 // styles for the _mixins.scss module
 @function calculateRem($size) {
   $remSize: $size / 16px;
-  @return $remSize * 1rem;
+  @return $remSize * $font-base;
 }
 
 @mixin font-size($size) {

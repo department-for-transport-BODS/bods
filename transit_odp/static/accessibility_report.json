@@ -5,7 +5,7 @@
   },
   "testRunner": {},
   "testEnvironment": [],
-  "timestamp": "2024-09-11T11:27:13.478Z",
+  "timestamp": "2024-09-19T06:26:49.148Z",
   "url": "",
   "toolOptions": {
     "reporter": "v1"
@@ -279,6 +279,15 @@
       "nodes": []
     },
     {
+      "id": "duplicate-id-aria",
+      "impact": null,
+      "tags": ["cat.parsing", "wcag2a", "wcag412", "EN-301-549", "EN-9.4.1.2"],
+      "description": "Ensures every id attribute value used in ARIA and in labels is unique",
+      "help": "IDs used in ARIA and labels must be unique",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/duplicate-id-aria?application=axeAPI",
+      "nodes": []
+    },
+    {
       "id": "empty-table-header",
       "impact": null,
       "tags": ["cat.name-role-value", "best-practice"],
@@ -380,6 +389,36 @@
       "description": "Ensure that HTML elements with both valid lang and xml:lang attributes agree on the base language of the page",
       "help": "HTML elements with lang and xml:lang must have the same base language",
       "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/html-xml-lang-mismatch?application=axeAPI",
+      "nodes": []
+    },
+    {
+      "id": "image-alt",
+      "impact": null,
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag111",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT7.a",
+        "TT7.b",
+        "EN-301-549",
+        "EN-9.1.1.1",
+        "ACT"
+      ],
+      "description": "Ensures <img> elements have alternate text or a role of none or presentation",
+      "help": "Images must have alternate text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/image-alt?application=axeAPI",
+      "nodes": []
+    },
+    {
+      "id": "image-redundant-alt",
+      "impact": null,
+      "tags": ["cat.text-alternatives", "best-practice"],
+      "description": "Ensure image alternative is not repeated as text",
+      "help": "Alternative text of images should not be repeated as text",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/image-redundant-alt?application=axeAPI",
       "nodes": []
     },
     {
@@ -711,45 +750,6 @@
       "nodes": []
     },
     {
-      "id": "duplicate-id-aria",
-      "impact": null,
-      "tags": ["cat.parsing", "wcag2a", "wcag412", "EN-301-549", "EN-9.4.1.2"],
-      "description": "Ensures every id attribute value used in ARIA and in labels is unique",
-      "help": "IDs used in ARIA and labels must be unique",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/duplicate-id-aria?application=axeAPI",
-      "nodes": []
-    },
-    {
-      "id": "image-alt",
-      "impact": null,
-      "tags": [
-        "cat.text-alternatives",
-        "wcag2a",
-        "wcag111",
-        "section508",
-        "section508.22.a",
-        "TTv5",
-        "TT7.a",
-        "TT7.b",
-        "EN-301-549",
-        "EN-9.1.1.1",
-        "ACT"
-      ],
-      "description": "Ensures <img> elements have alternate text or a role of none or presentation",
-      "help": "Images must have alternate text",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/image-alt?application=axeAPI",
-      "nodes": []
-    },
-    {
-      "id": "image-redundant-alt",
-      "impact": null,
-      "tags": ["cat.text-alternatives", "best-practice"],
-      "description": "Ensure image alternative is not repeated as text",
-      "help": "Alternative text of images should not be repeated as text",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/image-redundant-alt?application=axeAPI",
-      "nodes": []
-    },
-    {
       "id": "scrollable-region-focusable",
       "impact": null,
       "tags": [
@@ -817,6 +817,147 @@
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background image"
         }
       ]
+    },
+    {
+      "id": "color-contrast",
+      "impact": "serious",
+      "tags": [
+        "cat.color",
+        "wcag2aa",
+        "wcag143",
+        "TTv5",
+        "TT13.c",
+        "EN-301-549",
+        "EN-9.1.4.3",
+        "ACT"
+      ],
+      "description": "Ensures the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/color-contrast?application=axeAPI",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "messageKey": "nonBmp"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element content contains only non-text characters"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<li class=\"govuk-pagination__item govuk-pagination__item--ellipses\">\u22ef</li>",
+          "target": [".govuk-pagination__item--ellipses"],
+          "failureSummary": "Fix any of the following:\n  Element content contains only non-text characters"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "12.0pt (16px)",
+                "fontWeight": "normal",
+                "messageKey": "bgImage",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<a class=\"govuk-footer__link govuk-footer__copyright-logo\" target=\"_blank\" href=\"https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/\">\n          \u00a9 Crown copyright\n        </a>",
+                  "target": [".govuk-footer__copyright-logo"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element's background color could not be determined due to a background image"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<a class=\"govuk-footer__link govuk-footer__copyright-logo\" target=\"_blank\" href=\"https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/\">\n          \u00a9 Crown copyright\n        </a>",
+          "target": [".govuk-footer__copyright-logo"],
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background image"
+        }
+      ]
+    },
+    {
+      "id": "color-contrast",
+      "impact": "serious",
+      "tags": [
+        "cat.color",
+        "wcag2aa",
+        "wcag143",
+        "TTv5",
+        "TT13.c",
+        "EN-301-549",
+        "EN-9.1.4.3",
+        "ACT"
+      ],
+      "description": "Ensures the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/color-contrast?application=axeAPI",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "14.3pt (19px)",
+                "fontWeight": "normal",
+                "messageKey": "elmPartiallyObscured",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<textarea name=\"description-description\" cols=\"40\" rows=\"3\" placeholder=\"\" class=\"govuk-!-width-three-quarters govuk-textarea \" maxlength=\"300\" aria-describedby=\"id_description-description-hint\" required=\"\" id=\"id_description-description\"></textarea>",
+                  "target": ["#id_description-description"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element's background color could not be determined because it's partially obscured by another element"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<textarea name=\"description-description\" cols=\"40\" rows=\"3\" placeholder=\"\" class=\"govuk-!-width-three-quarters govuk-textarea \" maxlength=\"300\" aria-describedby=\"id_description-description-hint\" required=\"\" id=\"id_description-description\"></textarea>",
+          "target": ["#id_description-description"],
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "12.0pt (16px)",
+                "fontWeight": "normal",
+                "messageKey": "bgImage",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<a class=\"govuk-footer__link govuk-footer__copyright-logo\" target=\"_blank\" href=\"https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/\">\n          \u00a9 Crown copyright\n        </a>",
+                  "target": [".govuk-footer__copyright-logo"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element's background color could not be determined due to a background image"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<a class=\"govuk-footer__link govuk-footer__copyright-logo\" target=\"_blank\" href=\"https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/\">\n          \u00a9 Crown copyright\n        </a>",
+          "target": [".govuk-footer__copyright-logo"],
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background image"
+        }
+      ]
     }
   ],
   "violations": [
@@ -846,7 +987,7 @@
           "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
         }
       ],
-      "path": "http://data.bods.localhost:8001/api/buslocation-openapi/#/"
+      "path": "http://data.bods.localhost:8001/api/timetable-openapi/"
     },
     {
       "id": "page-has-heading-one",
@@ -874,91 +1015,48 @@
           "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
         }
       ],
-      "path": "http://data.bods.localhost:8001/api/buslocation-openapi/#/GTFS%20RT%20Data%20feed/get_api_v1_gtfsrtdatafeed_"
+      "path": "http://data.bods.localhost:8001/api/buslocation-openapi/#/SIRI-VM%20Data%20feed/get_api_v1_datafeed"
     },
     {
-      "id": "page-has-heading-one",
-      "impact": "moderate",
-      "tags": ["cat.semantics", "best-practice"],
-      "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-      "help": "Page should contain a level-one heading",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/page-has-heading-one?application=axeAPI",
+      "id": "list",
+      "impact": "serious",
+      "tags": [
+        "cat.structure",
+        "wcag2a",
+        "wcag131",
+        "EN-301-549",
+        "EN-9.1.3.1"
+      ],
+      "description": "Ensures that lists are structured correctly",
+      "help": "<ul> and <ol> must only directly contain <li>, <script> or <template> elements",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/list?application=axeAPI",
       "nodes": [
         {
           "any": [],
-          "all": [
+          "all": [],
+          "none": [
             {
-              "id": "page-has-heading-one",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "Page must have a level-one heading"
+              "id": "only-listitems",
+              "data": {
+                "values": "form"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<form method=\"post\" novalidate=\"\">",
+                  "target": ["form"]
+                }
+              ],
+              "impact": "serious",
+              "message": "List element has direct children that are not allowed: form"
             }
           ],
-          "none": [],
-          "impact": "moderate",
-          "html": "<html lang=\"en\" class=\"govuk-template\">",
-          "target": ["html"],
-          "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          "impact": "serious",
+          "html": "<ol class=\"govuk-breadcrumbs__list\">",
+          "target": ["ol"],
+          "failureSummary": "Fix all of the following:\n  List element has direct children that are not allowed: form"
         }
       ],
-      "path": "http://data.bods.localhost:8001/api/disruptions-openapi/"
-    },
-    {
-      "id": "page-has-heading-one",
-      "impact": "moderate",
-      "tags": ["cat.semantics", "best-practice"],
-      "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-      "help": "Page should contain a level-one heading",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/page-has-heading-one?application=axeAPI",
-      "nodes": [
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "page-has-heading-one",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "Page must have a level-one heading"
-            }
-          ],
-          "none": [],
-          "impact": "moderate",
-          "html": "<html lang=\"en\" class=\"govuk-template\">",
-          "target": ["html"],
-          "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-        }
-      ],
-      "path": "http://data.bods.localhost:8001/api/disruptions-openapi/#/SIRI-SX%20Disruptions/get_siri_sx"
-    },
-    {
-      "id": "page-has-heading-one",
-      "impact": "moderate",
-      "tags": ["cat.semantics", "best-practice"],
-      "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-      "help": "Page should contain a level-one heading",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/page-has-heading-one?application=axeAPI",
-      "nodes": [
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "page-has-heading-one",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "moderate",
-              "message": "Page must have a level-one heading"
-            }
-          ],
-          "none": [],
-          "impact": "moderate",
-          "html": "<html lang=\"en\" class=\"govuk-template\">",
-          "target": ["html"],
-          "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-        }
-      ],
-      "path": "http://data.bods.localhost:8001/api/disruptions-openapi/#/SIRI-SX%20Disruptions"
+      "path": "http://publish.bods.localhost:8001/org/44/dataset/timetable/new"
     }
   ],
   "rules": [

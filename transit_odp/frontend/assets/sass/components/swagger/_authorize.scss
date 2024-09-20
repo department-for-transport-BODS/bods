@@ -1,8 +1,6 @@
 .auth-btn-wrapper {
   display: flex;
-
   padding: 10px 0;
-
   justify-content: center;
 
   .btn-done {
@@ -12,7 +10,6 @@
 
 .auth-wrapper {
   display: flex;
-
   flex: 1;
   justify-content: flex-end;
 
@@ -26,13 +23,11 @@
 .auth-container {
   margin: 0 0 10px 0;
   padding: 10px 20px;
-
   border-bottom: 1px solid $auth-container-border-color;
 
   &:last-of-type {
     margin: 0;
     padding: 10px 20px;
-
     border: 0;
   }
 
@@ -48,21 +43,16 @@
   input[type="text"],
   input[type="password"] {
     min-width: 230px;
+    @extend .govuk-input;
   }
 
   .errors {
-    font-size: 1rem;
-
+    font-size: $font-base;
     padding: 10px;
-
     border-radius: 4px;
-
     background-color: #ffeeee;
-
     color: red;
-
     margin: 1em;
-
     b {
       text-transform: capitalize;
       margin-right: 1em;
@@ -72,12 +62,11 @@
 
 .scopes {
   h2 {
-    font-size: 1.1875rem;
-
+    font-size: $font-lg;
     @include text_headline();
 
     a {
-      font-size: 1rem;
+      font-size: $font-base;
       color: $auth-select-all-none-link-font-color;
       cursor: pointer;
       padding-left: 10px;

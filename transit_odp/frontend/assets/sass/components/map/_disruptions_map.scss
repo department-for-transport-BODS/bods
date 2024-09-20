@@ -1,12 +1,15 @@
 .disruptions-map {
   .mapboxgl-popup-content {
-    font: 400 12px/18px "GDS Transport", arial, sans-serif;
+    font:
+      400 12px/18px "GDS Transport",
+      arial,
+      sans-serif;
     padding: 0;
     width: 300px;
   }
 
   .mapboxgl-popup-content h2 {
-    background: #005EA5;
+    background: #005ea5;
     color: #fff;
     margin: 0;
     padding: 10px;
@@ -24,7 +27,7 @@
   }
 
   .mapboxgl-popup-content h3 {
-    background: #005EA5;
+    background: #005ea5;
     color: #fff;
     margin: 0;
     padding: 10px;
@@ -38,7 +41,7 @@
     border-radius: 0 0 6px 6px;
     font-weight: 700;
     background: #ffffff;
-    border: 2px solid #005EA5;
+    border: 2px solid #005ea5;
   }
 
   .mapboxgl-popup-content a {
@@ -50,10 +53,10 @@
   }
 
   .mapboxgl-popup-anchor-top > .mapboxgl-popup-tip {
-    border-bottom-color: #005EA5;
+    border-bottom-color: #005ea5;
   }
 
   .mapboxgl-popup-anchor-bottom > .mapboxgl-popup-tip {
-    border-top-color: #005EA5;
+    border-top-color: #005ea5;
   }
 }

@@ -22,16 +22,13 @@
 }
 
 .opblock-tag {
+  font-family: var(--djdt-font-family-primary) !important;
   display: flex;
   align-items: center;
-
-  padding: 10px 20px 10px 10px;
-
+  padding: 10px;
   cursor: pointer;
   transition: all 0.2s;
-
   border-bottom: 1px solid rgba($opblock-tag-border-bottom-color, 0.3);
-
   &:hover {
     background: rgba($opblock-tag-background-color-hover, 0.02);
   }
@@ -39,7 +36,7 @@
 
 @mixin method($color) {
   border-color: $color;
-  background: rgba($color, 0.1);
+  background: transparent;
 
   .opblock-summary-method {
     background: $color;
@@ -55,7 +52,7 @@
 }
 
 .opblock-tag {
-  font-size: 24px;
+  font-size: $font-lg;
 
   margin: 0 0 5px 0;
 
@@ -72,7 +69,7 @@
   }
 
   small {
-    font-size: 1.1875rem;
+    font-size: $font-md;
     font-weight: normal;
     flex: 2;
     padding: 0 10px;
@@ -102,7 +99,7 @@
 }
 
 .parameter__type {
-  font-size: 1.1875rem;
+  font-size: $font-md;
   padding: 5px 0;
 }
 
@@ -167,7 +164,6 @@
 
 .opblock {
   margin: 0 0 15px 0;
-
   border: 1px solid $opblock-border-color;
   border-radius: 4px;
   box-shadow: 0 0 3px rgba($opblock-box-shadow-color, 0.19);
@@ -218,17 +214,14 @@
   .opblock-section-header {
     display: flex;
     align-items: center;
-
     padding: 8px 20px;
-
     min-height: 50px;
-
     background: rgba($opblock-isopen-section-header-background-color, 0.8);
     box-shadow: 0 1px 2px
       rgba($opblock-isopen-section-header-box-shadow-color, 0.1);
 
     > label {
-      font-size: 1.1875rem;
+      font-size: $font-md;
       font-weight: bold;
       display: flex;
       align-items: center;
@@ -243,7 +236,7 @@
     }
 
     h4 {
-      font-size: 1.1875rem;
+      font-size: $font-md;
       flex: 1;
       margin: 0;
       @include text_headline();
@@ -251,11 +244,12 @@
   }
 
   .opblock-summary-method {
-    font-size: 1.1875rem;
+    font-family: var(--djdt-font-family-primary) !important;
+    font-size: $font-md;
     font-weight: bold;
 
     @media (max-width: 768px) {
-      font-size: 1.1875rem;
+      font-size: $font-base;
     }
 
     min-width: 80px;
@@ -271,10 +265,10 @@
   .opblock-summary-path,
   .opblock-summary-operation-id,
   .opblock-summary-path__deprecated {
-    font-size: $font-lg;
+    font-size: $font-base;
 
     @media (max-width: 768px) {
-      font-size: 1.1875rem;
+      font-size: $font-lg;
     }
 
     display: flex;
@@ -297,7 +291,7 @@
   }
 
   .opblock-summary-operation-id {
-    font-size: 1.1875rem;
+    font-size: $font-md;
   }
 
   .opblock-summary-description {
@@ -422,7 +416,7 @@
   list-style: none;
 
   li {
-    font-size: 1.1875rem;
+    font-size: $font-md;
     min-width: 60px;
     padding: 0;
 
@@ -433,7 +427,7 @@
     &:first-of-type {
       position: relative;
       padding-left: 0;
-      padding-right: 1.1875rem;
+      padding-right: $font-md;
 
       &:after {
         position: absolute;
@@ -464,17 +458,17 @@
 .opblock-description-wrapper,
 .opblock-external-docs-wrapper,
 .opblock-title_normal {
-  font-size: 1.1875rem;
+  font-size: $font-lg;
   margin: 0 0 5px 0;
   padding: 15px 20px;
 
   h4 {
-    font-size: 1.1875rem;
+    font-size: $font-lg;
     margin: 0 0 5px 0;
   }
 
   p {
-    font-size: 1.1875rem;
+    font-size: $font-lg;
     margin: 0;
   }
 }
@@ -507,6 +501,7 @@
     padding: 8px 0;
 
     select {
+      @extend .govuk-select;
       margin: 3px 0 0 0;
     }
   }
@@ -517,7 +512,7 @@
 
   h5,
   h4 {
-    font-size: 1.1875rem;
+    font-size: $font-lg;
     margin: 10px 0 5px 0;
   }
 
@@ -567,7 +562,7 @@
 }
 
 .opblock-body pre.microlight {
-  font-size: 12px;
+  font-size: $font-sm;
   margin: 0;
   padding: 10px;
   white-space: pre-wrap;
@@ -596,6 +591,7 @@
     code {
       white-space: pre-wrap !important;
       word-break: break-all;
+      line-height: 1.25rem;
     }
   }
 }
@@ -613,7 +609,7 @@
   padding: 5px;
   border: none;
   border-radius: 4px;
-  font-weight: 600;
+  font-weight: 400;
   color: white;
   font-size: $font-md;
   height: 30px;
@@ -642,7 +638,7 @@
       gap: 10px;
 
       > label {
-        font-size: 1.1875rem;
+        font-size: $font-lg;
         font-weight: bold;
         display: flex;
         flex-direction: column;
@@ -651,25 +647,17 @@
         @include text_headline();
 
         select {
+          @extend .govuk-select;
           min-width: 130px;
           text-transform: uppercase;
         }
       }
     }
 
-    /*
-        This checks if the schemes-server-container is not present and
-        aligns the authorize button to the right
-        */
     &:not(:has(.schemes-server-container)) {
       justify-content: flex-end;
     }
 
-    /*
-      Target Authorize Button in schemes wrapper
-      This was added here to fix responsiveness issues with the authorize button
-      within the schemes wrapper without affecting other instances of it's usage
-    */
     .auth-wrapper {
       flex: none;
       justify-content: start;
@@ -748,6 +736,7 @@
 
   &--accept-controller {
     select {
+      @extend .govuk-select;
       border-color: $response-content-type-controls-accept-header-select-border-color;
     }
   }

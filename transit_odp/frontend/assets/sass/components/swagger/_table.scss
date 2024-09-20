@@ -69,12 +69,11 @@ table {
   margin-bottom: 2em;
 
   input {
-    width: 100%;
-    max-width: 340px;
+    @extend .govuk-input;
   }
 
   select {
-    border-width: 1px;
+    @extend .govuk-select;
   }
 
   .markdown,
@@ -86,11 +85,8 @@ table {
 }
 
 .parameter__name {
-  font-size: $font-lg;
+  font-size: $font-base;
   font-weight: normal;
-
-  // hack to give breathing room to the name column
-  // TODO: refactor all of this to flexbox
   margin-right: 0.75em;
 
   @include text_headline();
@@ -104,10 +100,8 @@ table {
 
     &:after {
       font-size: 10px;
-
       position: relative;
       top: -6px;
-
       padding: 5px;
 
       content: "required";
@@ -139,8 +133,7 @@ table {
   padding-bottom: $font-sm;
 
   input {
-    margin-right: 7px;
-    width: auto;
+    @extend .govuk-input;
   }
 
   &.disabled {
