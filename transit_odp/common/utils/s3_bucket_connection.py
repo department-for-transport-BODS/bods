@@ -121,12 +121,19 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
         # Parse the CSV content
         csv_file = StringIO(content)
         reader = csv.DictReader(csv_file)
+        rows = list(reader)
 
+        
         _ids = []
+        _id_s3_file_name_map = []
         _id_type = ""
         _column_name = ""
+        _column_name_s3_file = ""
 
         column_names = reader.fieldnames
+
+        if len(column_names) > 1:
+           _column_name_s3_file = column_names[1]
 
         if column_names[0].lower() == "dataset id":
             _column_name = column_names[0]
@@ -139,11 +146,17 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
             _id_type = None
 
         if _column_name:
-            _ids = [
-                int(row[_column_name]) for row in reader if row[_column_name].strip()
-            ]
+            for row in rows:
+                _id_value = row[_column_name].strip()
 
-        return _ids, _id_type
+                if _id_value:
+                    _s3_file_value = row[_column_name_s3_file].strip() if _column_name_s3_file and row[_column_name_s3_file].strip() else None
+                    _ids.append(int(_id_value))
+
+                    # Append a tuple of (id, s3_file_name) to the map list
+                    _id_s3_file_name_map.append((int(_id_value), _s3_file_value))
+
+        return _ids, _id_type, _id_s3_file_name_map
 
     except botocore.exceptions.ClientError as e:
         error_code = e.response["Error"]["Code"]
