@@ -1164,6 +1164,7 @@ class DatasetRevisionQuerySet(models.QuerySet):
             .exclude(
                 latest_task_status__in=["FAILURE", "SUCCESS"],
             )
+            .exclude(status__in=[INACTIVE, LIVE])
         )
 
     def get_fares_stuck_revisions(self):
@@ -1180,6 +1181,7 @@ class DatasetRevisionQuerySet(models.QuerySet):
             .exclude(
                 latest_task_status__in=["FAILURE", "SUCCESS"],
             )
+            .exclude(status__in=[INACTIVE, LIVE])
         )
 
 
