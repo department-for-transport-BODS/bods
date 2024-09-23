@@ -62,46 +62,49 @@ def load_existing_stops(existing_stops):
     for start in range(0, total_rows, chunk_size):
         end = min(start + chunk_size, total_rows)
         chunk = existing_stops.iloc[start:end]
-        objs = []
+        updates = []
         for row in chunk.itertuples():
-            obj = row.obj
-            obj.atco_code = row.Index
-            obj.naptan_code = row.naptan_code
-            obj.common_name = row.common_name
-            obj.indicator = row.indicator
-            obj.street = row.street
-            obj.locality_id = row.locality_id
-            obj.admin_area_id = int(row.admin_area_id)
-            obj.location = Point(
-                x=float(row.longitude), y=float(row.latitude), srid=4326
+            updates.append(
+                {
+                    "id": row.obj.id,
+                    "atco_code": row.obj.atco_code,
+                    "naptan_code": row.obj.naptan_code,
+                    "common_name": row.obj.common_name,
+                    "indicator": row.obj.indicator,
+                    "street": row.obj.street,
+                    "locality_id": row.obj.locality_id,
+                    "admin_area_id": row.obj.admin_area_id,
+                    "location": row.obj.location,
+                    "stop_areas": row.obj.stop_areas,
+                    "stop_type": row.obj.stop_type,
+                    "bus_stop_type": row.obj.bus_stop_type,
+                }
             )
-            obj.stop_areas = row.stop_areas
-            obj.stop_type = row.stop_type
-            obj.bus_stop_type = row.bus_stop_type
-            objs.append(obj)
         try:
             with transaction.atomic():
-                StopPoint.objects.bulk_update(
-                    objs,
-                    (
-                        "atco_code",
-                        "naptan_code",
-                        "common_name",
-                        "indicator",
-                        "street",
-                        "locality_id",
-                        "admin_area_id",
-                        "location",
-                        "stop_areas",
-                        "stop_type",
-                        "bus_stop_type",
-                    ),
-                )
+                for update in updates:
+                    StopPoint.objects.filter(id=update["id"]).update(
+                        atco_code=update["atco_code"],
+                        naptan_code=update["naptan_code"],
+                        common_name=update["common_name"],
+                        indicator=update["indicator"],
+                        street=update["street"],
+                        locality_id=update["locality_id"],
+                        admin_area_id=update["admin_area_id"],
+                        location=Point(
+                            x=update["location"].x, y=update["location"].y, srid=4326
+                        ),
+                        stop_areas=update["stop_areas"],
+                        stop_type=update["stop_type"],
+                        bus_stop_type=update["bus_stop_type"],
+                    )
+
         except Exception as e:
             logger.error(
                 f"[load_existing_stops]: Error processing rows {start} to {end} - {e}"
             )
         logger.info(f"[load_existing_stops]: Processed rows {start} to {end}")
+
     logger.info(
         f"[load_existing_stops]: Finished loading {total_rows} existing NaPTAN stops."
     )
@@ -147,29 +150,32 @@ def load_existing_admin_areas(existing_admin_areas):
     for start in range(0, total_rows, chunk_size):
         end = min(start + chunk_size, total_rows)
         chunk = existing_admin_areas.iloc[start:end]
-        objs = []
+        updates = []
         for row in chunk.itertuples():
-            obj = row.obj
-            obj.id = int(row.Index)
-            obj.name = row.name
-            obj.traveline_region_id = row.traveline_region_id
-            obj.atco_code = row.atco_code
-            objs.append(obj)
+            updates.append(
+                {
+                    "id": int(row.Index),
+                    "name": row.name,
+                    "traveline_region_id": row.traveline_region_id,
+                    "atco_code": row.atco_code,
+                }
+            )
+
         try:
             with transaction.atomic():
-                AdminArea.objects.bulk_update(
-                    objs,
-                    (
-                        "name",
-                        "traveline_region_id",
-                        "atco_code",
-                    ),
-                )
+                for update in updates:
+                    AdminArea.objects.filter(id=update["id"]).update(
+                        name=update["name"],
+                        traveline_region_id=update["traveline_region_id"],
+                        atco_code=update["atco_code"],
+                    )
         except Exception as exp:
             logger.error(
                 f"[load_existing_admin_areas]: Error processing rows {start} to {end} - {exp}"
             )
+
         logger.info(f"[load_existing_admin_areas]: Processed rows {start} to {end}")
+
     logger.info("[load_existing_admin_areas]: Finished")
 
 
@@ -212,26 +218,29 @@ def load_existing_localities(existing_localities):
     for start in range(0, total_rows, chunk_size):
         end = min(start + chunk_size, total_rows)
         chunk = existing_localities.iloc[start:end]
-        objs = []
+        updates = []
         for row in chunk.itertuples():
-            obj = row.obj
-            obj.gazetteer_id = row.Index
-            obj.name = row.name
-            obj.easting = row.easting
-            obj.northing = row.northing
-            # obj.district_id = int(row.district_id)
-            obj.admin_area_id = int(row.admin_area_id)
-            objs.append(obj)
+            updates.append(
+                {
+                    "gazetteer_id": row.Index,
+                    "name": row.name,
+                    "easting": row.easting,
+                    "northing": row.northing,
+                    "admin_area_id": int(row.admin_area_id),
+                }
+            )
         try:
             with transaction.atomic():
-                Locality.objects.bulk_update(
-                    objs,
-                    ("name", "easting", "northing", "district_id", "admin_area_id"),
-                )
-            logger.info(f"[load_existing_localities]: Processed rows {start} to {end}")
+                for update in updates:
+                    Locality.objects.filter(gazetteer_id=update["gazetteer_id"]).update(
+                        name=update["name"],
+                        easting=update["easting"],
+                        northing=update["northing"],
+                        admin_area_id=update["admin_area_id"],
+                    )
         except Exception as exp:
             logger.error(
-                f"[load_existing_localities]: Error processing rows {start} to {end} - {e}"
+                f"[load_existing_localities]: Error processing rows {start} to {end} - {exp}"
             )
     logger.info("[load_existing_localities]: Finished")
 
@@ -280,30 +289,31 @@ def update_flexible_zones(flexible_zones):
     for start in range(0, total_rows, chunk_size):
         end = min(start + chunk_size, total_rows)
         chunk = flexible_zones.iloc[start:end]
-
-        flexible_zones_list = []
+        updates = []
         for index, flexible_zone in chunk.iterrows():
-            flexible_zones_list.append(
-                FlexibleZone(
-                    id=flexible_zone["zone_db"].id,
-                    sequence_number=index[0],
-                    naptan_stoppoint_id=index[1],
-                    location=Point(
+            updates.append(
+                {
+                    "id": flexible_zone["zone_db"].id,
+                    "sequence_number": index[0],
+                    "naptan_stoppoint_id": index[1],
+                    "location": Point(
                         x=float(flexible_zone["zone_df"].translation.longitude),
                         y=float(flexible_zone["zone_df"].translation.latitude),
                         srid=4326,
                     ),
-                )
+                }
             )
         try:
             with transaction.atomic():
-                FlexibleZone.objects.bulk_update(
-                    flexible_zones_list,
-                    fields=["sequence_number", "naptan_stoppoint_id", "location"],
-                )
-        except Exception as e:
+                for update in updates:
+                    FlexibleZone.objects.filter(id=update["id"]).update(
+                        sequence_number=update["sequence_number"],
+                        naptan_stoppoint_id=update["naptan_stoppoint_id"],
+                        location=update["location"],
+                    )
+        except Exception as exp:
             logger.error(
-                f"[update_flexible_zones]: Error processing rows {start} to {end} - {e}"
+                f"[load_existing_localities]: Error processing rows {start} to {end} - {exp}"
             )
         logger.info(f"[update_flexible_zones]: Processed rows {start} to {end}")
     logger.info("[update_flexible_zones]: Finished updating existing Flexible Zones")
