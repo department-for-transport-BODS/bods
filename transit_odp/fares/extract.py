@@ -1,12 +1,11 @@
-import itertools
+import zipfile
 
-from typing import List
+from celery.utils.log import get_task_logger
 
-from waffle import flag_is_active
+from transit_odp.fares.netex import NeTExDocument, get_documents_from_file
+from transit_odp.pipelines import exceptions
 
-from transit_odp.fares.netex import NeTExDocument
-
-NeTExDocuments = List[NeTExDocument]
+logger = get_task_logger(__name__)
 
 
 class ExtractionError(Exception):
@@ -19,7 +18,7 @@ class ExtractionError(Exception):
 
 
 class FaresDataCatalogueExtractor:
-    def __init__(self, documents: NeTExDocuments):
+    def __init__(self, documents: NeTExDocument):
         self.documents = documents
 
     @property
@@ -183,30 +182,30 @@ class FaresDataCatalogueExtractor:
 
 
 class NeTExDocumentsExtractor:
-    def __init__(self, documents: NeTExDocuments):
-        self.documents = documents
+    def __init__(self, revision):
+        # Initializing self.doc to NetExDocument for ease of understanding
+        self.doc = NeTExDocument
+        self.revision = revision
+        self.fares_catalogue_extracted_data = []
 
     def _attr_from_documents(self, attr):
         """Iterates over all documents and gets `attr`."""
-        elements = [getattr(doc, attr) for doc in self.documents]
+        elements = getattr(self.doc, attr)
         return elements
 
     def _get_count(self, attr):
         """Gets the total counts of an `attr` in all documents."""
-        lens = [len(lines) for lines in self._attr_from_documents(attr)]
-        return sum(lens)
+        return len(self._attr_from_documents(attr))
 
-    def _get_user_type_count(self, attr):
+    def _get_user_type(self, attr):
         """Gets the total count of distinct UserType in all documents"""
         lists_user_types = self._attr_from_documents(attr)
-        distinct_user_types = set(
-            [value for sublist in lists_user_types for value in sublist]
-        )
-        return len(distinct_user_types)
+        distinct_user_types = set(lists_user_types)
+        return distinct_user_types
 
     @property
     def schema_version(self):
-        return min(doc.get_netex_version() for doc in self.documents)
+        return float(self.doc.get_netex_version())
 
     @property
     def num_of_lines(self):
@@ -231,14 +230,12 @@ class NeTExDocumentsExtractor:
     @property
     def num_of_user_profiles(self):
         attr = "user_profiles"
-        return self._get_user_type_count(attr)
+        return self._get_user_type(attr)
 
     @property
     def valid_from(self):
         try:
-            min_date = min(
-                doc.get_earliest_tariff_from_date() for doc in self.documents
-            )
+            min_date = self.doc.get_earliest_tariff_from_date()
         except TypeError:
             return None
         return min_date
@@ -246,69 +243,157 @@ class NeTExDocumentsExtractor:
     @property
     def valid_to(self):
         try:
-            max_date = max(doc.get_latest_tariff_to_date() for doc in self.documents)
+            max_date = self.doc.get_latest_tariff_to_date()
         except TypeError:
             return None
         return max_date
 
     @property
     def stop_point_refs(self):
-        stop_point_refs = [
-            doc.get_scheduled_stop_point_ref_ids() for doc in self.documents
-        ]
-        return list(itertools.chain(*stop_point_refs))
+        return self.doc.get_scheduled_stop_point_ref_ids()
 
     @property
     def num_of_trip_products(self):
-        trip_products_list = [
-            doc.get_number_of_trip_products() for doc in self.documents
+        trip_products_list = []
+        product_type_list = self.doc.get_product_types()
+        trip_product_values = [
+            "singleTrip",
+            "dayReturnTrip",
+            "periodReturnTrip",
+            "timeLimitedSingleTrip",
+            "ShortTrip",
         ]
-        return trip_products_list[0]
+        for product_type in product_type_list:
+            if getattr(product_type, "text") in trip_product_values:
+                trip_products_list.append(getattr(product_type, "text"))
+        return set(trip_products_list)
 
     @property
     def num_of_pass_products(self):
-        pass_products_list = [
-            doc.get_number_of_pass_products() for doc in self.documents
-        ]
-        return pass_products_list[0]
+        pass_products_list = []
+        product_type_list = self.doc.get_product_types()
+        pass_product_values = ["dayPass", "periodPass"]
+
+        for product_type in product_type_list:
+            if getattr(product_type, "text") in pass_product_values:
+                pass_products_list.append(getattr(product_type, "text"))
+        return set(pass_products_list)
 
     @property
     def fares_data_catalogue(self):
-        fares_catalogue_extracted_data = []
-        for doc in self.documents:
-            fares_catalogue = FaresDataCatalogueExtractor(doc)
-            fares_catalogue_extracted_data.append(fares_catalogue.to_dict())
-        return fares_catalogue_extracted_data
+        fares_catalogue = FaresDataCatalogueExtractor(self.doc)
+        self.fares_catalogue_extracted_data.append(fares_catalogue.to_dict())
+        return self.fares_catalogue_extracted_data
 
-    def to_dict(self):
-        is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
-        if is_fares_validator_active:
-            keys = [
-                "schema_version",
-                "num_of_lines",
-                "num_of_fare_zones",
-                "num_of_sales_offer_packages",
-                "num_of_fare_products",
-                "num_of_user_profiles",
-                "num_of_trip_products",
-                "num_of_pass_products",
-                "valid_from",
-                "valid_to",
-                "stop_point_refs",
-                "fares_data_catalogue",
-            ]
-        else:
-            keys = [
-                "schema_version",
-                "num_of_lines",
-                "num_of_fare_zones",
-                "num_of_sales_offer_packages",
-                "num_of_fare_products",
-                "num_of_user_profiles",
-                "valid_from",
-                "valid_to",
-                "stop_point_refs",
-            ]
+    def extract(self):
+        """
+        Processes a zip file.
+        """
+        extracts_sum = []
+        extracts_distinct_count = []
+        extracts_min = []
+        extracts_max = []
+        extracts_list = []
+        extracts_fares_data_catalogue = []
+
+        final_dictionary_sum = dict()
+        final_dictionary_dictinct_count = dict()
+        final_dictionary_min = dict()
+        final_dictionary_max = dict()
+        final_dictionary_list = dict()
+
+        # Get generator object of NetExDocument and create a list of
+        # dictionaries for each kind of property to be extracted
+        documents = get_documents_from_file(self.revision)
+        try:
+            for self.doc in documents:
+                extracts_sum.append(self.to_dict_sum())
+                extracts_distinct_count.append(self.to_dict_distinct_count())
+                extracts_min.append(self.to_dict_min())
+                extracts_max.append(self.to_dict_max())
+                extracts_fares_data_catalogue.append(
+                    self.to_dict_fares_data_catalogue()
+                )
+                extracts_list.append(self.to_dict_list())
+        except zipfile.BadZipFile as e:
+            raise exceptions.FileError(filename=self.revision.upload_file.name) from e
+        except exceptions.PipelineException:
+            raise
+        except Exception as e:
+            raise exceptions.PipelineException from e
+
+        for validation_dict in extracts_sum:
+            if final_dictionary_sum:
+                final_dictionary_sum = {
+                    x: validation_dict.get(x, 0) + final_dictionary_sum.get(x, 0)
+                    for x in set(final_dictionary_sum).union(validation_dict)
+                }
+            else:
+                final_dictionary_sum = validation_dict.copy()
+
+        for validation_dict in extracts_distinct_count:
+            if final_dictionary_dictinct_count:
+                final_dictionary_dictinct_count = {
+                    x: validation_dict.get(x, 0).union(
+                        final_dictionary_dictinct_count.get(x, 0)
+                    )
+                    for x in set(final_dictionary_dictinct_count).union(validation_dict)
+                }
+            else:
+                final_dictionary_dictinct_count = validation_dict.copy()
+
+        for key, value in final_dictionary_dictinct_count.items():
+            final_dictionary_dictinct_count[key] = len(value)
+
+        for validation_dict in extracts_min:
+            if final_dictionary_min:
+                final_dictionary_min = {
+                    x: min(validation_dict.get(x, 0), final_dictionary_min.get(x, 0))
+                    for x in set(final_dictionary_min).union(validation_dict)
+                }
+            else:
+                final_dictionary_min = validation_dict.copy()
+
+        for validation_dict in extracts_max:
+            try:
+                if final_dictionary_max:
+                    final_dictionary_max = {
+                        x: max(
+                            validation_dict.get(x, 0),
+                            final_dictionary_max.get(x, 0),
+                        )
+                        for x in set(final_dictionary_max).union(validation_dict)
+                    }
+                else:
+                    final_dictionary_max = validation_dict.copy()
+            except TypeError:
+                for key in list(validation_dict.keys()):
+                    final_dictionary_max[key] = None
+
+        for validation_dict in extracts_list:
+            if final_dictionary_list:
+                final_dictionary_list = {
+                    x: list(
+                        set(validation_dict.get(x, 0) + final_dictionary_list.get(x, 0))
+                    )
+                    for x in set(final_dictionary_list).union(validation_dict)
+                }
+            else:
+                final_dictionary_list = validation_dict.copy()
+        for key, value in final_dictionary_list.items():
+            final_dictionary_list[key] = sorted(value)
+
+        final_extracts_dictionary = {
+            **final_dictionary_sum,
+            **final_dictionary_dictinct_count,
+            **final_dictionary_min,
+            **final_dictionary_max,
+            **final_dictionary_list,
+            **extracts_fares_data_catalogue[-1],
+        }
+        return final_extracts_dictionary
+
+    def get_attr_for_dict(self, keys):
         try:
             data = {key: getattr(self, key) for key in keys}
         except ValueError as err:
@@ -316,3 +401,45 @@ class NeTExDocumentsExtractor:
             raise ExtractionError(msg) from err
 
         return data
+
+    def to_dict_min(self):
+        keys = [
+            "schema_version",
+            "valid_from",
+        ]
+        return self.get_attr_for_dict(keys)
+
+    def to_dict_max(self):
+        keys = [
+            "valid_to",
+        ]
+        return self.get_attr_for_dict(keys)
+
+    def to_dict_list(self):
+        keys = [
+            "stop_point_refs",
+        ]
+        return self.get_attr_for_dict(keys)
+
+    def to_dict_sum(self):
+        keys = [
+            "num_of_lines",
+            "num_of_fare_zones",
+            "num_of_sales_offer_packages",
+            "num_of_fare_products",
+        ]
+        return self.get_attr_for_dict(keys)
+
+    def to_dict_distinct_count(self):
+        keys = [
+            "num_of_user_profiles",
+            "num_of_trip_products",
+            "num_of_pass_products",
+        ]
+        return self.get_attr_for_dict(keys)
+
+    def to_dict_fares_data_catalogue(self):
+        keys = [
+            "fares_data_catalogue",
+        ]
+        return self.get_attr_for_dict(keys)
