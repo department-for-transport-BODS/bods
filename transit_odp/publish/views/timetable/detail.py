@@ -242,7 +242,6 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
             timetable_inbound_outbound = TimetableVisualiser(
                 live_revision.id, service_code, line, target_date
             ).get_timetable_visualiser()
-
             timetable = {}
             is_timetable_info_available = False
             # Set the context for the timetable visualiser and the line details
@@ -268,9 +267,11 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
                     "show_all": bound_details["show_all"],
                     "journey_name": journey,
                     "stops": direction_details["stops"],
+                    "observations": direction_details["observations"],
                     "page_param": direction + "Page",
                     "show_all_param": "showAll" + direction.capitalize(),
                 }
+            # kwargs["observations_contents"] = timetable_inbound_outbound["observations_contents"] 
             kwargs["timetable"] = timetable
             kwargs["is_timetable_info_available"] = is_timetable_info_available
 

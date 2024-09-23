@@ -6,8 +6,16 @@
  *
  * @example toggleTooltip('1', 'inbound') will add the class to show the tooltip
  */
-function showTooltip(event, rowIndex, direction) {
+function showTooltip(event, rowIndex, direction=null, type=null) {
   hideAllTooltips();
+  console.log(type);
+  console.log(direction);
+  console.log(rowIndex);
+  if (type === "observation") {
+  const TARGET = document.getElementById(rowIndex);
+  TARGET.classList.add("showtooltip");
+  return;
+  }
   // Only call the function when the event is triggered by the stop
   if (event.target.id.startsWith("stop-")) {
     const elemId = "tooltip-" + direction + "-" + rowIndex;
@@ -20,7 +28,7 @@ function showTooltip(event, rowIndex, direction) {
  *
  */
 function hideAllTooltips() {
-  document.querySelectorAll("p.tooltiptext.showtooltip").forEach((element) => {
+  document.querySelectorAll("p.tooltiptext.showtooltip, div.tooltiptext.showtooltip").forEach((element) => {
     element.classList.remove("showtooltip");
   });
 }
