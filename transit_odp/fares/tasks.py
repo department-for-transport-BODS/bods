@@ -44,14 +44,18 @@ DT_FORMAT = "%Y-%m-%d_%H-%M-%S"
 
 @shared_task(bind=True)
 def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
-    logger.info(f"DatasetRevision {revision_id} => Starting fares ETL pipeline.")
+    context = DatasetPipelineLoggerContext(
+        component_name="FaresPipeline", object_id=revision.dataset.id
+    )
+    adapter = PipelineAdapter(logger, {"context": context})
+    adapter.info(f"DatasetRevision {revision_id} => Starting fares ETL pipeline.")
     try:
         revision = DatasetRevision.objects.get(
             pk=revision_id, dataset__dataset_type=FaresType
         )
     except DatasetRevision.DoesNotExist as exc:
         message = f"DatasetRevision {revision_id} does not exist."
-        logger.exception(message, exc_info=True)
+        adapter.exception(message, exc_info=True)
         raise PipelineException(message) from exc
     else:
         revision.to_indexing()
@@ -61,12 +65,6 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
             status=DatasetETLTaskResult.STARTED,
             task_id=self.request.id,
         )
-
-        context = DatasetPipelineLoggerContext(
-            component_name="FaresPipeline", object_id=revision.dataset.id
-        )
-        adapter = PipelineAdapter(logger, {"context": context})
-
         task_download_fares_file(task.id, adapter)
         task_run_antivirus_check(task.id, adapter)
         task_run_fares_validation(task.id, adapter)
@@ -79,7 +77,7 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
         revision.save()
 
         if do_publish:
-            logger.info(f"DatasetRevision {revision_id} => Publishing fares dataset.")
+            adapter.info(f"DatasetRevision {revision_id} => Publishing fares dataset.")
             if revision.status == "success" or revision.status == "error":
                 revision.publish()
 
@@ -313,9 +311,14 @@ def task_update_fares_validation_existing_dataset():
         Dataset.objects.get_existing_fares_dataset_with_no_validation_report()
     )
     count = existing_fares.count()
-    logger.info(f"There are {count} datasets with no validation report.")
+    context = DatasetPipelineLoggerContext(
+        component_name="UpdateFaresValidationExistingDataset",
+        object_id=revision.dataset.id,
+    )
+    adapter = PipelineAdapter(logger, {"context": context})
+    adapter.info(f"There are {count} datasets with no validation report.")
     for fares_dataset in existing_fares:
-        logger.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
+        adapter.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
         revision = fares_dataset.live_revision
         revision_id = revision.id
         try:
@@ -324,17 +327,16 @@ def task_update_fares_validation_existing_dataset():
             )
         except DatasetRevision.DoesNotExist as exc:
             message = f"DatasetRevision {revision_id} does not exist."
-            logger.exception(message, exc_info=True)
+            adapter.exception(message, exc_info=True)
             raise PipelineException(message) from exc
 
         task_id = uuid.uuid4()
         task = DatasetETLTaskResult.objects.create(
             revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
         )
-
-        task_download_fares_file(task.id)
-        task_set_fares_validation_result(task.id)
-        task_run_fares_etl(task.id)
+        task_download_fares_file(task.id, adapter)
+        task_set_fares_validation_result(task.id, adapter)
+        task_run_fares_etl(task.id, adapter)
 
         task.update_progress(100)
         task.to_success()
@@ -345,12 +347,19 @@ def task_update_fares_catalogue_data_existing_datasets():
     """This is a one-off task to update the DataCatalogueMetaData model data"""
     existing_fares = Dataset.objects.get_existing_fares_dataset()
     total_count = existing_fares.count()
-    logger.info(f"There are {total_count} datasets in total.")
+    context = DatasetPipelineLoggerContext(
+        component_name="UpdateFaresCatalogueDataExistingDatasets",
+        object_id=revision.dataset.id,
+    )
+    adapter = PipelineAdapter(logger, {"context": context})
+    adapter.info(f"There are {total_count} datasets in total.")
     current_count = 0
     failed_datasets = []
     for fares_dataset in existing_fares:
         try:
-            logger.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
+            adapter.info(
+                f"Running fares ETL pipeline for dataset id {fares_dataset.id}"
+            )
             revision = fares_dataset.live_revision
             revision_id = revision.id
             try:
@@ -359,7 +368,7 @@ def task_update_fares_catalogue_data_existing_datasets():
                 )
             except DatasetRevision.DoesNotExist as exc:
                 message = f"DatasetRevision {revision_id} does not exist."
-                logger.exception(message, exc_info=True)
+                adapter.exception(message, exc_info=True)
                 raise PipelineException(message) from exc
 
             task_id = uuid.uuid4()
@@ -367,21 +376,21 @@ def task_update_fares_catalogue_data_existing_datasets():
                 revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
             )
 
-            task_download_fares_file(task.id)
-            task_run_fares_etl(task.id)
+            task_download_fares_file(task.id, adapter)
+            task_run_fares_etl(task.id, adapter)
 
             current_count += 1
             task.to_success()
-            logger.info(f"The task completed for {current_count} of {total_count}")
+            adapter.info(f"The task completed for {current_count} of {total_count}")
         except Exception as exc:
             failed_datasets.append(fares_dataset.id)
             message = f"Error processing dataset id {fares_dataset.id}: {exc}"
-            logger.exception(message, exc_info=True)
+            adapter.exception(message, exc_info=True)
     success_count = total_count - len(failed_datasets)
-    logger.info(
+    adapter.info(
         f"Total number of datasets processed successfully is {success_count} out of {total_count}"
     )
-    logger.info(
+    adapter.info(
         f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
     )
 
@@ -393,15 +402,22 @@ def task_rerun_fares_validation_specific_datasets():
     """
     csv_file_name = CSVFileName.RERUN_FARES_VALIDATION.value
     _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
-
+    context = DatasetPipelineLoggerContext(
+        component_name="RerunFaresCatalogueDataExistingDatasets",
+        object_id=revision.dataset.id,
+    )
+    adapter = PipelineAdapter(logger, {"context": context})
+    adapter.info(
+        f"RerunFaresValidationSpecificDatasets {revision_id} => Starting fares ETL pipeline."
+    )
     if not _ids and not _id_type == "dataset_ids":
-        logger.info("No valid dataset IDs found in the file.")
+        adapter.info("No valid dataset IDs found in the file.")
         return
-    logger.info(f"Total number of datasets to be processed: {len(_ids)}")
+    adapter.info(f"Total number of datasets to be processed: {len(_ids)}")
     fares_datasets = Dataset.objects.filter(id__in=_ids).get_active()
 
     if not fares_datasets:
-        logger.info("No active datasets found in BODS with these dataset IDs")
+        adapter.info("No active datasets found in BODS with these dataset IDs")
         return
 
     processed_count = 0
@@ -410,7 +426,7 @@ def task_rerun_fares_validation_specific_datasets():
 
     total_count = fares_datasets.count()
     for fares_dataset in fares_datasets:
-        logger.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
+        adapter.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
         revision = fares_dataset.live_revision
         if revision:
             revision_id = revision.id
@@ -421,17 +437,14 @@ def task_rerun_fares_validation_specific_datasets():
             except DatasetRevision.DoesNotExist as exc:
                 message = f"DatasetRevision {revision_id} does not exist."
                 failed_datasets.append(fares_dataset.id)
-                logger.exception(message, exc_info=True)
+                adapter.exception(message, exc_info=True)
                 raise PipelineException(message) from exc
 
             task_id = uuid.uuid4()
             task = DatasetETLTaskResult.objects.create(
                 revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
             )
-            context = DatasetPipelineLoggerContext(
-                component_name="FaresPipeline", object_id=revision.dataset.id
-            )
-            adapter = PipelineAdapter(logger, {"context": context})
+
             task_download_fares_file(task.id, adapter)
             task_set_fares_validation_result(task.id, adapter)
             task_run_fares_etl(task.id, adapter)
@@ -440,11 +453,11 @@ def task_rerun_fares_validation_specific_datasets():
             task.to_success()
             successfully_processed_ids.append(fares_dataset.id)
             processed_count += 1
-            logger.info(f"The task completed for {processed_count} of {total_count}")
+            adapter.info(f"The task completed for {processed_count} of {total_count}")
 
-    logger.info(
+    adapter.info(
         f"Total number of datasets processed successfully is {len(successfully_processed_ids)} out of {total_count}"
     )
-    logger.info(
+    adapter.info(
         f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
     )
