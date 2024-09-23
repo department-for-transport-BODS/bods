@@ -45,8 +45,8 @@ DT_FORMAT = "%Y-%m-%d_%H-%M-%S"
 @shared_task(bind=True)
 def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
     context = DatasetPipelineLoggerContext(
-            component_name="FaresPipeline", object_id=revision.dataset.id
-        )
+        component_name="FaresPipeline", object_id=revision.dataset.id
+    )
     adapter = PipelineAdapter(logger, {"context": context})
     adapter.info(f"DatasetRevision {revision_id} => Starting fares ETL pipeline.")
     try:
@@ -312,8 +312,9 @@ def task_update_fares_validation_existing_dataset():
     )
     count = existing_fares.count()
     context = DatasetPipelineLoggerContext(
-            component_name="UpdateFaresValidationExistingDataset", object_id=revision.dataset.id
-        )
+        component_name="UpdateFaresValidationExistingDataset",
+        object_id=revision.dataset.id,
+    )
     adapter = PipelineAdapter(logger, {"context": context})
     adapter.info(f"There are {count} datasets with no validation report.")
     for fares_dataset in existing_fares:
@@ -347,15 +348,18 @@ def task_update_fares_catalogue_data_existing_datasets():
     existing_fares = Dataset.objects.get_existing_fares_dataset()
     total_count = existing_fares.count()
     context = DatasetPipelineLoggerContext(
-            component_name="UpdateFaresCatalogueDataExistingDatasets", object_id=revision.dataset.id
-        )
+        component_name="UpdateFaresCatalogueDataExistingDatasets",
+        object_id=revision.dataset.id,
+    )
     adapter = PipelineAdapter(logger, {"context": context})
     adapter.info(f"There are {total_count} datasets in total.")
     current_count = 0
     failed_datasets = []
     for fares_dataset in existing_fares:
         try:
-            adapter.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
+            adapter.info(
+                f"Running fares ETL pipeline for dataset id {fares_dataset.id}"
+            )
             revision = fares_dataset.live_revision
             revision_id = revision.id
             try:
@@ -399,10 +403,13 @@ def task_rerun_fares_validation_specific_datasets():
     csv_file_name = CSVFileName.RERUN_FARES_VALIDATION.value
     _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
     context = DatasetPipelineLoggerContext(
-            component_name="RerunFaresCatalogueDataExistingDatasets", object_id=revision.dataset.id
-        )
+        component_name="RerunFaresCatalogueDataExistingDatasets",
+        object_id=revision.dataset.id,
+    )
     adapter = PipelineAdapter(logger, {"context": context})
-    adapter.info(f"RerunFaresValidationSpecificDatasets {revision_id} => Starting fares ETL pipeline.")
+    adapter.info(
+        f"RerunFaresValidationSpecificDatasets {revision_id} => Starting fares ETL pipeline."
+    )
     if not _ids and not _id_type == "dataset_ids":
         adapter.info("No valid dataset IDs found in the file.")
         return
