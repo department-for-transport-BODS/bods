@@ -28,7 +28,9 @@ CRITICAL_INTRO = (
 ADVISORY_INTRO = (
     "These observations suggest there may be an error in the data. "
     "However, for some types of services these may be intended by the operator. "
-    "Advisory observations should be investigated and addressed."
+    "Advisory observations should be investigated and addressed. "
+    "If the observation is a result of intended behaviour, an operator can"
+    " suppress the observation."
 )
 
 URL_MAPPING = {

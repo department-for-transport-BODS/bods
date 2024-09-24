@@ -52,6 +52,7 @@ class ObservationResultsQueryset(models.QuerySet):
         dqs_details: str = None,
         is_details_link: bool = True,
         col_name: str = "",
+        org_id: int = None,
     ) -> list:
         """
         Filter for observation results for the report and revision of the specific Checks
@@ -66,6 +67,9 @@ class ObservationResultsQueryset(models.QuerySet):
             "revision_id",
             "is_published",
             "is_details_link",
+            "is_suppressed",
+            "organisation_id",
+            "report_id",
         ]
 
         if col_name == "noc":
@@ -133,6 +137,8 @@ class ObservationResultsQueryset(models.QuerySet):
                 revision_id=Value(revision_id, output_field=TextField()),
                 is_published=Value(is_published, output_field=BooleanField()),
                 is_details_link=Value(is_details_link, output_field=BooleanField()),
+                organisation_id=Value(org_id, output_field=TextField()),
+                report_id=Value(report_id, output_field=TextField()),
             )
             .values(*columns)
             .distinct()
@@ -211,3 +217,26 @@ class ObservationResultsQueryset(models.QuerySet):
         )
 
         return qs
+
+    def get_observations_by_service_code_line_name(
+        self, service_code: str, line_name: str
+    ):
+        """
+        Filter for observation results for the report and revision of the specific Checks
+        """
+
+        columns = [
+            "observation",
+            "service_code",
+            "line_name",
+            "message",
+            "dqs_details",
+            "revision_id",
+            "is_published",
+            "is_details_link",
+        ]
+
+        return self.filter(
+            taskresults__dataquality_report_id=service_code,
+            taskresults__checks__observation=line_name,
+        )

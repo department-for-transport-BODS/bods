@@ -39,6 +39,7 @@ class DQSWarningListBaseView(SingleTableView):
         self.table_class = DQSWarningListBaseTable
 
         report_id = self.kwargs.get("report_id")
+        org_id = self.kwargs.get("pk1")
 
         qs = Report.objects.filter(id=report_id)
         if not len(qs):
@@ -59,6 +60,7 @@ class DQSWarningListBaseView(SingleTableView):
             self.dqs_details,
             self.is_details_link,
             self.col_name,
+            org_id,
         )
 
     def get_table_kwargs(self):
@@ -75,6 +77,7 @@ class DQSWarningListBaseView(SingleTableView):
                 "preamble": self.data.preamble,
                 "resolve": self.data.resolve,
                 "impacts": self.data.impacts,
+                "new_key": "myval",
             }
         )
         return context

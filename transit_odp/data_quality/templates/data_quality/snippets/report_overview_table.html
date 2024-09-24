@@ -18,12 +18,12 @@
           <caption class="govuk-table__caption govuk-table__caption--s govuk-!-font-weight-bold govuk-!-font-size-24">{{ category }} ({{ df.number_of_services_affected.sum }})</caption>
           <thead class="govuk-table__head govuk-!-font-weight-regular">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header govuk-!-font-weight-bold govuk-!-width-one-half">
-                {% trans "Number of Observation" %}{{ df.number_of_services_affected.sum |pluralize:"s" }}
+              <th scope="col" class="govuk-table__header govuk-!-font-weight-bold {% if level_title == "Advisory" %} govuk-!-width-one-quarter {% else %} govuk-!-width-one-half {% endif %}">
+                {% trans "Number of observation" %}{{ df.number_of_services_affected.sum |pluralize:"s" }}
               </th>
               
               {% if level_title == "Advisory" %}
-              <th scope="col" class="govuk-table__header govuk-!-font-weight-bold govuk-!-width-one-half">
+              <th scope="col" class="govuk-table__header govuk-!-font-weight-bold govuk-!-width-one-third">
                 {% trans "Number of suppressed observation" %}
               </th>
               {% endif %}

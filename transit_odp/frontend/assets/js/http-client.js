@@ -13,6 +13,10 @@ class HttpClient {
       body: body,
       mode: "cors",
       credentials: "omit",
+      //credentials: "include", // Include cookies in the request
+      headers: {
+        "Content-Type": "application/json",
+      },
     }).then(this.checkStatus);
   }
 
