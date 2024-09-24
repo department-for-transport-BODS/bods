@@ -46,35 +46,44 @@
   </table>
   <p class="govuk-body">
     {% blocktrans %}
-            Data quality checks are provided on the data supplied to the service to provide feedback on the data to help operators identify and understand issues within their data. The issues identified may prevent a data consumer using and sharing their data with passengers. High data quality is expected for all data published on the service. It reduces the barriers to entry for innovators and consumers when using bus open data. High quality data enables trust to be created between passengers and the public transport network.
-        {% endblocktrans %}
+      Data quality checks are provided on the data supplied to the service to provide feedback on
+      the data to help operators identify and understand issues within their data. The issues
+      identified may prevent a data consumer using and sharing their data with passengers.
+      High data quality is expected for all data published on the service. It reduces the barriers
+      to entry for innovators and consumers when using bus open data. High quality data enables
+      trust to be created between passengers and the public transport network.
+    {% endblocktrans %}
   </p>
   <h2 class="govuk-heading-m">Timetables data</h2>
   <p class="govuk-body">
     {% blocktrans %}
-            TransXChange data undergoes two sets of checks. In the first validation stage,
-            it is checked that it adheres to the TxC 2.4 schema and the PTI profile v1.1.
-            The TxC 2.4 schema is the basic data standard mandated by DfT, and the PTI
-            profile v1.1 is an additional mandate for the TransxChange data that will be
-            expected from operators. The PTI profile 1.1 clarifies the standards even further,
-            making the industry unified with a common, unambiguous data standard. More
-            information on the differences between the TxC 2.4 schema and the PTI profile
-            v1.1 can be found
-        {% endblocktrans %}
-    <a class="govuk-link" href="{{ pti_link_on_bods }}" target="_blank">here</a>.
+      TransXChange data undergoes two sets of checks. In the first validation stage,
+      it is checked that it adheres to the TxC 2.4 schema and the PTI profile v1.1.
+      The TxC 2.4 schema is the basic data standard mandated by DfT, and the PTI profile
+      v1.1 is an additional mandate for the TransxChange data that will be expected
+      from operators. The PTI profile 1.1 clarifies the standards even further, making
+      the industry unified with a common, unambiguous data standard. Find out more about
+    {% endblocktrans %}
+    <a class="govuk-link" href="{{ pti_link_on_bods }}" target="_blank">the differences between the TxC 2.4 schema and the PTI profile v1.1</a>.
   </p>
   <p class="govuk-body">
     {% trans "From" %}
     {{ pti_enforced_date|date:"l jS F Y" }},
     {% blocktrans %}
-            files non-compliant to the PTI profile 1.1 will be
-            rejected upon submission.
-        {% endblocktrans %}
+      files non-compliant to the PTI profile 1.1 will be
+      rejected upon submission.
+    {% endblocktrans %}
   </p>
   <p class="govuk-body">
     {% blocktrans %}
-            The feedback as a result of the validation check in the first step of upload is provided to the user which is to be shared with their respective software suppliers to enable them to provide robust data that fits the profile. In the second review step, a further data quality check is conducted which produces a report for operators. The report provides observations about operator's data, highlighting common errors. Some observations are critical, meaning there is definitely an error within the data and the operator is expected to rectify the issue. Other observations are advisory as they may be false positives, as a result of the data structure. Operators should use these reports as suggested improvements in their timetables data.
-        {% endblocktrans %}
+      The feedback as a result of the validation check in the first step of upload is provided to the user which is
+      to be shared with their respective software suppliers to enable them to provide robust data that fits the profile.
+      In the second review step, a further data quality check is conducted which produces a report for operators.
+      The report provides observations about operator's data, highlighting common errors. Some observations are critical,
+      meaning there is definitely an error within the data and the operator is expected to rectify the issue. Other observations
+      are advisory as they may be false positives, as a result of the data structure. Operators should use these reports as
+      suggested improvements in their timetables data.
+    {% endblocktrans %}
   </p>
   <h2 class="govuk-heading-m">Bus location data</h2>
   <p class="govuk-body">
@@ -283,9 +292,7 @@
       Validation of data against the SIRI-VM-PTI profile takes place in three stages:
       the first two stages are the data schema and SIRI-VM-PTI compliant stages as described
     {% endblocktrans %}
-    <a href="#new-feed-v-process" class="govuk-link">
-      {% trans "above" %}
-    .</a>
+    <a href="#new-feed-v-process" class="govuk-link">{% trans "above" %}</a>.
   </p>
   <p class="govuk-body">
     {% blocktrans trimmed %}
@@ -325,9 +332,7 @@
     <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf"
        class="govuk-link"
        rel="noreferrer noopener"
-       target="_blank">
-      {% trans "SIRI VM & Data Matching profile" %}
-    .</a>
+       target="_blank">{% trans "SIRI VM & Data Matching profile" %}</a>.
   </p>
   <p class="govuk-body">
     {% blocktrans trimmed %}
@@ -425,15 +430,12 @@
   </p>
   <p class="govuk-body">
     {% blocktrans trimmed %}
-      Weekly SIRI VM feed percentage matching score and report are available to download at
-      a SIRI VM feed level on BODS. More information on SIRI-VM PTI and Data matching can be found
+      Weekly SIRI VM feed percentage matching score and report are available to download at a SIRI VM feed level on BODS.
     {% endblocktrans %}
     <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf"
        class="govuk-link"
        rel="noreferrer noopener"
-       target="_blank">
-      {% trans "here" %}
-    .</a>
+       target="_blank">{% trans "Read more information on SIRI-VM PTI and Data matching" %}</a>.
   </p>
   <p class="govuk-body">
     <b>
@@ -442,16 +444,13 @@
   </p>
   <p class="govuk-body">
     {% blocktrans trimmed %}
-      To be able to compare data for any given journey it is necessary to first identify a single
-      journey in both the SIRI and TxC datasets. The SIRI delivery is the starting point for the process.
-      More information on SIRI-VM PTI and Data matching can be found
+      To be able to compare data for any given journey it is necessary to first identify a single journey in both the
+      SIRI and TxC datasets. The SIRI delivery is the starting point for the process.
     {% endblocktrans %}
     <a href="https://pti.org.uk/system/files/files/SIRI_VM_PTI_Data_Matching_v1-1.pdf"
        class="govuk-link"
        rel="noreferrer noopener"
-       target="_blank">
-      {% trans "here" %}
-    .</a>
+       target="_blank">{% trans "Read more information on SIRI-VM PTI and Data matching" %}</a>.
   </p>
   <p class="govuk-body">
     <p class="govuk-body govuk-!-margin-bottom-0">{% trans "Step 1" %}</p>
@@ -681,7 +680,8 @@
   <h2 class="govuk-heading-m">Fares data</h2>
   <p class="govuk-body">
     {% blocktrans %}
-            NeTEx data is validated against their respective schemas, to check if it is in the expected format. As this format is new to the UK, more data quality checks may be enabled over time.
-        {% endblocktrans %}
+      NeTEx data is validated against their respective schemas, to check if it is in the expected format.
+      As this format is new to the UK, more data quality checks may be enabled over time.
+    {% endblocktrans %}
   </p>
 {% endblock %}
