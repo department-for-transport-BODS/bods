@@ -37,19 +37,6 @@ class AVLDataset(Dataset):
         response["Content-Disposition"] = f"attachment; filename={filename}"
         return response
 
-    def to_schema_validation_response(self):
-        org_name = self.organisation.name
-        revision = self.live_revision
-        report = revision.avl_schema_validation_reports.order_by("-created").first()
-
-        if report is None:
-            raise Http404
-
-        filename = f"BODS_Schema_validation_{org_name}_{report.created:%d%m%Y}.csv"
-        response = FileResponse(report.file.open("rb"), as_attachment=True)
-        response["Content-Disposition"] = f"attachment; filename={filename}"
-        return response
-
 
 class AVLDatasetRevision(DatasetRevision):
     objects = AVLDatasetRevisionManager.from_queryset(DatasetRevisionQuerySet)

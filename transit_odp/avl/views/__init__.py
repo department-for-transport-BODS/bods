@@ -5,7 +5,6 @@ from .delete import RevisionDeleteAVLView, RevisionDeleteSuccessView
 from .detail import (
     AvlFeedDetailView,
     DownloadPPCWeeklyReportView,
-    SchemaValidationFileDownloadView,
     ValidationFileDownloadView,
 )
 from .list import ListView
@@ -41,7 +40,6 @@ __all__ = [
     "RevisionPublishSuccessView",
     "RevisionUpdateSuccessView",
     "DownloadPPCWeeklyReportView",
-    "SchemaValidationFileDownloadView",
     "UpdateRevisionPublishView",
     "ValidationFileDownloadView",
 ]

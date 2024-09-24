@@ -1,13 +1,15 @@
 {% load i18n %}
 <h2 data-qa="timetable-header" class="govuk-heading-m">{% trans "Timetables solution suppliers" %}</h2>
 <table data-qa="requirements-table" class="govuk-table">
-  <tbody class="govuk-table__body">
-    <tr data-qa="timetable-row" class="govuk-table__row">
-      <td class="govuk-table__cell"></td>
-      <td class="govuk-table__cell"></td>
-      <td class="govuk-table__cell"></td>
-      <td class="govuk-table__cell"></td>
+  <thead data-qa="requirements-table-header" class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Supplier</th>
+      <th scope="col" class="govuk-table__header">Website (URL)</th>
+      <th scope="col" class="govuk-table__header">Email address</th>
+      <th scope="col" class="govuk-table__header">Data type</th>
     </tr>
+  </thead>
+  <tbody class="govuk-table__body">
     <tr data-qa="timetable-row" class="govuk-table__row">
       <td class="govuk-table__cell">{% trans "Excel TransXChange Tool" %}</td>
       <td class="govuk-table__cell">{% trans "N/A" %}</td>
