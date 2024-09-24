@@ -42,7 +42,10 @@ from transit_odp.timetables.utils import (
     get_holidays_records_to_insert,
     create_queue_payload,
 )
-from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
+from transit_odp.common.utils.s3_bucket_connection import (
+    read_datasets_file_from_s3,
+    get_file_name_by_id,
+)
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     PostSchemaValidator,
@@ -130,7 +133,9 @@ def task_populate_timing_point_count(revision_id: int) -> None:
 
 
 @shared_task()
-def task_dataset_download(revision_id: int, task_id: int, reprocess_flag: bool = False) -> int:
+def task_dataset_download(
+    revision_id: int, task_id: int, reprocess_flag: bool = False
+) -> int:
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
@@ -627,7 +632,9 @@ def task_rerun_timetables_etl_specific_datasets():
     provided in a csv file available in AWS S3 bucket
     """
     csv_file_name = CSVFileName.RERUN_ETL_TIMETABLES.value
-    _ids, _id_type, _s3_file_names = read_datasets_file_from_s3(csv_file_name)
+    _ids, _id_type, _s3_file_names_ids_map = read_datasets_file_from_s3(csv_file_name)
+
+    # list_to_update_upload_file_name = list(filter(lambda item: item[1] is not None, _s3_file_names_ids_map))
 
     if not _ids:
         logger.info("No valid dataset IDs or dataset revision IDs found in the file.")
@@ -675,6 +682,16 @@ def task_rerun_timetables_etl_specific_datasets():
                 revision = DatasetRevision.objects.get(
                     pk=revision_id, dataset__dataset_type=TimetableType
                 )
+                if _s3_file_names_ids_map:
+                    s3_file_name = get_file_name_by_id(
+                        revision_id, _s3_file_names_ids_map
+                    )
+                    if s3_file_name:
+                        revision.upload_file = get_file_name_by_id(
+                            revision, _s3_file_names_ids_map
+                        )
+                        revision.save()
+
             except DatasetRevision.DoesNotExist as exc:
                 message = f"DatasetRevision {revision_id} does not exist."
                 failed_datasets.append(output_id)
