@@ -168,25 +168,31 @@ def drop_stops_with_invalid_localities(
 
 
 def get_records_to_update(dataframe, columns_to_check, create_location=False):
-    df_copy = dataframe.copy()
-
     def check_update(row):
-        obj = row["obj"]
-        for col in columns_to_check:
-            if row[col] != getattr(obj, col):
-                return "Yes"
-        return None
+        obj = row.get("obj")
+        if obj is None:
+            return None
 
-    if create_location and "longitude" in df_copy and "latitude" in df_copy:
+        for col in columns_to_check:
+            if col in row and hasattr(obj, col):
+                if row[col] != getattr(obj, col):
+                    return "Yes"
+        return "No"
+
+    df_copy = dataframe.copy()
+    if (
+        create_location
+        and "longitude" in df_copy.columns
+        and "latitude" in df_copy.columns
+    ):
         df_copy["location"] = df_copy.apply(
             lambda row: Point(
                 float(row["longitude"]), float(row["latitude"]), srid=4326
             ),
             axis=1,
         )
-
     df_copy["is_update"] = df_copy.apply(check_update, axis=1)
-    df_copy["is_update"] = df_copy["is_update"].fillna("")
+    df_copy["is_update"] = df_copy["is_update"].replace({None: "", "No": ""})
     df_copy = df_copy[df_copy["is_update"] == "Yes"]
     cols_to_drop = ["is_update", "location"] if create_location else ["is_update"]
     df_copy.drop(cols_to_drop, axis=1, inplace=True, errors="ignore")
