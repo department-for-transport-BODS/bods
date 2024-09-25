@@ -107,9 +107,7 @@ def get_dqs_report_from_s3(report_filename):
 def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
     """Read csv from S3 bucket and return a list of dataset ids and dataset revision ids"""
     try:
-        bucket_name = getattr(
-            settings, "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME", None
-        )
+        bucket_name = "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME"
         storage = get_s3_bucket_storage(bucket_name)
 
         storage.connection.meta.client.head_object(
