@@ -67,17 +67,19 @@ def load_existing_stops(existing_stops):
             updates.append(
                 {
                     "id": row.obj.id,
-                    "atco_code": row.obj.atco_code,
-                    "naptan_code": row.obj.naptan_code,
-                    "common_name": row.obj.common_name,
-                    "indicator": row.obj.indicator,
-                    "street": row.obj.street,
-                    "locality_id": row.obj.locality_id,
-                    "admin_area_id": row.obj.admin_area_id,
-                    "location": row.obj.location,
-                    "stop_areas": row.obj.stop_areas,
-                    "stop_type": row.obj.stop_type,
-                    "bus_stop_type": row.obj.bus_stop_type,
+                    "atco_code": row.Index,
+                    "naptan_code": row.naptan_code,
+                    "common_name": row.common_name,
+                    "indicator": row.indicator,
+                    "street": row.street,
+                    "locality_id": row.locality_id,
+                    "admin_area_id": row.admin_area_id,
+                    "location": Point(
+                        x=float(row.longitude), y=float(row.latitude), srid=4326
+                    ),
+                    "stop_areas": row.stop_areas,
+                    "stop_type": row.stop_type,
+                    "bus_stop_type": row.bus_stop_type,
                 }
             )
         try:

@@ -1,5 +1,6 @@
 import pandas as pd
 from celery.utils.log import get_task_logger
+from django.contrib.gis.geos import Point
 
 from transit_odp.naptan.models import (
     AdminArea,
@@ -164,3 +165,55 @@ def drop_stops_with_invalid_localities(
 
     good_stops = stops[stops.locality_id.isin(localities.index)]
     return good_stops
+
+
+def get_records_to_update(dataframe, columns_to_check, create_location=False):
+    df_copy = dataframe.copy()
+
+    def check_update(row):
+        obj = row["obj"]
+        for col in columns_to_check:
+            if row[col] != getattr(obj, col):
+                return "Yes"
+        return None
+
+    if create_location and "longitude" in df_copy and "latitude" in df_copy:
+        df_copy["location"] = df_copy.apply(
+            lambda row: Point(
+                float(row["longitude"]), float(row["latitude"]), srid=4326
+            ),
+            axis=1,
+        )
+
+    df_copy["is_update"] = df_copy.apply(check_update, axis=1)
+    df_copy["is_update"] = df_copy["is_update"].fillna("")
+    df_copy = df_copy[df_copy["is_update"] == "Yes"]
+    cols_to_drop = ["is_update", "location"] if create_location else ["is_update"]
+    df_copy.drop(cols_to_drop, axis=1, inplace=True, errors="ignore")
+    return df_copy
+
+
+def get_stops_to_update(stoppoints):
+    columns_to_check = [
+        "naptan_code",
+        "common_name",
+        "indicator",
+        "street",
+        "locality_id",
+        "admin_area_id",
+        "location",
+        "stop_areas",
+        "stop_type",
+        "bus_stop_type",
+    ]
+    return get_records_to_update(stoppoints, columns_to_check, create_location=True)
+
+
+def get_admin_areas_to_update(admin_areas):
+    columns_to_check = ["name", "traveline_region_id", "atco_code"]
+    return get_records_to_update(admin_areas, columns_to_check)
+
+
+def get_localities_to_update(localities):
+    columns_to_check = ["name", "easting", "northing", "admin_area_id"]
+    return get_records_to_update(localities, columns_to_check)
