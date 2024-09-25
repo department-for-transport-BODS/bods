@@ -178,7 +178,7 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
 def check_file_exists_s3(dataset_file_name=None):
     """Check if a file exists in dataset storage S3 bucket"""
     try:
-        bucket_name = getattr(settings, "AWS_STORAGE_BUCKET_NAME", None)
+        bucket_name = "AWS_STORAGE_BUCKET_NAME"
         storage = get_s3_bucket_storage(bucket_name)
 
         storage.connection.meta.client.head_object(
