@@ -689,6 +689,7 @@ def task_rerun_timetables_etl_specific_datasets():
             )
 
             task_dataset_download(revision_id, task.id)
+            task_extract_txc_file_data(revision_id, task.id)
             task_dataset_etl(revision_id, task.id)
 
             task.update_progress(100)
