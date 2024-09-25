@@ -57,7 +57,7 @@ def load_existing_stops(existing_stops):
     logger.info(
         f"[load_existing_stops]: Loading {len(existing_stops)} existing NaPTAN stops."
     )
-    chunk_size = 2000
+    chunk_size = 5000
     total_rows = len(existing_stops)
     for start in range(0, total_rows, chunk_size):
         end = min(start + chunk_size, total_rows)
