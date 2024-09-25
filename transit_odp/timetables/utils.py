@@ -338,13 +338,15 @@ def get_df_timetable_visualiser(
         # if observations are present, add them to the stops
         if observations:
             observation = observations.get(
-                df_vehicle_journey_with_pattern_stop.iloc[idx]["service_pattern_stop_id"]
+                df_vehicle_journey_with_pattern_stop.iloc[idx][
+                    "service_pattern_stop_id"
+                ]
             )
             if observation:
                 if f"{row['common_name']}_{idx}" in observation_stops:
-                    observation_stops[f"{row['common_name']}_{idx}"]["observations"].update(
-                        observation
-                    )
+                    observation_stops[f"{row['common_name']}_{idx}"][
+                        "observations"
+                    ].update(observation)
                 else:
                     observation_stops.update(
                         {f"{row['common_name']}_{idx}": {"observations": observation}}
@@ -552,11 +554,9 @@ def create_queue_payload(pending_checks: list) -> dict:
     return queue_payload
 
 
-
-
 def observation_contents_mapper(observations_list) -> Dict:
-    """ This function maps the observation list to the observation content
-    Args: 
+    """This function maps the observation list to the observation content
+    Args:
         observations_list: list of observations
     Returns:
         requested_observation: dict of observations
@@ -570,6 +570,10 @@ def observation_contents_mapper(observations_list) -> Dict:
     for observation in observations_list:
         for observation_content in OBSERVATIONS:
             if observation_content.title == observation:
-                requested_observation[observation] = {"title": observation_content.title,"text":observation_content.text,"resolve": observation_content.resolve}
+                requested_observation[observation] = {
+                    "title": observation_content.title,
+                    "text": observation_content.text,
+                    "resolve": observation_content.resolve,
+                }
 
-    return requested_observation        
+    return requested_observation

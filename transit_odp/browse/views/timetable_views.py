@@ -520,7 +520,6 @@ class LineMetadataDetailView(DetailView):
             "total_row_count": total_row_count,
         }
 
-
     def get_context_data(self, **kwargs):
         """
         Get the context data for the view.
@@ -612,7 +611,7 @@ class LineMetadataDetailView(DetailView):
                     "show_all_param": "showAll" + direction.capitalize(),
                 }
             kwargs["timetable"] = timetable
-            # kwargs["observations_contents"] = timetable_inbound_outbound["observations_contents"] 
+            # kwargs["observations_contents"] = timetable_inbound_outbound["observations_contents"]
             kwargs["is_timetable_info_available"] = is_timetable_info_available
 
         return kwargs
@@ -896,9 +895,9 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             response = StreamingHttpResponse(
                 gtfs_region_file, content_type="application/zip"
             )
-            response[
-                "Content-Disposition"
-            ] = f'attachment; filename="itm_{id_}_gtfs.zip"'
+            response["Content-Disposition"] = (
+                f'attachment; filename="itm_{id_}_gtfs.zip"'
+            )
         else:
             gtfs = self.get_download_file(id_)
             if gtfs.file is None:

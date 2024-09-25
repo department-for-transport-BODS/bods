@@ -271,7 +271,7 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
                     "page_param": direction + "Page",
                     "show_all_param": "showAll" + direction.capitalize(),
                 }
-            # kwargs["observations_contents"] = timetable_inbound_outbound["observations_contents"] 
+            # kwargs["observations_contents"] = timetable_inbound_outbound["observations_contents"]
             kwargs["timetable"] = timetable
             kwargs["is_timetable_info_available"] = is_timetable_info_available
 
