@@ -634,8 +634,6 @@ def task_rerun_timetables_etl_specific_datasets():
     csv_file_name = CSVFileName.RERUN_ETL_TIMETABLES.value
     _ids, _id_type, _s3_file_names_ids_map = read_datasets_file_from_s3(csv_file_name)
 
-    # list_to_update_upload_file_name = list(filter(lambda item: item[1] is not None, _s3_file_names_ids_map))
-
     if not _ids:
         logger.info("No valid dataset IDs or dataset revision IDs found in the file.")
         return
