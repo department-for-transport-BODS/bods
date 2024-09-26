@@ -62,49 +62,27 @@ def load_existing_stops(existing_stops):
     for start in range(0, total_rows, chunk_size):
         end = min(start + chunk_size, total_rows)
         chunk = existing_stops.iloc[start:end]
-        updates = []
         for row in chunk.itertuples():
-            updates.append(
-                {
-                    "id": row.obj.id,
-                    "atco_code": row.Index,
-                    "naptan_code": row.naptan_code,
-                    "common_name": row.common_name,
-                    "indicator": row.indicator,
-                    "street": row.street,
-                    "locality_id": row.locality_id,
-                    "admin_area_id": row.admin_area_id,
-                    "location": Point(
+            try:
+                StopPoint.objects.filter(id=row.obj.id).update(
+                    atco_code=row.Index,
+                    naptan_code=row.naptan_code,
+                    common_name=row.common_name,
+                    indicator=row.indicator,
+                    street=row.street,
+                    locality_id=row.locality_id,
+                    admin_area_id=row.admin_area_id,
+                    location=Point(
                         x=float(row.longitude), y=float(row.latitude), srid=4326
                     ),
-                    "stop_areas": row.stop_areas,
-                    "stop_type": row.stop_type,
-                    "bus_stop_type": row.bus_stop_type,
-                }
-            )
-        try:
-            with transaction.atomic():
-                for update in updates:
-                    StopPoint.objects.filter(id=update["id"]).update(
-                        atco_code=update["atco_code"],
-                        naptan_code=update["naptan_code"],
-                        common_name=update["common_name"],
-                        indicator=update["indicator"],
-                        street=update["street"],
-                        locality_id=update["locality_id"],
-                        admin_area_id=update["admin_area_id"],
-                        location=Point(
-                            x=update["location"].x, y=update["location"].y, srid=4326
-                        ),
-                        stop_areas=update["stop_areas"],
-                        stop_type=update["stop_type"],
-                        bus_stop_type=update["bus_stop_type"],
-                    )
-
-        except Exception as e:
-            logger.error(
-                f"[load_existing_stops]: Error processing rows {start} to {end} - {e}"
-            )
+                    stop_areas=row.stop_areas,
+                    stop_type=row.stop_type,
+                    bus_stop_type=row.bus_stop_type,
+                )
+            except Exception as exp:
+                logger.error(
+                    f"[load_existing_stops]: Error processing row {row} - {exp}"
+                )
         logger.info(f"[load_existing_stops]: Processed rows {start} to {end}")
 
     logger.info(
@@ -152,32 +130,18 @@ def load_existing_admin_areas(existing_admin_areas):
     for start in range(0, total_rows, chunk_size):
         end = min(start + chunk_size, total_rows)
         chunk = existing_admin_areas.iloc[start:end]
-        updates = []
         for row in chunk.itertuples():
-            updates.append(
-                {
-                    "id": int(row.Index),
-                    "name": row.name,
-                    "traveline_region_id": row.traveline_region_id,
-                    "atco_code": row.atco_code,
-                }
-            )
-
-        try:
-            with transaction.atomic():
-                for update in updates:
-                    AdminArea.objects.filter(id=update["id"]).update(
-                        name=update["name"],
-                        traveline_region_id=update["traveline_region_id"],
-                        atco_code=update["atco_code"],
-                    )
-        except Exception as exp:
-            logger.error(
-                f"[load_existing_admin_areas]: Error processing rows {start} to {end} - {exp}"
-            )
-
+            try:
+                AdminArea.objects.filter(id=int(row.Index)).update(
+                    name=row.name,
+                    traveline_region_id=row.traveline_region_id,
+                    atco_code=row.atco_code,
+                )
+            except Exception as exp:
+                logger.error(
+                    f"[load_existing_admin_areas]: Error processing row {row} - {exp}"
+                )
         logger.info(f"[load_existing_admin_areas]: Processed rows {start} to {end}")
-
     logger.info("[load_existing_admin_areas]: Finished")
 
 
@@ -220,30 +184,18 @@ def load_existing_localities(existing_localities):
     for start in range(0, total_rows, chunk_size):
         end = min(start + chunk_size, total_rows)
         chunk = existing_localities.iloc[start:end]
-        updates = []
         for row in chunk.itertuples():
-            updates.append(
-                {
-                    "gazetteer_id": row.Index,
-                    "name": row.name,
-                    "easting": row.easting,
-                    "northing": row.northing,
-                    "admin_area_id": int(row.admin_area_id),
-                }
-            )
-        try:
-            with transaction.atomic():
-                for update in updates:
-                    Locality.objects.filter(gazetteer_id=update["gazetteer_id"]).update(
-                        name=update["name"],
-                        easting=update["easting"],
-                        northing=update["northing"],
-                        admin_area_id=update["admin_area_id"],
-                    )
-        except Exception as exp:
-            logger.error(
-                f"[load_existing_localities]: Error processing rows {start} to {end} - {exp}"
-            )
+            try:
+                Locality.objects.filter(gazetteer_id=row.Index).update(
+                    name=row.name,
+                    easting=row.easting,
+                    northing=row.northing,
+                    admin_area_id=int(row.admin_area_id),
+                )
+            except Exception as exp:
+                logger.error(
+                    f"[load_existing_localities]: Error processing row {row} - {exp}"
+                )
     logger.info("[load_existing_localities]: Finished")
 
 
