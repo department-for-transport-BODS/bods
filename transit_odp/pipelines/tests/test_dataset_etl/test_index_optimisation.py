@@ -13,6 +13,7 @@ from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     OrganisationFactory,
+    TXCFileAttributesFactory,
 )
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.pipelines.dataset_etl.feed_parser import FeedParser
@@ -149,6 +150,7 @@ class IndexOptimisationTestCase(TestCase):
         revision = DatasetRevisionFactory(
             is_published=False, status=FeedStatus.pending.value
         )
+        TXCFileAttributesFactory(revision=revision)
 
         revision.associate_file(file)
         revision.save()
@@ -195,6 +197,7 @@ class IndexOptimisationTestCase(TestCase):
         revision = DatasetRevisionFactory(
             is_published=False, status=FeedStatus.pending.value
         )
+        TXCFileAttributesFactory(revision=revision)
 
         revision.associate_file(file)
         revision.save()
@@ -294,6 +297,7 @@ class IndexOptimisationTestCase(TestCase):
                 status=FeedStatus.pending.value,
                 upload_file__from_file=fin,
             )
+            TXCFileAttributesFactory(revision=revision)
 
         DatasetETLTaskResultFactory.create(revision=revision)
         self.pipeline = TransXChangePipeline(revision)
