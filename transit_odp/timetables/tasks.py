@@ -729,14 +729,12 @@ def task_rerun_timetables_etl_specific_datasets():
 
             if revision:
                 task_id = uuid.uuid4()
-                DatasetETLTaskResult.objects.create(
+                task = DatasetETLTaskResult.objects.create(
                     revision=revision,
                     status=DatasetETLTaskResult.STARTED,
                     task_id=task_id,
                 )
                 try:
-                    task = get_etl_task_or_pipeline_exception(task_id)
-
                     task_dataset_download(revision_id, task.id, reprocess_flag=True)
                     task_extract_txc_file_data(revision_id, task.id)
                     task_dataset_etl(revision_id, task.id)
