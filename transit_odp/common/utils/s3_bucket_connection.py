@@ -1,4 +1,3 @@
-import os
 import csv
 import logging
 from io import StringIO
