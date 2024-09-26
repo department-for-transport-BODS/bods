@@ -1,13 +1,13 @@
 from crispy_forms.layout import HTML, ButtonHolder, Layout
-from transit_odp.crispy_forms_govuk.forms import GOVUKModelForm
-from transit_odp.crispy_forms_govuk.layout import ButtonSubmit, LinkButton
-from transit_odp.crispy_forms_govuk.layout.fields import CheckboxSingleField
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from django_hosts import reverse
 from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.crispy_forms_govuk.forms import GOVUKModelForm
+from transit_odp.crispy_forms_govuk.layout import ButtonSubmit, LinkButton
+from transit_odp.crispy_forms_govuk.layout.fields import CheckboxSingleField
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.publish.forms.constants import DISABLE_SUBMIT_SCRIPT
@@ -118,14 +118,6 @@ class RevisionPublishForm(GOVUKModelForm):
             raise forms.ValidationError("Select the box below to publish the data")
 
         return consent
-
-    def clean(self):
-        # There is no frontend route to this but protects against manually posting a
-        # form
-        if self.instance.is_pti_compliant():
-            return super().clean()
-
-        raise forms.ValidationError("Cannot publish PTI non compliant datasets")
 
 
 class FaresRevisionPublishFormViolations(RevisionPublishForm):

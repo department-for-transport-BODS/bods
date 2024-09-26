@@ -402,8 +402,13 @@ def task_rerun_fares_validation_specific_datasets():
     provided in a csv file available in AWS S3 bucket
     """
     csv_file_name = CSVFileName.RERUN_FARES_VALIDATION.value
-    _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
-    logger.info(
+    _ids, _id_type, _ = read_datasets_file_from_s3(csv_file_name)
+    context = DatasetPipelineLoggerContext(
+        component_name="RerunFaresCatalogueDataExistingDatasets",
+        object_id=revision.dataset.id,
+    )
+    adapter = PipelineAdapter(logger, {"context": context})
+    adapter.info(
         f"RerunFaresValidationSpecificDatasets {revision_id} => Starting fares ETL pipeline."
     )
     if not _ids and not _id_type == "dataset_ids":

@@ -1,8 +1,7 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
-{# PTI Report Section #}
-{% if has_pti_observations %}
-  {# This is the soft fail path, should tidy up after pti enforced date #}
+{# Report Section #}
+{% if is_schema_violation or is_post_schema_violation or is_pti_violation %}
   {% include "publish/snippets/pti_panel/soft_fail.html" %}
 {% else %}
   {% include "publish/snippets/pti_panel/pass.html" %}

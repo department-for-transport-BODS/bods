@@ -3,7 +3,10 @@ from unittest.mock import Mock
 import pytest
 
 from transit_odp.organisation.constants import FeedStatus
-from transit_odp.organisation.factories import DatasetRevisionFactory
+from transit_odp.organisation.factories import (
+    DatasetRevisionFactory,
+    TXCFileAttributesFactory,
+)
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.tasks import task_run_naptan_etl
@@ -19,6 +22,7 @@ TXC_PIPELINE = "transit_odp.timetables.tasks.TransXChangePipeline"
 class TestTaskFeedIndex:
     def test_dataset_etl_called_correctly(self, mocker):
         revision = DatasetRevisionFactory()
+        TXCFileAttributesFactory(revision=revision)
         task = DatasetETLTaskResultFactory(revision=revision)
         pipeline = mocker.Mock()
         mocker.patch(TXC_PIPELINE, return_value=pipeline)
