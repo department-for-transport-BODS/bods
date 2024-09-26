@@ -44,7 +44,7 @@ from transit_odp.organisation.querysets import (
 from transit_odp.pipelines.signals import dataset_etl
 from transit_odp.timetables.dataclasses.transxchange import TXCFile
 from transit_odp.users.models import User
-from requests.exceptions import RequestException
+from transit_odp.validate.utils import filter_and_repackage_zip
 from django.core.validators import RegexValidator
 
 
@@ -351,6 +351,16 @@ class DatasetRevision(
             return self.pti_result.is_compliant
 
         return self.pti_observations.count() == 0
+
+    def modify_upload_file(self, files_to_remove):
+        if self.upload_file.name.endswith(".zip"):
+            intial_zip_file = self.upload_file
+            new_zip_stream = filter_and_repackage_zip(intial_zip_file, files_to_remove)
+            new_zip_content = ContentFile(
+                new_zip_stream.read(), name=self.upload_file.name
+            )
+            self.upload_file = new_zip_content
+            self.save()
 
     def publish(self, user=None):
         """Publish the revision"""

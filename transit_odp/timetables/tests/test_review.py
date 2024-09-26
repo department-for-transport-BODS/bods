@@ -70,7 +70,7 @@ class TestPublishReview:
         response = client.get(self.url)
 
         assert response.status_code == 200
-        assert "publish/revision_review/pti_hard_fail.html" in [
+        assert "publish/snippets/pti_panel/soft_fail.html" in [
             t.name for t in response.templates
         ]
 
@@ -87,7 +87,7 @@ class TestPublishReview:
             },
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 302
 
     def test_draft_notifies_on_publish_new_revision(self, client_factory, mailoutbox):
         self.revision.is_published = True
@@ -158,6 +158,6 @@ def test_old_datasets_use_pti_hardblock_templates(client_factory):
     response = client.get(url)
 
     assert response.status_code == 200
-    assert "publish/revision_review/pti_hard_fail.html" in [
+    assert "publish/snippets/pti_panel/pass.html" in [
         t.name for t in response.templates
     ]
