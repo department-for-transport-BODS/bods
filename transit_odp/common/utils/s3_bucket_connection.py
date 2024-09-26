@@ -111,7 +111,7 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
         storage = get_s3_bucket_storage(bucket_name)
 
         storage.connection.meta.client.head_object(
-            Bucket=bucket_name, Key=csv_file_name
+            Bucket=storage.bucket_name, Key=csv_file_name
         )
 
         file = storage._open(csv_file_name)
