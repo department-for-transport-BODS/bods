@@ -27,6 +27,7 @@ from transit_odp.dqs.models import ObservationResults
 import pandas as pd
 from typing import List
 from collections import defaultdict
+from transit_odp.dqs.constants import Checks, Level as Importance
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -256,18 +257,17 @@ class TimetableVisualiser:
         Get the observation results based on the service pattern ids
         and revision id
         """
-        #TODO: This can be set via flag or a configuration
-        REQUIRED_OBSERVATIONS = "First stop is set down only"
-        REQUIRED_IMPORTANCE = "Critical"
+        REQUIRED_OBSERVATIONS = Checks.FirstStopIsSetDown.value
+        REQUIRED_IMPORTANCE = Importance.critical.value
+
 
         columns = ["importance","observation" ,"service_pattern_stop_id", "vehicle_journey_id"]
-        #TODO: Avoid the hardcoding of the importance
         qs_observation_results = (
             ObservationResults.objects.filter(
                 service_pattern_stop_id__in=service_patter_ids,
                 taskresults__dataquality_report__revision_id=self._revision_id,
                 taskresults__checks__importance=REQUIRED_IMPORTANCE,
-                taskresults__checks__observation = REQUIRED_OBSERVATIONS
+                # taskresults__checks__observation = REQUIRED_OBSERVATIONS
             )
             .annotate(
                 importance=F("taskresults__checks__importance"),

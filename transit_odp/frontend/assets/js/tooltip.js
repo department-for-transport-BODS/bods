@@ -8,9 +8,6 @@
  */
 function showTooltip(event, rowIndex, direction=null, type=null) {
   hideAllTooltips();
-  console.log(type);
-  console.log(direction);
-  console.log(rowIndex);
   if (type === "observation") {
   const TARGET = document.getElementById(rowIndex);
   TARGET.classList.add("showtooltip");
