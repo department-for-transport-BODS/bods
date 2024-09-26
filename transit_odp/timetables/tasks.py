@@ -45,6 +45,10 @@ from transit_odp.timetables.utils import (
     get_bank_holidays,
     get_holidays_records_to_insert,
 )
+from transit_odp.common.utils.s3_bucket_connection import (
+    read_datasets_file_from_s3,
+    get_file_name_by_id,
+)
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     PostSchemaValidator,
@@ -130,13 +134,15 @@ def task_populate_timing_point_count(revision_id: int) -> None:
 
 
 @shared_task()
-def task_dataset_download(revision_id: int, task_id: int) -> int:
+def task_dataset_download(
+    revision_id: int, task_id: int, reprocess_flag: bool = False
+) -> int:
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Downloading data.")
-    if revision.url_link:
+    if revision.url_link and not reprocess_flag:
         adapter.info(f"Downloading timetables file from {revision.url_link}.")
         now = timezone.now().strftime(DT_FORMAT)
         try:
@@ -658,7 +664,7 @@ def task_rerun_timetables_etl_specific_datasets():
     provided in a csv file available in AWS S3 bucket
     """
     csv_file_name = CSVFileName.RERUN_ETL_TIMETABLES.value
-    _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
+    _ids, _id_type, _s3_file_names_ids_map = read_datasets_file_from_s3(csv_file_name)
 
     if not _ids:
         logger.info("No valid dataset IDs or dataset revision IDs found in the file.")
@@ -706,6 +712,16 @@ def task_rerun_timetables_etl_specific_datasets():
                 revision = DatasetRevision.objects.get(
                     pk=revision_id, dataset__dataset_type=TimetableType
                 )
+                if _s3_file_names_ids_map:
+                    s3_file_name = get_file_name_by_id(
+                        revision_id, _s3_file_names_ids_map
+                    )
+                    if s3_file_name:
+                        revision.upload_file = get_file_name_by_id(
+                            revision, _s3_file_names_ids_map
+                        )
+                        revision.save()
+
             except DatasetRevision.DoesNotExist as exc:
                 message = f"DatasetRevision {revision_id} does not exist."
                 failed_datasets.append(output_id)
@@ -713,13 +729,16 @@ def task_rerun_timetables_etl_specific_datasets():
                 raise PipelineException(message) from exc
 
             task_id = uuid.uuid4()
-            task = DatasetETLTaskResult.objects.create(
+            DatasetETLTaskResult.objects.create(
                 revision=revision,
                 status=DatasetETLTaskResult.STARTED,
                 task_id=task_id,
             )
 
-            task_dataset_download(revision_id, task.id)
+            task = get_etl_task_or_pipeline_exception(task_id)
+
+            task_dataset_download(revision_id, task.id, reprocess_flag=True)
+            task_extract_txc_file_data(revision_id, task.id)
             task_dataset_etl(revision_id, task.id)
 
             task.update_progress(100)
@@ -730,6 +749,7 @@ def task_rerun_timetables_etl_specific_datasets():
 
         except Exception as exc:
             failed_datasets.append(output_id)
+            task.to_error("", DatasetETLTaskResult.FAILURE)
             message = f"Error processing dataset id {output_id}: {exc}"
             logger.exception(message, exc_info=True)
 
