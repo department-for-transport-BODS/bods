@@ -163,6 +163,9 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
                     # Append a tuple of (id, s3_file_name) to the map list
                     _id_s3_file_name_map.append((int(_id_value), _s3_file_value))
 
+        elif _column_name and not _column_name_s3_file:
+            _ids = [int(row[_column_name]) for row in rows if row[_column_name].strip()]
+
         return _ids, _id_type, _id_s3_file_name_map
 
     except botocore.exceptions.ClientError as e:
@@ -200,6 +203,9 @@ def check_file_exists_s3(dataset_file_name=None):
 
 
 def get_file_name_by_id(id_to_find, id_s3_file_name_map):
+    """
+    This function is to get the s3 file name for corresponding revision_id from the map
+    """
     for id_value, file_name in id_s3_file_name_map:
         if id_value == id_to_find:
             if check_file_exists_s3(file_name):
