@@ -724,32 +724,37 @@ def task_rerun_timetables_etl_specific_datasets():
 
             except DatasetRevision.DoesNotExist as exc:
                 message = f"DatasetRevision {revision_id} does not exist."
-                failed_datasets.append(output_id)
                 logger.exception(message, exc_info=True)
                 raise PipelineException(message) from exc
 
-            task_id = uuid.uuid4()
-            DatasetETLTaskResult.objects.create(
-                revision=revision,
-                status=DatasetETLTaskResult.STARTED,
-                task_id=task_id,
-            )
+            if revision:
+                task_id = uuid.uuid4()
+                DatasetETLTaskResult.objects.create(
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=task_id,
+                )
+                try:
+                    task = get_etl_task_or_pipeline_exception(task_id)
 
-            task = get_etl_task_or_pipeline_exception(task_id)
+                    task_dataset_download(revision_id, task.id, reprocess_flag=True)
+                    task_extract_txc_file_data(revision_id, task.id)
+                    task_dataset_etl(revision_id, task.id)
 
-            task_dataset_download(revision_id, task.id, reprocess_flag=True)
-            task_extract_txc_file_data(revision_id, task.id)
-            task_dataset_etl(revision_id, task.id)
+                    task.update_progress(100)
+                    task.to_success()
+                    successfully_processed_ids.append(output_id)
+                    processed_count += 1
+                    logger.info(
+                        f"The task completed for {processed_count} of {total_count}"
+                    )
 
-            task.update_progress(100)
-            task.to_success()
-            successfully_processed_ids.append(output_id)
-            processed_count += 1
-            logger.info(f"The task completed for {processed_count} of {total_count}")
+                except Exception as e:
+                    task.to_error("", DatasetETLTaskResult.FAILURE)
+                    raise
 
         except Exception as exc:
             failed_datasets.append(output_id)
-            task.to_error("", DatasetETLTaskResult.FAILURE)
             message = f"Error processing dataset id {output_id}: {exc}"
             logger.exception(message, exc_info=True)
 
