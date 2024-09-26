@@ -1,6 +1,13 @@
 {% load i18n %}
 <h3 data-qa="bus-location-header" class="govuk-heading-m">{% trans "Bus location solution suppliers" %}</h3>
 <table data-qa="requirements-table" class="govuk-table">
+  <thead data-qa="requirements-table-header" class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Supplier</th>
+      <th scope="col" class="govuk-table__header">Website (URL)</th>
+      <th scope="col" class="govuk-table__header">Email address</th>
+    </tr>
+  </thead>
   <tbody class="govuk-table__body">
     <tr data-qa="timetable-row" class="govuk-table__row">
       <td class="govuk-table__cell">INIT</td>
