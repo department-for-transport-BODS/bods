@@ -26,16 +26,16 @@ class ServiceCodeExemptionsForm(GOVUKFormMixin, forms.ModelForm):
         required=True,
     )
 
-    registration_code = forms.IntegerField(
+    registration_code = forms.CharField(
         label=_("Service Code"),
-        widget=forms.NumberInput(
+        widget=forms.TextInput(
             attrs={
                 "placeholder": _("Enter service code"),
             }
         ),
         error_messages={"required": "Enter a service code to continue."},
         required=True,
-        min_value=1,
+        max_length=50,
     )
 
     justification = forms.CharField(

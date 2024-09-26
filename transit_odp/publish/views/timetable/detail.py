@@ -1,10 +1,23 @@
+import math
+import re
+from datetime import datetime
+from typing import Dict
+
+import pandas as pd
 from django.conf import settings
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.browse.timetable_visualiser import TimetableVisualiser
 from transit_odp.common.enums import FeedErrorSeverity
 from transit_odp.common.views import BaseDetailView
+from transit_odp.data_quality.models import SchemaViolation
+from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
+from transit_odp.data_quality.report_summary import Summary
 from transit_odp.data_quality.scoring import get_data_quality_rag
+from transit_odp.dqs.constants import ReportStatus
+from transit_odp.dqs.models import Report
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset
 from transit_odp.publish.views.utils import (
@@ -14,16 +27,6 @@ from transit_odp.publish.views.utils import (
     get_valid_files,
 )
 from transit_odp.users.views.mixins import OrgUserViewMixin
-from datetime import datetime
-import pandas as pd
-from transit_odp.browse.timetable_visualiser import TimetableVisualiser
-from typing import Dict
-import math
-import re
-from waffle import flag_is_active
-from transit_odp.data_quality.report_summary import Summary
-from transit_odp.dqs.models import Report
-from transit_odp.dqs.constants import ReportStatus
 
 
 class FeedDetailView(OrgUserViewMixin, BaseDetailView):
@@ -95,6 +98,16 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
         kwargs["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
         kwargs["distinct_attributes"] = get_distinct_dataset_txc_attributes(
             live_revision.id
+        )
+
+        kwargs["is_schema_violation"] = (
+            SchemaViolation.objects.filter(revision=live_revision.id).count() > 0
+        )
+        kwargs["is_post_schema_violation"] = (
+            PostSchemaViolation.objects.filter(revision=live_revision.id).count() > 0
+        )
+        kwargs["is_pti_violation"] = (
+            PTIObservation.objects.filter(revision=live_revision.id).count() > 0
         )
 
         return kwargs
