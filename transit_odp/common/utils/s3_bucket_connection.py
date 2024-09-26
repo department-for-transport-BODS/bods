@@ -183,7 +183,7 @@ def check_file_exists_s3(dataset_file_name=None):
         storage = get_s3_bucket_storage(bucket_name)
 
         storage.connection.meta.client.head_object(
-            Bucket=bucket_name, Key=dataset_file_name
+            Bucket=storage.bucket_name, Key=dataset_file_name
         )
         return True
 
