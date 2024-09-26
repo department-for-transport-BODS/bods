@@ -205,6 +205,9 @@ def check_file_exists_s3(dataset_file_name=None):
 
 
 def get_file_name_by_id(id_to_find, id_s3_file_name_map):
+    """
+    This function is to get the s3 file name for corresponding revision_id from the map
+    """
     for id_value, file_name in id_s3_file_name_map:
         if id_value == id_to_find:
             if check_file_exists_s3(file_name):
