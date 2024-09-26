@@ -717,9 +717,7 @@ def task_rerun_timetables_etl_specific_datasets():
                         revision_id, _s3_file_names_ids_map
                     )
                     if s3_file_name:
-                        revision.upload_file = get_file_name_by_id(
-                            revision, _s3_file_names_ids_map
-                        )
+                        revision.upload_file = s3_file_name
                         revision.save()
 
             except DatasetRevision.DoesNotExist as exc:
