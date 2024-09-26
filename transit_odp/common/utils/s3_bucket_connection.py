@@ -163,6 +163,11 @@ def read_datasets_file_from_s3(csv_file_name: str) -> tuple:
                     # Append a tuple of (id, s3_file_name) to the map list
                     _id_s3_file_name_map.append((int(_id_value), _s3_file_value))
 
+        elif _column_name and not _column_name_s3_file:
+            _ids = [
+                int(row[_column_name]) for row in reader if row[_column_name].strip()
+            ]
+
         return _ids, _id_type, _id_s3_file_name_map
 
     except botocore.exceptions.ClientError as e:
