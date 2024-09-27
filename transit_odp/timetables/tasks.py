@@ -130,13 +130,15 @@ def task_populate_timing_point_count(revision_id: int) -> None:
 
 
 @shared_task()
-def task_dataset_download(revision_id: int, task_id: int) -> int:
+def task_dataset_download(
+    revision_id: int, task_id: int, reprocess_flag: bool = False
+) -> int:
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Downloading data.")
-    if revision.url_link:
+    if revision.url_link and not reprocess_flag:
         adapter.info(f"Downloading timetables file from {revision.url_link}.")
         now = timezone.now().strftime(DT_FORMAT)
         try:
