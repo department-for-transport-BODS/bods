@@ -267,7 +267,7 @@ class TimetableVisualiser:
                 service_pattern_stop_id__in=service_pattern_ids,
                 taskresults__dataquality_report__revision_id=self._revision_id,
                 taskresults__checks__importance=REQUIRED_IMPORTANCE,
-                # taskresults__checks__observation = REQUIRED_OBSERVATIONS
+                taskresults__checks__observation = REQUIRED_OBSERVATIONS
             )
             .annotate(
                 importance=F("taskresults__checks__importance"),
