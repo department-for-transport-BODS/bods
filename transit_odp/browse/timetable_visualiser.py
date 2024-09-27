@@ -251,7 +251,7 @@ class TimetableVisualiser:
 
     def get_observation_results_based_on_service_pattern_id(
         self,
-        service_patter_ids: List,
+        service_pattern_ids: List,
     ) -> dict:
         """
         Get the observation results based on the service pattern ids
@@ -264,7 +264,7 @@ class TimetableVisualiser:
         columns = ["importance","observation" ,"service_pattern_stop_id", "vehicle_journey_id"]
         qs_observation_results = (
             ObservationResults.objects.filter(
-                service_pattern_stop_id__in=service_patter_ids,
+                service_pattern_stop_id__in=service_pattern_ids,
                 taskresults__dataquality_report__revision_id=self._revision_id,
                 taskresults__checks__importance=REQUIRED_IMPORTANCE,
                 # taskresults__checks__observation = REQUIRED_OBSERVATIONS
@@ -399,10 +399,10 @@ class TimetableVisualiser:
                 )
             ]
             # Get the service pattern ids
-            service_pattern_ids = df_vehicle_journey_operating["service_pattern_stop_id"].unique().tolist()
+            service_pattern_stop_ids = df_vehicle_journey_operating["service_pattern_stop_id"].unique().tolist()
             # Get the observation results based on the service pattern ids
             df_observation_results = self.get_observation_results_based_on_service_pattern_id(
-                service_pattern_ids
+                service_pattern_stop_ids
             )
 
             df_timetable, stops, observations = get_df_timetable_visualiser(
