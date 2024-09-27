@@ -36,7 +36,8 @@
         <li>
           {% filter force_escape %}
             {% blocktrans %}
-                            zoom in up to 300% without problems
+                            zoom in up to 400% without the
+                            text spilling off the screen.
                         {% endblocktrans %}
           {% endfilter %}
         </li>
@@ -204,8 +205,8 @@
           {% filter force_escape %}
             {% trans "This website follows the" %}
           {% endfilter %}
-          {% blocktrans with link="https://www.w3.org/TR/WCAG21/" %}
-                        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">Web Content Accessibility Guidelines version 2.1</a>
+          {% blocktrans with link="https://www.w3.org/TR/WCAG22/" %}
+                        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">Web Content Accessibility Guidelines version 2.2</a>
                     {% endblocktrans %}
           {% filter force_escape %}
             {% trans "AA standard." %}
@@ -268,18 +269,17 @@
         <p class="govuk-body">
           {% filter force_escape %}
             {% blocktrans %}
-                                This statement was prepared on 17 December
-                                2019. It was last reviewed on 1 March
-                                2022.
-                            {% endblocktrans %}
+              This statement was prepared on 17 December
+              2019. It was last reviewed on 27 September 2024.
+            {% endblocktrans %}
           {% endfilter %}
         </p>
         <p class="govuk-body">
           {% filter force_escape %}
             {% blocktrans %}
-                                This website was last tested on 20 October
-                                2020. The test was carried out by Digital
-                                Accessibility Centre.
+                                This website was last tested on 20 September
+                                2024. The test was carried out by the KPMG
+                                Accessibility Testing department.
                             {% endblocktrans %}
           {% endfilter %}
         </p>
