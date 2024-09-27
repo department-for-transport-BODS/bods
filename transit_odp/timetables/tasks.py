@@ -627,7 +627,7 @@ def task_rerun_timetables_etl_specific_datasets():
     provided in a csv file available in AWS S3 bucket
     """
     csv_file_name = CSVFileName.RERUN_ETL_TIMETABLES.value
-    _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
+    _ids, _id_type, _s3_file_names_ids_map = read_datasets_file_from_s3(csv_file_name)
 
     if not _ids:
         logger.info("No valid dataset IDs or dataset revision IDs found in the file.")
@@ -675,27 +675,42 @@ def task_rerun_timetables_etl_specific_datasets():
                 revision = DatasetRevision.objects.get(
                     pk=revision_id, dataset__dataset_type=TimetableType
                 )
+                if _s3_file_names_ids_map:
+                    s3_file_name = get_file_name_by_id(
+                        revision_id, _s3_file_names_ids_map
+                    )
+                    if s3_file_name:
+                        revision.upload_file = s3_file_name
+                        revision.save()
+
             except DatasetRevision.DoesNotExist as exc:
                 message = f"DatasetRevision {revision_id} does not exist."
-                failed_datasets.append(output_id)
                 logger.exception(message, exc_info=True)
                 raise PipelineException(message) from exc
 
-            task_id = uuid.uuid4()
-            task = DatasetETLTaskResult.objects.create(
-                revision=revision,
-                status=DatasetETLTaskResult.STARTED,
-                task_id=task_id,
-            )
+            if revision:
+                task_id = uuid.uuid4()
+                task = DatasetETLTaskResult.objects.create(
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=task_id,
+                )
+                try:
+                    task_dataset_download(revision_id, task.id, reprocess_flag=True)
+                    task_extract_txc_file_data(revision_id, task.id)
+                    task_dataset_etl(revision_id, task.id)
 
-            task_dataset_download(revision_id, task.id)
-            task_dataset_etl(revision_id, task.id)
+                    task.update_progress(100)
+                    task.to_success()
+                    successfully_processed_ids.append(output_id)
+                    processed_count += 1
+                    logger.info(
+                        f"The task completed for {processed_count} of {total_count}"
+                    )
 
-            task.update_progress(100)
-            task.to_success()
-            successfully_processed_ids.append(output_id)
-            processed_count += 1
-            logger.info(f"The task completed for {processed_count} of {total_count}")
+                except Exception as e:
+                    task.to_error("", DatasetETLTaskResult.FAILURE)
+                    raise
 
         except Exception as exc:
             failed_datasets.append(output_id)

@@ -402,7 +402,7 @@ def task_rerun_fares_validation_specific_datasets():
     provided in a csv file available in AWS S3 bucket
     """
     csv_file_name = CSVFileName.RERUN_FARES_VALIDATION.value
-    _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
+    _ids, _id_type, _ = read_datasets_file_from_s3(csv_file_name)
     logger.info(
         f"RerunFaresValidationSpecificDatasets {revision_id} => Starting fares ETL pipeline."
     )
