@@ -609,7 +609,6 @@ class LineMetadataDetailView(DetailView):
                     "show_all_param": "showAll" + direction.capitalize(),
                 }
             kwargs["timetable"] = timetable
-            # kwargs["observations_contents"] = timetable_inbound_outbound["observations_contents"]
             kwargs["is_timetable_info_available"] = is_timetable_info_available
 
         return kwargs
