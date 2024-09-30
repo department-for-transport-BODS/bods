@@ -24,7 +24,11 @@ import { CounterCharactersInTextBox } from "./counter-characters-text-box";
 import { FormSet } from "./django-formset";
 import { initDatePicker, changeTargetDate } from "./timetable";
 import { showTooltip, hideTooltip, disableClick } from "./tooltip";
-import { suppressObservation } from "./supress-observation";
+import {
+  suppressObservation,
+  suppressAllObservations,
+  setButtonStatus,
+} from "./supress-observation";
 
 function initAll() {
   console.log(`Initialising BODSFrontend -   ${new Date().toISOString()}`);
@@ -63,4 +67,6 @@ export {
   disableClick,
   FormSet,
   suppressObservation,
+  suppressAllObservations,
+  setButtonStatus,
 };

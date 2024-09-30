@@ -10,6 +10,11 @@ urlpatterns = [
     path("glossary/", view=views.DataQualityGlossaryView.as_view(), name="glossary"),
     path("csv/", view=views.ReportCSVDownloadView.as_view(), name="report-csv"),
     path(
+        "suppress-observation/",
+        view=DQSviews.SuppressObservationView.as_view(),
+        name="suppress-observation",
+    ),
+    path(
         "fast-timings/",
         include(
             [

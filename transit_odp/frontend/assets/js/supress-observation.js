@@ -1,5 +1,79 @@
 import { HttpClient } from "./http-client";
 
+
+function setButtonStatus() {
+  const suppressCheckboxes =
+    document.getElementsByClassName("checkbox-suppress");
+
+  const suppressButton = document.getElementById("button-suppress-observation");
+  let allChecked = true;
+  for (let i = 1; i <= suppressCheckboxes.length; i++) {
+    const checkBoxSuppress = document.getElementById(`checkbox-suppress-${i}`);
+    if (checkBoxSuppress.checked & allChecked) {
+      allChecked = true;
+    } else {
+      allChecked = false;
+      break;
+    }
+  }
+
+  if (allChecked) {
+    suppressButton.textContent = "Restore all observations";
+  } else {
+    suppressButton.textContent = "Suppress all observations";
+  }
+}
+
+/**
+ * Extract the orgnaisation id, revision id and report id from the url.
+ * @returns the orgnaisation id, revision id and report id
+ */
+function extractOrgRevisionAndReportID() {
+  // Create a URL object
+  const urlObj = new URL(window.location.href);
+  // Use URLSearchParams to extract path segments
+  const segments = urlObj.pathname.split("/").filter((segment) => segment);
+
+  // Extract organization ID and dataset ID
+  const organisation_id = segments[1];
+  const revision_id = segments[4];
+  const report_id = segments[6];
+
+  return { organisation_id, revision_id, report_id };
+}
+
+/**
+ * Get the API URL
+ * @returns the API URL of the suppress observation
+ */
+function getAPIUrl() {
+  // Need to make an AJAX call
+  let hostName = window.location.host;
+  hostName = hostName.replace("publish", "data");
+  // http://publish.localhost:8000/org/1/dataset/timetable/98/report/30/pick-up-only/
+  const baseUrl = `${window.location.protocol}//${hostName}/`;
+  const apiURL = `${baseUrl}api/app/dqs_report/suppress_observation/`;
+  let apiU =
+    "http://publish.localhost:8000/org/1/dataset/timetable/98/report/30/suppress-observation";
+  return apiU;
+  return apiURL;
+}
+
+/**
+ * Set the status of the checkbox
+ * @param {boolean} is_suppressed - Whether the check box is suppressed
+ * @param {int} rowIndex - Row number of the checkbox
+ */
+function setStatus(is_suppressed, rowIndex) {
+  let suppressText = "Suppress";
+  if (is_suppressed) {
+    suppressText = "Suppressed";
+  }
+  document.getElementById(`checkbox-suppress-${rowIndex}`).checked =
+    is_suppressed;
+  document.getElementById(`row-${rowIndex}`).innerHTML = suppressText;
+}
+
 /**
  * Suppress the observation for a specific service code and line name
  * @param {int} organisation_id - Organisation id
@@ -20,32 +94,13 @@ function suppressObservation(
   observation,
   rowIndex
 ) {
-  console.log("Changing text ");
-  console.log(document.getElementById(`row-${rowIndex}`));
   const checkboxSuppress = document.getElementById(
     `checkbox-suppress-${rowIndex}`
   );
   const is_suppressed = checkboxSuppress.checked;
 
-  let suppressText = "Suppress";
-  if (is_suppressed) {
-    suppressText = "Suppressed";
-  }
-  console.log(`text: ${suppressText}, ${is_suppressed} `);
-  document.getElementById(`row-${rowIndex}`).innerHTML = suppressText;
-
-  console.log(
-    `Suppressing observation for ${service_code}, line: ${line_name}`
-  );
   // Need to make an AJAX call
-  let httpClient = new HttpClient();
-  console.log("Calling");
-  let hostName = window.location.host;
-  hostName = hostName.replace("publish", "data");
-  const baseUrl = `${window.location.protocol}//${hostName}/`;
-  const apiURL = `${baseUrl}api/app/suppress_observation/suppress/`;
-  console.log(`calling the ${apiURL} url`);
-
+  const httpClient = new HttpClient();
   const requestBody = JSON.stringify({
     report_id: report_id,
     revision_id: revision_id,
@@ -55,76 +110,54 @@ function suppressObservation(
     check: observation,
     is_suppressed: is_suppressed,
   });
-  let response = httpClient
-    .post(`${apiURL}`, requestBody)
+
+  httpClient
+    .post(`${getAPIUrl()}`, requestBody)
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
+      setStatus(is_suppressed, rowIndex);
     })
     .catch((reason) => console.log(reason));
-  console.log(response);
 }
 
-function suppressAllObservations(
-  organisation_id,
-  revision_id,
-  report_id,
-  observation,
-  rowIndex
-) {
-  const checkboxSuppress = document.getElementsByClassName("checkbox-suppress");
-  const buttonText = document.getElementById("");
+function suppressAllObservations() {
+  const httpClient = new HttpClient();
+  const suppressButton = document.getElementById("button-suppress-observation");
+  const buttonText = suppressButton.textContent.toLowerCase();
+  const observation = document
+    .getElementById("observation-title")
+    .textContent.trim();
 
-  let suppressText = "Suppress";
-  if (is_suppressed) {
-    suppressText = "Suppressed";
+  // Restore all observations
+  let is_suppressed = true;
+  if (buttonText.includes("restore")) {
+    is_suppressed = false;
   }
-  console.log(`text: ${suppressText}, ${is_suppressed} `);
-  document.getElementById(`row-${rowIndex}`).innerHTML = suppressText;
 
-  console.log(
-    `Suppressing observation for ${service_code}, line: ${line_name}`
-  );
-  // Need to make an AJAX call
-  let httpClient = new HttpClient();
-  console.log("Calling");
-  let hostName = window.location.host;
-  hostName = hostName.replace("publish", "data");
-  const baseUrl = `${window.location.protocol}//${hostName}/`;
-  const apiURL = `${baseUrl}api/app/suppress_observation/suppress/`;
-  console.log(`calling the ${apiURL} url`);
+  const { organisation_id, revision_id, report_id } =
+    extractOrgRevisionAndReportID();
 
   const requestBody = JSON.stringify({
-    report_id: report_id,
-    revision_id: revision_id,
     organisation_id: organisation_id,
-    service_code: service_code,
-    line_name: line_name,
+    revision_id: revision_id,
+    report_id: report_id,
     check: observation,
     is_suppressed: is_suppressed,
   });
-  let response = httpClient
-    .post(`${apiURL}`, requestBody)
+
+  httpClient
+    .post(`${getAPIUrl()}`, requestBody)
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
+      const suppressCheckboxes =
+        document.getElementsByClassName("checkbox-suppress");
+
+      for (let i = 1; i <= suppressCheckboxes.length; i++) {
+        setStatus(is_suppressed, i);
+      }
+      setButtonStatus();
     })
     .catch((reason) => console.log(reason));
-  console.log(response);
 }
 
-class APIService {
-  constructor(apiURL, dqsClass) {
-    (this.dqsClass = dqsClass), (this.apiURL = apiURL);
-  }
-
-  getDQSReportStatus(revisionId) {
-    return this.httpClient
-      .get(`${this.apiURL}${this.dqsClass}/${revisionId}/dqs-status/`)
-      .then((response) => response.json());
-  }
-}
-
-export { APIService };
-
-export { suppressObservation };
+export { suppressObservation, suppressAllObservations, setButtonStatus };
