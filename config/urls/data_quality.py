@@ -11,7 +11,7 @@ urlpatterns = [
     path("csv/", view=views.ReportCSVDownloadView.as_view(), name="report-csv"),
     path(
         "suppress-observation/",
-        view=DQSviews.SuppressObservationView.as_view(),
+        view=DQSviews.SuppressObservationView.as_view({"post": "suppress_observation"}),
         name="suppress-observation",
     ),
     path(

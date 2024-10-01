@@ -28,7 +28,7 @@ import {
   suppressObservation,
   suppressAllObservations,
   setButtonStatus,
-} from "./supress-observation";
+} from "./suppress-observation";
 
 function initAll() {
   console.log(`Initialising BODSFrontend -   ${new Date().toISOString()}`);

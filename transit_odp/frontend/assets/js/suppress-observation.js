@@ -1,6 +1,5 @@
 import { HttpClient } from "./http-client";
 
-
 function setButtonStatus() {
   const suppressCheckboxes =
     document.getElementsByClassName("checkbox-suppress");
@@ -47,16 +46,12 @@ function extractOrgRevisionAndReportID() {
  * @returns the API URL of the suppress observation
  */
 function getAPIUrl() {
-  // Need to make an AJAX call
-  let hostName = window.location.host;
-  hostName = hostName.replace("publish", "data");
-  // http://publish.localhost:8000/org/1/dataset/timetable/98/report/30/pick-up-only/
-  const baseUrl = `${window.location.protocol}//${hostName}/`;
-  const apiURL = `${baseUrl}api/app/dqs_report/suppress_observation/`;
-  let apiU =
-    "http://publish.localhost:8000/org/1/dataset/timetable/98/report/30/suppress-observation";
-  return apiU;
-  return apiURL;
+  // Remove trailing slash if it exists
+  const url = window.location.href.replace(/\/$/, "");
+  // Split the URL by slashes, remove the last segment, and join it back
+  const segments = url.split("/");
+  segments.pop(); // Remove the last segment
+  return segments.join("/") + "/" + "suppress-observation/"; // Re-add the trailing slash
 }
 
 /**
@@ -116,6 +111,7 @@ function suppressObservation(
     .then((response) => response.json())
     .then((data) => {
       setStatus(is_suppressed, rowIndex);
+      setButtonStatus();
     })
     .catch((reason) => console.log(reason));
 }
