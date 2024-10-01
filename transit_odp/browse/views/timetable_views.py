@@ -604,7 +604,7 @@ class LineMetadataDetailView(DetailView):
                     "show_all": bound_details["show_all"],
                     "journey_name": journey,
                     "stops": direction_details["stops"],
-                    "observations": direction_details["observation"],
+                    "observations": direction_details.get("observations",{}),
                     "page_param": direction + "Page",
                     "show_all_param": "showAll" + direction.capitalize(),
                 }

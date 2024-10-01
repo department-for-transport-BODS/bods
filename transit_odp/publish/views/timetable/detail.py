@@ -34,7 +34,6 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
     model = Dataset
 
     def get_queryset(self):
-
         query = (
             super()
             .get_queryset()
@@ -280,11 +279,10 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
                     "show_all": bound_details["show_all"],
                     "journey_name": journey,
                     "stops": direction_details["stops"],
-                    "observations": direction_details["observations"],
+                    "observations": direction_details.get("observations", {}),
                     "page_param": direction + "Page",
                     "show_all_param": "showAll" + direction.capitalize(),
                 }
-            # kwargs["observations_contents"] = timetable_inbound_outbound["observations_contents"]
             kwargs["timetable"] = timetable
             kwargs["is_timetable_info_available"] = is_timetable_info_available
 
