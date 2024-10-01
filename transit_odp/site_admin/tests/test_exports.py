@@ -859,8 +859,8 @@ class TestServiceCodeExemptionsCSV:
         assert lines[4][0] == org1_name
         assert lines[5][0] == org1_name
 
-        assert lines[1][2] == "PS000002/19"
-        assert lines[2][2] == "PS000002/150"
+        assert lines[1][2] == "PS000002/150"
+        assert lines[2][2] == "PS000002/19"
         assert lines[3][2] == "PA000001/1"
         assert lines[4][2] == "PA000001/2"
         assert lines[5][2] == "PS000001/1"

@@ -5,32 +5,32 @@ BODS transxchange models.
 
 import logging
 from collections import OrderedDict
+from datetime import datetime
 from typing import Iterator, List
-from django.db.models.query import QuerySet
 
 import geopandas
 import pandas as pd
+from django.db.models.query import QuerySet
 from shapely.geometry import Point
-from datetime import datetime
 
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.transmodel.models import (
+    BankHolidays,
+    BookingArrangements,
     FlexibleServiceOperationPeriod,
     NonOperatingDatesExceptions,
     OperatingDatesExceptions,
+    OperatingProfile,
     Service,
+    ServicedOrganisations,
+    ServicedOrganisationVehicleJourney,
+    ServicedOrganisationWorkingDays,
     ServiceLink,
     ServicePattern,
-    ServicedOrganisationWorkingDays,
     StopActivity,
     StopPoint,
-    BookingArrangements,
     VehicleJourney,
-    ServicedOrganisations,
-    OperatingProfile,
-    ServicedOrganisationVehicleJourney,
-    BankHolidays,
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
