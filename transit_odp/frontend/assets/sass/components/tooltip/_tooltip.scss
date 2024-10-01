@@ -30,6 +30,11 @@
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
 }
 
+// override tooltiptext position for the observations
+.tooltip div.tooltiptext{
+    bottom: 130%;
+}
+
 /* Tooltip arrow */
 .tooltip .tooltiptext::before,
 .tooltip .tooltiptext::after {
