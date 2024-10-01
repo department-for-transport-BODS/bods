@@ -50,7 +50,7 @@ class Checks(Enum):
     FirstStopIsNotATimingPoint = "First stop is not a timing point"
     MissingJourneyCode = "Missing journey code"
     DuplicateJourneyCode = "Duplicate journey code"
-    NoTimingPointMoreThan15Mins = "No timing point more than 15 mins"
+    NoTimingPointMoreThan15Minutes = "No timing point for more than 15 minutes"
     MissingBusWorkingNumber = "Missing bus working number"
     MissingStop = "Missing stop"
     SameStopFoundMultipleTimes = "Same stop found multiple times"
@@ -280,7 +280,7 @@ IncorrectStopTypeObservation = Observation(
     title=Checks.IncorrectStopType.value,
     text=(
         "This observation identifies the use of stops that are not designated as bus stops within NaPTAN. "
-        "Expected stop types are BCT, BCQ or BCS."
+        "Expected stop types are BCT, BCQ, BCE, BST or BCS."
     ),
     impacts=(
         "An incorrect stop type suggests that the stop being used is not intended for buses. "
@@ -377,12 +377,15 @@ DuplicateJourneyCodeObservation = Observation(
         " to match the timetables data to the equivalent location data for that service to provide passengers with"
         " predicted or calculated arrival time of a bus at a stop."
     ),
-    resolve=(""),
-    preamble="The following service(s) have been observed to not have the duplicate journey code.",
+    resolve=(
+        "Please enter a unique journey code on your scheduling tool for vehicle journeys operated by the same"
+        " bus service and on the same day(s)."
+    ),
+    preamble="The following service(s) have been observed to have at least one journey that has a duplicate journey code.",
     list_url_name="dq:duplicate-journey-code-list",
     level=Level.critical,
     category=Category.journey,
-    is_active=False,
+    is_active=True,
 )
 
 MissingJourneyCodeObservation = Observation(
@@ -401,7 +404,7 @@ MissingJourneyCodeObservation = Observation(
     list_url_name="dq:missing-journey-code-list",
     level=Level.critical,
     category=Category.journey,
-    is_active=False,
+    is_active=True,
 )
 
 CancelledServiceAppearingActiveObservation = Observation(
@@ -428,7 +431,7 @@ CancelledServiceAppearingActiveObservation = Observation(
     list_url_name="dq:cancelled-service-appearing-active-list",
     level=Level.critical,
     category=Category.data_set,
-    is_active=False,
+    is_active=True,
 )
 
 IncorrectLicenceNumberObservation = Observation(
@@ -442,12 +445,18 @@ IncorrectLicenceNumberObservation = Observation(
         " and to match the data with bus location and fares data. This ability improves the quality"
         " of information available to passengers."
     ),
-    resolve=(""),
+    resolve=(
+        "Please check the licence number in your data is correct for your organisation and"
+        " is assigned to your Organisation profile."
+        + _LINE_BREAK
+        + "Operators can assign a licence number to their account by going to My account"
+        " (in the top right-hand side of the dashboard) and choosing Organisation profile."
+    ),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
     list_url_name="dq:incorrect-licence-number-list",
     level=Level.advisory,
     category=Category.data_set,
-    is_active=False,
+    is_active=True,
 )
 
 ServicedOrganisationOutOfDateObservation = Observation(
@@ -537,7 +546,7 @@ MissingBusWorkingNumberObservation = Observation(
     list_url_name="dq:missing-bus-working-number-list",
     level=Level.advisory,
     category=Category.journey,
-    is_active=False,
+    is_active=True,
 )
 
 DuplicateJourneysObservation = Observation(
@@ -559,7 +568,7 @@ DuplicateJourneysObservation = Observation(
 )
 
 NoTimingPointMoreThan15MinsObservation = Observation(
-    title=Checks.NoTimingPointMoreThan15Mins.value,
+    title=Checks.NoTimingPointMoreThan15Minutes.value,
     text=(
         "This observation identifies journeys where the interval between a pair of consecutive timing"
         " points is more than 15 minutes. "
@@ -576,13 +585,13 @@ NoTimingPointMoreThan15MinsObservation = Observation(
         " to the departure times on your scheduling tool if required."
     ),
     preamble=(
-        "The following service(s) have been observed to have at least one journey with a pair of timings"
-        " points of more than 15 minutes."
+        "The following service(s) have been observed to have at least one journey with a timing point more than"
+        " 15 minutes away from the previous timing point."
     ),
-    list_url_name="dq:no-timing-point-more-than-15-mins-list",
+    list_url_name="dq:no-timing-point-more-than-15-minutes-list",
     level=Level.advisory,
     category=Category.timing,
-    is_active=False,
+    is_active=True,
 )
 
 OBSERVATIONS = (

@@ -141,11 +141,8 @@
         {% endfilter %}
       </th>
       <td class="govuk-table__cell">
-        {% if object.is_pti_compliant %}
-          <p class="govuk-body govuk-!-font-weight-bold">Successfully passed validation</p>
-          <p class="govuk-body">Your data is BODS compliant.</p>
-        {% else %}
-          <p class="govuk-body govuk-!-font-weight-bold">3a Validation check – Failed</p>
+        {% if is_schema_violation or is_post_schema_violation or is_pti_violation %}
+          <p class="govuk-body govuk-!-font-weight-bold">3a Validation check – Passed with issues</p>
           <p class="govuk-body">
             <a class="govuk-link" href="{% url 'revision-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">
               Download validation report
@@ -153,15 +150,15 @@
           </p>
           <p class="govuk-body">
             {% blocktrans %}
-                                The timetables data supplied is non-compliant.
-                                It does not meet the data format required and from
-                            {% endblocktrans %}
-            {{ pti_enforced_date|date:"jS F Y" }}
-            {% blocktrans %}
-                                will be rejected from BODS. To pass the validation please address all outstanding
-                                issues in the validation report and update the data set.
+                                Some of the files in the data supplied is non-compliant.
+                                It does not meet the data format required. To pass the
+                                validation please address all outstanding issues in the
+                                validation report and update the data set.
                             {% endblocktrans %}
           </p>
+        {% else %}
+          <p class="govuk-body govuk-!-font-weight-bold">Successfully passed validation</p>
+          <p class="govuk-body">Your data is BODS compliant.</p>
         {% endif %}
       </td>
     </tr>

@@ -119,7 +119,7 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script>
+  <script nonce="{{request.csp_nonce}}">
     BODSFrontend.initMap("{{ api_root }}", {{ object.live_revision.id }}, "{{line_name}}", "{{service_code}}");
         {% if is_timetable_visualiser_active %}
             BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");

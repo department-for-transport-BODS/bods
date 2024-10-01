@@ -145,6 +145,7 @@ THIRD_PARTY_APPS = [
     "django_celery_results",
     "waffle",
     "django_axe.apps.DjangoAxeConfig",
+    "csp",
 ]
 LOCAL_APPS = [
     "transit_odp.api.apps.ApiConfig",
@@ -231,11 +232,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
+    "csp.middleware.CSPMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django_hosts.middleware.HostsRequestMiddleware",
     "transit_odp.common.middleware.DefaultHostMiddleware",
+    "transit_odp.common.middleware.SecurityHeadersMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -517,7 +520,7 @@ BANK_HOLIDAY_API_URL = env(
 # Google Analytics Key
 GOOGLE_ANALYTICS_KEY = env("GOOGLE_ANALYTICS_KEY", default="")
 
-# Central AVL Service
+# Central AVL Service (OLD - Ito)
 # ------------------------------------------------------------------------------
 CAVL_URL = env("CAVL_URL")
 CAVL_CONSUMER_URL = env("CAVL_CONSUMER_URL")
@@ -620,6 +623,12 @@ DISRUPTIONS_API_KEY = env("DISRUPTIONS_API_KEY", default="")
 # ------------------------------------------------------------------------------
 GTFS_API_BASE_URL = env("GTFS_API_BASE_URL", default="")
 
+# AVL API
+# ------------------------------------------------------------------------------
+AVL_CONSUMER_API_BASE_URL = env("AVL_CONSUMER_API_BASE_URL", default="")
+AVL_PRODUCER_API_BASE_URL = env("AVL_PRODUCER_API_BASE_URL", default="")
+AVL_PRODUCER_API_KEY = env("AVL_PRODUCER_API_KEY", default="")
+AVL_IP_ADDRESS_LIST = env("AVL_IP_ADDRESS_LIST", default="")
 
 # S3 bucket name for Dataset maintenance
 # ------------------------------------------------------------------------------
@@ -729,3 +738,28 @@ ACCOUNT_LOGIN_ATTEMPTS_LIMIT = env("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", default=5)
 ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = env("ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT", default=900)
 SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=False)
 SESSION_COOKIE_HTTPONLY = env.bool("SESSION_COOKIE_HTTPONLY", default=True)
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = (
+    "'self'",
+    "'unsafe-inline'",
+    "https://www.googletagmanager.com",
+    "https://ajax.googleapis.com/ajax/libs/jquery",
+)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
+CSP_IMG_SRC = (
+    "'self'",
+    "data:",
+    "blob:",
+)
+CSP_CONNECT_SRC = (
+    "'self'",
+    "https://*.mapbox.com",
+    "http://*.localhost:8000",
+    "https://*.bus-data.dft.gov.uk",
+)
+CSP_FONT_SRC = ("'self'",)
+CSP_OBJECT_SRC = ("'none'",)
+CSP_FRAME_ANCESTORS = ("'self'",)
+CSP_WORKER_SRC = ("'self'", "blob:")
+SECURE_CONTENT_TYPE_NOSNIFF = True

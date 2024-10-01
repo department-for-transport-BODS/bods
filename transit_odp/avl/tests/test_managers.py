@@ -17,9 +17,8 @@ from transit_odp.avl.constants import (
     UPPER_THRESHOLD,
     VALIDATION_TERMINATED,
 )
-from transit_odp.avl.enums import AVL_FEED_DOWN, AVL_FEED_UP
+from transit_odp.avl.enums import AVLFeedStatus
 from transit_odp.avl.factories import (
-    AVLSchemaValidationReportFactory,
     AVLValidationReportFactory,
 )
 from transit_odp.avl.models import AVLValidationReport
@@ -430,30 +429,6 @@ def test_non_critical_weighted_average():
     assert pytest.approx(dataset.avg_non_critical_score, 0.0001) == expected
 
 
-def test_has_schema_violations_no_violations():
-    """
-    GIVEN An AVLDatasetRevision with no AVLSchemaValidationReports
-    WHEN add_has_schema_violation_reports is called on an AVLDataset
-    THEN has_schema_violations is set to False
-    """
-    AVLDatasetRevisionFactory()
-    datasets = AVLDataset.objects.add_has_schema_violation_reports()
-    dataset = datasets.last()
-    assert not dataset.has_schema_violations
-
-
-def test_has_schema_violations_with_violations():
-    """
-    GIVEN An AVLDatasetRevision with 1 AVLSchemaValidationReport
-    WHEN add_has_schema_violation_reports is called on an AVLDataset
-    THEN has_schema_violations is set to True
-    """
-    AVLSchemaValidationReportFactory()
-    datasets = AVLDataset.objects.add_has_schema_violation_reports()
-    dataset = datasets.last()
-    assert dataset.has_schema_violations
-
-
 def test_add_first_error_date_no_errors():
     """
     GIVEN An AVL dataset with perfect AVLValidationReport
@@ -627,7 +602,7 @@ def test_get_datafeeds_to_validate():
     THEN only the LIVE, published feeds are returned.
     WHEN get_datafeeds_to_validate is called.
     """
-    avl_statuses = Iterator([AVL_FEED_UP, AVL_FEED_DOWN])
+    avl_statuses = Iterator([AVLFeedStatus.live.value, AVLFeedStatus.inactive.value])
     live_feeds = 10
     AVLDatasetRevisionFactory.create_batch(
         live_feeds, status=LIVE, dataset__avl_feed_status=avl_statuses

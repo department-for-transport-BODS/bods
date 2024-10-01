@@ -41,7 +41,7 @@
     </tbody>
   </table>
 </div>
-<script>
+<script nonce="{{request.csp_nonce}}">
     window.addEventListener("load", function () {
         let licenceRequiredCheckboxSelector = '[id^="id_licence_required"]';
         let licenceInputDisableFieldsSelector = '[id^="id_licences"][id$="number"],[id="id_licences-ADD"],div.govuk-form-group td[id^="id_licences"] > button';

@@ -12,18 +12,22 @@ test_data_sets = [
     ("L1:L2", "L1|L2"),
     ("192 Rural Rider", "193 Rural Rider"),
     ("WYN", "Wyn"),
+    ("Ring & Ride (Coventry)", ""),
+    ("298-1", ""),
 ]
 
 expected_results = [
-    "39|8|8A|9",
+    "8|39|8A|9",
     "Excel A|Excel B|Excel C",
-    "418|418R|418W",
-    "08|81|88|891",
-    "40|40B|40a|Louth Nipper",
-    "33|33B|63",
+    "418 (418W)|418 (418R)",
+    "88|08|81|891",
+    "Louth Nipper|40|40a|40B",
+    "33|63|33B",
     "L1|L2",
-    "192|193|Rider|Rural",
+    "192 Rural Rider|193 Rural Rider",
     "WYN",
+    "Ring & Ride (Coventry)",
+    "298-1",
 ]
 
 

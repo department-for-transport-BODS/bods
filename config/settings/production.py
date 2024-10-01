@@ -61,7 +61,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
 SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=False)
 # https://docs.djangoproject.com/en/dev/ref/middleware/#x-content-type-options-nosniff
 SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
-    "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=False
+    "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=True
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-browser-xss-filter
 SECURE_BROWSER_XSS_FILTER = False
@@ -98,6 +98,9 @@ AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
 
 # Bucket for local authority CSV file
 AWS_BODDS_XSD_SCHEMA_BUCKET_NAME = env("AWS_BODDS_XSD_SCHEMA_BUCKET_NAME")
+LOCAL_AUTHORITY_COMPARISON_FILE_NAME = env(
+    "LOCAL_AUTHORITY_COMPARISON_FILE_NAME", default="local_authority_comparison.csv"
+)
 
 # STATIC
 # ------------------------

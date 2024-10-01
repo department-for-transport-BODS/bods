@@ -44,6 +44,9 @@ from transit_odp.organisation.querysets import (
 from transit_odp.pipelines.signals import dataset_etl
 from transit_odp.timetables.dataclasses.transxchange import TXCFile
 from transit_odp.users.models import User
+from transit_odp.validate.utils import filter_and_repackage_zip
+from django.core.validators import RegexValidator
+
 
 logger = logging.getLogger(__name__)
 
@@ -349,20 +352,20 @@ class DatasetRevision(
 
         return self.pti_observations.count() == 0
 
+    def modify_upload_file(self, files_to_remove):
+        if self.upload_file.name.endswith(".zip"):
+            intial_zip_file = self.upload_file
+            new_zip_stream = filter_and_repackage_zip(intial_zip_file, files_to_remove)
+            new_zip_content = ContentFile(
+                new_zip_stream.read(), name=self.upload_file.name
+            )
+            self.upload_file = new_zip_content
+            self.save()
+
     def publish(self, user=None):
         """Publish the revision"""
         if not self.is_published:
             now = timezone.now()
-            # TODO - should likely fold the logic in 'update_live_revision' receiver
-            # into this method, i.e. update live_revision on the dataset to point to
-            # this newly published revision in an atomic transaction.
-            #  However, then tests wouldn't be as easy to initialise / be data-driven
-            # TODO - remove 'live' status
-            if self.status == FeedStatus.success.value:
-                self.status = FeedStatus.live.value
-            self.is_published = True
-            self.published_at = now
-            self.published_by = user
 
             # register AVL dataset with CAVL
             if self.dataset.dataset_type == DatasetType.AVL:
@@ -379,6 +382,8 @@ class DatasetRevision(
                         url=self.url_link,
                         username=self.username,
                         password=self.password,
+                        description=self.description,
+                        short_description=self.short_description,
                     )
                 else:
                     cavl_service.update_feed(
@@ -386,7 +391,19 @@ class DatasetRevision(
                         url=self.url_link,
                         username=self.username,
                         password=self.password,
+                        description=self.description,
+                        short_description=self.short_description,
                     )
+            # TODO - should likely fold the logic in 'update_live_revision' receiver
+            # into this method, i.e. update live_revision on the dataset to point to
+            # this newly published revision in an atomic transaction.
+            #  However, then tests wouldn't be as easy to initialise / be data-driven
+            # TODO - remove 'live' status
+            if self.status == FeedStatus.success.value:
+                self.status = FeedStatus.live.value
+            self.is_published = True
+            self.published_at = now
+            self.published_by = user
 
             self.save()
             signals.revision_publish.send(self, dataset=self.dataset)
@@ -660,10 +677,12 @@ class ServiceCodeExemption(TimeStampedModel):
         help_text="Organisation licence",
         related_name="service_code_exemptions",
     )
-    registration_code = models.IntegerField(
+    registration_code = models.CharField(
         blank=False,
         null=False,
         help_text="The part of the service code after the licence prefix",
+        max_length=50,
+        validators=[RegexValidator(r"^\d+$", "Only numeric values are allowed.")],
     )
     justification = models.CharField(
         blank=True,

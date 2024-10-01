@@ -122,11 +122,6 @@ urlpatterns = [
                     view=views.ValidationFileDownloadView.as_view(),
                     name="validation-report-download",
                 ),
-                path(
-                    "schema-report/",
-                    view=views.SchemaValidationFileDownloadView.as_view(),
-                    name="schema-report-download",
-                ),
             ]
         ),
     ),
