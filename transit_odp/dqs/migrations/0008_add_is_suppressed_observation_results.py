@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("dqs", "0005_create_dqs_checks"),
+        ("dqs", "0007_alter_report_options"),
     ]
 
     operations = [
