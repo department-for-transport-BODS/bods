@@ -335,35 +335,3 @@ def load_flexible_zones(all_flexible_stops):
     except Exception as e:
         logger.error(f"[load_flexible_zones]: Error occurred - {e}")
     logger.info("[load_flexible_zones]: Finished")
-
-
-def delete_existing_stops(stops):
-    logger.info(f"[delete_existing_stops]: Deleting {len(stops)} existing naptan stops")
-    chunk_size = 5000
-    total_rows = len(stops)
-    for start in range(0, total_rows, chunk_size):
-        end = min(start + chunk_size, total_rows)
-        chunk = stops.iloc[start:end]
-        atcos_to_delete = list(chunk.index)
-        if atcos_to_delete:
-            try:
-                # first delete flexible zones for naptan_stoppoint id's then delete the stoppoint
-                naptan_ids = set(
-                    StopPoint.objects.filter(atco_code__in=atcos_to_delete).values_list(
-                        "id", flat=True
-                    )
-                )
-                FlexibleZone.objects.filter(naptan_stoppoint__in=naptan_ids).delete()
-                StopPoint.objects.filter(id__in=naptan_ids).delete()
-                logger.info(
-                    f"[delete_existing_stops]: Deleted {len(atcos_to_delete)} naptan stops in rows {start} to {end}"
-                )
-            except Exception as e:
-                logger.error(
-                    f"[delete_existing_stops]: Error deleting rows {start} to {end} - {e}"
-                )
-        else:
-            logger.info(
-                f"[delete_existing_stops]: No records to delete in rows {start} to {end}"
-            )
-    logger.info("[delete_existing_stops]: Finished deleting existing stops")

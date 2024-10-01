@@ -11,7 +11,6 @@ from transit_odp.pipelines.pipelines.naptan_etl.extract import (
     get_latest_nptg,
 )
 from transit_odp.pipelines.pipelines.naptan_etl.load import (
-    delete_existing_stops,
     load_existing_admin_areas,
     load_existing_localities,
     load_existing_stops,
@@ -56,11 +55,6 @@ def run():
     extract_districts_from_db()
     localities_from_db = extract_localities_from_db()
 
-    # get stops that are not found in NAPTAN.xml but present in database
-    stops_to_delete = stops_from_db.loc[
-        stops_from_db.index.difference(stops_naptan.index)
-    ]
-
     # Transform
     new_stops = get_new_data(stops_naptan, stops_from_db)
     existing_stops = get_existing_data(stops_naptan, stops_from_db, "atco_code")
@@ -89,7 +83,6 @@ def run():
     logger.info(f"[naptan_etl: run]: New stops {len(new_stops)} found")
     load_new_stops(new_stops)
     load_existing_stops(existing_stops_to_update)
-    delete_existing_stops(stops_to_delete)
 
     stops_from_db = extract_stops_from_db()
     new_flexible_stop_points = new_stops[~new_stops["flexible_zones"].isna()]
