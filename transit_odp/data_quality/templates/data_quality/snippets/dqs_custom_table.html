@@ -2,10 +2,9 @@
 {% load i18n %}
 {% load parse_dictionary %}
 {% block table-wrapper %}
-  <div>   
-    
+  <div>    
     {% block table %}
-      <table class="custom_govuk_table {{ table.attrs }}" {% render_attrs table.attrs %}>
+      <table class="custom_govuk_table" {% render_attrs table.attrs %}>
         {% if table.caption %}
           <caption class="govuk-table__caption {{ table.attrs.caption.class |default_if_none:"" }}">{{ table.caption }}</caption>
         {% endif %}
@@ -112,7 +111,6 @@
   
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      console.log("Document is ready!");
       BODSFrontend.setButtonStatus();
     });       
   </script>

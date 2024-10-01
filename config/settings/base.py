@@ -88,13 +88,11 @@ ALLOWED_HOSTS += [
     f"{DATA_SUBDOMAIN}.{PARENT_HOST}",
     f"{PUBLISH_SUBDOMAIN}.{PARENT_HOST}",
     f"{ADMIN_SUBDOMAIN}.{PARENT_HOST}",
-    "http://publish.localhost:8000",
 ]
 
 # https://github.com/ottoyiu/django-cors-headers#cors_origin_whitelist
 CORS_ORIGIN_REGEX_WHITELIST = (
     rf"^(https?://)?([\w-]+\.)?{PARENT_HOST}(:{HOST_PORT})?$",
-    "http://publish.localhost:8000",
 )
 # CORS_URLS_REGEX = rf'^(https?://)?{ROOT_SUBDOMAIN}.{PARENT_HOST}(:{HOST_PORT})?/api/.*$'
 CORS_URLS_REGEX = rf"^(https?://)?.*/api/.*$"
@@ -461,8 +459,12 @@ INVITATIONS_ACCEPT_INVITE_AFTER_SIGNUP = True
 # API
 # ------------------------------------------------------------------------------
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": (),
-    "DEFAULT_AUTHENTICATION_CLASSES": (),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "transit_odp.api.authentication.TokenAuthSupportQueryString",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+    ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 25,
     "MAX_PAGE_SIZE": 100,

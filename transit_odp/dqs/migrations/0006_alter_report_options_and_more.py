@@ -10,10 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterModelOptions(
-            name="report",
-            options={"get_latest_by": "created"},
-        ),
         migrations.AddField(
             model_name="observationresults",
             name="is_suppressed",

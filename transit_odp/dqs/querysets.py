@@ -217,26 +217,3 @@ class ObservationResultsQueryset(models.QuerySet):
         )
 
         return qs
-
-    def get_observations_by_service_code_line_name(
-        self, service_code: str, line_name: str
-    ):
-        """
-        Filter for observation results for the report and revision of the specific Checks
-        """
-
-        columns = [
-            "observation",
-            "service_code",
-            "line_name",
-            "message",
-            "dqs_details",
-            "revision_id",
-            "is_published",
-            "is_details_link",
-        ]
-
-        return self.filter(
-            taskresults__dataquality_report_id=service_code,
-            taskresults__checks__observation=line_name,
-        )

@@ -8,7 +8,6 @@ class TokenAuthSupportQueryString(TokenAuthentication):
     """
 
     def authenticate(self, request):
-        print(f"request.query_params: {request.query_params}")
         # Check if API_KEY_PARAM is in the request query params.
         # Give precedence to 'Authorization' header.
         API_KEY_PARAM = "api_key"

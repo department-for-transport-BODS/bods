@@ -77,7 +77,6 @@ class DQSWarningListBaseView(SingleTableView):
                 "preamble": self.data.preamble,
                 "resolve": self.data.resolve,
                 "impacts": self.data.impacts,
-                "new_key": "myval",
             }
         )
         return context

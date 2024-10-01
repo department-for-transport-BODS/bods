@@ -283,7 +283,6 @@ def get_df_timetable_visualiser(
         lambda row: f"{row['common_name']}_{row['stop_sequence']}_{row['vehicle_journey_code']}_{row['vehicle_journey_id']}",
         axis=1,
     )
-
     vehicle_journey_codes_sorted = get_vehicle_journey_codes_sorted(
         df_vehicle_journey_operating
     )
@@ -316,8 +315,6 @@ def get_df_timetable_visualiser(
             "indicator": row["indicator"],
             "common_name": row["common_name"],
             "stop_seq": row["stop_sequence"],
-            "vj1": "",
-            "vj2": "",
         }
         record["Journey Code"] = bus_stops[idx]
         for (

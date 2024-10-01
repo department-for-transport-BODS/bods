@@ -12,7 +12,6 @@ router = DefaultRouter()
 #  * /dataset/:id/draft/...
 router.register(r"revision", views.DatasetRevisionViewSet, "revision")
 router.register(r"dqs_revision", views.DQSDatasetRevisionViewSet, "dqs_revision")
-router.register(r"dqs_report", views.DQSSuppressObservationViewSet, "dqs_report")
 
 # APIs for rendering map data
 router.register(r"stop_point", views.StopViewSet, "stop")

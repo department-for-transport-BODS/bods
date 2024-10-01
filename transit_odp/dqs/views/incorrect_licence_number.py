@@ -1,5 +1,12 @@
 from transit_odp.dqs.constants import Checks, IncorrectLicenceNumberObservation
-from transit_odp.dqs.views.base import DQSWarningListBaseView
+from transit_odp.dqs.tables.duplicate_journey_code import DuplicateJourneyCodeTable
+from transit_odp.dqs.views.base import DQSWarningListBaseView, DQSWarningDetailBaseView
+
+from transit_odp.dqs.models import ObservationResults
+from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.views.base import DQSWarningDetailBaseView
+from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
+from transit_odp.dqs.models import Report
 
 
 class IncorrectLicenceNumberListView(DQSWarningListBaseView):
