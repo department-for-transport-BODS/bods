@@ -83,7 +83,7 @@ class ReviewView(ReviewBaseView):
         if error_message is None:
             error_message = ERROR_CODE_MAP.get(task.error_code, None)
 
-        return error_message
+        return error_message, task.error_code
 
     def get_upload_file(self, revision_id):
         revision = DatasetRevision.objects.get(id=revision_id)
@@ -121,7 +121,7 @@ class ReviewView(ReviewBaseView):
         context["current_step"] = "upload" if is_loading else "review"
 
         # Get the error info
-        context["error"] = self.get_error()
+        context["error"], context["error_code"] = self.get_error()
 
         # Get the fares-validator error info
         validator_error = None

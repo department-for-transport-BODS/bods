@@ -30,7 +30,7 @@
       {% if loading %}
         {# Loading Progress #}
         {% include "fares/review/loading.html" %}
-      {% elif object.error_code == "SCHEMA_ERROR" %}
+      {% elif error_code == "SCHEMA_ERROR" %}
         {% include "fares/review/warning_panel.html" %}
       {% elif error %}
         {% include "fares/review/error_panel.html" %}
