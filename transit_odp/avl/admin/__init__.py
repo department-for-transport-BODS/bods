@@ -11,7 +11,6 @@ from transit_odp.avl.admin.forms import (
     PostPublishingCheckReportAdminForm,
 )
 from transit_odp.avl.models import (
-    AVLSchemaValidationReport,
     AVLValidationReport,
     PostPublishingCheckReport,
 )
@@ -104,82 +103,6 @@ class AVLValidationReportAdmin(admin.ModelAdmin):
     dataset_id.admin_order_field = "revision__dataset__id"
     organisation_name.admin_order_field = "revision__dataset__organisation__name"
     download_report.short_description = "Download AVL validation report file"
-
-
-@admin.register(AVLSchemaValidationReport)
-class AVLSchemaValidationReportAdmin(admin.ModelAdmin):
-    formfield_overrides = {models.FileField: {"widget": CustomAdminFileWidget}}
-    list_display = (
-        "dataset_id",
-        "organisation_name",
-        "download_report",
-        "error_count",
-        "created",
-    )
-    search_fields = ("revision__dataset__id", "revision__dataset__organisation__name")
-    fields = (
-        "dataset_id",
-        "organisation_name",
-        "download_report",
-        "file",
-        "revision",
-        "error_count",
-        "created",
-    )
-    readonly_fields = (
-        "id",
-        "dataset_id",
-        "organisation_name",
-        "download_report",
-    )
-
-    def get_urls(self):
-        urls = super().get_urls()
-        urls += [
-            re_path(
-                r"^download-avl-schema-report/(?P<pk>\d+)$",
-                self.download_schema_report,
-                name="avl-schema-report",
-            ),
-        ]
-        return urls
-
-    def get_queryset(self, request):
-        return (
-            super()
-            .get_queryset(request=request)
-            .select_related("revision", "revision__dataset__organisation")
-        )
-
-    def dataset_id(self, instance):
-        return instance.revision.dataset_id
-
-    def organisation_name(self, instance):
-        return instance.revision.dataset.organisation.name
-
-    def download_report(self, instance):
-        if instance.pk is None:
-            return "Not available"
-        if not instance.file:
-            return "Empty"
-
-        return format_html(
-            '<a href="{}">{}</a>',
-            reverse("admin:avl-schema-report", args=[instance.pk]),
-            instance.file.name,
-        )
-
-    def download_schema_report(self, request, pk):
-        if request.user.is_anonymous or not request.user.is_superuser:
-            return HttpResponseForbidden("not admin user", content_type="text/html")
-        report = get_object_or_404(AVLSchemaValidationReport, pk=pk)
-        response = FileResponse(report.file.open("rb"), as_attachment=True)
-        response["Content-Disposition"] = f"attachment; filename={report.file.name}"
-        return response
-
-    dataset_id.admin_order_field = "revision__dataset__id"
-    organisation_name.admin_order_field = "revision__dataset__organisation__name"
-    download_report.short_description = "Download AVL schema validation report file"
 
 
 @admin.register(AVLDataset)

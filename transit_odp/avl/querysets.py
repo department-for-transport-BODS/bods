@@ -45,18 +45,6 @@ class AVLDatasetQuerySet(DatasetQuerySet):
         )
         return feeds
 
-    def add_has_schema_violation_reports(self):
-        """
-        Annotates a boolean `has_schema_violations` onto the AVLDataset if
-        the live_revision has schema violations.
-        """
-        from transit_odp.avl.models import AVLSchemaValidationReport
-
-        reports = AVLSchemaValidationReport.objects.filter(
-            revision=OuterRef("live_revision_id")
-        )
-        return self.annotate(has_schema_violations=Exists(reports))
-
     def get_reports_weighted_avg(self, score_type: str = "critical_score"):
         """
         Returns a Subquery of the AVLValidationReport weighted average score for

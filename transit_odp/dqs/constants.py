@@ -280,7 +280,7 @@ IncorrectStopTypeObservation = Observation(
     title=Checks.IncorrectStopType.value,
     text=(
         "This observation identifies the use of stops that are not designated as bus stops within NaPTAN. "
-        "Expected stop types are BCT, BCQ or BCS."
+        "Expected stop types are BCT, BCQ, BCE, BST or BCS."
     ),
     impacts=(
         "An incorrect stop type suggests that the stop being used is not intended for buses. "
