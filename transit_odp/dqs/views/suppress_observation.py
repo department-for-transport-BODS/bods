@@ -6,6 +6,9 @@ from rest_framework import viewsets, status as ResponseStatus
 
 
 class SuppressObservationView(viewsets.ViewSet):
+    """
+    Suppress Observation view to update the observation result
+    """
 
     queryset = ObservationResults.objects.all()
 

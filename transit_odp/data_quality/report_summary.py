@@ -221,7 +221,6 @@ class Summary(BaseModel):
                 warning_data[level.value]["count"] = len(
                     df[df["importance"] == level.value]
                 )
-            df.to_csv("dataframe.csv")
 
             df = (
                 df.groupby(["observation", "category", "importance"])
