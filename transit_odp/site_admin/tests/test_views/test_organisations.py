@@ -841,7 +841,7 @@ class TestOrganisationServiceCodeExemptionView:
         assert response.status_code == 302
         assert exemption.justification == "because"
         assert exemption.exempted_by == admin
-        assert exemption.registration_code == 88
+        assert exemption.registration_code == "88"
 
     def test_add_many_exemption_to_existing(self, client_factory):
         org = OrganisationFactory(
@@ -936,7 +936,7 @@ class TestOrganisationServiceCodeExemptionView:
         assert response.status_code == 302
         assert exemption.justification == "changed"
         assert exemption.exempted_by == admin
-        assert exemption.registration_code == 88
+        assert exemption.registration_code == "88"
 
     def test_delete_one_from_many(self, client_factory):
         org = OrganisationFactory(

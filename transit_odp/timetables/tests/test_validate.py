@@ -32,6 +32,15 @@ XML_FILE = DATA_DIR.joinpath("ea_20-1A-A-y08-1.xml")
 ZIP_FILE = DATA_DIR.joinpath("EA_TXC_5_files.zip")
 
 
+class TransXChangeDocumentFactory:
+    def __init__(self, filename, name):
+        self.filename = filename
+        self.name = name
+
+    def get_file_name(self):
+        return self.filename
+
+
 class TestFileValidation:
     def test_malformed_xml(self):
         """Tests a malformed xml file fails the pipeline"""
@@ -356,24 +365,41 @@ def test_revision_number_service_and_line_violation(
     [
         (
             [
-                "552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml",
-                "test.xml",
+                TransXChangeDocumentFactory(
+                    "552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml",
+                    "552-FEAO552--FESX-Basildon-2023-07-23-B58_X10_Normal_V3_Exports-BODS_V1_1.xml",
+                ),
+                TransXChangeDocumentFactory("test.xml", "test.xml"),
             ],
             0,
         ),
         (
             [
-                r"C:\Users\test1\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml",
-                "test.xml",
-                r"\\PC-SVR\Redirected Folders\test.test\Desktop\PROCTERS COACHES 2022-01-17 13-37\PROCTERS COACHES 73 2022-01-17 13-37.xml",
+                TransXChangeDocumentFactory(
+                    r"C:\Users\test1\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml",
+                    r"C:\Users\test1\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml",
+                ),
+                TransXChangeDocumentFactory(
+                    r"\\PC-SVR\Redirected Folders\test.test\Desktop\PROCTERS COACHES 2022-01-17 13-37\PROCTERS COACHES 73 2022-01-17 13-37.xml",
+                    r"\\PC-SVR\Redirected Folders\test.test\Desktop\PROCTERS COACHES 2022-01-17 13-37\PROCTERS COACHES 73 2022-01-17 13-37.xml",
+                ),
             ],
             1,
         ),
         (
             [
-                r"C:\Users\test1\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml",
-                r"\\PC-SVR\Redirected Folders\test.test\Desktop\PROCTERS COACHES 2022-01-17 13-37\PROCTERS COACHES 73 2022-01-17 13-37.xml",
-                r"\\TANAT-000\Network-Data\Drives\Home\test.test\Desktop\transxchange new\done\completed\Tanat Valley Coaches 2021-06-23 13-02\Tanat Valley Coaches 74 2021-06-23 13-02.xml",
+                TransXChangeDocumentFactory(
+                    r"C:\Users\test1\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml",
+                    r"C:\Users\test1\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml",
+                ),
+                TransXChangeDocumentFactory(
+                    r"\\PC-SVR\Redirected Folders\test.test\Desktop\PROCTERS COACHES 2022-01-17 13-37\PROCTERS COACHES 73 2022-01-17 13-37.xml",
+                    r"\\PC-SVR\Redirected Folders\test.test\Desktop\PROCTERS COACHES 2022-01-17 13-37\PROCTERS COACHES 73 2022-01-17 13-37.xml",
+                ),
+                TransXChangeDocumentFactory(
+                    r"\\TANAT-000\Network-Data\Drives\Home\test.test\Desktop\transxchange new\done\completed\Tanat Valley Coaches 2021-06-23 13-02\Tanat Valley Coaches 74 2021-06-23 13-02.xml",
+                    r"\\TANAT-000\Network-Data\Drives\Home\test.test\Desktop\transxchange new\done\completed\Tanat Valley Coaches 2021-06-23 13-02\Tanat Valley Coaches 74 2021-06-23 13-02.xml",
+                ),
             ],
             1,
         ),
