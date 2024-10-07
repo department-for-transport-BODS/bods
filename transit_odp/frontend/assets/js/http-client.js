@@ -13,6 +13,9 @@ class HttpClient {
       body: body,
       mode: "cors",
       credentials: "omit",
+      headers: {
+        "Content-Type": "application/json",
+      },
     }).then(this.checkStatus);
   }
 

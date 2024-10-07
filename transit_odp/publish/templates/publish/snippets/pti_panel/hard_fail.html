@@ -1,7 +1,7 @@
 {% extends "publish/snippets/pti_panel/base.html" %}
 {% load i18n %}
 {% block pti_panel_content %}
-  <h2 class="govuk-heading-m">3a Validation check - Failed</h2>
+  <h2 class="govuk-heading-m">Validation check - Failed</h2>
   <p class="govuk-body">
     {% blocktrans %}
       The validation report checks for compliance against the mandated
@@ -13,14 +13,15 @@
   </p>
   <p class="govuk-body">
     {% blocktrans %}
-      The timetables data supplied is non-compliant and cannot be submitted to BODS as
-      per the
+      The timetables data supplied is non-compliant and cannot be
+      submitted to BODS as per the
     {% endblocktrans %}
     <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality" class="govuk-link">
-      {% trans "guidance." %}
+      {% trans "guidance" %}
     </a>
     {% blocktrans %}
-      To pass the validation please address all outstanding issues in the validation report.
+      To pass the validation please address all
+      outstanding issues in the validation report.
     {% endblocktrans %}
   </p>
 {% endblock %}

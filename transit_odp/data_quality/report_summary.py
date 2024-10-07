@@ -28,7 +28,9 @@ CRITICAL_INTRO = (
 ADVISORY_INTRO = (
     "These observations suggest there may be an error in the data. "
     "However, for some types of services these may be intended by the operator. "
-    "Advisory observations should be investigated and addressed."
+    "Advisory observations should be investigated and addressed. "
+    "If the observation is a result of intended behaviour, an operator can"
+    " suppress the observation."
 )
 
 URL_MAPPING = {
@@ -109,6 +111,7 @@ class Summary(BaseModel):
             "journey_start_time",
             "direction",
             "stop_name",
+            "is_suppressed",
         ]
         data = (
             ObservationResults.objects.filter(
@@ -208,6 +211,7 @@ class Summary(BaseModel):
                     "journey_start_time",
                     "direction",
                     "stop_name",
+                    "is_suppressed",
                 ]
             ]
             df.drop_duplicates(inplace=True)
@@ -221,14 +225,13 @@ class Summary(BaseModel):
             df = (
                 df.groupby(["observation", "category", "importance"])
                 .agg(
-                    {
-                        "journey_start_time": "size",
-                    }
-                )
-                .rename(
-                    columns={
-                        "journey_start_time": "number_of_services_affected",
-                    }
+                    number_of_services_affected=("journey_start_time", "size"),
+                    number_of_suppressed_observation=(
+                        "is_suppressed",
+                        lambda is_suppressed_series: (
+                            is_suppressed_series == True
+                        ).sum(),
+                    ),
                 )
                 .reset_index()
             )
