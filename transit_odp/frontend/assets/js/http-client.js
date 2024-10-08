@@ -8,13 +8,18 @@ class HttpClient {
   }
 
   post(url, body) {
+    const csrftoken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("csrftoken="))
+      .split("=")[1];
     return fetch(url, {
       method: "POST",
       body: body,
       mode: "cors",
-      credentials: "omit",
+      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
+        "X-CSRFToken": csrftoken,
       },
     }).then(this.checkStatus);
   }
