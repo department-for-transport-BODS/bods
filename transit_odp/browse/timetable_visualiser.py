@@ -21,7 +21,7 @@ from transit_odp.timetables.utils import (
     get_initial_vehicle_journeys_df,
     get_updated_columns,
     fill_missing_journey_codes,
-    observation_contents_mapper
+    observation_contents_mapper,
 )
 from transit_odp.dqs.models import ObservationResults
 import pandas as pd
@@ -34,7 +34,6 @@ logger.setLevel(logging.DEBUG)
 
 
 class TimetableVisualiser:
-
     """
     Timetable visualiser for the capturing of the time and the stops with journey codes
     for the specific revision id, service code, line running on the target date on the
@@ -91,7 +90,7 @@ class TimetableVisualiser:
             "start_time",
             "street",
             "indicator",
-            "service_pattern_stop_id"
+            "service_pattern_stop_id",
         ]
 
         qs_vehicle_journeys = (
@@ -260,14 +259,18 @@ class TimetableVisualiser:
         REQUIRED_OBSERVATIONS = Checks.FirstStopIsSetDown.value
         REQUIRED_IMPORTANCE = Importance.critical.value
 
-
-        columns = ["importance","observation" ,"service_pattern_stop_id", "vehicle_journey_id"]
+        columns = [
+            "importance",
+            "observation",
+            "service_pattern_stop_id",
+            "vehicle_journey_id",
+        ]
         qs_observation_results = (
             ObservationResults.objects.filter(
                 service_pattern_stop_id__in=service_pattern_ids,
                 taskresults__dataquality_report__revision_id=self._revision_id,
                 taskresults__checks__importance=REQUIRED_IMPORTANCE,
-                taskresults__checks__observation = REQUIRED_OBSERVATIONS
+                taskresults__checks__observation=REQUIRED_OBSERVATIONS,
             )
             .annotate(
                 importance=F("taskresults__checks__importance"),
@@ -279,24 +282,27 @@ class TimetableVisualiser:
         df = pd.DataFrame.from_records(qs_observation_results)
         if df.empty:
             return {}
-        requested_observations = df["observation"].unique().tolist() 
+        requested_observations = df["observation"].unique().tolist()
 
-
-        #TODO: Use Get request on the toopltip to get the observation contents.    
+        # TODO: Use Get request on the toopltip to get the observation contents.
         # Get the observation contents
         observation_contents = observation_contents_mapper(requested_observations)
-
 
         observation_results = defaultdict(lambda: defaultdict(list))
         for _, row in df.iterrows():
             service_pattern_stop_id = row["service_pattern_stop_id"]
             vehicle_journey_id = row["vehicle_journey_id"]
             details = row["observation"]
-    
-            if observation_contents[details] not in observation_results[service_pattern_stop_id][vehicle_journey_id]:
-                observation_results[service_pattern_stop_id][vehicle_journey_id].append(observation_contents[details])
 
-        return observation_results 
+            if (
+                observation_contents[details]
+                not in observation_results[service_pattern_stop_id][vehicle_journey_id]
+            ):
+                observation_results[service_pattern_stop_id][vehicle_journey_id].append(
+                    observation_contents[details]
+                )
+
+        return observation_results
 
     def get_timetable_visualiser(self) -> pd.DataFrame:
         """
@@ -399,10 +405,16 @@ class TimetableVisualiser:
                 )
             ]
             # Get the service pattern ids
-            service_pattern_stop_ids = df_vehicle_journey_operating["service_pattern_stop_id"].unique().tolist()
+            service_pattern_stop_ids = (
+                df_vehicle_journey_operating["service_pattern_stop_id"]
+                .unique()
+                .tolist()
+            )
             # Get the observation results based on the service pattern ids
-            df_observation_results = self.get_observation_results_based_on_service_pattern_id(
-                service_pattern_stop_ids
+            df_observation_results = (
+                self.get_observation_results_based_on_service_pattern_id(
+                    service_pattern_stop_ids
+                )
             )
 
             df_timetable, stops, observations = get_df_timetable_visualiser(
@@ -417,6 +429,6 @@ class TimetableVisualiser:
                 "description": journey_description,
                 "df_timetable": df_timetable,
                 "stops": stops,
-                "observations": observations
+                "observations": observations,
             }
         return data
