@@ -16,81 +16,65 @@
       <p class="govuk-body">
         {% filter force_escape %}
           {% blocktrans %}
-                        This statement applies to pages on
-                    {% endblocktrans %}
+            This statement applies to pages on
+          {% endblocktrans %}
         {% endfilter %}
         {% blocktrans with link="https://www.bus-data.dft.gov.uk/" %}
-                    <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">bus-data.dft.gov.uk</a>.
-                {% endblocktrans %}
+          <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">bus-data.dft.gov.uk</a>.
+        {% endblocktrans %}
       </p>
       <p class="govuk-body">
         {% filter force_escape %}
           {% blocktrans %}
-                        This website is run by the Department for
-                        Transport. The text should be clear and simple
-                        to understand. You should be able to:
-                    {% endblocktrans %}
+            This website is run by the Department for
+            Transport. The text should be clear and simple
+            to understand. You should be able to:
+          {% endblocktrans %}
         {% endfilter %}
       </p>
       <ul class="govuk-list govuk-list--bullet">
         <li>
           {% filter force_escape %}
             {% blocktrans %}
-                            zoom in up to 400% without the
-                            text spilling off the screen.
-                        {% endblocktrans %}
+              zoom in up to 400% without the
+              text spilling off the screen.
+            {% endblocktrans %}
           {% endfilter %}
         </li>
         <li>
           {% filter force_escape %}
             {% blocktrans %}
-                            navigate all of the website using just a
-                            keyboard (except for maps which are not
-                            essential to the functionality)
-                        {% endblocktrans %}
+              navigate all of the website using just a
+              keyboard (except for maps which are not
+              essential to the functionality)
+            {% endblocktrans %}
           {% endfilter %}
         </li>
         <li>
           {% filter force_escape %}
             {% blocktrans %}
-                            navigate all of the website using speech
-                            recognition software
-                        {% endblocktrans %}
+              use all of the website using a screen
+              reader (including the most recent versions
+              of NVDA)
+            {% endblocktrans %}
           {% endfilter %}
         </li>
         <li>
           {% filter force_escape %}
             {% blocktrans %}
-                            use all of the website using a screen
-                            reader (including the most recent versions
-                            of JAWS, NVDA and VoiceOver)
-                        {% endblocktrans %}
+              interpret page information through access
+              technology due to a consistent heading
+              structure
+            {% endblocktrans %}
           {% endfilter %}
         </li>
         <li>
           {% filter force_escape %}
             {% blocktrans %}
-                            interpret page information through access
-                            technology due to a consistent heading
-                            structure
-                        {% endblocktrans %}
-          {% endfilter %}
-        </li>
-        <li>
-          {% filter force_escape %}
-            {% blocktrans %}
-                            use all of the functionality with
-                            Javascript turned off
-                        {% endblocktrans %}
-          {% endfilter %}
-        </li>
-        <li>
-          {% filter force_escape %}
-            {% blocktrans %}
-                            access the site and use the associated
-                            services with Google Chrome, Internet
-                            Explorer, Safari, Opera, Firefox, and Edge
-                        {% endblocktrans %}
+              access the site and use the associated
+              services with Google Chrome, Internet
+              Explorer, Safari, Opera, Firefox, and Edge
+            {% endblocktrans %}
           {% endfilter %}
         </li>
       </ul>
@@ -104,13 +88,13 @@
         <p class="govuk-body">
           {% filter force_escape %}
             {% blocktrans %}
-                            Parts of this website are not fully
-                            accessible. These include the map
-                            function, which isn’t readily
-                            accessible by the screen reader and
-                            the key board function will not pick
-                            it up directly.
-                        {% endblocktrans %}
+              Parts of this website are not fully
+              accessible. These include the map
+              function, which isn’t readily
+              accessible by the screen reader and
+              the key board function will not pick
+              it up directly.
+            {% endblocktrans %}
           {% endfilter %}
         </p>
       </section>
@@ -130,8 +114,8 @@
                 {% trans "Email:" %}
               {% endfilter %}
               {% blocktrans with link="BusOpenData@dft.gov.uk" %}
-                                <a class="govuk-link" href="mailto:{{ link }}">{{ link }}</a>
-                            {% endblocktrans %}
+                <a class="govuk-link" href="mailto:{{ link }}">{{ link }}</a>
+              {% endblocktrans %}
             </li>
           </ul>
         </p>
@@ -146,16 +130,16 @@
         <p class="govuk-body">
           {% filter force_escape %}
             {% blocktrans %}
-                            We’re always looking to improve the
-                            accessibility of this website.  If you
-                            find any problems that are not listed on
-                            this page or you think we're not meeting
-                            the accessibility requirements, contact:
-                        {% endblocktrans %}
+              We’re always looking to improve the
+              accessibility of this website.  If you
+              find any problems that are not listed on
+              this page or you think we're not meeting
+              the accessibility requirements, contact:
+            {% endblocktrans %}
           {% endfilter %}
           {% blocktrans with link="BusOpenData@dft.gov.uk" %}
-                        <a class="govuk-link" href="mailto:{{ link }}">{{ link }}</a>
-                    {% endblocktrans %}
+            <a class="govuk-link" href="mailto:{{ link }}">{{ link }}</a>
+          {% endblocktrans %}
         </p>
       </section>
       <section>
@@ -163,21 +147,21 @@
         <p class="govuk-body">
           {% filter force_escape %}
             {% blocktrans %}
-                            The Equality and Human Rights Commission
-                            (EHRC) is responsible for enforcing the
-                            Public Sector Bodies (Websites and Mobile
-                            Applications) (No. 2) Accessibility
-                            Regulations 2018 (the 'accessibility
-                            regulations').  If you’re not happy with
-                            how we respond to your complaint,
-                        {% endblocktrans %}
+              The Equality and Human Rights Commission
+              (EHRC) is responsible for enforcing the
+              Public Sector Bodies (Websites and Mobile
+              Applications) (No. 2) Accessibility
+              Regulations 2018 (the 'accessibility
+              regulations').  If you’re not happy with
+              how we respond to your complaint,
+            {% endblocktrans %}
           {% endfilter %}
           {% blocktrans with link="https://www.equalityadvisoryservice.com/" %}
-                        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">
-                            contact the Equality Advisory and Support
-                            Service (EASS).
-                        </a>
-                    {% endblocktrans %}
+            <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">
+              contact the Equality Advisory and Support
+              Service (EASS).
+            </a>
+          {% endblocktrans %}
         </p>
       </section>
       <section>
@@ -185,12 +169,12 @@
         <p class="govuk-body">
           {% filter force_escape %}
             {% blocktrans %}
-                            Department for Transport is committed to
-                            making its websites accessible, in
-                            accordance with the Public Sector Bodies
-                            (Websites and Mobile Applications) (No. 2)
-                            Accessibility Regulations 2018.
-                        {% endblocktrans %}
+              Department for Transport is committed to
+              making its websites accessible, in
+              accordance with the Public Sector Bodies
+              (Websites and Mobile Applications) (No. 2)
+              Accessibility Regulations 2018.
+            {% endblocktrans %}
           {% endfilter %}
         </p>
       </section>
@@ -206,8 +190,8 @@
             {% trans "This website follows the" %}
           {% endfilter %}
           {% blocktrans with link="https://www.w3.org/TR/WCAG22/" %}
-                        <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">Web Content Accessibility Guidelines version 2.2</a>
-                    {% endblocktrans %}
+            <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">Web Content Accessibility Guidelines version 2.2</a>
+          {% endblocktrans %}
           {% filter force_escape %}
             {% trans "AA standard." %}
           {% endfilter %}
@@ -234,27 +218,27 @@
             <li>
               {% filter force_escape %}
                 {% blocktrans %}
-                                    Maps functions cannot be directly
-                                    read by a screen reader. Key
-                                    information is in the text.
-                                {% endblocktrans %}
+                  Maps functions cannot be directly
+                  read by a screen reader. Key
+                  information is in the text.
+                {% endblocktrans %}
               {% endfilter %}
             </li>
             <li>
               {% filter force_escape %}
                 {% blocktrans %}
-                                    Keyboard only users may not
-                                    be able to zoom on our maps.
-                                {% endblocktrans %}
+                  Keyboard only users may not
+                  be able to zoom on our maps.
+                {% endblocktrans %}
               {% endfilter %}
             </li>
             <li>
               {% filter force_escape %}
                 {% blocktrans %}
-                                    Alternative versions can be
-                                    provided in plain text, braille,
-                                    BSL, large print or audio CD.
-                                {% endblocktrans %}
+                  Alternative versions can be
+                  provided in plain text, braille,
+                  BSL, large print or audio CD.
+                {% endblocktrans %}
               {% endfilter %}
             </li>
           </ul>
@@ -277,29 +261,17 @@
         <p class="govuk-body">
           {% filter force_escape %}
             {% blocktrans %}
-                                This website was last tested on 20 September
-                                2024. The test was carried out by the KPMG
-                                Accessibility Testing department.
-                            {% endblocktrans %}
-          {% endfilter %}
-        </p>
-        <p class="govuk-body">
-          {% filter force_escape %}
-            {% blocktrans %}
-                                We used this approach to decide on a
-                                sample of pages to test the analysis of
-                                key user journeys on the platform.
-                            {% endblocktrans %}
+              This website was last tested on 20 September
+              2024. The test was carried out by the KPMG
+              Accessibility Testing department.
+            {% endblocktrans %}
           {% endfilter %}
         </p>
         <p class="govuk-body">
           {% filter force_escape %}
             {% trans "You can read the" %}
           {% endfilter %}
-          {% blocktrans with link="http://digitalaccessibilitycentre.org/index.php/kpmg-publish-bus-open-data" %}
-                            <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ link }}">full accessibility test report from the Digital
-                                Accessibility Centre</a>.
-                        {% endblocktrans %}
+          <a class="govuk-link" href="{% static 'frontend/documents/BODS_Accessibility_VPAT_2.4_WCAG_2.2_Edition_v0.1.docx' %}">full VPAT report</a>.
         </p>
       </section>
     </div>
