@@ -1,6 +1,4 @@
 from crispy_forms.layout import HTML, ButtonHolder, Layout
-from transit_odp.crispy_forms_govuk.forms import GOVUKForm, GOVUKModelForm
-from transit_odp.crispy_forms_govuk.layout import RadioAccordion, RadioAccordionGroup
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -8,6 +6,8 @@ from django_hosts import reverse
 
 import config.hosts
 from transit_odp.common.constants import DEFAULT_ERROR_SUMMARY
+from transit_odp.crispy_forms_govuk.forms import GOVUKForm, GOVUKModelForm
+from transit_odp.crispy_forms_govuk.layout import RadioAccordion, RadioAccordionGroup
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.publish.constants import (
     DUPLICATE_COMMENT_ERROR_MESSAGE,
@@ -322,7 +322,7 @@ class FeedUploadForm(GOVUKModelForm):
 class SelectDataTypeForm(GOVUKForm):
     form_title = _("Choose data type")
     dataset_type = forms.ChoiceField(
-        label="",
+        label="Please choose the type of data you would like to publish.",
         choices=[
             (1, _("Timetables")),
             (2, _("Automatic Vehicle Locations (AVL)")),
@@ -333,14 +333,9 @@ class SelectDataTypeForm(GOVUKForm):
         error_messages={"required": "Please select a data type"},
     )
     page_heading_field = "dataset_type"
-    description = _("Please choose the type of data you would like to publish.")
 
     def get_layout(self):
         return Layout(
-            HTML(
-                f'<p class="govuk-body-m '
-                f'govuk-!-margin-bottom-7">{self.description}</p>'
-            ),
             "dataset_type",
             CONTINUE_BUTTON,
         )
