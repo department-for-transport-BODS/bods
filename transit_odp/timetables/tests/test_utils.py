@@ -200,8 +200,7 @@ def test_get_df_timetable_visualiser():
         df_vehicle_journey_operating["departure_time"], format="%H:%M:%S"
     ).dt.time
     actual_df_vehicle_journey, _ = get_df_timetable_visualiser(
-        df_vehicle_journey_operating,
-        {}
+        df_vehicle_journey_operating, {}
     )
 
     # Check the dataframe expected
