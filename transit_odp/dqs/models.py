@@ -110,6 +110,13 @@ class ObservationResults(models.Model):
     details = models.TextField(
         blank=True, help_text="Contains more details about the error"
     )
+
+    is_suppressed = models.BooleanField(
+        default=None,
+        help_text="Contains whether the observation result is suppressed",
+        null=True,
+        blank=True,
+    )
     taskresults = models.ForeignKey(
         TaskResults,
         related_name="dqs_observationresult_taskresults",
