@@ -19,7 +19,7 @@
               {% with key=cell|concatenate:"_"|concatenate:idx %}
                 <a class="tooltip govuk-link"
                    title="More information"
-                   id="stop-{{ direction }}-{{ idx }}" href="javascript:void(0);"
+                   id="stop-{{ direction }}-{{ idx }}" href="#"
                    onclick="BODSFrontend.showTooltip(event,'{{ idx }}', '{{ direction }}');">{{ cell }}                   
                   <p class="tooltiptext" id="tooltip-{{ direction }}-{{ idx }}" onclick="BODSFrontend.disableClick(event);">
                     <span class="govuk-!-font-weight-bold">ATCO Code:</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}

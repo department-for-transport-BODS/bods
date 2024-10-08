@@ -47,7 +47,7 @@ function extractOrgRevisionAndReportID() {
  */
 function getAPIUrl() {
   // Remove trailing slash if it exists
-  const url = window.location.href.replace(/\/$/, "");
+  const url = window.location.href.replace(/#.*$/, "").replace(/\/$/, "");
   // Split the URL by slashes, remove the last segment, and join it back
   const segments = url.split("/");
   segments.pop(); // Remove the last segment
