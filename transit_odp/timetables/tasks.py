@@ -1,11 +1,10 @@
+import itertools
 import uuid
-
 from logging import getLogger
 from pathlib import Path
 from urllib.parse import unquote
 
 import celery
-import itertools
 from celery import shared_task
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -13,24 +12,28 @@ from django.db import DatabaseError, IntegrityError, transaction
 from django.utils import timezone
 from waffle import flag_is_active
 
+from transit_odp.common.constants import CSVFileName
 from transit_odp.common.loggers import (
     MonitoringLoggerContext,
     PipelineAdapter,
     get_dataset_adapter_from_revision,
 )
+from transit_odp.common.utils.aws_common import SQSClientWrapper
+from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
 from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.data_quality.models.report import (
     PostSchemaViolation,
+    PTIObservation,
     PTIValidationResult,
 )
-from transit_odp.data_quality.tasks import upload_dataset_to_dqs, update_dqs_task_status
+from transit_odp.data_quality.tasks import update_dqs_task_status, upload_dataset_to_dqs
+from transit_odp.dqs.models import Checks, Report, TaskResults
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
+from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import Dataset, DatasetRevision, TXCFileAttributes
 from transit_odp.organisation.updaters import update_dataset
-from transit_odp.organisation.constants import TimetableType
-from transit_odp.common.constants import CSVFileName
-from transit_odp.pipelines.exceptions import PipelineException
+from transit_odp.pipelines.exceptions import NoValidFileToProcess, PipelineException
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.dataclasses.transxchange import TXCFile
 from transit_odp.timetables.etl import TransXChangePipeline
@@ -38,11 +41,14 @@ from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.pti import get_pti_validator
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 from transit_odp.timetables.utils import (
+    create_queue_payload,
     get_bank_holidays,
     get_holidays_records_to_insert,
-    create_queue_payload,
 )
-from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
+from transit_odp.common.utils.s3_bucket_connection import (
+    read_datasets_file_from_s3,
+    get_file_name_by_id,
+)
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
     PostSchemaValidator,
@@ -50,14 +56,12 @@ from transit_odp.timetables.validate import (
     TXCRevisionValidator,
 )
 from transit_odp.transmodel.models import BankHolidays
-from transit_odp.dqs.models import Report, Checks, TaskResults
 from transit_odp.validate import (
     DataDownloader,
     DownloadException,
     FileScanner,
     ValidationException,
 )
-from transit_odp.common.utils.aws_common import SQSClientWrapper
 
 logger = getLogger(__name__)
 
@@ -130,13 +134,15 @@ def task_populate_timing_point_count(revision_id: int) -> None:
 
 
 @shared_task()
-def task_dataset_download(revision_id: int, task_id: int) -> int:
+def task_dataset_download(
+    revision_id: int, task_id: int, reprocess_flag: bool = False
+) -> int:
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
 
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Downloading data.")
-    if revision.url_link:
+    if revision.url_link and not reprocess_flag:
         adapter.info(f"Downloading timetables file from {revision.url_link}.")
         now = timezone.now().strftime(DT_FORMAT)
         try:
@@ -225,20 +231,12 @@ def task_timetable_schema_check(revision_id: int, task_id: int):
     revision = DatasetRevision.objects.get(id=revision_id)
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting timetable schema validation.")
-
-    try:
-        adapter.info("Checking for TXC schema violations.")
-        validator = DatasetTXCValidator()
-        violations = validator.get_violations(revision=revision)
-    except Exception as exc:
-        message = str(exc)
-        adapter.error(message, exc_info=True)
-        task.to_error("dataset_validate", DatasetETLTaskResult.SCHEMA_ERROR)
-        task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
-    else:
-        adapter.info(f"{len(violations)} violations found")
+    adapter.info("Checking for TXC schema violations.")
+    validator = DatasetTXCValidator(revision=revision)
+    violations = validator.get_violations()
+    number_of_files_in_revision = validator.get_number_of_files_uploaded()
+    adapter.info(f"{len(violations)} violations found")
+    if number_of_files_in_revision > 0:
         if len(violations) > 0:
             schema_violations = [
                 SchemaViolation.from_violation(revision_id=revision.id, violation=v)
@@ -252,16 +250,21 @@ def task_timetable_schema_check(revision_id: int, task_id: int):
                 SchemaViolation.objects.bulk_create(
                     schema_violations, batch_size=BATCH_SIZE
                 )
-
-                message = "TransXChange schema issues found."
-                task.to_error("dataset_validate", DatasetETLTaskResult.SCHEMA_ERROR)
-                task.additional_info = message
-                task.save()
-            raise PipelineException(message)
-        else:
-            adapter.info("Validation complete.")
-            task.update_progress(40)
-            return revision_id
+                revision.modify_upload_file(
+                    list(set([sv.filename for sv in schema_violations]))
+                )
+        adapter.info("Validation complete.")
+        task.update_progress(40)
+    else:
+        message = f"Validation task: task_timetable_schema_check, no file to process, zip file: {revision.upload_file.name}"
+        adapter.error(message, exc_info=True)
+        task.to_error(
+            "task_timetable_schema_check", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS
+        )
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message)
+    return revision_id
 
 
 @shared_task
@@ -275,48 +278,40 @@ def task_post_schema_check(revision_id: int, task_id: int):
     revision = DatasetRevision.objects.get(id=revision_id)
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting post schema validation check.")
-
-    try:
-        violations = []
-        parser = TransXChangeDatasetParser(revision.upload_file)
-        file_names_list = parser.get_file_names()
-        validator = PostSchemaValidator(file_names_list)
-        violations += validator.get_violations()
-    except Exception as exc:
-        message = "TransXChange post schema issues found."
+    violations = []
+    parser = TransXChangeDatasetParser(revision.upload_file)
+    doc_list = parser.get_documents()
+    if not doc_list:
+        message = f"Validation task: task_post_schema_check, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)
         task.to_error(
-            "post_schema_dataset_validate", DatasetETLTaskResult.POST_SCHEMA_ERROR
+            "task_post_schema_check", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS
         )
         task.additional_info = message
         task.save()
-        raise PipelineException(message) from exc
-    else:
-        adapter.info(f"{len(violations)} violations found.")
-        if len(violations) > 0:
-            schema_violations = [
-                PostSchemaViolation.from_violation(revision=revision, violation=v)
-                for v in violations
-            ]
+        raise PipelineException(message)
 
-            with transaction.atomic():
-                # 'Update data' flow allows validation to occur multiple times
-                revision.post_schema_violations.all().delete()
-                PostSchemaViolation.objects.bulk_create(
-                    schema_violations, batch_size=BATCH_SIZE
-                )
+    validator = PostSchemaValidator(doc_list)
+    violations += validator.get_violations()
 
-                message = "TransXChange post schema issues found."
-                task.to_error(
-                    "post_schema_dataset_validate",
-                    DatasetETLTaskResult.POST_SCHEMA_ERROR,
-                )
-                task.additional_info = message
-                task.save()
-            raise PipelineException(message)
-        else:
-            adapter.info("Completed post schema validation check.")
-            return revision_id
+    adapter.info(f"{len(violations)} violations found.")
+
+    if len(violations) > 0:
+        failed_filenames = validator.get_failed_validation_filenames()
+        schema_violations = [
+            PostSchemaViolation.from_violation(revision=revision, filename=filename)
+            for filename in failed_filenames
+        ]
+
+        with transaction.atomic():
+            # 'Update data' flow allows validation to occur multiple times
+            revision.post_schema_violations.all().delete()
+            PostSchemaViolation.objects.bulk_create(
+                schema_violations, batch_size=BATCH_SIZE
+            )
+            revision.modify_upload_file([sv.filename for sv in schema_violations])
+    adapter.info("Completed post schema validation check.")
+    return revision_id
 
 
 @shared_task()
@@ -337,6 +332,17 @@ def task_extract_txc_file_data(revision_id: int, task_id: int):
             TXCFile.from_txc_document(doc, use_path_filename=True)
             for doc in parser.get_documents()
         ]
+        adapter.info(f"txc file attribute ETL has {len(files)} files to process")
+        if not files:
+            message = f"Validation task: task_extract_txc_file_data, no file to process, zip file: {revision.upload_file.name}"
+            adapter.error(message, exc_info=True)
+            task.to_error(
+                "task_extract_txc_file_data",
+                DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS,
+            )
+            task.additional_info = message
+            task.save()
+            raise PipelineException(message)
 
         attributes = [
             TXCFileAttributes.from_txc_file(txc_file=f, revision_id=revision.id)
@@ -360,41 +366,51 @@ def task_pti_validation(revision_id: int, task_id: int):
 
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting PTI Profile validation.")
-    try:
-        pti = get_pti_validator()
-        violations = pti.get_violations(revision=revision)
-        revision_validator = TXCRevisionValidator(revision)
-        violations += revision_validator.get_violations()
-        adapter.info(f"{len(violations)} violations found.")
 
-        with transaction.atomic():
-            # 'Update data' flow allows validation to occur multiple times
-            # lets just delete any 'old' observations.
-            # TODO remove once pti observations have been transitioned to pti results
-            revision.pti_observations.all().delete()
-            PTIValidationResult.objects.filter(revision_id=revision.id).delete()
-            PTIValidationResult.from_pti_violations(
-                revision=revision, violations=violations
-            ).save()
-            task.update_progress(50)
-            revision.save()
-    except ValidationException as exc:
-        message = "PTI Validation failed."
+    valid_txc_files = list(
+        TXCFileAttributes.objects.filter(revision=revision.id).values_list(
+            "filename", flat=True
+        )
+    )
+    adapter.info(f"PTI task has {len(valid_txc_files)} files to process")
+    if not valid_txc_files:
+        message = f"Validation task: task_pti_validation, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)
-        task.to_error("dataset_validate", exc.code)
-        task.additional_info = message
-        task.save()
-        raise PipelineException(message) from exc
-    except Exception as exc:
-        task.handle_general_pipeline_exception(exc, adapter)
-
-    if settings.PTI_ENFORCED_DATE.date() <= timezone.localdate() and violations:
-        message = "PTI Validation failed."
-        adapter.error(message)
-        task.to_error("dataset_validate", ValidationException.code)
+        task.to_error(
+            "task_pti_validation", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS
+        )
         task.additional_info = message
         task.save()
         raise PipelineException(message)
+
+    pti = get_pti_validator()
+    violations = pti.get_violations(revision=revision)
+    revision_validator = TXCRevisionValidator(revision)
+    violations += revision_validator.get_violations()
+    adapter.info(f"{len(violations)} violations found.")
+
+    with transaction.atomic():
+        # 'Update data' flow allows validation to occur multiple times
+        # lets just delete any 'old' observations.
+        # TODO remove once pti observations have been transitioned to pti results
+        revision.pti_observations.all().delete()
+        pti_violations = [
+            PTIObservation.from_violation(revision_id=revision_id, violation=v)
+            for v in violations
+        ]
+        PTIObservation.objects.bulk_create(pti_violations, batch_size=BATCH_SIZE)
+
+        PTIValidationResult.objects.filter(revision_id=revision.id).delete()
+        PTIValidationResult.from_pti_violations(
+            revision=revision, violations=violations
+        ).save()
+
+        TXCFileAttributes.objects.filter(
+            revision=revision.id, filename__in=[pv.filename for pv in pti_violations]
+        ).delete()
+        revision.modify_upload_file(list(set([pv.filename for pv in pti_violations])))
+        task.update_progress(50)
+        revision.save()
 
     adapter.info("Finished PTI Profile validation.")
     return revision_id
@@ -411,6 +427,21 @@ def task_dataset_etl(revision_id: int, task_id: int):
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+
+    valid_txc_files = list(
+        TXCFileAttributes.objects.filter(revision=revision.id).values_list(
+            "filename", flat=True
+        )
+    )
+    adapter.info(f"ETL task has {len(valid_txc_files)} files to process")
+    if not valid_txc_files:
+        message = f"ETL task: task_dataset_etl, no file to process, zip file: {revision.upload_file.name}"
+        adapter.error(message, exc_info=True)
+        task.to_error("task_dataset_etl", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS)
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message)
+
     adapter.info("Starting ETL pipeline task.")
     try:
         task.update_progress(60)
@@ -424,6 +455,12 @@ def task_dataset_etl(revision_id: int, task_id: int):
         pipeline.load(transformed)
         adapter.info("Data successfully loaded into BODS.")
         task.update_progress(90)
+    except NoValidFileToProcess as exp:
+        message = f"Validation task: task_dataset_etl, no file to process, zip file: {revision.upload_file.name}"
+        adapter.error(message, exc_info=True)
+        task.to_error("task_dataset_etl", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS)
+        task.additional_info = message
+        raise PipelineException(message)
     except Exception as exc:
         task.handle_general_pipeline_exception(
             exc,
@@ -627,7 +664,7 @@ def task_rerun_timetables_etl_specific_datasets():
     provided in a csv file available in AWS S3 bucket
     """
     csv_file_name = CSVFileName.RERUN_ETL_TIMETABLES.value
-    _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
+    _ids, _id_type, _s3_file_names_ids_map = read_datasets_file_from_s3(csv_file_name)
 
     if not _ids:
         logger.info("No valid dataset IDs or dataset revision IDs found in the file.")
@@ -675,27 +712,138 @@ def task_rerun_timetables_etl_specific_datasets():
                 revision = DatasetRevision.objects.get(
                     pk=revision_id, dataset__dataset_type=TimetableType
                 )
+                if _s3_file_names_ids_map:
+                    s3_file_name = get_file_name_by_id(
+                        revision_id, _s3_file_names_ids_map
+                    )
+                    if s3_file_name:
+                        revision.upload_file = s3_file_name
+                        revision.save()
+
             except DatasetRevision.DoesNotExist as exc:
                 message = f"DatasetRevision {revision_id} does not exist."
-                failed_datasets.append(output_id)
                 logger.exception(message, exc_info=True)
                 raise PipelineException(message) from exc
 
-            task_id = uuid.uuid4()
-            task = DatasetETLTaskResult.objects.create(
-                revision=revision,
-                status=DatasetETLTaskResult.STARTED,
-                task_id=task_id,
-            )
+            if revision:
+                task_id = uuid.uuid4()
+                task = DatasetETLTaskResult.objects.create(
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=task_id,
+                )
+                try:
+                    task_dataset_download(revision_id, task.id, reprocess_flag=True)
+                    task_extract_txc_file_data(revision_id, task.id)
+                    task_dataset_etl(revision_id, task.id)
 
-            task_dataset_download(revision_id, task.id)
-            task_dataset_etl(revision_id, task.id)
+                    task.update_progress(100)
+                    task.to_success()
+                    successfully_processed_ids.append(output_id)
+                    processed_count += 1
+                    logger.info(
+                        f"The task completed for {processed_count} of {total_count}"
+                    )
 
-            task.update_progress(100)
-            task.to_success()
-            successfully_processed_ids.append(output_id)
-            processed_count += 1
-            logger.info(f"The task completed for {processed_count} of {total_count}")
+                except Exception as e:
+                    task.to_error("", DatasetETLTaskResult.FAILURE)
+                    raise
+
+        except Exception as exc:
+            failed_datasets.append(output_id)
+            message = f"Error processing dataset id {output_id}: {exc}"
+            logger.exception(message, exc_info=True)
+
+    logger.info(
+        f"Total number of datasets processed successfully is {len(successfully_processed_ids)} out of {total_count}"
+    )
+    logger.info(
+        f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
+    )
+
+
+@shared_task(ignore_errors=True)
+def task_rerun_timetables_dqs_specific_datasets():
+    """This is a one-off task to rerun the timetables DQS task for a list of datasets
+    provided in a csv file available in AWS S3 bucket
+    """
+    csv_file_name = CSVFileName.RERUN_DQS_TIMETABLES.value
+    _ids, _id_type, _ = read_datasets_file_from_s3(csv_file_name)
+
+    if not _ids:
+        logger.info("No valid dataset IDs or dataset revision IDs found in the file.")
+        return
+
+    timetables_datasets = []
+    if _id_type == "dataset_id":
+        logger.info(f"Total number of datasets to be processed: {len(_ids)}")
+        timetables_datasets = Dataset.objects.filter(id__in=_ids).get_active()
+    elif _id_type == "dataset_revision_id":
+        logger.info(f"Total number of dataset revisions to be processed: {len(_ids)}")
+        timetables_datasets = _ids
+
+    if not timetables_datasets:
+        logger.info("No active datasets found in BODS with these dataset IDs")
+        return
+
+    processed_count = 0
+    successfully_processed_ids = []
+    failed_datasets = []
+
+    total_count = len(timetables_datasets)
+    for timetables_dataset in timetables_datasets:
+        try:
+            if _id_type == "dataset_id":
+                logger.info(
+                    f"Running Timetables DQS task for dataset id {timetables_dataset.id}"
+                )
+                revision = timetables_dataset.live_revision
+                if revision:
+                    revision_id = revision.id
+                    output_id = revision.id
+                else:
+                    raise PipelineException(
+                        f"No live revision for dataset id {timetables_dataset.id}"
+                    )
+            elif _id_type == "dataset_revision_id":
+                revision_id = timetables_dataset
+                output_id = timetables_dataset
+                logger.info(
+                    f"Running Timetables DQS task for revision id {timetables_dataset}"
+                )
+
+            try:
+                revision = DatasetRevision.objects.get(
+                    pk=revision_id, dataset__dataset_type=TimetableType
+                )
+
+            except DatasetRevision.DoesNotExist as exc:
+                message = f"DatasetRevision {revision_id} does not exist."
+                logger.exception(message, exc_info=True)
+                raise PipelineException(message) from exc
+
+            if revision:
+                task_id = uuid.uuid4()
+                task = DatasetETLTaskResult.objects.create(
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=task_id,
+                )
+                try:
+                    task_extract_txc_file_data(revision_id, task.id)
+                    task_data_quality_service(revision_id, task.id)
+
+                    task.update_progress(100)
+                    task.to_success()
+                    successfully_processed_ids.append(output_id)
+                    processed_count += 1
+                    logger.info(
+                        f"The task completed for {processed_count} of {total_count}"
+                    )
+
+                except Exception as e:
+                    task.to_error("", DatasetETLTaskResult.FAILURE)
+                    raise
 
         except Exception as exc:
             failed_datasets.append(output_id)
