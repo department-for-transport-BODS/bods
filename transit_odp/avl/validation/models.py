@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List, Optional
 
 from pydantic import BaseModel
@@ -36,9 +35,8 @@ class Header(BaseModel):
     """
 
     packet_name: str
-    timestamp: int
+    timestamp: str
     feed_id: int
-    plugin: str
 
 
 class Identifier(BaseModel):
@@ -59,7 +57,7 @@ class Identifier(BaseModel):
     line_ref: Optional[str] = None
     name: str
     operator_ref: Optional[str] = None
-    recorded_at_time: Optional[datetime] = None
+    recorded_at_time: Optional[str] = None
     vehicle_journey_ref: Optional[str] = None
     vehicle_ref: Optional[str] = None
 
@@ -70,18 +68,16 @@ class Error(BaseModel):
 
     Args:
         level: Whether the error is critical or non-critical.
-        context: The packet element that has the issue.
         details: Details of the error.
         identifier: The Identifier object used to identify the element.
     """
 
     level: str
-    context: str
     details: str
     identifier: Identifier
 
 
-class Result(BaseModel):
+class Errors(BaseModel):
     """
     The result of a packet analysis.
 
@@ -129,44 +125,4 @@ class ValidationResponse(BaseModel):
     feed_id: int
     packet_count: int
     validation_summary: ValidationSummary
-    results: List[Result]
-
-
-class SchemaError(BaseModel):
-    """
-    A schema validation error.
-
-    Args:
-        domain_name: The xml domain name.
-        filename: The xml filename.
-        level_name: The name of the error level.
-        line: The line the error occurs on.
-        message: The error message.
-        path: The path to the element that has the issue.
-        type_name: The type of error.
-    """
-
-    domain_name: str
-    filename: str
-    level_name: str
-    line: int
-    message: str
-    path: str
-    type_name: str
-
-
-class SchemaValidationResponse(BaseModel):
-    """
-    A validation response
-
-    Args:
-        feed_id: The id of the feed.
-        is_valid: True if the packet has no schema issues, False otherwise.
-        timestamp: The timestamp of when Real Time processed the packet
-        errors: A list of all the schema validation errors.
-    """
-
-    feed_id: int
-    is_valid: bool
-    timestamp: int
-    errors: List[SchemaError]
+    errors: List[Errors]

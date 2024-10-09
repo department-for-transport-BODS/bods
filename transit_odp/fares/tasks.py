@@ -79,7 +79,7 @@ def task_run_fares_pipeline(self, revision_id: int, do_publish: bool = False):
         revision.save()
 
         if do_publish:
-            logger.info(f"DatasetRevision {revision_id} => Publishing fares dataset.")
+            adapter.info(f"DatasetRevision {revision_id} => Publishing fares dataset.")
             if revision.status == "success" or revision.status == "error":
                 revision.publish()
 
@@ -331,10 +331,14 @@ def task_update_fares_validation_existing_dataset():
         task = DatasetETLTaskResult.objects.create(
             revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
         )
-
-        task_download_fares_file(task.id)
-        task_set_fares_validation_result(task.id)
-        task_run_fares_etl(task.id)
+        context = DatasetPipelineLoggerContext(
+            component_name="UpdateFaresValidationExistingDataset",
+            object_id=revision.dataset.id,
+        )
+        adapter = PipelineAdapter(logger, {"context": context})
+        task_download_fares_file(task.id, adapter)
+        task_set_fares_validation_result(task.id, adapter)
+        task_run_fares_etl(task.id, adapter)
 
         task.update_progress(100)
         task.to_success()
@@ -362,26 +366,32 @@ def task_update_fares_catalogue_data_existing_datasets():
                 logger.exception(message, exc_info=True)
                 raise PipelineException(message) from exc
 
+            context = DatasetPipelineLoggerContext(
+                component_name="UpdateFaresCatalogueDataExistingDatasets",
+                object_id=revision.dataset.id,
+            )
+            adapter = PipelineAdapter(logger, {"context": context})
+
             task_id = uuid.uuid4()
             task = DatasetETLTaskResult.objects.create(
                 revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
             )
 
-            task_download_fares_file(task.id)
-            task_run_fares_etl(task.id)
+            task_download_fares_file(task.id, adapter)
+            task_run_fares_etl(task.id, adapter)
 
             current_count += 1
             task.to_success()
-            logger.info(f"The task completed for {current_count} of {total_count}")
+            adapter.info(f"The task completed for {current_count} of {total_count}")
         except Exception as exc:
             failed_datasets.append(fares_dataset.id)
             message = f"Error processing dataset id {fares_dataset.id}: {exc}"
-            logger.exception(message, exc_info=True)
+            adapter.exception(message, exc_info=True)
     success_count = total_count - len(failed_datasets)
-    logger.info(
+    adapter.info(
         f"Total number of datasets processed successfully is {success_count} out of {total_count}"
     )
-    logger.info(
+    adapter.info(
         f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
     )
 
@@ -392,7 +402,10 @@ def task_rerun_fares_validation_specific_datasets():
     provided in a csv file available in AWS S3 bucket
     """
     csv_file_name = CSVFileName.RERUN_FARES_VALIDATION.value
-    _ids, _id_type = read_datasets_file_from_s3(csv_file_name)
+    _ids, _id_type, _ = read_datasets_file_from_s3(csv_file_name)
+    logger.info(
+        f"RerunFaresValidationSpecificDatasets {revision_id} => Starting fares ETL pipeline."
+    )
     if not _ids and not _id_type == "dataset_ids":
         logger.info("No valid dataset IDs found in the file.")
         return
@@ -423,20 +436,26 @@ def task_rerun_fares_validation_specific_datasets():
                 logger.exception(message, exc_info=True)
                 raise PipelineException(message) from exc
 
+            context = DatasetPipelineLoggerContext(
+                component_name="RerunFaresCatalogueDataExistingDatasets",
+                object_id=revision.dataset.id,
+            )
+            adapter = PipelineAdapter(logger, {"context": context})
+
             task_id = uuid.uuid4()
             task = DatasetETLTaskResult.objects.create(
                 revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
             )
 
-            task_download_fares_file(task.id)
-            task_set_fares_validation_result(task.id)
-            task_run_fares_etl(task.id)
+            task_download_fares_file(task.id, adapter)
+            task_set_fares_validation_result(task.id, adapter)
+            task_run_fares_etl(task.id, adapter)
 
             task.update_progress(100)
             task.to_success()
             successfully_processed_ids.append(fares_dataset.id)
             processed_count += 1
-            logger.info(f"The task completed for {processed_count} of {total_count}")
+            adapter.info(f"The task completed for {processed_count} of {total_count}")
 
     logger.info(
         f"Total number of datasets processed successfully is {len(successfully_processed_ids)} out of {total_count}"

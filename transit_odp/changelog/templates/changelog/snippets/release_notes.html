@@ -1,4 +1,30 @@
 {% load i18n %}
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "October 2024 (1.41.0)" %}</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      File level processing for Fares datasets. This will result in published zip
+      files to be restructured to pass successfully processed data to consumers immediately.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A fix for the way registrations held with the Office of the Traffic
+      Commissioner data is associated with Local Transport Authorities.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A fix for the way cancelled registrations held with the Office of the Traffic
+      Commissioner data are displayed on BODS.
+    {% endblocktrans %}
+  </li>
+</ul>
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "September 2024 (1.40.0)" %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}
@@ -14,11 +40,6 @@
   <li>
     {% blocktrans %}
     Enable BODS to ingest locally managed registrations from Enhanced Partnerships.
-    {% endblocktrans %}
-  </li>
-  <li>
-    {% blocktrans %}
-    Improve the Fares publish process to only reject files from a zip that fail the schema check, instead of rejecting the entire zip.
     {% endblocktrans %}
   </li>
   <li>

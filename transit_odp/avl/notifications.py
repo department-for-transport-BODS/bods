@@ -75,20 +75,6 @@ def send_avl_flagged_with_major_issue(dataset: Dataset):
         )
 
 
-def send_avl_schema_check_fail(dataset: Dataset):
-    revision = dataset.live_revision
-    notifier.send_avl_schema_check_fail(
-        feed_name=revision.name,
-        feed_id=dataset.id,
-        short_description=revision.short_description,
-        operator_name=dataset.organisation.name,
-        published_at=revision.published_at,
-        feed_detail_link=dataset.feed_detail_url,
-        comments=revision.comment,
-        contact_email=dataset.contact.email,
-    )
-
-
 def send_avl_compliance_status_changed(datafeed: AVLDataset, old_status: str):
     """
     Sends an AVL compliance status has changed notification to a data feeds
