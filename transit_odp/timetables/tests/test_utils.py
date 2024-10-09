@@ -195,18 +195,6 @@ def test_get_df_timetable_visualiser():
     actual_df_vehicle_journey, *_ = get_df_timetable_visualiser(pd.DataFrame(), {})
     assert actual_df_vehicle_journey.empty
 
-    # df_vehicle_journey_operating["departure_time"] = pd.to_datetime(
-    #     df_vehicle_journey_operating["departure_time"], format="%H:%M:%S"
-    # ).dt.time
-    # actual_df_vehicle_journey, actual_stops ,_  = get_df_timetable_visualiser(
-    #     df_vehicle_journey_operating, {}
-    # )
-    # df_actual_stops = pd.DataFrame.from_dict(actual_stops)
-
-    # # Check the dataframe expected
-    # assert check_frame_equal(
-    #     df_actual_stops, expected_stops
-    # )
 
 
 def test_get_vehicle_journey_codes_sorted():
