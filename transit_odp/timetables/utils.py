@@ -6,7 +6,7 @@ from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
 from transit_odp.timetables.constants import TXC_XSD_PATH
 from django.conf import settings
-
+from transit_odp.dqs.constants import OBSERVATIONS
 import requests
 from requests import RequestException
 
@@ -19,6 +19,7 @@ from transit_odp.common.utils.aws_common import get_s3_bucket_storage
 
 from transit_odp.transmodel.models import BankHolidays
 from typing import Tuple, Dict
+import copy
 
 logger = logging.getLogger(__name__)
 
@@ -254,7 +255,7 @@ def get_vehicle_journey_codes_sorted(
 
 
 def get_df_timetable_visualiser(
-    df_vehicle_journey_operating: pd.DataFrame,
+    df_vehicle_journey_operating: pd.DataFrame, observations: dict
 ) -> Tuple[pd.DataFrame, Dict]:
     """
     Get the dataframe containing the list of stops and the timetable details
@@ -276,9 +277,19 @@ def get_df_timetable_visualiser(
         "vehicle_journey_id",
         "street",
         "indicator",
+        "service_pattern_stop_id",
     ]
+
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
+    df_vehicle_journey_with_pattern_stop = copy.deepcopy(df_vehicle_journey_operating)
+    # drop service pattern stop id column if exists:
+    if 'service_pattern_stop_id' in df_vehicle_journey_operating.columns:
+        df_vehicle_journey_operating = df_vehicle_journey_operating.drop(
+            columns=["service_pattern_stop_id"]
+        )
+
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
+
     df_vehicle_journey_operating["key"] = df_vehicle_journey_operating.apply(
         lambda row: f"{row['common_name']}_{row['stop_sequence']}_{row['vehicle_journey_code']}_{row['vehicle_journey_id']}",
         axis=1,
@@ -291,7 +302,13 @@ def get_df_timetable_visualiser(
         ["stop_sequence", "departure_time"]
     )
     df_sequence_time = df_sequence_time[
-        ["stop_sequence", "common_name", "street", "indicator", "atco_code"]
+        [
+            "stop_sequence",
+            "common_name",
+            "street",
+            "indicator",
+            "atco_code",
+        ]
     ]
     df_sequence_time = df_sequence_time.drop_duplicates()
     df_sequence_time["key"] = df_sequence_time.apply(
@@ -299,10 +316,10 @@ def get_df_timetable_visualiser(
         axis=1,
     )
     bus_stops = df_sequence_time["common_name"].tolist()
-
+    observation_stops = {}
     stops = {}
-    # Create a dict for storing the unique combination of columns data for fast retreival
     departure_time_data = {}
+
     for row in df_vehicle_journey_operating.to_dict("records"):
         departure_time_data[row["key"]] = row["departure_time"].strftime("%H:%M")
 
@@ -315,7 +332,26 @@ def get_df_timetable_visualiser(
             "indicator": row["indicator"],
             "common_name": row["common_name"],
             "stop_seq": row["stop_sequence"],
+            "vehicle_journey_id": int(
+                df_vehicle_journey_with_pattern_stop.iloc[idx]["vehicle_journey_id"]
+            ),
         }
+        # if observations are present, add them to the stops
+        if observations:
+            observation = observations.get(
+                df_vehicle_journey_with_pattern_stop.iloc[idx][
+                    "service_pattern_stop_id"
+                ]
+            )
+            if observation:
+                if f"{row['common_name']}_{idx}" in observation_stops:
+                    observation_stops[f"{row['common_name']}_{idx}"][
+                        "observations"
+                    ].update(observation)
+                else:
+                    observation_stops.update(
+                        {f"{row['common_name']}_{idx}": {"observations": observation}}
+                    )
         record["Journey Code"] = bus_stops[idx]
         for (
             journey_code,
@@ -324,12 +360,14 @@ def get_df_timetable_visualiser(
             vehicle_journey_codes_sorted
         ):  # tuple with journey code(cols) and journey id
             key = f"{row['key']}_{journey_code}_{journey_id}"
-            record[journey_code] = departure_time_data.get(key, "-")
+            record[journey_code] = {
+                "departure_time": departure_time_data.get(key, "-"),
+                "journey_id": journey_id,
+            }
         stops_journey_code_time_list.append(record)
 
     df_vehicle_journey_operating = pd.DataFrame(stops_journey_code_time_list)
-
-    return (df_vehicle_journey_operating, stops)
+    return (df_vehicle_journey_operating, stops, observation_stops)
 
 
 def is_vehicle_journey_operating(df_vj, target_date) -> bool:
@@ -515,3 +553,28 @@ def create_queue_payload(pending_checks: list) -> dict:
         queue_payload[queue_name].append(message)
 
     return queue_payload
+
+
+def observation_contents_mapper(observations_list) -> Dict:
+    """This function maps the observation list to the observation content
+    Args:
+        observations_list: list of observations
+    Returns:
+        requested_observation: dict of observations
+    Example output :
+        {observation: {"title": observation_content.title,
+                        "text":observation_content.text,
+                        "resolve": observation_content.resolve
+                        }}
+    """
+    requested_observation = {}
+    for observation in observations_list:
+        for observation_content in OBSERVATIONS:
+            if observation_content.title == observation:
+                requested_observation[observation] = {
+                    "title": observation_content.title,
+                    "text": observation_content.text,
+                    "resolve": observation_content.resolve,
+                }
+
+    return requested_observation
