@@ -44,24 +44,15 @@ class DataModel(BaseModel):
     received_date: date = Field(alias="receivedDate")
     end_date: date = Field(alias="endDate")
 
-    @validator("registration_number")
-    def trim_registration_number(cls, value, values):
-        # Split the registration number by slash and take the first part and append the service_number
-        reg_number_parts = value.split("/")
-        if len(reg_number_parts) > 1:
-            if "service_number" in values:
-                return reg_number_parts[0] + "/" + values["service_number"]
-            else:
-                return reg_number_parts[0]
-        else:
-            return value
-
     @validator("atco_code", pre=True)
     def extract_atco_code(cls, value):
-        # Extract the atco code after the first slash of registration_number
+        # Extract the first three digits after the first slash of registration_number
         reg_number_parts = value.split("/")
         if len(reg_number_parts) > 1:
-            return reg_number_parts[1]
+            if len(reg_number_parts[1]) >= 3:
+                return reg_number_parts[1][:3]
+            else:
+                return reg_number_parts[1]
         else:
             return value
 
