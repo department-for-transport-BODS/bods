@@ -1,4 +1,3 @@
-import json
 import logging
 from dataclasses import dataclass
 
@@ -56,7 +55,7 @@ def _get_token() -> str:
     token_cache_timeout = response.expires_in
     cache.set("ep-auth-bearer", f"{response.access_token}", timeout=token_cache_timeout)
     auth_token = cache.get("ep-auth-bearer", None)
-    logger.info(f"EP auth token from cache: {auth_token}")
+    logger.info("EP auth token from cache")
     return auth_token
 
 

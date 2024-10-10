@@ -53,6 +53,7 @@ class ObservationResultsQueryset(models.QuerySet):
         is_details_link: bool = True,
         col_name: str = "",
         org_id: int = None,
+        show_suppressed: bool = False,
     ) -> list:
         """
         Filter for observation results for the report and revision of the specific Checks
@@ -70,6 +71,7 @@ class ObservationResultsQueryset(models.QuerySet):
             "is_suppressed",
             "organisation_id",
             "report_id",
+            "show_suppressed",
         ]
 
         if col_name == "noc":
@@ -139,6 +141,7 @@ class ObservationResultsQueryset(models.QuerySet):
                 is_details_link=Value(is_details_link, output_field=BooleanField()),
                 organisation_id=Value(org_id, output_field=TextField()),
                 report_id=Value(report_id, output_field=TextField()),
+                show_suppressed=Value(show_suppressed, output_field=BooleanField()),
             )
             .values(*columns)
             .distinct()

@@ -34,7 +34,6 @@ class FeedDetailView(OrgUserViewMixin, BaseDetailView):
     model = Dataset
 
     def get_queryset(self):
-
         query = (
             super()
             .get_queryset()
@@ -255,7 +254,6 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
             timetable_inbound_outbound = TimetableVisualiser(
                 live_revision.id, service_code, line, target_date
             ).get_timetable_visualiser()
-
             timetable = {}
             is_timetable_info_available = False
             # Set the context for the timetable visualiser and the line details
@@ -281,6 +279,7 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
                     "show_all": bound_details["show_all"],
                     "journey_name": journey,
                     "stops": direction_details["stops"],
+                    "observations": direction_details.get("observations", {}),
                     "page_param": direction + "Page",
                     "show_all_param": "showAll" + direction.capitalize(),
                 }

@@ -33,5 +33,5 @@ jobs:
       - name: djlint
         id: djlint
         run: |
-          pip install --upgrade djlint
+          pip install --upgrade djlint --break-system-packages
           djlint .
