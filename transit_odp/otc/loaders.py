@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from functools import cached_property
 from itertools import chain
 from logging import getLogger
@@ -338,3 +338,23 @@ class Loader:
     @cached_property
     def to_delete_service(self):
         return self.registry.filter_by_status(*RegistrationStatusEnum.to_delete())
+
+    def load_given_services(self, services: str):
+        if services == "":
+            logger.info("No Services passed, Skipping the job")
+            return
+        services_list = services.split(",")
+        logger.info(f"Job will be executed for following services {services_list}")
+
+        with transaction.atomic():
+            _registrations = self.registry.get_variations_since(
+                datetime.today(), services_list
+            )
+
+            self.load_licences()
+            self.load_operators()
+            self.load_services()
+            self.update_services_and_operators()
+            self.delete_bad_data()
+            self.inactivate_bad_services()
+            self.refresh_lta(_registrations)
