@@ -18,14 +18,14 @@
           <caption class="govuk-table__caption govuk-table__caption--s govuk-!-font-weight-bold govuk-!-font-size-24">{{ category }} ({{ df.number_of_services_affected.sum }})</caption>
           <thead class="govuk-table__head govuk-!-font-weight-regular">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header govuk-!-font-weight-bold {% if level_title == "Advisory" %} govuk-!-width-one-quarter {% else %} govuk-!-width-one-half {% endif %}">
+              <th scope="col"
+                  class="govuk-table__header govuk-!-font-weight-bold {% if level_title == "Advisory" %} govuk-!-width-one-quarter {% else %} govuk-!-width-one-half {% endif %}">
                 {% trans "Number of observation" %}{{ df.number_of_services_affected.sum |pluralize:"s" }}
               </th>
-              
               {% if level_title == "Advisory" %}
-              <th scope="col" class="govuk-table__header govuk-!-font-weight-bold govuk-!-width-one-third">
-                {% trans "Number of suppressed observation" %}
-              </th>
+                <th scope="col" class="govuk-table__header govuk-!-font-weight-bold govuk-!-width-one-third">
+                  {% trans "Number of suppressed observation" %}
+                </th>
               {% endif %}
               <th scope="col" class="govuk-table__header govuk-!-font-weight-bold">{% trans "Observation category" %}</th>
             </tr>
@@ -35,8 +35,8 @@
               <tr class="govuk-table__row">
                 <th scope="row" class="govuk-table__header govuk-!-font-weight-regular ">{{ row.number_of_services_affected }}</th>
                 {% if level_title == "Advisory" %}
-                <td scope="row" class="govuk-table__header govuk-!-font-weight-regular">{{ row.number_of_suppressed_observation }}</td>
-                {% endif %}                
+                  <td scope="row" class="govuk-table__header govuk-!-font-weight-regular">{{ row.number_of_suppressed_observation }}</td>
+                {% endif %}
                 <td class="govuk-table__cell">
                   {% if row.url != 'no-url' %}
                     <a href="{% url 'dq:overview' pk1=view.kwargs.pk1 pk=view.kwargs.pk report_id=view.kwargs.report_id host hosts.publish %}{{ row.url }}">
