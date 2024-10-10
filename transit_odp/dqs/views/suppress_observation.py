@@ -20,8 +20,8 @@ class SuppressObservationView(viewsets.ViewSet):
         session_data = request.session
         org_id = request_data.get("organisation_id", None)
 
-        if session_data and session_data.get("_auth_user_id", None):
-            auth_user_id = session_data.get("_auth_user_id", None)
+        if session_data and session_data.get("_auth_user_id"):
+            auth_user_id = session_data.get("_auth_user_id")
             users = User.objects.filter(id=auth_user_id)
             if len(users) > 0:
                 if users[0].organisation_id != org_id:

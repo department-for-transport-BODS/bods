@@ -38,8 +38,9 @@ class DQSWarningListBaseView(SingleTableView):
     def dispatch(self, request, *args, **kwargs):
         session_data = request.session
         self.show_suppressed = False
-        if session_data and session_data.get("_auth_user_id", None):
-            auth_user_id = session_data.get("_auth_user_id", None)
+
+        if session_data and session_data.get("_auth_user_id"):
+            auth_user_id = session_data.get("_auth_user_id")
             users = User.objects.filter(id=auth_user_id)
             if len(users) > 0:
                 org_id = self.kwargs.get("pk1")
@@ -50,8 +51,6 @@ class DQSWarningListBaseView(SingleTableView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-
-        print("in query set")
 
         self.model = ObservationResults
         self.table_class = DQSWarningListBaseTable
@@ -88,8 +87,6 @@ class DQSWarningListBaseView(SingleTableView):
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
-        print(f"in base: {context} ")
-
         context.update(
             {
                 "title": self.data.title,
