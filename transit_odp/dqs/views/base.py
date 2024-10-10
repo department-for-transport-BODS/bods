@@ -11,6 +11,7 @@ from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 from transit_odp.dqs.models import Report
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
+from transit_odp.users.models import User
 
 
 class DQSWarningListBaseView(SingleTableView):
@@ -35,16 +36,15 @@ class DQSWarningListBaseView(SingleTableView):
         return self._is_dqs_new_report
 
     def dispatch(self, request, *args, **kwargs):
-        # Access the session here
         session_data = request.session
-        print(f"Session data: {dir(session_data)}")
-        for k, v in session_data.items():
-            print(f"K: {k}, V: {v}")
-
         self.show_suppressed = False
         if session_data and session_data.get("_auth_user_id", None):
-            print("Found the key")
-            self.show_suppressed = True
+            auth_user_id = session_data.get("_auth_user_id", None)
+            users = User.objects.filter(id=auth_user_id)
+            if len(users) > 0:
+                org_id = self.kwargs.get("pk1")
+                if users[0].organisation_id == org_id:
+                    self.show_suppressed = True
 
         # Call the parent class's dispatch method
         return super().dispatch(request, *args, **kwargs)
@@ -79,6 +79,7 @@ class DQSWarningListBaseView(SingleTableView):
             self.is_details_link,
             self.col_name,
             org_id,
+            self.show_suppressed,
         )
 
     def get_table_kwargs(self):
