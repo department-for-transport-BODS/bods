@@ -260,6 +260,7 @@ class DQSWarningListBaseTable(GovUkTable):
     is_suppressed = tables.Column(verbose_name="Is Suppressed")
     organisation_id = tables.Column(verbose_name="Organisation Id")
     report_id = tables.Column(verbose_name="Report Id")
+    show_suppressed = tables.Column(verbose_name="Show Suppressed")
 
     class Meta:
 
