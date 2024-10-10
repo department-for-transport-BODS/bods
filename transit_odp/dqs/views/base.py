@@ -34,7 +34,23 @@ class DQSWarningListBaseView(SingleTableView):
                 self._is_dqs_new_report = False
         return self._is_dqs_new_report
 
+    def dispatch(self, request, *args, **kwargs):
+        # Access the session here
+        session_data = request.session
+        print(f"Session data: {dir(session_data)}")
+        for k, v in session_data.items():
+            print(f"K: {k}, V: {v}")
+
+        self.show_suppressed = False
+        if session_data and session_data.get("_auth_user_id", None):
+            print("Found the key")
+            self.show_suppressed = True
+
+        # Call the parent class's dispatch method
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
+
         self.model = ObservationResults
         self.table_class = DQSWarningListBaseTable
 
@@ -69,6 +85,7 @@ class DQSWarningListBaseView(SingleTableView):
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
+        print(f"in base: {context} ")
 
         context.update(
             {
