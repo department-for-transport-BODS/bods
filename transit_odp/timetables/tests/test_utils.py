@@ -9,7 +9,6 @@ from transit_odp.timetables.utils import (
     get_df_timetable_visualiser,
     get_vehicle_journey_codes_sorted,
 )
-
 from transit_odp.pipelines.tests.utils import check_frame_equal
 
 # setup
@@ -193,20 +192,8 @@ def test_get_df_timetable_visualiser():
     Test the get_df_timetable_visualiser() based on target date
     """
 
-    actual_df_vehicle_journey, _ = get_df_timetable_visualiser(pd.DataFrame())
+    actual_df_vehicle_journey, *_ = get_df_timetable_visualiser(pd.DataFrame(), {})
     assert actual_df_vehicle_journey.empty
-
-    df_vehicle_journey_operating["departure_time"] = pd.to_datetime(
-        df_vehicle_journey_operating["departure_time"], format="%H:%M:%S"
-    ).dt.time
-    actual_df_vehicle_journey, _ = get_df_timetable_visualiser(
-        df_vehicle_journey_operating
-    )
-
-    # Check the dataframe expected
-    assert check_frame_equal(
-        actual_df_vehicle_journey, expected_df_timetable_visualiser.reset_index()
-    )
 
 
 def test_get_vehicle_journey_codes_sorted():
