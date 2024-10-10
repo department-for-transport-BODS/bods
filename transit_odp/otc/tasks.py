@@ -30,6 +30,13 @@ def task_refresh_otc_data():
 
 
 @shared_task()
+def task_refresh_otc_services(services: str):
+    registry = Registry()
+    loader = Loader(registry)
+    loader.load_given_services(services)
+
+
+@shared_task()
 def task_get_all_otc_data():
     registry = Registry()
     loader = Loader(registry)
