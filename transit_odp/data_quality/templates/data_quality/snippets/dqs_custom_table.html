@@ -51,34 +51,36 @@
                       {{ row.cells.dqs_details }}
                     {% endif %}
                   </td>
-                  <td class="govuk-table__cell govuk-!-padding-bottom-0 ">                    
-                      <div class="govuk-form-group">
-                        <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
-                          <div class="govuk-checkboxes__item">
-                            {% if row.cells.show_suppressed is True %}
-                              <input class="govuk-checkboxes__input checkbox-suppress" id="checkbox-suppress-{{ forloop.counter }}" name="suppress" 
-                              type="checkbox" 
-                              {% if row.cells.is_suppressed %} checked {% else %}  {% endif %}                                
-                              onclick="BODSFrontend.suppressObservation({{ row.cells.organisation_id }}, {{ row.cells.revision_id }}, {{ row.cells.report_id }}, '{{ row.cells.service_code }}','{{ row.cells.line_name }}', '{{ row.cells.observation }}', '{{ forloop.counter }}' );"  />
-                              <label class="govuk-label govuk-checkboxes__label" for="suppress" id="row-{{ forloop.counter }}" >
-                                {% if row.cells.is_suppressed %}
-                                    Suppressed
-                                {% else %}
-                                    Suppress
-                                {% endif %}
-                              </label>
-                            {% else %}
-                            <label class="govuk-label" id="row-{{ forloop.counter }}" >
+                  <td class="govuk-table__cell govuk-!-padding-bottom-0 ">
+                    <div class="govuk-form-group">
+                      <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                        <div class="govuk-checkboxes__item">
+                          {% if row.cells.show_suppressed is True %}
+                            <input class="govuk-checkboxes__input checkbox-suppress"
+                                   id="checkbox-suppress-{{ forloop.counter }}"
+                                   name="suppress"
+                                   type="checkbox"
+                                   {% if row.cells.is_suppressed %} checked {% else %}  {% endif %}
+                                   onclick="BODSFrontend.suppressObservation({{ row.cells.organisation_id }}, {{ row.cells.revision_id }}, {{ row.cells.report_id }}, '{{ row.cells.service_code }}','{{ row.cells.line_name }}', '{{ row.cells.observation }}', '{{ forloop.counter }}' );" />
+                            <label class="govuk-label govuk-checkboxes__label" for="suppress" id="row-{{ forloop.counter }}">
                               {% if row.cells.is_suppressed %}
                                 Suppressed
                               {% else %}
                                 Suppress
                               {% endif %}
                             </label>
-                            {% endif %}
-                          </div>
+                          {% else %}
+                            <label class="govuk-label" id="row-{{ forloop.counter }}">
+                              {% if row.cells.is_suppressed %}
+                                Suppressed
+                              {% else %}
+                                Suppress
+                              {% endif %}
+                            </label>
+                          {% endif %}
                         </div>
                       </div>
+                    </div>
                   </td>
                 </tr>
               {% endblock table.tbody.row %}

@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import viewsets, status as ResponseStatus
 from transit_odp.users.models import User
 
+
 class SuppressObservationView(viewsets.ViewSet):
     """
     Suppress Observation view to update the observation result
