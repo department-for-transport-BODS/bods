@@ -74,8 +74,6 @@ class EPClient:
         headers = {
             "Authorization": f"Bearer {self.ep_auth.token}",
         }
-
-        logger.info(f"headers: {headers}")
         try:
             response = requests.get(
                 url=url,
