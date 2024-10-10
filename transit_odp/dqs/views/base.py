@@ -51,6 +51,8 @@ class DQSWarningListBaseView(SingleTableView):
 
     def get_queryset(self):
 
+        print("in query set")
+
         self.model = ObservationResults
         self.table_class = DQSWarningListBaseTable
 

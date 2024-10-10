@@ -50,11 +50,7 @@
                     {% endif %}
                   </td>
                   <td class="govuk-table__cell govuk-!-padding-bottom-0 ">
-                    {% if row.cells.is_published %}
-                      <a href="{% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
-                        {{ row.cells.line_name }} - {{ row.cells.service_code }}
-                      </a>
-                    {% else %}                      
+                    {{ row.cells.show_suppressed }}
                       <div class="govuk-form-group">
                         <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
                           <div class="govuk-checkboxes__item">                            
@@ -72,7 +68,6 @@
                           </div>                                                          
                         </div>                          
                     </div>
-                    {% endif %}
                   </td>
                 </tr>
               {% endblock table.tbody.row %}
