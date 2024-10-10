@@ -17,6 +17,7 @@ from transit_odp.organisation.constants import (
     ERROR,
     EXPIRED,
     INACTIVE,
+    INDEXING,
     LIVE,
     ORG_ACTIVE,
     ORG_INACTIVE,
@@ -1060,10 +1061,15 @@ def test_get_stuck_timetables():
     """
     Given a set of revisions in the "stuck" and "unstuck" state.
     When calling the get_stuck_revisions queryset method.
-    Then only return timetables that are stuck (i.e. `latest_task_progress` less
-    than 99%, `latest_task_status` not SUCCESS/FAILURE and `created` over a day ago.)
+    Then only return timetables that are stuck (i.e. `latest_task_progress`
+    less than 99%, `latest_task_status` not SUCCESS/FAILURE, `created`
+    over a day ago, and the status is not LIVE/INACTIVE).
     """
     created = datetime(2021, 1, 1, 12, 12, 12, tzinfo=pytz.utc)
+    processing_status = INDEXING
+    published_status = LIVE
+    inactive_status = INACTIVE
+
     success_revision = DatasetRevisionFactory(
         dataset__dataset_type=TimetableType, created=created
     )
@@ -1077,13 +1083,75 @@ def test_get_stuck_timetables():
         revision=failed_revision, progress=30, status=DatasetETLTaskResult.FAILURE
     )
     stuck_revision = DatasetRevisionFactory(
-        dataset__dataset_type=TimetableType, created=created
+        dataset__dataset_type=TimetableType, created=created, status=processing_status
     )
     DatasetETLTaskResultFactory(
         revision=stuck_revision, progress=35, status=DatasetETLTaskResult.PENDING
     )
+    stuck_revision_two = DatasetRevisionFactory(
+        dataset__dataset_type=TimetableType, created=created, status=published_status
+    )
+    DatasetETLTaskResultFactory(
+        revision=stuck_revision_two, progress=45, status=DatasetETLTaskResult.STARTED
+    )
+    stuck_revision_three = DatasetRevisionFactory(
+        dataset__dataset_type=TimetableType, created=created, status=inactive_status
+    )
+    DatasetETLTaskResultFactory(
+        revision=stuck_revision_three, progress=55, status=DatasetETLTaskResult.STARTED
+    )
 
     stuck_revisions = DatasetRevision.objects.get_stuck_revisions()
+
+    assert stuck_revisions.count() == 1
+    assert stuck_revisions.last() == stuck_revision
+
+
+def test_get_stuck_fares():
+    """
+    Given a set of revisions in the "stuck" and "unstuck" state.
+    When calling the get_fares_stuck_revisions queryset method.
+    Then only return fares that are stuck (i.e. `latest_task_progress`
+    less than 99%, `latest_task_status` not SUCCESS/FAILURE, `created` over
+    a day ago, and the status is not LIVE/INACTIVE).
+    """
+    created = datetime(2022, 1, 1, 12, 12, 12, tzinfo=pytz.utc)
+    processing_status = INDEXING
+    published_status = LIVE
+    inactive_status = INACTIVE
+
+    success_revision = DatasetRevisionFactory(
+        dataset__dataset_type=FaresType, created=created
+    )
+    DatasetETLTaskResultFactory(
+        revision=success_revision, progress=100, status=DatasetETLTaskResult.SUCCESS
+    )
+    failed_revision = DatasetRevisionFactory(
+        dataset__dataset_type=FaresType, created=created
+    )
+    DatasetETLTaskResultFactory(
+        revision=failed_revision, progress=30, status=DatasetETLTaskResult.FAILURE
+    )
+    stuck_revision = DatasetRevisionFactory(
+        dataset__dataset_type=FaresType, created=created, status=processing_status
+    )
+    DatasetETLTaskResultFactory(
+        revision=stuck_revision, progress=35, status=DatasetETLTaskResult.PENDING
+    )
+    stuck_revision_two = DatasetRevisionFactory(
+        dataset__dataset_type=FaresType, created=created, status=published_status
+    )
+    DatasetETLTaskResultFactory(
+        revision=stuck_revision_two, progress=45, status=DatasetETLTaskResult.STARTED
+    )
+    stuck_revision_three = DatasetRevisionFactory(
+        dataset__dataset_type=FaresType, created=created, status=inactive_status
+    )
+    DatasetETLTaskResultFactory(
+        revision=stuck_revision_three, progress=55, status=DatasetETLTaskResult.STARTED
+    )
+
+    stuck_revisions = DatasetRevision.objects.get_fares_stuck_revisions()
 
     assert stuck_revisions.count() == 1
     assert stuck_revisions.last() == stuck_revision
