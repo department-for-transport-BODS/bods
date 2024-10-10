@@ -283,7 +283,7 @@ def get_df_timetable_visualiser(
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
     df_vehicle_journey_with_pattern_stop = copy.deepcopy(df_vehicle_journey_operating)
     # drop service pattern stop id column if exists:
-    if 'service_pattern_stop_id' in df_vehicle_journey_operating.columns:
+    if "service_pattern_stop_id" in df_vehicle_journey_operating.columns:
         df_vehicle_journey_operating = df_vehicle_journey_operating.drop(
             columns=["service_pattern_stop_id"]
         )
