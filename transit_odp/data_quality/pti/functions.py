@@ -612,9 +612,24 @@ def validate_licence_number(context, elements: List[etree._Element]) -> bool:
 
 def has_servicedorganisation_working_days(context, service_organisations):
     """
-    Check when file has detected a flexible service (includes
-    FlexibleService), it has ServiceClassification and Flexible elements.
-    If the file also has a standard service, then return True.
+    Checks if all service organisations have defined working days.
+
+    This function iterates over a list of service organisations and verifies
+    whether each organisation has defined working days by checking the
+    corresponding XML structure. If any service organisation lacks working
+    days, the function returns False; otherwise, it returns True.
+
+    Args:
+        context: The context in which the function is called (not used in the
+                 current implementation but may be relevant for future use).
+        service_organisations (list): A list of service organisation objects
+                                       that are expected to contain XML
+                                       elements.
+
+    Returns:
+        bool: True if all service organisations have working days defined,
+              False otherwise.
+
     """
     is_valid = True
     for service_organisation in service_organisations:
