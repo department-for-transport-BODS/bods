@@ -19,8 +19,9 @@
               {% with key=cell|concatenate:"_"|concatenate:idx %}
                 <a class="tooltip govuk-link"
                    title="More information"
-                   id="stop-{{ direction }}-{{ idx }}" href="javascript:void(0);"
-                   onclick="BODSFrontend.showTooltip(event,'{{ idx }}', '{{ direction }}');">{{ cell }}                   
+                   id="stop-{{ direction }}-{{ idx }}"
+                   href="#"
+                   onclick="BODSFrontend.showTooltip(event,'{{ idx }}', '{{ direction }}');">{{ cell }}
                   <p class="tooltiptext" id="tooltip-{{ direction }}-{{ idx }}" onclick="BODSFrontend.disableClick(event);">
                     <span class="govuk-!-font-weight-bold">ATCO Code:</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}
                     <br />
@@ -37,7 +38,54 @@
                 </a>
               {% endwith %}
             {% else %}
-              <span>{{ cell }}</span>
+              {% with key=row|get_value_from_dict:'Journey Code'|concatenate:"_"|concatenate:idx %}
+                {% with observations=timetable_details.observations|get_value_from_dict:key %}
+                  {% if observations %}
+                    {% for obs_key, obs_value in observations.items %}
+                      {% if obs_value|get_value_from_dict:cell.journey_id|stringformat:'s' %}
+                        <a class="tooltip govuk-link"
+                           style="color: #d4351c"
+                           title="More information"
+                           id="stop-{{ direction }}-{{ cell.journey_id }}-{{ idx }}"
+                           onclick="BODSFrontend.showTooltip(event,'{{ cell.journey_id }}-{{ idx }}', '{{ direction }}', 'observation');">
+                          {{ cell.departure_time }}
+                          <div class="tooltiptext"
+                               style="width:450px"
+                               id="{{ cell.journey_id }}-{{ idx }}"
+                               onclick="BODSFrontend.disableClick(event);">
+                            <div class="govuk-accordion" data-module="govuk-accordion" id="timetable_tooltip">
+                              {% for key in obs_value|get_value_from_dict:cell.journey_id %}
+                                <div class="govuk-accordion__section">
+                                  <div class="govuk-accordion__section-header">
+                                    <span class="govuk-accordion__section-heading">
+                                      <span class="govuk-accordion__section-button" id="accordion-default-heading-1">
+                                        {{ key|get_value_from_dict:'title' }}
+                                      </span>
+                                    </span>
+                                  </div>
+                                  <div id="accordion-default-content-1"
+                                       class="govuk-accordion__section-content govuk-!-padding-bottom-1 govuk-!-padding-top-0">
+                                    <p>{{ key|get_value_from_dict:'text' }}</p>
+                                    <p>{{ key|get_value_from_dict:'resolve' }}</p>
+                                  </div>
+                                </div>
+                              {% endfor %}
+                            </div>
+                            <button type="submit"
+                                    class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
+                                    onclick="BODSFrontend.hideTooltip(event);"
+                                    data-module="govuk-button">Close</button>
+                          </div>
+                        </a>
+                      {% else %}
+                        <span>{{ cell.departure_time }}</span>
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    <span>{{ cell.departure_time }}</span>
+                  {% endif %}
+                {% endwith %}
+              {% endwith %}
             {% endif %}
           </td>
         {% endfor %}

@@ -14,6 +14,14 @@
               <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header">Service ({{ table.paginated_rows|length }})</th>
                 <th scope="col" class="govuk-table__header">Details</th>
+                <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+                  <button type="submit"
+                          data-prevent-double-click="true"
+                          class="govuk-button govuk-button--secondary govuk-!-margin-0"
+                          id="button-suppress-observation"
+                          data-module="govuk-button"
+                          onclick="BODSFrontend.suppressAllObservations();">Suppress all observations</button>
+                </th>
               </tr>
             </thead>
           {% endif %}
@@ -23,7 +31,7 @@
             {% for row in table.paginated_rows %}
               {% block table.tbody.row %}
                 <tr class="govuk-table__row {{ row.attrs.class }}">
-                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
+                  <td class="govuk-table__cell govuk-!-padding-bottom-0  {{ column.attrs.td.class |default_if_none:"" }}">
                     {% if row.cells.is_published %}
                       <a href="{% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
                         {{ row.cells.line_name }} - {{ row.cells.service_code }}
@@ -34,7 +42,7 @@
                       </a>
                     {% endif %}
                   </td>
-                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
+                  <td class="govuk-table__cell govuk-!-padding-bottom-0  {{ column.attrs.td.class |default_if_none:"" }}">
                     {% if row.cells.is_details_link %}
                       <a href="{{ request.build_absolute_uri }}detail?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
                         {{ row.cells.dqs_details }}
@@ -43,12 +51,43 @@
                       {{ row.cells.dqs_details }}
                     {% endif %}
                   </td>
+                  <td class="govuk-table__cell govuk-!-padding-bottom-0 ">
+                    <div class="govuk-form-group">
+                      <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                        <div class="govuk-checkboxes__item">
+                          {% if row.cells.show_suppressed is True %}
+                            <input class="govuk-checkboxes__input checkbox-suppress"
+                                   id="checkbox-suppress-{{ forloop.counter }}"
+                                   name="suppress"
+                                   type="checkbox"
+                                   {% if row.cells.is_suppressed %} checked {% else %}  {% endif %}
+                                   onclick="BODSFrontend.suppressObservation({{ row.cells.organisation_id }}, {{ row.cells.revision_id }}, {{ row.cells.report_id }}, '{{ row.cells.service_code }}','{{ row.cells.line_name }}', '{{ row.cells.observation }}', '{{ forloop.counter }}' );" />
+                            <label class="govuk-label govuk-checkboxes__label" for="suppress" id="row-{{ forloop.counter }}">
+                              {% if row.cells.is_suppressed %}
+                                Suppressed
+                              {% else %}
+                                Suppress
+                              {% endif %}
+                            </label>
+                          {% else %}
+                            <label class="govuk-label" id="row-{{ forloop.counter }}">
+                              {% if row.cells.is_suppressed %}
+                                Suppressed
+                              {% else %}
+                                Suppress
+                              {% endif %}
+                            </label>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               {% endblock table.tbody.row %}
             {% empty %}
               {% if table.empty_text %}
                 {% block table.tbody.empty_text %}
-                  <tr class="govuk-table__row">
+                  <tr class="govuk-table__row !govuk-padding-0">
                     <td class="govuk-table__cell" colspan="{{ table.columns|length }}">{{ table.empty_text }}</td>
                   </tr>
                 {% endblock table.tbody.empty_text %}
@@ -76,3 +115,10 @@
     {% endblock %}
   </div>
 {% endblock table-wrapper %}
+{% block scripts %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      BODSFrontend.setButtonStatus();
+    });       
+  </script>
+{% endblock %}

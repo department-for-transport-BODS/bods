@@ -242,6 +242,9 @@ class JourneyListTable(WarningListBaseTable):
 # TODO: DQSMIGRATION: Move to dqs module
 class DQSWarningListBaseTable(GovUkTable):
 
+    observation = tables.Column(
+        verbose_name="Observation", orderable=False, empty_values=()
+    )
     message = tables.Column(verbose_name="Service", orderable=False, empty_values=())
     dqs_details = tables.Column(
         verbose_name="Details",
@@ -254,6 +257,10 @@ class DQSWarningListBaseTable(GovUkTable):
     revision_id = tables.Column(verbose_name="Revision Id", visible=True)
     is_published = tables.Column(verbose_name="Is Published", visible=True)
     is_details_link = tables.Column(verbose_name="Is Details Link", visible=True)
+    is_suppressed = tables.Column(verbose_name="Is Suppressed")
+    organisation_id = tables.Column(verbose_name="Organisation Id")
+    report_id = tables.Column(verbose_name="Report Id")
+    show_suppressed = tables.Column(verbose_name="Show Suppressed")
 
     class Meta:
 
