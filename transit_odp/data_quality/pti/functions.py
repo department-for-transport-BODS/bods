@@ -608,3 +608,20 @@ def validate_licence_number(context, elements: List[etree._Element]) -> bool:
         elif not (licence_number and licence_number[0].text):
             return False
     return True
+
+
+def has_servicedorganisation_working_days(context, service_organisations):
+    """
+    Check when file has detected a flexible service (includes
+    FlexibleService), it has ServiceClassification and Flexible elements.
+    If the file also has a standard service, then return True.
+    """
+    is_valid = True
+    for service_organisation in service_organisations:
+        print(f"service_organisation: {service_organisation}")
+        ns = {"x": service_organisation.nsmap.get(None)}
+        working_days = service_organisation.xpath("x:WorkingDays", namespaces=ns)
+        print(f"working_days: {working_days}")
+        if not working_days:
+            is_valid = False
+    return is_valid
