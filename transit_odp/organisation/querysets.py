@@ -46,6 +46,7 @@ from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
     DRAFT,
+    ERROR,
     EXPIRED,
     INACTIVE,
     LIVE,
@@ -1165,7 +1166,7 @@ class DatasetRevisionQuerySet(models.QuerySet):
             .exclude(
                 latest_task_status__in=["FAILURE", "SUCCESS"],
             )
-            .exclude(status__in=[INACTIVE, LIVE, DRAFT])
+            .exclude(status__in=[INACTIVE, LIVE, DRAFT, ERROR])
         )
 
     def get_fares_stuck_revisions(self):
@@ -1182,7 +1183,7 @@ class DatasetRevisionQuerySet(models.QuerySet):
             .exclude(
                 latest_task_status__in=["FAILURE", "SUCCESS"],
             )
-            .exclude(status__in=[INACTIVE, LIVE, DRAFT])
+            .exclude(status__in=[INACTIVE, LIVE, DRAFT, ERROR])
         )
 
 
