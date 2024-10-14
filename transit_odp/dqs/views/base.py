@@ -11,6 +11,7 @@ from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 from transit_odp.dqs.models import Report
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
+from transit_odp.users.models import User
 
 
 class DQSWarningListBaseView(SingleTableView):
@@ -34,7 +35,23 @@ class DQSWarningListBaseView(SingleTableView):
                 self._is_dqs_new_report = False
         return self._is_dqs_new_report
 
+    def dispatch(self, request, *args, **kwargs):
+        session_data = request.session
+        self.show_suppressed = False
+
+        if session_data and session_data.get("_auth_user_id"):
+            auth_user_id = session_data.get("_auth_user_id")
+            users = User.objects.filter(id=auth_user_id)
+            if len(users) > 0:
+                org_id = self.kwargs.get("pk1")
+                if users[0].organisation_id == org_id:
+                    self.show_suppressed = True
+
+        # Call the parent class's dispatch method
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
+
         self.model = ObservationResults
         self.table_class = DQSWarningListBaseTable
 
@@ -61,6 +78,7 @@ class DQSWarningListBaseView(SingleTableView):
             self.is_details_link,
             self.col_name,
             org_id,
+            self.show_suppressed,
         )
 
     def get_table_kwargs(self):
@@ -69,7 +87,6 @@ class DQSWarningListBaseView(SingleTableView):
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
-
         context.update(
             {
                 "title": self.data.title,
