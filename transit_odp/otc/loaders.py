@@ -358,7 +358,9 @@ class Loader:
                     services_without_localauthority.append(service.registration_number)
 
             if len(services_without_localauthority):
-                logger.info(f"Following services does not have localauthortiy {list(set(services_without_localauthority))}")
+                logger.info(
+                    f"Following services does not have localauthortiy {list(set(services_without_localauthority))}"
+                )
 
             self.load_licences()
             self.load_operators()
