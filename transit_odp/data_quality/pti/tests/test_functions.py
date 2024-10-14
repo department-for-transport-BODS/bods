@@ -26,6 +26,7 @@ from transit_odp.data_quality.pti.functions import (
     is_member_of,
     today,
     validate_licence_number,
+    has_servicedorganisation_working_days,
 )
 from transit_odp.data_quality.pti.tests.constants import TXC_END, TXC_START
 from transit_odp.naptan.factories import (
@@ -1238,3 +1239,35 @@ def test_validate_licence_number_non_coach_data_failed():
         elements = doc.xpath("//x:Operator", namespaces=NAMESPACE)
         actual = validate_licence_number("", elements)
         assert actual == False
+
+
+@pytest.mark.django_db
+def test_has_servicedorganisation_working_days_not_present():
+    """
+    This test case validates working days tag is present for ServicedOrganisation
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    string_xml = DATA_DIR / "servicedorganisation_working_days_not_present.xml"
+    with string_xml.open("r") as txc_xml:
+        doc = etree.parse(txc_xml)
+        elements = doc.xpath(
+            "//x:ServicedOrganisations/x:ServicedOrganisation", namespaces=NAMESPACE
+        )
+        actual = has_servicedorganisation_working_days("", elements)
+        assert actual == False
+
+
+@pytest.mark.django_db
+def test_has_servicedorganisation_working_days_present():
+    """
+    This test case validates working days tag is present for ServicedOrganisation
+    """
+    NAMESPACE = {"x": "http://www.transxchange.org.uk/"}
+    string_xml = DATA_DIR / "servicedorganisation_working_days_present.xml"
+    with string_xml.open("r") as txc_xml:
+        doc = etree.parse(txc_xml)
+        elements = doc.xpath(
+            "//x:ServicedOrganisations/x:ServicedOrganisation", namespaces=NAMESPACE
+        )
+        actual = has_servicedorganisation_working_days("", elements)
+        assert actual == True
