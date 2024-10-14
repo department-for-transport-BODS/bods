@@ -499,9 +499,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
             revision.id
         )
-        print(f"txc_file_attributes_objects:::: {txc_file_attributes_objects}")
         combinations = itertools.product(txc_file_attributes_objects, checks)
-        print(f"combinations::: {combinations}")
         TaskResults.initialize_task_results(report, combinations)
         adapter.info(
             f"TaskResults is initialised for with status PENDING for {revision}"
