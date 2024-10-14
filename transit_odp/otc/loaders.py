@@ -351,6 +351,15 @@ class Loader:
                 datetime.today(), services_list
             )
 
+            services_without_localauthority = []
+            for service in _registrations:
+                if service.local_authorities is None:
+                    logger.info(f"Found service without localauthority {service}")
+                    services_without_localauthority.append(service.registration_number)
+
+            if len(services_without_localauthority):
+                logger.info(f"Following services does not have localauthortiy {list(set(services_without_localauthority))}")
+
             self.load_licences()
             self.load_operators()
             self.load_services()
