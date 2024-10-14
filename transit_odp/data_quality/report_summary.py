@@ -241,9 +241,14 @@ class Summary(BaseModel):
             df["url"] = df["url"].fillna("no-url")
             for level in Level:
                 warning_data[level.value] = {}
-                warning_data[level.value]["count"] = df[
-                    df["importance"] == level.value
-                ]["number_of_services_affected"].sum()
+                warning_data[level.value]["count"] = (
+                    df[df["importance"] == level.value][
+                        "number_of_services_affected"
+                    ].sum()
+                    - df[df["importance"] == level.value][
+                        "number_of_suppressed_observation"
+                    ].sum()
+                )
                 importance_df = df[df["importance"] == level.value]
                 # TODO: change df to something like data, or better name in the dict
                 warning_data[level.value]["df"] = {}

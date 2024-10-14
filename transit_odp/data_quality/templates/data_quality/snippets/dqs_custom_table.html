@@ -52,14 +52,10 @@
                     {% endif %}
                   </td>
                   <td class="govuk-table__cell govuk-!-padding-bottom-0 ">
-                    {% if row.cells.is_published %}
-                      <a href="{% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
-                        {{ row.cells.line_name }} - {{ row.cells.service_code }}
-                      </a>
-                    {% else %}
-                      <div class="govuk-form-group">
-                        <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
-                          <div class="govuk-checkboxes__item">
+                    <div class="govuk-form-group">
+                      <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                        <div class="govuk-checkboxes__item">
+                          {% if row.cells.show_suppressed is True %}
                             <input class="govuk-checkboxes__input checkbox-suppress"
                                    id="checkbox-suppress-{{ forloop.counter }}"
                                    name="suppress"
@@ -73,10 +69,18 @@
                                 Suppress
                               {% endif %}
                             </label>
-                          </div>
+                          {% else %}
+                            <label class="govuk-label" id="row-{{ forloop.counter }}">
+                              {% if row.cells.is_suppressed %}
+                                Suppressed
+                              {% else %}
+                                Suppress
+                              {% endif %}
+                            </label>
+                          {% endif %}
                         </div>
                       </div>
-                    {% endif %}
+                    </div>
                   </td>
                 </tr>
               {% endblock table.tbody.row %}
