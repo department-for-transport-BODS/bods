@@ -769,7 +769,6 @@ def task_rerun_timetables_dqs_specific_datasets():
     """
     csv_file_name = CSVFileName.RERUN_DQS_TIMETABLES.value
     _ids, _id_type, _ = read_datasets_file_from_s3(csv_file_name)
-
     if not _ids:
         logger.info("No valid dataset IDs or dataset revision IDs found in the file.")
         return
@@ -830,7 +829,6 @@ def task_rerun_timetables_dqs_specific_datasets():
                     task_id=task_id,
                 )
                 try:
-                    task_extract_txc_file_data(revision_id, task.id)
                     task_data_quality_service(revision_id, task.id)
 
                     task.update_progress(100)
