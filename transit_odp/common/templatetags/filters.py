@@ -26,6 +26,12 @@ def percentage(text, arg=-1):
     return floatformat(percentage_value, arg=arg) + "%"
 
 
+@register.filter()
+def subtract(value1, value2):
+    """Subtract value2 from value1."""
+    return value1 - value2
+
+
 @register.filter("lookup")
 def lookup(d: Dict[Any, Any], key: Any) -> Any:
     return d[key]
