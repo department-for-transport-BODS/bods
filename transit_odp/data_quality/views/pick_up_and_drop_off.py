@@ -17,7 +17,6 @@ from transit_odp.data_quality.tables import (
     LastStopPickUpOnlyVehicleTable,
     PickUpDropOffListTable,
 )
-from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 
 # TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
 from transit_odp.data_quality.views.base import (

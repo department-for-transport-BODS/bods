@@ -6,7 +6,7 @@ from django_hosts import reverse
 import config.hosts
 
 from transit_odp.dqs.models import ObservationResults
-from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.constants import Checks, Level
 from transit_odp.data_quality.tables.base import DQSWarningListBaseTable
 from transit_odp.dqs.models import Report
 from transit_odp.organisation.models import DatasetRevision
@@ -38,13 +38,16 @@ class DQSWarningListBaseView(SingleTableView):
     def dispatch(self, request, *args, **kwargs):
         session_data = request.session
         self.show_suppressed = False
+        org_id = self.kwargs.get("pk1")
 
-        if session_data and session_data.get("_auth_user_id"):
+        if session_data and session_data.get("_auth_user_id") and org_id:
             auth_user_id = session_data.get("_auth_user_id")
             users = User.objects.filter(id=auth_user_id)
-            if len(users) > 0:
-                org_id = self.kwargs.get("pk1")
-                if users[0].organisation_id == org_id:
+            if len(users):
+                user = users[0]
+                org_id = int(org_id)
+                organisation_ids = set(user.organisations.values_list("id", flat=True))
+                if org_id in organisation_ids:
                     self.show_suppressed = True
 
         # Call the parent class's dispatch method
@@ -69,6 +72,8 @@ class DQSWarningListBaseView(SingleTableView):
         if qs_revision:
             is_published = qs_revision.is_published
 
+        show_suppressed_button = True if self.data.level == Level.advisory else False
+
         return self.model.objects.get_observations(
             report_id,
             self.check,
@@ -79,6 +84,7 @@ class DQSWarningListBaseView(SingleTableView):
             self.col_name,
             org_id,
             self.show_suppressed,
+            show_suppressed_button,
         )
 
     def get_table_kwargs(self):
