@@ -307,7 +307,7 @@ FirstStopNotTimingPointObservation = Observation(
     preamble="First stop in the following timing pattern(s) have been observed to not have timing points.",
     model=models.TimingFirstWarning,
     list_url_name="dq:first-stop-not-timing-point-list",
-    level=Level.advisory,
+    level=Level.critical,
     category=Category.timing,
 )
 
@@ -340,7 +340,7 @@ LastStopNotTimingPointObservation = Observation(
     preamble="Last stop in the following timing pattern(s) have been observed to not have timing points.",
     model=models.TimingLastWarning,
     list_url_name="dq:last-stop-not-timing-point-list",
-    level=Level.advisory,
+    level=Level.critical,
     category=Category.timing,
 )
 FastTimingPointObservation = Observation(
