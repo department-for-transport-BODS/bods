@@ -196,7 +196,6 @@ def test_get_df_timetable_visualiser():
     assert actual_df_vehicle_journey.empty
 
 
-
 def test_get_vehicle_journey_codes_sorted():
     """
     Test the get_vehicle_journey_codes_sorted() based on the vehicle journey operating
