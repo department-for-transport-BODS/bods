@@ -3,6 +3,7 @@ from transit_odp.dqs.models import ObservationResults
 from transit_odp.dqs.constants import Level
 from rest_framework.response import Response
 from rest_framework import viewsets, status as ResponseStatus
+from transit_odp.users.models import User
 
 
 class SuppressObservationView(viewsets.ViewSet):
@@ -16,10 +17,24 @@ class SuppressObservationView(viewsets.ViewSet):
         """Action to suppress the observation result"""
 
         request_data = request.data
+        session_data = request.session
+        org_id = request_data.get("organisation_id", None)
+
+        if session_data and session_data.get("_auth_user_id") and org_id:
+            auth_user_id = session_data.get("_auth_user_id")
+            users = User.objects.filter(id=auth_user_id)
+            if len(users):
+                user = users[0]
+                organisation_ids = set(user.organisations.values_list("id", flat=True))
+                org_id = int(org_id)
+                if org_id not in organisation_ids:
+                    return Response(
+                        {"error": "Unauthorised access"},
+                        status=ResponseStatus.HTTP_401_UNAUTHORIZED,
+                    )
 
         report_id = request_data.get("report_id", None)
         revision_id = request_data.get("revision_id", None)
-        org_id = request_data.get("organisation_id", None)
         service_code = request_data.get("service_code", None)
         line_name = request_data.get("line_name", None)
         check = request_data.get("check", None)
