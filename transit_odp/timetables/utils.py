@@ -263,7 +263,7 @@ def get_df_timetable_visualiser(
     """
 
     if df_vehicle_journey_operating.empty:
-        return (df_vehicle_journey_operating, {})
+        return (df_vehicle_journey_operating, {},{})
 
     # Keep the relevant columns of dataframe and remove the duplicates
     columns_to_keep = [
