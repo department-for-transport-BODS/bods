@@ -383,7 +383,7 @@ DuplicateJourneyCodeObservation = Observation(
     ),
     preamble="The following service(s) have been observed to have at least one journey that has a duplicate journey code.",
     list_url_name="dq:duplicate-journey-code-list",
-    level=Level.critical,
+    level=Level.advisory,
     category=Category.journey,
     is_active=True,
 )
@@ -454,7 +454,7 @@ IncorrectLicenceNumberObservation = Observation(
     ),
     preamble="The following service(s) have been observed to not have the correct licence numbers.",
     list_url_name="dq:incorrect-licence-number-list",
-    level=Level.advisory,
+    level=Level.critical,
     category=Category.data_set,
     is_active=True,
 )
