@@ -105,6 +105,11 @@ class CoachDownloadView(BaseTemplateView):
 
 
 class AccessibilityVPATReportView(TemplateView):
+    """
+    View for downloading the Voluntary Product Accessibility
+    Template (VPAT) report.
+    """
+
     def get(self, request):
         file_name = "BODS_Accessibility_VPAT_2.4_WCAG_2.2_Edition_v0.1.docx"
         file_path = f"transit_odp/frontend/assets/documents/{file_name}"
