@@ -1,13 +1,17 @@
+import logging
 from collections import namedtuple
 from typing import Any
 
+from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import DetailView, TemplateView, UpdateView
 
-from django.conf import settings
 from transit_odp.common.constants import FALSE, TRUE
 from transit_odp.common.utils.cookie_settings import delete_cookie, set_cookie
 from transit_odp.common.view_mixins import BODSBaseView
+
+logger = logging.getLogger(__name__)
 
 
 class ComingSoonView(TemplateView):
@@ -98,3 +102,21 @@ class CoachDownloadView(BaseTemplateView):
         context["atco_file"] = settings.COACH_ATCO_FILE_S3_URL
 
         return context
+
+
+class AccessibilityVPATReportView(TemplateView):
+    def get(self, request):
+        file_name = "BODS_Accessibility_VPAT_2.4_WCAG_2.2_Edition_v0.1.docx"
+        file_path = f"transit_odp/frontend/assets/documents/{file_name}"
+        try:
+            with open(file_path, "rb") as f:
+                response = HttpResponse(
+                    f.read(),
+                    content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                )
+                response["Content-Disposition"] = f"attachment; filename={file_name}"
+
+                return response
+        except FileNotFoundError:
+            logger.error(f"Requested file {file_name} not found.")
+            return HttpResponse(f"Requested file {file_name} not found.", status=404)
