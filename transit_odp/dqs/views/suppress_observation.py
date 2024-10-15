@@ -20,11 +20,14 @@ class SuppressObservationView(viewsets.ViewSet):
         session_data = request.session
         org_id = request_data.get("organisation_id", None)
 
-        if session_data and session_data.get("_auth_user_id"):
+        if session_data and session_data.get("_auth_user_id") and org_id:
             auth_user_id = session_data.get("_auth_user_id")
             users = User.objects.filter(id=auth_user_id)
             if len(users) > 0:
-                if users[0].organisation_id != org_id:
+                user = users[0]
+                organisation_ids = set(user.organisations.values_list("id", flat=True))
+                org_id = int(org_id)
+                if org_id not in organisation_ids:
                     return Response(
                         {"error": "Unauthorised access"},
                         status=ResponseStatus.HTTP_401_UNAUTHORIZED,

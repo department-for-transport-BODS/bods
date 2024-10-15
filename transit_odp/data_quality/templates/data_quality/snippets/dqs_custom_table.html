@@ -13,7 +13,8 @@
             <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:"" }}">
               <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header">Service ({{ table.paginated_rows|length }})</th>
-                <th scope="col" class="govuk-table__header">Details</th>
+                <th scope="col" class="govuk-table__header">Details</th>                
+                {% if table.rows|length > 0 and table.rows.0.cells.show_suppressed_button is True %}
                 <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
                   <button type="submit"
                           data-prevent-double-click="true"
@@ -21,7 +22,8 @@
                           id="button-suppress-observation"
                           data-module="govuk-button"
                           onclick="BODSFrontend.suppressAllObservations();">Suppress all observations</button>
-                </th>
+                </th>                
+                {% endif %}
               </tr>
             </thead>
           {% endif %}
@@ -51,6 +53,7 @@
                       {{ row.cells.dqs_details }}
                     {% endif %}
                   </td>
+                  {% if row.cells.show_suppressed_button is True %}
                   <td class="govuk-table__cell govuk-!-padding-bottom-0 ">
                     <div class="govuk-form-group">
                       <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
@@ -60,10 +63,10 @@
                                    id="checkbox-suppress-{{ forloop.counter }}"
                                    name="suppress"
                                    type="checkbox"
-                                   {% if row.cells.is_suppressed %} checked {% else %}  {% endif %}
+                                   {% if row.cells.is_suppressed is True %} checked {% else %}  {% endif %}
                                    onclick="BODSFrontend.suppressObservation({{ row.cells.organisation_id }}, {{ row.cells.revision_id }}, {{ row.cells.report_id }}, '{{ row.cells.service_code }}','{{ row.cells.line_name }}', '{{ row.cells.observation }}', '{{ forloop.counter }}' );" />
                             <label class="govuk-label govuk-checkboxes__label" for="suppress" id="row-{{ forloop.counter }}">
-                              {% if row.cells.is_suppressed %}
+                              {% if row.cells.is_suppressed is True  %}
                                 Suppressed
                               {% else %}
                                 Suppress
@@ -71,7 +74,7 @@
                             </label>
                           {% else %}
                             <label class="govuk-label" id="row-{{ forloop.counter }}">
-                              {% if row.cells.is_suppressed %}
+                              {% if row.cells.is_suppressed is True %}
                                 Suppressed
                               {% else %}
                                 Suppress
@@ -82,6 +85,7 @@
                       </div>
                     </div>
                   </td>
+                  {% endif %}
                 </tr>
               {% endblock table.tbody.row %}
             {% empty %}
