@@ -34,6 +34,7 @@ from transit_odp.data_quality.pti.functions import (
     has_flexible_service_classification,
     has_name,
     has_prohibited_chars,
+    has_servicedorganisation_working_days,
     is_member_of,
     regex,
     strip,
@@ -599,6 +600,10 @@ class PTIValidator:
             "check_vehicle_journey_timing_links", check_vehicle_journey_timing_links
         )
         self.register_function("validate_licence_number", validate_licence_number)
+        self.register_function(
+            "has_servicedorganisation_working_days",
+            has_servicedorganisation_working_days,
+        )
 
     def register_function(self, key: str, function: Callable) -> None:
         self.fns[key] = function
