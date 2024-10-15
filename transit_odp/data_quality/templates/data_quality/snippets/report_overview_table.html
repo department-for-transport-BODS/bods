@@ -15,7 +15,7 @@
       <p class="govuk-body">{{ level_data.intro }}</p>
       {% for category, df in level_data.df.items %}
         <table class="govuk-table">
-          <caption class="govuk-table__caption govuk-table__caption--s govuk-!-font-weight-bold govuk-!-font-size-24">{{ category }} ({{ df.number_of_services_affected.sum | subtract:df.number_of_suppressed_observation.sum  }})</caption>
+          <caption class="govuk-table__caption govuk-table__caption--s govuk-!-font-weight-bold govuk-!-font-size-24">{{ category }} ({{ df.number_of_services_affected.sum | subtract:df.number_of_suppressed_observation.sum }})</caption>
           <thead class="govuk-table__head govuk-!-font-weight-regular">
             <tr class="govuk-table__row">
               <th scope="col"
@@ -33,7 +33,9 @@
           <tbody class="govuk-table__body">
             {% for idx, row in df.iterrows %}
               <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header govuk-!-font-weight-regular ">{{ row.number_of_services_affected | subtract:row.number_of_suppressed_observation }}</th>
+                <th scope="row" class="govuk-table__header govuk-!-font-weight-regular ">
+                  {{ row.number_of_services_affected | subtract:row.number_of_suppressed_observation }}
+                </th>
                 {% if level_title == "Advisory" %}
                   <td scope="row" class="govuk-table__header govuk-!-font-weight-regular">{{ row.number_of_suppressed_observation }}</td>
                 {% endif %}
