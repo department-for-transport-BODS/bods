@@ -367,6 +367,8 @@ def get_df_timetable_visualiser(
         stops_journey_code_time_list.append(record)
 
     df_vehicle_journey_operating = pd.DataFrame(stops_journey_code_time_list)
+    print("observation_stops")
+    print(observation_stops)
     return (df_vehicle_journey_operating, stops, observation_stops)
 
 
