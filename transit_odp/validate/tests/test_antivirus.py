@@ -52,7 +52,7 @@ class TestFileScanner:
         "side_effect, expected",
         [
             (clamd.BufferTooLongError, AntiVirusError),
-            (clamd.ConnectionError, clamd.ConnectionError),
+            (TypeError, TypeError),
         ],
     )
     def test_perform_scan_exceptions(self, side_effect, expected, mocker):
@@ -61,7 +61,7 @@ class TestFileScanner:
         scanner.clamav.instream.side_effect = side_effect
         with pytest.raises(expected):
             scanner._perform_scan(mfile)
-        if side_effect == clamd.ConnectionError:
+        if side_effect == TypeError:
             assert scanner.clamav.instream.call_count == SCAN_ATTEMPTS
 
     def test_scan(self, mocker):
@@ -103,6 +103,9 @@ class TestFileScanner:
 
         with pytest.raises(ClamConnectionError) as excinfo:
             scanner.scan(mfile)
+
+        if mperform_scan.side_effect == ClamConnectionError:
+            assert scanner.clamav.instream.call_count == SCAN_ATTEMPTS
 
         assert excinfo.value.filename == mfile.name
         assert excinfo.value.code == "AV_CONNECTION_ERROR"
