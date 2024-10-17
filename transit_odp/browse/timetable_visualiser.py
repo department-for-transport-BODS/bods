@@ -278,7 +278,8 @@ class TimetableVisualiser:
             )
             .values(*columns)
         )
-
+        print("query")
+        print(qs_observation_results.query)
         df = pd.DataFrame.from_records(qs_observation_results)
         if df.empty:
             return {}
@@ -421,6 +422,11 @@ class TimetableVisualiser:
                 df_vehicle_journey_operating,
                 df_observation_results,
             )
+
+            print("observations")
+            print(observations)
+            print("stops")
+            print(stops)
 
             # Get updated columns where the missing journey code is replaced with journey id
             df_timetable.columns = get_updated_columns(df_timetable)
