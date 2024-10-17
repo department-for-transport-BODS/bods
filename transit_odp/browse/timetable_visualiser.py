@@ -417,6 +417,8 @@ class TimetableVisualiser:
                     service_pattern_stop_ids
                 )
             )
+            print("df_observation_results")
+            print(df_observation_results)
 
             df_timetable, stops, observations = get_df_timetable_visualiser(
                 df_vehicle_journey_operating,
