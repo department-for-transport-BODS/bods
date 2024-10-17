@@ -304,8 +304,18 @@ class TimetableVisualiser:
                 observation_results[service_pattern_stop_id][vehicle_journey_id].append(
                     observation_contents[details]
                 )
+        def convert_to_regular_dict(d):
+            if isinstance(d, defaultdict):
+                d = {k: convert_to_regular_dict(v) for k, v in d.items()}
+            elif isinstance(d, dict):
+                d = {k: convert_to_regular_dict(v) for k, v in d.items()}
+            return d
 
-        return observation_results
+        normal_dict = convert_to_regular_dict(observation_results)
+        print("normal dict")
+        print(type(normal_dict))
+        print(normal_dict)
+        return normal_dict
 
     def get_timetable_visualiser(self) -> pd.DataFrame:
         """
