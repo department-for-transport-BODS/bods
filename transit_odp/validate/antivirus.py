@@ -72,10 +72,26 @@ class FileScanner:
         logger.info("Antivirus scan: Started")
         self.clamav = ClamdNetworkSocket(host=host, port=port)
 
+    @retry(
+        reraise=True,
+        retry=retry_if_exception_type(ClamConnectionError),
+        wait=wait_random_exponential(multiplier=MULTIPLIER, max=10),
+        stop=stop_after_attempt(SCAN_ATTEMPTS),
+        before=before_log(logger, logging.DEBUG),
+    )
     def scan(self, file_: BinaryIO):
+        """
+        Retrieves and returns the result of the scanned file. A maxiumum
+        of 5 scan attempts will occur if a connection to ClamAV cannot be
+        established (leading to ClamConnectionError exception).
+
+        Args:
+            file_: File being scanned
+        """
         try:
             result = self._perform_scan(file_)
         except ClamdConnectionError as exc:
+            logger.info("Issue wih ClamAV connection: Re-attempting connection.")
             raise ClamConnectionError(file_.name) from exc
 
         if result.status == "ERROR":
@@ -88,16 +104,31 @@ class FileScanner:
 
     @retry(
         reraise=True,
-        retry=retry_if_exception_type(ClamdConnectionError),
+        retry=retry_if_exception_type(TypeError),
         wait=wait_random_exponential(multiplier=MULTIPLIER, max=10),
         stop=stop_after_attempt(SCAN_ATTEMPTS),
         before=before_log(logger, logging.DEBUG),
     )
     def _perform_scan(self, file_: BinaryIO) -> ScanResult:
+        """
+        Returns response from ClamAV. A maxiumum of 5 scan attempts will occur
+        if no response is received from ClamAV (leading to TypeError exception).
+
+        Args:
+            file_: File being scanned
+
+        Returns:
+            ScanResult: Result from response
+        """
+
         try:
             response = self.clamav.instream(file_)
             status, reason = response["stream"]
             return ScanResult(status=status, reason=reason)
+        except TypeError as exc:
+            msg = "Issue with the ClamAV response: Re-requesting response."
+            logger.info(msg)
+            raise TypeError(exc)
         except BufferTooLongError as e:
             msg = "Antivirus scan failed due to BufferTooLongError"
             logger.exception(msg, exc_info=True)
