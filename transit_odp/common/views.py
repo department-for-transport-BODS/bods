@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import DetailView, TemplateView, UpdateView
 
-from transit_odp.common.constants import FALSE, TRUE
+from transit_odp.common.constants import ACCESSIBILITY_REPORT_FILE_NAME, FALSE, TRUE
 from transit_odp.common.utils.cookie_settings import delete_cookie, set_cookie
 from transit_odp.common.view_mixins import BODSBaseView
 
@@ -111,17 +111,23 @@ class AccessibilityVPATReportView(TemplateView):
     """
 
     def get(self, request):
-        file_name = "BODS_Accessibility_VPAT_2.4_WCAG_2.2_Edition_v0.1.docx"
-        file_path = f"transit_odp/frontend/assets/documents/{file_name}"
+        file_path = (
+            f"transit_odp/frontend/assets/documents/{ACCESSIBILITY_REPORT_FILE_NAME}"
+        )
         try:
             with open(file_path, "rb") as f:
                 response = HttpResponse(
                     f.read(),
                     content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 )
-                response["Content-Disposition"] = f"attachment; filename={file_name}"
+                response["Content-Disposition"] = (
+                    f"attachment; filename={ACCESSIBILITY_REPORT_FILE_NAME}"
+                )
 
                 return response
         except FileNotFoundError:
-            logger.error(f"Requested file {file_name} not found.")
-            return HttpResponse(f"Requested file {file_name} not found.", status=404)
+            logger.error(f"Requested file {ACCESSIBILITY_REPORT_FILE_NAME} not found.")
+            return HttpResponse(
+                f"Requested file {ACCESSIBILITY_REPORT_FILE_NAME} not found.",
+                status=404,
+            )
