@@ -120,9 +120,9 @@ class AccessibilityVPATReportView(TemplateView):
                     f.read(),
                     content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 )
-                response["Content-Disposition"] = (
-                    f"attachment; filename={ACCESSIBILITY_REPORT_FILE_NAME}"
-                )
+                response[
+                    "Content-Disposition"
+                ] = f"attachment; filename={ACCESSIBILITY_REPORT_FILE_NAME}"
 
                 return response
         except FileNotFoundError:
