@@ -304,6 +304,7 @@ class TimetableVisualiser:
                 observation_results[service_pattern_stop_id][vehicle_journey_id].append(
                     observation_contents[details]
                 )
+
         def convert_to_regular_dict(d):
             if isinstance(d, defaultdict):
                 d = {k: convert_to_regular_dict(v) for k, v in d.items()}
