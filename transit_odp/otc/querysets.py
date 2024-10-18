@@ -14,6 +14,7 @@ from django.db.models import (
     Value,
     When,
     Window,
+    Q,
 )
 from django.db.models.functions import Replace, RowNumber, TruncDate
 from django.db.models.query_utils import Q
@@ -30,6 +31,7 @@ from transit_odp.organisation.models import (
     TXCFileAttributes,
 )
 from transit_odp.otc.constants import (
+    API_TYPE_EP,
     API_TYPE_WECA,
     FLEXIBLE_REG,
     SCHOOL_OR_WORKS,
@@ -318,7 +320,7 @@ class ServiceQuerySet(QuerySet):
         weca_registrations.append(
             (
                 self.filter(licence__number__in=organisation_licences)
-                .filter(api_type__isnull=True)
+                .filter(Q(api_type__isnull=True) | Q(api_type=API_TYPE_EP))
                 .exclude(
                     registration_number__in=Subquery(
                         self.filter(licence__number__in=organisation_licences)
