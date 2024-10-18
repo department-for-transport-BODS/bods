@@ -37,8 +37,11 @@ from transit_odp.timetables.transxchange import BaseSchemaViolation
 from transit_odp.users.factories import OrgAdminFactory
 from transit_odp.validate import DownloadException, FileScanner
 from transit_odp.validate.antivirus import SuspiciousFile
-from transit_odp.validate.tests.utils import create_text_file, create_zip_file
-from transit_odp.validate.xml import XMLSyntaxError
+from transit_odp.validate.tests.utils import (
+    create_sparse_file,
+    create_text_file,
+    create_zip_file,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -305,6 +308,29 @@ def test_run_timetable_txc_schema_validation_exception(
     assert task.error_code == task.NO_VALID_FILE_TO_PROCESS
 
 
+def test_run_timetable_txc_schema_validation_dangerous_xml_found(
+    mocker, tmp_path, mock_dataset_txc_validator
+):
+    file1 = tmp_path / "file1.xml"
+    create_sparse_file(file1, file_size=int(1e2))
+
+    error_message = "Invalid schema"
+
+    xml_validator = TASK_MODULE + ".DatasetTXCValidator"
+    mocker.patch(xml_validator, return_value=mock_dataset_txc_validator)
+
+    with open(file1, "rb") as f:
+        task = create_task(revision__upload_file=File(f, name="file1.xml"))
+
+    task_timetable_schema_check(task.revision.id, task.id)
+    schemaviolation_objects = SchemaViolation.objects.filter(
+        revision_id=task.revision.id
+    )
+    assert schemaviolation_objects.count() == 1
+    assert schemaviolation_objects.first().filename == "failed_violation.xml"
+    assert schemaviolation_objects.first().details == error_message
+
+
 def test_run_task_post_schema_check(mocker, tmp_path, mock_post_schema_validator):
     """
     Given a zip file with an xml containing PII, violation
@@ -418,22 +444,6 @@ def test_file_check_general_exception(mocker):
     task.refresh_from_db()
     assert task.error_code == task.SYSTEM_ERROR
     assert str(exc_info.value) == message
-
-
-def test_file_check_validation_exception(mocker):
-    task = create_task(revision__upload_file__data=b"123")
-
-    download_get = TASK_MODULE + ".TimetableFileValidator.validate"
-    filename = task.revision.upload_file.name
-    mocker.patch(download_get, side_effect=XMLSyntaxError(filename=filename))
-
-    with pytest.raises(PipelineException) as exc_info:
-        task_timetable_file_check(task.revision.id, task.id)
-
-    task.refresh_from_db()
-    assert task.error_code == task.XML_SYNTAX_ERROR
-    expected_message = XMLSyntaxError.message_template.format(filename=filename)
-    assert str(exc_info.value) == expected_message
 
 
 def test_task_pti_validation():
