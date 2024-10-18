@@ -262,10 +262,10 @@ def get_df_timetable_visualiser(
     with journey code as columns
     """
     # Adjust display settings
-    pd.set_option('display.max_rows', None)
-    pd.set_option('display.max_columns', None)
-    pd.set_option('display.width', None)
-    pd.set_option('display.max_colwidth', None)
+    pd.set_option("display.max_rows", None)
+    pd.set_option("display.max_columns", None)
+    pd.set_option("display.width", None)
+    pd.set_option("display.max_colwidth", None)
 
     if df_vehicle_journey_operating.empty:
         return (df_vehicle_journey_operating, {}, {})
@@ -298,8 +298,8 @@ def get_df_timetable_visualiser(
     print(df_vehicle_journey_with_pattern_stop.shape)
     print(df_vehicle_journey_with_pattern_stop)
     print("observations")
-    for k,v in observations.items():
-        print(k,v)
+    for k, v in observations.items():
+        print(k, v)
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
     print("df_vehicle_journey_operating.shape")
     print(df_vehicle_journey_operating.shape)
@@ -339,7 +339,9 @@ def get_df_timetable_visualiser(
     stops_journey_code_time_list = []
     print("df_sequence_time")
     print(df_sequence_time)
-    sequence_list = [(idx,row) for idx,row  in enumerate(df_sequence_time.to_dict("records"))]
+    sequence_list = [
+        (idx, row) for idx, row in enumerate(df_sequence_time.to_dict("records"))
+    ]
     for i in sequence_list:
         print(i)
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
@@ -358,7 +360,9 @@ def get_df_timetable_visualiser(
         if observations:
             seq_index = df_sequence_time.index[idx]
             observation = observations.get(
-                df_vehicle_journey_with_pattern_stop.loc[seq_index, "service_pattern_stop_id"]
+                df_vehicle_journey_with_pattern_stop.loc[
+                    seq_index, "service_pattern_stop_id"
+                ]
             )
             print("observation")
             print(observation)
