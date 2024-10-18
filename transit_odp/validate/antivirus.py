@@ -17,7 +17,7 @@ from transit_odp.validate.exceptions import ValidationException
 logger = logging.getLogger(__name__)
 
 SCAN_ATTEMPTS = 5
-MULTIPLIER = 0.5
+MULTIPLIER = 1
 
 
 class AntiVirusError(ValidationException):
