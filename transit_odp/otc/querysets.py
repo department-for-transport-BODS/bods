@@ -14,7 +14,7 @@ from django.db.models import (
     Value,
     When,
     Window,
-    Q
+    Q,
 )
 from django.db.models.functions import Replace, RowNumber, TruncDate
 from django.db.models.query_utils import Q
