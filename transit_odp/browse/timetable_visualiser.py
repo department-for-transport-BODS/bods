@@ -278,8 +278,11 @@ class TimetableVisualiser:
             )
             .values(*columns)
         )
-
-        df = pd.DataFrame.from_records(qs_observation_results)
+        print("query")
+        print(qs_observation_results.query)
+        df = pd.DataFrame(qs_observation_results)
+        print("DF")
+        print(df)
         if df.empty:
             return {}
         requested_observations = df["observation"].unique().tolist()
@@ -301,8 +304,18 @@ class TimetableVisualiser:
                 observation_results[service_pattern_stop_id][vehicle_journey_id].append(
                     observation_contents[details]
                 )
+        def convert_to_regular_dict(d):
+            if isinstance(d, defaultdict):
+                d = {k: convert_to_regular_dict(v) for k, v in d.items()}
+            elif isinstance(d, dict):
+                d = {k: convert_to_regular_dict(v) for k, v in d.items()}
+            return d
 
-        return observation_results
+        normal_dict = convert_to_regular_dict(observation_results)
+        print("normal dict")
+        print(type(normal_dict))
+        print(normal_dict)
+        return normal_dict
 
     def get_timetable_visualiser(self) -> pd.DataFrame:
         """
@@ -416,11 +429,18 @@ class TimetableVisualiser:
                     service_pattern_stop_ids
                 )
             )
+            print("df_observation_results")
+            print(df_observation_results)
 
             df_timetable, stops, observations = get_df_timetable_visualiser(
                 df_vehicle_journey_operating,
                 df_observation_results,
             )
+
+            print("observations")
+            print(observations)
+            print("stops")
+            print(stops)
 
             # Get updated columns where the missing journey code is replaced with journey id
             df_timetable.columns = get_updated_columns(df_timetable)

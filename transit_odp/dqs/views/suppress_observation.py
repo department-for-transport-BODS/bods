@@ -18,7 +18,8 @@ class SuppressObservationView(viewsets.ViewSet):
 
         request_data = request.data
         session_data = request.session
-        org_id = request_data.get("organisation_id", None)
+        org_id = self.kwargs.get("pk1", None)
+        report_id = self.kwargs.get("report_id", None)
 
         if session_data and session_data.get("_auth_user_id") and org_id:
             auth_user_id = session_data.get("_auth_user_id")
@@ -33,14 +34,12 @@ class SuppressObservationView(viewsets.ViewSet):
                         status=ResponseStatus.HTTP_401_UNAUTHORIZED,
                     )
 
-        report_id = request_data.get("report_id", None)
-        revision_id = request_data.get("revision_id", None)
         service_code = request_data.get("service_code", None)
         line_name = request_data.get("line_name", None)
         check = request_data.get("check", None)
         is_suppressed = request_data.get("is_suppressed", False)
 
-        if not (report_id and revision_id and org_id and check):
+        if not (report_id and org_id and check):
             return Response(
                 {"error": "Required parameters are not sent"},
                 status=ResponseStatus.HTTP_400_BAD_REQUEST,
@@ -48,7 +47,6 @@ class SuppressObservationView(viewsets.ViewSet):
 
         observations = ObservationResults.objects.filter(
             taskresults__dataquality_report_id=report_id,
-            taskresults__dataquality_report__revision_id=revision_id,
             taskresults__checks__observation=check,
             taskresults__checks__importance=Level.advisory.value,
         )

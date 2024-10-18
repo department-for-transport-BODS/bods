@@ -97,9 +97,6 @@ function suppressObservation(
   // Need to make an AJAX call
   const httpClient = new HttpClient();
   const requestBody = JSON.stringify({
-    report_id: report_id,
-    revision_id: revision_id,
-    organisation_id: organisation_id,
     service_code: service_code,
     line_name: line_name,
     check: observation,
@@ -116,6 +113,9 @@ function suppressObservation(
     .catch((reason) => console.log(reason));
 }
 
+/**
+ * Suppress the observations for a check across all service code and line name.
+ */
 function suppressAllObservations() {
   const httpClient = new HttpClient();
   const suppressButton = document.getElementById("button-suppress-observation");
@@ -130,13 +130,7 @@ function suppressAllObservations() {
     is_suppressed = false;
   }
 
-  const { organisation_id, revision_id, report_id } =
-    extractOrgRevisionAndReportID();
-
   const requestBody = JSON.stringify({
-    organisation_id: organisation_id,
-    revision_id: revision_id,
-    report_id: report_id,
     check: observation,
     is_suppressed: is_suppressed,
   });
