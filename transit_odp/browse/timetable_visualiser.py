@@ -278,11 +278,7 @@ class TimetableVisualiser:
             )
             .values(*columns)
         )
-        print("query")
-        print(qs_observation_results.query)
         df = pd.DataFrame(qs_observation_results)
-        print("DF")
-        print(df)
         if df.empty:
             return {}
         requested_observations = df["observation"].unique().tolist()
