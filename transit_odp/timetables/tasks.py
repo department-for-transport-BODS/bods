@@ -101,14 +101,13 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_extract_txc_file_data.signature(args),
             task_pti_validation.signature(args),
         ]
-        jobs.append(task_dataset_etl.signature(args))
 
-        # if is_new_data_quality_service_active:
-        #     jobs.append(task_dataset_etl.signature(args))
-        #     jobs.append(task_data_quality_service.signature(args))
-        # else:
-        #     jobs.append(task_dqs_upload.signature(args))
-        #     jobs.append(task_dataset_etl.signature(args))
+        if is_new_data_quality_service_active:
+            jobs.append(task_dataset_etl.signature(args))
+            jobs.append(task_data_quality_service.signature(args))
+        else:
+            jobs.append(task_dqs_upload.signature(args))
+            jobs.append(task_dataset_etl.signature(args))
 
         # Adding the final step for ETL
         jobs.append(task_dataset_etl_finalise.signature(args))
