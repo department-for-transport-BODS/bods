@@ -1,4 +1,11 @@
-{% if field.label %}
+{% if field.label == 'Please choose the type of data you would like to publish.' %}
+  {# H2 heading size when publishing a dataset - choosing a data type. #}
+  <legend class="govuk-fieldset__legend {% if legend_classes %} {{ legend_classes }} {% else %} govuk-fieldset__legend--m {% endif %}">
+    {% if field.name == page_heading_field %}<h2 class="govuk-fieldset__heading">{% endif %}
+      {{ field.label|safe }}
+      {% if field.name == page_heading_field %}</h2>{% endif %}
+  </legend>
+{% else %}
   {# The default is to use the xl class, legend_classes can be set using a custom LayoutObject to wrap the field #}
   <legend class="govuk-fieldset__legend {% if legend_classes %} {{ legend_classes }} {% else %} govuk-fieldset__legend--xl {% endif %}">
     {# This follows the recommended Question Page pattern#}

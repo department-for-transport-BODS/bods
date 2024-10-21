@@ -14,6 +14,7 @@ from django.db.models import (
     Value,
     When,
     Window,
+    Q,
 )
 from django.db.models.functions import Replace, RowNumber, TruncDate
 from django.db.models.query_utils import Q
@@ -30,6 +31,7 @@ from transit_odp.organisation.models import (
     TXCFileAttributes,
 )
 from transit_odp.otc.constants import (
+    API_TYPE_EP,
     API_TYPE_WECA,
     FLEXIBLE_REG,
     SCHOOL_OR_WORKS,
@@ -274,7 +276,7 @@ class ServiceQuerySet(QuerySet):
         )
 
         traveline_region_subquery = Subquery(
-            self.get_org_weca_otc_traveline_region_exemption(organisation_id)
+            self.get_org_traveline_region_exemption(organisation_id)
         )
 
         return (
@@ -289,7 +291,7 @@ class ServiceQuerySet(QuerySet):
             .distinct("licence__number", "registration_number")
         )
 
-    def get_org_weca_otc_traveline_region_exemption(self, organisation_id: int):
+    def get_org_traveline_region_exemption(self, organisation_id: int):
         """Return registration numbers to be exempted based on traveline_region_id
         Which are not in england
 
@@ -303,7 +305,7 @@ class ServiceQuerySet(QuerySet):
             (
                 self.filter(
                     licence__number__in=organisation_licences,
-                    api_type=API_TYPE_WECA,
+                    api_type__in=[API_TYPE_WECA, API_TYPE_EP],
                 )
                 .exclude(
                     atco_code__in=AdminArea.objects.filter(
@@ -544,7 +546,7 @@ class ServiceQuerySet(QuerySet):
         )
 
         traveline_region_subquery = Subquery(
-            self.get_org_weca_otc_traveline_region_exemption(organisation_id)
+            self.get_org_traveline_region_exemption(organisation_id)
         )
 
         return (
