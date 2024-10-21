@@ -10,6 +10,7 @@ from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
 from transit_odp.otc.constants import (
+    API_TYPE_EP,
     API_TYPE_WECA,
     OTC_SCOPE_STATUS_IN_SCOPE,
     OTC_SCOPE_STATUS_OUT_OF_SCOPE,
@@ -298,7 +299,7 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
             traveline_region = ui_lta_name = ""
 
             if service:
-                if service.api_type == API_TYPE_WECA:
+                if service.api_type in [API_TYPE_WECA, API_TYPE_EP]:
                     is_english_region = self.get_is_english_region_weca(
                         service.atco_code, naptan_adminarea_df
                     )
