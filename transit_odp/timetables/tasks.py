@@ -19,7 +19,10 @@ from transit_odp.common.loggers import (
     get_dataset_adapter_from_revision,
 )
 from transit_odp.common.utils.aws_common import SQSClientWrapper
-from transit_odp.common.utils.s3_bucket_connection import read_datasets_file_from_s3
+from transit_odp.common.utils.s3_bucket_connection import (
+    get_file_name_by_id,
+    read_datasets_file_from_s3,
+)
 from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.data_quality.models.report import (
     PostSchemaViolation,
@@ -44,10 +47,6 @@ from transit_odp.timetables.utils import (
     create_queue_payload,
     get_bank_holidays,
     get_holidays_records_to_insert,
-)
-from transit_odp.common.utils.s3_bucket_connection import (
-    read_datasets_file_from_s3,
-    get_file_name_by_id,
 )
 from transit_odp.timetables.validate import (
     DatasetTXCValidator,
@@ -102,13 +101,14 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_extract_txc_file_data.signature(args),
             task_pti_validation.signature(args),
         ]
+        jobs.append(task_dataset_etl.signature(args))
 
-        if is_new_data_quality_service_active:
-            jobs.append(task_dataset_etl.signature(args))
-            jobs.append(task_data_quality_service.signature(args))
-        else:
-            jobs.append(task_dqs_upload.signature(args))
-            jobs.append(task_dataset_etl.signature(args))
+        # if is_new_data_quality_service_active:
+        #     jobs.append(task_dataset_etl.signature(args))
+        #     jobs.append(task_data_quality_service.signature(args))
+        # else:
+        #     jobs.append(task_dqs_upload.signature(args))
+        #     jobs.append(task_dataset_etl.signature(args))
 
         # Adding the final step for ETL
         jobs.append(task_dataset_etl_finalise.signature(args))
@@ -255,7 +255,9 @@ def task_timetable_schema_check(revision_id: int, task_id: int):
                 )
         adapter.info("Validation complete.")
         task.update_progress(40)
-    else:
+    if number_of_files_in_revision == 0 or (
+        len(violations) > 0 and revision.upload_file.name.endswith(".xml")
+    ):
         message = f"Validation task: task_timetable_schema_check, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)
         task.to_error(
@@ -311,6 +313,15 @@ def task_post_schema_check(revision_id: int, task_id: int):
             )
             revision.modify_upload_file([sv.filename for sv in schema_violations])
     adapter.info("Completed post schema validation check.")
+    if len(violations) > 0 and revision.upload_file.name.endswith(".xml"):
+        message = f"Validation task: task_post_schema_check, no file to process, zip file: {revision.upload_file.name}"
+        adapter.error(message, exc_info=True)
+        task.to_error(
+            "task_post_schema_check", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS
+        )
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message)
     return revision_id
 
 
@@ -413,6 +424,15 @@ def task_pti_validation(revision_id: int, task_id: int):
         revision.save()
 
     adapter.info("Finished PTI Profile validation.")
+    if len(violations) > 0 and revision.upload_file.name.endswith(".xml"):
+        message = f"Validation task: task_pti_validation, no file to process, zip file: {revision.upload_file.name}"
+        adapter.error(message, exc_info=True)
+        task.to_error(
+            "task_pti_validation", DatasetETLTaskResult.NO_VALID_FILE_TO_PROCESS
+        )
+        task.additional_info = message
+        task.save()
+        raise PipelineException(message)
     return revision_id
 
 

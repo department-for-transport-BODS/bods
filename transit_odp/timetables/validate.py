@@ -87,6 +87,8 @@ class DatasetTXCValidator:
             if error:
                 violations.append(BaseSchemaViolation.from_error(error[0]))
                 continue
+
+            file_.seek(0)
             doc = etree.parse(file_)
             is_valid = self._schema.validate(doc)
             if not is_valid:
