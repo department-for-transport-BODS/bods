@@ -456,6 +456,7 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
                     "stops": direction_details["stops"],
                     "page_param": direction + "Page",
                     "show_all_param": "showAll" + direction.capitalize(),
+                    "observations": direction_details.get("observations", {}),
                 }
 
             context["timetable"] = timetable
