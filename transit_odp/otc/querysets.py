@@ -276,7 +276,7 @@ class ServiceQuerySet(QuerySet):
         )
 
         traveline_region_subquery = Subquery(
-            self.get_org_weca_otc_traveline_region_exemption(organisation_id)
+            self.get_org_traveline_region_exemption(organisation_id)
         )
 
         return (
@@ -291,7 +291,7 @@ class ServiceQuerySet(QuerySet):
             .distinct("licence__number", "registration_number")
         )
 
-    def get_org_weca_otc_traveline_region_exemption(self, organisation_id: int):
+    def get_org_traveline_region_exemption(self, organisation_id: int):
         """Return registration numbers to be exempted based on traveline_region_id
         Which are not in england
 
@@ -305,7 +305,7 @@ class ServiceQuerySet(QuerySet):
             (
                 self.filter(
                     licence__number__in=organisation_licences,
-                    api_type=API_TYPE_WECA,
+                    api_type__in=[API_TYPE_WECA, API_TYPE_EP],
                 )
                 .exclude(
                     atco_code__in=AdminArea.objects.filter(
@@ -320,7 +320,7 @@ class ServiceQuerySet(QuerySet):
         weca_registrations.append(
             (
                 self.filter(licence__number__in=organisation_licences)
-                .filter(Q(api_type__isnull=True) | Q(api_type=API_TYPE_EP))
+                .filter(api_type__isnull=True)
                 .exclude(
                     registration_number__in=Subquery(
                         self.filter(licence__number__in=organisation_licences)
@@ -546,7 +546,7 @@ class ServiceQuerySet(QuerySet):
         )
 
         traveline_region_subquery = Subquery(
-            self.get_org_weca_otc_traveline_region_exemption(organisation_id)
+            self.get_org_traveline_region_exemption(organisation_id)
         )
 
         return (
