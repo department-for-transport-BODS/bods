@@ -261,12 +261,6 @@ def get_df_timetable_visualiser(
     Get the dataframe containing the list of stops and the timetable details
     with journey code as columns
     """
-    # Adjust display settings
-    pd.set_option("display.max_rows", None)
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.width", None)
-    pd.set_option("display.max_colwidth", None)
-
     if df_vehicle_journey_operating.empty:
         return (df_vehicle_journey_operating, {}, {})
 
