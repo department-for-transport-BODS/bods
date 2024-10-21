@@ -300,16 +300,16 @@ def get_df_timetable_visualiser(
     ]
 
     # Add key to the filtered df.
-    df_vehicle_journey_with_pattern_stop["key"] = (
-        df_vehicle_journey_with_pattern_stop.apply(
-            lambda row: f"{str(row['common_name'])}_{str(row['stop_sequence'])}_{str(row['vehicle_journey_code'])}_{str(row['vehicle_journey_id'])}"
-            if pd.notnull(row["common_name"])
-            and pd.notnull(row["stop_sequence"])
-            and pd.notnull(row["vehicle_journey_code"])
-            and pd.notnull(row["vehicle_journey_id"])
-            else "",
-            axis=1,
-        )
+    df_vehicle_journey_with_pattern_stop[
+        "key"
+    ] = df_vehicle_journey_with_pattern_stop.apply(
+        lambda row: f"{str(row['common_name'])}_{str(row['stop_sequence'])}_{str(row['vehicle_journey_code'])}_{str(row['vehicle_journey_id'])}"
+        if pd.notnull(row["common_name"])
+        and pd.notnull(row["stop_sequence"])
+        and pd.notnull(row["vehicle_journey_code"])
+        and pd.notnull(row["vehicle_journey_id"])
+        else "",
+        axis=1,
     )
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
     df_vehicle_journey_operating["key"] = df_vehicle_journey_operating.apply(
