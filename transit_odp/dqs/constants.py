@@ -463,16 +463,22 @@ ServicedOrganisationOutOfDateObservation = Observation(
     title=Checks.ServicedOrganisationOutOfDate.value,
     text=(
         "This observation identifies services that have journeys operating during Serviced"
-        " Organisation days that have passed."
+        " Organisation days that have expired."
     ),
     impacts=(
         "Serviced organisations hold dates for when organisations, such as schools, are open"
-        " and closed. If the date has passed, the journeys will not appear in journey planning"
-        " apps impacting passenger satisfaction. Operators must ensure the data provides reliable,"
-        " up-to-date information for passengers. "
+        " and closed. The services will not appear on downstream journey planning apps,"
+        " impacting the reliability of the data for passengers. Operators must ensure the data"
+        " provides up-to-date information for passengers."
     ),
-    resolve=(""),
-    preamble="The following service(s) have been observed to not have the correct licence numbers.",
+    resolve=(
+        "Please enter up to date working days on your scheduling tool for serviced organisations"
+        " specified on your timetables data."
+    ),
+    preamble=(
+        "The following service(s) have been observed to have at least one journey referencing"
+        " a serviced organisation that have working days that are out of date."
+    ),
     list_url_name="dq:serviced-organisation-out-of-date-list",
     level=Level.advisory,
     category=Category.data_set,

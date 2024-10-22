@@ -44,6 +44,18 @@ class DQSWarningDetailsBaseTable(GovUkTable):
         self.stop_type = tables.Column(
             verbose_name="Stop type", attrs={"column_key": "stop_type"}
         )
+        self.serviced_organisation = tables.Column(
+            verbose_name="Serviced organisation",
+            attrs={"column_key": "serviced_organisation"},
+        )
+        self.serviced_organisation_code = tables.Column(
+            verbose_name="Serviced organisation code",
+            attrs={"column_key": "serviced_organisation_code"},
+        )
+        self.last_working_day = tables.Column(
+            verbose_name="Last working day",
+            attrs={"column_key": "last_working_day"},
+        )
         self.columns = [
             self.journey_start_time,
             self.direction,
