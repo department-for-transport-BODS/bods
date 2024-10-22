@@ -1,33 +1,30 @@
 import logging
+from collections import defaultdict
+from typing import List
 
-from django.db.models import (
-    Q,
-    F,
-    CharField,
-)
+import pandas as pd
+from django.db.models import CharField, F, Q
 from django.db.models.functions import Coalesce
 
-from transit_odp.transmodel.models import (
-    Service,
-    ServicedOrganisationVehicleJourney,
-    OperatingDatesExceptions,
-    NonOperatingDatesExceptions,
-)
+from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.constants import Level as Importance
+from transit_odp.dqs.models import ObservationResults
 from transit_odp.timetables.utils import (
-    get_vehicle_journeyids_exceptions,
-    get_non_operating_vj_serviced_org,
+    fill_missing_journey_codes,
     get_df_operating_vehicle_journey,
     get_df_timetable_visualiser,
     get_initial_vehicle_journeys_df,
+    get_non_operating_vj_serviced_org,
     get_updated_columns,
-    fill_missing_journey_codes,
+    get_vehicle_journeyids_exceptions,
     observation_contents_mapper,
 )
-from transit_odp.dqs.models import ObservationResults
-import pandas as pd
-from typing import List
-from collections import defaultdict
-from transit_odp.dqs.constants import Checks, Level as Importance
+from transit_odp.transmodel.models import (
+    NonOperatingDatesExceptions,
+    OperatingDatesExceptions,
+    Service,
+    ServicedOrganisationVehicleJourney,
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -278,11 +275,7 @@ class TimetableVisualiser:
             )
             .values(*columns)
         )
-        print("query")
-        print(qs_observation_results.query)
         df = pd.DataFrame(qs_observation_results)
-        print("DF")
-        print(df)
         if df.empty:
             return {}
         requested_observations = df["observation"].unique().tolist()
@@ -419,18 +412,10 @@ class TimetableVisualiser:
                     service_pattern_stop_ids
                 )
             )
-            print("df_observation_results")
-            print(df_observation_results)
-
             df_timetable, stops, observations = get_df_timetable_visualiser(
                 df_vehicle_journey_operating,
                 df_observation_results,
             )
-
-            print("observations")
-            print(observations)
-            print("stops")
-            print(stops)
 
             # Get updated columns where the missing journey code is replaced with journey id
             df_timetable.columns = get_updated_columns(df_timetable)

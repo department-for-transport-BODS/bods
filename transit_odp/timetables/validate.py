@@ -83,6 +83,12 @@ class DatasetTXCValidator:
     def get_violations(self):
         violations = []
         for file_ in self.iter_get_files():
+            error = XMLValidator(file_).dangerous_xml_check()
+            if error:
+                violations.append(BaseSchemaViolation.from_error(error[0]))
+                continue
+
+            file_.seek(0)
             doc = etree.parse(file_)
             is_valid = self._schema.validate(doc)
             if not is_valid:
@@ -126,11 +132,6 @@ class TimetableFileValidator:
         if self.is_zip:
             with ZippedValidator(self.file) as zv:
                 zv.validate()
-                for name in zv.get_files():
-                    with zv.open(name) as f:
-                        XMLValidator(f).dangerous_xml_check()
-        else:
-            XMLValidator(self.file).dangerous_xml_check()
 
 
 class TXCRevisionValidator:
