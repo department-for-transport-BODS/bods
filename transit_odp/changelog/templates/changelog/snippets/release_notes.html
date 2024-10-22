@@ -1,4 +1,47 @@
 {% load i18n %}
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "November 2024 (1.42.0)" %}</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      File level processing for Timetable datasets. This will result in published zip files to be
+      restructured to pass successfully processed data to consumers immediately.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An improvement to the way NaPTAN data is processed overnight to improve resilience of
+      the application.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A fix for the way locally managed registrations are imported.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An improvement to handle timetable files that are published that fail the
+      anti-virus checks or are incorrectly structured.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An improvement to the way live location data supplied via the download all pages are
+      constructed to improve resilience of the application.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An updated accessibility statement that describes the way BODS has been updated to
+      meet WCAG 2.2 AA requirements.
+    {% endblocktrans %}
+  </li>
+</ul>
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "October 2024 (1.41.0)" %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}
