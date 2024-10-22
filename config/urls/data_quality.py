@@ -462,5 +462,22 @@ urlpatterns = [
             ]
         ),
     ),
+    path(
+        "serviced-organisation-out-of-date/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.ServicedOrganisationOutOfDateListView.as_view(),
+                    name="serviced-organisation-out-of-date-list",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.ServicedOrganisationOutOfDateDetailView.as_view(),
+                    name="serviced-organisation-out-of-date-detail",
+                ),
+            ]
+        ),
+    ),
     path("django_axe/", include("django_axe.urls")),
 ]
