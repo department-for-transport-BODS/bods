@@ -154,6 +154,7 @@ class DQSWarningDetailBaseView(MultiTableMixin, TemplateView):
                     },
                     host=config.hosts.PUBLISH_HOST,
                 ),
+                "subtitle_description": "Which journeys have been affected?",
             }
         )
         return context
