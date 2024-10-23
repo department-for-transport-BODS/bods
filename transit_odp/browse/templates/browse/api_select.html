@@ -3,14 +3,14 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% block title_tag %}
-  {% trans "Try API Service" %}
+  {% trans "API services" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
-  {% breadcrumb_url 'Try API Service' 'api-select' host hosts.data %}
+  {% breadcrumb_url 'API services' 'api-select' host hosts.data %}
 {% endblock %}
 {% block heading.title.text %}
-  {% trans "Try API Service" %}
+  {% trans "API services" %}
 {% endblock %}
 {% block heading.subtitle %}
   <div class="govuk-!-padding-right-9">
