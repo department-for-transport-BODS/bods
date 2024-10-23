@@ -322,7 +322,8 @@ def test_run_timetable_txc_schema_validation_dangerous_xml_found(
     with open(file1, "rb") as f:
         task = create_task(revision__upload_file=File(f, name="file1.xml"))
 
-    task_timetable_schema_check(task.revision.id, task.id)
+    with pytest.raises(PipelineException):
+        task_timetable_schema_check(task.revision.id, task.id)
     schemaviolation_objects = SchemaViolation.objects.filter(
         revision_id=task.revision.id
     )
