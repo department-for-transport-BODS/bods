@@ -25,7 +25,7 @@ from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
-from transit_odp.otc.constants import API_TYPE_WECA
+from transit_odp.otc.constants import API_TYPE_EP, API_TYPE_WECA
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.otc.models import UILta
@@ -585,7 +585,7 @@ class LTACSV(CSVBuilder, LTACSVHelper):
             seasonal_service = seasonal_service_map.get(service_code)
             exemption = service_code_exemption_map.get(service_code)
 
-            if service.api_type == API_TYPE_WECA:
+            if service.api_type in [API_TYPE_WECA, API_TYPE_EP]:
                 is_english_region = self.get_is_english_region_weca(
                     service.atco_code, naptan_adminarea_df
                 )
@@ -850,7 +850,7 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
             seasonal_service = seasonal_service_map.get(registration_number)
             exemption = service_code_exemption_map.get(registration_number)
 
-            if service.api_type == API_TYPE_WECA:
+            if service.api_type in [API_TYPE_WECA, API_TYPE_EP]:
                 is_english_region = self.get_is_english_region_weca(
                     service.atco_code, naptan_adminarea_df
                 )
