@@ -36,8 +36,10 @@ class ServicedOrganisationOutOfDateDetailView(DQSWarningDetailBaseView):
         context = super().get_context_data(**kwargs)
         context.update(
             {
-                "subtitle": f"Service {line} has at least one journey linked to a serviced organisation that is out of date.",
-                "subtitle_description": "Which Serviced Organisations have been affected?",
+                "subtitle": f"Service {line} has at least one journey linked to a serviced organisation that is out of date",
+                "subtitle_description": "Which serviced organisations have been affected?",
+                "total_journey_description": "Total serviced organisations",
+                "list_text": "serviced organisations",
             }
         )
 
