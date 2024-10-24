@@ -96,7 +96,7 @@ class FileScanner:
 
         if result.status == "ERROR":
             logger.info("Antivirus scan: FAILED")
-            raise AntiVirusError(file_.name)
+            raise AntiVirusError(file_.name, result.reason)
         elif result.status == "FOUND":
             logger.exception("Antivirus scan: FOUND")
             raise SuspiciousFile(file_.name, result.reason)
@@ -104,7 +104,7 @@ class FileScanner:
 
     @retry(
         reraise=True,
-        retry=retry_if_exception_type(TypeError),
+        retry=retry_if_exception_type(AntiVirusError),
         wait=wait_random_exponential(multiplier=MULTIPLIER, max=10),
         stop=stop_after_attempt(SCAN_ATTEMPTS),
         before=before_log(logger, logging.DEBUG),
@@ -112,7 +112,8 @@ class FileScanner:
     def _perform_scan(self, file_: BinaryIO) -> ScanResult:
         """
         Returns response from ClamAV. A maxiumum of 5 scan attempts will occur
-        if no response is received from ClamAV (leading to TypeError exception).
+        if no response is received from ClamAV or buffer period is too long
+        (both leading to an AntiVirusError exception).
 
         Args:
             file_: File being scanned
@@ -128,7 +129,7 @@ class FileScanner:
         except TypeError as exc:
             msg = "Issue with the ClamAV response: Re-requesting response."
             logger.info(msg)
-            raise TypeError(exc)
+            raise AntiVirusError(file_.name, message=msg) from exc
         except BufferTooLongError as e:
             msg = "Antivirus scan failed due to BufferTooLongError"
             logger.exception(msg, exc_info=True)
