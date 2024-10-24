@@ -13,7 +13,6 @@ from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.pti import DatasetPTIValidator, get_pti_validator
 from transit_odp.timetables.tasks import task_pti_validation
 
-
 DATA_DIR = Path(__file__).parent / "data"
 
 pytestmark = pytest.mark.django_db
@@ -95,7 +94,8 @@ def test_validate_pti_success(mocker, pti_unenforced):
     validator.get_violations.return_value = [violation]
     mocker.patch(GET_VALIDATOR, return_value=validator)
 
-    task_pti_validation(revision.id, task.id)
+    with pytest.raises(PipelineException):
+        task_pti_validation(revision.id, task.id)
 
     result = PTIValidationResult.objects.get(revision=revision)
     pti_observation_result = PTIObservation.objects.filter(revision_id=revision.id)
@@ -124,10 +124,12 @@ def test_validate_pti_multiple_calls(mocker, pti_unenforced):
     validator.get_violations.return_value = [violation]
     mocker.patch(GET_VALIDATOR, return_value=validator)
 
-    task_pti_validation(revision.id, task.id)
+    with pytest.raises(PipelineException):
+        task_pti_validation(revision.id, task.id)
     original_result = PTIValidationResult.objects.get(revision=revision)
 
-    task_pti_validation(revision.id, task.id)
+    with pytest.raises(PipelineException):
+        task_pti_validation(revision.id, task.id)
     new_result = PTIValidationResult.objects.get(revision=revision)
 
     pti_observation_result = PTIObservation.objects.filter(revision_id=revision.id)
