@@ -52,7 +52,7 @@ class TestFileScanner:
         "side_effect, expected",
         [
             (clamd.BufferTooLongError, AntiVirusError),
-            (TypeError, TypeError),
+            (TypeError, AntiVirusError),
         ],
     )
     def test_perform_scan_exceptions(self, side_effect, expected, mocker):

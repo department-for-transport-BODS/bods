@@ -62,9 +62,12 @@ ERROR_CODE_LOOKUP = {
         "description": "The data set has already expired"
     },
     DatasetETLTaskResult.SUSPICIOUS_FILE: {
-        "description": f"Our anti virus scan detected an issue with your data"
-        f"set. If you believe this to be "
-        f'wrong, please <a class="govuk-link" href="{support_url}">contact '
-        f"support</a>."
+        "description": "The data published is not suitable according to anti virus checks."
+    },
+    DatasetETLTaskResult.ANTIVIRUS_FAILURE: {
+        "description": "The anti virus checks failed to validate the file(s). Please try again later."
+    },
+    DatasetETLTaskResult.AV_CONNECTION_ERROR: {
+        "description": "The anti virus checks failed to validate the file(s). Please try again later."
     },
 }

@@ -19,7 +19,7 @@ from transit_odp.validate.antivirus import (
     ClamConnectionError,
     SuspiciousFile,
 )
-from transit_odp.validate.xml import DangerousXML, XMLSyntaxError, XMLValidator
+from transit_odp.validate.xml import XMLValidator
 
 pytestmark = pytest.mark.django_db
 
@@ -88,7 +88,7 @@ class TestPipeline:
                     message="Antivirus failed validating file text.xml.",
                 ),
                 pytest.raises(PipelineException),
-                AntiVirusError.code,
+                DatasetETLTaskResult.ANTIVIRUS_FAILURE,
             ),
             (
                 ClamConnectionError(
@@ -96,7 +96,7 @@ class TestPipeline:
                     message="Could not connect to Clam daemon when testing test.xml.",
                 ),
                 pytest.raises(PipelineException),
-                ClamConnectionError.code,
+                DatasetETLTaskResult.AV_CONNECTION_ERROR,
             ),
         ],
     )
@@ -118,7 +118,7 @@ class TestPipeline:
         with expectaton:
             task_scan_timetables(revision.id, task.id)
 
-        task.to_error.assert_called_once_with("dataset_validate", task_status)
+        task.to_error.assert_called_once_with("task_scan_timetables", task_status)
 
 
 def test_revision_get_by_service_code_non_unique():
