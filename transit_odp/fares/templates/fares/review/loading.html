@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="govuk-panel--confirmation blue-background govuk-panel">
+<div class="govuk-panel govuk-panel--confirmation bods-bg-blue-light">
   <h1 class="govuk-panel__title govuk-!-font-size-36">{% trans "Your data is being processed" %}</h1>
   <div class="govuk-panel__body govuk-!-font-size-19">
     <div class="pb3-l">
@@ -10,8 +10,8 @@
         {% endblocktrans %}
     </div>
     <div id="progressOuterDiv" class="progress-bar-outer">
-      <div id="progressInnerDiv" class="progress-bar-inner"></div>
+      <div class="loading-white" id="progressInnerDiv"></div>
     </div>
-    <span class="progress-bar-text" id="progressSpan"></span>
+    <span class="loading-white-lg" id="progressSpan"></span>
   </div>
 </div>
