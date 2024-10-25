@@ -67,7 +67,7 @@ class DatasetTXCValidatorFactory_No_Violation:
         return []
 
     def get_number_of_files_uploaded(self):
-        return 0
+        return 1
 
 
 class DatasetTXCValidatorFactory:
@@ -96,6 +96,17 @@ class PostSchemaValidatorFactory:
         return ["failed_postchema_violation.xml"]
 
 
+class PostSchemaValidatorFactory_No_Violation:
+    def __init__(self):
+        pass
+
+    def get_violations(self):
+        return []
+
+    def get_failed_validation_filenames(self):
+        return []
+
+
 @pytest.fixture
 def mock_dataset_txc_validator():
     return DatasetTXCValidatorFactory(None)
@@ -109,6 +120,11 @@ def mock_dataset_txc_validator_no_violation():
 @pytest.fixture
 def mock_post_schema_validator():
     return PostSchemaValidatorFactory()
+
+
+@pytest.fixture
+def mock_post_schema_validator_no_violation():
+    return PostSchemaValidatorFactory_No_Violation()
 
 
 @pytest.fixture
@@ -282,13 +298,35 @@ def test_run_timetable_txc_schema_validation_violation_found(
     assert schemaviolation_objects.first().filename == "failed_violation.xml"
 
 
-def test_run_timetable_txc_schema_validation_exception(
+def test_task_timetable_schema_check_zip_no_violation(
     mocker, tmp_path, mock_dataset_txc_validator_no_violation
 ):
     """
-    Given a zip file with an invalid xml a violation entry
-    and if there are no valid file in uploaded zip file
-    PipelineException would be raised
+    Given a zip file with valid xml no violation entry
+    would be inserted in schemaviolation table.
+    """
+    xml_file = DATA / "test_flexible_and_standard_service.xml"
+    testzip = tmp_path / "testzip.zip"
+    create_zip_file(testzip, [xml_file])
+    with open(testzip, "rb") as zout:
+        task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
+
+    zip_validator = TASK_MODULE + ".DatasetTXCValidator"
+    mocker.patch(zip_validator, return_value=mock_dataset_txc_validator_no_violation)
+
+    task_timetable_schema_check(task.revision.id, task.id)
+    schemaviolation_objects = SchemaViolation.objects.filter(
+        revision_id=task.revision.id
+    )
+    assert schemaviolation_objects.count() == 0
+
+
+def test_run_timetable_txc_schema_validation_exception(
+    mocker, tmp_path, mock_dataset_txc_validator
+):
+    """
+    Given a zip file with an invalid xml a violation entry will be inserted
+    in SchemaViolation table and no Pipeline Exception would be raised
     """
 
     file1 = tmp_path / "file1.xml"
@@ -299,13 +337,15 @@ def test_run_timetable_txc_schema_validation_exception(
         task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
 
     zip_validator = TASK_MODULE + ".DatasetTXCValidator"
-    mocker.patch(zip_validator, return_value=mock_dataset_txc_validator_no_violation)
+    mocker.patch(zip_validator, return_value=mock_dataset_txc_validator)
 
-    with pytest.raises(PipelineException) as exc_info:
-        task_timetable_schema_check(task.revision.id, task.id)
+    task_timetable_schema_check(task.revision.id, task.id)
 
     task.refresh_from_db()
-    assert task.error_code == task.NO_VALID_FILE_TO_PROCESS
+    schemaviolation_objects = SchemaViolation.objects.filter(
+        revision_id=task.revision.id
+    )
+    assert schemaviolation_objects.count() == 1
 
 
 def test_run_timetable_txc_schema_validation_dangerous_xml_found(
@@ -322,7 +362,8 @@ def test_run_timetable_txc_schema_validation_dangerous_xml_found(
     with open(file1, "rb") as f:
         task = create_task(revision__upload_file=File(f, name="file1.xml"))
 
-    task_timetable_schema_check(task.revision.id, task.id)
+    with pytest.raises(PipelineException):
+        task_timetable_schema_check(task.revision.id, task.id)
     schemaviolation_objects = SchemaViolation.objects.filter(
         revision_id=task.revision.id
     )
@@ -358,6 +399,33 @@ def test_run_task_post_schema_check(mocker, tmp_path, mock_post_schema_validator
         revision_id=task.revision.id
     )
     assert postschemaviolation_objects.count() == 1
+
+
+def test_task_post_schema_check_zip_noviolation(
+    mocker, tmp_path, mock_post_schema_validator_no_violation
+):
+    """
+    Given a zip file with no PII violation, no violation
+    will be recorded in PostSchemaViolation table
+    """
+
+    xml_file = DATA / "test_flexible_and_standard_service.xml"
+    testzip = tmp_path / "testzip.zip"
+    create_zip_file(testzip, [xml_file])
+    with open(testzip, "rb") as zout:
+        task = create_task(revision__upload_file=File(zout, name="testzip.zip"))
+
+    zip_validator = TASK_MODULE + ".PostSchemaValidator"
+    mocker.patch(
+        zip_validator,
+        return_value=mock_post_schema_validator_no_violation,
+    )
+    task_post_schema_check(task.revision.id, task.id)
+
+    postschemaviolation_objects = PostSchemaViolation.objects.filter(
+        revision_id=task.revision.id
+    )
+    assert postschemaviolation_objects.count() == 0
 
 
 def test_run_task_post_schema_check_exception(

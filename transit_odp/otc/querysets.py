@@ -130,7 +130,7 @@ class ServiceQuerySet(QuerySet):
         return self.annotate(
             traveline_region=Case(
                 When(
-                    Q(api_type=API_TYPE_WECA),
+                    Q(api_type__in=[API_TYPE_WECA, API_TYPE_EP]),
                     then=F("traveline_region_weca"),
                 ),
                 default=F("traveline_region_otc"),
@@ -184,7 +184,7 @@ class ServiceQuerySet(QuerySet):
         return self.annotate(
             local_authority_ui_lta=Case(
                 When(
-                    Q(api_type=API_TYPE_WECA),
+                    Q(api_type__in=[API_TYPE_WECA, API_TYPE_EP]),
                     then=F("ui_lta_weca"),
                 ),
                 default=F("ui_lta_otc"),
@@ -364,9 +364,9 @@ class ServiceQuerySet(QuerySet):
             licence_id__isnull=False,
         ).values("id")
 
-    def get_weca_otc_traveline_region_exemption(self, ui_lta):
+    def get_traveline_region_exemption_lta(self, ui_lta):
         """
-        Get OTC and WECA registration_number subquery, which are exempted
+        Get OTC, WECA and EP registration_number subquery, which are exempted
         because those are not present in english traveline region
         """
         weca_registrations = [
@@ -374,7 +374,7 @@ class ServiceQuerySet(QuerySet):
                 atco_code__in=AdminArea.objects.filter(ui_lta=ui_lta)
                 .exclude(traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS)
                 .values("atco_code"),
-                api_type=API_TYPE_WECA,
+                api_type__in=[API_TYPE_WECA, API_TYPE_EP],
             ).values("registration_number")
         ]
 
@@ -452,7 +452,7 @@ class ServiceQuerySet(QuerySet):
                 )
 
                 exemption_traveline_region_subquery = Subquery(
-                    self.get_weca_otc_traveline_region_exemption(lta_list[0].ui_lta)
+                    self.get_traveline_region_exemption_lta(lta_list[0].ui_lta)
                 )
 
                 all_in_scope_in_season_services = (
@@ -599,7 +599,7 @@ class ServiceQuerySet(QuerySet):
             )
 
             exemption_traveline_region_subquery = Subquery(
-                self.get_weca_otc_traveline_region_exemption(lta_list[0].ui_lta)
+                self.get_traveline_region_exemption_lta(lta_list[0].ui_lta)
             )
 
             return (

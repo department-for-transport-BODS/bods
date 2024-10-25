@@ -46,7 +46,7 @@
             {% blocktrans %}
               navigate all of the website using just a
               keyboard (except for maps which are not
-              essential to the functionality)
+              essential to the functionality).
             {% endblocktrans %}
           {% endfilter %}
         </li>
@@ -55,7 +55,7 @@
             {% blocktrans %}
               use all of the website using a screen
               reader (including the most recent versions
-              of NVDA)
+              of NVDA).
             {% endblocktrans %}
           {% endfilter %}
         </li>
@@ -64,7 +64,7 @@
             {% blocktrans %}
               interpret page information through access
               technology due to a consistent heading
-              structure
+              structure.
             {% endblocktrans %}
           {% endfilter %}
         </li>
@@ -73,7 +73,7 @@
             {% blocktrans %}
               access the site and use the associated
               services with Google Chrome, Internet
-              Explorer, Safari, Opera, Firefox, and Edge
+              Explorer, Safari, Opera, Firefox, and Edge.
             {% endblocktrans %}
           {% endfilter %}
         </li>
@@ -262,16 +262,9 @@
           {% filter force_escape %}
             {% blocktrans %}
               This website was last tested on 20 September
-              2024. The test was carried out by the KPMG
-              Accessibility Testing department.
+              2024.
             {% endblocktrans %}
           {% endfilter %}
-        </p>
-        <p class="govuk-body">
-          {% filter force_escape %}
-            {% trans "You can read the" %}
-          {% endfilter %}
-          <a class="govuk-link" href="{% url 'accessibility-document' %}">full VPAT report</a>.
         </p>
       </section>
     </div>
