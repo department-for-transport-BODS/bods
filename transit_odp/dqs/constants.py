@@ -63,6 +63,11 @@ class Checks(Enum):
     DuplicateJourneys = "Duplicate journeys"
 
 
+STOPNAMEOBSERVATION = [
+    Checks.IncorrectStopType.value,
+    Checks.StopNotFoundInNaptan.value,
+]
+
 CHECKS_DATA = [
     {
         "observation": Checks.IncorrectNoc.value,
