@@ -21,12 +21,12 @@
                      id="{{ cell.journey_id }}-{{ idx }}"
                      onclick="BODSFrontend.disableClick(event);">
                   <div id="timetable_tooltip">
-                    <div class="">
-                      <span class="">
-                        <span class="govuk-!-font-weight-bold govuk-!-font-size-27" id="">{{ key.title }}</span>
+                    <div>
+                      <span>
+                        <span class="govuk-!-font-weight-bold govuk-!-font-size-27">{{ key.title }}</span>
                       </span>
                     </div>
-                    <div id="" class="govuk-!-font-weight-regular">
+                    <div class="govuk-!-font-weight-regular">
                       <p>{{ key.text }}</p>
                       <p>{{ key.resolve }}</p>
                     </div>
@@ -146,12 +146,12 @@
                                 {% else %}
                                   <div id="timetable_tooltip">
                                     {% for key in obs_value|get_value_from_dict:cell.journey_id %}
-                                      <div class="">
-                                        <span class="">
-                                          <span class="govuk-!-font-weight-bold govuk-!-font-size-27" id="">{{ key|get_value_from_dict:'title' }}</span>
+                                      <div>
+                                        <span>
+                                          <span class="govuk-!-font-weight-bold govuk-!-font-size-27">{{ key|get_value_from_dict:'title' }}</span>
                                         </span>
                                       </div>
-                                      <div id="" class="">
+                                      <div>
                                         <p>{{ key|get_value_from_dict:'text' }}</p>
                                         <p>{{ key|get_value_from_dict:'resolve' }}</p>
                                       </div>
