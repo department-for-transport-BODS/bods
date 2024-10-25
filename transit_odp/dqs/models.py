@@ -8,7 +8,7 @@ from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.transmodel.models import (
     ServicePatternStop,
     VehicleJourney,
-    ServicedOrganisations,
+    ServicedOrganisationVehicleJourney,
 )
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.dqs.querysets import TaskResultsQueryset, ObservationResultsQueryset
@@ -121,10 +121,11 @@ class ObservationResults(models.Model):
         null=True,
         blank=True,
     )
-    serviced_organisation_id = models.ForeignKey(
-        ServicedOrganisations,
+    serviced_organisation_vehicle_journey = models.ForeignKey(
+        ServicedOrganisationVehicleJourney,
         default=None,
         help_text="Contains the link to serviced organisation id",
+        related_name="dqs_observationresult_serviced_organisation_vehicle_journey",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
