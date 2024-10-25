@@ -88,7 +88,7 @@ class TimetableVisualiser:
             "street",
             "indicator",
             "service_pattern_stop_id",
-            "stop_type"
+            "stop_type",
         ]
 
         qs_vehicle_journeys = (
@@ -281,11 +281,6 @@ class TimetableVisualiser:
             .values(*columns)
         )
         df = pd.DataFrame(qs_observation_results)
-        # Set df options
-        pd.set_option('display.max_columns', None)  # Show all columns
-        pd.set_option('display.max_rows', None)     # Show all rows
-        pd.set_option('display.width', None)              # Set display width to 1000 characters
-        pd.set_option('display.max_colwidth', None)         # Set maximum column width to 50 characters
         if df.empty:
             return {}, [], pd.DataFrame()
         requested_observations = df["observation"].unique().tolist()
@@ -416,16 +411,18 @@ class TimetableVisualiser:
                 .tolist()
             )
             # Get the observation results based on the service pattern ids
-            df_observation_results,observation_contents, df = (
-                self.get_observation_results_based_on_service_pattern_id(
-                    service_pattern_stop_ids
-                )
+            (
+                df_observation_results,
+                observation_contents,
+                df,
+            ) = self.get_observation_results_based_on_service_pattern_id(
+                service_pattern_stop_ids
             )
             df_timetable, stops, observations = get_df_timetable_visualiser(
                 df_vehicle_journey_operating,
                 df_observation_results,
                 observation_contents,
-                df
+                df,
             )
 
             # Get updated columns where the missing journey code is replaced with journey id

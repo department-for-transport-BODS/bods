@@ -62,6 +62,7 @@ class Checks(Enum):
     MissingData = "Missing data"
     DuplicateJourneys = "Duplicate journeys"
 
+
 STOPNAMEOBSERVATION = [
     Checks.IncorrectStopType.value,
     Checks.StopNotFoundInNaptan.value,
