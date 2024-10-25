@@ -284,7 +284,7 @@ class TimetableVisualiser:
 
         # Get the observation contents
         observation_contents = observation_contents_mapper(requested_observations)
-        return  observation_contents, df
+        return observation_contents, df
 
     def get_timetable_visualiser(self) -> pd.DataFrame:
         """
