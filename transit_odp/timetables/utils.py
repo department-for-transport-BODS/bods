@@ -6,7 +6,7 @@ from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
 from transit_odp.timetables.constants import TXC_XSD_PATH
 from django.conf import settings
-from transit_odp.dqs.constants import OBSERVATIONS, STOPNAMEOBSERVATION
+from transit_odp.dqs.constants import OBSERVATIONS, STOPNAMEOBSERVATION, Checks
 import requests
 from requests import RequestException
 
@@ -289,8 +289,9 @@ def get_df_timetable_visualiser(
         )
         # Drop Missing journey code as it will be attach to the table header
         df_full_observation_list = df_full_observation_list[
-            df_full_observation_list["observation"] != "Missing journey code"
+            df_full_observation_list["observation"] != Checks.MissingJourneyCode.value
         ]
+        
         # Filter service pattern stop id with observations only.
         df_vehicle_journey_with_pattern_stop = df_vehicle_journey_with_pattern_stop[
             df_vehicle_journey_with_pattern_stop["service_pattern_stop_id"].isin(
@@ -410,7 +411,7 @@ def get_df_timetable_visualiser(
                             for _, row in observations_df.iterrows()
                             if row.observation not in STOPNAMEOBSERVATION
                         ]
-                        if len(obs_list) > 0:
+                        if obs_list:
                             observation.update({journey_id: obs_list})
                         if f"{row['common_name']}_{idx}" in observation_stops:
                             observation_stops[f"{row['common_name']}_{idx}"][
@@ -433,6 +434,10 @@ def get_df_timetable_visualiser(
         "missing_journey_code" in col for col in df_vehicle_journey_operating.columns
     ):
         observation_stops["-"] = observation_contents.get("Missing journey code")
+    print("observation_stops")
+    print(observation_stops)
+    print("stops")
+    print(stops)
     return (df_vehicle_journey_operating, stops, observation_stops)
 
 
