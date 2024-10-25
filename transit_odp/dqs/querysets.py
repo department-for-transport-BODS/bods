@@ -222,14 +222,16 @@ class ObservationResultsQueryset(models.QuerySet):
                 ),
                 stop_type=F("service_pattern_stop__naptan_stop__stop_type"),
                 journey_code=F("vehicle_journey__journey_code"),
-                serviced_organisation=F("serviced_organisation_id__name"),
+                serviced_organisation=F(
+                    "serviced_organisation_vehicle_journey__serviced_organisation__name"
+                ),
                 serviced_organisation_code=F(
-                    "serviced_organisation_id__organisation_code"
+                    "serviced_organisation_vehicle_journey__serviced_organisation__organisation_code"
                 ),
                 last_working_day=Func(
                     Max(
                         F(
-                            "serviced_organisation_id__serviced_organisations__serviced_organisations_vehicle_journey__end_date"
+                            "serviced_organisation_vehicle_journey__serviced_organisations_vehicle_journey__end_date"
                         )
                     ),
                     Value("dd/MM/yyyy"),
