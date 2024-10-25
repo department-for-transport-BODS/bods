@@ -255,7 +255,6 @@ def get_vehicle_journey_codes_sorted(
 
 def get_df_timetable_visualiser(
     df_vehicle_journey_operating: pd.DataFrame,
-    observations: dict,
     observation_contents: dict,
     df_full_observation_list: pd.DataFrame,
 ) -> Tuple[pd.DataFrame, Dict]:
@@ -263,14 +262,6 @@ def get_df_timetable_visualiser(
     Get the dataframe containing the list of stops and the timetable details
     with journey code as columns
     """
-
-    # Set df options
-    pd.set_option("display.max_columns", None)  # Show all columns
-    pd.set_option("display.max_rows", None)  # Show all rows
-    pd.set_option("display.width", None)  # Set display width to 1000 characters
-    pd.set_option(
-        "display.max_colwidth", None
-    )  # Set maximum column width to 50 characters
 
     if df_vehicle_journey_operating.empty:
         return (df_vehicle_journey_operating, {}, {})
