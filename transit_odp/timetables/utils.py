@@ -397,7 +397,6 @@ def get_df_timetable_visualiser(
                             observation_type = str(
                                 obs_mapped_to_stop_name.observation.item()
                             )
-                            # observation.update({'stop': observation_contents.get(observation_type) })
                             stops[f"{row['common_name']}_{idx}"].update(
                                 {
                                     "observation": observation_contents.get(
@@ -413,7 +412,6 @@ def get_df_timetable_visualiser(
                         ]
                         if len(obs_list) > 0:
                             observation.update({journey_id: obs_list})
-                            # observation = observations.get(service_pattern_stop_id)
                         if f"{row['common_name']}_{idx}" in observation_stops:
                             observation_stops[f"{row['common_name']}_{idx}"][
                                 "observations"
