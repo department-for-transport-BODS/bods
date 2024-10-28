@@ -30,6 +30,10 @@ PARAMETERS = (
 )
 
 
+class AVLApiServiceView(LoginRequiredMixin, TemplateView):
+    template_name = "api/avl_api_service.html"
+
+
 class AVLOpenApiView(LoginRequiredMixin, TemplateView):
     template_name = "swagger_ui/avl.html"
 
