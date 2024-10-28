@@ -4,6 +4,7 @@ from rest_framework_swagger.views import get_swagger_view
 
 from transit_odp.api.views import (
     AVLApiView,
+    AVLApiServiceView,
     AVLDetailApiView,
     AVLGTFSRTApiView,
     AVLOpenApiView,
@@ -36,7 +37,18 @@ disruptions_views = get_swagger_view(title="Disruption Data API")
 
 urlpatterns = [
     path("timetable-openapi/", TimetablesApiView.as_view(), name="timetableopenapi"),
-    path("buslocation-openapi/", AVLOpenApiView.as_view(), name="avlopenapi"),
+    path("buslocation-api", AVLApiServiceView.as_view(), name="buslocation-api"),
+    path(
+        "buslocation-api/openapi/",
+        AVLOpenApiView.as_view(),
+        name="buslocation-tryapi",
+    ),
+    # TODO - replace with subscribe view when created,
+    path(
+        "buslocation-api/subscribe/",
+        AVLOpenApiView.as_view(),
+        name="buslocation-subscribe",
+    ),
     path("fares-openapi/", FaresOpenApiView.as_view(), name="faresopenapi"),
     path(
         "disruptions-openapi/",

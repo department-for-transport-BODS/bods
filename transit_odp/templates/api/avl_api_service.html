@@ -1,0 +1,57 @@
+{% extends "page.html" %}
+{% load static %}
+{% load breadcrumbs %}
+{% load i18n %}
+{% block title_tag %}
+  {% trans "Location data API Service" %}
+{% endblock %}
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'API services' 'api-select' host hosts.data %}
+  {% breadcrumb_url 'Location data API Service' 'api:buslocation-api' host hosts.data %}
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl dont-break-out" aria-label="Heading Title">Location data API Service</h1>
+        <div class="govuk-!-margin-bottom-6">
+          <h3 class="govuk-heading-m">Ready to use the API?</h3>
+          <a class="govuk-link " href="{% url 'guidance:support-developer' host hosts.data %}">
+            {% trans "View developer documentation" %}
+          </a>
+        </div>
+        <div class="govuk-!-margin-bottom-6">
+          <h3 class="govuk-heading-m">First time API user?</h3>
+          <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">
+            {% trans "Guide me" %}
+          </a>
+        </div>
+        <div class="govuk-!-margin-bottom-6">
+          <h3 class="govuk-heading-m">Try API service?</h3>
+          <p class="govuk-body govuk-!-padding-bottom-3">
+            {% blocktrans %}
+              You can experiment with our interactive API services, to familiarise yourself
+              with the data supplied. Please append your API_Key from your
+            {% endblocktrans %}
+            <a href="{% url 'users:settings' host hosts.data %}">
+              {% filter force_escape %}
+                {% trans "Account Settings" %}
+              {% endfilter %}
+            </a>
+            {% blocktrans %}
+              page and query parameters to your API requests.
+            {% endblocktrans %}
+          </p>
+          <a class="govuk-link" href="{% url 'api:buslocation-tryapi' host hosts.data %}">
+            {% trans "Try API" %}
+          </a>
+        </div>
+        <div class="govuk-!-margin-bottom-6">
+          <h3 class="govuk-heading-m">Subscribe to the Location data API?</h3>
+          <a class="govuk-link" href="{% url 'api:buslocation-subscribe' host hosts.data %}">
+            {% trans "Subscribe" %}
+          </a>
+        </div>
+      </div>
+  </div>
+{% endblock %}
