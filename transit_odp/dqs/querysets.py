@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import F, TextField, CharField, BooleanField
+from django.db.models import F, TextField, CharField, BooleanField, Max, Func
 from transit_odp.dqs.constants import TaskResultsStatus, Checks
 from django.db.models.expressions import Value
 from django.db.models.functions import (
@@ -52,6 +52,9 @@ class ObservationResultsQueryset(models.QuerySet):
         dqs_details: str = None,
         is_details_link: bool = True,
         col_name: str = "",
+        org_id: int = None,
+        show_suppressed: bool = False,
+        show_suppressed_button: bool = False,
     ) -> list:
         """
         Filter for observation results for the report and revision of the specific Checks
@@ -66,6 +69,11 @@ class ObservationResultsQueryset(models.QuerySet):
             "revision_id",
             "is_published",
             "is_details_link",
+            "is_suppressed",
+            "organisation_id",
+            "report_id",
+            "show_suppressed",
+            "show_suppressed_button",
         ]
 
         if col_name == "noc":
@@ -133,6 +141,12 @@ class ObservationResultsQueryset(models.QuerySet):
                 revision_id=Value(revision_id, output_field=TextField()),
                 is_published=Value(is_published, output_field=BooleanField()),
                 is_details_link=Value(is_details_link, output_field=BooleanField()),
+                organisation_id=Value(org_id, output_field=TextField()),
+                report_id=Value(report_id, output_field=TextField()),
+                show_suppressed=Value(show_suppressed, output_field=BooleanField()),
+                show_suppressed_button=Value(
+                    show_suppressed_button, output_field=BooleanField()
+                ),
             )
             .values(*columns)
             .distinct()
@@ -155,6 +169,9 @@ class ObservationResultsQueryset(models.QuerySet):
             "journey_code",
             "stop_type",
             "details",
+            "serviced_organisation",
+            "serviced_organisation_code",
+            "last_working_day",
         ]
 
         qs = (
@@ -205,6 +222,22 @@ class ObservationResultsQueryset(models.QuerySet):
                 ),
                 stop_type=F("service_pattern_stop__naptan_stop__stop_type"),
                 journey_code=F("vehicle_journey__journey_code"),
+                serviced_organisation=F(
+                    "serviced_organisation_vehicle_journey__serviced_organisation__name"
+                ),
+                serviced_organisation_code=F(
+                    "serviced_organisation_vehicle_journey__serviced_organisation__organisation_code"
+                ),
+                last_working_day=Func(
+                    Max(
+                        F(
+                            "serviced_organisation_vehicle_journey__serviced_organisations_vehicle_journey__end_date"
+                        )
+                    ),
+                    Value("dd/MM/yyyy"),
+                    function="TO_CHAR",  # TO_CHAR is for PostgreSQL
+                    output_field=CharField(),
+                ),
             )
             .values(*columns)
             .distinct()

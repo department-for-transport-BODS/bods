@@ -8,12 +8,24 @@ class HttpClient {
   }
 
   post(url, body) {
-    return fetch(url, {
-      method: "POST",
-      body: body,
-      mode: "cors",
-      credentials: "omit",
-    }).then(this.checkStatus);
+    const csrfTokenElement = document.querySelector(
+      'input[name="csrfmiddlewaretoken"'
+    );
+    if (csrfTokenElement) {
+      const csrftoken = csrfTokenElement.value;
+      if (csrftoken) {
+        return fetch(url, {
+          method: "POST",
+          body: body,
+          mode: "cors",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken,
+          },
+        }).then(this.checkStatus);
+      }
+    }    
   }
 
   checkStatus(response) {

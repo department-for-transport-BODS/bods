@@ -14,6 +14,7 @@ from django.db.models import (
     Value,
     When,
     Window,
+    Q,
 )
 from django.db.models.functions import Replace, RowNumber, TruncDate
 from django.db.models.query_utils import Q
@@ -30,6 +31,7 @@ from transit_odp.organisation.models import (
     TXCFileAttributes,
 )
 from transit_odp.otc.constants import (
+    API_TYPE_EP,
     API_TYPE_WECA,
     FLEXIBLE_REG,
     SCHOOL_OR_WORKS,
@@ -128,7 +130,7 @@ class ServiceQuerySet(QuerySet):
         return self.annotate(
             traveline_region=Case(
                 When(
-                    Q(api_type=API_TYPE_WECA),
+                    Q(api_type__in=[API_TYPE_WECA, API_TYPE_EP]),
                     then=F("traveline_region_weca"),
                 ),
                 default=F("traveline_region_otc"),
@@ -182,7 +184,7 @@ class ServiceQuerySet(QuerySet):
         return self.annotate(
             local_authority_ui_lta=Case(
                 When(
-                    Q(api_type=API_TYPE_WECA),
+                    Q(api_type__in=[API_TYPE_WECA, API_TYPE_EP]),
                     then=F("ui_lta_weca"),
                 ),
                 default=F("ui_lta_otc"),
@@ -274,7 +276,7 @@ class ServiceQuerySet(QuerySet):
         )
 
         traveline_region_subquery = Subquery(
-            self.get_org_weca_otc_traveline_region_exemption(organisation_id)
+            self.get_org_traveline_region_exemption(organisation_id)
         )
 
         return (
@@ -289,7 +291,7 @@ class ServiceQuerySet(QuerySet):
             .distinct("licence__number", "registration_number")
         )
 
-    def get_org_weca_otc_traveline_region_exemption(self, organisation_id: int):
+    def get_org_traveline_region_exemption(self, organisation_id: int):
         """Return registration numbers to be exempted based on traveline_region_id
         Which are not in england
 
@@ -303,7 +305,7 @@ class ServiceQuerySet(QuerySet):
             (
                 self.filter(
                     licence__number__in=organisation_licences,
-                    api_type=API_TYPE_WECA,
+                    api_type__in=[API_TYPE_WECA, API_TYPE_EP],
                 )
                 .exclude(
                     atco_code__in=AdminArea.objects.filter(
@@ -362,9 +364,9 @@ class ServiceQuerySet(QuerySet):
             licence_id__isnull=False,
         ).values("id")
 
-    def get_weca_otc_traveline_region_exemption(self, ui_lta):
+    def get_traveline_region_exemption_lta(self, ui_lta):
         """
-        Get OTC and WECA registration_number subquery, which are exempted
+        Get OTC, WECA and EP registration_number subquery, which are exempted
         because those are not present in english traveline region
         """
         weca_registrations = [
@@ -372,7 +374,7 @@ class ServiceQuerySet(QuerySet):
                 atco_code__in=AdminArea.objects.filter(ui_lta=ui_lta)
                 .exclude(traveline_region_id__in=ENGLISH_TRAVELINE_REGIONS)
                 .values("atco_code"),
-                api_type=API_TYPE_WECA,
+                api_type__in=[API_TYPE_WECA, API_TYPE_EP],
             ).values("registration_number")
         ]
 
@@ -450,7 +452,7 @@ class ServiceQuerySet(QuerySet):
                 )
 
                 exemption_traveline_region_subquery = Subquery(
-                    self.get_weca_otc_traveline_region_exemption(lta_list[0].ui_lta)
+                    self.get_traveline_region_exemption_lta(lta_list[0].ui_lta)
                 )
 
                 all_in_scope_in_season_services = (
@@ -544,7 +546,7 @@ class ServiceQuerySet(QuerySet):
         )
 
         traveline_region_subquery = Subquery(
-            self.get_org_weca_otc_traveline_region_exemption(organisation_id)
+            self.get_org_traveline_region_exemption(organisation_id)
         )
 
         return (
@@ -597,7 +599,7 @@ class ServiceQuerySet(QuerySet):
             )
 
             exemption_traveline_region_subquery = Subquery(
-                self.get_weca_otc_traveline_region_exemption(lta_list[0].ui_lta)
+                self.get_traveline_region_exemption_lta(lta_list[0].ui_lta)
             )
 
             return (

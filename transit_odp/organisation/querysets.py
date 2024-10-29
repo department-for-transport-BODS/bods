@@ -47,6 +47,7 @@ from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
     EXPIRED,
     INACTIVE,
+    INDEXING,
     LIVE,
     ORG_ACTIVE,
     ORG_INACTIVE,
@@ -1160,6 +1161,7 @@ class DatasetRevisionQuerySet(models.QuerySet):
                 dataset__dataset_type=TimetableType,
                 latest_task_progress__lt=100,
                 created__lt=yesterday,
+                status=INDEXING,
             )
             .exclude(
                 latest_task_status__in=["FAILURE", "SUCCESS"],
@@ -1176,6 +1178,7 @@ class DatasetRevisionQuerySet(models.QuerySet):
                 dataset__dataset_type=FaresType,
                 latest_task_progress__lt=100,
                 created__lt=yesterday,
+                status=INDEXING,
             )
             .exclude(
                 latest_task_status__in=["FAILURE", "SUCCESS"],

@@ -32,6 +32,7 @@ INACTIVE = FeedStatus.inactive.value
 LIVE = FeedStatus.live.value
 PENDING = FeedStatus.pending.value
 SUCCESS = FeedStatus.success.value
+INDEXING = FeedStatus.indexing.value
 
 EXPIRY_NOTIFY_THRESHOLD = 30
 

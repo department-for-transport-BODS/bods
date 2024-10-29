@@ -6,7 +6,7 @@ from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
 from transit_odp.timetables.constants import TXC_XSD_PATH
 from django.conf import settings
-
+from transit_odp.dqs.constants import OBSERVATIONS, STOPNAMEOBSERVATION
 import requests
 from requests import RequestException
 
@@ -14,11 +14,11 @@ from enum import Enum
 from pydantic import BaseModel, ValidationError, Field
 from typing import List, Optional
 from datetime import datetime, timedelta
-
 from transit_odp.common.utils.aws_common import get_s3_bucket_storage
 
 from transit_odp.transmodel.models import BankHolidays
 from typing import Tuple, Dict
+import copy
 
 logger = logging.getLogger(__name__)
 
@@ -255,6 +255,8 @@ def get_vehicle_journey_codes_sorted(
 
 def get_df_timetable_visualiser(
     df_vehicle_journey_operating: pd.DataFrame,
+    observation_contents: dict,
+    df_full_observation_list: pd.DataFrame,
 ) -> Tuple[pd.DataFrame, Dict]:
     """
     Get the dataframe containing the list of stops and the timetable details
@@ -262,7 +264,7 @@ def get_df_timetable_visualiser(
     """
 
     if df_vehicle_journey_operating.empty:
-        return (df_vehicle_journey_operating, {})
+        return (df_vehicle_journey_operating, {}, {})
 
     # Keep the relevant columns of dataframe and remove the duplicates
     columns_to_keep = [
@@ -276,8 +278,44 @@ def get_df_timetable_visualiser(
         "vehicle_journey_id",
         "street",
         "indicator",
+        "stop_type",
+        "service_pattern_stop_id",
     ]
+
     df_vehicle_journey_operating = df_vehicle_journey_operating[columns_to_keep]
+    if not df_full_observation_list.empty:
+        df_vehicle_journey_with_pattern_stop = copy.deepcopy(
+            df_vehicle_journey_operating
+        )
+        # Drop Missing journey code as it will be attach to the table header
+        df_full_observation_list = df_full_observation_list[
+            df_full_observation_list["observation"] != "Missing journey code"
+        ]
+        # Filter service pattern stop id with observations only.
+        df_vehicle_journey_with_pattern_stop = df_vehicle_journey_with_pattern_stop[
+            df_vehicle_journey_with_pattern_stop["service_pattern_stop_id"].isin(
+                list(df_full_observation_list["service_pattern_stop_id"])
+            )
+        ]
+        # Add key to the filtered df.
+        df_vehicle_journey_with_pattern_stop[
+            "key"
+        ] = df_vehicle_journey_with_pattern_stop.apply(
+            lambda row: f"{str(row['common_name'])}_{str(row['stop_sequence'])}_{str(row['vehicle_journey_code'])}_{str(row['vehicle_journey_id'])}"
+            if pd.notnull(row["common_name"])
+            and pd.notnull(row["stop_sequence"])
+            and pd.notnull(row["vehicle_journey_code"])
+            and pd.notnull(row["vehicle_journey_id"])
+            else "",
+            axis=1,
+        )
+
+    # drop service pattern stop id column if exists:
+    if "service_pattern_stop_id" in df_vehicle_journey_operating.columns:
+        df_vehicle_journey_operating = df_vehicle_journey_operating.drop(
+            columns=["service_pattern_stop_id"]
+        )
+
     df_vehicle_journey_operating = df_vehicle_journey_operating.drop_duplicates()
     df_vehicle_journey_operating["key"] = df_vehicle_journey_operating.apply(
         lambda row: f"{row['common_name']}_{row['stop_sequence']}_{row['vehicle_journey_code']}_{row['vehicle_journey_id']}",
@@ -291,7 +329,14 @@ def get_df_timetable_visualiser(
         ["stop_sequence", "departure_time"]
     )
     df_sequence_time = df_sequence_time[
-        ["stop_sequence", "common_name", "street", "indicator", "atco_code"]
+        [
+            "stop_sequence",
+            "common_name",
+            "street",
+            "indicator",
+            "atco_code",
+            "stop_type",
+        ]
     ]
     df_sequence_time = df_sequence_time.drop_duplicates()
     df_sequence_time["key"] = df_sequence_time.apply(
@@ -299,13 +344,12 @@ def get_df_timetable_visualiser(
         axis=1,
     )
     bus_stops = df_sequence_time["common_name"].tolist()
-
+    observation_stops = {}
     stops = {}
-    # Create a dict for storing the unique combination of columns data for fast retreival
     departure_time_data = {}
+
     for row in df_vehicle_journey_operating.to_dict("records"):
         departure_time_data[row["key"]] = row["departure_time"].strftime("%H:%M")
-
     stops_journey_code_time_list = []
     for idx, row in enumerate(df_sequence_time.to_dict("records")):
         record = {}
@@ -315,6 +359,7 @@ def get_df_timetable_visualiser(
             "indicator": row["indicator"],
             "common_name": row["common_name"],
             "stop_seq": row["stop_sequence"],
+            "stop_type": row["stop_type"],
         }
         record["Journey Code"] = bus_stops[idx]
         for (
@@ -324,12 +369,71 @@ def get_df_timetable_visualiser(
             vehicle_journey_codes_sorted
         ):  # tuple with journey code(cols) and journey id
             key = f"{row['key']}_{journey_code}_{journey_id}"
-            record[journey_code] = departure_time_data.get(key, "-")
+            record[journey_code] = {
+                "departure_time": departure_time_data.get(key, "-"),
+                "journey_id": journey_id,
+            }
+            if not df_full_observation_list.empty:
+                queried_df = df_vehicle_journey_with_pattern_stop[
+                    df_vehicle_journey_with_pattern_stop["key"] == key
+                ]
+                if not queried_df.empty:
+                    service_pattern_stop_id = int(
+                        queried_df["service_pattern_stop_id"].item()
+                    )
+                    observations_df = df_full_observation_list[
+                        df_full_observation_list["service_pattern_stop_id"]
+                        == service_pattern_stop_id
+                    ]
+                    if not observations_df.empty:
+                        observation = {}
+                        # Drop duplicate rows
+                        observations_df = observations_df.drop_duplicates()
+                        # check if observations contain Incorrect stop type
+                        obs_mapped_to_stop_name = observations_df[
+                            observations_df["observation"].isin(STOPNAMEOBSERVATION)
+                        ]
+                        if not obs_mapped_to_stop_name.empty:
+                            observation_type = str(
+                                obs_mapped_to_stop_name.observation.item()
+                            )
+                            stops[f"{row['common_name']}_{idx}"].update(
+                                {
+                                    "observation": observation_contents.get(
+                                        observation_type
+                                    )
+                                }
+                            )
+
+                        obs_list = [
+                            observation_contents.get(row.observation)
+                            for _, row in observations_df.iterrows()
+                            if row.observation not in STOPNAMEOBSERVATION
+                        ]
+                        if len(obs_list) > 0:
+                            observation.update({journey_id: obs_list})
+                        if f"{row['common_name']}_{idx}" in observation_stops:
+                            observation_stops[f"{row['common_name']}_{idx}"][
+                                "observations"
+                            ].update(observation)
+                        else:
+                            observation_stops.update(
+                                {
+                                    f"{row['common_name']}_{idx}": {
+                                        "observations": observation
+                                    }
+                                }
+                            )
+
         stops_journey_code_time_list.append(record)
 
     df_vehicle_journey_operating = pd.DataFrame(stops_journey_code_time_list)
-
-    return (df_vehicle_journey_operating, stops)
+    # Adding missing journey code observation to the table header
+    if any(
+        "missing_journey_code" in col for col in df_vehicle_journey_operating.columns
+    ):
+        observation_stops["-"] = observation_contents.get("Missing journey code")
+    return (df_vehicle_journey_operating, stops, observation_stops)
 
 
 def is_vehicle_journey_operating(df_vj, target_date) -> bool:
@@ -515,3 +619,28 @@ def create_queue_payload(pending_checks: list) -> dict:
         queue_payload[queue_name].append(message)
 
     return queue_payload
+
+
+def observation_contents_mapper(observations_list) -> Dict:
+    """This function maps the observation list to the observation content
+    Args:
+        observations_list: list of observations
+    Returns:
+        requested_observation: dict of observations
+    Example output :
+        {observation: {"title": observation_content.title,
+                        "text":observation_content.text,
+                        "resolve": observation_content.resolve
+                        }}
+    """
+    requested_observation = {}
+    for observation in observations_list:
+        for observation_content in OBSERVATIONS:
+            if observation_content.title == observation:
+                requested_observation[observation] = {
+                    "title": observation_content.title,
+                    "text": observation_content.text.replace("<br/>", ""),
+                    "resolve": observation_content.resolve.replace("<br/>", ""),
+                }
+
+    return requested_observation

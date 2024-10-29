@@ -1,35 +1,36 @@
 import logging
+from collections import defaultdict
+from typing import List
 
-from django.db.models import (
-    Q,
-    F,
-    CharField,
-)
+import pandas as pd
+from django.db.models import CharField, F, Q
 from django.db.models.functions import Coalesce
 
-from transit_odp.transmodel.models import (
-    Service,
-    ServicedOrganisationVehicleJourney,
-    OperatingDatesExceptions,
-    NonOperatingDatesExceptions,
-)
+from transit_odp.dqs.constants import Checks
+from transit_odp.dqs.constants import Level as Importance
+from transit_odp.dqs.models import ObservationResults
 from transit_odp.timetables.utils import (
-    get_vehicle_journeyids_exceptions,
-    get_non_operating_vj_serviced_org,
+    fill_missing_journey_codes,
     get_df_operating_vehicle_journey,
     get_df_timetable_visualiser,
     get_initial_vehicle_journeys_df,
+    get_non_operating_vj_serviced_org,
     get_updated_columns,
-    fill_missing_journey_codes,
+    get_vehicle_journeyids_exceptions,
+    observation_contents_mapper,
 )
-import pandas as pd
+from transit_odp.transmodel.models import (
+    NonOperatingDatesExceptions,
+    OperatingDatesExceptions,
+    Service,
+    ServicedOrganisationVehicleJourney,
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
 class TimetableVisualiser:
-
     """
     Timetable visualiser for the capturing of the time and the stops with journey codes
     for the specific revision id, service code, line running on the target date on the
@@ -86,6 +87,8 @@ class TimetableVisualiser:
             "start_time",
             "street",
             "indicator",
+            "service_pattern_stop_id",
+            "stop_type",
         ]
 
         qs_vehicle_journeys = (
@@ -154,6 +157,12 @@ class TimetableVisualiser:
                 ),
                 indicator=F(
                     "service_patterns__service_pattern_stops__naptan_stop__indicator"
+                ),
+                stop_type=F(
+                    "service_patterns__service_pattern_stops__naptan_stop__stop_type"
+                ),
+                service_pattern_stop_id=F(
+                    "service_patterns__service_pattern_stops__id"
                 ),
             )
             .values(*columns)
@@ -239,6 +248,43 @@ class TimetableVisualiser:
         )
 
         return pd.DataFrame.from_records(qs_serviced_orgs)
+
+    def get_observation_results_based_on_service_pattern_id(
+        self,
+        service_pattern_ids: List,
+    ) -> dict:
+        """
+        Get the observation results based on the service pattern ids
+        and revision id
+        """
+        REQUIRED_IMPORTANCE = Importance.critical.value
+
+        columns = [
+            "importance",
+            "observation",
+            "service_pattern_stop_id",
+            "vehicle_journey_id",
+        ]
+        qs_observation_results = (
+            ObservationResults.objects.filter(
+                service_pattern_stop_id__in=service_pattern_ids,
+                taskresults__dataquality_report__revision_id=self._revision_id,
+                taskresults__checks__importance=REQUIRED_IMPORTANCE,
+            )
+            .annotate(
+                importance=F("taskresults__checks__importance"),
+                observation=F("taskresults__checks__observation"),
+            )
+            .values(*columns)
+        )
+        df = pd.DataFrame(qs_observation_results)
+        if df.empty:
+            return {}, pd.DataFrame()
+        requested_observations = df["observation"].unique().tolist()
+
+        # Get the observation contents
+        observation_contents = observation_contents_mapper(requested_observations)
+        return observation_contents, df
 
     def get_timetable_visualiser(self) -> pd.DataFrame:
         """
@@ -329,7 +375,6 @@ class TimetableVisualiser:
                 op_exception_vj_ids,
                 nonop_exception_vj_ids,
             )
-
             # Get the vehicle journey id which are not operating for the serviced organisation
             vehicle_journey_ids_non_operating = get_non_operating_vj_serviced_org(
                 self._target_date, df_serviced_org
@@ -341,9 +386,23 @@ class TimetableVisualiser:
                     vehicle_journey_ids_non_operating
                 )
             ]
-
-            df_timetable, stops = get_df_timetable_visualiser(
-                df_vehicle_journey_operating
+            # Get the service pattern ids
+            service_pattern_stop_ids = (
+                df_vehicle_journey_operating["service_pattern_stop_id"]
+                .unique()
+                .tolist()
+            )
+            # Get the observation results based on the service pattern ids
+            (
+                observation_contents,
+                df_observation_results,
+            ) = self.get_observation_results_based_on_service_pattern_id(
+                service_pattern_stop_ids
+            )
+            df_timetable, stops, observations = get_df_timetable_visualiser(
+                df_vehicle_journey_operating,
+                observation_contents,
+                df_observation_results,
             )
 
             # Get updated columns where the missing journey code is replaced with journey id
@@ -353,5 +412,6 @@ class TimetableVisualiser:
                 "description": journey_description,
                 "df_timetable": df_timetable,
                 "stops": stops,
+                "observations": observations,
             }
         return data

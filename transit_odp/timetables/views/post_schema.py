@@ -23,6 +23,7 @@ class PostSchemaCSV(CSVBuilder):
         self.revision = revision
 
     columns = [
+        CSVColumn(header="Filename", accessor="filename"),
         CSVColumn(header="Error Type", accessor="error_type"),
         CSVColumn(header="Next Steps", accessor="next_steps"),
         CSVColumn(header="Link to Next Steps Column", accessor="link"),

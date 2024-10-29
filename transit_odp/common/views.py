@@ -1,13 +1,16 @@
+import logging
 from collections import namedtuple
 from typing import Any
 
+from django.conf import settings
 from django.shortcuts import render
 from django.views.generic import DetailView, TemplateView, UpdateView
 
-from django.conf import settings
 from transit_odp.common.constants import FALSE, TRUE
 from transit_odp.common.utils.cookie_settings import delete_cookie, set_cookie
 from transit_odp.common.view_mixins import BODSBaseView
+
+logger = logging.getLogger(__name__)
 
 
 class ComingSoonView(TemplateView):

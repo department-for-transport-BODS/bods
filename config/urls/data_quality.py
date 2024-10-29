@@ -10,6 +10,11 @@ urlpatterns = [
     path("glossary/", view=views.DataQualityGlossaryView.as_view(), name="glossary"),
     path("csv/", view=views.ReportCSVDownloadView.as_view(), name="report-csv"),
     path(
+        "suppress-observation/",
+        view=DQSviews.SuppressObservationView.as_view({"post": "suppress_observation"}),
+        name="suppress-observation",
+    ),
+    path(
         "fast-timings/",
         include(
             [
@@ -453,6 +458,23 @@ urlpatterns = [
                     "",
                     view=DQSviews.CancelledServiceAppearingActiveListView.as_view(),
                     name="cancelled-service-appearing-active-list",
+                ),
+            ]
+        ),
+    ),
+    path(
+        "serviced-organisation-out-of-date/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.ServicedOrganisationOutOfDateListView.as_view(),
+                    name="serviced-organisation-out-of-date-list",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.ServicedOrganisationOutOfDateDetailView.as_view(),
+                    name="serviced-organisation-out-of-date-detail",
                 ),
             ]
         ),

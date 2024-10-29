@@ -32,6 +32,13 @@ from .cancelled_service_apprearing_active import (
     CancelledServiceAppearingActiveListView,
 )
 
+from .serviced_organisation_out_of_date import (
+    ServicedOrganisationOutOfDateListView,
+    ServicedOrganisationOutOfDateDetailView,
+)
+
+from .suppress_observation import SuppressObservationView
+
 __all__ = [
     "DQSWarningDetailBaseView",
     "DQSWarningListBaseView",
@@ -51,4 +58,7 @@ __all__ = [
     "MissingBusWorkingNumberListView",
     "MissingBusWorkingNumberDetailView",
     "CancelledServiceAppearingActiveListView",
+    "SuppressObservationView",
+    "ServicedOrganisationOutOfDateListView",
+    "ServicedOrganisationOutOfDateDetailView",
 ]

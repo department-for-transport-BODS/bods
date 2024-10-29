@@ -1,13 +1,13 @@
+import uuid
 import zipfile
 from datetime import datetime
-import uuid
+from pathlib import Path
 
 import pandas as pd
 from celery.utils.log import get_task_logger
 from django.core.files.base import File
 from shapely.geometry import Point
 from waffle import flag_is_active
-from pathlib import Path
 
 from transit_odp.common.utils.geometry import construct_geometry
 from transit_odp.common.utils.timestamps import extract_timestamp
@@ -21,20 +21,20 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.aggregations import (
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import ExtractedData
 from transit_odp.timetables.dataframes import (
+    booking_arrangements_to_dataframe,
+    flexible_journey_patterns_to_dataframe,
     flexible_operation_period_to_dataframe,
+    flexible_stop_points_from_journey_details,
+    flexible_vehicle_journeys_to_dataframe,
     journey_pattern_section_from_journey_pattern,
     journey_pattern_sections_to_dataframe,
     journey_patterns_to_dataframe,
-    provisional_stops_to_dataframe,
-    services_to_dataframe,
-    stop_point_refs_to_dataframe,
-    booking_arrangements_to_dataframe,
-    standard_vehicle_journeys_to_dataframe,
-    flexible_vehicle_journeys_to_dataframe,
-    serviced_organisations_to_dataframe,
-    flexible_journey_patterns_to_dataframe,
-    flexible_stop_points_from_journey_details,
     operating_profiles_to_dataframe,
+    provisional_stops_to_dataframe,
+    serviced_organisations_to_dataframe,
+    services_to_dataframe,
+    standard_vehicle_journeys_to_dataframe,
+    stop_point_refs_to_dataframe,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -417,7 +417,11 @@ class TransXChangeExtractor:
 
 class TransXChangeZipExtractor:
     def __init__(
-        self, file_obj, start_time, stop_activity_cache, txc_files=pd.DataFrame()
+        self,
+        file_obj,
+        start_time,
+        stop_activity_cache,
+        txc_files=pd.DataFrame(),
     ):
         self.file_obj = file_obj
         self.start_time = start_time
@@ -444,14 +448,17 @@ class TransXChangeZipExtractor:
         This function extracts the timetable data and iterates over xml file in a single zip file.
         """
         extracts = []
-        filenames = [info.filename for info in z.infolist() if not info.is_dir()]
+        filenames = [
+            info.filename
+            for info in z.infolist()
+            if not info.is_dir() and info.filename
+        ]
         file_count = len(filenames)
         logger.info(f"Total files in zip: {file_count}")
 
         for i, filename in enumerate(filenames):
-            logger.info(f"Extracting: {filename}")
-
-            if filename.endswith(".xml"):
+            if filename.endswith(".xml") and not filename.startswith("__"):
+                logger.info(f"Extracting: {filename}")
                 with z.open(filename, "r") as f:
                     file_obj = File(f, name=filename)
                     extractor = TransXChangeExtractor(
@@ -462,6 +469,10 @@ class TransXChangeZipExtractor:
                     )
                     extracted = extractor.extract()
                     extracts.append(extracted)
+            else:
+                logger.info(
+                    f"skipping: {filename} as file has failed the validation checks"
+                )
 
         return ExtractedData(
             services=concat_and_dedupe((extract.services for extract in extracts)),

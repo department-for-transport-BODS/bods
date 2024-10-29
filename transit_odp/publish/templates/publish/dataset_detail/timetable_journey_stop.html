@@ -7,37 +7,174 @@
   </caption>
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      {% for col in timetable_details.df.columns %}<th scope="col" class="govuk-table__header ">{{ col }}</th>{% endfor %}
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    {% for idx, row in timetable_details.df.iterrows %}
-      <tr class="govuk-table__row">
-        {% for col_name, cell in row.items %}
-          <td class="govuk-table__cell timetable_govuk_body">
-            {% if col_name == 'Journey Code' %}
-              {% with key=cell|concatenate:"_"|concatenate:idx %}
-                <a class="tooltip govuk-link"
-                   title="More information"
-                   id="stop-{{ direction }}-{{ idx }}"
-                   onclick="BODSFrontend.showTooltip(event,'{{ idx }}', '{{ direction }}');">{{ cell }}
-                  <p class="tooltiptext" id="tooltip-{{ direction }}-{{ idx }}" onclick="BODSFrontend.disableClick(event);">
-                    <span class="govuk-!-font-weight-bold">ATCO Code:</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}
-                    <br />
-                    <span class="govuk-!-font-weight-bold">Street:</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'street' }}
-                    <br />
-                    <span class="govuk-!-font-weight-bold">Indicator:</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'indicator' }}
-                    <br />
-                    <button type="submit"
-                            class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
-                            id="closeToolTip-{{ direction }}-{{ idx }}"
-                            onclick="BODSFrontend.hideTooltip(event);"
-                            data-module="govuk-button">Close</button>
-                  </p>
-                </a>
+      {% for col in timetable_details.df.columns %}
+        <th scope="col" class="govuk-table__header ">
+          {% if col == '-' %}
+            {% with key=timetable_details.observations|get_value_from_dict:col %}
+              <a class="tooltip govuk-link"
+                 style="color: #d4351c"
+                 title="More information"
+                 id="stop-{{ direction }}-{{ cell.journey_id }}-{{ idx }}"
+                 onclick="BODSFrontend.showTooltip(event,'{{ cell.journey_id }}-{{ idx }}', '{{ direction }}', 'observation');">
+                <div class="tooltiptext"
+                     style="width:550px"
+                     id="{{ cell.journey_id }}-{{ idx }}"
+                     onclick="BODSFrontend.disableClick(event);">
+                  <div id="timetable_tooltip">
+                    <div>
+                      <span>
+                        <span class="govuk-!-font-weight-bold govuk-!-font-size-27">{{ key.title }}</span>
+                      </span>
+                    </div>
+                    <div class="govuk-!-font-weight-regular">
+                      <p>{{ key.text }}</p>
+                      <p>{{ key.resolve }}</p>
+                    </div>
+                  </div>
+                  <button type="submit"
+                          class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
+                          onclick="BODSFrontend.hideTooltip(event);"
+                          data-module="govuk-button">Close</button>
+                </div>
+              </div>
+            {% endwith %}
+          {% endif %}
+          {{ col }}
+        </a>
+      </th>
+    {% endfor %}
+  </tr>
+</thead>
+<tbody class="govuk-table__body">
+  {% for idx, row in timetable_details.df.iterrows %}
+    <tr class="govuk-table__row">
+      {% for col_name, cell in row.items %}
+        <td class="govuk-table__cell timetable_govuk_body">
+          {% if col_name == 'Journey Code' %}
+            {% with key=cell|concatenate:"_"|concatenate:idx %}
+              {% with obs=timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'observation' %}
+                {% if obs %}
+                  <a class="tooltip govuk-link"
+                     style="color: #d4351c"
+                     title="More information"
+                     id="stop-{{ direction }}-{{ idx }}"
+                     onclick="BODSFrontend.showTooltip(event,'tooltip-{{ direction }}-{{ idx }}', '{{ direction }}', 'observation');">{{ cell }}
+                    <p class="tooltiptext"
+                       style="width:550px"
+                       id="tooltip-{{ direction }}-{{ idx }}"
+                       onclick="BODSFrontend.disableClick(event);">
+                      <span class="govuk-!-font-weight-bold govuk-!-font-size-27">{{ obs.title }}</span>
+                      <br />
+                      <br />
+                      <span>{{ obs.text }}</span>
+                      <br />
+                      <br />
+                      <span>{{ obs.resolve }}</span>
+                      <br />
+                      <br />
+                      <span class="govuk-!-font-weight-bold" {% if obs.title == 'Stop not found in NaPTAN' %}style="color: #d4351c;"{% endif %}>ATCO Code:&nbsp;</span><span {% if obs.title == 'Stop not found in NaPTAN' %}style="color: #d4351c;"{% endif %}>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}</span>
+                      <br />
+                      <span class="govuk-!-font-weight-bold">Street:&nbsp;</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'street' }}
+                      <br />
+                      <span class="govuk-!-font-weight-bold">Indicator:&nbsp;</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'indicator' }}
+                      {% if obs.title == 'Incorrect stop type' %}
+                        <br />
+                        <span style="color: #d4351c;" class="govuk-!-font-weight-bold">Stop type:&nbsp;</span><span style="color: #d4351c;">{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'stop_type' }}</span>
+                      {% endif %}
+                      <br />
+                      <button type="submit"
+                              class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
+                              id="closeToolTip-{{ direction }}-{{ idx }}"
+                              onclick="BODSFrontend.hideTooltip(event);"
+                              data-module="govuk-button">Close</button>
+                    </p>
+                  </a>
+                {% else %}
+                  <a class="tooltip govuk-link"
+                     title="More information"
+                     id="stop-{{ direction }}-{{ idx }}"
+                     onclick="BODSFrontend.showTooltip(event,'{{ idx }}', '{{ direction }}');">{{ cell }}
+                    <p class="tooltiptext" id="tooltip-{{ direction }}-{{ idx }}" onclick="BODSFrontend.disableClick(event);">
+                      <span class="govuk-!-font-weight-bold">ATCO Code:&nbsp;</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}
+                      <br />
+                      <span class="govuk-!-font-weight-bold">Street:&nbsp;</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'street' }}
+                      <br />
+                      <span class="govuk-!-font-weight-bold">Indicator:&nbsp;</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'indicator' }}
+                      <br />
+                      <button type="submit"
+                              class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
+                              id="closeToolTip-{{ direction }}-{{ idx }}"
+                              onclick="BODSFrontend.hideTooltip(event);"
+                              data-module="govuk-button">Close</button>
+                    </p>
+                  </a>
+                {% endif %}
               {% endwith %}
-            {% else %}
-              <span>{{ cell }}</span>
+            {% endwith %}
+          {% else %}
+            {% with key=row|get_value_from_dict:'Journey Code'|concatenate:"_"|concatenate:idx %}
+              {% with observations=timetable_details.observations|get_value_from_dict:key %}
+                {% if observations %}
+                  {% for obs_key, obs_value in observations.items %}
+                    {% if obs_value|get_value_from_dict:cell.journey_id|stringformat:'s' %}
+                      <a class="tooltip govuk-link"
+                         style="color: #d4351c"
+                         title="More information"
+                         id="stop-{{ direction }}-{{ cell.journey_id }}-{{ idx }}"
+                         onclick="BODSFrontend.showTooltip(event,'{{ cell.journey_id }}-{{ idx }}', '{{ direction }}', 'observation');">
+                        {{ cell.departure_time }}
+                        <div class="tooltiptext"
+                             style="width:550px"
+                             id="{{ cell.journey_id }}-{{ idx }}"
+                             onclick="BODSFrontend.disableClick(event);">
+                          {% if obs_value|get_value_from_dict:cell.journey_id|length > 1 %}
+                            <div class="govuk-accordion" data-module="govuk-accordion" id="timetable_tooltip">
+                              {% for key in obs_value|get_value_from_dict:cell.journey_id %}
+                                <div class="govuk-accordion__section">
+                                  <div class="govuk-accordion__section-header">
+                                    <span class="govuk-accordion__section-heading">
+                                      <span class="govuk-accordion__section-button" id="accordion-default-heading-1">
+                                        {{ key|get_value_from_dict:'title' }}
+                                      </span>
+                                    </span>
+                                  </div>
+                                  <div id="accordion-default-content-1"
+                                       class="govuk-accordion__section-content govuk-!-padding-bottom-1 govuk-!-padding-top-0">
+                                    <p>{{ key|get_value_from_dict:'text' }}</p>
+                                    <p>{{ key|get_value_from_dict:'resolve' }}</p>
+                                  </div>
+                                </div>
+                              {% endfor %}
+                            {% else %}
+                              <div id="timetable_tooltip">
+                                {% for key in obs_value|get_value_from_dict:cell.journey_id %}
+                                  <div>
+                                    <span>
+                                      <span class="govuk-!-font-weight-bold govuk-!-font-size-27">{{ key|get_value_from_dict:'title' }}</span>
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <p>{{ key|get_value_from_dict:'text' }}</p>
+                                    <p>{{ key|get_value_from_dict:'resolve' }}</p>
+                                  </div>
+                                {% endfor %}
+                              {% endif %}
+                            </div>
+                            <button type="submit"
+                                    class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
+                                    onclick="BODSFrontend.hideTooltip(event);"
+                                    data-module="govuk-button">Close</button>
+                          </div>
+                        </a>
+                      {% else %}
+                        <span>{{ cell.departure_time }}</span>
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    <span>{{ cell.departure_time }}</span>
+                  {% endif %}
+                {% endwith %}
+              {% endwith %}
             {% endif %}
           </td>
         {% endfor %}

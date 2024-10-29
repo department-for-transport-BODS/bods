@@ -2,17 +2,16 @@ from pathlib import Path
 
 import pytest
 
-from transit_odp.data_quality.models.report import PTIValidationResult
+from transit_odp.data_quality.models.report import PTIObservation, PTIValidationResult
 from transit_odp.data_quality.pti.factories import ViolationFactory
-from transit_odp.organisation.constants import FeedStatus
-from transit_odp.organisation.factories import DatasetRevisionFactory
-from transit_odp.organisation.models import DatasetRevision
+from transit_odp.organisation.factories import (
+    DatasetRevisionFactory,
+    TXCFileAttributesFactory,
+)
 from transit_odp.pipelines.exceptions import PipelineException
-from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.timetables.proxies import TimetableDatasetRevision
 from transit_odp.timetables.pti import DatasetPTIValidator, get_pti_validator
 from transit_odp.timetables.tasks import task_pti_validation
-from transit_odp.validate.exceptions import ValidationException
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -86,6 +85,7 @@ def test_validate_pti_success(mocker, pti_unenforced):
     """
     filepath = DATA_DIR / "pti_xml_test.xml"
     revision = DatasetRevisionFactory(upload_file__from_path=filepath.as_posix())
+    TXCFileAttributesFactory(revision=revision)
     task = mocker.Mock(revision=revision, id=-1)
     mocker.patch(GET_TASK, return_value=task)
 
@@ -94,9 +94,12 @@ def test_validate_pti_success(mocker, pti_unenforced):
     validator.get_violations.return_value = [violation]
     mocker.patch(GET_VALIDATOR, return_value=validator)
 
-    task_pti_validation(revision.id, task.id)
+    with pytest.raises(PipelineException):
+        task_pti_validation(revision.id, task.id)
 
     result = PTIValidationResult.objects.get(revision=revision)
+    pti_observation_result = PTIObservation.objects.filter(revision_id=revision.id)
+    assert pti_observation_result.count() == 1
     assert result.count == 1
     assert not result.is_compliant
     validator.get_violations.assert_called_once_with(revision=revision)
@@ -111,6 +114,7 @@ def test_validate_pti_multiple_calls(mocker, pti_unenforced):
     """
     filepath = DATA_DIR / "pti_xml_test.xml"
     revision = DatasetRevisionFactory(upload_file__from_path=filepath.as_posix())
+    TXCFileAttributesFactory(revision=revision)
 
     task = mocker.Mock(revision=revision, id=-1)
     mocker.patch(GET_TASK, return_value=task)
@@ -120,22 +124,25 @@ def test_validate_pti_multiple_calls(mocker, pti_unenforced):
     validator.get_violations.return_value = [violation]
     mocker.patch(GET_VALIDATOR, return_value=validator)
 
-    task_pti_validation(revision.id, task.id)
+    with pytest.raises(PipelineException):
+        task_pti_validation(revision.id, task.id)
     original_result = PTIValidationResult.objects.get(revision=revision)
 
-    task_pti_validation(revision.id, task.id)
+    with pytest.raises(PipelineException):
+        task_pti_validation(revision.id, task.id)
     new_result = PTIValidationResult.objects.get(revision=revision)
 
+    pti_observation_result = PTIObservation.objects.filter(revision_id=revision.id)
+    assert pti_observation_result.count() == 1
     assert original_result.count == new_result.count
     assert original_result != new_result
 
 
-def test_validate_pti_exception(mocker, pti_unenforced):
+def test_validate_pti_exception_with_no_valid_txc_files(mocker, pti_unenforced):
     """
-    Given a revision with a file that contains pti violations
-    When a call to `task_pti_validation` results in a PipelineException
-    Then no PTIValidationResult object should be created and the DatasetETLResult
-    task should be put to an error status.
+    Given a revision with a file that contains pti violations and no entry in
+    txcfileattributes table. When a call to `task_pti_validation` results
+    in a PipelineException
     """
     filepath = DATA_DIR / "pti_xml_test.xml"
     revision = DatasetRevisionFactory(upload_file__from_path=filepath.as_posix())
@@ -143,49 +150,5 @@ def test_validate_pti_exception(mocker, pti_unenforced):
     task = mocker.Mock(revision=revision, id=-1)
     mocker.patch(GET_TASK, return_value=task)
 
-    validator = mocker.Mock(spec=DatasetPTIValidator)
-    validator.get_violations.side_effect = ValidationException(filename=filepath.name)
-    mocker.patch(GET_VALIDATOR, return_value=validator)
-
     with pytest.raises(PipelineException):
         task_pti_validation(revision.id, task.id)
-
-    results = PTIValidationResult.objects.filter(revision=revision)
-    assert results.count() == 0
-    assert not task.update_progress.called
-    validator.get_violations.assert_called_once_with(revision=revision)
-    task.to_error.assert_called_once()
-    task.save.assert_called_once()
-
-
-def test_validate_pti_fails_when_pti_enforced(mocker, pti_enforced, mailoutbox):
-    """
-    Given revision with a file containing pti violations
-    When calling `task_pti_validation` function
-    Then a PTIValidationResult object is created with a `count` of 1, `is_compliant`
-    is False and the `DatasetPTIValidator.get_violations` is called once.
-    """
-    filepath = DATA_DIR / "pti_xml_test.xml"
-    revision = DatasetRevisionFactory(
-        status=FeedStatus.indexing.value,
-        upload_file__from_path=filepath.as_posix(),
-        is_published=False,
-    )
-    task = DatasetETLTaskResultFactory(revision=revision)
-    mocker.patch(GET_TASK, return_value=task)
-
-    violation = ViolationFactory(filename=filepath.name)
-    validator = mocker.Mock(spec=DatasetPTIValidator)
-    validator.get_violations.return_value = [violation]
-    mocker.patch(GET_VALIDATOR, return_value=validator)
-
-    with pytest.raises(PipelineException):
-        task_pti_validation(revision.id, task.id)
-
-    result = PTIValidationResult.objects.get(revision=revision)
-    assert result.count == 1
-    assert not result.is_compliant
-    validator.get_violations.assert_called_once_with(revision=revision)
-    assert DatasetRevision.objects.get(id=revision.id).status == FeedStatus.error.value
-
-    assert "You are legally obliged" in mailoutbox[0].body

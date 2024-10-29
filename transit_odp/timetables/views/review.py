@@ -1,17 +1,26 @@
+import math
+import re
+from datetime import datetime
+from typing import Dict
+
+import pandas as pd
 from django.conf import settings
 from django.utils import timezone
 from django.views.generic.detail import DetailView
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.browse.timetable_visualiser import TimetableVisualiser
+from transit_odp.data_quality.models import SchemaViolation
+from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
 from transit_odp.data_quality.report_summary import Summary
 from transit_odp.data_quality.scoring import get_data_quality_rag
+from transit_odp.dqs.constants import ReportStatus
+from transit_odp.dqs.models import Report
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
 from transit_odp.pipelines.models import DatasetETLTaskResult
-from transit_odp.dqs.models import Report
-from transit_odp.dqs.constants import ReportStatus
-from transit_odp.publish.forms import RevisionPublishFormViolations
 from transit_odp.publish.views.base import BaseDatasetUploadModify, ReviewBaseView
 from transit_odp.publish.views.utils import (
     get_current_files,
@@ -26,27 +35,15 @@ from transit_odp.timetables.views.constants import (
     ERROR_CODE_LOOKUP,
 )
 from transit_odp.users.views.mixins import OrgUserViewMixin
-from datetime import datetime
-import pandas as pd
-from transit_odp.browse.timetable_visualiser import TimetableVisualiser
-from typing import Dict
-import math
-import re
-from waffle import flag_is_active
 
 
 class BaseTimetableReviewView(ReviewBaseView):
     def get_form_class(self):
-        if not self.object.is_pti_compliant():
-            return RevisionPublishFormViolations
         return super().get_form_class()
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        if not self.object.is_pti_compliant():
-            label = DATA_QUALITY_WITH_VIOLATIONS_LABEL
-        else:
-            label = DATA_QUALITY_LABEL
+        label = DATA_QUALITY_LABEL
         kwargs.update({"consent_label": label, "is_update": False})
         return kwargs
 
@@ -79,6 +76,16 @@ class BaseTimetableReviewView(ReviewBaseView):
         revision = self.get_object()
         tasks = revision.data_quality_tasks
         loading = self.is_loading()
+
+        is_schema_violation = (
+            SchemaViolation.objects.filter(revision=revision.id).count() > 0
+        )
+        is_post_schema_violation = (
+            PostSchemaViolation.objects.filter(revision=revision.id).count() > 0
+        )
+        is_pti_violation = (
+            PTIObservation.objects.filter(revision=revision.id).count() > 0
+        )
 
         show_update = (
             self.object.is_pti_compliant() and tasks.get_latest_status() == "SUCCESS"
@@ -153,7 +160,14 @@ class BaseTimetableReviewView(ReviewBaseView):
             system_error = ERROR_CODE_LOOKUP.get(DatasetETLTaskResult.SYSTEM_ERROR)
             error_context = ERROR_CODE_LOOKUP.get(revision.error_code, system_error)
             context.update({"severe_error": error_context})
-        context.update({"error": has_error})
+        context.update(
+            {
+                "error": has_error,
+                "is_post_schema_violation": is_post_schema_violation,
+                "is_schema_violation": is_schema_violation,
+                "is_pti_violation": is_pti_violation,
+            }
+        )
 
         return context
 
@@ -288,7 +302,6 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
     def get_direction_timetable(
         self, df_timetable: pd.DataFrame, direction: str = "outbound"
     ) -> Dict:
-
         """
         Get the timetable details like the total, current page and the dataframe
         based on the timetable dataframe and the direction.
@@ -354,7 +367,6 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
         }
 
     def get_context_data(self, **kwargs):
-
         """
         Get the context data for the view.
 
@@ -444,6 +456,7 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
                     "stops": direction_details["stops"],
                     "page_param": direction + "Page",
                     "show_all_param": "showAll" + direction.capitalize(),
+                    "observations": direction_details.get("observations", {}),
                 }
 
             context["timetable"] = timetable

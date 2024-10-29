@@ -1,35 +1,42 @@
 import logging
+import math
+import re
 from collections import namedtuple
 from datetime import datetime, timedelta
+from typing import Dict
 
+import pandas as pd
+import requests
 from allauth.account.adapter import get_adapter
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.db.models import Max
-from django.http import FileResponse, Http404, HttpResponse, StreamingHttpResponse
+from django.http import FileResponse, Http404, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.generic import CreateView, DetailView, TemplateView, UpdateView
 from django.views.generic.detail import BaseDetailView
 from django_hosts import reverse
+from requests import RequestException
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.browse.constants import LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
 from transit_odp.browse.filters import TimetableSearchFilter
 from transit_odp.browse.forms import ConsumerFeedbackForm
 from transit_odp.browse.tables import DatasetPaginatorTable
+from transit_odp.browse.timetable_visualiser import TimetableVisualiser
 from transit_odp.browse.views.base_views import (
     BaseSearchView,
     BaseTemplateView,
     ChangeLogView,
 )
-from transit_odp.browse.timetable_visualiser import TimetableVisualiser
 from transit_odp.common.downloaders import GTFSFileDownloader
-from transit_odp.common.services import get_gtfs_bucket_service
 from transit_odp.common.forms import ConfirmationForm
+from transit_odp.common.services import get_gtfs_bucket_service
 from transit_odp.common.view_mixins import (
     BaseDownloadFileView,
     DownloadView,
@@ -56,15 +63,6 @@ from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
 from transit_odp.transmodel.models import BookingArrangements, Service
 from transit_odp.users.constants import SiteAdminType
-import pandas as pd
-from typing import Dict
-import math
-import re
-from waffle import flag_is_active
-import requests
-from requests import RequestException
-from rest_framework import status
-from io import BytesIO
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -606,6 +604,7 @@ class LineMetadataDetailView(DetailView):
                     "show_all": bound_details["show_all"],
                     "journey_name": journey,
                     "stops": direction_details["stops"],
+                    "observations": direction_details.get("observations", {}),
                     "page_param": direction + "Page",
                     "show_all_param": "showAll" + direction.capitalize(),
                 }
