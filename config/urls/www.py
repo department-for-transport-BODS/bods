@@ -14,7 +14,6 @@ from transit_odp.common.utils.custom_error_handlers import (
     permission_denied,
 )
 from transit_odp.common.views import (
-    AccessibilityVPATReportView,
     CookieDetailView,
     CookieView,
     PrivacyPolicyView,
@@ -55,11 +54,6 @@ urlpatterns = [
         "accessibility/",
         TemplateView.as_view(template_name="pages/accessibility.html"),
         name="accessibility",
-    ),
-    path(
-        "accessibility-vpat-report/",
-        AccessibilityVPATReportView.as_view(),
-        name="accessibility-document",
     ),
     path("privacy-policy/", PrivacyPolicyView.as_view(), name="privacy-policy"),
     path("account/", include("config.urls.allauth")),

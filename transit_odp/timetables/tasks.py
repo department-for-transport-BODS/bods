@@ -235,6 +235,11 @@ def task_timetable_schema_check(revision_id: int, task_id: int):
     violations = validator.get_violations()
     number_of_files_in_revision = validator.get_number_of_files_uploaded()
     adapter.info(f"{len(violations)} violations found")
+
+    # 'Update data' flow allows validation to occur multiple times
+    # lets just delete any 'old' observations irrespective of whether updated data has validations
+    revision.schema_violations.all().delete()
+
     if number_of_files_in_revision > 0:
         if len(violations) > 0:
             schema_violations = [
@@ -243,9 +248,6 @@ def task_timetable_schema_check(revision_id: int, task_id: int):
             ]
 
             with transaction.atomic():
-                # 'Update data' flow allows validation to occur multiple times
-                # lets just delete any 'old' observations.
-                revision.schema_violations.all().delete()
                 SchemaViolation.objects.bulk_create(
                     schema_violations, batch_size=BATCH_SIZE
                 )
@@ -297,6 +299,10 @@ def task_post_schema_check(revision_id: int, task_id: int):
 
     adapter.info(f"{len(violations)} violations found.")
 
+    # 'Update data' flow allows validation to occur multiple times
+    # lets just delete any 'old' observations irrespective of whether updated data has validations
+    revision.post_schema_violations.all().delete()
+
     if len(violations) > 0:
         failed_filenames = validator.get_failed_validation_filenames()
         schema_violations = [
@@ -305,8 +311,6 @@ def task_post_schema_check(revision_id: int, task_id: int):
         ]
 
         with transaction.atomic():
-            # 'Update data' flow allows validation to occur multiple times
-            revision.post_schema_violations.all().delete()
             PostSchemaViolation.objects.bulk_create(
                 schema_violations, batch_size=BATCH_SIZE
             )
