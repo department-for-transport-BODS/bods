@@ -12,6 +12,12 @@ DESTINATION_REF_FILENAME = "destinationref.csv"
 
 
 def get_vehicle_activity_operatorref_linename() -> tuple:
+    """Get dataframe tuple which includes linename and operator ref for
+    all the errors from uncountedvehicleactivities, originref, directionref, destinationref
+
+    Returns:
+        tuple: two dfs with errors and all sirivm analysed
+    """
     errors_df, all_activity_df = read_all_avl_zip_files()
 
     return transform_avl_activity_operatorref_linename(
@@ -20,6 +26,12 @@ def get_vehicle_activity_operatorref_linename() -> tuple:
 
 
 def read_all_avl_zip_files() -> tuple:
+    """Get errors dataframe and all sirivm analysed dataframe
+    From the weekly PPC report zip files
+
+    Returns:
+        tuple: two dataframes with errors and all sirivm analysed
+    """
     latest_zip_files = get_latest_reports_from_db()
     errors_df = pd.DataFrame()
     all_activity_df_all = pd.DataFrame()
@@ -51,6 +63,12 @@ def read_all_avl_zip_files() -> tuple:
 
 
 def get_latest_reports_from_db():
+    """Get the list of all the zip files generated from the
+    Weekly PPC report
+
+    Returns:
+        Queryset with list of zipfile record
+    """
     return (
         PostPublishingCheckReport.objects.filter(
             granularity=AVL_GRANULARITY_WEEKLY, vehicle_activities_analysed__gt=0
@@ -70,11 +88,33 @@ def get_latest_reports_from_db():
 
 
 def transform_avl_activity_operatorref_linename(csv_df: pd.DataFrame) -> pd.DataFrame:
+    """Get transformed dataframe with only OperatorRef and LineRef columns
+
+    Args:
+        csv_df (pd.DataFrame): dataframe with all the columns
+
+    Returns:
+        pd.DataFrame: transformed dataframe with OperatorRef and LineRef
+    """
     csv_df.drop_duplicates(inplace=True)
     return csv_df[["OperatorRef", "LineRef"]]
 
 
 def get_originref_df(zipfile: ZipFile, all_activity_df: pd.DataFrame) -> pd.DataFrame:
+    """Get line ref and operator ref from origin ref csv from
+    PPC weekly zip file
+
+    Following columns will be used for comparision in origin ref
+    and all sirivm analysed
+    DatedVehicleJourneyRef, VehicleRef, OriginRef
+
+    Args:
+        zipfile (ZipFile): zip file object to read the origin ref df
+        all_activity_df (pd.DataFrame): all sirivm analysed df
+
+    Returns:
+        pd.DataFrame: dataframe with lineref and operator ref
+    """
     with zipfile.open(OPERATOR_REF_FILENAME) as uf:
         origin_ref_df = pd.read_csv(
             uf,
@@ -112,6 +152,20 @@ def get_originref_df(zipfile: ZipFile, all_activity_df: pd.DataFrame) -> pd.Data
 def get_directionref_df(
     zipfile: ZipFile, all_activity_df: pd.DataFrame
 ) -> pd.DataFrame:
+    """Get line ref and operator ref from direction ref csv from
+    PPC weekly zip file
+
+    Following columns will be used for comparision in direction ref
+    and all sirivm analysed
+    DatedVehicleJourneyRef, VehicleRef, DirectionRef
+
+    Args:
+        zipfile (ZipFile): zip file object to read the direction ref df
+        all_activity_df (pd.DataFrame): all sirivm analysed df
+
+    Returns:
+        pd.DataFrame: dataframe with lineref and operator ref
+    """
     with zipfile.open(DIRECTION_REF_FILENAME) as uf:
         origin_ref_df = pd.read_csv(
             uf,
@@ -149,6 +203,20 @@ def get_directionref_df(
 def get_destinationref_df(
     zipfile: ZipFile, all_activity_df: pd.DataFrame
 ) -> pd.DataFrame:
+    """Get line ref and operator ref from desination ref csv from
+    PPC weekly zip file
+
+    Following columns will be used for comparision in destination ref
+    and all sirivm analysed
+    DatedVehicleJourneyRef, VehicleRef, DestinationRef
+
+    Args:
+        zipfile (ZipFile): zip file object to read the destination ref df
+        all_activity_df (pd.DataFrame): all sirivm analysed df
+
+    Returns:
+        pd.DataFrame: dataframe with lineref and operator ref
+    """
     with zipfile.open(DESTINATION_REF_FILENAME) as uf:
         origin_ref_df = pd.read_csv(
             uf,
