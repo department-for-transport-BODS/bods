@@ -219,7 +219,7 @@
         {% endfilter %}
       </p>
       <div id="feed-stat-list" class="govuk-grid-row">
-        <div class="govuk-grid-column-one-quarter">
+        <div class="govuk-grid-column-one-half">
           {% if overall_ppc_score is not None %}
             <div class="feed-stat">
               <span class="feed-stat__value">{{ overall_ppc_score|floatformat:"0" }}%</span>
@@ -237,6 +237,16 @@
               <p class="feed-stat__label">{% trans "Weekly overall AVL to timetables matching score" %}</p>
             </div>
           {% endif %}
+        </div>
+        <div class="govuk-grid-column-one-half">
+          <div class="feed-stat">
+            <span class="feed-stat__value">{{ avl_services_require_attention_percentage }}%</span>
+            <span class="feed-stat__label">
+              {% filter force_escape %}
+                {% trans "Services requiring attention" %}
+              {% endfilter %}
+            </span>
+          </div>
         </div>
       </div>
       <ul class="govuk-list govuk-!-margin-top-5">
