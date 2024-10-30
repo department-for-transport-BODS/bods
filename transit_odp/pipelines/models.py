@@ -66,8 +66,10 @@ class TaskResult(TimeStampedModel):
     FAILURE = "FAILURE"
     #: Task ready
     READY = "READY"
+    #: Task error
+    ERROR = "ERROR"
 
-    ALL_STATES = frozenset({PENDING, RECEIVED, STARTED, SUCCESS, FAILURE, READY})
+    ALL_STATES = frozenset({PENDING, RECEIVED, STARTED, SUCCESS, FAILURE, READY, ERROR})
     TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
 
     task_id = models.CharField(
@@ -284,7 +286,7 @@ class PipelineProcessingStep(models.Model):
         return f"{self.name} ({self.get_category_display()})"
 
 
-class FileProcessingResult(models.Model):
+class FileProcessingResult(TaskResult):
     STARTED = "STARTED"
     FAILURE = "FAILURE"
     ERROR = "ERROR"
@@ -309,19 +311,7 @@ class FileProcessingResult(models.Model):
         null=True,  # Set to null to handle cases where no error occurs
         blank=True,
     )
-    created_datetime = models.DateTimeField(
-        auto_now_add=True
-    )  # Auto set the creation timestamp
-    end_datetime = models.DateTimeField()
     filename = models.CharField(max_length=255)
-    lambda_run_id = models.CharField(
-        max_length=255,
-        unique=True,
-        db_index=True,
-        verbose_name=_("Lambda UUID"),
-        help_text=_("The Unique Lambda ID for the Task that was run"),
-    )
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES)
     error_message = models.TextField(blank=True, null=True)
 
     class Meta:
