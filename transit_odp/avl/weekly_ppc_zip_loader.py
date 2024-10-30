@@ -18,11 +18,9 @@ def get_vehicle_activity_operatorref_linename() -> tuple:
     Returns:
         tuple: two dfs with errors and all sirivm analysed
     """
-    errors_df, all_activity_df = read_all_avl_zip_files()
+    errors_df = read_all_avl_zip_files()
 
-    return transform_avl_activity_operatorref_linename(
-        errors_df
-    ), transform_avl_activity_operatorref_linename(all_activity_df)
+    return transform_avl_activity_operatorref_linename(errors_df)
 
 
 def read_all_avl_zip_files() -> tuple:
@@ -32,34 +30,40 @@ def read_all_avl_zip_files() -> tuple:
     Returns:
         tuple: two dataframes with errors and all sirivm analysed
     """
-    latest_zip_files = get_latest_reports_from_db()
-    errors_df = pd.DataFrame()
-    all_activity_df_all = pd.DataFrame()
-    for record in latest_zip_files:
-        with ZipFile(record.file.path, "r") as z:
-            with z.open(ALL_SIRIVM_FILENAME) as af:
-                all_activity_df = pd.read_csv(
-                    af,
-                    dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "int64"},
+    try:
+        latest_zip_files = get_latest_reports_from_db()
+        errors_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
+        for record in latest_zip_files:
+            with ZipFile(record.file.path, "r") as z:
+                with z.open(ALL_SIRIVM_FILENAME) as af:
+                    all_activity_df = pd.read_csv(
+                        af,
+                        dtype={
+                            "VehicleRef": "object",
+                            "DatedVehicleJourneyRef": "int64",
+                            "LineRef": "object",
+                        },
+                    )
+
+                with z.open(UNCOUNTED_VEHICLE_ACTIVITY_FILENAME) as uf:
+                    df = pd.read_csv(uf, dtype={"LineRef": "object"})
+                    df = df[["OperatorRef", "LineRef"]]
+                    errors_df = pd.concat([df, errors_df])
+
+                errors_df = pd.concat(
+                    [
+                        errors_df,
+                        get_destinationref_df(z, all_activity_df),
+                        get_originref_df(z, all_activity_df),
+                        get_directionref_df(z, all_activity_df),
+                    ]
                 )
+                errors_df.drop_duplicates(inplace=True)
+                errors_df.reset_index(inplace=True, drop=True)
 
-            with z.open(UNCOUNTED_VEHICLE_ACTIVITY_FILENAME) as uf:
-                df = pd.read_csv(uf)
-                df = df[["OperatorRef", "LineRef"]]
-                errors_df = pd.concat([df, errors_df])
-
-            errors_df = pd.concat(
-                [
-                    errors_df,
-                    get_destinationref_df(z, all_activity_df),
-                    get_originref_df(z, all_activity_df),
-                    get_directionref_df(z, all_activity_df),
-                ]
-            )
-            errors_df.drop_duplicates(inplace=True)
-            all_activity_df_all = pd.concat([all_activity_df_all, all_activity_df])
-
-    return errors_df, all_activity_df_all
+        return errors_df
+    except Exception:
+        return pd.DataFrame(columns=["OperatorRef", "LineRef"])
 
 
 def get_latest_reports_from_db():
@@ -115,38 +119,42 @@ def get_originref_df(zipfile: ZipFile, all_activity_df: pd.DataFrame) -> pd.Data
     Returns:
         pd.DataFrame: dataframe with lineref and operator ref
     """
-    with zipfile.open(OPERATOR_REF_FILENAME) as uf:
-        origin_ref_df = pd.read_csv(
-            uf,
-            dtype={
-                "VehicleRef in SIRI": "object",
-                "DatedVehicleJourneyRef in SIRI": "int64",
-            },
-        )
-        origin_ref_df = origin_ref_df[
-            [
-                "DatedVehicleJourneyRef in SIRI",
-                "VehicleRef in SIRI",
-                "OriginRef in SIRI",
-            ]
-        ].rename(
-            columns={
-                "DatedVehicleJourneyRef in SIRI": "DatedVehicleJourneyRef",
-                "VehicleRef in SIRI": "VehicleRef",
-                "OriginRef in SIRI": "OriginRef",
-            }
-        )
+    try:
+        with zipfile.open(OPERATOR_REF_FILENAME) as uf:
+            origin_ref_df = pd.read_csv(
+                uf,
+                dtype={
+                    "VehicleRef in SIRI": "object",
+                    "DatedVehicleJourneyRef in SIRI": "int64",
+                },
+            )
+            origin_ref_df = origin_ref_df[
+                [
+                    "DatedVehicleJourneyRef in SIRI",
+                    "VehicleRef in SIRI",
+                    "OriginRef in SIRI",
+                ]
+            ].rename(
+                columns={
+                    "DatedVehicleJourneyRef in SIRI": "DatedVehicleJourneyRef",
+                    "VehicleRef in SIRI": "VehicleRef",
+                    "OriginRef in SIRI": "OriginRef",
+                }
+            )
 
-        filtered_df = pd.merge(
-            all_activity_df,
-            origin_ref_df,
-            on=["DatedVehicleJourneyRef", "VehicleRef", "OriginRef"],
-            how="inner",
-        )
-        filtered_df = filtered_df[["OperatorRef", "LineRef"]]
-        filtered_df.drop_duplicates(inplace=True)
+            filtered_df = pd.merge(
+                all_activity_df,
+                origin_ref_df,
+                on=["DatedVehicleJourneyRef", "VehicleRef", "OriginRef"],
+                how="inner",
+            )
+            filtered_df = filtered_df[["OperatorRef", "LineRef"]]
+            filtered_df.drop_duplicates(inplace=True)
+            filtered_df.reset_index(inplace=True, drop=True)
 
-        return filtered_df
+            return filtered_df
+    except Exception:
+        return pd.DataFrame(columns=["OperatorRef", "LineRef"])
 
 
 def get_directionref_df(
@@ -166,38 +174,42 @@ def get_directionref_df(
     Returns:
         pd.DataFrame: dataframe with lineref and operator ref
     """
-    with zipfile.open(DIRECTION_REF_FILENAME) as uf:
-        origin_ref_df = pd.read_csv(
-            uf,
-            dtype={
-                "VehicleRef in SIRI": "object",
-                "DatedVehicleJourneyRef in SIRI": "int64",
-            },
-        )
-        origin_ref_df = origin_ref_df[
-            [
-                "DatedVehicleJourneyRef in SIRI",
-                "VehicleRef in SIRI",
-                "DirectionRef in SIRI",
-            ]
-        ].rename(
-            columns={
-                "DatedVehicleJourneyRef in SIRI": "DatedVehicleJourneyRef",
-                "VehicleRef in SIRI": "VehicleRef",
-                "DirectionRef in SIRI": "DirectionRef",
-            }
-        )
+    try:
+        with zipfile.open(DIRECTION_REF_FILENAME) as uf:
+            origin_ref_df = pd.read_csv(
+                uf,
+                dtype={
+                    "VehicleRef in SIRI": "object",
+                    "DatedVehicleJourneyRef in SIRI": "int64",
+                },
+            )
+            origin_ref_df = origin_ref_df[
+                [
+                    "DatedVehicleJourneyRef in SIRI",
+                    "VehicleRef in SIRI",
+                    "DirectionRef in SIRI",
+                ]
+            ].rename(
+                columns={
+                    "DatedVehicleJourneyRef in SIRI": "DatedVehicleJourneyRef",
+                    "VehicleRef in SIRI": "VehicleRef",
+                    "DirectionRef in SIRI": "DirectionRef",
+                }
+            )
 
-        filtered_df = pd.merge(
-            all_activity_df,
-            origin_ref_df,
-            on=["DatedVehicleJourneyRef", "VehicleRef", "DirectionRef"],
-            how="inner",
-        )
-        filtered_df = filtered_df[["OperatorRef", "LineRef"]]
-        filtered_df.drop_duplicates(inplace=True)
+            filtered_df = pd.merge(
+                all_activity_df,
+                origin_ref_df,
+                on=["DatedVehicleJourneyRef", "VehicleRef", "DirectionRef"],
+                how="inner",
+            )
+            filtered_df = filtered_df[["OperatorRef", "LineRef"]]
+            filtered_df.drop_duplicates(inplace=True)
+            filtered_df.reset_index(inplace=True, drop=True)
 
-        return filtered_df
+            return filtered_df
+    except Exception:
+        return pd.DataFrame(columns=["OperatorRef", "LineRef"])
 
 
 def get_destinationref_df(
@@ -217,35 +229,39 @@ def get_destinationref_df(
     Returns:
         pd.DataFrame: dataframe with lineref and operator ref
     """
-    with zipfile.open(DESTINATION_REF_FILENAME) as uf:
-        origin_ref_df = pd.read_csv(
-            uf,
-            dtype={
-                "VehicleRef in SIRI": "object",
-                "DatedVehicleJourneyRef in SIRI": "int64",
-            },
-        )
-        origin_ref_df = origin_ref_df[
-            [
-                "DatedVehicleJourneyRef in SIRI",
-                "VehicleRef in SIRI",
-                "DestinationRef in SIRI",
-            ]
-        ].rename(
-            columns={
-                "DatedVehicleJourneyRef in SIRI": "DatedVehicleJourneyRef",
-                "VehicleRef in SIRI": "VehicleRef",
-                "DestinationRef in SIRI": "DestinationRef",
-            }
-        )
+    try:
+        with zipfile.open(DESTINATION_REF_FILENAME) as uf:
+            origin_ref_df = pd.read_csv(
+                uf,
+                dtype={
+                    "VehicleRef in SIRI": "object",
+                    "DatedVehicleJourneyRef in SIRI": "int64",
+                },
+            )
+            origin_ref_df = origin_ref_df[
+                [
+                    "DatedVehicleJourneyRef in SIRI",
+                    "VehicleRef in SIRI",
+                    "DestinationRef in SIRI",
+                ]
+            ].rename(
+                columns={
+                    "DatedVehicleJourneyRef in SIRI": "DatedVehicleJourneyRef",
+                    "VehicleRef in SIRI": "VehicleRef",
+                    "DestinationRef in SIRI": "DestinationRef",
+                }
+            )
 
-        filtered_df = pd.merge(
-            all_activity_df,
-            origin_ref_df,
-            on=["DatedVehicleJourneyRef", "VehicleRef", "DestinationRef"],
-            how="inner",
-        )
-        filtered_df = filtered_df[["OperatorRef", "LineRef"]]
-        filtered_df.drop_duplicates(inplace=True)
+            filtered_df = pd.merge(
+                all_activity_df,
+                origin_ref_df,
+                on=["DatedVehicleJourneyRef", "VehicleRef", "DestinationRef"],
+                how="inner",
+            )
+            filtered_df = filtered_df[["OperatorRef", "LineRef"]]
+            filtered_df.drop_duplicates(inplace=True)
+            filtered_df.reset_index(inplace=True, drop=True)
 
-        return filtered_df
+            return filtered_df
+    except Exception:
+        return pd.DataFrame(columns=["OperatorRef", "LineRef"])

@@ -3,7 +3,9 @@ from typing import Dict, List, Optional
 from django.db.models import Subquery
 from django.utils.timezone import now
 
-from transit_odp.avl.weekly_ppc_zip_loader import get_vehicle_activity_operatorref_linename
+from transit_odp.avl.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.naptan.models import AdminArea
@@ -417,7 +419,7 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
 
     otc_map = get_line_level_in_scope_otc_map(org_id)
     txcfa_map = get_line_level_txc_map(org_id)
-    uncounted_activity_df, all_activity_df = get_vehicle_activity_operatorref_linename()
+    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
 
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
