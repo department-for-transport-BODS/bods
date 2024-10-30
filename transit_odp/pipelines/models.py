@@ -309,17 +309,20 @@ class FileProcessingResult(models.Model):
         null=True,  # Set to null to handle cases where no error occurs
         blank=True,
     )
-    created = models.DateTimeField(auto_now_add=True)  # Auto set the creation timestamp
+    created_datetime = models.DateTimeField(
+        auto_now_add=True
+    )  # Auto set the creation timestamp
+    end_datetime = models.DateTimeField()
     filename = models.CharField(max_length=255)
-    task_id = models.CharField(
+    lambda_run_id = models.CharField(
         max_length=255,
         unique=True,
         db_index=True,
-        verbose_name=_("Lambda Task ID"),
+        verbose_name=_("Lambda UUID"),
         help_text=_("The Unique Lambda ID for the Task that was run"),
     )
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
-    message = models.TextField(blank=True, null=True)
+    error_message = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = "pipelines_fileprocessingresult"
