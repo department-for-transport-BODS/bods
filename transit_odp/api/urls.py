@@ -15,6 +15,10 @@ from transit_odp.api.views import (
     TimetablesViewSet,
     v2,
 )
+from transit_odp.api.views.avl import (
+    AVLSubscriptionsSubscribeView,
+    AVLSubscriptionsSubscribeSuccessView,
+)
 from transit_odp.api.views.disruptions import DisruptionsApiView
 
 app_name = "api"
@@ -43,11 +47,15 @@ urlpatterns = [
         AVLOpenApiView.as_view(),
         name="buslocation-tryapi",
     ),
-    # TODO - replace with subscribe view when created,
     path(
         "buslocation-api/subscribe/",
-        AVLOpenApiView.as_view(),
+        AVLSubscriptionsSubscribeView.as_view(),
         name="buslocation-subscribe",
+    ),
+    path(
+        "buslocation-api/subscribe/success",
+        AVLSubscriptionsSubscribeSuccessView.as_view(),
+        name="buslocation-subscribe-success",
     ),
     path("fares-openapi/", FaresOpenApiView.as_view(), name="faresopenapi"),
     path(

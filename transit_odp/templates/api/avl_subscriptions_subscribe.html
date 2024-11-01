@@ -1,0 +1,31 @@
+{% extends "page.html" %}
+{% load static %}
+{% load breadcrumbs %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block title_tag %}
+  {% if form.errors %}
+    {% trans "Error: " %}
+  {% endif %}
+  {% trans "Create AVL Data Subscription" %}
+{% endblock %}
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'API services' 'api-select' host hosts.data %}
+  {% breadcrumb_url 'Create AVL Data Subscription' 'api:buslocation-api' host hosts.data %}
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="component-wrapper">
+          <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            {% crispy form %}
+          </form>
+        </div>
+      </div>
+      {% block heading.secondary %}
+        {% include "browse/snippets/download_secondary_links.html" %}
+      {% endblock %}
+  </div>
+{% endblock %}

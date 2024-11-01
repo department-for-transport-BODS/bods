@@ -1,0 +1,27 @@
+{% extends "page.html" %}
+{% load static %}
+{% load breadcrumbs %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block title_tag %}
+  {% if form.errors %}
+    {% trans "Error: " %}
+  {% endif %}
+  {% trans "AVL Data Subscription Created" %}
+{% endblock %}
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'API services' 'api-select' host hosts.data %}
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">AVL Data Subscription Created</h1>
+        <p>You have successfully subscribed to the AVL API.</p>
+        <p>[view subscriptions link?]</p>
+      </div>
+      {% block heading.secondary %}
+        {% include "browse/snippets/download_secondary_links.html" %}
+      {% endblock %}
+  </div>
+{% endblock %}

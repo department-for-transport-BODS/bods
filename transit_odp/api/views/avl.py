@@ -9,7 +9,13 @@ from requests import RequestException
 from rest_framework import status, views
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from transit_odp.avl.forms import AvlSubscriptionsSubscribeForm
 from waffle import flag_is_active
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import FormView
+from django.http import HttpResponseRedirect
+from django_hosts import reverse
+import config.hosts
 
 from transit_odp.api.renders import BinRenderer, ProtoBufRenderer, XMLRender
 from transit_odp.api.utils.response_utils import create_xml_error_response
@@ -36,6 +42,32 @@ class AVLApiServiceView(LoginRequiredMixin, TemplateView):
 
 class AVLOpenApiView(LoginRequiredMixin, TemplateView):
     template_name = "swagger_ui/avl.html"
+
+
+class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
+    template_name = "api/avl_subscriptions_subscribe.html"
+    form_class = AvlSubscriptionsSubscribeForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def form_valid(self, form):
+        # todo: make request to subscribe endpoint with form values
+        # and set x-api-key header with the user's api key
+        # then handle error responses appropriately by setting them in the error summary
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse(
+            "api:buslocation-subscribe-success",
+            args={},
+            host=config.hosts.DATA_HOST,
+        )
+
+
+class AVLSubscriptionsSubscribeSuccessView(LoginRequiredMixin, TemplateView):
+    template_name = "api/avl_subscriptions_subscribe_success.html"
 
 
 class AVLApiView(views.APIView):
