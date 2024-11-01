@@ -113,7 +113,7 @@ class ICAVLSubscriptionService(Protocol):
         producer_ref: str,
         origin_ref: str,
         destination_ref: str,
-    ) -> bool:
+    ) -> None:
         """
         Creates a subscription in the AVL consumer subscription service.
         Args:

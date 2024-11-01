@@ -59,37 +59,71 @@ class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         api_key = Token.objects.get_or_create(user=self.request.user)[0].key
         subscription_id = uuid.uuid4()
-        dataset_ids = [form.cleaned_data["dataset_id_1"]]
+        dataset_ids = [
+            form.cleaned_data["dataset_id_1"],
+            form.cleaned_data["dataset_id_2"],
+            form.cleaned_data["dataset_id_3"],
+            form.cleaned_data["dataset_id_4"],
+            form.cleaned_data["dataset_id_5"],
+        ]
+        dataset_ids_set = set([dataset_id for dataset_id in dataset_ids if dataset_id])
 
-        if form.cleaned_data["dataset_id_2"]:
-            dataset_ids.append(form.cleaned_data["dataset_id_2"])
+        try:
+            self.cavl_subscription_service.subscribe(
+                api_key=api_key,
+                name=form.cleaned_data["name"],
+                url=form.cleaned_data["url"],
+                update_interval=form.cleaned_data["update_interval"],
+                subscription_id=subscription_id,
+                dataset_ids=",".join(dataset_ids_set),
+                bounding_box=form.cleaned_data["bounding_box"],
+                operator_ref=form.cleaned_data["operator_ref"],
+                vehicle_ref=form.cleaned_data["vehicle_ref"],
+                line_ref=form.cleaned_data["line_ref"],
+                producer_ref=form.cleaned_data["producer_ref"],
+                origin_ref=form.cleaned_data["origin_ref"],
+                destination_ref=form.cleaned_data["destination_ref"],
+            )
+        except RequestException as e:
+            status_code = e.response.status_code
+            error_messages = e.response.json()["errors"]
+            error_message = _(error_messages[0])
 
-        if form.cleaned_data["dataset_id_3"]:
-            dataset_ids.append(form.cleaned_data["dataset_id_3"])
+            match status_code:
+                case 400:
+                    for message in e.errors:
+                        form.add_error(None, _(message))
+                case 404:
+                    # The following code is used to extract the dataset ID from the error message
+                    # so that the appropriate field in the form can be highlighted with the error message
+                    field_name = None
 
-        if form.cleaned_data["dataset_id_4"]:
-            dataset_ids.append(form.cleaned_data["dataset_id_4"])
+                    # Extract the ID from the error message
+                    subscription_id_not_found = error_message.split(":")[-1].strip()
 
-        if form.cleaned_data["dataset_id_5"]:
-            dataset_ids.append(form.cleaned_data["dataset_id_5"])
+                    # Look up the ID in the dataset_ids list
+                    if subscription_id_not_found in dataset_ids:
+                        index = dataset_ids.index(subscription_id_not_found)
+                        field_name = f"dataset_id_{index + 1}"
+                    else:
+                        field_name = None
 
-        self.cavl_subscription_service.subscribe(
-            api_key=api_key,
-            name=form.cleaned_data["name"],
-            url=form.cleaned_data["url"],
-            update_interval=form.cleaned_data["update_interval"],
-            subscription_id=subscription_id,
-            dataset_ids=",".join(dataset_ids),
-            bounding_box=form.cleaned_data["bounding_box"],
-            operator_ref=form.cleaned_data["operator_ref"],
-            vehicle_ref=form.cleaned_data["vehicle_ref"],
-            line_ref=form.cleaned_data["line_ref"],
-            producer_ref=form.cleaned_data["producer_ref"],
-            origin_ref=form.cleaned_data["origin_ref"],
-            destination_ref=form.cleaned_data["destination_ref"],
-        )
+                    # Change the first param in form.add_error to the correct dataset ID
+                    form.add_error(
+                        field_name, f"ID not found: {subscription_id_not_found}"
+                    )
+                case 409:
+                    form.add_error(None, error_message)
+                case 429:
+                    form.add_error(None, error_message)
+                case 503:
+                    form.add_error(None, error_message)
+                case _:
+                    form.add_error(
+                        None, "An unexpected error occurred, try again later"
+                    )
 
-        # then handle error responses appropriately by setting them in the error summary
+            return self.form_invalid(form)
 
         return HttpResponseRedirect(self.get_success_url())
 

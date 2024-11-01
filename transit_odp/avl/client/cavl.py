@@ -196,7 +196,7 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
         producer_ref: str,
         origin_ref: str,
         destination_ref: str,
-    ) -> bool:
+    ) -> None:
         api_url = f"{self.AVL_CONSUMER_URL}/v1/siri-vm/subscriptions?name={name}&subscriptionId={dataset_ids}"
 
         if bounding_box:
@@ -263,4 +263,5 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
             logger.exception(
                 f"[CAVL] Couldn't create AVL consumer subscription <id={subscription_id}> <name={name}>. Response: {self._get_error_response(e)}"
             )
+
             raise
