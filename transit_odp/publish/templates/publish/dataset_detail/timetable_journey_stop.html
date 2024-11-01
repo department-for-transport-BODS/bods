@@ -12,6 +12,7 @@
           {% if col == '-' %}
             {% with key=timetable_details.observations|get_value_from_dict:col %}
               <a class="tooltip govuk-link"
+                 href="javascript:void(0)"
                  style="color: #d4351c"
                  title="More information"
                  id="stop-{{ direction }}-{{ cell.journey_id }}-{{ idx }}"
@@ -57,6 +58,7 @@
                   <a class="tooltip govuk-link"
                      style="color: #d4351c"
                      title="More information"
+                     href="javascript:void(0)"
                      id="stop-{{ direction }}-{{ idx }}"
                      onclick="BODSFrontend.showTooltip(event,'tooltip-{{ direction }}-{{ idx }}', '{{ direction }}', 'observation');">{{ cell }}
                     <p class="tooltiptext"
@@ -92,6 +94,7 @@
                 {% else %}
                   <a class="tooltip govuk-link"
                      title="More information"
+                     href="javascript:void(0)"
                      id="stop-{{ direction }}-{{ idx }}"
                      onclick="BODSFrontend.showTooltip(event,'{{ idx }}', '{{ direction }}');">{{ cell }}
                     <p class="tooltiptext" id="tooltip-{{ direction }}-{{ idx }}" onclick="BODSFrontend.disableClick(event);">
@@ -119,6 +122,7 @@
                     {% if obs_value|get_value_from_dict:cell.journey_id|stringformat:'s' %}
                       <a class="tooltip govuk-link"
                          style="color: #d4351c"
+                         href="javascript:void(0)"
                          title="More information"
                          id="stop-{{ direction }}-{{ cell.journey_id }}-{{ idx }}"
                          onclick="BODSFrontend.showTooltip(event,'{{ cell.journey_id }}-{{ idx }}', '{{ direction }}', 'observation');">
