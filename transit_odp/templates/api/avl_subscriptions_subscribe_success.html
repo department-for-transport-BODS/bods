@@ -12,6 +12,7 @@
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'API services' 'api-select' host hosts.data %}
+  {% breadcrumb_url 'Location data API Service' 'api:buslocation-api' host hosts.data %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">

@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 import requests
 from django.conf import settings
@@ -9,6 +10,7 @@ from requests import RequestException
 from rest_framework import status, views
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from transit_odp.avl.client.cavl import CAVLSubscriptionService
 from transit_odp.avl.forms import AvlSubscriptionsSubscribeForm
 from waffle import flag_is_active
 from django.utils.translation import gettext_lazy as _
@@ -16,6 +18,7 @@ from django.views.generic import FormView
 from django.http import HttpResponseRedirect
 from django_hosts import reverse
 import config.hosts
+from rest_framework.authtoken.models import Token
 
 from transit_odp.api.renders import BinRenderer, ProtoBufRenderer, XMLRender
 from transit_odp.api.utils.response_utils import create_xml_error_response
@@ -47,15 +50,47 @@ class AVLOpenApiView(LoginRequiredMixin, TemplateView):
 class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
     template_name = "api/avl_subscriptions_subscribe.html"
     form_class = AvlSubscriptionsSubscribeForm
+    cavl_subscription_service = CAVLSubscriptionService()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
 
     def form_valid(self, form):
-        # todo: make request to subscribe endpoint with form values
-        # and set x-api-key header with the user's api key
+        api_key = Token.objects.get_or_create(user=self.request.user)[0].key
+        subscription_id = uuid.uuid4()
+        dataset_ids = [form.cleaned_data["dataset_id_1"]]
+
+        if form.cleaned_data["dataset_id_2"]:
+            dataset_ids.append(form.cleaned_data["dataset_id_2"])
+
+        if form.cleaned_data["dataset_id_3"]:
+            dataset_ids.append(form.cleaned_data["dataset_id_3"])
+
+        if form.cleaned_data["dataset_id_4"]:
+            dataset_ids.append(form.cleaned_data["dataset_id_4"])
+
+        if form.cleaned_data["dataset_id_5"]:
+            dataset_ids.append(form.cleaned_data["dataset_id_5"])
+
+        self.cavl_subscription_service.subscribe(
+            api_key=api_key,
+            name=form.cleaned_data["name"],
+            url=form.cleaned_data["url"],
+            update_interval=form.cleaned_data["update_interval"],
+            subscription_id=subscription_id,
+            dataset_ids=",".join(dataset_ids),
+            bounding_box=form.cleaned_data["bounding_box"],
+            operator_ref=form.cleaned_data["operator_ref"],
+            vehicle_ref=form.cleaned_data["vehicle_ref"],
+            line_ref=form.cleaned_data["line_ref"],
+            producer_ref=form.cleaned_data["producer_ref"],
+            origin_ref=form.cleaned_data["origin_ref"],
+            destination_ref=form.cleaned_data["destination_ref"],
+        )
+
         # then handle error responses appropriately by setting them in the error summary
+
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):

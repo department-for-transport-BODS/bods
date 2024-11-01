@@ -304,15 +304,8 @@ class AvlSubscriptionsSubscribeForm(GOVUKForm):
     form_error_title = DEFAULT_ERROR_SUMMARY
 
     length_validator = RegexValidator(regex=r"^.{,256}$", code="invalid")
-    bounding_box_validator = RegexValidator(regex=r"^[0-9]+(,[0-9]+){3}$", code="invalid")
-
-    url = forms.URLField(
-        label=_("URL for endpoint"),
-        required=True,
-        error_messages={
-            "required": _("Enter a URL"),
-            "invalid": _("Enter a valid URL"),
-        },
+    bounding_box_validator = RegexValidator(
+        regex=r"^[0-9]+(,[0-9]+){3}$", code="invalid"
     )
 
     name = forms.CharField(
@@ -322,6 +315,15 @@ class AvlSubscriptionsSubscribeForm(GOVUKForm):
         error_messages={
             "required": _("Enter a name"),
             "invalid": _("Enter a name up to 256 characters"),
+        },
+    )
+
+    url = forms.URLField(
+        label=_("URL for endpoint"),
+        required=True,
+        error_messages={
+            "required": _("Enter a URL"),
+            "invalid": _("Enter a valid URL"),
         },
     )
 
@@ -476,8 +478,8 @@ class AvlSubscriptionsSubscribeForm(GOVUKForm):
         )
 
         return Layout(
-            Field("url"),
             Field("name"),
+            Field("url"),
             HTML(
                 '<fieldset class="govuk-fieldset" role="group" aria-describedby="dataset-id-hint">'
                 '<legend class="govuk-fieldset__legend govuk-fieldset__legend--m"><h2 class="govuk-fieldset__heading">Dataset ID</h2></legend>'
