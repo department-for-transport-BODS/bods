@@ -3,6 +3,7 @@ from transit_odp.avl.models import PostPublishingCheckReport
 from django.db.models import Subquery
 from zipfile import ZipFile
 import pandas as pd
+from io import BytesIO
 
 ALL_SIRIVM_FILENAME = "all_siri_vm_analysed.csv"
 UNCOUNTED_VEHICLE_ACTIVITY_FILENAME = "uncountedvehicleactivities.csv"
@@ -34,32 +35,34 @@ def read_all_avl_zip_files() -> tuple:
         latest_zip_files = get_latest_reports_from_db()
         errors_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
         for record in latest_zip_files:
-            with ZipFile(record.file.path, "r") as z:
-                with z.open(ALL_SIRIVM_FILENAME) as af:
-                    all_activity_df = pd.read_csv(
-                        af,
-                        dtype={
-                            "VehicleRef": "object",
-                            "DatedVehicleJourneyRef": "int64",
-                            "LineRef": "object",
-                        },
+            with record.file.open("rb") as zip_file_obj:
+                zip_data = BytesIO(zip_file_obj.read())
+                with ZipFile(zip_data, "r") as z:
+                    with z.open(ALL_SIRIVM_FILENAME) as af:
+                        all_activity_df = pd.read_csv(
+                            af,
+                            dtype={
+                                "VehicleRef": "object",
+                                "DatedVehicleJourneyRef": "int64",
+                                "LineRef": "object",
+                            },
+                        )
+
+                    with z.open(UNCOUNTED_VEHICLE_ACTIVITY_FILENAME) as uf:
+                        df = pd.read_csv(uf, dtype={"LineRef": "object"})
+                        df = df[["OperatorRef", "LineRef"]]
+                        errors_df = pd.concat([df, errors_df])
+
+                    errors_df = pd.concat(
+                        [
+                            errors_df,
+                            get_destinationref_df(z, all_activity_df),
+                            get_originref_df(z, all_activity_df),
+                            get_directionref_df(z, all_activity_df),
+                        ]
                     )
-
-                with z.open(UNCOUNTED_VEHICLE_ACTIVITY_FILENAME) as uf:
-                    df = pd.read_csv(uf, dtype={"LineRef": "object"})
-                    df = df[["OperatorRef", "LineRef"]]
-                    errors_df = pd.concat([df, errors_df])
-
-                errors_df = pd.concat(
-                    [
-                        errors_df,
-                        get_destinationref_df(z, all_activity_df),
-                        get_originref_df(z, all_activity_df),
-                        get_directionref_df(z, all_activity_df),
-                    ]
-                )
-                errors_df.drop_duplicates(inplace=True)
-                errors_df.reset_index(inplace=True, drop=True)
+                    errors_df.drop_duplicates(inplace=True)
+                    errors_df.reset_index(inplace=True, drop=True)
 
         return errors_df
     except Exception:

@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 from django.db.models import Subquery
 from django.utils.timezone import now
 
-from transit_odp.avl.weekly_ppc_zip_loader import (
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
 from transit_odp.organisation.models.data import TXCFileAttributes

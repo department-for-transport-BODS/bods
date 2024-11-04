@@ -7,7 +7,7 @@ from pandas.testing import assert_frame_equal
 import io
 from transit_odp.avl.factories import PostPublishingCheckReportFactory
 from transit_odp.avl.models import PPCReportType
-from transit_odp.avl.weekly_ppc_zip_loader import (
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     ALL_SIRIVM_FILENAME,
     UNCOUNTED_VEHICLE_ACTIVITY_FILENAME,
     get_destinationref_df,
@@ -64,6 +64,7 @@ UNCOUNTED_VEHICLE_ACTIVITY_DATA = """SD ResponseTimestamp,AVL data set name BODS
     \n2024-10-26T18:45:38.091000+00:00,Arriva UK Bus_20201027 14:44:26,705,ACYM,5,2024-10-26T17:42:03+00:00,3110,No vehicle journeys found with JourneyCode '3110' [CODE_2_1]
     \n2024-10-26T18:45:38.091000+00:00,Arriva UK Bus_20201027 14:44:26,705,ACYM,4,2024-10-26T18:45:19+00:00,3004,Found more than one matching vehicle journey in timetables belonging to a single service code [CODE_6_2_B]"""
 
+BASE_PATH = "transit_odp.avl.require_attention.weekly_ppc_zip_loader"
 
 def test_get_destinationref_df_with_records():
     csv_content = io.StringIO(DESTINATION_REF)
@@ -100,7 +101,7 @@ def test_get_destinationref_df_with_blankfile():
     assert_frame_equal(expected_df, result_df, check_dtype=False)
 
 
-@patch("transit_odp.avl.weekly_ppc_zip_loader.ZipFile")
+@patch(f"{BASE_PATH}.ZipFile")
 def test_get_destinationref_df_file_missing(MockZipFile):
     mock_zipfile = MockZipFile.return_value
     mock_zipfile.open.side_effect = KeyError("File not found in zip")
@@ -145,7 +146,7 @@ def test_get_originref_df_with_records():
     assert_frame_equal(expected_df, result_df, check_dtype=False)
 
 
-@patch("transit_odp.avl.weekly_ppc_zip_loader.ZipFile")
+@patch(f"{BASE_PATH}.ZipFile")
 def test_get_originref_df_file_missing(MockZipFile):
     mock_zipfile = MockZipFile.return_value
     mock_zipfile.open.side_effect = KeyError("File not found in zip")
@@ -188,7 +189,7 @@ def test_get_directionref_df_with_records():
     assert_frame_equal(expected_df, result_df, check_dtype=False)
 
 
-@patch("transit_odp.avl.weekly_ppc_zip_loader.ZipFile")
+@patch(f"{BASE_PATH}.ZipFile")
 def test_get_directionref_df_file_missing(MockZipFile):
     mock_zipfile = MockZipFile.return_value
     mock_zipfile.open.side_effect = KeyError("File not found in zip")
@@ -280,11 +281,11 @@ def test_get_latest_records_from_db_with_prev_week():
     assert len(records) == 1
 
 
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_latest_reports_from_db")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_destinationref_df")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_originref_df")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_directionref_df")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.ZipFile")
+@patch(f"{BASE_PATH}.get_latest_reports_from_db")
+@patch(f"{BASE_PATH}.get_destinationref_df")
+@patch(f"{BASE_PATH}.get_originref_df")
+@patch(f"{BASE_PATH}.get_directionref_df")
+@patch(f"{BASE_PATH}.ZipFile")
 def test_read_all_avl_zip_files(
     mock_zip_file,
     mock_direction_ref,
@@ -336,11 +337,11 @@ def test_read_all_avl_zip_files(
     assert_frame_equal(expected_df, result_df, check_dtype=False)
 
 
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_latest_reports_from_db")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_destinationref_df")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_originref_df")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_directionref_df")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.ZipFile")
+@patch(f"{BASE_PATH}.get_latest_reports_from_db")
+@patch(f"{BASE_PATH}.get_destinationref_df")
+@patch(f"{BASE_PATH}.get_originref_df")
+@patch(f"{BASE_PATH}.get_directionref_df")
+@patch(f"{BASE_PATH}.ZipFile")
 def test_read_all_avl_zip_files_blank_uncounted_vehicle(
     mock_zip_file,
     mock_direction_ref,
@@ -392,7 +393,7 @@ def test_read_all_avl_zip_files_blank_uncounted_vehicle(
     assert_frame_equal(expected_df, result_df, check_dtype=False)
 
 
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_latest_reports_from_db")
+@patch(f"{BASE_PATH}.get_latest_reports_from_db")
 def test_read_all_avl_zip_files_blank_record_from_db(
     mock_reports_fromDB,
 ):
@@ -402,11 +403,11 @@ def test_read_all_avl_zip_files_blank_record_from_db(
     assert_frame_equal(expected_df, result_df, check_dtype=False)
 
 
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_latest_reports_from_db")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_destinationref_df")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_originref_df")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.get_directionref_df")
-@patch("transit_odp.avl.weekly_ppc_zip_loader.ZipFile")
+@patch(f"{BASE_PATH}.get_latest_reports_from_db")
+@patch(f"{BASE_PATH}.get_destinationref_df")
+@patch(f"{BASE_PATH}.get_originref_df")
+@patch(f"{BASE_PATH}.get_directionref_df")
+@patch(f"{BASE_PATH}.ZipFile")
 def test_read_all_avl_zip_files_get_destinationref_df_exception(
     mock_zip_file,
     mock_direction_ref,
