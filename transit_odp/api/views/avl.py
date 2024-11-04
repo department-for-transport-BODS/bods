@@ -94,21 +94,17 @@ class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
                     for message in e.errors:
                         form.add_error(None, _(message))
                 case 404:
-                    # The following code is used to extract the dataset ID from the error message
-                    # so that the appropriate field in the form can be highlighted with the error message
+                    # The following code is used to extract the correct dataset ID from the server error message
+                    # so that the appropriate field in the form can be highlighted with a UI error message
                     field_name = None
-
-                    # Extract the ID from the error message
                     subscription_id_not_found = error_message.split(":")[-1].strip()
 
-                    # Look up the ID in the dataset_ids list
                     if subscription_id_not_found in dataset_ids:
                         index = dataset_ids.index(subscription_id_not_found)
                         field_name = f"dataset_id_{index + 1}"
                     else:
                         field_name = None
 
-                    # Change the first param in form.add_error to the correct dataset ID
                     form.add_error(
                         field_name, f"ID not found: {subscription_id_not_found}"
                     )
