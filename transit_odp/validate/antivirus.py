@@ -96,10 +96,10 @@ class FileScanner:
 
         if result.status == "ERROR":
             logger.info("Antivirus scan: FAILED")
-            raise AntiVirusError(file_.name, result.reason)
+            raise AntiVirusError(file_.name, message=result.reason)
         elif result.status == "FOUND":
             logger.exception("Antivirus scan: FOUND")
-            raise SuspiciousFile(file_.name, result.reason)
+            raise SuspiciousFile(file_.name, message=result.reason)
         logger.info("Antivirus scan: OK")
 
     @retry(
