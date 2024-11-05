@@ -63,6 +63,11 @@ class Checks(Enum):
     DuplicateJourneys = "Duplicate journeys"
 
 
+STOPNAMEOBSERVATION = [
+    Checks.IncorrectStopType.value,
+    Checks.StopNotFoundInNaptan.value,
+]
+
 CHECKS_DATA = [
     {
         "observation": Checks.IncorrectNoc.value,
@@ -462,22 +467,22 @@ IncorrectLicenceNumberObservation = Observation(
 ServicedOrganisationOutOfDateObservation = Observation(
     title=Checks.ServicedOrganisationOutOfDate.value,
     text=(
-        "This observation identifies services that have journeys operating during Serviced"
-        " Organisation days that have expired."
+        "This observation identifies services that have journeys operating during serviced"
+        " organisation working days that have expired."
     ),
     impacts=(
         "Serviced organisations hold dates for when organisations, such as schools, are open"
-        " and closed. The services will not appear on downstream journey planning apps,"
-        " impacting the reliability of the data for passengers. Operators must ensure the data"
-        " provides up-to-date information for passengers."
+        " and closed. If the date has expired, the services will not appear on downstream journey"
+        " planning apps, impacting the reliability of the data for passengers. Operators must"
+        " ensure the data provides up-to-date information for passengers."
     ),
     resolve=(
-        "Please enter up to date working days on your scheduling tool for serviced organisations"
+        "Please enter up-to-date working days on your scheduling tool for serviced organisations"
         " specified on your timetables data."
     ),
     preamble=(
         "The following service(s) have been observed to have at least one journey referencing"
-        " a serviced organisation that have working days that are out of date."
+        " a serviced organisation that has working days that are out of date."
     ),
     list_url_name="dq:serviced-organisation-out-of-date-list",
     level=Level.advisory,

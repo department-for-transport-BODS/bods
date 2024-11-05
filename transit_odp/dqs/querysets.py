@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import F, TextField, CharField, BooleanField, Max
+from django.db.models import F, TextField, CharField, BooleanField, Max, Func
 from transit_odp.dqs.constants import TaskResultsStatus, Checks
 from django.db.models.expressions import Value
 from django.db.models.functions import (
@@ -222,14 +222,21 @@ class ObservationResultsQueryset(models.QuerySet):
                 ),
                 stop_type=F("service_pattern_stop__naptan_stop__stop_type"),
                 journey_code=F("vehicle_journey__journey_code"),
-                serviced_organisation=F("serviced_organisation_id__name"),
-                serviced_organisation_code=F(
-                    "serviced_organisation_id__organisation_code"
+                serviced_organisation=F(
+                    "serviced_organisation_vehicle_journey__serviced_organisation__name"
                 ),
-                last_working_day=Max(
-                    F(
-                        "serviced_organisation_id__serviced_organisations__serviced_organisations_vehicle_journey__end_date"
-                    )
+                serviced_organisation_code=F(
+                    "serviced_organisation_vehicle_journey__serviced_organisation__organisation_code"
+                ),
+                last_working_day=Func(
+                    Max(
+                        F(
+                            "serviced_organisation_vehicle_journey__serviced_organisations_vehicle_journey__end_date"
+                        )
+                    ),
+                    Value("dd/MM/yyyy"),
+                    function="TO_CHAR",  # TO_CHAR is for PostgreSQL
+                    output_field=CharField(),
                 ),
             )
             .values(*columns)

@@ -3,11 +3,10 @@ from collections import namedtuple
 from typing import Any
 
 from django.conf import settings
-from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import DetailView, TemplateView, UpdateView
 
-from transit_odp.common.constants import ACCESSIBILITY_REPORT_FILE_NAME, FALSE, TRUE
+from transit_odp.common.constants import FALSE, TRUE
 from transit_odp.common.utils.cookie_settings import delete_cookie, set_cookie
 from transit_odp.common.view_mixins import BODSBaseView
 
@@ -102,32 +101,3 @@ class CoachDownloadView(BaseTemplateView):
         context["atco_file"] = settings.COACH_ATCO_FILE_S3_URL
 
         return context
-
-
-class AccessibilityVPATReportView(TemplateView):
-    """
-    View for downloading the Voluntary Product Accessibility
-    Template (VPAT) report.
-    """
-
-    def get(self, request):
-        file_path = (
-            f"transit_odp/frontend/assets/documents/{ACCESSIBILITY_REPORT_FILE_NAME}"
-        )
-        try:
-            with open(file_path, "rb") as f:
-                response = HttpResponse(
-                    f.read(),
-                    content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                )
-                response[
-                    "Content-Disposition"
-                ] = f"attachment; filename={ACCESSIBILITY_REPORT_FILE_NAME}"
-
-                return response
-        except FileNotFoundError:
-            logger.error(f"Requested file {ACCESSIBILITY_REPORT_FILE_NAME} not found.")
-            return HttpResponse(
-                f"Requested file {ACCESSIBILITY_REPORT_FILE_NAME} not found.",
-                status=404,
-            )

@@ -8,10 +8,6 @@ FALSE = "False"
 
 UTF8 = "utf-8"
 
-ACCESSIBILITY_REPORT_FILE_NAME = (
-    "BODS_Accessibility_VPAT_2.4_WCAG_2.2_Edition_v0.1.docx"
-)
-
 
 class CSVFileName(Enum):
     DELETE_DATASETS = "delete_datasets.csv"
