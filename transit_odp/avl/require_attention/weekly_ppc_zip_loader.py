@@ -1,9 +1,12 @@
+import logging
 from transit_odp.avl.constants import AVL_GRANULARITY_WEEKLY
 from transit_odp.avl.models import PostPublishingCheckReport
 from django.db.models import Subquery
 from zipfile import ZipFile
 import pandas as pd
 from io import BytesIO
+
+logger = logging.getLogger(__name__)
 
 ALL_SIRIVM_FILENAME = "all_siri_vm_analysed.csv"
 UNCOUNTED_VEHICLE_ACTIVITY_FILENAME = "uncountedvehicleactivities.csv"
@@ -12,27 +15,16 @@ DIRECTION_REF_FILENAME = "directionref.csv"
 DESTINATION_REF_FILENAME = "destinationref.csv"
 
 
-def get_vehicle_activity_operatorref_linename() -> tuple:
-    """Get dataframe tuple which includes linename and operator ref for
-    all the errors from uncountedvehicleactivities, originref, directionref, destinationref
-
-    Returns:
-        tuple: two dfs with errors and all sirivm analysed
-    """
-    errors_df = read_all_avl_zip_files()
-
-    return transform_avl_activity_operatorref_linename(errors_df)
-
-
-def read_all_avl_zip_files() -> tuple:
+def get_vehicle_activity_operatorref_linename() -> pd.DataFrame:
     """Get errors dataframe and all sirivm analysed dataframe
     From the weekly PPC report zip files
 
     Returns:
-        tuple: two dataframes with errors and all sirivm analysed
+        pd.DataFrame: dataframe containing lines and operator ref
     """
     try:
         latest_zip_files = get_latest_reports_from_db()
+        logger.info(f"Total {len(latest_zip_files)} Found with vehicle activities.")
         errors_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
         for record in latest_zip_files:
             with record.file.open("rb") as zip_file_obj:
@@ -63,9 +55,11 @@ def read_all_avl_zip_files() -> tuple:
                     )
                     errors_df.drop_duplicates(inplace=True)
                     errors_df.reset_index(inplace=True, drop=True)
-
+        logger.info(f"Found {len(errors_df)} lines in error in weekly ppc report.")
         return errors_df
-    except Exception:
+    except Exception as e:
+        logger.error("Exception: For getting vehicle activity and operator refs.")
+        logger.error(str(e))
         return pd.DataFrame(columns=["OperatorRef", "LineRef"])
 
 
@@ -92,19 +86,6 @@ def get_latest_reports_from_db():
         )
         .all()
     )
-
-
-def transform_avl_activity_operatorref_linename(csv_df: pd.DataFrame) -> pd.DataFrame:
-    """Get transformed dataframe with only OperatorRef and LineRef columns
-
-    Args:
-        csv_df (pd.DataFrame): dataframe with all the columns
-
-    Returns:
-        pd.DataFrame: transformed dataframe with OperatorRef and LineRef
-    """
-    csv_df.drop_duplicates(inplace=True)
-    return csv_df[["OperatorRef", "LineRef"]]
 
 
 def get_originref_df(zipfile: ZipFile, all_activity_df: pd.DataFrame) -> pd.DataFrame:
@@ -156,7 +137,11 @@ def get_originref_df(zipfile: ZipFile, all_activity_df: pd.DataFrame) -> pd.Data
             filtered_df.reset_index(inplace=True, drop=True)
 
             return filtered_df
-    except Exception:
+    except Exception as e:
+        logger.error(
+            f"Exception: In Reading OperatorRef file in zip {zipfile.filename}."
+        )
+        logger.error(str(e))
         return pd.DataFrame(columns=["OperatorRef", "LineRef"])
 
 
@@ -211,7 +196,11 @@ def get_directionref_df(
             filtered_df.reset_index(inplace=True, drop=True)
 
             return filtered_df
-    except Exception:
+    except Exception as e:
+        logger.error(
+            f"Exception: In Reading DirectionRef file in zip {zipfile.filename}."
+        )
+        logger.error(str(e))
         return pd.DataFrame(columns=["OperatorRef", "LineRef"])
 
 
@@ -266,5 +255,9 @@ def get_destinationref_df(
             filtered_df.reset_index(inplace=True, drop=True)
 
             return filtered_df
-    except Exception:
+    except Exception as e:
+        logger.error(
+            f"Exception: In Reading DestinationRef file in zip {zipfile.filename}."
+        )
+        logger.error(str(e))
         return pd.DataFrame(columns=["OperatorRef", "LineRef"])

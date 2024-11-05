@@ -14,7 +14,7 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_directionref_df,
     get_latest_reports_from_db,
     get_originref_df,
-    read_all_avl_zip_files,
+    get_vehicle_activity_operatorref_linename,
 )
 from transit_odp.organisation.factories import DatasetFactory, OrganisationFactory
 from datetime import date, timedelta
@@ -65,6 +65,7 @@ UNCOUNTED_VEHICLE_ACTIVITY_DATA = """SD ResponseTimestamp,AVL data set name BODS
     \n2024-10-26T18:45:38.091000+00:00,Arriva UK Bus_20201027 14:44:26,705,ACYM,4,2024-10-26T18:45:19+00:00,3004,Found more than one matching vehicle journey in timetables belonging to a single service code [CODE_6_2_B]"""
 
 BASE_PATH = "transit_odp.avl.require_attention.weekly_ppc_zip_loader"
+
 
 def test_get_destinationref_df_with_records():
     csv_content = io.StringIO(DESTINATION_REF)
@@ -185,7 +186,6 @@ def test_get_directionref_df_with_records():
 
     expected_df = pd.DataFrame({"OperatorRef": ["ACYM"], "LineRef": ["5"]})
     result_df = get_directionref_df(mock_zip_file, df_input)
-    print(result_df)
     assert_frame_equal(expected_df, result_df, check_dtype=False)
 
 
@@ -281,124 +281,124 @@ def test_get_latest_records_from_db_with_prev_week():
     assert len(records) == 1
 
 
+# @patch(f"{BASE_PATH}.get_latest_reports_from_db")
+# @patch(f"{BASE_PATH}.get_destinationref_df")
+# @patch(f"{BASE_PATH}.get_originref_df")
+# @patch(f"{BASE_PATH}.get_directionref_df")
+# @patch(f"{BASE_PATH}.ZipFile")
+# def test_get_vehicle_activity_operatorref_linename(
+#     mock_zip_file,
+#     mock_direction_ref,
+#     mock_origin_ref,
+#     mock_destination_ref,
+#     mock_reports_fromDB,
+# ):
+#     mock_origin_ref.return_value = pd.DataFrame(
+#         {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "12"]}
+#     )
+#     mock_destination_ref.return_value = pd.DataFrame(
+#         {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "10"]}
+#     )
+#     mock_direction_ref.return_value = pd.DataFrame(
+#         {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "8"]}
+#     )
+
+#     mock_record = MagicMock()
+#     mock_record.file.path = "mock.zip"
+#     mock_reports_fromDB.return_value = [mock_record]
+
+#     mock_zip_instance = mock_zip_file.return_value.__enter__.return_value
+#     mock_zip_instance.namelist.return_value = [
+#         ALL_SIRIVM_FILENAME,
+#         UNCOUNTED_VEHICLE_ACTIVITY_FILENAME,
+#     ]
+
+#     csv_data = {
+#         ALL_SIRIVM_FILENAME: io.StringIO(ALL_SIRIVM_ANNALYSED),
+#         UNCOUNTED_VEHICLE_ACTIVITY_FILENAME: io.StringIO(
+#             UNCOUNTED_VEHICLE_ACTIVITY_DATA
+#         ),
+#     }
+
+#     def mock_open(name):
+#         if name in csv_data:
+#             return csv_data[name]
+#         raise KeyError(f"File {name} not found in zip")
+
+#     mock_zip_instance.open.side_effect = mock_open
+
+#     result_df = get_vehicle_activity_operatorref_linename()
+#     expected_df = pd.DataFrame(
+#         {
+#             "OperatorRef": ["ACYM", "ACYM", "ACYM", "ACYM", "ACYM"],
+#             "LineRef": ["4", "5", "10", "12", "8"],
+#         }
+#     )
+#     assert_frame_equal(expected_df, result_df, check_dtype=False)
+
+
+# @patch(f"{BASE_PATH}.get_latest_reports_from_db")
+# @patch(f"{BASE_PATH}.get_destinationref_df")
+# @patch(f"{BASE_PATH}.get_originref_df")
+# @patch(f"{BASE_PATH}.get_directionref_df")
+# @patch(f"{BASE_PATH}.ZipFile")
+# def test_get_vehicle_activity_operatorref_linename_blank_uncounted_vehicle(
+#     mock_zip_file,
+#     mock_direction_ref,
+#     mock_origin_ref,
+#     mock_destination_ref,
+#     mock_reports_fromDB,
+# ):
+#     mock_origin_ref.return_value = pd.DataFrame(
+#         {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "12"]}
+#     )
+#     mock_destination_ref.return_value = pd.DataFrame(
+#         {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "10"]}
+#     )
+#     mock_direction_ref.return_value = pd.DataFrame(
+#         {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "8"]}
+#     )
+
+#     mock_record = MagicMock()
+#     mock_record.file.path = "mock.zip"
+#     mock_reports_fromDB.return_value = [mock_record]
+
+#     mock_zip_instance = mock_zip_file.return_value.__enter__.return_value
+#     mock_zip_instance.namelist.return_value = [
+#         ALL_SIRIVM_FILENAME,
+#         UNCOUNTED_VEHICLE_ACTIVITY_FILENAME,
+#     ]
+
+#     csv_data = {
+#         ALL_SIRIVM_FILENAME: io.StringIO(ALL_SIRIVM_ANNALYSED),
+#         UNCOUNTED_VEHICLE_ACTIVITY_FILENAME: io.StringIO(
+#             "SD ResponseTimestamp,AVL data set name BODS,AVL data set ID BODS,OperatorRef,LineRef,RecordedAtTime,DatedVehicleJourneyRef in SIRI,Error note: Reason it could not be analysed against TXC"
+#         ),
+#     }
+
+#     def mock_open(name):
+#         if name in csv_data:
+#             return csv_data[name]
+#         raise KeyError(f"File {name} not found in zip")
+
+#     mock_zip_instance.open.side_effect = mock_open
+
+#     result_df = get_vehicle_activity_operatorref_linename()
+#     expected_df = pd.DataFrame(
+#         {
+#             "OperatorRef": ["ACYM", "ACYM", "ACYM", "ACYM"],
+#             "LineRef": ["5", "10", "12", "8"],
+#         }
+#     )
+#     assert_frame_equal(expected_df, result_df, check_dtype=False)
+
+
 @patch(f"{BASE_PATH}.get_latest_reports_from_db")
-@patch(f"{BASE_PATH}.get_destinationref_df")
-@patch(f"{BASE_PATH}.get_originref_df")
-@patch(f"{BASE_PATH}.get_directionref_df")
-@patch(f"{BASE_PATH}.ZipFile")
-def test_read_all_avl_zip_files(
-    mock_zip_file,
-    mock_direction_ref,
-    mock_origin_ref,
-    mock_destination_ref,
-    mock_reports_fromDB,
-):
-    mock_origin_ref.return_value = pd.DataFrame(
-        {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "12"]}
-    )
-    mock_destination_ref.return_value = pd.DataFrame(
-        {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "10"]}
-    )
-    mock_direction_ref.return_value = pd.DataFrame(
-        {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "8"]}
-    )
-
-    mock_record = MagicMock()
-    mock_record.file.path = "mock.zip"
-    mock_reports_fromDB.return_value = [mock_record]
-
-    mock_zip_instance = mock_zip_file.return_value.__enter__.return_value
-    mock_zip_instance.namelist.return_value = [
-        ALL_SIRIVM_FILENAME,
-        UNCOUNTED_VEHICLE_ACTIVITY_FILENAME,
-    ]
-
-    csv_data = {
-        ALL_SIRIVM_FILENAME: io.StringIO(ALL_SIRIVM_ANNALYSED),
-        UNCOUNTED_VEHICLE_ACTIVITY_FILENAME: io.StringIO(
-            UNCOUNTED_VEHICLE_ACTIVITY_DATA
-        ),
-    }
-
-    def mock_open(name):
-        if name in csv_data:
-            return csv_data[name]
-        raise KeyError(f"File {name} not found in zip")
-
-    mock_zip_instance.open.side_effect = mock_open
-
-    result_df = read_all_avl_zip_files()
-    expected_df = pd.DataFrame(
-        {
-            "OperatorRef": ["ACYM", "ACYM", "ACYM", "ACYM", "ACYM"],
-            "LineRef": ["4", "5", "10", "12", "8"],
-        }
-    )
-    assert_frame_equal(expected_df, result_df, check_dtype=False)
-
-
-@patch(f"{BASE_PATH}.get_latest_reports_from_db")
-@patch(f"{BASE_PATH}.get_destinationref_df")
-@patch(f"{BASE_PATH}.get_originref_df")
-@patch(f"{BASE_PATH}.get_directionref_df")
-@patch(f"{BASE_PATH}.ZipFile")
-def test_read_all_avl_zip_files_blank_uncounted_vehicle(
-    mock_zip_file,
-    mock_direction_ref,
-    mock_origin_ref,
-    mock_destination_ref,
-    mock_reports_fromDB,
-):
-    mock_origin_ref.return_value = pd.DataFrame(
-        {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "12"]}
-    )
-    mock_destination_ref.return_value = pd.DataFrame(
-        {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "10"]}
-    )
-    mock_direction_ref.return_value = pd.DataFrame(
-        {"OperatorRef": ["ACYM", "ACYM"], "LineRef": ["5", "8"]}
-    )
-
-    mock_record = MagicMock()
-    mock_record.file.path = "mock.zip"
-    mock_reports_fromDB.return_value = [mock_record]
-
-    mock_zip_instance = mock_zip_file.return_value.__enter__.return_value
-    mock_zip_instance.namelist.return_value = [
-        ALL_SIRIVM_FILENAME,
-        UNCOUNTED_VEHICLE_ACTIVITY_FILENAME,
-    ]
-
-    csv_data = {
-        ALL_SIRIVM_FILENAME: io.StringIO(ALL_SIRIVM_ANNALYSED),
-        UNCOUNTED_VEHICLE_ACTIVITY_FILENAME: io.StringIO(
-            "SD ResponseTimestamp,AVL data set name BODS,AVL data set ID BODS,OperatorRef,LineRef,RecordedAtTime,DatedVehicleJourneyRef in SIRI,Error note: Reason it could not be analysed against TXC"
-        ),
-    }
-
-    def mock_open(name):
-        if name in csv_data:
-            return csv_data[name]
-        raise KeyError(f"File {name} not found in zip")
-
-    mock_zip_instance.open.side_effect = mock_open
-
-    result_df = read_all_avl_zip_files()
-    expected_df = pd.DataFrame(
-        {
-            "OperatorRef": ["ACYM", "ACYM", "ACYM", "ACYM"],
-            "LineRef": ["5", "10", "12", "8"],
-        }
-    )
-    assert_frame_equal(expected_df, result_df, check_dtype=False)
-
-
-@patch(f"{BASE_PATH}.get_latest_reports_from_db")
-def test_read_all_avl_zip_files_blank_record_from_db(
+def test_get_vehicle_activity_operatorref_linename_blank_record_from_db(
     mock_reports_fromDB,
 ):
     mock_reports_fromDB.return_value = []
-    result_df = read_all_avl_zip_files()
+    result_df = get_vehicle_activity_operatorref_linename()
     expected_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
     assert_frame_equal(expected_df, result_df, check_dtype=False)
 
@@ -408,7 +408,7 @@ def test_read_all_avl_zip_files_blank_record_from_db(
 @patch(f"{BASE_PATH}.get_originref_df")
 @patch(f"{BASE_PATH}.get_directionref_df")
 @patch(f"{BASE_PATH}.ZipFile")
-def test_read_all_avl_zip_files_get_destinationref_df_exception(
+def test_get_vehicle_activity_operatorref_linename_get_destinationref_df_exception(
     mock_zip_file,
     mock_direction_ref,
     mock_origin_ref,
@@ -447,6 +447,6 @@ def test_read_all_avl_zip_files_get_destinationref_df_exception(
 
     mock_zip_instance.open.side_effect = mock_open
 
-    result_df = read_all_avl_zip_files()
+    result_df = get_vehicle_activity_operatorref_linename()
     expected_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
     assert_frame_equal(expected_df, result_df, check_dtype=False)

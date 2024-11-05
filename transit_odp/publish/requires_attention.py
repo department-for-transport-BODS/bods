@@ -3,6 +3,7 @@ from typing import Dict, List, Optional
 from django.db.models import Subquery
 from django.utils.timezone import now
 
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
@@ -420,20 +421,25 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     otc_map = get_line_level_in_scope_otc_map(org_id)
     txcfa_map = get_line_level_txc_map(org_id)
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+    abods_registry = AbodsRegistery()
+    synced_in_last_month = abods_registry.records()
 
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
         if file_attribute is not None:
             operator_ref = file_attribute.national_operator_code
             line_name = service_key[1]
-            if not uncounted_activity_df.loc[
-                (uncounted_activity_df["OperatorRef"] == operator_ref)
-                & (
-                    uncounted_activity_df["LineRef"].isin(
-                        [line_name, line_name.replace(" ", "_")]
+            if (
+                not uncounted_activity_df.loc[
+                    (uncounted_activity_df["OperatorRef"] == operator_ref)
+                    & (
+                        uncounted_activity_df["LineRef"].isin(
+                            [line_name, line_name.replace(" ", "_")]
+                        )
                     )
-                )
-            ].empty:
+                ].empty
+                or f"{line_name}__{operator_ref}" not in synced_in_last_month
+            ):
                 _update_data(object_list, service)
 
     return object_list
