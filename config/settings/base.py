@@ -657,7 +657,9 @@ AWS_ENVIRONMENT = env("AWS_ENVIRONMENT", default="LOCAL")
 
 # ABODS AVL LINE LEVEL DETAILS
 # -------------------------------------------------------------------------------
-ABODS_AVL_LINE_LEVEL_DETAILS_URL = env("ABODS_AVL_LINE_LEVEL_DETAILS_URL", default="https://abods_api.url")
+ABODS_AVL_LINE_LEVEL_DETAILS_URL = env(
+    "ABODS_AVL_LINE_LEVEL_DETAILS_URL", default="https://abods_api.url"
+)
 ABODS_AVL_AUTH_TOKEN = env("ABODS_AVL_AUTH_TOKEN", default="")
 
 

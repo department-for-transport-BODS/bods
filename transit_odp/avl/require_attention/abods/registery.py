@@ -61,12 +61,16 @@ class AbodsClient:
         except Timeout as e:
             msg = f"Timeout Error: {e}"
             logger.exception(msg)
-            raise
+            return self.default_response()
 
         except HTTPError as e:
             msg = f"HTTPError: {e}"
             logger.exception(msg)
-            raise
+            return self.default_response()
+        except Exception as exc:
+            logger.error("Unexpected error in ABODS API response")
+            logger.exception(exc)
+            return self.default_response()
 
         if response.status_code == HTTPStatus.NO_CONTENT:
             logger.warning(
@@ -84,6 +88,7 @@ class AbodsClient:
             logger.error("Validation error in ABODS API response")
             logger.error(f"Response JSON: {response.text}")
             logger.error(f"Validation Error: {exc}")
+
         return self.default_response()
 
     def default_response(self):
