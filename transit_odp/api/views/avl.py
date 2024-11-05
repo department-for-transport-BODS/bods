@@ -59,14 +59,14 @@ class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         api_key = Token.objects.get_or_create(user=self.request.user)[0].key
         subscription_id = uuid.uuid4()
-        dataset_ids = [
-            form.cleaned_data["dataset_id_1"],
-            form.cleaned_data["dataset_id_2"],
-            form.cleaned_data["dataset_id_3"],
-            form.cleaned_data["dataset_id_4"],
-            form.cleaned_data["dataset_id_5"],
+        data_feed_ids = [
+            form.cleaned_data["data_feed_id_1"],
+            form.cleaned_data["data_feed_id_2"],
+            form.cleaned_data["data_feed_id_3"],
+            form.cleaned_data["data_feed_id_4"],
+            form.cleaned_data["data_feed_id_5"],
         ]
-        dataset_ids_set = set([dataset_id for dataset_id in dataset_ids if dataset_id])
+        data_feed_ids_set = set([data_feed_id for data_feed_id in data_feed_ids if data_feed_id])
 
         try:
             self.cavl_subscription_service.subscribe(
@@ -75,7 +75,7 @@ class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
                 url=form.cleaned_data["url"],
                 update_interval=form.cleaned_data["update_interval"],
                 subscription_id=subscription_id,
-                dataset_ids=",".join(dataset_ids_set),
+                data_feed_ids=",".join(data_feed_ids_set),
                 bounding_box=form.cleaned_data["bounding_box"],
                 operator_ref=form.cleaned_data["operator_ref"],
                 vehicle_ref=form.cleaned_data["vehicle_ref"],
@@ -94,14 +94,14 @@ class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
                     for message in e.errors:
                         form.add_error(None, _(message))
                 case 404:
-                    # The following code is used to extract the correct dataset ID from the server error message
+                    # The following code is used to extract the correct data_feed ID from the server error message
                     # so that the appropriate field in the form can be highlighted with a UI error message
                     field_name = None
                     subscription_id_not_found = error_message.split(":")[-1].strip()
 
-                    if subscription_id_not_found in dataset_ids:
-                        index = dataset_ids.index(subscription_id_not_found)
-                        field_name = f"dataset_id_{index + 1}"
+                    if subscription_id_not_found in data_feed_ids:
+                        index = data_feed_ids.index(subscription_id_not_found)
+                        field_name = f"data_feed_id_{index + 1}"
                     else:
                         field_name = None
 

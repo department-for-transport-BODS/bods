@@ -7,12 +7,13 @@
   {% if form.errors %}
     {% trans "Error: " %}
   {% endif %}
-  {% trans "Create AVL Data Subscription" %}
+  {% trans "Create Location Data Subscription" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'API services' 'api-select' host hosts.data %}
-  {% breadcrumb_url 'Create AVL Data Subscription' 'api:buslocation-api' host hosts.data %}
+  {% breadcrumb_url 'Location data API Service' 'api:buslocation-api' host hosts.data %}
+  {% breadcrumb_url 'Create Location Data Subscription' 'api:buslocation-subscribe' host hosts.data %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">

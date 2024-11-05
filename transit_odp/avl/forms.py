@@ -299,7 +299,7 @@ class EditFeedDescriptionForm(GOVUKModelForm):
 
 
 class AvlSubscriptionsSubscribeForm(GOVUKForm):
-    form_title = _("Create AVL Data Subscription")
+    form_title = _("Create Location Data Subscription")
     form_tag = False
     form_error_title = DEFAULT_ERROR_SUMMARY
 
@@ -327,49 +327,49 @@ class AvlSubscriptionsSubscribeForm(GOVUKForm):
         },
     )
 
-    dataset_id_1 = forms.CharField(
-        label=_("Dataset ID 1"),
+    data_feed_id_1 = forms.CharField(
+        label=_("Data feed ID 1"),
         required=True,
         validators=[length_validator],
         error_messages={
-            "required": _("Enter a dataset ID"),
-            "invalid": _("Enter a dataset ID up to 256 characters"),
+            "required": _("Enter a data feed ID"),
+            "invalid": _("Enter a data feed ID up to 256 characters"),
         },
     )
 
-    dataset_id_2 = forms.CharField(
-        label=_("Dataset ID 2 (optional)"),
+    data_feed_id_2 = forms.CharField(
+        label=_("Data feed ID 2 (optional)"),
         required=False,
         validators=[length_validator],
         error_messages={
-            "invalid": _("Enter a dataset ID up to 256 characters"),
+            "invalid": _("Enter a data feed ID up to 256 characters"),
         },
     )
 
-    dataset_id_3 = forms.CharField(
-        label=_("Dataset ID 3 (optional)"),
+    data_feed_id_3 = forms.CharField(
+        label=_("Data feed ID 3 (optional)"),
         required=False,
         validators=[length_validator],
         error_messages={
-            "invalid": _("Enter a dataset ID up to 256 characters"),
+            "invalid": _("Enter a data feed ID up to 256 characters"),
         },
     )
 
-    dataset_id_4 = forms.CharField(
-        label=_("Dataset ID 4 (optional)"),
+    data_feed_id_4 = forms.CharField(
+        label=_("Data feed ID 4 (optional)"),
         required=False,
         validators=[length_validator],
         error_messages={
-            "invalid": _("Enter a dataset ID up to 256 characters"),
+            "invalid": _("Enter a data feed ID up to 256 characters"),
         },
     )
 
-    dataset_id_5 = forms.CharField(
-        label=_("Dataset ID 5 (optional)"),
+    data_feed_id_5 = forms.CharField(
+        label=_("Data feed ID 5 (optional)"),
         required=False,
         validators=[length_validator],
         error_messages={
-            "invalid": _("Enter a dataset ID up to 256 characters"),
+            "invalid": _("Enter a data feed ID up to 256 characters"),
         },
     )
 
@@ -481,38 +481,38 @@ class AvlSubscriptionsSubscribeForm(GOVUKForm):
             Field("name"),
             Field("url"),
             HTML(
-                '<fieldset class="govuk-fieldset" role="group" aria-describedby="dataset-id-hint">'
-                '<legend class="govuk-fieldset__legend govuk-fieldset__legend--m"><h2 class="govuk-fieldset__heading">Dataset ID</h2></legend>'
-                '<div id="dataset-id-hint" class="govuk-hint">This is the ID assigned to the AVL dataset by BODS</div>'
+                '<fieldset class="govuk-fieldset" role="group" aria-describedby="data-feed-id-hint">'
+                '<legend class="govuk-fieldset__legend govuk-fieldset__legend--m"><h2 class="govuk-fieldset__heading">Data feed ID</h2></legend>'
+                '<div id="data-feed-id-hint" class="govuk-hint">This is the ID assigned to the location data feed by BODS</div>'
                 '<div class="govuk-date-input">'
             ),
             HTML('<div class="govuk-date-input__item">'),
             Field(
-                "dataset_id_1",
+                "data_feed_id_1",
                 css_class="govuk-input--width-10 govuk-input--extra-letter-spacing",
             ),
             HTML("</div>"),
             HTML('<div class="govuk-date-input__item">'),
             Field(
-                "dataset_id_2",
+                "data_feed_id_2",
                 css_class="govuk-input--width-10 govuk-input--extra-letter-spacing",
             ),
             HTML("</div>"),
             HTML('<div class="govuk-date-input__item">'),
             Field(
-                "dataset_id_3",
+                "data_feed_id_3",
                 css_class="govuk-input--width-10 govuk-input--extra-letter-spacing",
             ),
             HTML("</div>"),
             HTML('<div class="govuk-date-input__item">'),
             Field(
-                "dataset_id_4",
+                "data_feed_id_4",
                 css_class="govuk-input--width-10 govuk-input--extra-letter-spacing",
             ),
             HTML("</div>"),
             HTML('<div class="govuk-date-input__item">'),
             Field(
-                "dataset_id_5",
+                "data_feed_id_5",
                 css_class="govuk-input--width-10 govuk-input--extra-letter-spacing",
             ),
             HTML("</div>"),

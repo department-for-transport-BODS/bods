@@ -7,18 +7,19 @@
   {% if form.errors %}
     {% trans "Error: " %}
   {% endif %}
-  {% trans "AVL Data Subscription Created" %}
+  {% trans "Location Data Subscription Created" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'API services' 'api-select' host hosts.data %}
   {% breadcrumb_url 'Location data API Service' 'api:buslocation-api' host hosts.data %}
+  {% breadcrumb_url 'Create Location Data Subscription' 'api:buslocation-subscribe' host hosts.data %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">AVL Data Subscription Created</h1>
-        <p>You have successfully subscribed to the AVL API.</p>
+        <h1 class="govuk-heading-xl">Location Data Subscription Created</h1>
+        <p>You have successfully subscribed to the Location API.</p>
         <p>[view subscriptions link?]</p>
       </div>
       {% block heading.secondary %}

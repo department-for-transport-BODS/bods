@@ -188,7 +188,7 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
         url: str,
         update_interval: int,
         subscription_id: str,
-        dataset_ids: str,
+        data_feed_ids: str,
         bounding_box: str,
         operator_ref: str,
         vehicle_ref: str,
@@ -197,7 +197,7 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
         origin_ref: str,
         destination_ref: str,
     ) -> None:
-        api_url = f"{self.AVL_CONSUMER_URL}/v1/siri-vm/subscriptions?name={name}&subscriptionId={dataset_ids}"
+        api_url = f"{self.AVL_CONSUMER_URL}/siri-vm/subscriptions?name={name}&subscriptionId={data_feed_ids}"
 
         if bounding_box:
             api_url += "&boundingBox=" + bounding_box
