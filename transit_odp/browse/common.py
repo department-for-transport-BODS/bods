@@ -1,17 +1,25 @@
-from typing import Dict, List, Tuple
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import TravelineRegions
-from transit_odp.otc.models import Service, UILta
-from transit_odp.otc.models import Service as OTCService, LocalAuthority
+from transit_odp.organisation.models import Organisation, TXCFileAttributes
+from transit_odp.otc.constants import (
+    OTC_SCOPE_STATUS_IN_SCOPE,
+    OTC_SCOPE_STATUS_OUT_OF_SCOPE,
+)
+from transit_odp.otc.models import LocalAuthority
+from transit_odp.otc.models import Service
+from transit_odp.otc.models import Service as OTCService
+from transit_odp.otc.models import UILta
 
 
 def get_all_naptan_atco_df() -> pd.DataFrame:
     """
-    Return a dataframe with is_english_region value (bool) if services is in english region,
-    Services in engligh regions are considered as in scope
+    Return a dataframe with is_english_region value (bool) if services is in
+    english region, Services in engligh regions are considered as in scope
     """
     return pd.DataFrame.from_records(
         AdminArea.objects.add_is_english_region().values(
@@ -45,7 +53,8 @@ def get_weca_traveline_region_map(ui_lta) -> Dict[str, str]:
 
 def get_all_weca_traveline_region_map() -> Dict[str, Dict[str, str]]:
     """
-    Return a dictionary with key as atco code and value as a dictionary of region name and ui_lta_name
+    Return a dictionary with key as atco code and value as a dictionary
+    of region name and ui_lta_name
     """
     return {
         admin_area.atco_code: {
@@ -116,6 +125,153 @@ def get_service_traveline_regions(ui_ltas):
     )
 
 
+def get_42_day_look_ahead_date() -> str:
+    """
+    Returns date for the 'Date for complete 42 day look ahead' column by
+    calculating 42 days from now.
+
+    Returns:
+        str: Date (Today + 42 days)
+    """
+    return (datetime.now() + timedelta(days=42)).strftime("%Y-%m-%d")
+
+
+def get_seasonal_service_status(otc_service: dict) -> str:
+    """
+    Returns value for the 'Seasonal Status' column.
+
+    Args:
+        otc_service (dict): OTC Service dictionary
+
+    Returns:
+        str: Seasonal Status value
+    """
+    seasonal_service_status = otc_service.get("seasonal_status")
+    return "In Season" if seasonal_service_status else "Out of Season"
+
+
+def get_operator_name(otc_service: dict) -> str:
+    """
+    Returns value for the 'Operator Name' column by looking at the existence
+    of a licence number in the 'Organisation' table.
+
+    Args:
+        otc_service (dict): OTC Service dictionary
+
+    Returns:
+        str: Operator name value
+    """
+    otc_licence_number = otc_service.get("otc_licence_number")
+    operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
+    if not operator_name:
+        return "Organisation not yet created"
+    else:
+        return operator_name
+
+
+def get_scope_status(otc_service: dict) -> str:
+    """
+    Returns value for the 'Scope Status' column.
+    If True, then return Out of Scope.
+    Otherwise, return In Scope.
+
+    Args:
+        otc_service (dict): OTC Service dictionary
+
+    Returns:
+        str: Scope status value
+    """
+    if otc_service.get("scope_status", False):
+        return OTC_SCOPE_STATUS_OUT_OF_SCOPE
+    else:
+        return OTC_SCOPE_STATUS_IN_SCOPE
+
+
+def get_avl_published_status(
+    file_attribute: Optional[TXCFileAttributes],
+    synced_in_last_month,
+    service_number,
+):
+    operator_ref = file_attribute.national_operator_code
+    if f"{service_number}__{operator_ref}" in synced_in_last_month:
+        return "Yes"
+    return "No"
+
+
+def get_avl_to_timetable_match_status(
+    file_attribute: Optional[TXCFileAttributes],
+    uncounted_activity_df,
+    service_number,
+):
+    operator_ref = file_attribute.national_operator_code
+    if not uncounted_activity_df.loc[
+        (uncounted_activity_df["OperatorRef"] == operator_ref)
+        & (
+            uncounted_activity_df["LineRef"].isin(
+                [service_number, service_number.replace(" ", "_")]
+            )
+        )
+    ].empty:
+        return "Yes"
+    return "No"
+
+
+def get_avl_requires_attention(otc_service: dict) -> str:
+    """
+    Returns value for 'AVL requires attention' column based on the following logic:
+        If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to Yes,
+        then 'AVL requires attention' = No.
+
+        If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to No,
+        then 'AVL requires attention' = Yes.
+
+    Args:
+        avl_published_status (str): Value of 'AVL Published Status'
+        avl_to_timetable__match_status (str): Value of 'AVL to Timetable Match Status'
+
+    Returns:
+        str: Yes or No for 'AVL requires attention' column
+
+    """
+    avl_published_status = otc_service.get("avl_published_status")
+    avl_to_timetable_match_status = otc_service.get("avl_to_timetable_match_status")
+
+    if (avl_published_status == "Yes") and (avl_to_timetable_match_status == "Yes"):
+        return "No"
+    return "Yes"
+
+
+def get_overall_requires_attention(otc_service: dict) -> str:
+    """
+    Returns value for 'Requires attention' column based on the following logic:
+        If 'Scope Status' = Out of Scope OR 'Seasonal Status' = Out of Season,
+        then 'Requires attention' = No.
+
+        If 'Timetables requires attention' = No AND 'AVL requires attention' = No,
+        then 'Requires attention' = No.
+
+        If 'Timetables requires attention' = Yes OR 'AVL requires attention' = Yes,
+        then 'Requires attention' = Yes.
+
+    Args:
+        otc_service (dict): OTC Service dictionary
+
+    Returns:
+        str: Yes or No for 'Requires attention' column
+
+    """
+    timetable_requires_attention = otc_service.get("timetable_requires_attention")
+    avl_requires_attention = otc_service.get("avl_requires_attention")
+    scope_status = get_scope_status(otc_service)
+    seasonal_status = get_seasonal_service_status(otc_service)
+
+    if (scope_status == "Out of Scope") or (seasonal_status == "Out of Season"):
+        return "No"
+    if (timetable_requires_attention == "No") and (avl_requires_attention == "No"):
+        return "No"
+    return "Yes"
+
+
 class LTACSVHelper:
     """Class with methods to compute LTA related information,
     Used in both LTA completeness report and Operator compleness report
@@ -142,9 +298,9 @@ class LTACSVHelper:
             str: pipe "|" seprated string of UI LTA's
         """
         if ui_ltas_dict_key not in self.otc_service_traveline_region:
-            self.otc_service_traveline_region[
-                ui_ltas_dict_key
-            ] = get_service_traveline_regions(ui_ltas)
+            self.otc_service_traveline_region[ui_ltas_dict_key] = (
+                get_service_traveline_regions(ui_ltas)
+            )
         return self.otc_service_traveline_region.get(ui_ltas_dict_key, "")
 
     def get_otc_ui_lta(
@@ -171,8 +327,9 @@ class LTACSVHelper:
         ui_ltas_dict_key: Tuple[UILta],
         naptan_adminarea_df: pd.DataFrame,
     ) -> bool:
-        """Find if the annotated key is_english_region for naptan admin area is True or False for
-        any of the UI LTAs this service belongs to
+        """
+        Find if the annotated key is_english_region for naptan admin area
+        is True or False for any of the UI LTAs this service belongs to.
 
         Args:
             ui_ltas (List[UILta]): List of UI LTAs the service belongs to
@@ -183,16 +340,17 @@ class LTACSVHelper:
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if ui_ltas_dict_key not in self.otc_traveline_region_status:
-            self.otc_traveline_region_status[
-                ui_ltas_dict_key
-            ] = not naptan_adminarea_df.empty and any(
-                (
-                    naptan_adminarea_df[
-                        naptan_adminarea_df["ui_lta_id"].isin(
-                            [ui_lta.id for ui_lta in ui_ltas]
-                        )
-                    ]
-                )["is_english_region"]
+            self.otc_traveline_region_status[ui_ltas_dict_key] = (
+                not naptan_adminarea_df.empty
+                and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["ui_lta_id"].isin(
+                                [ui_lta.id for ui_lta in ui_ltas]
+                            )
+                        ]
+                    )["is_english_region"]
+                )
             )
         return self.otc_traveline_region_status.get(ui_ltas_dict_key, "")
 
@@ -212,12 +370,15 @@ class LTACSVHelper:
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if atco_code not in self.weca_traveline_region_status:
-            self.weca_traveline_region_status[
-                atco_code
-            ] = not naptan_adminarea_df.empty and any(
-                (naptan_adminarea_df[naptan_adminarea_df["atco_code"] == atco_code])[
-                    "is_english_region"
-                ]
+            self.weca_traveline_region_status[atco_code] = (
+                not naptan_adminarea_df.empty
+                and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["atco_code"] == atco_code
+                        ]
+                    )["is_english_region"]
+                )
             )
         return self.weca_traveline_region_status.get(atco_code, "")
 
@@ -253,18 +414,22 @@ def get_in_scope_in_season_lta_service_numbers(
     lta_list: list[LocalAuthority],
 ) -> pd.DataFrame:
     """
-    Retrieves in-scope, in-season LTA (Local Transport Authority) services and splits the service numbers.
+    Retrieves in-scope, in-season LTA (Local Transport Authority) services and
+    splits the service numbers.
 
-    This function takes a list of Local Authority objects and fetches the corresponding in-scope,
-    in-season services. It then processes the service numbers, which may contain multiple values
-    separated by '|'. The function returns a DataFrame with each service number split into individual rows.
+    This function takes a list of Local Authority objects and fetches the
+    corresponding in-scope, in-season services. It then processes the service
+    numbers, which may contain multiple values separated by '|'. The function
+    returns a DataFrame with each service number split into individual rows.
 
     Args:
-        lta_list (list[LocalAuthority]): A list of Local Authority objects to filter the services.
+        lta_list (list[LocalAuthority]): A list of Local Authority objects
+                                         to filter the services.
 
     Returns:
-        pd.DataFrame: A DataFrame containing the exploded service numbers. If no services are found,
-                      an empty DataFrame is returned. The DataFrame has the following columns:
+        pd.DataFrame: A DataFrame containing the exploded service numbers.
+                      If no services are found, an empty DataFrame is returned.
+                      The DataFrame has the following columns:
                       - 'service_number': Original service number.
                       - 'split_service_number': Split parts of the service number.
 

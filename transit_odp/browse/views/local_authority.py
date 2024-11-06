@@ -7,19 +7,22 @@ from django.db.models.functions import Trim
 from django.http import HttpResponse
 from django.views import View
 
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
 from transit_odp.browse.common import (
     LTACSVHelper,
     get_all_naptan_atco_df,
+    get_avl_published_status,
+    get_avl_to_timetable_match_status,
+    get_in_scope_in_season_lta_service_numbers,
     get_service_traveline_regions,
     get_weca_services_register_numbers,
     get_weca_traveline_region_map,
     ui_ltas_string,
-    get_in_scope_in_season_lta_service_numbers,
 )
-from transit_odp.browse.lta_column_headers import (
-    header_accessor_data,
-    header_accessor_data_line_level,
-)
+from transit_odp.browse.lta_column_headers import header_accessor_data
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
@@ -31,10 +34,8 @@ from transit_odp.otc.models import Service as OTCService
 from transit_odp.otc.models import UILta
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
-    get_requires_attention_data_lta,
-    get_requires_attention_data_lta_line_level_length,
-    get_txc_map_lta,
     get_line_level_txc_map_lta,
+    get_requires_attention_data_lta_line_level_length,
     is_stale,
 )
 
@@ -232,9 +233,9 @@ class LocalAuthorityView(BaseListView):
             context["total_in_scope_in_season_services"] = len(
                 get_in_scope_in_season_lta_service_numbers(lta_list)
             )
-            context[
-                "total_services_requiring_attention"
-            ] = get_requires_attention_data_lta_line_level_length(lta_list)
+            context["total_services_requiring_attention"] = (
+                get_requires_attention_data_lta_line_level_length(lta_list)
+            )
 
             try:
                 context["services_require_attention_percentage"] = round(
@@ -309,9 +310,9 @@ class LocalAuthorityDetailView(BaseDetailView):
             get_in_scope_in_season_lta_service_numbers(lta_objs)
         )
 
-        context[
-            "total_services_requiring_attention"
-        ] = get_requires_attention_data_lta_line_level_length(lta_objs)
+        context["total_services_requiring_attention"] = (
+            get_requires_attention_data_lta_line_level_length(lta_objs)
+        )
 
         try:
             context["services_require_attention_percentage"] = round(
@@ -327,7 +328,7 @@ class LocalAuthorityDetailView(BaseDetailView):
         return context
 
 
-class LocalAuthorityExportView(View):
+class LocalAuthorityComplianceReportView(View):
     def get(self, *args, **kwargs):
         return self.render_to_response()
 
@@ -346,39 +347,9 @@ class LocalAuthorityExportView(View):
 
         updated_ui_lta_name = lta_objs[0].ui_lta_name().replace(",", " ").strip()
 
-        csv_filename = (
-            f"{updated_ui_lta_name}_detailed service code export detailed export.csv"
-        )
+        csv_filename = f"{updated_ui_lta_name} compliance report.csv"
 
         csv_export = LTACSV(lta_objs)
-        file_ = csv_export.to_string()
-        response = HttpResponse(file_, content_type="text/csv")
-        response["Content-Disposition"] = f"attachment; filename={csv_filename}"
-        return response
-
-
-class LocalAuthorityLineLevelExportView(View):
-    def get(self, *args, **kwargs):
-        return self.render_to_response()
-
-    def render_to_response(self):
-        lta_objs = []
-        combined_authority_ids = self.request.GET.get("auth_ids")
-
-        if combined_authority_ids:
-            combined_authority_ids = [
-                int(lta_id.replace("[", "").replace("]", ""))
-                for lta_id in combined_authority_ids.split(",")
-            ]
-
-        for combined_authority_id in combined_authority_ids:
-            lta_objs.append(LocalAuthority.objects.get(id=combined_authority_id))
-
-        updated_ui_lta_name = lta_objs[0].ui_lta_name().replace(",", " ").strip()
-
-        csv_filename = f"{updated_ui_lta_name}_detailed line level service code export detailed export.csv"
-
-        csv_export = LTALineLevelCSV(lta_objs)
         file_ = csv_export.to_string()
         response = HttpResponse(file_, content_type="text/csv")
         response["Content-Disposition"] = f"attachment; filename={csv_filename}"
@@ -391,267 +362,20 @@ class LTACSV(CSVBuilder, LTACSVHelper):
     def _update_data(
         self,
         service: Optional[OTCService],
-        file_attribute: Optional[TXCFileAttributes],
-        seasonal_service: Optional[SeasonalService],
-        exempted: Optional[bool],
-        staleness_status: Optional[str],
-        require_attention: str,
-        traveline_region: str,
-        ui_lta_name: str,
-    ) -> None:
-        self._object_list.append(
-            {
-                "require_attention": require_attention,
-                "scope_status": exempted,
-                "otc_licence_number": service and service.otc_licence_number,
-                "otc_registration_number": service and service.registration_number,
-                "otc_service_number": service and service.service_number,
-                "operator_name": file_attribute and file_attribute.organisation_name,
-                "licence_number": file_attribute and file_attribute.licence_number,
-                "service_code": file_attribute and file_attribute.service_code,
-                "line_name": file_attribute
-                and self.modify_dataset_line_name(file_attribute.line_names),
-                "operating_period_start_date": file_attribute
-                and (file_attribute.operating_period_start_date),
-                "operating_period_end_date": file_attribute
-                and (file_attribute.operating_period_end_date),
-                "revision_number": file_attribute and file_attribute.revision_number,
-                "last_modified_date": file_attribute
-                and (file_attribute.modification_datetime.date()),
-                "dataset_id": file_attribute and file_attribute.revision.dataset_id,
-                "xml_filename": file_attribute and file_attribute.filename,
-                "seasonal_status": seasonal_service
-                and seasonal_service.seasonal_status,
-                "seasonal_start": seasonal_service and seasonal_service.start,
-                "seasonal_end": seasonal_service and seasonal_service.end,
-                "staleness_status": staleness_status,
-                "effective_seasonal_start_date": seasonal_service
-                and seasonal_service.start - timedelta(days=42),
-                "effective_stale_date_end_date": file_attribute
-                and file_attribute.effective_stale_date_end_date,
-                "effective_stale_date_last_modified_date": file_attribute
-                and file_attribute.effective_stale_date_last_modified_date,
-                "last_modified_lt_effective_stale_date_otc": service
-                and file_attribute
-                and (
-                    file_attribute.modification_datetime.date()
-                    < service.effective_stale_date_otc_effective_date
-                ),
-                "effective_stale_date_otc_effective_date": service
-                and (service.effective_stale_date_otc_effective_date),
-                "national_operator_code": file_attribute
-                and file_attribute.national_operator_code,
-                "traveline_region": traveline_region,
-                "ui_lta_name": ui_lta_name,
-            }
-        )
-
-    def __init__(self, combined_authorities):
-        super().__init__()
-        self._combined_authorities = combined_authorities
-        self._object_list = []
-        self.otc_service_traveline_region = {}
-        self.otc_service_ui_ltas = {}
-        self.weca_traveline_region_status = {}
-        self.otc_traveline_region_status = {}
-
-    def modify_dataset_line_name(self, line_names: list) -> str:
-        return " ".join(line_name for line_name in line_names)
-
-    def _get_require_attention(
-        self,
-        exempted: Optional[bool],
-        seasonal_service: Optional[SeasonalService],
-    ) -> str:
-        if exempted or (seasonal_service and not seasonal_service.seasonal_status):
-            return "No"
-        return "Yes"
-
-    def get_otc_service_traveline_region(
-        self, ui_ltas: List[UILta], ui_ltas_dict_key: Tuple[UILta]
-    ) -> str:
-        """Returns a pipe "|" seprate list of all the traveline regions
-        the UI LTAs belongs to, Dict will be prepared for the values
-
-        Args:
-            ui_ltas (List[UILta]): List of UI LTAs
-            ui_ltas_dict_key (Tuple[UILta]): Tuple of UI LTAs to be used
-            as key for the dictionary
-
-        Returns:
-            str: pipe "|" seprated string of UI LTA's
-        """
-        if ui_ltas_dict_key not in self.otc_service_traveline_region:
-            self.otc_service_traveline_region[
-                ui_ltas_dict_key
-            ] = get_service_traveline_regions(ui_ltas)
-        return self.otc_service_traveline_region[ui_ltas_dict_key]
-
-    def get_otc_ui_lta(
-        self, ui_ltas: List[UILta], ui_ltas_dict_key: Tuple[UILta]
-    ) -> str:
-        """Return a pipe "|" seprate string of the UI LTA names for the service
-        dictionary of the ui ltas will be maintained in order to minimize the
-        manipulations
-
-        Args:
-            ui_ltas (List[UILta]): List of UI LTAs the service belongs to
-            ui_ltas_dict_key (Tuple[UILta]): Tuple of UI LTAs to make key in dict
-
-        Returns:
-            str: Pipe "|" seprated list of UI LTAs
-        """
-        if ui_ltas_dict_key not in self.otc_service_ui_ltas:
-            self.otc_service_ui_ltas[ui_ltas_dict_key] = ui_ltas_string(ui_ltas)
-        return self.otc_service_ui_ltas[ui_ltas_dict_key]
-
-    def get_is_english_region_otc(
-        self,
-        ui_ltas: List[UILta],
-        ui_ltas_dict_key: Tuple[UILta],
-        naptan_adminarea_df: pd.DataFrame,
-    ) -> bool:
-        """Find if the annotated key is_english_region for naptan admin area is True or False for
-        any of the UI LTAs this service belongs to
-
-        Args:
-            ui_ltas (List[UILta]): List of UI LTAs the service belongs to
-            ui_ltas_dict_key (Tuple[UILta]): Tuple value of UI LTAs for keys
-            naptan_adminarea_df (pd.DataFrame): Dataframe for the admin area values
-
-        Returns:
-            bool: Returns True is the atco code passed belongs to an enlish region
-        """
-        if ui_ltas_dict_key not in self.otc_traveline_region_status:
-            self.otc_traveline_region_status[
-                ui_ltas_dict_key
-            ] = not naptan_adminarea_df.empty and any(
-                (
-                    naptan_adminarea_df[
-                        naptan_adminarea_df["ui_lta_id"].isin(
-                            [ui_lta.id for ui_lta in ui_ltas]
-                        )
-                    ]
-                )["is_english_region"]
-            )
-        return self.otc_traveline_region_status[ui_ltas_dict_key]
-
-    def get_is_english_region_weca(
-        self, atco_code: str, naptan_adminarea_df: pd.DataFrame
-    ) -> bool:
-        """Find if the annotated key is_english_region is True or False for
-        The provided atco code
-        For weca services if atco code belongs to an Naptan Admin area
-        Such services will be considered in english region.
-
-        Args:
-            atco_code (str): Atco code to be checked
-            naptan_adminarea_df (pd.DataFrame): Naptan admin areas list
-
-        Returns:
-            bool: Returns True is the atco code passed belongs to an enlish region
-        """
-        if atco_code not in self.weca_traveline_region_status:
-            self.weca_traveline_region_status[
-                atco_code
-            ] = not naptan_adminarea_df.empty and any(
-                (naptan_adminarea_df[naptan_adminarea_df["atco_code"] == atco_code])[
-                    "is_english_region"
-                ]
-            )
-        return self.weca_traveline_region_status[atco_code]
-
-    def get_otc_service_bods_data(self, lta_list) -> None:
-        """
-        Compares an LTA's OTC and WECA Services dictionaries list with
-        TXCFileAttributes dictionaries list and the SeasonalService list
-        to determine which OTC and WECA Services require attention and which
-        doesn't ie. not live in BODS at all, or live but meeting new
-        Staleness conditions.
-        """
-        ui_lta = lta_list[0].ui_lta
-        otc_map = get_all_otc_map_lta(lta_list)
-        txcfa_map = get_txc_map_lta(lta_list)
-        seasonal_service_map = get_seasonal_service_map(lta_list)
-        service_code_exemption_map = get_service_code_exemption_map(lta_list)
-        naptan_adminarea_df = get_all_naptan_atco_df()
-        traveline_region_map_weca = get_weca_traveline_region_map(ui_lta)
-        services_code = set(otc_map)
-        services_code = sorted(services_code)
-
-        for service_code in services_code:
-            service = otc_map.get(service_code)
-            file_attribute = txcfa_map.get(service_code)
-            seasonal_service = seasonal_service_map.get(service_code)
-            exemption = service_code_exemption_map.get(service_code)
-
-            if service.api_type in [API_TYPE_WECA, API_TYPE_EP]:
-                is_english_region = self.get_is_english_region_weca(
-                    service.atco_code, naptan_adminarea_df
-                )
-                ui_lta_name = ui_lta.name
-                traveline_region = traveline_region_map_weca.get(service.atco_code, "")
-            else:
-                (
-                    is_english_region,
-                    ui_lta_name,
-                    traveline_region,
-                ) = self.get_otc_service_details(service, naptan_adminarea_df)
-
-            exempted = False
-            if not (
-                not (exemption and exemption.registration_code) and is_english_region
-            ):
-                exempted = True
-
-            staleness_status = "Up to date"
-            if file_attribute is None:
-                require_attention = self._get_require_attention(
-                    exempted, seasonal_service
-                )
-            elif service and is_stale(service, file_attribute):
-                rad = evaluate_staleness(service, file_attribute)
-                staleness_status = STALENESS_STATUS[rad.index(True)]
-                require_attention = self._get_require_attention(
-                    exempted, seasonal_service
-                )
-            else:
-                require_attention = "No"
-
-            self._update_data(
-                service,
-                file_attribute,
-                seasonal_service,
-                exempted,
-                staleness_status,
-                require_attention,
-                traveline_region,
-                ui_lta_name,
-            )
-
-    def get_queryset(self):
-        self.get_otc_service_bods_data(self._combined_authorities)
-        return self._object_list
-
-
-class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
-    columns = create_columns(header_accessor_data_line_level)
-
-    def _update_data(
-        self,
-        service: Optional[OTCService],
         service_number: Optional[str],
         file_attribute: Optional[TXCFileAttributes],
         seasonal_service: Optional[SeasonalService],
         exempted: Optional[bool],
         staleness_status: Optional[str],
-        require_attention: str,
+        timetable_requires_attention: str,
+        avl_published_status: str,
+        avl_to_timetable_match_status: str,
         traveline_region: str,
         ui_lta_name: str,
     ) -> None:
         self._object_list.append(
             {
-                "require_attention": require_attention,
+                "timetable_requires_attention": timetable_requires_attention,
                 "scope_status": exempted,
                 "otc_licence_number": service and service.otc_licence_number,
                 "otc_registration_number": service and service.registration_number,
@@ -665,6 +389,9 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
                 "otc_variation_number": service and service.variation_number,
                 "otc_effective_date": service and service.effective_date,
                 "otc_received_date": service and service.received_date,
+                "otc_licence_expiry_date": service and service.licence.expiry_date,
+                "avl_published_status": avl_published_status,
+                "avl_to_timetable_match_status": avl_to_timetable_match_status,
                 "operator_name": file_attribute and file_attribute.organisation_name,
                 "licence_number": file_attribute and file_attribute.licence_number,
                 "service_code": file_attribute and file_attribute.service_code,
@@ -702,7 +429,6 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
                 and file_attribute.national_operator_code,
                 "traveline_region": traveline_region,
                 "ui_lta_name": ui_lta_name,
-                "otc_licence_expiry_date": service and service.licence.expiry_date,
             }
         )
 
@@ -718,11 +444,77 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
     def modify_dataset_line_name(self, line_names: list) -> str:
         return " ".join(line_name for line_name in line_names)
 
-    def _get_require_attention(
+    def _get_seasonal_service_status(otc_service: dict) -> str:
+        """
+        Returns the status value for 'Seasonal Status' column.
+
+        Args:
+            otc_service (dict): OTC Service dictionary
+
+        Returns:
+            str: 'Seasonal Status' value
+        """
+        seasonal_service_status = otc_service.get("seasonal_status")
+        return "In Season" if seasonal_service_status else "Out of Season"
+
+    def _get_timetables_require_attention(
         self,
         exempted: Optional[bool],
         seasonal_service: Optional[SeasonalService],
+        service: Optional[OTCService],
+        file_attribute: Optional[TXCFileAttributes],
+        staleness_status: Optional[str],
     ) -> str:
+        """
+        Returns value for 'Timetables requires attention' based on the
+        following logic:
+
+        If 'Scope Status' = Out of Scope OR 'Seasonal Status' = Out of Season,
+        then 'Timetables requires attention' = No.
+
+        If 'Scope Status' = In Scope
+        AND 'Seasonal Status' = Not Seasonal/In Season
+        AND 'Registration Status' = Registered
+        AND 'Timetables Published Status' = Published
+        AND 'Timetables Timeliness Status' = Up to Date,
+        then 'Timetables requires attention' = No.
+
+        If 'Scope Status' = In Scope
+        AND 'Seasonal Status' = Not Seasonal/In Season
+        AND 'Registration Status' = Registered
+        AND 'Timetables Published Status' = Unpublished
+        OR 'Timetables Timeliness Status' = 42 day look ahead is incomplete/
+        OTC variation not published/Service hasn't been updated within a year,
+        then 'Timetables requires attention' = Yes.
+
+        Args:
+            exempted (Optional[bool]): Scope Status
+            seasonal_service (Optional[SeasonalService]): Seasonal Status
+            service (Optional[OTCService]): OTC Service dict
+            file_attribute (Optional[TXCFileAttributes]): TXC file attributes dict
+            staleness_status (Optional[str]): Timeliness Status
+
+        Returns:
+            str: Yes or No for 'Timetables requires attention' column
+
+        """
+        if file_attribute:
+            if service:
+                registered_status = True if service.otc_licence_number else False
+                published_status = True if file_attribute.revision.dataset_id else False
+                seasonal_status = (
+                    self._get_seasonal_service_status(service)
+                    if seasonal_service
+                    else "Not Seasonal"
+                )
+                if (
+                    registered_status
+                    and (seasonal_status != "Out of Season")
+                    and (not exempted)
+                    and published_status
+                    and (staleness_status == "Up to date")
+                ):
+                    return "No"
         if exempted or (seasonal_service and not seasonal_service.seasonal_status):
             return "No"
         return "Yes"
@@ -742,9 +534,9 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
             str: pipe "|" seprated string of UI LTA's
         """
         if ui_ltas_dict_key not in self.otc_service_traveline_region:
-            self.otc_service_traveline_region[
-                ui_ltas_dict_key
-            ] = get_service_traveline_regions(ui_ltas)
+            self.otc_service_traveline_region[ui_ltas_dict_key] = (
+                get_service_traveline_regions(ui_ltas)
+            )
         return self.otc_service_traveline_region[ui_ltas_dict_key]
 
     def get_otc_ui_lta(
@@ -771,8 +563,8 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
         ui_ltas_dict_key: Tuple[UILta],
         naptan_adminarea_df: pd.DataFrame,
     ) -> bool:
-        """Find if the annotated key is_english_region for naptan admin area is True or False for
-        any of the UI LTAs this service belongs to
+        """Find if the annotated key is_english_region for naptan admin area
+        is True or False for any of the UI LTAs this service belongs to
 
         Args:
             ui_ltas (List[UILta]): List of UI LTAs the service belongs to
@@ -783,16 +575,17 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if ui_ltas_dict_key not in self.otc_traveline_region_status:
-            self.otc_traveline_region_status[
-                ui_ltas_dict_key
-            ] = not naptan_adminarea_df.empty and any(
-                (
-                    naptan_adminarea_df[
-                        naptan_adminarea_df["ui_lta_id"].isin(
-                            [ui_lta.id for ui_lta in ui_ltas]
-                        )
-                    ]
-                )["is_english_region"]
+            self.otc_traveline_region_status[ui_ltas_dict_key] = (
+                not naptan_adminarea_df.empty
+                and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["ui_lta_id"].isin(
+                                [ui_lta.id for ui_lta in ui_ltas]
+                            )
+                        ]
+                    )["is_english_region"]
+                )
             )
         return self.otc_traveline_region_status[ui_ltas_dict_key]
 
@@ -812,12 +605,15 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if atco_code not in self.weca_traveline_region_status:
-            self.weca_traveline_region_status[
-                atco_code
-            ] = not naptan_adminarea_df.empty and any(
-                (naptan_adminarea_df[naptan_adminarea_df["atco_code"] == atco_code])[
-                    "is_english_region"
-                ]
+            self.weca_traveline_region_status[atco_code] = (
+                not naptan_adminarea_df.empty
+                and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["atco_code"] == atco_code
+                        ]
+                    )["is_english_region"]
+                )
             )
         return self.weca_traveline_region_status[atco_code]
 
@@ -840,6 +636,9 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
         service_number_registration_number_map = sorted(
             service_number_registration_number_map
         )
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        abods_registry = AbodsRegistery()
+        synced_in_last_month = abods_registry.records()
 
         for (
             service_number,
@@ -871,17 +670,39 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
 
             staleness_status = "Up to date"
             if file_attribute is None:
-                require_attention = self._get_require_attention(
-                    exempted, seasonal_service
+                timetable_requires_attention = self._get_timetables_require_attention(
+                    exempted,
+                    seasonal_service,
+                    service,
+                    file_attribute,
+                    staleness_status,
                 )
             elif service and is_stale(service, file_attribute):
                 rad = evaluate_staleness(service, file_attribute)
                 staleness_status = STALENESS_STATUS[rad.index(True)]
-                require_attention = self._get_require_attention(
-                    exempted, seasonal_service
+                timetable_requires_attention = self._get_timetables_require_attention(
+                    exempted,
+                    seasonal_service,
+                    service,
+                    file_attribute,
+                    staleness_status,
                 )
             else:
-                require_attention = "No"
+                timetable_requires_attention = "No"
+
+            avl_published_status = None
+            avl_to_timetable_match_status = None
+            if file_attribute is not None:
+                avl_published_status = get_avl_published_status(
+                    file_attribute,
+                    synced_in_last_month,
+                    service_number,
+                )
+                avl_to_timetable_match_status = get_avl_to_timetable_match_status(
+                    file_attribute,
+                    uncounted_activity_df,
+                    service_number,
+                )
 
             self._update_data(
                 service,
@@ -890,7 +711,9 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
                 seasonal_service,
                 exempted,
                 staleness_status,
-                require_attention,
+                timetable_requires_attention,
+                avl_published_status,
+                avl_to_timetable_match_status,
                 traveline_region,
                 ui_lta_name,
             )

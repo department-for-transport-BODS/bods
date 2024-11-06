@@ -17,9 +17,8 @@ from transit_odp.browse.views.contact_operator import (
 from transit_odp.browse.views.data_catalogue import DownloadDataCatalogueView
 from transit_odp.browse.views.guide_me import BrowseGuideMeView
 from transit_odp.browse.views.local_authority import (
+    LocalAuthorityComplianceReportView,
     LocalAuthorityDetailView,
-    LocalAuthorityExportView,
-    LocalAuthorityLineLevelExportView,
     LocalAuthorityView,
 )
 from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
@@ -88,14 +87,9 @@ urlpatterns = [
                     name="local-authority-detail",
                 ),
                 path(
-                    "export/",
-                    view=LocalAuthorityExportView.as_view(),
-                    name="local-authority-export",
-                ),
-                path(
-                    "line-level-export/",
-                    view=LocalAuthorityLineLevelExportView.as_view(),
-                    name="local-authority-line-level-export",
+                    "compliance-report/",
+                    view=LocalAuthorityComplianceReportView.as_view(),
+                    name="local-authority-compliance-report",
                 ),
             ]
         ),
