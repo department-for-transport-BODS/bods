@@ -257,10 +257,17 @@
             {% endfilter %}
           </a>
         </li>
-        <li class="govuk-!-margin-bottom-3">
+        <li>
           <a class="govuk-link" href="{% url 'avl-search' host hosts.data %}?organisation={{ object.id }}&status=live">
             {% filter force_escape %}
               {% trans "Browse Location data" %}
+            {% endfilter %}
+          </a>
+        </li>
+        <li class="govuk-!-margin-bottom-3">
+          <a class="govuk-link" href={% url 'service-codes' pk1=object.id host hosts.publish %}>
+            {% filter force_escape %}
+              {% trans "Download detailed export" %}
             {% endfilter %}
           </a>
         </li>
