@@ -66,8 +66,10 @@ class TaskResult(TimeStampedModel):
     FAILURE = "FAILURE"
     #: Task ready
     READY = "READY"
+    #: Task error
+    ERROR = "ERROR"
 
-    ALL_STATES = frozenset({PENDING, RECEIVED, STARTED, SUCCESS, FAILURE, READY})
+    ALL_STATES = frozenset({PENDING, RECEIVED, STARTED, SUCCESS, FAILURE, READY, ERROR})
     TASK_STATE_CHOICES = sorted(zip(ALL_STATES, ALL_STATES))
 
     task_id = models.CharField(
@@ -146,6 +148,7 @@ class DatasetETLTaskResult(TaskResult):
             POST_SCHEMA_ERROR,
             DATASET_EXPIRED,
             SUSPICIOUS_FILE,
+            NO_VALID_FILE_TO_PROCESS,
         }
     )
     TASK_ERROR_CODE_CHOICES = sorted(zip(ALL_ERROR_CODES, ALL_ERROR_CODES))
@@ -218,6 +221,104 @@ class DatasetETLTaskResult(TaskResult):
     def update_progress(self, progress: int):
         self.progress = progress
         self.save()
+
+
+class PipelineErrorCode(models.Model):
+    FILE_TOO_LARGE = "FILE_TOO_LARGE"
+    ZIP_TOO_LARGE = "ZIP_TOO_LARGE"
+    NESTED_ZIP_FORBIDDEN = "NESTED_ZIP_FORBIDDEN"
+    NO_DATA_FOUND = "NO_DATA_FOUND"
+    XML_SYNTAX_ERROR = "XML_SYNTAX_ERROR"
+    DANGEROUS_XML_ERROR = "DANGEROUS_XML_ERROR"
+    SCHEMA_VERSION_MISSING = "SCHEMA_VERSION_MISSING"
+    SCHEMA_VERSION_NOT_SUPPORTED = "SCHEMA_VERSION_NOT_SUPPORTED"
+    SCHEMA_ERROR = "SCHEMA_ERROR"
+    POST_SCHEMA_ERROR = "POST_SCHEMA_ERROR"
+    DATASET_EXPIRED = "DATASET_EXPIRED"
+    SUSPICIOUS_FILE = "SUSPICIOUS_FILE"
+    NO_VALID_FILE_TO_PROCESS = "NO_VALID_FILE_TO_PROCESS"
+    SYSTEM_ERROR = "SYSTEM_ERROR"
+    ALL_ERROR_CODES = frozenset(
+        {
+            SYSTEM_ERROR,
+            FILE_TOO_LARGE,
+            ZIP_TOO_LARGE,
+            NESTED_ZIP_FORBIDDEN,
+            NO_DATA_FOUND,
+            XML_SYNTAX_ERROR,
+            DANGEROUS_XML_ERROR,
+            SCHEMA_VERSION_MISSING,
+            SCHEMA_VERSION_NOT_SUPPORTED,
+            SCHEMA_ERROR,
+            POST_SCHEMA_ERROR,
+            DATASET_EXPIRED,
+            SUSPICIOUS_FILE,
+            NO_VALID_FILE_TO_PROCESS,
+        }
+    )
+    TASK_ERROR_CODE_CHOICES = sorted(zip(ALL_ERROR_CODES, ALL_ERROR_CODES))
+    error = models.CharField(
+        max_length=255, choices=TASK_ERROR_CODE_CHOICES, unique=True
+    )
+
+    class Meta:
+        db_table = "pipelines_pipelineerrorcode"
+
+    def __str__(self):
+        return self.error
+
+
+class PipelineProcessingStep(models.Model):
+    TIMETABLES = "TIMETABLES"
+    FARES = "FARES"
+    ALL_CATEGORIES = frozenset({TIMETABLES, FARES})
+    CATEGORY_CHOICES = sorted(zip(ALL_CATEGORIES, ALL_CATEGORIES))
+
+    name = models.CharField(max_length=255)
+    category = models.CharField(
+        max_length=20, choices=CATEGORY_CHOICES, default=TIMETABLES
+    )
+
+    class Meta:
+        db_table = "pipelines_pipelineprocessingstep"
+
+    def __str__(self):
+        return f"{self.name} ({self.get_category_display()})"
+
+
+class FileProcessingResult(TaskResult):
+    STARTED = "STARTED"
+    FAILURE = "FAILURE"
+    ERROR = "ERROR"
+    SUCCESS = "SUCCESS"
+    ALL_STATUS = frozenset({STARTED, FAILURE, ERROR, SUCCESS})
+    STATUS_CHOICES = sorted(zip(ALL_STATUS, ALL_STATUS))
+
+    revision = models.ForeignKey(
+        DatasetRevision,
+        related_name="file_processing_results",
+        on_delete=models.CASCADE,
+    )
+    pipeline_processing_step = models.ForeignKey(
+        PipelineProcessingStep,
+        related_name="file_processing_steps",
+        on_delete=models.CASCADE,
+    )
+    pipeline_error_code = models.ForeignKey(
+        PipelineErrorCode,
+        related_name="file_processing_errors",
+        on_delete=models.CASCADE,
+        null=True,  # Set to null to handle cases where no error occurs
+        blank=True,
+    )
+    filename = models.CharField(max_length=255)
+    error_message = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = "pipelines_fileprocessingresult"
+
+    def __str__(self):
+        return f"{self.filename} - {self.status}"
 
 
 class DataQualityTask(TaskResult):
