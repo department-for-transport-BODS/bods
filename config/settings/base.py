@@ -53,6 +53,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {"default": env.db("DATABASE_URL")}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
+DATABASES = {
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": "transit_odp",
+        "USER": "transit_odp",
+        "PASSWORD": "transit_odp",
+        "HOST": "postgres",
+        "PORT": "5432",
+    }
+}
 
 # URLS
 # ------------------------------------------------------------------------------
