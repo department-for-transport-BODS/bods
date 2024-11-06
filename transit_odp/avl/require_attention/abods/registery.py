@@ -41,7 +41,6 @@ class AbodsClient:
         Response will be returned in the JSON format
         """
         url = settings.ABODS_AVL_LINE_LEVEL_DETAILS_URL
-
         params = {
             "query": "query ExampleQuery { avlLineLevelStatus { operatorNoc lineName lastRecordedAtTime } }",
             **kwargs,
