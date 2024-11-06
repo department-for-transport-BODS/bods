@@ -95,3 +95,42 @@ class ICAVLService(Protocol):
         Returns: A ValidationTaskResult containing the status of the validation
         """
         ...
+
+
+class ICAVLSubscriptionService(Protocol):
+    def subscribe(
+        self,
+        api_key: str,
+        name: str,
+        url: str,
+        update_interval: int,
+        subscription_id: str,
+        dataset_ids: str,
+        bounding_box: str,
+        operator_ref: str,
+        vehicle_ref: str,
+        line_ref: str,
+        producer_ref: str,
+        origin_ref: str,
+        destination_ref: str,
+    ) -> None:
+        """
+        Creates a subscription in the AVL consumer subscription service.
+        Args:
+            api_key: The BODS user API key
+            name: User-friendly name for the subscription
+            url: The endpoint that AVL subscription data will be sent to
+            update_interval: The update interval for data being sent
+            subscription_id: An ID for the subscription
+            dataset_ids: The dataset ID(s) to subscribe to, concatenated into a string
+            bounding_box: Optional bounding box coordinates data filter
+            operator_ref: Optional operator ref data filter
+            vehicle_ref: Optional vehicle ref data filter
+            line_ref: Optional line ref data filter
+            producer_ref: Optional producer ref data filter
+            origin_ref: Optional origin ref data filter
+            destination_ref: Optional destination ref data filter
+
+        Returns: Boolean indicating the subscription was created successfully
+        """
+        ...

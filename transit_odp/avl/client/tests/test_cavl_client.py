@@ -11,12 +11,14 @@ import logging
 from requests.exceptions import RequestException, ConnectTimeout
 
 from transit_odp.avl.client import CAVLService
+from transit_odp.avl.client.cavl import CAVLSubscriptionService
 from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
 from transit_odp.avl.enums import AVLFeedStatus
 
 CapLog = pytest.LogCaptureFixture
 
-DUMMY_CAVL_URL = "http://www.dummy.com"
+DUMMY_AVL_PRODUCER_URL = "http://www.dummy.com"
+DUMMY_AVL_CONSUMER_URL = "http://www.dummy.com"
 
 
 @contextmanager
@@ -34,11 +36,19 @@ def mock_datetime_now(monkeypatch):
 
 @pytest.fixture()
 def cavl_service() -> CAVLService:
-    """Overrides CAVL_URL env settings to use dummy test one."""
+    """Overrides AVL_PRODUCER_URL env settings to use dummy test one."""
 
     c = CAVLService()
-    c.CAVL_URL = DUMMY_CAVL_URL
-    c.AVL_URL = DUMMY_CAVL_URL
+    c.AVL_PRODUCER_URL = DUMMY_AVL_PRODUCER_URL
+    return c
+
+
+@pytest.fixture()
+def cavl_subscription_service() -> CAVLSubscriptionService:
+    """Overrides AVL_CONSUMER_URL env settings to use dummy test one."""
+
+    c = CAVLSubscriptionService()
+    c.AVL_CONSUMER_URL = DUMMY_AVL_CONSUMER_URL
     return c
 
 
@@ -93,7 +103,7 @@ class TestCAVLService:
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/subscriptions"
+        url = DUMMY_AVL_PRODUCER_URL + "/subscriptions"
         kwargs["m"].post(url, json=response_mock, status_code=status)
 
         with expected_result:
@@ -158,7 +168,7 @@ class TestCAVLService:
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/subscriptions/1"
+        url = DUMMY_AVL_PRODUCER_URL + "/subscriptions/1"
         kwargs["m"].delete(url, json=response_mock, status_code=status)
 
         with expected_result:
@@ -215,7 +225,7 @@ class TestCAVLService:
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/subscriptions/1"
+        url = DUMMY_AVL_PRODUCER_URL + "/subscriptions/1"
 
         kwargs["m"].put(url, json=response_mock, status_code=status)
 
@@ -229,7 +239,7 @@ class TestCAVLService:
         self, caplog, cavl_service: CAVLService, **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/subscriptions/1"
+        url = DUMMY_AVL_PRODUCER_URL + "/subscriptions/1"
         kwargs["m"].get(
             url,
             json=dict(
@@ -301,7 +311,7 @@ class TestCAVLService:
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/subscriptions/1"
+        url = DUMMY_AVL_PRODUCER_URL + "/subscriptions/1"
         kwargs["m"].get(url, json=response_mock, status_code=status)
 
         with expected_result:
@@ -314,7 +324,7 @@ class TestCAVLService:
         self, caplog, cavl_service: CAVLService, **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/subscriptions"
+        url = DUMMY_AVL_PRODUCER_URL + "/subscriptions"
         kwargs["m"].get(
             url,
             json=[
@@ -406,7 +416,7 @@ class TestCAVLService:
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/subscriptions"
+        url = DUMMY_AVL_PRODUCER_URL + "/subscriptions"
         kwargs["m"].get(url, json=response_mock, status_code=status)
 
         with expected_result:
@@ -419,7 +429,7 @@ class TestCAVLService:
         self, caplog, cavl_service: CAVLService, mock_datetime_now, **kwargs
     ) -> None:
         caplog.set_level(logging.WARNING)
-        url = DUMMY_CAVL_URL + "/feed/verify"
+        url = DUMMY_AVL_PRODUCER_URL + "/feed/verify"
         response_mock = dict(
             url="dummy",
             username="dummy",
@@ -481,7 +491,7 @@ class TestCAVLService:
         **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = DUMMY_CAVL_URL + "/feed/verify"
+        url = DUMMY_AVL_PRODUCER_URL + "/feed/verify"
 
         kwargs["m"].put(url, json=response_mock, status_code=status)
 
@@ -547,7 +557,7 @@ class TestCAVLService:
         expected_result,
         **kwargs
     ) -> None:
-        url = DUMMY_CAVL_URL + endpoint
+        url = DUMMY_AVL_PRODUCER_URL + endpoint
 
         getattr(kwargs["m"], http_method)(url, exc=requests.exceptions.ConnectTimeout)
 
@@ -555,3 +565,77 @@ class TestCAVLService:
             getattr(cavl_service, method)(*parameters)
 
         assert [rec.message for rec in caplog.records] == expected_log
+
+
+@requests_mock.Mocker(kw="m")
+class TestCAVLSubscriptionService:
+    @pytest.mark.parametrize(
+        "status, response_mock, expected_result, expected_message",
+        [
+            (
+                HTTPStatus.OK,
+                {},
+                does_not_raise(),
+                ["POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 200"],
+            ),
+            (
+                HTTPStatus.BAD_REQUEST,
+                dict(errors=["Bad request"]),
+                pytest.raises(RequestException),
+                [
+                    "POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 400",
+                    "[CAVL] Couldn't create AVL consumer subscription <id=1234> <name=dummy_name>. Response: {'errors': ['Bad request']}",
+                ],
+            ),
+            (
+                HTTPStatus.NOT_FOUND,
+                dict(errors=["Not found"]),
+                pytest.raises(RequestException),
+                [
+                    "POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 404",
+                    "[CAVL] Couldn't create AVL consumer subscription <id=1234> <name=dummy_name>. Response: {'errors': ['Not found']}",
+                ],
+            ),
+            (
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                dict(errors=["Server error"]),
+                pytest.raises(RequestException),
+                [
+                    "POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 500",
+                    "[CAVL] Couldn't create AVL consumer subscription <id=1234> <name=dummy_name>. Response: {'errors': ['Server error']}",
+                ],
+            ),
+        ],
+    )
+    def test_subscribe(
+        self,
+        caplog,
+        cavl_subscription_service: CAVLSubscriptionService,
+        status: int,
+        response_mock,
+        expected_result,
+        expected_message: list[str],
+        **kwargs
+    ) -> None:
+        caplog.set_level(logging.DEBUG)
+        url = f"{DUMMY_AVL_CONSUMER_URL}/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3"
+        kwargs["m"].post(url, json=response_mock, status_code=status)
+
+        with expected_result:
+            cavl_subscription_service.subscribe(
+                api_key="api_key",
+                name="dummy_name",
+                url="dummy_url",
+                update_interval=10,
+                subscription_id="1234",
+                data_feed_ids="1,2,3",
+                bounding_box="",
+                operator_ref="",
+                vehicle_ref="",
+                line_ref="",
+                producer_ref="",
+                origin_ref="",
+                destination_ref="",
+            )
+
+        assert [rec.message for rec in caplog.records] == expected_message

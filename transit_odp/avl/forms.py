@@ -1,14 +1,16 @@
-from crispy_forms.layout import HTML, ButtonHolder, Layout
-from transit_odp.crispy_forms_govuk.forms import GOVUKModelForm
+from crispy_forms.layout import Field, HTML, ButtonHolder, Layout
+from transit_odp.crispy_forms_govuk.forms import GOVUKForm, GOVUKModelForm
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django_hosts.resolvers import reverse
 from django.conf import settings
+from django.core.validators import RegexValidator
 
 import config.hosts
 from transit_odp.common.constants import DEFAULT_ERROR_SUMMARY
+from transit_odp.crispy_forms_govuk.layout.buttons import ButtonSubmit, LinkButton
 from transit_odp.organisation.models import DatasetRevision
 from transit_odp.publish.constants import (
     DUPLICATE_COMMENT_ERROR_MESSAGE,
@@ -293,4 +295,236 @@ class EditFeedDescriptionForm(GOVUKModelForm):
             "description",
             "short_description",
             ButtonHolder(EDIT_DESCRIPTION_SUBMIT, CANCEL_PUBLISH_BUTTON),
+        )
+
+
+class AvlSubscriptionsSubscribeForm(GOVUKForm):
+    form_title = _("Create Location Data Subscription")
+    form_tag = False
+    form_error_title = DEFAULT_ERROR_SUMMARY
+
+    length_validator = RegexValidator(regex=r"^.{,256}$", code="invalid")
+    bounding_box_validator = RegexValidator(
+        regex=r"^[0-9]+(,[0-9]+){3}$", code="invalid"
+    )
+
+    name = forms.CharField(
+        label=_("Name"),
+        required=True,
+        validators=[length_validator],
+        error_messages={
+            "required": _("Enter a name"),
+            "invalid": _("Enter a name up to 256 characters"),
+        },
+    )
+
+    url = forms.URLField(
+        label=_("URL for endpoint"),
+        required=True,
+        error_messages={
+            "required": _("Enter a URL"),
+            "invalid": _("Enter a valid URL"),
+        },
+    )
+
+    data_feed_id_1 = forms.CharField(
+        label=_("Data feed ID 1"),
+        required=True,
+        validators=[length_validator],
+        error_messages={
+            "required": _("Enter a data feed ID"),
+            "invalid": _("Enter a data feed ID up to 256 characters"),
+        },
+    )
+
+    data_feed_id_2 = forms.CharField(
+        label=_("Data feed ID 2 (optional)"),
+        required=False,
+        validators=[length_validator],
+        error_messages={
+            "invalid": _("Enter a data feed ID up to 256 characters"),
+        },
+    )
+
+    data_feed_id_3 = forms.CharField(
+        label=_("Data feed ID 3 (optional)"),
+        required=False,
+        validators=[length_validator],
+        error_messages={
+            "invalid": _("Enter a data feed ID up to 256 characters"),
+        },
+    )
+
+    data_feed_id_4 = forms.CharField(
+        label=_("Data feed ID 4 (optional)"),
+        required=False,
+        validators=[length_validator],
+        error_messages={
+            "invalid": _("Enter a data feed ID up to 256 characters"),
+        },
+    )
+
+    data_feed_id_5 = forms.CharField(
+        label=_("Data feed ID 5 (optional)"),
+        required=False,
+        validators=[length_validator],
+        error_messages={
+            "invalid": _("Enter a data feed ID up to 256 characters"),
+        },
+    )
+
+    update_interval = forms.ChoiceField(
+        label=_("Update interval"),
+        required=True,
+        choices=(
+            (10, "10 seconds"),
+            (15, "15 seconds"),
+            (20, "20 seconds"),
+            (30, "30 seconds"),
+        ),
+        error_messages={
+            "invalid": _("Select a valid update interval"),
+        },
+    )
+
+    bounding_box = forms.CharField(
+        label=_("Bounding box coordinates (optional)"),
+        required=False,
+        validators=[bounding_box_validator],
+        help_text=_(
+            "Set of coordinates for a rectangular boundingBox [minLongitude, minLatitude, maxLongitude, maxLatitude]"
+        ),
+        error_messages={
+            "invalid": _("Enter four comma-separated numbers"),
+        },
+    )
+
+    operator_ref = forms.CharField(
+        label=_("Operator ref (optional)"),
+        required=False,
+        max_length=256,
+        validators=[length_validator],
+        help_text=_(
+            "This is often the National Operator Code but please check the values used within the feeds you wish to subscribe to"
+        ),
+        error_messages={
+            "invalid": _("Enter an operator ref up to 256 characters"),
+        },
+    )
+
+    vehicle_ref = forms.CharField(
+        label=_("Vehicle ref (optional)"),
+        required=False,
+        validators=[length_validator],
+        help_text=_("Reference to the specific vehicle make a journey or journeys"),
+        error_messages={
+            "invalid": _("Enter a vehicle ref up to 256 characters"),
+        },
+    )
+
+    line_ref = forms.CharField(
+        label=_("Line ref (optional)"),
+        required=False,
+        validators=[length_validator],
+        help_text=_("Name of number by which the line is known to the public"),
+        error_messages={
+            "invalid": _("Enter a line ref up to 256 characters"),
+        },
+    )
+
+    producer_ref = forms.CharField(
+        label=_("Producer ref (optional)"),
+        required=False,
+        validators=[length_validator],
+        help_text=_("Participant reference that identifies the producer of the data"),
+        error_messages={
+            "invalid": _("Enter a producer ref up to 256 characters"),
+        },
+    )
+
+    origin_ref = forms.CharField(
+        label=_("Origin ref (optional)"),
+        required=False,
+        validators=[length_validator],
+        help_text=_("The ATCO code which identifies the origin of the journey"),
+        error_messages={
+            "invalid": _("Enter a origin ref up to 256 characters"),
+        },
+    )
+
+    destination_ref = forms.CharField(
+        label=_("Destination ref (optional)"),
+        required=False,
+        validators=[length_validator],
+        help_text=_("The ATCO code which identifies the destination of the journey"),
+        error_messages={
+            "invalid": _("Enter a destination ref up to 256 characters"),
+        },
+    )
+
+    def __init__(self, instance=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_layout(self):
+        submit_button = ButtonSubmit("submit", "submit", content=_("Subscribe"))
+        cancel_button = LinkButton(
+            reverse(
+                "api:buslocation-api",
+                kwargs={},
+                host=config.hosts.DATA_HOST,
+            ),
+            content=_("Cancel"),
+            field_classes="govuk-button govuk-button--secondary",
+        )
+
+        return Layout(
+            Field("name"),
+            Field("url"),
+            HTML(
+                '<fieldset class="govuk-fieldset" role="group" aria-describedby="data-feed-id-hint">'
+                '<legend class="govuk-fieldset__legend govuk-fieldset__legend--m"><h2 class="govuk-fieldset__heading">Data feed ID</h2></legend>'
+                '<div id="data-feed-id-hint" class="govuk-hint">This is the ID assigned to the location data feed by BODS</div>'
+                '<div class="govuk-date-input">'
+            ),
+            HTML('<div class="govuk-date-input__item">'),
+            Field(
+                "data_feed_id_1",
+                css_class="govuk-input--width-10 govuk-input--extra-letter-spacing",
+            ),
+            HTML("</div>"),
+            HTML('<div class="govuk-date-input__item">'),
+            Field(
+                "data_feed_id_2",
+                css_class="govuk-input--width-10 govuk-input--extra-letter-spacing",
+            ),
+            HTML("</div>"),
+            HTML('<div class="govuk-date-input__item">'),
+            Field(
+                "data_feed_id_3",
+                css_class="govuk-input--width-10 govuk-input--extra-letter-spacing",
+            ),
+            HTML("</div>"),
+            HTML('<div class="govuk-date-input__item">'),
+            Field(
+                "data_feed_id_4",
+                css_class="govuk-input--width-10 govuk-input--extra-letter-spacing",
+            ),
+            HTML("</div>"),
+            HTML('<div class="govuk-date-input__item">'),
+            Field(
+                "data_feed_id_5",
+                css_class="govuk-input--width-10 govuk-input--extra-letter-spacing",
+            ),
+            HTML("</div>"),
+            HTML("</div></fieldset>"),
+            Field("update_interval"),
+            HTML('<h2 class="govuk-heading-m">Data filters</h2>'),
+            Field("bounding_box", css_class="govuk-input--extra-letter-spacing"),
+            Field("operator_ref", css_class="govuk-input--extra-letter-spacing"),
+            Field("vehicle_ref", css_class="govuk-input--extra-letter-spacing"),
+            Field("line_ref", css_class="govuk-input--extra-letter-spacing"),
+            Field("producer_ref", css_class="govuk-input--extra-letter-spacing"),
+            Field("origin_ref", css_class="govuk-input--extra-letter-spacing"),
+            Field("destination_ref", css_class="govuk-input--extra-letter-spacing"),
+            ButtonHolder(submit_button, cancel_button),
         )
