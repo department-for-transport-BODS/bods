@@ -11,7 +11,7 @@ from django.utils import timezone
 from requests.exceptions import RequestException
 
 from transit_odp.avl.client.interface import ICAVLService, ICAVLSubscriptionService
-from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
+from transit_odp.avl.dataclasses import ConsumerSubscription, Feed, ValidationTaskResult
 
 
 logger = logging.getLogger(__name__)
@@ -261,7 +261,85 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
             response.raise_for_status()
         except RequestException as e:
             logger.exception(
-                f"[CAVL] Couldn't create AVL consumer subscription <id={subscription_id}> <name={name}>. Response: {self._get_error_response(e)}"
+                f"[CAVL] Couldn't create AVL consumer subscription <api_key={api_key}> <id={subscription_id}>. Response: {self._get_error_response(e)}"
             )
 
             raise
+
+    def unsubscribe(
+        self,
+        api_key: str,
+        subscription_id: str,
+    ) -> None:
+        api_url = f"{self.AVL_CONSUMER_URL}/siri-vm/subscriptions"
+
+        current_datetime = datetime.now()
+        request_timestamp = current_datetime.isoformat() + "Z"
+        message_identifier = uuid.uuid4()
+
+        headers = {
+            "Content-Type": "application/xml",
+            "x-api-key": api_key,
+        }
+
+        xml = f"""
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Siri version="2.0" xmlns="http://www.siri.org.uk/siri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.siri.org.uk/siri http://www.siri.org.uk/schema/2.0/xsd/siri.xsd">
+  <TerminateSubscriptionRequest>
+    <RequestTimestamp>{request_timestamp}</RequestTimestamp>
+    <RequestorRef>BODS</RequestorRef>
+    <MessageIdentifier>{message_identifier}</MessageIdentifier>
+    <SubscriptionRef>{subscription_id}</SubscriptionRef>
+  </TerminateSubscriptionRequest>
+</Siri>
+"""
+
+        try:
+            response = requests.delete(api_url, data=xml, timeout=30, headers=headers)
+            response.raise_for_status()
+        except RequestException as e:
+            logger.exception(
+                f"[CAVL] Couldn't unsubscribe AVL consumer subscription <api_key={api_key}> <id={subscription_id}>. Response: {self._get_error_response(e)}"
+            )
+
+            raise
+
+    def get_subscriptions(self, api_key: str) -> Sequence[ConsumerSubscription]:
+        api_url = self.AVL_CONSUMER_URL + "/siri-vm/subscriptions"
+
+        headers = {
+            "Content-Type": "application/json",
+            "x-api-key": api_key,
+        }
+
+        try:
+            response = requests.get(api_url, timeout=30, headers=headers)
+            response.raise_for_status()
+        except RequestException as e:
+            logger.exception(
+                f"[CAVL] Couldn't fetch consumer subscriptions <api_key={api_key}>. Response: {self._get_error_response(e)}"
+            )
+            raise
+
+        if response.status_code == HTTPStatus.OK:
+            return [ConsumerSubscription(**j) for j in response.json()]
+
+    def get_subscription(self, api_key: str, subscription_id: int) -> ConsumerSubscription:
+        api_url = self.AVL_CONSUMER_URL + f"/siri-vm/subscriptions?subscriptionId={subscription_id}"
+
+        headers = {
+            "Content-Type": "application/json",
+            "x-api-key": api_key,
+        }
+
+        try:
+            response = requests.get(api_url, timeout=30, headers=headers)
+            response.raise_for_status()
+        except RequestException as e:
+            logger.exception(
+                f"[CAVL] Couldn't fetch consumer subscription <api_key={api_key}> <id={subscription_id}>. Response: {self._get_error_response(e)}"
+            )
+            raise
+
+        if response.status_code == HTTPStatus.OK:
+            return ConsumerSubscription(**response.json())

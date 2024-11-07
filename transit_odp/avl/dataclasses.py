@@ -38,3 +38,28 @@ class Feed(BaseModel):
 
         if mapped_status is not None:
             self.status = mapped_status
+
+class ConsumerSubscriptionQueryParams(BaseModel):
+    subscription_id: str
+    bounding_box: Optional[str] = None
+    operator_ref: Optional[str] = None
+    vehicle_ref: Optional[str] = None
+    line_ref: Optional[str] = None
+    producer_ref: Optional[str] = None
+    origin_ref: Optional[str] = None
+    destination_ref: Optional[str] = None
+    model_config = ConfigDict(populate_by_name=True)
+
+class ConsumerSubscription(BaseModel):
+    id: str
+    name: str
+    subscription_id: str
+    status: str
+    url: str
+    requestor_ref: int
+    update_interval: int
+    heartbeat_interval: int
+    request_timestamp: str
+    initial_termination_time: str
+    query_params: ConsumerSubscriptionQueryParams
+    model_config = ConfigDict(populate_by_name=True)

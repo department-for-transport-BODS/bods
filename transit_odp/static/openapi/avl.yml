@@ -100,23 +100,173 @@ paths:
 
       responses: {}
 
-  /api/v1/subscriptions:
+  /api/v1/siri-vm/subscriptions:
+    post:
+      tags:
+        - SIRI-VM subscriptions
+      description: Create a location data subscription
+      requestBody:
+        content:
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/SiriSubscriptionRequest"
+      parameters:
+        - name: name
+          in: query
+          description: Set a user-friendly name for the subscription
+          schema:
+            type: string
+            example: My subscription
+
+        - name: boundingBox
+          in: query
+          description: >
+            Limit results to bus location data with vehicle position within the rectangular
+            boundingBox you set using co-ordinates.
+            [minLongitude, minLatitude, maxLongitude, maxLatitude].
+            The default values shown are for the Liverpool area.
+          schema:
+            type: array
+            items:
+              type: number
+            minItems: 4
+            maxItems: 4
+            example: [-2.930, 53.374, -3.085, 53.453]
+          style: form
+          explode: false
+
+        - name: operatorRef
+          in: query
+          description: >
+            Limit results to bus location data with the specified operatorRef.
+            The National Operator Code is often used as the input for operatorRef.
+            Comma separated list of values can be used for querying.
+          schema:
+            type: array
+            items:
+              type: string
+            example: [SCGH, SCLI, HRBT]
+          style: form
+          explode: false
+
+        - name: vehicleRef
+          in: query
+          description: Limit results to bus location data with the specified vehicleRef.
+          schema:
+            type: string
+            example: BUSC
+
+        - name: lineRef
+          in: query
+          description: Limit results to bus location data with the specified lineRef.
+          schema:
+            type: string
+            example: 85A
+
+        - name: producerRef
+          in: query
+          description: Limit results to bus location data with the specified producerRef.
+          schema:
+            type: string
+            example: SCLI
+
+        - name: originRef
+          in: query
+          description: Limit results to bus location data with the specified originRef.
+          schema:
+            type: string
+            example: "21024515"
+
+        - name: destinationRef
+          in: query
+          description: Limit results to bus location data with the specified destinationRef.
+          schema:
+            type: string
+            example: "21027012"
+      responses:
+        200:
+          description: Success
+        400:
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        409:
+          description: Subscription already live
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        429:
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        503:
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+
+    delete:
+      tags:
+        - SIRI-VM subscriptions
+      description: Unsubscribe a location data subscription
+      requestBody:
+        content:
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/SiriTerminateSubscriptionRequest"
+      responses:
+        204:
+          description: Success
+        400:
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        409:
+          description: Subscription already live
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+
     get:
       tags:
         - SIRI-VM subscriptions
       description: Returns a list of location data subscriptions for the user
-
       responses:
         200:
-          description: Successfully returns subscription data
+          description: Success
           content:
             application/json:
               schema:
                   $ref: "#/components/schemas/GetConsumerSubscriptionsResponse"
         400:
           description: Invalid request
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
 
-  /api/v1/subscriptions?subscriptionId={subscriptionId}:
+  /api/v1/siri-vm/subscriptions?subscriptionId={subscriptionId}:
     get:
       tags:
         - SIRI-VM subscriptions
@@ -128,18 +278,25 @@ paths:
           schema:
             type: string
             example: "1234"
-
       responses:
         200:
-          description: Successfully returns subscription data
+          description: Success
           content:
             application/json:
               schema:
                   $ref: "#/components/schemas/GetConsumerSubscriptionResponse"
         400:
           description: Invalid request
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
         404:
           description: Subscription not found
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
 
   /api/v1/datafeed/{datafeedID}/:
     get:
@@ -220,11 +377,14 @@ paths:
 
 components:
   schemas:
-    Siri:
+    ApiError:
       type: object
       properties:
-        ServiceDelivery:
-          $ref: "#/components/schemas/ServiceDelivery"
+        errors:
+          type: array
+          items:
+            type: string
+          example: ["Example error message"]
 
     ServiceDelivery:
       type: object
@@ -328,6 +488,86 @@ components:
           type: number
           example: 52.09376837
 
+    SubscriptionRequest:
+      type: object
+      properties:
+        RequestTimestamp:
+          type: string
+          format: date-time
+          example: "2024-01-01T00:00:00.000Z"
+        ConsumerAddress:
+          type: string
+          example: "https://example.com"
+        RequestorRef:
+          type: string
+          example: "test"
+        MessageIdentifier:
+          type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        SubscriptionContext:
+          type: object
+          properties:
+            HeartbeatInterval:
+              type: string
+              example: "PT30S"
+        VehicleMonitoringSubscriptionRequest:
+          type: object
+          properties:
+            SubscriptionIdentifier:
+              type: string
+              example: "example-subscription-id"
+            InitialTerminationTime:
+              type: string
+              format: date-time
+              example: "2050-01-01T00:00:00.000Z"
+            VehicleMonitoringRequest:
+              type: object
+              properties:
+                version:
+                  type: string
+                  example: "2.0"
+                  xml:
+                    attribute: true
+                RequestTimestamp:
+                  type: string
+                  format: date-time
+                  example: "2024-01-01T00:00:00.000Z"
+                VehicleMonitoringDetailLevel:
+                  type: string
+                  example: "normal"
+            UpdateInterval:
+              type: string
+              example: "PT10S"
+
+    TerminateSubscriptionRequest:
+      type: object
+      properties:
+        RequestTimestamp:
+          type: string
+          format: date-time
+          example: "2024-01-01T00:00:00.000Z"
+        RequestorRef:
+          type: string
+          example: "test"
+        MessageIdentifier:
+          type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        SubscriptionRef:
+          type: string
+          example: "example-subscription-id"
+
+    SiriSubscriptionRequest:
+      type: object
+      properties:
+        SubscriptionRequest:
+          $ref: "#/components/schemas/SubscriptionRequest"
+
+    SiriTerminateSubscriptionRequest:
+      type: object
+      properties:
+        TerminateSubscriptionRequest:
+          $ref: "#/components/schemas/TerminateSubscriptionRequest"
+
     ConsumerSubscriptionQueryParams:
       type: object
       properties:
@@ -374,7 +614,7 @@ components:
       properties:
         id:
           type: string
-          example: "random-uuid"
+          example: "123e4567-e89b-12d3-a456-426614174000"
         subscriptionId:
           type: string
           example: "1234"
@@ -398,9 +638,11 @@ components:
           example: "PT30S"
         initialTerminationTime:
           type: string
+          format: date-time
           example: "2050-01-01T00:00:00.000Z"
         requestTimestamp:
           type: string
+          format: date-time
           example: "2024-01-01T00:00:00.000Z"
         queryParams:
           $ref: "#/components/schemas/ConsumerSubscriptionQueryParams"

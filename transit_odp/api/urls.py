@@ -16,6 +16,7 @@ from transit_odp.api.views import (
     v2,
 )
 from transit_odp.api.views.avl import (
+    AVLConsumerSubscriptionsApiView,
     AVLSubscriptionsSubscribeView,
     AVLSubscriptionsSubscribeSuccessView,
 )
@@ -66,6 +67,7 @@ urlpatterns = [
     path("app/", include("transit_odp.api.app.urls")),
     path("v1/", include(router_v1.urls)),
     path("v1/datafeed/", AVLApiView.as_view(), name="avldatafeedapi"),
+    path("v1/siri-vm/subscriptions", AVLConsumerSubscriptionsApiView, name="avlconsumersubscriptionsapi"),
     path("v1/siri-sx/", DisruptionsApiView.as_view(), name="disruptionsapi"),
     path(
         "v1/datafeed/<int:pk>/", AVLDetailApiView.as_view(), name="avldetaildatafeedapi"

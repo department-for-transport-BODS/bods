@@ -27,16 +27,7 @@ from transit_odp.organisation.models import Dataset
 
 logger = logging.getLogger(__name__)
 
-API_KEY = "api_key"
-PARAMETERS = (
-    "boundingBox",
-    "destinationRef",
-    "lineRef",
-    "operatorRef",
-    "originRef",
-    "producerRef",
-    "vehicleRef",
-)
+BODS_USER_API_KEY_PROPERTY = "api_key"
 
 
 class AVLApiServiceView(LoginRequiredMixin, TemplateView):
@@ -189,6 +180,34 @@ class AVLGTFSRTApiView(views.APIView):
         return Response(content, status=status_code)
 
 
+class AVLConsumerSubscriptionsApiView(views.ViewSet):
+    """APIViewSet for managing AVL consumer subscriptions."""
+
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (XMLRender,)
+
+    def get(self, request, format=None):
+        """Get AVL consumer subscription details"""
+        url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm/subscriptions"
+
+        content, status_code = _get_consumer_subscriptions_api_response(url, request.query_params)
+        return Response(content, status=status_code)
+
+    def post(self, request, format=None):
+        """Create AVL consumer subscription"""
+        url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm/subscriptions"
+
+        content, status_code = _get_consumer_subscribe_api_response(url, request.query_params, request.body)
+        return Response(content, status=status_code)
+
+    def delete(self, request, format=None):
+        """Unsubscribe AVL consumer subscription"""
+        url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm/subscriptions"
+
+        content, status_code = _get_consumer_unsubscribe_api_response(url, request.query_params, request.body)
+        return Response(content, status=status_code)
+
+
 def _get_gtfs_rt_response(url: str, query_params: QueryDict):
     """Gets GTFS RT response from CAVL consumer api.
 
@@ -205,7 +224,7 @@ def _get_gtfs_rt_response(url: str, query_params: QueryDict):
     content = f"{response_status}: {error_msg}."
 
     params = query_params.copy()
-    params.pop(API_KEY, None)
+    params.pop(BODS_USER_API_KEY_PROPERTY, None)
 
     try:
         response = requests.get(url, params=params, timeout=60)
@@ -235,10 +254,20 @@ def _get_consumer_api_response(url: str, query_params: QueryDict):
     content = create_xml_error_response(error_msg, response_status)
 
     params = query_params.copy()
-    params.pop(API_KEY, None)
+    params.pop(BODS_USER_API_KEY_PROPERTY, None)
+
+    ALLOWED_PARAMETERS = (
+        "boundingBox",
+        "destinationRef",
+        "lineRef",
+        "operatorRef",
+        "originRef",
+        "producerRef",
+        "vehicleRef",
+    )
 
     for key in params:
-        if key not in PARAMETERS:
+        if key not in ALLOWED_PARAMETERS:
             error_msg = f"Parameter {key} is not valid."
             content = create_xml_error_response(error_msg, response_status)
             return content, response_status
@@ -254,6 +283,149 @@ def _get_consumer_api_response(url: str, query_params: QueryDict):
         f"- status {response.status_code}"
     )
     if response.status_code == 200:
+        content = response.content
+        response_status = status.HTTP_200_OK
+
+    return content, response_status
+
+
+def _get_consumer_subscriptions_api_response(url: str, query_params: QueryDict):
+    """Gets response from CAVL consumer api for AVL consumer subscriptions.
+
+    Args:
+        url (str): URL to send request to.
+        query_params (QueryDict): Query params to send in get request.
+
+    Returns
+        content (str): String representing the body of a response.
+        response_status (int): The response status code.
+    """
+    error_msg = "Unable to process request at this time."
+    response_status = status.HTTP_400_BAD_REQUEST
+    content = create_xml_error_response(error_msg, response_status)
+
+    params = query_params.copy()
+
+    headers = {
+        'x-api-key': params.pop(BODS_USER_API_KEY_PROPERTY)
+    }
+
+    ALLOWED_PARAMETERS = (
+        "subscriptionId",
+    )
+
+    for key in params:
+        if key not in ALLOWED_PARAMETERS:
+            error_msg = f"Parameter {key} is not valid."
+            content = create_xml_error_response(error_msg, response_status)
+            return content, response_status
+
+    try:
+        response = requests.get(url, headers=headers, params=params, timeout=60)
+    except RequestException:
+        return content, response_status
+
+    elapsed_time = response.elapsed.total_seconds()
+    logger.info(
+        f"Request to List consumer subscriptions API with params {dict(params)} took {elapsed_time}s "
+        f"- status {response.status_code}"
+    )
+    if response.status_code == 200:
+        content = response.content
+        response_status = status.HTTP_200_OK
+
+    return content, response_status
+
+
+def _get_consumer_subscribe_api_response(url: str, query_params: QueryDict, body: str):
+    """Gets response from CAVL consumer api for AVL consumer subscribe.
+
+    Args:
+        url (str): URL to send request to.
+        query_params (QueryDict): Query params to send in get request.
+
+    Returns
+        content (str): String representing the body of a response.
+        response_status (int): The response status code.
+    """
+    error_msg = "Unable to process request at this time."
+    response_status = status.HTTP_400_BAD_REQUEST
+    content = create_xml_error_response(error_msg, response_status)
+
+    params = query_params.copy()
+    params['subscriptionId'] = uuid.uuid4()
+
+    headers = {
+        'x-api-key': params.pop(BODS_USER_API_KEY_PROPERTY)
+    }
+
+    ALLOWED_PARAMETERS = (
+        "name",
+        "subscriptionId",
+        "boundingBox",
+        "operatorRef",
+        "vehicleRef",
+        "lineRef",
+        "producerRef",
+        "originRef",
+        "destinationRef",
+    )
+
+    for key in params:
+        if key not in ALLOWED_PARAMETERS:
+            error_msg = f"Parameter {key} is not valid."
+            content = create_xml_error_response(error_msg, response_status)
+            return content, response_status
+
+    try:
+        response = requests.post(url, headers=headers, params=params, body=body, timeout=60)
+    except RequestException:
+        return content, response_status
+
+    elapsed_time = response.elapsed.total_seconds()
+    logger.info(
+        f"Request to List consumer subscriptions API with params {dict(params)} took {elapsed_time}s "
+        f"- status {response.status_code}"
+    )
+    if response.status_code == 200:
+        content = response.content
+        response_status = status.HTTP_200_OK
+
+    return content, response_status
+
+
+def _get_consumer_unsubscribe_api_response(url: str, query_params: QueryDict, body: str):
+    """Gets response from CAVL consumer api for AVL consumer unsubscribe.
+
+    Args:
+        url (str): URL to send request to.
+        query_params (QueryDict): Query params to send in get request.
+
+    Returns
+        content (str): String representing the body of a response.
+        response_status (int): The response status code.
+    """
+    error_msg = "Unable to process request at this time."
+    response_status = status.HTTP_400_BAD_REQUEST
+    content = create_xml_error_response(error_msg, response_status)
+
+    params = query_params.copy()
+
+    headers = {
+        'x-api-key': params.pop(BODS_USER_API_KEY_PROPERTY)
+    }
+
+    try:
+        response = requests.post(url, headers=headers, params=params, body=body, timeout=60)
+    except RequestException:
+        return content, response_status
+
+    elapsed_time = response.elapsed.total_seconds()
+    logger.info(
+        f"Request to List consumer subscriptions API with params {dict(params)} took {elapsed_time}s "
+        f"- status {response.status_code}"
+    )
+    if response.status_code == 204:
         content = response.content
         response_status = status.HTTP_200_OK
 
