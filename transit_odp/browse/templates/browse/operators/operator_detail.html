@@ -219,7 +219,7 @@
         {% endfilter %}
       </p>
       <div id="feed-stat-list" class="govuk-grid-row">
-        <div class="govuk-grid-column-one-quarter">
+        <div class="govuk-grid-column-one-half">
           {% if overall_ppc_score is not None %}
             <div class="feed-stat">
               <span class="feed-stat__value">{{ overall_ppc_score|floatformat:"0" }}%</span>
@@ -238,6 +238,16 @@
             </div>
           {% endif %}
         </div>
+        <div class="govuk-grid-column-one-half">
+          <div class="feed-stat">
+            <span class="feed-stat__value">{{ avl_services_require_attention_percentage }}%</span>
+            <span class="feed-stat__label">
+              {% filter force_escape %}
+                {% trans "Services requiring attention" %}
+              {% endfilter %}
+            </span>
+          </div>
+        </div>
       </div>
       <ul class="govuk-list govuk-!-margin-top-5">
         <li>
@@ -247,10 +257,17 @@
             {% endfilter %}
           </a>
         </li>
-        <li class="govuk-!-margin-bottom-3">
+        <li>
           <a class="govuk-link" href="{% url 'avl-search' host hosts.data %}?organisation={{ object.id }}&status=live">
             {% filter force_escape %}
               {% trans "Browse Location data" %}
+            {% endfilter %}
+          </a>
+        </li>
+        <li class="govuk-!-margin-bottom-3">
+          <a class="govuk-link" href={% url 'service-codes' pk1=object.id host hosts.publish %}>
+            {% filter force_escape %}
+              {% trans "Download detailed export" %}
             {% endfilter %}
           </a>
         </li>

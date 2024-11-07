@@ -3,6 +3,10 @@ from typing import Dict, List, Optional
 from django.db.models import Subquery
 from django.utils.timezone import now
 
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.naptan.models import AdminArea
@@ -401,6 +405,43 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
             _update_data(object_list, service)
         elif is_stale(service, file_attribute):
             _update_data(object_list, service)
+    return object_list
+
+
+def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list to determine which OTC Services require attention ie. service has
+    been published for a service or has a matching issue.
+
+    Returns list of objects of each service requiring attention for an organisation.
+    """
+    object_list = []
+
+    otc_map = get_line_level_in_scope_otc_map(org_id)
+    txcfa_map = get_line_level_txc_map(org_id)
+    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+    abods_registry = AbodsRegistery()
+    synced_in_last_month = abods_registry.records()
+
+    for service_key, service in otc_map.items():
+        file_attribute = txcfa_map.get(service_key)
+        if file_attribute is not None:
+            operator_ref = file_attribute.national_operator_code
+            line_name = service_key[1]
+            if (
+                not uncounted_activity_df.loc[
+                    (uncounted_activity_df["OperatorRef"] == operator_ref)
+                    & (
+                        uncounted_activity_df["LineRef"].isin(
+                            [line_name, line_name.replace(" ", "_")]
+                        )
+                    )
+                ].empty
+                or f"{line_name}__{operator_ref}" not in synced_in_last_month
+            ):
+                _update_data(object_list, service)
+
     return object_list
 
 
