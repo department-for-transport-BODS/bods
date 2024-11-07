@@ -5,6 +5,9 @@ from django.db.models import Subquery
 from zipfile import ZipFile
 import pandas as pd
 from io import BytesIO
+from django.core.cache import cache
+import pickle
+
 
 logger = logging.getLogger(__name__)
 
@@ -13,9 +16,38 @@ UNCOUNTED_VEHICLE_ACTIVITY_FILENAME = "uncountedvehicleactivities.csv"
 OPERATOR_REF_FILENAME = "originref.csv"
 DIRECTION_REF_FILENAME = "directionref.csv"
 DESTINATION_REF_FILENAME = "destinationref.csv"
+CACHE_KEY = "weekly_vehicle_activity_error_operatorref_linenames"
 
 
 def get_vehicle_activity_operatorref_linename() -> pd.DataFrame:
+    """Get the value for weekly operator ref and linename
+
+    Returns:
+        pd.DataFrame: Dataframe either from cache or from zip
+    """
+    value_in_cache = cache.get(CACHE_KEY, None)
+    logger.info("Vehicle activites fetching from cache")
+    if value_in_cache is None:
+        logger.info("Vehicle activites not present in cache, setting new value")
+        set_value_in_cache()
+        value_in_cache = cache.get(CACHE_KEY, None)
+
+    df = pickle.loads(value_in_cache)
+    return df
+
+
+def set_value_in_cache():
+    errors_df = read_all_linenames_from_weekly_files()
+    serialized_df = pickle.dumps(errors_df)
+    cache.set(CACHE_KEY, serialized_df, timeout=(7 * 24 * 60 * 60))
+
+
+def reset_vehicle_activity_in_cache() -> None:
+    cache.delete(CACHE_KEY)
+    set_value_in_cache()
+
+
+def read_all_linenames_from_weekly_files() -> pd.DataFrame:
     """Get errors dataframe and all sirivm analysed dataframe
     From the weekly PPC report zip files
 

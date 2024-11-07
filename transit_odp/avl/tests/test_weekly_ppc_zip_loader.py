@@ -14,7 +14,7 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_directionref_df,
     get_latest_reports_from_db,
     get_originref_df,
-    get_vehicle_activity_operatorref_linename,
+    read_all_linenames_from_weekly_files,
 )
 from transit_odp.organisation.factories import DatasetFactory, OrganisationFactory
 from datetime import date, timedelta
@@ -286,7 +286,7 @@ def test_get_latest_records_from_db_with_prev_week():
 # @patch(f"{BASE_PATH}.get_originref_df")
 # @patch(f"{BASE_PATH}.get_directionref_df")
 # @patch(f"{BASE_PATH}.ZipFile")
-# def test_get_vehicle_activity_operatorref_linename(
+# def test_read_all_linenames_from_weekly_files(
 #     mock_zip_file,
 #     mock_direction_ref,
 #     mock_origin_ref,
@@ -327,7 +327,7 @@ def test_get_latest_records_from_db_with_prev_week():
 
 #     mock_zip_instance.open.side_effect = mock_open
 
-#     result_df = get_vehicle_activity_operatorref_linename()
+#     result_df = read_all_linenames_from_weekly_files()
 #     expected_df = pd.DataFrame(
 #         {
 #             "OperatorRef": ["ACYM", "ACYM", "ACYM", "ACYM", "ACYM"],
@@ -342,7 +342,7 @@ def test_get_latest_records_from_db_with_prev_week():
 # @patch(f"{BASE_PATH}.get_originref_df")
 # @patch(f"{BASE_PATH}.get_directionref_df")
 # @patch(f"{BASE_PATH}.ZipFile")
-# def test_get_vehicle_activity_operatorref_linename_blank_uncounted_vehicle(
+# def test_read_all_linenames_from_weekly_files_blank_uncounted_vehicle(
 #     mock_zip_file,
 #     mock_direction_ref,
 #     mock_origin_ref,
@@ -383,7 +383,7 @@ def test_get_latest_records_from_db_with_prev_week():
 
 #     mock_zip_instance.open.side_effect = mock_open
 
-#     result_df = get_vehicle_activity_operatorref_linename()
+#     result_df = read_all_linenames_from_weekly_files()
 #     expected_df = pd.DataFrame(
 #         {
 #             "OperatorRef": ["ACYM", "ACYM", "ACYM", "ACYM"],
@@ -394,11 +394,11 @@ def test_get_latest_records_from_db_with_prev_week():
 
 
 @patch(f"{BASE_PATH}.get_latest_reports_from_db")
-def test_get_vehicle_activity_operatorref_linename_blank_record_from_db(
+def test_read_all_linenames_from_weekly_files_blank_record_from_db(
     mock_reports_fromDB,
 ):
     mock_reports_fromDB.return_value = []
-    result_df = get_vehicle_activity_operatorref_linename()
+    result_df = read_all_linenames_from_weekly_files()
     expected_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
     assert_frame_equal(expected_df, result_df, check_dtype=False)
 
@@ -408,7 +408,7 @@ def test_get_vehicle_activity_operatorref_linename_blank_record_from_db(
 @patch(f"{BASE_PATH}.get_originref_df")
 @patch(f"{BASE_PATH}.get_directionref_df")
 @patch(f"{BASE_PATH}.ZipFile")
-def test_get_vehicle_activity_operatorref_linename_get_destinationref_df_exception(
+def test_read_all_linenames_from_weekly_files_get_destinationref_df_exception(
     mock_zip_file,
     mock_direction_ref,
     mock_origin_ref,
@@ -447,6 +447,6 @@ def test_get_vehicle_activity_operatorref_linename_get_destinationref_df_excepti
 
     mock_zip_instance.open.side_effect = mock_open
 
-    result_df = get_vehicle_activity_operatorref_linename()
+    result_df = read_all_linenames_from_weekly_files()
     expected_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
     assert_frame_equal(expected_df, result_df, check_dtype=False)

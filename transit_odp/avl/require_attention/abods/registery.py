@@ -1,7 +1,7 @@
 import logging
 import requests
 from http import HTTPStatus
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, List, Union
 from requests import HTTPError, RequestException, Timeout
 
@@ -41,10 +41,6 @@ class AbodsClient:
         Response will be returned in the JSON format
         """
         url = settings.ABODS_AVL_LINE_LEVEL_DETAILS_URL
-        params = {
-            "query": "query ExampleQuery { avlLineLevelStatus { operatorNoc lineName lastRecordedAtTime } }",
-            **kwargs,
-        }
         files = []
         headers = {"Authorization": f"Bearer {settings.ABODS_AVL_AUTH_TOKEN}"}
 
@@ -52,7 +48,9 @@ class AbodsClient:
             response = requests.post(
                 url=url,
                 headers=headers,
-                params=params,
+                json={
+                    "query": "query ExampleQuery { avlLineLevelStatus { operatorNoc lineName lastRecordedAtTime } }"
+                },
                 files=files,
                 timeout=timeout,
             )
@@ -72,10 +70,7 @@ class AbodsClient:
             return self.default_response()
 
         if response.status_code == HTTPStatus.NO_CONTENT:
-            logger.warning(
-                f"Empty Response, API return {HTTPStatus.NO_CONTENT}, "
-                f"for params {params}"
-            )
+            logger.warning(f"Empty Response, API return {HTTPStatus.NO_CONTENT}, ")
             return self.default_response()
         try:
             return APIResponse(**response.json())
@@ -121,7 +116,11 @@ class AbodsRegistery:
     def normailze(self):
         logger.info("ABODSRegistery: Nomalizing line details")
         for line_details in self.data.avlLineLevelStatus:
-            self.lines.append(f"{line_details.lineName}__{line_details.operatorNoc}")
+            date_one_month_ago = datetime.today() - timedelta(days=30)
+            if line_details.lastRecordedAtTime.date() >= date_one_month_ago.date():
+                self.lines.append(
+                    f"{line_details.lineName}__{line_details.operatorNoc}"
+                )
         logger.info(f"ABODSRegistery: Total {len(self.lines)} lines normalised")
 
     def remove_duplicate(self):
