@@ -186,7 +186,7 @@ def task_scan_timetables(revision_id: int, task_id: int) -> int:
         scanner.scan(revision.upload_file)
     except ValidationException as exc:
         logger.error(exc.message, exc_info=True)
-        task.to_error("dataset_validate", exc.code)
+        task.to_error("task_scan_timetables", exc.code)
         task.additional_info = exc.message
         task.save()
         raise PipelineException(exc.message) from exc

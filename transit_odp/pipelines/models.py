@@ -127,6 +127,8 @@ class DatasetETLTaskResult(TaskResult):
     DATASET_EXPIRED = "DATASET_EXPIRED"
     SUSPICIOUS_FILE = "SUSPICIOUS_FILE"
     NO_VALID_FILE_TO_PROCESS = "NO_VALID_FILE_TO_PROCESS"
+    ANTIVIRUS_FAILURE = "ANTIVIRUS_FAILURE"
+    AV_CONNECTION_ERROR = "AV_CONNECTION_ERROR"
 
     # This error code indicates an error that is likely not the user's fault
     SYSTEM_ERROR = "SYSTEM_ERROR"
@@ -134,6 +136,8 @@ class DatasetETLTaskResult(TaskResult):
     ALL_ERROR_CODES = frozenset(
         {
             SYSTEM_ERROR,
+            ANTIVIRUS_FAILURE,
+            AV_CONNECTION_ERROR,
             FILE_TOO_LARGE,
             ZIP_TOO_LARGE,
             NESTED_ZIP_FORBIDDEN,
