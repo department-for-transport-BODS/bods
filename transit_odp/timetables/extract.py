@@ -143,7 +143,12 @@ class TransXChangeExtractor:
         else:
             if "from_is_timing_status" in timing_links.columns:
                 timing_links.drop(
-                    columns=["from_is_timing_status", "to_is_timing_status", "run_time", "wait_time"],
+                    columns=[
+                        "from_is_timing_status",
+                        "to_is_timing_status",
+                        "run_time",
+                        "wait_time",
+                    ],
                     axis=1,
                     inplace=True,
                 )

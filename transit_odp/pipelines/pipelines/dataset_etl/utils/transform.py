@@ -73,7 +73,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
                 "from_stop_atco": "stop_atco",
                 "from_stop_sequence_number": "sequence_number",
                 "from_activity_id": "activity_id",
-                "from_is_timing_status": "is_timing_status"
+                "from_is_timing_status": "is_timing_status",
             }
         )
     )
@@ -113,7 +113,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
             "to_stop_atco": "stop_atco",
             "to_stop_sequence_number": "sequence_number",
             "to_activity_id": "activity_id",
-            "to_is_timing_status": "is_timing_status"
+            "to_is_timing_status": "is_timing_status",
         }
     )
     columns.remove("to_stop_atco")
@@ -869,7 +869,13 @@ def transform_flexible_service_pattern_to_service_links(flexible_service_pattern
     with default values for flexible stops
     """
     logger.info("Starting transform_flexible_service_pattern_to_service_links")
-    drop_columns = ["departure_time", "from_is_timing_status", "to_is_timing_status", "run_time", "wait_time"]
+    drop_columns = [
+        "departure_time",
+        "from_is_timing_status",
+        "to_is_timing_status",
+        "run_time",
+        "wait_time",
+    ]
     service_pattern_to_service_links = flexible_service_patterns.reset_index()
     service_pattern_to_service_links["departure_time"] = None
     service_pattern_to_service_links["from_is_timing_status"] = False

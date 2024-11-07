@@ -421,7 +421,9 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                     ["From", "TimingStatus"]
                 )
 
-                from_is_timing_status = get_timing_status_for_stop(from_stop_timing_status)
+                from_is_timing_status = get_timing_status_for_stop(
+                    from_stop_timing_status
+                )
                 to_is_timing_status = get_timing_status_for_stop(to_stop_timing_status)
 
                 timing_link_id = link["id"]
