@@ -141,9 +141,9 @@ class TransXChangeExtractor:
             operating_profiles = self.extract_operating_profiles()
             logger.debug("Finished extracting operating_profiles")
         else:
-            if "is_timing_status" in timing_links.columns:
+            if "from_is_timing_status" in timing_links.columns:
                 timing_links.drop(
-                    columns=["is_timing_status", "run_time", "wait_time"],
+                    columns=["from_is_timing_status", "to_is_timing_status", "run_time", "wait_time"],
                     axis=1,
                     inplace=True,
                 )

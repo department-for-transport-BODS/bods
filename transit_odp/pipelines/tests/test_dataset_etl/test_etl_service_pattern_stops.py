@@ -40,15 +40,22 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
         )
 
         self.assertIn("common_name", extracted.stop_points.columns)
-        self.assertIn("is_timing_status", extracted.timing_links.columns)
+        self.assertIn("from_is_timing_status", extracted.timing_links.columns)
+        self.assertIn("to_is_timing_status", extracted.timing_links.columns)
         self.assertIn("run_time", extracted.timing_links.columns)
         self.assertIn("wait_time", extracted.timing_links.columns)
         self.assertIn("run_time", extracted.vehicle_journeys.columns)
         self.assertIn("departure_time", extracted.vehicle_journeys.columns)
         self.assertEqual(
-            54,
+            27,
             extracted_timing_links[
-                extracted_timing_links["is_timing_status"] == True
+                extracted_timing_links["from_is_timing_status"] == True
+            ].shape[0],
+        )
+        self.assertEqual(
+            128,
+            extracted_timing_links[
+                extracted_timing_links["to_is_timing_status"] == False
             ].shape[0],
         )
         self.assertEqual(
@@ -86,9 +93,15 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
 
         self.assertNotIn("common_name", transformed.stop_points.columns)
         self.assertEqual(
-            2632,
+            1385,
             transformed_service_pattern_stops[
-                transformed_service_pattern_stops["is_timing_status"] == True
+                transformed_service_pattern_stops["from_is_timing_status"] == True
+            ].shape[0],
+        )
+        self.assertEqual(
+            1385,
+            transformed_service_pattern_stops[
+                transformed_service_pattern_stops["to_is_timing_status"] == True
             ].shape[0],
         )
         self.assertIn("18:15:00", departure_time_1["departure_time"].to_list())
@@ -143,15 +156,22 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
         )
 
         self.assertIn("common_name", extracted.stop_points.columns)
-        self.assertIn("is_timing_status", extracted.timing_links.columns)
+        self.assertIn("from_is_timing_status", extracted.timing_links.columns)
+        self.assertIn("to_is_timing_status", extracted.timing_links.columns)
         self.assertIn("run_time", extracted.timing_links.columns)
         self.assertIn("wait_time", extracted.timing_links.columns)
         self.assertIn("run_time", extracted.vehicle_journeys.columns)
         self.assertIn("departure_time", extracted.vehicle_journeys.columns)
         self.assertEqual(
-            45,
+            44,
             extracted_timing_links[
-                extracted_timing_links["is_timing_status"] == True
+                extracted_timing_links["from_is_timing_status"] == True
+            ].shape[0],
+        )
+        self.assertEqual(
+            44,
+            extracted_timing_links[
+                extracted_timing_links["to_is_timing_status"] == True
             ].shape[0],
         )
         self.assertEqual(
@@ -195,8 +215,14 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
         departure_time_2 = transformed_service_pattern_stops[condition_departure_time_2]
 
         self.assertNotIn("common_name", transformed.stop_points.columns)
+        # self.assertEqual(
+        #     341,
+        #     transformed_service_pattern_stops[
+        #         transformed_service_pattern_stops["from_is_timing_status"] == True
+        #     ].shape[0],
+        # )
         self.assertEqual(
-            352,
+            341,
             transformed_service_pattern_stops[
                 transformed_service_pattern_stops["is_timing_status"] == True
             ].shape[0],
@@ -256,7 +282,10 @@ class ETLSPSWithProvisionalStop(ExtractBaseTestCase):
         ]
 
         self.assertTrue(
-            (transformed.service_pattern_stops["is_timing_status"] == True).any()
+            (transformed.service_pattern_stops["from_is_timing_status"] == True).any()
+        )
+        self.assertTrue(
+            (transformed.service_pattern_stops["to_timing_status"] == True).any()
         )
         self.assertEqual(atco_codes, extracted_stops["atco_code"].to_list())
         self.assertEqual(common_names, extracted_stops["common_name"].to_list())
