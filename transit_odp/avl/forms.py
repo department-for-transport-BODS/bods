@@ -402,7 +402,6 @@ class AvlSubscriptionsSubscribeForm(GOVUKForm):
     operator_ref = forms.CharField(
         label=_("Operator ref (optional)"),
         required=False,
-        max_length=256,
         validators=[length_validator],
         help_text=_(
             "This is often the National Operator Code but please check the values used within the feeds you wish to subscribe to"
