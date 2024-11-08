@@ -497,15 +497,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
             departure_time = pd.to_timedelta(
                 vehicle_journey.get_element(["DepartureTime"]).text
             )
-            dead_run_time = vehicle_journey.get_element_or_none(
-                ["StartDeadRun", "PositioningLink", "RunTime"]
-            )
             vj_departure_time = departure_time
-            if dead_run_time:
-                parsed_dead_run_time = isodate.parse_duration(dead_run_time.text)
-                departure_time = departure_time + pd.to_timedelta(
-                    parsed_dead_run_time.total_seconds(), unit="s"
-                )
 
             journey_pattern_ref_element = vehicle_journey.get_element_or_none(
                 ["JourneyPatternRef"]
