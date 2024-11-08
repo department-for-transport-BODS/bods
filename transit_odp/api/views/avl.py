@@ -352,7 +352,6 @@ def _get_consumer_subscribe_api_response(url: str, query_params: QueryDict, body
     content = create_xml_error_response(error_msg, response_status)
 
     params = query_params.copy()
-    params['subscriptionId'] = uuid.uuid4()
 
     headers = {
         'x-api-key': params.pop(BODS_USER_API_KEY_PROPERTY)
