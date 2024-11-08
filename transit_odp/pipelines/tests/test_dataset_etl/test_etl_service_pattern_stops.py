@@ -95,13 +95,7 @@ class ETLSPSWithRunTimeInVehicleJourney(ExtractBaseTestCase):
         self.assertEqual(
             1385,
             transformed_service_pattern_stops[
-                transformed_service_pattern_stops["from_is_timing_status"] == True
-            ].shape[0],
-        )
-        self.assertEqual(
-            1385,
-            transformed_service_pattern_stops[
-                transformed_service_pattern_stops["to_is_timing_status"] == True
+                transformed_service_pattern_stops["is_timing_status"] == True
             ].shape[0],
         )
         self.assertIn("18:15:00", departure_time_1["departure_time"].to_list())
@@ -282,10 +276,7 @@ class ETLSPSWithProvisionalStop(ExtractBaseTestCase):
         ]
 
         self.assertTrue(
-            (transformed.service_pattern_stops["from_is_timing_status"] == True).any()
-        )
-        self.assertTrue(
-            (transformed.service_pattern_stops["to_timing_status"] == True).any()
+            (transformed.service_pattern_stops["is_timing_status"] == True).any()
         )
         self.assertEqual(atco_codes, extracted_stops["atco_code"].to_list())
         self.assertEqual(common_names, extracted_stops["common_name"].to_list())
