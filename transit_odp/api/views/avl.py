@@ -77,8 +77,9 @@ class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
             )
         except RequestException as e:
             status_code = e.response.status_code
-            error_messages = e.response.json()["errors"]
-            error_message = _(error_messages[0])
+
+            error_messages = e.response.json().get("errors", [])
+            error_message = _(error_messages[0]) if error_messages else "The service is unavailable, try again later"
 
             match status_code:
                 case 400:
@@ -106,9 +107,7 @@ class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
                 case 503:
                     form.add_error(None, error_message)
                 case _:
-                    form.add_error(
-                        None, "An unexpected error occurred, try again later"
-                    )
+                    form.add_error(None, error_message)
 
             return self.form_invalid(form)
 
