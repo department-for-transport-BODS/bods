@@ -353,7 +353,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 12))
+        self.assertEqual(extracted.timing_links.shape, (20, 13))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -364,7 +364,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "from_activity_id",
                 "to_activity_id",
                 "route_link_ref",
-                "is_timing_status",
+                "from_is_timing_status",
+                "to_is_timing_status",
                 "run_time",
                 "wait_time",
                 "from_stop_sequence_number",
@@ -497,7 +498,7 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
         )
 
         # assert timing_links
-        self.assertEqual(extracted.timing_links.shape, (20, 12))
+        self.assertEqual(extracted.timing_links.shape, (20, 13))
         self.assertCountEqual(
             list(extracted.timing_links.columns),
             [
@@ -508,7 +509,8 @@ class ExtractMetadataTestCase(ExtractBaseTestCase):
                 "from_activity_id",
                 "to_activity_id",
                 "route_link_ref",
-                "is_timing_status",
+                "from_is_timing_status",
+                "to_is_timing_status",
                 "run_time",
                 "wait_time",
                 "from_stop_sequence_number",
