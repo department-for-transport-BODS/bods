@@ -13,28 +13,6 @@
     <th scope="row" class="govuk-table__header">{% trans "TransXChange version" %}</th>
     <td class="govuk-table__cell" colspan="2">{{ object.transxchange_version }}</td>
   </tr>
-  <tr class="govuk-table__row">
-    {# This will probably go away soon because all non compliant datasets will be    #}
-    {# inactive. However the search page allows users to look for inactive datasets  #}
-    <th scope="row" class="govuk-table__header">
-      {% filter force_escape %}
-        {% trans "BODS compliant data" %}
-      {% endfilter %}
-      {% include "browse/snippets/help_modals/timetables_pti_compliance.html" %}
-    </th>
-    <td class="govuk-table__cell" colspan="2">
-      {# Hack to avoid 3rd td width accommodating "download validation report" #}
-      {# none of the other fields need it to be that large #}
-      <div class="side-by-side">
-        <span>{{ object.is_pti_compliant|yesno:"Yes,No" }}</span>
-        {% if show_pti_link %}
-          <a class="govuk-link" href="{% url 'revision-pti-csv' pk=view.kwargs.pk pk1=object.organisation_id host hosts.publish %}">
-            {% trans "Download validation report" %}
-          </a>
-        {% endif %}
-      </div>
-    </td>
-  </tr>
   {% if dq_score != None or new_dqs_report %}
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
