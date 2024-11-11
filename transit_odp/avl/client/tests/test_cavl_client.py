@@ -576,9 +576,7 @@ class TestCAVLSubscriptionService:
                 HTTPStatus.OK,
                 {},
                 does_not_raise(),
-                [
-                    "POST http://www.dummy.com/v1/siri-vm/subscriptions/ 200"
-                ],
+                ["POST http://www.dummy.com/v1/siri-vm/subscriptions/ 200"],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
