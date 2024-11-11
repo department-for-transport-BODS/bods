@@ -57,7 +57,9 @@ class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
             form.cleaned_data["data_feed_id_4"],
             form.cleaned_data["data_feed_id_5"],
         ]
-        data_feed_ids_set = set([data_feed_id for data_feed_id in data_feed_ids if data_feed_id])
+        data_feed_ids_set = set(
+            [data_feed_id for data_feed_id in data_feed_ids if data_feed_id]
+        )
 
         try:
             self.cavl_subscription_service.subscribe(
@@ -79,7 +81,11 @@ class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
             status_code = e.response.status_code
 
             error_messages = e.response.json().get("errors", [])
-            error_message = _(error_messages[0]) if error_messages else "The service is unavailable, try again later"
+            error_message = (
+                _(error_messages[0])
+                if error_messages
+                else "The service is unavailable, try again later"
+            )
 
             match status_code:
                 case 400:
@@ -181,13 +187,18 @@ class AVLGTFSRTApiView(views.APIView):
 
 class AVLConsumerSubscriptionsApiViewSet(viewsets.ViewSet):
     """APIViewSet for managing AVL consumer subscriptions."""
+
     cavl_subscription_service = CAVLSubscriptionService()
 
     permission_classes = (IsAuthenticated,)
 
     def create(self, request, format=None):
         """Subscribe AVL consumer subscription"""
-        api_key = request.user.auth_token.key if request.user.is_authenticated else request.query_params.get("api_key")
+        api_key = (
+            request.user.auth_token.key
+            if request.user.is_authenticated
+            else request.query_params.get("api_key")
+        )
         status_code = status.HTTP_200_OK
         content = ""
         subscription_id = uuid.uuid4()
@@ -216,7 +227,11 @@ class AVLConsumerSubscriptionsApiViewSet(viewsets.ViewSet):
 
     def list(self, request, format=None):
         """Get AVL consumer subscription details"""
-        api_key = request.user.auth_token.key if request.user.is_authenticated else request.query_params.get("api_key")
+        api_key = (
+            request.user.auth_token.key
+            if request.user.is_authenticated
+            else request.query_params.get("api_key")
+        )
         status_code = status.HTTP_200_OK
         content = ""
 
@@ -231,18 +246,25 @@ class AVLConsumerSubscriptionsApiViewSet(viewsets.ViewSet):
 
 class AVLConsumerSubscriptionApiViewSet(viewsets.ViewSet):
     """APIViewSet for managing AVL consumer subscriptions."""
+
     cavl_subscription_service = CAVLSubscriptionService()
 
     permission_classes = (IsAuthenticated,)
 
     def destroy(self, request, subscription_id=-1, format=None):
         """Unsubscribe AVL consumer subscription"""
-        api_key = request.user.auth_token.key if request.user.is_authenticated else request.query_params.get("api_key")
+        api_key = (
+            request.user.auth_token.key
+            if request.user.is_authenticated
+            else request.query_params.get("api_key")
+        )
         status_code = status.HTTP_200_OK
         content = ""
 
         try:
-            content = self.cavl_subscription_service.unsubscribe(api_key=api_key, subscription_id=subscription_id)
+            content = self.cavl_subscription_service.unsubscribe(
+                api_key=api_key, subscription_id=subscription_id
+            )
         except RequestException as e:
             status_code = e.response.status_code
             content = e.response.content
@@ -251,12 +273,18 @@ class AVLConsumerSubscriptionApiViewSet(viewsets.ViewSet):
 
     def list(self, request, subscription_id=-1, format=None):
         """Get AVL consumer subscription details"""
-        api_key = request.user.auth_token.key if request.user.is_authenticated else request.query_params.get("api_key")
+        api_key = (
+            request.user.auth_token.key
+            if request.user.is_authenticated
+            else request.query_params.get("api_key")
+        )
         status_code = status.HTTP_200_OK
         content = ""
 
         try:
-            content = self.cavl_subscription_service.get_subscription(api_key=api_key, subscription_id=subscription_id)
+            content = self.cavl_subscription_service.get_subscription(
+                api_key=api_key, subscription_id=subscription_id
+            )
         except RequestException as e:
             status_code = e.response.status_code
             content = e.response.content

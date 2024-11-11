@@ -325,7 +325,10 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
             return response.json()
 
     def get_subscription(self, api_key: str, subscription_id: int) -> dict:
-        api_url = self.AVL_CONSUMER_URL + f"/siri-vm/subscriptions?subscriptionId={subscription_id}"
+        api_url = (
+            self.AVL_CONSUMER_URL
+            + f"/siri-vm/subscriptions?subscriptionId={subscription_id}"
+        )
 
         headers = {
             "Content-Type": "application/json",

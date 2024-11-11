@@ -70,18 +70,22 @@ urlpatterns = [
     path("v1/datafeed/", AVLApiView.as_view(), name="avldatafeedapi"),
     path(
         "v1/siri-vm/subscriptions/",
-        AVLConsumerSubscriptionsApiViewSet.as_view({
-          "get": "list",
-          "post": "create",
-        }),
+        AVLConsumerSubscriptionsApiViewSet.as_view(
+            {
+                "get": "list",
+                "post": "create",
+            }
+        ),
         name="avlconsumersubscriptionsapi",
     ),
     path(
         "v1/siri-vm/subscriptions/<str:subscription_id>/",
-        AVLConsumerSubscriptionApiViewSet.as_view({
-          "get": "list",
-          "delete": "destroy",
-        }),
+        AVLConsumerSubscriptionApiViewSet.as_view(
+            {
+                "get": "list",
+                "delete": "destroy",
+            }
+        ),
         name="avlconsumersubscriptionapi",
     ),
     path("v1/siri-sx/", DisruptionsApiView.as_view(), name="disruptionsapi"),

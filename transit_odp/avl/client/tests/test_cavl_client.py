@@ -100,7 +100,7 @@ class TestCAVLService:
         response_mock,
         expected_result,
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/subscriptions"
@@ -165,7 +165,7 @@ class TestCAVLService:
         response_mock,
         expected_result,
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/subscriptions/1"
@@ -222,7 +222,7 @@ class TestCAVLService:
         response_mock,
         expected_result,
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/subscriptions/1"
@@ -308,7 +308,7 @@ class TestCAVLService:
         response_mock,
         expected_result: Optional[Feed],
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/subscriptions/1"
@@ -413,7 +413,7 @@ class TestCAVLService:
         response_mock,
         expected_result: list[Feed],
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/subscriptions"
@@ -488,7 +488,7 @@ class TestCAVLService:
         status: int,
         response_mock,
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/feed/verify"
@@ -555,7 +555,7 @@ class TestCAVLService:
         parameters: list,
         expected_log: list[str],
         expected_result,
-        **kwargs
+        **kwargs,
     ) -> None:
         url = DUMMY_AVL_PRODUCER_URL + endpoint
 
@@ -576,7 +576,9 @@ class TestCAVLSubscriptionService:
                 HTTPStatus.OK,
                 {},
                 does_not_raise(),
-                ["POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 200"],
+                [
+                    "POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 200"
+                ],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
@@ -615,7 +617,7 @@ class TestCAVLSubscriptionService:
         response_mock,
         expected_result,
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = f"{DUMMY_AVL_CONSUMER_URL}/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3"
@@ -686,7 +688,7 @@ class TestCAVLSubscriptionService:
         response_mock,
         expected_result,
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = f"{DUMMY_AVL_CONSUMER_URL}/siri-vm/subscriptions"
@@ -766,7 +768,7 @@ class TestCAVLSubscriptionService:
                 initial_termination_time="2034-12-12T00:00:00Z",
                 query_params=dict(
                     subscription_id="test_producer_subscription_id",
-                )
+                ),
             ),
             dict(
                 id="test_id_2",
@@ -788,7 +790,7 @@ class TestCAVLSubscriptionService:
                     producer_ref="test_producer_ref",
                     origin_ref="test_origin_ref",
                     destination_ref="test_destination_ref",
-                )
+                ),
             ),
         ]
 
@@ -827,7 +829,7 @@ class TestCAVLSubscriptionService:
         response_mock,
         expected_result: list[dict],
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_CONSUMER_URL + "/siri-vm/subscriptions"
@@ -847,40 +849,42 @@ class TestCAVLSubscriptionService:
         kwargs["m"].get(
             url,
             json=dict(
-                    id="test_id_1",
-                    name="test_name_1",
-                    subscriptionId="test_consumer_subscription_id_1",
-                    status="live",
-                    url="https://example.com",
-                    requestorRef="test_requestor_ref_1",
-                    updateInterval="PT20S",
-                    heartbeatInterval="PT30S",
-                    requestTimestamp="2024-12-12T00:00:00Z",
-                    initialTerminationTime="2034-12-12T00:00:00Z",
-                    queryParams=dict(
-                        subscriptionId="test_producer_subscription_id",
-                    ),
+                id="test_id_1",
+                name="test_name_1",
+                subscriptionId="test_consumer_subscription_id_1",
+                status="live",
+                url="https://example.com",
+                requestorRef="test_requestor_ref_1",
+                updateInterval="PT20S",
+                heartbeatInterval="PT30S",
+                requestTimestamp="2024-12-12T00:00:00Z",
+                initialTerminationTime="2034-12-12T00:00:00Z",
+                queryParams=dict(
+                    subscriptionId="test_producer_subscription_id",
                 ),
+            ),
             status_code=HTTPStatus.OK,
         )
 
-        result = cavl_subscription_service.get_subscription(api_key="api_key", subscription_id="test_id_1")
+        result = cavl_subscription_service.get_subscription(
+            api_key="api_key", subscription_id="test_id_1"
+        )
 
         assert result == dict(
-                id="test_id_1",
-                name="test_name_1",
-                subscription_id="test_subscription_id_1",
-                status="live",
-                url="https://example.com",
-                requestor_ref="test_requestor_ref_1",
-                update_interval="PT20S",
-                heartbeat_interval="PT30S",
-                request_timestamp="2024-12-12T00:00:00Z",
-                initial_termination_time="2034-12-12T00:00:00Z",
-                query_params=dict(
-                    subscription_id="test_producer_subscription_id",
-                )
-            )
+            id="test_id_1",
+            name="test_name_1",
+            subscription_id="test_subscription_id_1",
+            status="live",
+            url="https://example.com",
+            requestor_ref="test_requestor_ref_1",
+            update_interval="PT20S",
+            heartbeat_interval="PT30S",
+            request_timestamp="2024-12-12T00:00:00Z",
+            initial_termination_time="2034-12-12T00:00:00Z",
+            query_params=dict(
+                subscription_id="test_producer_subscription_id",
+            ),
+        )
 
         assert [rec.message for rec in caplog.records] == [
             "GET http://www.dummy.com/siri-vm/subscriptions/test_id_1 200"
@@ -926,13 +930,15 @@ class TestCAVLSubscriptionService:
         response_mock,
         expected_result: Optional[dict],
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_CONSUMER_URL + "/siri-vm/subscriptions/test_id_1"
         kwargs["m"].get(url, json=response_mock, status_code=status)
 
         with expected_result:
-            cavl_subscription_service.get_subscription(api_key="api_key", subscription_id="test_id_1")
+            cavl_subscription_service.get_subscription(
+                api_key="api_key", subscription_id="test_id_1"
+            )
 
         assert [rec.message for rec in caplog.records] == expected_message
