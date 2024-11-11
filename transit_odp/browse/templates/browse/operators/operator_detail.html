@@ -238,6 +238,7 @@
             </div>
           {% endif %}
         </div>
+        {% if is_avl_require_attention_active %}
         <div class="govuk-grid-column-one-half">
           <div class="feed-stat">
             <span class="feed-stat__value">{{ avl_services_require_attention_percentage }}%</span>
@@ -248,6 +249,7 @@
             </span>
           </div>
         </div>
+        {% endif %}
       </div>
       <ul class="govuk-list govuk-!-margin-top-5">
         <li>
@@ -264,6 +266,7 @@
             {% endfilter %}
           </a>
         </li>
+        {% if is_avl_require_attention_active %}
         <li class="govuk-!-margin-bottom-3">
           <a class="govuk-link" href={% url 'service-codes' pk1=object.id host hosts.publish %}>
             {% filter force_escape %}
@@ -271,6 +274,7 @@
             {% endfilter %}
           </a>
         </li>
+        {% endif %}
       </ul>
       {% if user.is_authenticated %}
         <p class="govuk-body-m govuk-!-padding-top-3">
