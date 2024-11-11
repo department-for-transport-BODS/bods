@@ -3,6 +3,7 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic.base import TemplateView
 from rest_framework.authtoken import views
+from waffle import flag_is_active
 
 from transit_odp.browse.views.base_views import (
     ApiSelectView,
@@ -16,11 +17,6 @@ from transit_odp.browse.views.contact_operator import (
 )
 from transit_odp.browse.views.data_catalogue import DownloadDataCatalogueView
 from transit_odp.browse.views.guide_me import BrowseGuideMeView
-from transit_odp.browse.views.local_authority import (
-    LocalAuthorityComplianceReportView,
-    LocalAuthorityDetailView,
-    LocalAuthorityView,
-)
 from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
 from transit_odp.common.views import CoachDownloadView, ComingSoonView, VersionView
 from transit_odp.users.urls import AGENT_PATHS
@@ -31,125 +27,279 @@ from transit_odp.users.views.account import (
     UserRedirectView,
 )
 
-urlpatterns = [
-    path("", view=BrowseHomeView.as_view(), name="home"),
-    path("search/", view=SearchSelectView.as_view(), name="select-data"),
-    path("downloads/", view=DownloadsView.as_view(), name="downloads"),
-    path("api/", view=ApiSelectView.as_view(), name="api-select"),
-    path(
-        "guide-me/",
-        view=BrowseGuideMeView.as_view(),
-        name="guide-me",
-    ),
-    path(
-        "catalogue/",
-        view=DownloadDataCatalogueView.as_view(),
-        name="download-catalogue",
-    ),
-    path(
-        "operators/",
-        include(
-            [
-                path("", view=OperatorsView.as_view(), name="operators"),
-                path(
-                    "<int:pk>/",
-                    include(
-                        [
-                            path(
-                                "",
-                                view=OperatorDetailView.as_view(),
-                                name="operator-detail",
-                            ),
-                            path(
-                                "contact/",
-                                view=ContactOperatorView.as_view(),
-                                name="contact-operator",
-                            ),
-                            path(
-                                "contact/success/",
-                                view=ContactOperatorFeedbackSuccessView.as_view(),
-                                name="feedback-operator-success",
-                            ),
-                        ]
-                    ),
-                ),
-            ]
+is_avl_require_attention_active = flag_is_active("", "is_avl_require_attention_active")
+if is_avl_require_attention_active:
+    from transit_odp.browse.views.local_authority import (
+        LocalAuthorityComplianceReportView,
+        LocalAuthorityDetailView,
+        LocalAuthorityView,
+    )
+else:
+    from transit_odp.browse.views.local_authority import (
+        LocalAuthorityDetailView,
+        LocalAuthorityExportView,
+        LocalAuthorityLineLevelExportView,
+        LocalAuthorityView,
+    )
+
+if is_avl_require_attention_active:
+    urlpatterns = [
+        path("", view=BrowseHomeView.as_view(), name="home"),
+        path("search/", view=SearchSelectView.as_view(), name="select-data"),
+        path("downloads/", view=DownloadsView.as_view(), name="downloads"),
+        path("api/", view=ApiSelectView.as_view(), name="api-select"),
+        path(
+            "guide-me/",
+            view=BrowseGuideMeView.as_view(),
+            name="guide-me",
         ),
-    ),
-    path(
-        "local-authority/",
-        include(
-            [
-                path("", view=LocalAuthorityView.as_view(), name="local-authority"),
-                path(
-                    "detail/",
-                    view=LocalAuthorityDetailView.as_view(),
-                    name="local-authority-detail",
-                ),
-                path(
-                    "line-level-export/",
-                    view=LocalAuthorityComplianceReportView.as_view(),
-                    name="local-authority-compliance-report",
-                ),
-            ]
+        path(
+            "catalogue/",
+            view=DownloadDataCatalogueView.as_view(),
+            name="download-catalogue",
         ),
-    ),
-    path(
-        "contact/",
-        TemplateView.as_view(template_name="pages/contact.html"),
-        name="contact",
-    ),
-    path(
-        "api/",
-        include(
-            [
-                path(
-                    "api-auth/",
-                    include("rest_framework.urls", namespace="rest_framework"),
-                ),
-                path("api-token-auth/", views.obtain_auth_token),
-                path("", include("transit_odp.api.urls", namespace="api")),
-            ]
-        ),
-    ),
-    path("timetable/", include("transit_odp.browse.urls.timetables")),
-    path("avl/", include("transit_odp.browse.urls.avl")),
-    path("fares/", include("transit_odp.browse.urls.fares")),
-    path("disruptions/", include("transit_odp.browse.urls.disruptions")),
-    path("account/", include("config.urls.allauth")),
-    path(
-        "account/",
-        include(
-            (  # 2-tuple of urls and 'app_name', this is required for namespace to work
+        path(
+            "operators/",
+            include(
                 [
-                    path("", view=MyAccountView.as_view(), name="home"),
-                    path("settings/", view=SettingsView.as_view(), name="settings"),
+                    path("", view=OperatorsView.as_view(), name="operators"),
                     path(
-                        "manage/", view=DatasetManageView.as_view(), name="feeds-manage"
+                        "<int:pk>/",
+                        include(
+                            [
+                                path(
+                                    "",
+                                    view=OperatorDetailView.as_view(),
+                                    name="operator-detail",
+                                ),
+                                path(
+                                    "contact/",
+                                    view=ContactOperatorView.as_view(),
+                                    name="contact-operator",
+                                ),
+                                path(
+                                    "contact/success/",
+                                    view=ContactOperatorFeedbackSuccessView.as_view(),
+                                    name="feedback-operator-success",
+                                ),
+                            ]
+                        ),
                     ),
-                    # Used to redirect back to user's account page
-                    path(
-                        "~redirect/", view=UserRedirectView.as_view(), name="redirect"
-                    ),
-                    path("agent/", include(AGENT_PATHS)),
-                ],
-                "users",
+                ]
             ),
-            namespace="users",
         ),
-    ),
-    # Invitation routes
-    path("invitations/", include("config.urls.invitations", namespace="invitations")),
-    # Guidance routes
-    path(
-        "guidance/",
-        include("transit_odp.guidance.urls.developers", namespace="guidance"),
-    ),
-    path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
-    path("version/", VersionView.as_view(), name="version"),
-    path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
-    path("django_axe/", include("django_axe.urls")),
-]
+        path(
+            "local-authority/",
+            include(
+                [
+                    path("", view=LocalAuthorityView.as_view(), name="local-authority"),
+                    path(
+                        "detail/",
+                        view=LocalAuthorityDetailView.as_view(),
+                        name="local-authority-detail",
+                    ),
+                    path(
+                        "line-level-export/",
+                        view=LocalAuthorityComplianceReportView.as_view(),
+                        name="local-authority-compliance-report",
+                    ),
+                ]
+            ),
+        ),
+        path(
+            "contact/",
+            TemplateView.as_view(template_name="pages/contact.html"),
+            name="contact",
+        ),
+        path(
+            "api/",
+            include(
+                [
+                    path(
+                        "api-auth/",
+                        include("rest_framework.urls", namespace="rest_framework"),
+                    ),
+                    path("api-token-auth/", views.obtain_auth_token),
+                    path("", include("transit_odp.api.urls", namespace="api")),
+                ]
+            ),
+        ),
+        path("timetable/", include("transit_odp.browse.urls.timetables")),
+        path("avl/", include("transit_odp.browse.urls.avl")),
+        path("fares/", include("transit_odp.browse.urls.fares")),
+        path("disruptions/", include("transit_odp.browse.urls.disruptions")),
+        path("account/", include("config.urls.allauth")),
+        path(
+            "account/",
+            include(
+                (  # 2-tuple of urls and 'app_name', this is required for namespace to work
+                    [
+                        path("", view=MyAccountView.as_view(), name="home"),
+                        path("settings/", view=SettingsView.as_view(), name="settings"),
+                        path(
+                            "manage/",
+                            view=DatasetManageView.as_view(),
+                            name="feeds-manage",
+                        ),
+                        # Used to redirect back to user's account page
+                        path(
+                            "~redirect/",
+                            view=UserRedirectView.as_view(),
+                            name="redirect",
+                        ),
+                        path("agent/", include(AGENT_PATHS)),
+                    ],
+                    "users",
+                ),
+                namespace="users",
+            ),
+        ),
+        # Invitation routes
+        path(
+            "invitations/", include("config.urls.invitations", namespace="invitations")
+        ),
+        # Guidance routes
+        path(
+            "guidance/",
+            include("transit_odp.guidance.urls.developers", namespace="guidance"),
+        ),
+        path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
+        path("version/", VersionView.as_view(), name="version"),
+        path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
+        path("django_axe/", include("django_axe.urls")),
+    ]
+else:
+    urlpatterns = [
+        path("", view=BrowseHomeView.as_view(), name="home"),
+        path("search/", view=SearchSelectView.as_view(), name="select-data"),
+        path("downloads/", view=DownloadsView.as_view(), name="downloads"),
+        path("api/", view=ApiSelectView.as_view(), name="api-select"),
+        path(
+            "guide-me/",
+            view=BrowseGuideMeView.as_view(),
+            name="guide-me",
+        ),
+        path(
+            "catalogue/",
+            view=DownloadDataCatalogueView.as_view(),
+            name="download-catalogue",
+        ),
+        path(
+            "operators/",
+            include(
+                [
+                    path("", view=OperatorsView.as_view(), name="operators"),
+                    path(
+                        "<int:pk>/",
+                        include(
+                            [
+                                path(
+                                    "",
+                                    view=OperatorDetailView.as_view(),
+                                    name="operator-detail",
+                                ),
+                                path(
+                                    "contact/",
+                                    view=ContactOperatorView.as_view(),
+                                    name="contact-operator",
+                                ),
+                                path(
+                                    "contact/success/",
+                                    view=ContactOperatorFeedbackSuccessView.as_view(),
+                                    name="feedback-operator-success",
+                                ),
+                            ]
+                        ),
+                    ),
+                ]
+            ),
+        ),
+        path(
+            "local-authority/",
+            include(
+                [
+                    path("", view=LocalAuthorityView.as_view(), name="local-authority"),
+                    path(
+                        "detail/",
+                        view=LocalAuthorityDetailView.as_view(),
+                        name="local-authority-detail",
+                    ),
+                    path(
+                        "export/",
+                        view=LocalAuthorityExportView.as_view(),
+                        name="local-authority-export",
+                    ),
+                    path(
+                        "line-level-export/",
+                        view=LocalAuthorityLineLevelExportView.as_view(),
+                        name="local-authority-line-level-export",
+                    ),
+                ]
+            ),
+        ),
+        path(
+            "contact/",
+            TemplateView.as_view(template_name="pages/contact.html"),
+            name="contact",
+        ),
+        path(
+            "api/",
+            include(
+                [
+                    path(
+                        "api-auth/",
+                        include("rest_framework.urls", namespace="rest_framework"),
+                    ),
+                    path("api-token-auth/", views.obtain_auth_token),
+                    path("", include("transit_odp.api.urls", namespace="api")),
+                ]
+            ),
+        ),
+        path("timetable/", include("transit_odp.browse.urls.timetables")),
+        path("avl/", include("transit_odp.browse.urls.avl")),
+        path("fares/", include("transit_odp.browse.urls.fares")),
+        path("disruptions/", include("transit_odp.browse.urls.disruptions")),
+        path("account/", include("config.urls.allauth")),
+        path(
+            "account/",
+            include(
+                (  # 2-tuple of urls and 'app_name', this is required for namespace to work
+                    [
+                        path("", view=MyAccountView.as_view(), name="home"),
+                        path("settings/", view=SettingsView.as_view(), name="settings"),
+                        path(
+                            "manage/",
+                            view=DatasetManageView.as_view(),
+                            name="feeds-manage",
+                        ),
+                        # Used to redirect back to user's account page
+                        path(
+                            "~redirect/",
+                            view=UserRedirectView.as_view(),
+                            name="redirect",
+                        ),
+                        path("agent/", include(AGENT_PATHS)),
+                    ],
+                    "users",
+                ),
+                namespace="users",
+            ),
+        ),
+        # Invitation routes
+        path(
+            "invitations/", include("config.urls.invitations", namespace="invitations")
+        ),
+        # Guidance routes
+        path(
+            "guidance/",
+            include("transit_odp.guidance.urls.developers", namespace="guidance"),
+        ),
+        path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
+        path("version/", VersionView.as_view(), name="version"),
+        path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
+        path("django_axe/", include("django_axe.urls")),
+    ]
+
 
 if settings.DEBUG:
     from django.conf.urls.static import static
