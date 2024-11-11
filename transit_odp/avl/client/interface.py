@@ -1,6 +1,6 @@
 from typing import Protocol, Sequence
 
-from transit_odp.avl.dataclasses import ConsumerSubscription, Feed, ValidationTaskResult
+from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
 
 
 class ICAVLService(Protocol):
@@ -150,23 +150,23 @@ class ICAVLSubscriptionService(Protocol):
         """
         ...
 
-    def get_subscriptions(self, api_key: str) -> Sequence[ConsumerSubscription]:
+    def get_subscriptions(self, api_key: str) -> Sequence[dict]:
         """
         Retrieves the consumer subscriptions with the given api_key
         Args:
             api_key: The BODS user API key
 
-        Returns: A collection of ConsumerSubscription objects
+        Returns: A collection of dict objects
         """
         ...
 
-    def get_subscription(self, api_key: str, subscription_id: int) -> ConsumerSubscription:
+    def get_subscription(self, api_key: str, subscription_id: int) -> dict:
         """
         Retrieves the consumer subscription with the given api_key and subscription_id
         Args:
             api_key: The BODS user API key
             subscription_id: The ID of the subscription
 
-        Returns: A ConsumerSubscription object given by `subscription_id`
+        Returns: A dict object given by `subscription_id`
         """
         ...

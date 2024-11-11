@@ -11,7 +11,7 @@ from django.utils import timezone
 from requests.exceptions import RequestException
 
 from transit_odp.avl.client.interface import ICAVLService, ICAVLSubscriptionService
-from transit_odp.avl.dataclasses import ConsumerSubscription, Feed, ValidationTaskResult
+from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
 
 
 logger = logging.getLogger(__name__)
@@ -186,7 +186,7 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
         api_key: str,
         name: str,
         url: str,
-        update_interval: int,
+        update_interval: str,
         subscription_id: str,
         data_feed_ids: str,
         bounding_box: str,
@@ -250,7 +250,7 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
         <RequestTimestamp>{request_timestamp}</RequestTimestamp>
         <VehicleMonitoringDetailLevel>normal</VehicleMonitoringDetailLevel>
       </VehicleMonitoringRequest>
-    <UpdateInterval>PT{update_interval}S</UpdateInterval>
+    <UpdateInterval>{update_interval}</UpdateInterval>
     </VehicleMonitoringSubscriptionRequest>
   </SubscriptionRequest>
 </Siri>
@@ -304,7 +304,7 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
 
             raise
 
-    def get_subscriptions(self, api_key: str) -> Sequence[ConsumerSubscription]:
+    def get_subscriptions(self, api_key: str) -> Sequence[dict]:
         api_url = self.AVL_CONSUMER_URL + "/siri-vm/subscriptions"
 
         headers = {
@@ -322,9 +322,9 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
             raise
 
         if response.status_code == HTTPStatus.OK:
-            return [ConsumerSubscription(**j) for j in response.json()]
+            return response.json()
 
-    def get_subscription(self, api_key: str, subscription_id: int) -> ConsumerSubscription:
+    def get_subscription(self, api_key: str, subscription_id: int) -> dict:
         api_url = self.AVL_CONSUMER_URL + f"/siri-vm/subscriptions?subscriptionId={subscription_id}"
 
         headers = {
@@ -342,4 +342,4 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
             raise
 
         if response.status_code == HTTPStatus.OK:
-            return ConsumerSubscription(**response.json())
+            return response.json()

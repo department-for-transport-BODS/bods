@@ -12,7 +12,7 @@ from requests.exceptions import RequestException, ConnectTimeout
 
 from transit_odp.avl.client import CAVLService
 from transit_odp.avl.client.cavl import CAVLSubscriptionService
-from transit_odp.avl.dataclasses import ConsumerSubscription, ConsumerSubscriptionQueryParams, Feed, ValidationTaskResult
+from transit_odp.avl.dataclasses import Feed, ValidationTaskResult
 from transit_odp.avl.enums import AVLFeedStatus
 
 CapLog = pytest.LogCaptureFixture
@@ -753,7 +753,7 @@ class TestCAVLSubscriptionService:
         result = cavl_subscription_service.get_subscriptions(api_key="api_key")
 
         assert result == [
-            ConsumerSubscription(
+            dict(
                 id="test_id_1",
                 name="test_name_1",
                 subscription_id="test_subscription_id_1",
@@ -764,11 +764,11 @@ class TestCAVLSubscriptionService:
                 heartbeat_interval="PT30S",
                 request_timestamp="2024-12-12T00:00:00Z",
                 initial_termination_time="2034-12-12T00:00:00Z",
-                query_params=ConsumerSubscriptionQueryParams(
+                query_params=dict(
                     subscription_id="test_producer_subscription_id",
                 )
             ),
-            ConsumerSubscription(
+            dict(
                 id="test_id_2",
                 name="test_name_2",
                 subscription_id="test_subscription_id_2",
@@ -779,7 +779,7 @@ class TestCAVLSubscriptionService:
                 heartbeat_interval="PT30S",
                 request_timestamp="2024-12-12T00:00:00Z",
                 initial_termination_time="2034-12-12T00:00:00Z",
-                query_params=ConsumerSubscriptionQueryParams(
+                query_params=dict(
                     subscription_id="test_producer_subscription_id",
                     bounding_box="test_bounding_box",
                     operator_ref="test_operator_ref",
@@ -825,7 +825,7 @@ class TestCAVLSubscriptionService:
         cavl_subscription_service: CAVLSubscriptionService,
         status: int,
         response_mock,
-        expected_result: list[ConsumerSubscription],
+        expected_result: list[dict],
         expected_message: list[str],
         **kwargs
     ) -> None:
@@ -866,7 +866,7 @@ class TestCAVLSubscriptionService:
 
         result = cavl_subscription_service.get_subscription(api_key="api_key", subscription_id="test_id_1")
 
-        assert result == ConsumerSubscription(
+        assert result == dict(
                 id="test_id_1",
                 name="test_name_1",
                 subscription_id="test_subscription_id_1",
@@ -877,7 +877,7 @@ class TestCAVLSubscriptionService:
                 heartbeat_interval="PT30S",
                 request_timestamp="2024-12-12T00:00:00Z",
                 initial_termination_time="2034-12-12T00:00:00Z",
-                query_params=ConsumerSubscriptionQueryParams(
+                query_params=dict(
                     subscription_id="test_producer_subscription_id",
                 )
             )
@@ -924,7 +924,7 @@ class TestCAVLSubscriptionService:
         cavl_subscription_service: CAVLSubscriptionService,
         status: int,
         response_mock,
-        expected_result: Optional[ConsumerSubscription],
+        expected_result: Optional[dict],
         expected_message: list[str],
         **kwargs
     ) -> None:
