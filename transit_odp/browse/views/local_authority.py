@@ -237,9 +237,9 @@ class LocalAuthorityView(BaseListView):
             context["total_in_scope_in_season_services"] = len(
                 get_in_scope_in_season_lta_service_numbers(lta_list)
             )
-            context["total_services_requiring_attention"] = (
-                get_requires_attention_data_lta_line_level_length(lta_list)
-            )
+            context[
+                "total_services_requiring_attention"
+            ] = get_requires_attention_data_lta_line_level_length(lta_list)
 
             try:
                 context["services_require_attention_percentage"] = round(
@@ -317,9 +317,9 @@ class LocalAuthorityDetailView(BaseDetailView):
             get_in_scope_in_season_lta_service_numbers(lta_objs)
         )
 
-        context["total_services_requiring_attention"] = (
-            get_requires_attention_data_lta_line_level_length(lta_objs)
-        )
+        context[
+            "total_services_requiring_attention"
+        ] = get_requires_attention_data_lta_line_level_length(lta_objs)
 
         try:
             context["services_require_attention_percentage"] = round(
@@ -491,9 +491,9 @@ if is_avl_require_attention_active:
                 str: pipe "|" seprated string of UI LTA's
             """
             if ui_ltas_dict_key not in self.otc_service_traveline_region:
-                self.otc_service_traveline_region[ui_ltas_dict_key] = (
-                    get_service_traveline_regions(ui_ltas)
-                )
+                self.otc_service_traveline_region[
+                    ui_ltas_dict_key
+                ] = get_service_traveline_regions(ui_ltas)
             return self.otc_service_traveline_region[ui_ltas_dict_key]
 
         def get_otc_ui_lta(
@@ -533,17 +533,16 @@ if is_avl_require_attention_active:
                 bool: Returns True is the atco code passed belongs to an enlish region
             """
             if ui_ltas_dict_key not in self.otc_traveline_region_status:
-                self.otc_traveline_region_status[ui_ltas_dict_key] = (
-                    not naptan_adminarea_df.empty
-                    and any(
-                        (
-                            naptan_adminarea_df[
-                                naptan_adminarea_df["ui_lta_id"].isin(
-                                    [ui_lta.id for ui_lta in ui_ltas]
-                                )
-                            ]
-                        )["is_english_region"]
-                    )
+                self.otc_traveline_region_status[
+                    ui_ltas_dict_key
+                ] = not naptan_adminarea_df.empty and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["ui_lta_id"].isin(
+                                [ui_lta.id for ui_lta in ui_ltas]
+                            )
+                        ]
+                    )["is_english_region"]
                 )
             return self.otc_traveline_region_status[ui_ltas_dict_key]
 
@@ -563,15 +562,14 @@ if is_avl_require_attention_active:
                 bool: Returns True is the atco code passed belongs to an enlish region
             """
             if atco_code not in self.weca_traveline_region_status:
-                self.weca_traveline_region_status[atco_code] = (
-                    not naptan_adminarea_df.empty
-                    and any(
-                        (
-                            naptan_adminarea_df[
-                                naptan_adminarea_df["atco_code"] == atco_code
-                            ]
-                        )["is_english_region"]
-                    )
+                self.weca_traveline_region_status[
+                    atco_code
+                ] = not naptan_adminarea_df.empty and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["atco_code"] == atco_code
+                        ]
+                    )["is_english_region"]
                 )
             return self.weca_traveline_region_status[atco_code]
 
@@ -815,9 +813,9 @@ else:
                 str: pipe "|" seprated string of UI LTA's
             """
             if ui_ltas_dict_key not in self.otc_service_traveline_region:
-                self.otc_service_traveline_region[ui_ltas_dict_key] = (
-                    get_service_traveline_regions(ui_ltas)
-                )
+                self.otc_service_traveline_region[
+                    ui_ltas_dict_key
+                ] = get_service_traveline_regions(ui_ltas)
             return self.otc_service_traveline_region[ui_ltas_dict_key]
 
         def get_otc_ui_lta(
@@ -856,17 +854,16 @@ else:
                 bool: Returns True is the atco code passed belongs to an enlish region
             """
             if ui_ltas_dict_key not in self.otc_traveline_region_status:
-                self.otc_traveline_region_status[ui_ltas_dict_key] = (
-                    not naptan_adminarea_df.empty
-                    and any(
-                        (
-                            naptan_adminarea_df[
-                                naptan_adminarea_df["ui_lta_id"].isin(
-                                    [ui_lta.id for ui_lta in ui_ltas]
-                                )
-                            ]
-                        )["is_english_region"]
-                    )
+                self.otc_traveline_region_status[
+                    ui_ltas_dict_key
+                ] = not naptan_adminarea_df.empty and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["ui_lta_id"].isin(
+                                [ui_lta.id for ui_lta in ui_ltas]
+                            )
+                        ]
+                    )["is_english_region"]
                 )
             return self.otc_traveline_region_status[ui_ltas_dict_key]
 
@@ -886,15 +883,14 @@ else:
                 bool: Returns True is the atco code passed belongs to an enlish region
             """
             if atco_code not in self.weca_traveline_region_status:
-                self.weca_traveline_region_status[atco_code] = (
-                    not naptan_adminarea_df.empty
-                    and any(
-                        (
-                            naptan_adminarea_df[
-                                naptan_adminarea_df["atco_code"] == atco_code
-                            ]
-                        )["is_english_region"]
-                    )
+                self.weca_traveline_region_status[
+                    atco_code
+                ] = not naptan_adminarea_df.empty and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["atco_code"] == atco_code
+                        ]
+                    )["is_english_region"]
                 )
             return self.weca_traveline_region_status[atco_code]
 
@@ -1083,9 +1079,9 @@ else:
                 str: pipe "|" seprated string of UI LTA's
             """
             if ui_ltas_dict_key not in self.otc_service_traveline_region:
-                self.otc_service_traveline_region[ui_ltas_dict_key] = (
-                    get_service_traveline_regions(ui_ltas)
-                )
+                self.otc_service_traveline_region[
+                    ui_ltas_dict_key
+                ] = get_service_traveline_regions(ui_ltas)
             return self.otc_service_traveline_region[ui_ltas_dict_key]
 
         def get_otc_ui_lta(
@@ -1124,17 +1120,16 @@ else:
                 bool: Returns True is the atco code passed belongs to an enlish region
             """
             if ui_ltas_dict_key not in self.otc_traveline_region_status:
-                self.otc_traveline_region_status[ui_ltas_dict_key] = (
-                    not naptan_adminarea_df.empty
-                    and any(
-                        (
-                            naptan_adminarea_df[
-                                naptan_adminarea_df["ui_lta_id"].isin(
-                                    [ui_lta.id for ui_lta in ui_ltas]
-                                )
-                            ]
-                        )["is_english_region"]
-                    )
+                self.otc_traveline_region_status[
+                    ui_ltas_dict_key
+                ] = not naptan_adminarea_df.empty and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["ui_lta_id"].isin(
+                                [ui_lta.id for ui_lta in ui_ltas]
+                            )
+                        ]
+                    )["is_english_region"]
                 )
             return self.otc_traveline_region_status[ui_ltas_dict_key]
 
@@ -1154,15 +1149,14 @@ else:
                 bool: Returns True is the atco code passed belongs to an enlish region
             """
             if atco_code not in self.weca_traveline_region_status:
-                self.weca_traveline_region_status[atco_code] = (
-                    not naptan_adminarea_df.empty
-                    and any(
-                        (
-                            naptan_adminarea_df[
-                                naptan_adminarea_df["atco_code"] == atco_code
-                            ]
-                        )["is_english_region"]
-                    )
+                self.weca_traveline_region_status[
+                    atco_code
+                ] = not naptan_adminarea_df.empty and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["atco_code"] == atco_code
+                        ]
+                    )["is_english_region"]
                 )
             return self.weca_traveline_region_status[atco_code]
 
