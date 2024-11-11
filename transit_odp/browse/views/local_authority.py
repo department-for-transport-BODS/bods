@@ -39,8 +39,6 @@ from transit_odp.publish.requires_attention import (
     is_stale,
 )
 
-is_avl_require_attention_active = flag_is_active("", "is_avl_require_attention_active")
-
 STALENESS_STATUS = [
     "42 day look ahead is incomplete",
     "Service hasn't been updated within a year",
