@@ -209,12 +209,6 @@ class ETLSPSWithRunTimeInJourney(ExtractBaseTestCase):
         departure_time_2 = transformed_service_pattern_stops[condition_departure_time_2]
 
         self.assertNotIn("common_name", transformed.stop_points.columns)
-        # self.assertEqual(
-        #     341,
-        #     transformed_service_pattern_stops[
-        #         transformed_service_pattern_stops["from_is_timing_status"] == True
-        #     ].shape[0],
-        # )
         self.assertEqual(
             341,
             transformed_service_pattern_stops[
