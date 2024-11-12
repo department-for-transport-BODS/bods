@@ -40,16 +40,16 @@
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
               <th scope="col" class="govuk-table__header">Subscription name</th>
-              <th scope="col" class="govuk-table__header" style="max-width: 250px;">Data filters</th>
+              <th scope="col" class="govuk-table__header">Data filters</th>
               <th scope="col" class="govuk-table__header">Status</th>
               <th scope="col" class="govuk-table__header">Set up date</th>
             </tr>
             </thead>
+            <tbody>
             {% for subscription in active_subscriptions %}
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">{{ subscription.name }}</td>
-                <td class="govuk-table__cell"
-                    style="max-width: 250px;">{{ subscription.data_filters|linebreaksbr }}</td>
+                <td class="govuk-table__cell">{{ subscription.data_filters|linebreaksbr }}</td>
                 <td class="govuk-table__cell">{{ subscription.status }}</td>
                 <td class="govuk-table__cell">{{ subscription.set_up_date }}</td>
               </tr>
@@ -66,16 +66,16 @@
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
               <th scope="col" class="govuk-table__header">Subscription name</th>
-              <th scope="col" class="govuk-table__header" style="max-width: 250px;">Data filters</th>
+              <th scope="col" class="govuk-table__header">Data filters</th>
               <th scope="col" class="govuk-table__header">Status</th>
               <th scope="col" class="govuk-table__header">Set up date</th>
             </tr>
             </thead>
+            <tbody>
             {% for subscription in inactive_subscriptions %}
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">{{ subscription.name }}</td>
-                <td class="govuk-table__cell"
-                    style="max-width: 250px;">{{ subscription.data_filters|linebreaksbr }}</td>
+                <td class="govuk-table__cell">{{ subscription.data_filters|linebreaksbr }}</td>
                 <td class="govuk-table__cell">{{ subscription.status }}</td>
                 <td class="govuk-table__cell">{{ subscription.set_up_date }}</td>
               </tr>
