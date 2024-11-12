@@ -17,6 +17,8 @@ from transit_odp.api.views import (
 )
 from transit_odp.api.views.avl import (
     AVLManageSubscriptionsView,
+    AVLConsumerSubscriptionsApiViewSet,
+    AVLConsumerSubscriptionApiViewSet,
     AVLSubscriptionsSubscribeView,
     AVLSubscriptionsSubscribeSuccessView,
 )
@@ -42,7 +44,7 @@ disruptions_views = get_swagger_view(title="Disruption Data API")
 
 urlpatterns = [
     path("timetable-openapi/", TimetablesApiView.as_view(), name="timetableopenapi"),
-    path("buslocation-api", AVLApiServiceView.as_view(), name="buslocation-api"),
+    path("buslocation-api/", AVLApiServiceView.as_view(), name="buslocation-api"),
     path(
         "buslocation-api/openapi/",
         AVLOpenApiView.as_view(),
@@ -59,7 +61,7 @@ urlpatterns = [
         name="buslocation-manage-subscriptions",
     ),
     path(
-        "buslocation-api/subscribe/success",
+        "buslocation-api/subscribe/success/",
         AVLSubscriptionsSubscribeSuccessView.as_view(),
         name="buslocation-subscribe-success",
     ),
@@ -72,6 +74,26 @@ urlpatterns = [
     path("app/", include("transit_odp.api.app.urls")),
     path("v1/", include(router_v1.urls)),
     path("v1/datafeed/", AVLApiView.as_view(), name="avldatafeedapi"),
+    path(
+        "v1/siri-vm/subscriptions/",
+        AVLConsumerSubscriptionsApiViewSet.as_view(
+            {
+                "get": "list",
+                "post": "create",
+            }
+        ),
+        name="avlconsumersubscriptionsapi",
+    ),
+    path(
+        "v1/siri-vm/subscriptions/<str:subscription_id>/",
+        AVLConsumerSubscriptionApiViewSet.as_view(
+            {
+                "get": "list",
+                "delete": "destroy",
+            }
+        ),
+        name="avlconsumersubscriptionapi",
+    ),
     path("v1/siri-sx/", DisruptionsApiView.as_view(), name="disruptionsapi"),
     path(
         "v1/datafeed/<int:pk>/", AVLDetailApiView.as_view(), name="avldetaildatafeedapi"

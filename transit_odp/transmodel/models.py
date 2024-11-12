@@ -103,6 +103,23 @@ class VehicleJourney(models.Model):
         return f"{self.id}, timing_pattern: {self.id}, {start_time_str}"
 
 
+class Tracks(models.Model):
+    from_atco_code = models.CharField(max_length=255)
+    to_atco_code = models.CharField(max_length=255)
+    geometry = models.LineStringField(null=True, blank=True)
+    distance = models.IntegerField(blank=True, null=True)
+
+
+class TracksVehicleJourney(models.Model):
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney,
+        on_delete=models.CASCADE,
+        related_name="vehicle_journey_tracks",
+    )
+    tracks = models.ForeignKey(Tracks, on_delete=models.CASCADE, related_name="tracks")
+    sequence_number = models.IntegerField(blank=True, null=True)
+
+
 class StopActivity(models.Model):
     name = models.CharField(max_length=255)
     is_pickup = models.BooleanField(default=False)

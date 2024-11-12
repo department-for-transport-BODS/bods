@@ -135,11 +135,38 @@ class ICAVLSubscriptionService(Protocol):
         """
         ...
 
+    def unsubscribe(
+        self,
+        api_key: str,
+        subscription_id: str,
+    ) -> None:
+        """
+        Unsubscribes a subscription in the AVL consumer subscription service.
+        Args:
+            api_key: The BODS user API key
+            subscription_id: An ID for the subscription
+
+        Returns: Boolean indicating the subscription was unsubscribed successfully
+        """
+        ...
+
     def get_subscriptions(self, api_key: str) -> Sequence[dict]:
         """
         Retrieves the consumer subscriptions with the given api_key
         Args:
             api_key: The BODS user API key
+
         Returns: A collection of dict objects
+        """
+        ...
+
+    def get_subscription(self, api_key: str, subscription_id: int) -> dict:
+        """
+        Retrieves the consumer subscription with the given api_key and subscription_id
+        Args:
+            api_key: The BODS user API key
+            subscription_id: The ID of the subscription
+
+        Returns: A dict object given by `subscription_id`
         """
         ...

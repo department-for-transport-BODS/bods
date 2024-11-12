@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import QueryDict
 from django.views.generic import TemplateView
 from requests import RequestException
-from rest_framework import status, views
+from rest_framework import status, views, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from transit_odp.avl.client.cavl import CAVLSubscriptionService
@@ -29,16 +29,7 @@ from transit_odp.organisation.models import Dataset
 
 logger = logging.getLogger(__name__)
 
-API_KEY = "api_key"
-PARAMETERS = (
-    "boundingBox",
-    "destinationRef",
-    "lineRef",
-    "operatorRef",
-    "originRef",
-    "producerRef",
-    "vehicleRef",
-)
+BODS_USER_API_KEY_PROPERTY = "api_key"
 
 
 class AVLApiServiceView(LoginRequiredMixin, TemplateView):
@@ -165,7 +156,7 @@ class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
                 api_key=api_key,
                 name=form.cleaned_data["name"],
                 url=form.cleaned_data["url"],
-                update_interval=form.cleaned_data["update_interval"],
+                update_interval=f"PT{form.cleaned_data['update_interval']}S",
                 subscription_id=subscription_id,
                 data_feed_ids=",".join(data_feed_ids_set),
                 bounding_box=form.cleaned_data["bounding_box"],
@@ -284,6 +275,113 @@ class AVLGTFSRTApiView(views.APIView):
         return Response(content, status=status_code)
 
 
+class AVLConsumerSubscriptionsApiViewSet(viewsets.ViewSet):
+    """APIViewSet for managing AVL consumer subscriptions."""
+
+    cavl_subscription_service = CAVLSubscriptionService()
+
+    permission_classes = (IsAuthenticated,)
+
+    def create(self, request, format=None):
+        """Subscribe AVL consumer subscription"""
+        api_key = (
+            request.user.auth_token.key
+            if request.user.is_authenticated
+            else request.query_params.get("api_key")
+        )
+        status_code = status.HTTP_200_OK
+        content = ""
+        subscription_id = uuid.uuid4()
+
+        try:
+            content = self.cavl_subscription_service.subscribe(
+                api_key=api_key,
+                name=request.data.get("name"),
+                url=request.data.get("url"),
+                update_interval=request.data.get("updateInterval"),
+                subscription_id=subscription_id,
+                data_feed_ids=",".join(request.data.get("dataFeedIds", [])),
+                bounding_box=",".join(map(str, request.data.get("bounding_box", []))),
+                operator_ref=",".join(request.data.get("operatorRef", [])),
+                vehicle_ref=request.data.get("vehicleRef"),
+                line_ref=request.data.get("lineRef"),
+                producer_ref=request.data.get("producerRef"),
+                origin_ref=request.data.get("originRef"),
+                destination_ref=request.data.get("destinationRef"),
+            )
+        except RequestException as e:
+            status_code = e.response.status_code
+            content = e.response.content
+
+        return Response(content, status=status_code)
+
+    def list(self, request, format=None):
+        """Get AVL consumer subscription details"""
+        api_key = (
+            request.user.auth_token.key
+            if request.user.is_authenticated
+            else request.query_params.get("api_key")
+        )
+        status_code = status.HTTP_200_OK
+        content = ""
+
+        try:
+            content = self.cavl_subscription_service.get_subscriptions(api_key=api_key)
+        except RequestException as e:
+            status_code = e.response.status_code
+            content = e.response.content
+
+        return Response(content, status=status_code)
+
+
+class AVLConsumerSubscriptionApiViewSet(viewsets.ViewSet):
+    """APIViewSet for managing AVL consumer subscriptions."""
+
+    cavl_subscription_service = CAVLSubscriptionService()
+
+    permission_classes = (IsAuthenticated,)
+
+    def destroy(self, request, subscription_id=-1, format=None):
+        """Unsubscribe AVL consumer subscription"""
+        api_key = (
+            request.user.auth_token.key
+            if request.user.is_authenticated
+            else request.query_params.get("api_key")
+        )
+        status_code = status.HTTP_200_OK
+        content = ""
+
+        try:
+            content = self.cavl_subscription_service.unsubscribe(
+                api_key=api_key, subscription_id=subscription_id
+            )
+        except RequestException as e:
+            status_code = e.response.status_code
+            content = e.response.content
+
+        return Response(content, status=status_code)
+
+    def list(self, request, subscription_id=-1, format=None):
+        """Get AVL consumer subscription details"""
+        api_key = (
+            request.user.auth_token.key
+            if request.user.is_authenticated
+            else request.query_params.get("api_key")
+        )
+        status_code = status.HTTP_200_OK
+        content = ""
+
+        try:
+            content = self.cavl_subscription_service.get_subscription(
+                api_key=api_key, subscription_id=subscription_id
+            )
+        except RequestException as e:
+            status_code = e.response.status_code
+            content = e.response.content
+
+        return Response(content, status=status_code)
+
+
 def _get_gtfs_rt_response(url: str, query_params: QueryDict):
     """Gets GTFS RT response from CAVL consumer api.
 
@@ -300,7 +398,7 @@ def _get_gtfs_rt_response(url: str, query_params: QueryDict):
     content = f"{response_status}: {error_msg}."
 
     params = query_params.copy()
-    params.pop(API_KEY, None)
+    params.pop(BODS_USER_API_KEY_PROPERTY, None)
 
     try:
         response = requests.get(url, params=params, timeout=60)
@@ -330,10 +428,20 @@ def _get_consumer_api_response(url: str, query_params: QueryDict):
     content = create_xml_error_response(error_msg, response_status)
 
     params = query_params.copy()
-    params.pop(API_KEY, None)
+    params.pop(BODS_USER_API_KEY_PROPERTY, None)
+
+    ALLOWED_PARAMETERS = (
+        "boundingBox",
+        "destinationRef",
+        "lineRef",
+        "operatorRef",
+        "originRef",
+        "producerRef",
+        "vehicleRef",
+    )
 
     for key in params:
-        if key not in PARAMETERS:
+        if key not in ALLOWED_PARAMETERS:
             error_msg = f"Parameter {key} is not valid."
             content = create_xml_error_response(error_msg, response_status)
             return content, response_status
