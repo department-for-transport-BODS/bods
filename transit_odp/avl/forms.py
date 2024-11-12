@@ -305,7 +305,7 @@ class AvlSubscriptionsSubscribeForm(GOVUKForm):
 
     length_validator = RegexValidator(regex=r"^.{,256}$", code="invalid")
     bounding_box_validator = RegexValidator(
-        regex=r"^[0-9]+(,[0-9]+){3}$", code="invalid"
+        regex=r"^-?[0-9]+(\.[0-9]+)?(,-?[0-9]+(\.[0-9]+)?){3}$", code="invalid"
     )
 
     name = forms.CharField(
