@@ -83,7 +83,6 @@ class TransXChangeTransformer:
         stop_points = stop_points.loc[
             ~stop_points.index.isin(flexible_stop_points.index)
         ]
-
         # Create missing route information
         route_links = pd.DataFrame()
         if not timing_links.empty:

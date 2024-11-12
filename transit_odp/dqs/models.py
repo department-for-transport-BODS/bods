@@ -35,11 +35,7 @@ class Report(models.Model):
         """
         existing_report = cls.objects.filter(revision=revision).first()
         if existing_report:
-            existing_report.created = now()
-            existing_report.file_name = ""
-            existing_report.status = ReportStatus.PIPELINE_PENDING.value
-            existing_report.save()
-            return existing_report
+            existing_report.delete()
 
         new_report = cls(
             file_name="", revision=revision, status=ReportStatus.PIPELINE_PENDING.value
