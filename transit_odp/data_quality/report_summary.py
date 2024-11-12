@@ -212,8 +212,16 @@ class Summary(BaseModel):
                     "direction",
                     "stop_name",
                     "is_suppressed",
+                    "service_code",
+                    "line_name",
                 ]
             ]
+
+            df["unique_row"] = df.apply(
+                lambda row: f"{row['journey_start_time']}_{row['service_code']}_{row['line_name']}",
+                axis=1,
+            )
+
             df.drop_duplicates(inplace=True)
             count = len(df)
             for level in Level:
@@ -225,7 +233,7 @@ class Summary(BaseModel):
             df = (
                 df.groupby(["observation", "category", "importance"])
                 .agg(
-                    number_of_services_affected=("journey_start_time", "size"),
+                    number_of_services_affected=("unique_row", "size"),
                     number_of_suppressed_observation=(
                         "is_suppressed",
                         lambda is_suppressed_series: (
