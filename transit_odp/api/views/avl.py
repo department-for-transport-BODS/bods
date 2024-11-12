@@ -19,9 +19,11 @@ from django.http import HttpResponseRedirect
 from django_hosts import reverse
 import config.hosts
 from rest_framework.authtoken.models import Token
+from datetime import datetime
 
 from transit_odp.api.renders import BinRenderer, ProtoBufRenderer, XMLRender
 from transit_odp.api.utils.response_utils import create_xml_error_response
+from transit_odp.common.tables import GovUkTable
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
 
@@ -36,6 +38,94 @@ class AVLApiServiceView(LoginRequiredMixin, TemplateView):
 
 class AVLOpenApiView(LoginRequiredMixin, TemplateView):
     template_name = "swagger_ui/avl.html"
+
+
+def _format_query_params(query_params):
+    formatted_query_params = []
+
+    if "subscriptionId" in query_params:
+        subscription_ids = ", ".join(query_params["subscriptionId"])
+        formatted_query_params.append(f"Subscription Ids: {subscription_ids}")
+
+    if "boundingBox" in query_params:
+        bounding_box = ", ".join(map(str, query_params["boundingBox"]))
+        formatted_query_params.append(f"Bounding Box: {bounding_box}")
+
+    if "operatorRef" in query_params:
+        operator_ref = ", ".join(query_params["operatorRef"])
+        formatted_query_params.append(f"Operator Ref: {operator_ref}")
+
+    if "lineRef" in query_params:
+        line_ref = query_params["lineRef"]
+        formatted_query_params.append(f"Line Ref: {line_ref}")
+
+    if "producerRef" in query_params:
+        producer_ref = query_params["producerRef"]
+        formatted_query_params.append(f"Producer Ref: {producer_ref}")
+
+    if "vehicleRef" in query_params:
+        vehicle_ref = query_params["vehicleRef"]
+        formatted_query_params.append(f"Vehicle Ref: {vehicle_ref}")
+
+    if "originRef" in query_params:
+        origin_ref = query_params["originRef"]
+        formatted_query_params.append(f"Origin Ref: {origin_ref}")
+
+    if "destinationRef" in query_params:
+        destination_ref = query_params["destinationRef"]
+        formatted_query_params.append(f"Destination Ref: {destination_ref}")
+
+    return "; \n ".join(formatted_query_params)
+
+
+class AVLManageSubscriptionsView(LoginRequiredMixin, TemplateView):
+    template_name = "api/avl_subscriptions_manage.html"
+    cavl_subscription_service = CAVLSubscriptionService()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        api_key = Token.objects.get_or_create(user=self.request.user)[0].key
+
+        content = None
+        try:
+            content = self.cavl_subscription_service.get_subscriptions(api_key=api_key)
+        except RequestException:
+            context["error"] = "true"
+
+        if content is None:
+            context["error"] = "true"
+
+        else:
+            status_dict = {
+                "live": "Active",
+                "error": "Error",
+                "inactive": "Inactive",
+            }
+
+            formatted_subscriptions = [
+                {
+                    "name": subscription["name"],
+                    "data_filters": _format_query_params(subscription["queryParams"]),
+                    "status": status_dict[subscription["status"]],
+                    "set_up_date": datetime.strptime(
+                        subscription["requestTimestamp"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                    )
+                    if subscription["requestTimestamp"]
+                    else "",
+                }
+                for subscription in content
+            ]
+
+            context["active_subscriptions"] = [
+                sub
+                for sub in formatted_subscriptions
+                if sub["status"] in ["Active", "Error"]
+            ]
+            context["inactive_subscriptions"] = [
+                sub for sub in formatted_subscriptions if sub["status"] in ["Inactive"]
+            ]
+
+        return context
 
 
 class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
@@ -204,7 +294,7 @@ class AVLConsumerSubscriptionsApiViewSet(viewsets.ViewSet):
         subscription_id = uuid.uuid4()
 
         try:
-            content = self.cavl_subscription_service.subscribe(
+            self.cavl_subscription_service.subscribe(
                 api_key=api_key,
                 name=request.data.get("name"),
                 url=request.data.get("url"),
@@ -219,6 +309,7 @@ class AVLConsumerSubscriptionsApiViewSet(viewsets.ViewSet):
                 origin_ref=request.data.get("originRef"),
                 destination_ref=request.data.get("destinationRef"),
             )
+            content = dict(subscriptionId=subscription_id)
         except RequestException as e:
             status_code = e.response.status_code
             content = e.response.content

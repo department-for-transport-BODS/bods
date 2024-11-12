@@ -113,6 +113,10 @@ paths:
       responses:
         200:
           description: Success
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/CreateSubscriptionResponse"
         400:
           description: Invalid request
           content:
@@ -121,12 +125,6 @@ paths:
                   $ref: "#/components/schemas/ApiError"
         404:
           description: Subscription not found
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
-        409:
-          description: Subscription already live
           content:
             application/json:
               schema:
@@ -220,12 +218,6 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/ApiError"
-        409:
-          description: Subscription already live
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
 
   /api/v1/datafeed/{datafeedID}/:
     get:
@@ -314,6 +306,13 @@ components:
           items:
             type: string
           example: ["Example error message"]
+
+    CreateSubscriptionResponse:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+          example: "1234"
 
     ServiceDelivery:
       type: object
