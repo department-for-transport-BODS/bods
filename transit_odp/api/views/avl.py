@@ -294,7 +294,7 @@ class AVLConsumerSubscriptionsApiViewSet(viewsets.ViewSet):
         subscription_id = uuid.uuid4()
 
         try:
-            content = self.cavl_subscription_service.subscribe(
+            self.cavl_subscription_service.subscribe(
                 api_key=api_key,
                 name=request.data.get("name"),
                 url=request.data.get("url"),
@@ -309,6 +309,7 @@ class AVLConsumerSubscriptionsApiViewSet(viewsets.ViewSet):
                 origin_ref=request.data.get("originRef"),
                 destination_ref=request.data.get("destinationRef"),
             )
+            content = dict(subscriptionId=subscription_id)
         except RequestException as e:
             status_code = e.response.status_code
             content = e.response.content
