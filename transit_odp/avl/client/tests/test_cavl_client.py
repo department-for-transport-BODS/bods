@@ -100,7 +100,7 @@ class TestCAVLService:
         response_mock,
         expected_result,
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/subscriptions"
@@ -165,7 +165,7 @@ class TestCAVLService:
         response_mock,
         expected_result,
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/subscriptions/1"
@@ -222,7 +222,7 @@ class TestCAVLService:
         response_mock,
         expected_result,
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/subscriptions/1"
@@ -308,7 +308,7 @@ class TestCAVLService:
         response_mock,
         expected_result: Optional[Feed],
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/subscriptions/1"
@@ -413,7 +413,7 @@ class TestCAVLService:
         response_mock,
         expected_result: list[Feed],
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/subscriptions"
@@ -488,7 +488,7 @@ class TestCAVLService:
         status: int,
         response_mock,
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = DUMMY_AVL_PRODUCER_URL + "/feed/verify"
@@ -555,7 +555,7 @@ class TestCAVLService:
         parameters: list,
         expected_log: list[str],
         expected_result,
-        **kwargs
+        **kwargs,
     ) -> None:
         url = DUMMY_AVL_PRODUCER_URL + endpoint
 
@@ -576,7 +576,9 @@ class TestCAVLSubscriptionService:
                 HTTPStatus.OK,
                 {},
                 does_not_raise(),
-                ["POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 200"],
+                [
+                    "POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 200"
+                ],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
@@ -584,7 +586,7 @@ class TestCAVLSubscriptionService:
                 pytest.raises(RequestException),
                 [
                     "POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 400",
-                    "[CAVL] Couldn't create AVL consumer subscription <id=1234> <name=dummy_name>. Response: {'errors': ['Bad request']}",
+                    "[CAVL] Couldn't create AVL consumer subscription <api_key=api_key> <id=1234>. Response: {'errors': ['Bad request']}",
                 ],
             ),
             (
@@ -593,16 +595,16 @@ class TestCAVLSubscriptionService:
                 pytest.raises(RequestException),
                 [
                     "POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 404",
-                    "[CAVL] Couldn't create AVL consumer subscription <id=1234> <name=dummy_name>. Response: {'errors': ['Not found']}",
+                    "[CAVL] Couldn't create AVL consumer subscription <api_key=api_key> <id=1234>. Response: {'errors': ['Not found']}",
                 ],
             ),
             (
-                HTTPStatus.INTERNAL_SERVER_ERROR,
-                dict(errors=["Server error"]),
+                HTTPStatus.SERVICE_UNAVAILABLE,
+                dict(errors=["Service unavailable"]),
                 pytest.raises(RequestException),
                 [
-                    "POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 500",
-                    "[CAVL] Couldn't create AVL consumer subscription <id=1234> <name=dummy_name>. Response: {'errors': ['Server error']}",
+                    "POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 503",
+                    "[CAVL] Couldn't create AVL consumer subscription <api_key=api_key> <id=1234>. Response: {'errors': ['Service unavailable']}",
                 ],
             ),
         ],
@@ -615,7 +617,7 @@ class TestCAVLSubscriptionService:
         response_mock,
         expected_result,
         expected_message: list[str],
-        **kwargs
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.DEBUG)
         url = f"{DUMMY_AVL_CONSUMER_URL}/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3"
@@ -626,7 +628,7 @@ class TestCAVLSubscriptionService:
                 api_key="api_key",
                 name="dummy_name",
                 url="dummy_url",
-                update_interval=10,
+                update_interval="PT10S",
                 subscription_id="1234",
                 data_feed_ids="1,2,3",
                 bounding_box="",
@@ -636,6 +638,309 @@ class TestCAVLSubscriptionService:
                 producer_ref="",
                 origin_ref="",
                 destination_ref="",
+            )
+
+        assert [rec.message for rec in caplog.records] == expected_message
+
+    @pytest.mark.parametrize(
+        "status, response_mock, expected_result, expected_message",
+        [
+            (
+                HTTPStatus.NO_CONTENT,
+                {},
+                does_not_raise(),
+                ["DELETE http://www.dummy.com/siri-vm/subscriptions 204"],
+            ),
+            (
+                HTTPStatus.BAD_REQUEST,
+                dict(errors=["Bad request"]),
+                pytest.raises(RequestException),
+                [
+                    "DELETE http://www.dummy.com/siri-vm/subscriptions 400",
+                    "[CAVL] Couldn't unsubscribe AVL consumer subscription <api_key=api_key> <id=1234>. Response: {'errors': ['Bad request']}",
+                ],
+            ),
+            (
+                HTTPStatus.NOT_FOUND,
+                dict(errors=["Not found"]),
+                pytest.raises(RequestException),
+                [
+                    "DELETE http://www.dummy.com/siri-vm/subscriptions 404",
+                    "[CAVL] Couldn't unsubscribe AVL consumer subscription <api_key=api_key> <id=1234>. Response: {'errors': ['Not found']}",
+                ],
+            ),
+            (
+                HTTPStatus.SERVICE_UNAVAILABLE,
+                dict(errors=["Service unavailable"]),
+                pytest.raises(RequestException),
+                [
+                    "DELETE http://www.dummy.com/siri-vm/subscriptions 503",
+                    "[CAVL] Couldn't unsubscribe AVL consumer subscription <api_key=api_key> <id=1234>. Response: {'errors': ['Service unavailable']}",
+                ],
+            ),
+        ],
+    )
+    def test_unsubscribe(
+        self,
+        caplog,
+        cavl_subscription_service: CAVLSubscriptionService,
+        status: int,
+        response_mock,
+        expected_result,
+        expected_message: list[str],
+        **kwargs,
+    ) -> None:
+        caplog.set_level(logging.DEBUG)
+        url = f"{DUMMY_AVL_CONSUMER_URL}/siri-vm/subscriptions"
+        kwargs["m"].delete(url, json=response_mock, status_code=status)
+
+        with expected_result:
+            cavl_subscription_service.unsubscribe(
+                api_key="api_key",
+                subscription_id="1234",
+            )
+
+        assert [rec.message for rec in caplog.records] == expected_message
+
+    @pytest.fixture
+    def test_get_subscriptions_response(
+        self, caplog, cavl_subscription_service: CAVLSubscriptionService, **kwargs
+    ) -> None:
+        caplog.set_level(logging.DEBUG)
+        url = f"{DUMMY_AVL_CONSUMER_URL}/siri-vm/subscriptions/"
+        kwargs["m"].get(
+            url,
+            json=[
+                dict(
+                    id="test_id_1",
+                    name="test_name_1",
+                    subscriptionId="test_consumer_subscription_id_1",
+                    status="live",
+                    url="https://example.com",
+                    requestorRef="test_requestor_ref_1",
+                    updateInterval="PT20S",
+                    heartbeatInterval="PT30S",
+                    requestTimestamp="2024-12-12T00:00:00Z",
+                    initialTerminationTime="2034-12-12T00:00:00Z",
+                    queryParams=dict(
+                        subscriptionId="test_producer_subscription_id",
+                    ),
+                ),
+                dict(
+                    id="test_id_2",
+                    name="test_name_2",
+                    subscriptionId="test_consumer_subscription_id_2",
+                    status="inactive",
+                    url="https://example.com",
+                    requestorRef="test_requestor_ref_2",
+                    updateInterval="PT20S",
+                    heartbeatInterval="PT30S",
+                    requestTimestamp="2024-12-12T00:00:00Z",
+                    initialTerminationTime="2034-12-12T00:00:00Z",
+                    queryParams=dict(
+                        subscriptionId="test_producer_subscription_id",
+                        boundingBox="test_bounding_box",
+                        operatorRef="test_operator_ref",
+                        vehicleRef="test_vehicle_ref",
+                        lineRef="test_line_ref",
+                        producerRef="test_producer_ref",
+                        originRef="test_origin_ref",
+                        destinationRef="test_destination_ref",
+                    ),
+                ),
+            ],
+            status_code=HTTPStatus.OK,
+        )
+
+        result = cavl_subscription_service.get_subscriptions(api_key="api_key")
+
+        assert result == [
+            dict(
+                id="test_id_1",
+                name="test_name_1",
+                subscriptionId="test_subscription_id_1",
+                status="live",
+                url="https://example.com",
+                requestorRef="test_requestor_ref_1",
+                updateInterval="PT20S",
+                heartbeatInterval="PT30S",
+                requestTimestamp="2024-12-12T00:00:00Z",
+                initialTerminationTime="2034-12-12T00:00:00Z",
+                queryParams=dict(
+                    subscriptionId="test_producer_subscription_id",
+                ),
+            ),
+            dict(
+                id="test_id_2",
+                name="test_name_2",
+                subscriptionId="test_subscription_id_2",
+                status="inactive",
+                url="https://example.com",
+                requestorRef="test_requestor_ref_2",
+                updateInterval="PT20S",
+                heartbeatInterval="PT30S",
+                requestTimestamp="2024-12-12T00:00:00Z",
+                initialTerminationTime="2034-12-12T00:00:00Z",
+                queryParams=dict(
+                    subscriptionId="test_producer_subscription_id",
+                    boundingBox="test_bounding_box",
+                    operatorRef="test_operator_ref",
+                    vehicleRef="test_vehicle_ref",
+                    lineRef="test_line_ref",
+                    producerRef="test_producer_ref",
+                    originRef="test_origin_ref",
+                    destinationRef="test_destination_ref",
+                ),
+            ),
+        ]
+
+        assert [rec.message for rec in caplog.records] == [
+            "GET http://www.dummy.com/siri-vm/subscriptions 200"
+        ]
+
+    @pytest.mark.parametrize(
+        "status, response_mock, expected_result, expected_message",
+        [
+            (
+                HTTPStatus.BAD_REQUEST,
+                dict(errors=["Bad request"]),
+                pytest.raises(RequestException),
+                [
+                    "GET http://www.dummy.com/siri-vm/subscriptions 400",
+                    "[CAVL] Couldn't fetch consumer subscriptions <api_key=api_key>. Response: {'errors': ['Bad request']}",
+                ],
+            ),
+            (
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                dict(errors=["Server error"]),
+                pytest.raises(RequestException),
+                [
+                    "GET http://www.dummy.com/siri-vm/subscriptions 500",
+                    "[CAVL] Couldn't fetch consumer subscriptions <api_key=api_key>. Response: {'errors': ['Server error']}",
+                ],
+            ),
+        ],
+    )
+    def test_get_subscriptions_exceptions(
+        self,
+        caplog,
+        cavl_subscription_service: CAVLSubscriptionService,
+        status: int,
+        response_mock,
+        expected_result: list[dict],
+        expected_message: list[str],
+        **kwargs,
+    ) -> None:
+        caplog.set_level(logging.DEBUG)
+        url = f"{DUMMY_AVL_CONSUMER_URL}/siri-vm/subscriptions"
+        kwargs["m"].get(url, json=response_mock, status_code=status)
+
+        with expected_result:
+            cavl_subscription_service.get_subscriptions(api_key="api_key")
+
+        assert [rec.message for rec in caplog.records] == expected_message
+
+    @pytest.fixture
+    def test_get_subscription_response(
+        self, caplog, cavl_subscription_service: CAVLSubscriptionService, **kwargs
+    ) -> None:
+        caplog.set_level(logging.DEBUG)
+        url = (
+            f"{DUMMY_AVL_CONSUMER_URL}/siri-vm/subscriptions/?subscriptionId=test_id_1"
+        )
+        kwargs["m"].get(
+            url,
+            json=dict(
+                id="test_id_1",
+                name="test_name_1",
+                subscriptionId="test_consumer_subscription_id_1",
+                status="live",
+                url="https://example.com",
+                requestorRef="test_requestor_ref_1",
+                updateInterval="PT20S",
+                heartbeatInterval="PT30S",
+                requestTimestamp="2024-12-12T00:00:00Z",
+                initialTerminationTime="2034-12-12T00:00:00Z",
+                queryParams=dict(
+                    subscriptionId="test_producer_subscription_id",
+                ),
+            ),
+            status_code=HTTPStatus.OK,
+        )
+
+        result = cavl_subscription_service.get_subscription(
+            api_key="api_key", subscription_id="test_id_1"
+        )
+
+        assert result == dict(
+            id="test_id_1",
+            name="test_name_1",
+            subscriptionId="test_subscription_id_1",
+            status="live",
+            url="https://example.com",
+            requestorRef="test_requestor_ref_1",
+            updateInterval="PT20S",
+            heartbeatInterval="PT30S",
+            requestTimestamp="2024-12-12T00:00:00Z",
+            initialTerminationTime="2034-12-12T00:00:00Z",
+            queryParams=dict(
+                subscriptionId="test_producer_subscription_id",
+            ),
+        )
+
+        assert [rec.message for rec in caplog.records] == [
+            "GET http://www.dummy.com/siri-vm/subscriptions?subscriptionId=test_id_1 200"
+        ]
+
+    @pytest.mark.parametrize(
+        "status, response_mock, expected_result, expected_message",
+        [
+            (
+                HTTPStatus.BAD_REQUEST,
+                dict(errors=["Bad request"]),
+                pytest.raises(RequestException),
+                [
+                    "GET http://www.dummy.com/siri-vm/subscriptions?subscriptionId=test_id_1 400",
+                    "[CAVL] Couldn't fetch consumer subscription <api_key=api_key> <id=test_id_1>. Response: {'errors': ['Bad request']}",
+                ],
+            ),
+            (
+                HTTPStatus.NOT_FOUND,
+                dict(errors=["Not found"]),
+                pytest.raises(RequestException),
+                [
+                    "GET http://www.dummy.com/siri-vm/subscriptions?subscriptionId=test_id_1 404",
+                    "[CAVL] Couldn't fetch consumer subscription <api_key=api_key> <id=test_id_1>. Response: {'errors': ['Not found']}",
+                ],
+            ),
+            (
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                dict(errors=["Server error"]),
+                pytest.raises(RequestException),
+                [
+                    "GET http://www.dummy.com/siri-vm/subscriptions?subscriptionId=test_id_1 500",
+                    "[CAVL] Couldn't fetch consumer subscription <api_key=api_key> <id=test_id_1>. Response: {'errors': ['Server error']}",
+                ],
+            ),
+        ],
+    )
+    def test_get_subscription_exceptions(
+        self,
+        caplog,
+        cavl_subscription_service: CAVLSubscriptionService,
+        status: int,
+        response_mock,
+        expected_result: Optional[dict],
+        expected_message: list[str],
+        **kwargs,
+    ) -> None:
+        caplog.set_level(logging.DEBUG)
+        url = f"{DUMMY_AVL_CONSUMER_URL}/siri-vm/subscriptions?subscriptionId=test_id_1"
+        kwargs["m"].get(url, json=response_mock, status_code=status)
+
+        with expected_result:
+            cavl_subscription_service.get_subscription(
+                api_key="api_key", subscription_id="test_id_1"
             )
 
         assert [rec.message for rec in caplog.records] == expected_message
