@@ -80,28 +80,6 @@ class Registry:
         else:
             self.services["licence_id"] = None
 
-    def map_operatorname(self) -> None:
-        """
-        Map the Operator name with the services, so that EP services will have OTC_Operator link
-        We will not create Operators if they are missing in database table,
-        We will leave operator_id field blank
-        """
-        operator_df = pd.DataFrame.from_records(
-            Operator.objects.values("id", "operator_name")
-        )
-        operator_df.rename(columns={"id": "operator_id"}, inplace=True)
-        if not operator_df.empty:
-            self.services = pd.merge(
-                self.services,
-                operator_df,
-                left_on="operator_name",
-                right_on="operator_name",
-                how="left",
-            )
-            self.services.operator_id.replace({np.nan: None}, inplace=True)
-        else:
-            self.services["operator_id"] = None
-
     def get_missing_licences(self) -> None:
         """
         Returns the list of services with licences which
@@ -144,6 +122,4 @@ class Registry:
             self.ignore_existing_services()
             logger.info("Map licences to database")
             self.map_licences()
-            logger.info("Map operator name to database")
-            self.map_operatorname()
             self.remove_columns()

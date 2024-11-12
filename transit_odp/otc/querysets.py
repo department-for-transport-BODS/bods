@@ -78,7 +78,7 @@ class ServiceQuerySet(QuerySet):
             rank=Window(
                 expression=RowNumber(),
                 order_by=F("variation_number").desc(),
-                partition_by=[F("service_code")],
+                partition_by=[F("service_code"), F("service_number")],
             )
         )
 
