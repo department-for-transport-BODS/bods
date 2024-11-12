@@ -576,7 +576,9 @@ class TestCAVLSubscriptionService:
                 HTTPStatus.OK,
                 {},
                 does_not_raise(),
-                ["POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 200"],
+                [
+                    "POST http://www.dummy.com/siri-vm/subscriptions?name=dummy_name&subscriptionId=1,2,3 200"
+                ],
             ),
             (
                 HTTPStatus.BAD_REQUEST,
@@ -843,7 +845,9 @@ class TestCAVLSubscriptionService:
         self, caplog, cavl_subscription_service: CAVLSubscriptionService, **kwargs
     ) -> None:
         caplog.set_level(logging.DEBUG)
-        url = f"{DUMMY_AVL_CONSUMER_URL}/siri-vm/subscriptions/?subscriptionId=test_id_1"
+        url = (
+            f"{DUMMY_AVL_CONSUMER_URL}/siri-vm/subscriptions/?subscriptionId=test_id_1"
+        )
         kwargs["m"].get(
             url,
             json=dict(
