@@ -432,7 +432,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                 {
                     "file_id": file_id,
                     "service_code": "PB0000582:186",
-                    "departure_time": pd.to_timedelta("16:44:00"),
+                    "departure_time": pd.to_timedelta("16:40:00"),
                     "journey_pattern_ref": "PB0000582:186-jp_2",
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3682",
@@ -481,7 +481,7 @@ class ETLVehicleJourneysWithDepartureDayShift(ExtractBaseTestCase):
                 },
                 {
                     "file_id": file_id,
-                    "departure_time": pd.to_timedelta("16:44:00"),
+                    "departure_time": pd.to_timedelta("16:40:00"),
                     "journey_pattern_ref": "PB0000582:186-jp_2",
                     "line_ref": "WRAY:PB0000582:186:WF1",
                     "journey_code": "3682",
