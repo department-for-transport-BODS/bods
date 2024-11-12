@@ -35,23 +35,43 @@ class Registry:
 
     def ignore_existing_services(self) -> None:
         """
-        To ignore the existing services which belongs to OTC/WECA but are comming in EP API
+        To ignore the existing services which belongs to OTC but are comming in EP API
         Expectation is such scenarios will not happen but if they are those will be
         skipped from the dataframe
         """
-        services_queryset = Service.objects.filter(
-            registration_number__in=self.services["registration_number"].tolist(),
-            api_type__isnull=True,
-        ).values_list("registration_number")
-        services_to_ignore = [service[0] for service in services_queryset]
+        services_df = pd.DataFrame.from_records(
+            Service.objects.filter(
+                registration_number__in=self.services["registration_number"].tolist(),
+                api_type__isnull=True,
+            ).values_list("registration_number", "service_number"),
+            columns=["registration_number", "service_number"],
+        )
+
+        services_df["service_number"] = services_df["service_number"].apply(
+            lambda x: str(x).split("|")
+        )
+        services_df = services_df.explode("service_number")
+        services_df.drop_duplicates(inplace=True)
+        self.services = self.services.merge(
+            services_df,
+            on=["registration_number", "service_number"],
+            how="left",
+            indicator=True,
+        )
+
         logger.info(
-            "Found {} services of OTC/WECA in EP data, and these will be ignored".format(
-                len(services_to_ignore)
+            "Found {} services of OTC in EP data, and these will be ignored".format(
+                len(self.services[self.services["_merge"] == "both"])
             )
         )
-        self.services = self.services[
-            ~self.services["registration_number"].isin(services_to_ignore)
-        ]
+        logger.info(
+            "Found following services of OTC in EP data, and these were be ignored {}".format(
+                self.services[self.services["_merge"] == "both"]
+            )
+        )
+        self.services = self.services[self.services["_merge"] == "left_only"].drop(
+            columns=["_merge"]
+        )
 
     def convert_services_to_df(self) -> None:
         """
@@ -79,28 +99,6 @@ class Registry:
             self.services.licence_id.replace({np.nan: None}, inplace=True)
         else:
             self.services["licence_id"] = None
-
-    def map_operatorname(self) -> None:
-        """
-        Map the Operator name with the services, so that EP services will have OTC_Operator link
-        We will not create Operators if they are missing in database table,
-        We will leave operator_id field blank
-        """
-        operator_df = pd.DataFrame.from_records(
-            Operator.objects.values("id", "operator_name")
-        )
-        operator_df.rename(columns={"id": "operator_id"}, inplace=True)
-        if not operator_df.empty:
-            self.services = pd.merge(
-                self.services,
-                operator_df,
-                left_on="operator_name",
-                right_on="operator_name",
-                how="left",
-            )
-            self.services.operator_id.replace({np.nan: None}, inplace=True)
-        else:
-            self.services["operator_id"] = None
 
     def get_missing_licences(self) -> None:
         """
@@ -140,10 +138,8 @@ class Registry:
             logger.info(
                 "Merging EP records for same registration numbers by making service name seprated from pipe."
             )
-            logger.info("Ignoring OTC/WECA services present in EP records.")
+            logger.info("Ignoring OTC services present in EP records.")
             self.ignore_existing_services()
             logger.info("Map licences to database")
             self.map_licences()
-            logger.info("Map operator name to database")
-            self.map_operatorname()
             self.remove_columns()
