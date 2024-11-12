@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("pipelines", "0024_alter_dataqualitytask_status_and_more"),
+        ("pipelines", "0025_alter_datasetetltaskresult_error_code"),
     ]
 
     operations = [
