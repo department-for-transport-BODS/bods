@@ -407,7 +407,7 @@ def task_rerun_fares_validation_specific_datasets():
     if not _ids and not _id_type == "dataset_ids":
         logger.info("No valid dataset IDs found in the file.")
         return
-    
+
     logger.info(f"Total number of datasets to be processed: {len(_ids)}")
     fares_datasets = Dataset.objects.filter(id__in=_ids).get_active()
 
