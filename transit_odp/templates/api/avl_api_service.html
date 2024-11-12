@@ -48,9 +48,18 @@
         </div>
         <div class="govuk-!-margin-bottom-6">
           <h3 class="govuk-heading-m">Subscribe to the Location data API?</h3>
-          <a class="govuk-link" href="{% url 'api:buslocation-subscribe' host hosts.data %}">
-            {% trans "Create Location Data Subscription" %}
-          </a>
+          <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+            <li class="govuk-!-margin-bottom-4">
+              <a class="govuk-link govuk-!-margin-bottom-4" href="{% url 'api:buslocation-subscribe' host hosts.data %}">
+                {% trans "Create Location Data Subscription" %}
+              </a>
+            </li>
+            <li class="govuk-!-margin-bottom-4">
+              <a class="govuk-link" href="{% url 'api:buslocation-manage-subscriptions' host hosts.data %}">
+                {% trans "View Subscriptions" %}
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
       {% block heading.secondary %}

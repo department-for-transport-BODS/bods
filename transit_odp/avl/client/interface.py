@@ -134,3 +134,12 @@ class ICAVLSubscriptionService(Protocol):
         Returns: Boolean indicating the subscription was created successfully
         """
         ...
+
+    def get_subscriptions(self, api_key: str) -> Sequence[dict]:
+        """
+        Retrieves the consumer subscriptions with the given api_key
+        Args:
+            api_key: The BODS user API key
+        Returns: A collection of dict objects
+        """
+        ...

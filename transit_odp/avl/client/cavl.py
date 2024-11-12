@@ -265,3 +265,23 @@ class CAVLSubscriptionService(ICAVLSubscriptionService):
             )
 
             raise
+
+    def get_subscriptions(self, api_key: str) -> Sequence[dict]:
+        api_url = self.AVL_CONSUMER_URL + "/siri-vm/subscriptions"
+
+        headers = {
+            "Content-Type": "application/json",
+            "x-api-key": api_key,
+        }
+
+        try:
+            response = requests.get(api_url, timeout=30, headers=headers)
+            response.raise_for_status()
+        except RequestException as e:
+            logger.exception(
+                f"[CAVL] Couldn't fetch consumer subscriptions <api_key={api_key}>. Response: {self._get_error_response(e)}"
+            )
+            raise
+
+        if response.status_code == HTTPStatus.OK:
+            return response.json()
