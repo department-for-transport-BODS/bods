@@ -42,7 +42,7 @@
               <th scope="col" class="govuk-table__header">Status</th>
               <th scope="col" class="govuk-table__header">Subscription name</th>
               <th scope="col" class="govuk-table__header">Data filters</th>
-              <th scope="col" class="govuk-table__header">Set up date</th>
+              <th scope="col" class="govuk-table__header">Setup date</th>
             </tr>
             </thead>
             <tbody>
@@ -73,7 +73,7 @@
               <th scope="col" class="govuk-table__header">Status</th>
               <th scope="col" class="govuk-table__header">Subscription name</th>
               <th scope="col" class="govuk-table__header">Data filters</th>
-              <th scope="col" class="govuk-table__header">Set up date</th>
+              <th scope="col" class="govuk-table__header">Setup date</th>
             </tr>
             </thead>
             <tbody>
@@ -91,6 +91,11 @@
             {% endfor %}
             </tbody>
           </table>
+          <a role="button"
+            class="govuk-button govuk-button--primary"
+            href="{% url 'api:buslocation-subscribe' host hosts.data %}">
+            {% trans "Create a new subscription" %}
+          </a>
         </div>
       </div>
     </div>
