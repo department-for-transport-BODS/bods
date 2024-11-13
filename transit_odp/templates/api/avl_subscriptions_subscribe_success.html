@@ -20,12 +20,12 @@
       <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">Location Data Subscription Created</h1>
         <p>You have successfully subscribed to the Location data API.</p>
-        <a href="{% url 'api:buslocation-api' host hosts.data %}"
+        <a href="{% url 'api:buslocation-manage-subscriptions' host hosts.data %}"
              role="button"
              draggable="false"
              class="govuk-button govuk-!-margin-bottom-0"
              data-module="govuk-button">
-            {% trans "Return to Location data API Service" %}
+            {% trans "Manage subscriptions" %}
           </a>
       </div>
       {% block heading.secondary %}
