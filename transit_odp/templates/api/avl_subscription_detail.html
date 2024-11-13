@@ -1,0 +1,78 @@
+{% extends "page.html" %}
+{% load static %}
+{% load breadcrumbs %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block title_tag %}
+  {% if form.errors %}
+    {% trans "Error: " %}
+  {% endif %}
+  {% trans "Manage subscription" %}
+{% endblock %}
+{% block breadcrumb.content %}
+  {{ block.super }}
+  {% breadcrumb_url 'API services' 'api-select' host hosts.data %}
+  {% breadcrumb_url 'Location data API Service' 'api:buslocation-api' host hosts.data %}
+  {% breadcrumb_url 'Manage subscriptions' 'api:buslocation-manage-subscriptions' host hosts.data %}
+  {% breadcrumb_url subscription.name %}
+{% endblock %}
+{% block content %}
+  <h1 class="govuk-heading-xl">{{ subscription.name }}</h1>
+  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--invisible" />
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <table class="govuk-table dataset-property-table">
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row"></tr>
+            <th scope="row" class="govuk-table__header">{% trans "Name" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ subscription.name }}</td>
+          </tr>
+          <tr class="govuk-table__row"></tr>
+            <th scope="row" class="govuk-table__header">{% trans "ID" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ subscription.id }}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans "Status" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ subscription.status }}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans "URL" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ subscription.url }}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans "Requestor Ref" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ subscription.requestor_ref }}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans "Update Interval" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ subscription.update_interval }} {% trans "seconds" %}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans "Heartbeat Interval" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ subscription.heartbeat_interval }} {% trans "seconds" %}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans "Data Filters" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ subscription.data_filters|linebreaksbr }}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans "Set Up Date" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ subscription.set_up_date }}</td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans "Termination Date" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ subscription.termination_date }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <a role="button"
+         class="govuk-button govuk-button--primary"
+         href="{% url 'api:buslocation-manage-subscription-deactivate' subscription_id=subscription.id host hosts.data %}">
+        {% trans "Deactivate subscription" %}
+      </a>
+    </div>
+    {% block heading.secondary %}
+      {% include "browse/snippets/download_secondary_links.html" %}
+    {% endblock %}
+  </div>
+{% endblock %}

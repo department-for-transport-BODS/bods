@@ -218,6 +218,18 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/ApiError"
+        429:
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        503:
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
 
   /api/v1/datafeed/{datafeedID}/:
     get:

@@ -17,6 +17,9 @@ from transit_odp.api.views import (
 )
 from transit_odp.api.views.avl import (
     AVLManageSubscriptionsView,
+    AVLManageSubscriptionDetailView,
+    AVLManageSubscriptionDeactivateView,
+    AVLManageSubscriptionDeactivateSuccessView,
     AVLConsumerSubscriptionsApiViewSet,
     AVLConsumerSubscriptionApiViewSet,
     AVLSubscriptionsSubscribeView,
@@ -59,6 +62,21 @@ urlpatterns = [
         "buslocation-api/manage-subscriptions/",
         AVLManageSubscriptionsView.as_view(),
         name="buslocation-manage-subscriptions",
+    ),
+    path(
+        "buslocation-api/manage-subscriptions/<str:subscription_id>/",
+        AVLManageSubscriptionDetailView.as_view(),
+        name="buslocation-manage-subscription",
+    ),
+    path(
+        "buslocation-api/manage-subscriptions/<str:subscription_id>/deactivate",
+        AVLManageSubscriptionDeactivateView.as_view(),
+        name="buslocation-manage-subscription-deactivate",
+    ),
+    path(
+        "buslocation-api/manage-subscriptions/<str:subscription_id>/deactivate/success",
+        AVLManageSubscriptionDeactivateSuccessView.as_view(),
+        name="buslocation-manage-subscription-deactivate-success",
     ),
     path(
         "buslocation-api/subscribe/success/",

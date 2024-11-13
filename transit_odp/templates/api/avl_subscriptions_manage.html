@@ -7,18 +7,18 @@
   {% if form.errors %}
     {% trans "Error: " %}
   {% endif %}
-  {% trans "View subscriptions" %}
+  {% trans "Manage subscriptions" %}
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'API services' 'api-select' host hosts.data %}
   {% breadcrumb_url 'Location data API Service' 'api:buslocation-api' host hosts.data %}
-  {% breadcrumb_url 'View subscriptions' 'api:buslocation-manage-subscriptions' host hosts.data %}
+  {% breadcrumb_url 'Manage subscriptions' %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div>
-      <h1 class="govuk-heading-xl">View subscriptions</h1>
+      <h1 class="govuk-heading-xl">Manage subscriptions</h1>
       <div class="govuk-tabs" data-module="govuk-tabs">
         <h2 class="govuk-tabs__title">
           Location data subscriptions
@@ -39,18 +39,23 @@
           <table class="govuk-table" id="active-subscriptions-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Status</th>
               <th scope="col" class="govuk-table__header">Subscription name</th>
               <th scope="col" class="govuk-table__header">Data filters</th>
-              <th scope="col" class="govuk-table__header">Status</th>
               <th scope="col" class="govuk-table__header">Set up date</th>
             </tr>
             </thead>
             <tbody>
             {% for subscription in active_subscriptions %}
               <tr class="govuk-table__row">
-                <td class="govuk-table__cell">{{ subscription.name }}</td>
-                <td class="govuk-table__cell">{{ subscription.data_filters|linebreaksbr }}</td>
                 <td class="govuk-table__cell">{{ subscription.status }}</td>
+                <td class="govuk-table__cell">
+                  <a class="govuk-link"
+                    href="{% url 'api:buslocation-manage-subscription' subscription_id=subscription.id host hosts.data %}">
+                    {{ subscription.name }}
+                  </a>
+                </td>
+                <td class="govuk-table__cell">{{ subscription.data_filters|linebreaksbr }}</td>
                 <td class="govuk-table__cell">{{ subscription.set_up_date }}</td>
               </tr>
             {% empty %}
@@ -65,18 +70,18 @@
           <table class="govuk-table" id="inactive-subscriptions-table">
             <thead class="govuk-table__head">
             <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Status</th>
               <th scope="col" class="govuk-table__header">Subscription name</th>
               <th scope="col" class="govuk-table__header">Data filters</th>
-              <th scope="col" class="govuk-table__header">Status</th>
               <th scope="col" class="govuk-table__header">Set up date</th>
             </tr>
             </thead>
             <tbody>
             {% for subscription in inactive_subscriptions %}
               <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{{ subscription.status }}</td>
                 <td class="govuk-table__cell">{{ subscription.name }}</td>
                 <td class="govuk-table__cell">{{ subscription.data_filters|linebreaksbr }}</td>
-                <td class="govuk-table__cell">{{ subscription.status }}</td>
                 <td class="govuk-table__cell">{{ subscription.set_up_date }}</td>
               </tr>
             {% empty %}
