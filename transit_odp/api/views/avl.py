@@ -11,7 +11,10 @@ from rest_framework import status, views, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from transit_odp.avl.client.cavl import CAVLSubscriptionService
-from transit_odp.avl.forms import AvlSubscriptionsSubscribeForm
+from transit_odp.avl.forms import (
+    AvlSubscriptionsSubscribeForm,
+    AvlSubscriptionsUnsubscribeForm,
+)
 from waffle import flag_is_active
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
@@ -26,6 +29,7 @@ from transit_odp.api.utils.response_utils import create_xml_error_response
 from transit_odp.common.tables import GovUkTable
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -45,37 +49,37 @@ def _format_query_params(query_params):
 
     if "subscriptionId" in query_params:
         subscription_ids = ", ".join(query_params["subscriptionId"])
-        formatted_query_params.append(f"Subscription Ids: {subscription_ids}")
+        formatted_query_params.append(f"Data feed IDs: {subscription_ids}")
 
     if "boundingBox" in query_params:
         bounding_box = ", ".join(map(str, query_params["boundingBox"]))
-        formatted_query_params.append(f"Bounding Box: {bounding_box}")
+        formatted_query_params.append(f"Bounding box: {bounding_box}")
 
     if "operatorRef" in query_params:
         operator_ref = ", ".join(query_params["operatorRef"])
-        formatted_query_params.append(f"Operator Ref: {operator_ref}")
+        formatted_query_params.append(f"Operator ref: {operator_ref}")
 
     if "lineRef" in query_params:
         line_ref = query_params["lineRef"]
-        formatted_query_params.append(f"Line Ref: {line_ref}")
+        formatted_query_params.append(f"Line ref: {line_ref}")
 
     if "producerRef" in query_params:
         producer_ref = query_params["producerRef"]
-        formatted_query_params.append(f"Producer Ref: {producer_ref}")
+        formatted_query_params.append(f"Producer ref: {producer_ref}")
 
     if "vehicleRef" in query_params:
         vehicle_ref = query_params["vehicleRef"]
-        formatted_query_params.append(f"Vehicle Ref: {vehicle_ref}")
+        formatted_query_params.append(f"Vehicle ref: {vehicle_ref}")
 
     if "originRef" in query_params:
         origin_ref = query_params["originRef"]
-        formatted_query_params.append(f"Origin Ref: {origin_ref}")
+        formatted_query_params.append(f"Origin ref: {origin_ref}")
 
     if "destinationRef" in query_params:
         destination_ref = query_params["destinationRef"]
-        formatted_query_params.append(f"Destination Ref: {destination_ref}")
+        formatted_query_params.append(f"Destination ref: {destination_ref}")
 
-    return "; \n ".join(formatted_query_params)
+    return "\n".join(formatted_query_params)
 
 
 class AVLManageSubscriptionsView(LoginRequiredMixin, TemplateView):
@@ -104,6 +108,7 @@ class AVLManageSubscriptionsView(LoginRequiredMixin, TemplateView):
 
             formatted_subscriptions = [
                 {
+                    "id": subscription["subscriptionId"],
                     "name": subscription["name"],
                     "data_filters": _format_query_params(subscription["queryParams"]),
                     "status": status_dict[subscription["status"]],
@@ -126,6 +131,128 @@ class AVLManageSubscriptionsView(LoginRequiredMixin, TemplateView):
             ]
 
         return context
+
+
+class AVLManageSubscriptionDetailView(LoginRequiredMixin, TemplateView):
+    template_name = "api/avl_subscription_detail.html"
+    cavl_subscription_service = CAVLSubscriptionService()
+
+    def get_duration_value(self, duration_string):
+        duration_match = re.match(r"PT(\d+)S", duration_string)
+        return duration_match.group(1) if duration_match else ""
+
+    def format_datetime(self, datetime_string):
+        return (
+            datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M:%S.%fZ")
+            if datetime_string
+            else ""
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        subscription_id = kwargs["subscription_id"]
+        api_key = Token.objects.get_or_create(user=self.request.user)[0].key
+
+        content = None
+        try:
+            content = self.cavl_subscription_service.get_subscription(
+                api_key=api_key, subscription_id=subscription_id
+            )
+        except RequestException:
+            context["error"] = "true"
+
+        if content is None:
+            context["error"] = "true"
+
+        else:
+            status_dict = {
+                "live": "Active",
+                "error": "Error",
+                "inactive": "Inactive",
+            }
+
+            formatted_subscription = {
+                "id": subscription_id,
+                "name": content["name"],
+                "status": status_dict[content["status"]],
+                "url": content["url"],
+                "requestor_ref": content["requestorRef"],
+                "update_interval": self.get_duration_value(content["updateInterval"]),
+                "heartbeat_interval": self.get_duration_value(
+                    content["heartbeatInterval"]
+                ),
+                "data_filters": _format_query_params(content["queryParams"]),
+                "set_up_date": self.format_datetime(content["requestTimestamp"]),
+                "termination_date": self.format_datetime(
+                    content["initialTerminationTime"]
+                ),
+            }
+
+            context["subscription"] = formatted_subscription
+
+        return context
+
+
+class AVLManageSubscriptionDeactivateView(LoginRequiredMixin, FormView):
+    template_name = "api/avl_subscription_deactivate.html"
+    form_class = AvlSubscriptionsUnsubscribeForm
+    cavl_subscription_service = CAVLSubscriptionService()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["subscription_id"] = self.kwargs["subscription_id"]
+        return context
+
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super().get_form_kwargs()
+        kwargs.update(
+            {"cancel_url": self.get_cancel_url(self.kwargs["subscription_id"])}
+        )
+        return kwargs
+
+    def form_valid(self, form, **kwargs):
+        api_key = Token.objects.get_or_create(user=self.request.user)[0].key
+        subscription_id = self.kwargs["subscription_id"]
+
+        try:
+            self.cavl_subscription_service.unsubscribe(
+                api_key=api_key, subscription_id=subscription_id
+            )
+        except RequestException as e:
+            error_messages = e.response.json().get("errors", [])
+            error_message = (
+                _(error_messages[0])
+                if error_messages
+                else "The service is unavailable, try again later"
+            )
+
+            form.add_error(None, error_message)
+
+            return self.form_invalid(form)
+
+        return HttpResponseRedirect(self.get_success_url(subscription_id))
+
+    def get_success_url(self, subscription_id):
+        return reverse(
+            "api:buslocation-manage-subscription-deactivate-success",
+            kwargs={
+                "subscription_id": subscription_id,
+            },
+            host=config.hosts.DATA_HOST,
+        )
+
+    def get_cancel_url(self, subscription_id):
+        return reverse(
+            "api:buslocation-manage-subscription",
+            kwargs={
+                "subscription_id": subscription_id,
+            },
+            host=config.hosts.DATA_HOST,
+        )
+
+
+class AVLManageSubscriptionDeactivateSuccessView(LoginRequiredMixin, TemplateView):
+    template_name = "api/avl_subscription_deactivate_success.html"
 
 
 class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):

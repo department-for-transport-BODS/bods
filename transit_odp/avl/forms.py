@@ -527,3 +527,23 @@ class AvlSubscriptionsSubscribeForm(GOVUKForm):
             Field("destination_ref", css_class="govuk-input--extra-letter-spacing"),
             ButtonHolder(submit_button, cancel_button),
         )
+
+
+class AvlSubscriptionsUnsubscribeForm(GOVUKForm):
+    form_error_title = DEFAULT_ERROR_SUMMARY
+
+    def __init__(self, cancel_url, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cancel_url = cancel_url
+
+    def get_layout(self):
+        submit_button = ButtonSubmit("submit", "submit", content=_("Confirm"))
+        cancel_button = LinkButton(
+            url=self.cancel_url,
+            content=_("Cancel"),
+            field_classes="govuk-button govuk-button--secondary",
+        )
+
+        return Layout(
+            ButtonHolder(submit_button, cancel_button),
+        )
