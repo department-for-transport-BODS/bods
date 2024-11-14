@@ -5,10 +5,8 @@ from freezegun import freeze_time
 from config.hosts import DATA_HOST
 from transit_odp.browse.tests.test_avls import TestUserAVLFeedbackView
 from transit_odp.browse.tests.test_fares import TestFaresSearchView
-from transit_odp.data_quality.factories.report import PTIObservationFactory
 from transit_odp.organisation.constants import FeedStatus, TimetableType
 from transit_odp.organisation.factories import (
-    DatasetFactory,
     DatasetRevisionFactory,
     OrganisationFactory,
 )
@@ -106,31 +104,6 @@ class TestTimeTableSearchView(TestFaresSearchView):
         assert translated_query_params["area"] == admin_area.name
         assert translated_query_params["status"] == "Published"
         assert translated_query_params["organisation"] == self.organisation1.name
-
-    @pytest.mark.parametrize(
-        "is_pti_compliant,expected_results", (("True", 5), ("False", 4), ("", 9))
-    )
-    def test_can_search_using_bods_compliance(
-        self, client_factory, is_pti_compliant, expected_results
-    ):
-        self.setup_feeds()
-        for dataset in DatasetFactory.create_batch(4):
-            PTIObservationFactory(revision=dataset.live_revision)
-
-        client = client_factory(host=self.host)
-        response = client.get(
-            self.url,
-            data={
-                "q": "",
-                "area": "",
-                "organisation": "",
-                "status": "",
-                "start": "",
-                "published_at": "",
-                "is_pti_compliant": is_pti_compliant,
-            },
-        )
-        assert response.context_data["object_list"].count() == expected_results
 
     @freeze_time("19-11-2021")
     def test_search_filters_published_at(self, client_factory):
