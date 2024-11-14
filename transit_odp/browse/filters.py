@@ -25,8 +25,6 @@ class TimetableSearchFilter(filters.FilterSet):
     start = filters.DateTimeFilter(field_name="first_service_start", lookup_expr="gte")
     published_at = filters.DateTimeFilter(field_name="published_at", lookup_expr="gte")
 
-    is_pti_compliant = filters.BooleanFilter()
-
     class Meta:
         form = TimetableSearchFilterForm
 
