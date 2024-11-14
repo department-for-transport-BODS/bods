@@ -428,13 +428,12 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                 from_stop_timing_status = link.get_element_or_none(
                     ["From", "TimingStatus"]
                 )
-                is_timing_status = False
-                if order == 0:
-                    is_timing_status = get_timing_status_for_stop(
-                        from_stop_timing_status
-                    )
-                else:
-                    is_timing_status = get_timing_status_for_stop(to_stop_timing_status)
+
+                from_is_timing_status = get_timing_status_for_stop(
+                    from_stop_timing_status
+                )
+                to_is_timing_status = get_timing_status_for_stop(to_stop_timing_status)
+
                 timing_link_id = link["id"]
 
                 run_time = pd.NaT
@@ -484,7 +483,8 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                         "to_stop_ref": to_stop_ref,
                         "from_stop_sequence_number": from_stop_sequence_number,
                         "to_stop_sequence_number": to_stop_sequence_number,
-                        "is_timing_status": is_timing_status,
+                        "from_is_timing_status": from_is_timing_status,
+                        "to_is_timing_status": to_is_timing_status,
                         "run_time": run_time,
                         "wait_time": wait_time,
                         "from_activity_id": from_activity_id,
@@ -505,15 +505,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
             departure_time = pd.to_timedelta(
                 vehicle_journey.get_element(["DepartureTime"]).text
             )
-            dead_run_time = vehicle_journey.get_element_or_none(
-                ["StartDeadRun", "PositioningLink", "RunTime"]
-            )
             vj_departure_time = departure_time
-            if dead_run_time:
-                parsed_dead_run_time = isodate.parse_duration(dead_run_time.text)
-                departure_time = departure_time + pd.to_timedelta(
-                    parsed_dead_run_time.total_seconds(), unit="s"
-                )
 
             journey_pattern_ref_element = vehicle_journey.get_element_or_none(
                 ["JourneyPatternRef"]

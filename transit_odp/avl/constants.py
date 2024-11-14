@@ -36,3 +36,7 @@ AVL_API_STATUS_MAP = {
     "inactive": AVLFeedStatus.inactive.value,
     "error": AVLFeedStatus.error.value,
 }
+
+
+AVL_GRANULARITY_WEEKLY = "weekly"
+AVL_GRANULARITY_DAILY = "daily"
