@@ -153,12 +153,6 @@ paths:
             application/json:
               schema:
                   $ref: "#/components/schemas/GetConsumerSubscriptionsResponse"
-        400:
-          description: Invalid request
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
 
   /api/v1/siri-vm/subscriptions/{subscriptionId}/:
     get:
@@ -206,12 +200,6 @@ paths:
       responses:
         204:
           description: Success
-        400:
-          description: Invalid request
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
         404:
           description: Subscription not found
           content:
