@@ -31,6 +31,7 @@ $light-grey-50: mix(white, govuk-colour("light-grey"), 50%);
       padding: 5px;
       color: govuk-colour("black");
     }
+
     .pill-item__image {
       padding: 5px;
       align-self: center;
@@ -91,7 +92,8 @@ $search-box-height: 45px;
 .search-result__title {
   display: inline-block;
   margin-right: 1.375rem;
-  margin-bottom: 0; /* Note remove bottom margin from h3 tag as it doesn't collapse with metadata list */
+  margin-bottom: 0;
+  /* Note remove bottom margin from h3 tag as it doesn't collapse with metadata list */
 }
 
 .search-result__list {

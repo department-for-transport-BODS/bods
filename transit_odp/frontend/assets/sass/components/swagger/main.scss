@@ -1,0 +1,25 @@
+.swagger-ui {
+  @extend .govuk-template__body;
+  @extend .govuk-body;
+  @extend .js-enabled;
+  @extend .govuk-frontend-supported;
+  @import "mixins";
+  @import "variables";
+  @import "type";
+  @import "layout";
+  @import "buttons";
+  @import "form";
+  @import "modal";
+  @import "models";
+  @import "servers";
+  @import "table";
+  @import "topbar";
+  @import "information";
+  @import "authorize";
+  @import "errors";
+  @import "split-pane-mode";
+  @import "markdown";
+  font-size: $font-xl;
+  font-family: var(--djdt-font-family-primary) !important;
+  color: $black;
+}

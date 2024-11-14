@@ -1,0 +1,86 @@
+.info {
+  margin: 0px;
+  font-size: $font-base;
+
+  &.failed-config {
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  hgroup.main {
+    margin: 0 0 20px 0;
+    a {
+      @extend .govuk-link;
+      font-size: $font-base;
+      line-height: 1.25rem;
+    }
+  }
+
+  pre {
+    font-size: $font-md;
+    color: inherit;
+  }
+
+  p,
+  li,
+  table {
+    font-size: $font-base;
+    font-family: var(--djdt-font-family-primary) !important;
+    color: $black;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: var(--djdt-font-family-primary) !important;
+  }
+
+  a {
+    @extend .govuk-link;
+    font-size: $font-base;
+    line-height: 1.25rem;
+  }
+
+  > div {
+    margin: 0 0 5px 0;
+  }
+
+  .base-url {
+    font-weight: 600 !important;
+    margin: 0;
+  }
+
+  .title {
+    color: $black;
+    margin: 0;
+    small {
+      font-size: 10px;
+      position: relative;
+      top: -5px;
+      display: inline-block;
+      margin: 0 0 0 5px;
+      padding: 2px 4px;
+      vertical-align: super;
+      border-radius: 57px;
+      color: govuk-shade(govuk-colour("dark-grey"), 50%) !important;
+      background-color: govuk-tint(govuk-colour("dark-grey"), 85%) !important;
+
+      &.version-stamp {
+        color: govuk-shade(govuk-colour("green"), 50%) !important;
+        background-color: govuk-tint(govuk-colour("green"), 85%) !important;
+      }
+
+      pre {
+        margin: 0;
+        padding: 0;
+        color: inherit;
+        font-size: $font-md;
+        font-family: var(--djdt-font-family-primary) !important;
+      }
+    }
+  }
+}
