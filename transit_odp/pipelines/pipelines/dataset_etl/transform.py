@@ -52,6 +52,7 @@ class Transform(ETLUtility):
     def transform(self, extracted_data: ExtractedData) -> TransformedData:
         services = extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = extracted_data.journey_patterns.copy()
+        journey_pattern_tracks = extracted_data.journey_pattern_tracks.copy
         flexible_journey_patterns = extracted_data.flexible_journey_patterns.copy()
         jp_to_jps = extracted_data.jp_to_jps.copy()
         jp_sections = extracted_data.jp_sections.copy()
@@ -242,7 +243,6 @@ class Transform(ETLUtility):
                     service_pattern_stops.dropna(
                         subset=["stop_atco", "geometry"], inplace=True
                     )
-
         return TransformedData(
             services=services,
             service_patterns=service_patterns,

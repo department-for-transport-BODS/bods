@@ -40,8 +40,10 @@ from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
 
 logger = get_task_logger(__name__)
-
-
+pd.set_option('display.max_columns',None)
+pd.set_option('display.max_rows', None)
+pd.set_option('display.width', 1000)
+pd.set_option('display.max_colwidth', 1000)
 class TransXChangeExtractor:
     """An API equivalent replacement for XmlFileParser."""
 
@@ -96,7 +98,6 @@ class TransXChangeExtractor:
         logger.debug("Extracting services")
         services, lines = self.extract_services()
         logger.debug("Finished extracting services")
-
         # Extract StopPoints from doc and sync with DB (StopPoints should be 'readonly'
         # within this ETL process)
         logger.debug("Extracting stop points")
@@ -107,6 +108,7 @@ class TransXChangeExtractor:
         # Extract JourneyPattern and JourneyPatternSections
         logger.debug("Extracting journey_patterns")
         journey_patterns, jp_to_jps = self.extract_journey_patterns()
+        journey_pattern_tracks = self.extract_journey_rout_link()
         logger.debug("Finished extracting journey_patterns")
 
         # Extract JourneyPatternSections, TimingLinks and RouteLinks
@@ -199,6 +201,7 @@ class TransXChangeExtractor:
             flexible_stop_points=flexible_stop_points,
             provisional_stops=provisional_stops,
             journey_patterns=journey_patterns,
+            journey_pattern_tracks = journey_pattern_tracks,
             flexible_journey_patterns=flexible_journey_patterns,
             flexible_journey_details=flexible_journey_details,
             flexible_vehicle_journeys=flexible_vehicle_journeys,
@@ -311,6 +314,70 @@ class TransXChangeExtractor:
 
         return journey_patterns, jp_to_jps
 
+
+
+    def extract_journey_rout_link(self):
+        services = self.doc.get_services()
+        journey_patterns = journey_patterns_to_dataframe(services,False)
+        journey_patterns = journey_patterns[["pattern_id","route_ref"]]
+        grouped_df = journey_patterns.groupby('route_ref')['pattern_id'].apply(list).reset_index()
+        print("groupded_df")
+        print(grouped_df)
+        routes = self.doc.get_route()
+        route_ref_link = {} 
+        for route in routes: 
+            route_section_ref = route.get_element_or_none(["RouteSectionRef"])
+            route_id = route.get('id')
+            if route_section_ref and route_id: 
+                route_section_ref_text = route_section_ref.text if route_section_ref else '' 
+                route_ref_link.update({route_section_ref_text: route.get('id')})
+
+        route_sections = self.doc.get_route_sections()
+        sections_tracks = []
+        for route_section in route_sections:
+            route_section_id = route_section['id']
+            route_ref = route_ref_link.get(route_section_id, '')
+            try:
+                route_links = route_section.get_elements_or_none(["RouteLink"])
+                for route_link in route_links:
+                    route_from = route_link.get_element(['From','StopPointRef'])
+                    route_to =  route_link.get_element(['To','StopPointRef']) 
+                    distance =  route_link.get_element_or_none(['Distance']) 
+                    track_list = route_link.get_elements(['Track','Mapping'])
+                    for track  in track_list:
+                        locations = track.get_elements(['Location'])
+                        geometry = []
+                        for location in locations:
+                            Longitude = location.get_element_or_none(['Longitude'])
+                            Latitude = location.get_element_or_none(['Latitude'])
+                            geometry.append(Longitude.text)
+                            geometry.append(Latitude.text)
+                print("list of patter_ids")
+                print(grouped_df[grouped_df['route_ref'] == route_ref]['pattern_id']) 
+                sections_tracks.append(
+                    {
+                        "route_section_id" : route_section_id,
+                        "from_atco_code": route_from.text,
+                        "to_atco_code" : route_to.text,
+                        "distance" : distance.text,
+                        "geometry": geometry,
+                        "route_ref": route_ref,
+                        "patter_ids": grouped_df[grouped_df['route_ref'] == route_ref]['pattern_id']
+                    }
+                )
+            except Exception as e:
+                print(e)
+                logger.warning(f"Route link is missing for {route_section_id}")
+                
+
+        sections_tracks_df = pd.DataFrame(sections_tracks)
+        print("sections_tracks_df")
+        print(sections_tracks_df)
+        return sections_tracks_df
+
+
+ 
+
     def extract_vehicle_journeys(self):
         """
         This function extract the standard vehicle journey, flexible vehicle journey
@@ -346,7 +413,6 @@ class TransXChangeExtractor:
         if not df_flexible_operation_period.empty:
             df_flexible_operation_period["file_id"] = self.file_id
             df_flexible_operation_period.set_index(["file_id"], inplace=True)
-
         return (
             df_standard_vehicle_journeys,
             df_flexible_vehicle_journeys,
@@ -496,6 +562,9 @@ class TransXChangeZipExtractor:
             ),
             flexible_vehicle_journeys=concat_and_dedupe(
                 (extract.flexible_vehicle_journeys for extract in extracts)
+            ),
+            journey_pattern_tracks = concat_and_dedupe(
+                extract.journey_pattern_tracks for extract in extracts
             ),
             jp_to_jps=concat_and_dedupe((extract.jp_to_jps for extract in extracts)),
             jp_sections=concat_and_dedupe(

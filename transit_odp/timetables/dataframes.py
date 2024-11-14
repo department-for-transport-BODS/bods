@@ -330,7 +330,7 @@ def provisional_stops_to_dataframe(stops, doc: TransXChangeDocument):
     return pd.DataFrame(stop_points, columns=columns).set_index("atco_code")
 
 
-def journey_patterns_to_dataframe(services):
+def journey_patterns_to_dataframe(services, drop_route_ref=True):
     all_items = []
     for service in services:
         service_code = service.get_element(["ServiceCode"]).text
@@ -340,11 +340,16 @@ def journey_patterns_to_dataframe(services):
             for pattern in standard_service.get_elements(["JourneyPattern"]):
                 section_refs = pattern.get_elements(["JourneyPatternSectionRefs"])
                 direction = pattern.get_element_or_none(["Direction"])
+                # route_refs = pattern.get_elements(["RouteRef"]) 
+                route_refs = pattern.get_element_or_none(["RouteRef"]) 
                 all_items.append(
                     {
                         "service_code": service_code,
                         "journey_pattern_id": pattern["id"],
+                        "pattern_id": pattern["id"],
                         "direction": direction.text if direction is not None else "",
+                        # "route_ref": [route_ref.text for route_ref in route_refs],
+                        "route_ref": route_refs.text if route_refs is not None else "",
                         "jp_section_refs": [ref.text for ref in section_refs],
                     }
                 )
@@ -356,6 +361,9 @@ def journey_patterns_to_dataframe(services):
         journey_patterns["journey_pattern_id"] = journey_patterns[
             "service_code"
         ].str.cat(journey_patterns["journey_pattern_id"], sep="-")
+    if drop_route_ref:
+        journey_patterns = journey_patterns.drop(["route_ref","pattern_id"],axis=1)
+        
 
     return journey_patterns
 

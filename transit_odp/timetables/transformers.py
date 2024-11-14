@@ -51,6 +51,7 @@ class TransXChangeTransformer:
         """Transform various dataframes created during the extraction stage, so that these records can be loaded into expected tables in the loader stage"""
         services = self.extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = self.extracted_data.journey_patterns.copy()
+        journey_pattern_tracks = self.extracted_data.journey_pattern_tracks.copy()
         flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
         flexible_vehicle_journeys = self.extracted_data.flexible_vehicle_journeys.copy()
         jp_to_jps = self.extracted_data.jp_to_jps.copy()
@@ -317,6 +318,11 @@ class TransXChangeTransformer:
                                 df_merged_vehicle_journeys,
                             ]
                         )
+        print("df_merged_vehicle_journeys")
+        print(df_merged_vehicle_journeys.shape)
+        print(df_merged_vehicle_journeys.columns)
+        print(df_merged_vehicle_journeys.iloc[0:5])
+        print(journey_pattern_tracks)
         return TransformedData(
             services=services,
             service_patterns=service_patterns,
@@ -336,6 +342,7 @@ class TransXChangeTransformer:
             most_common_localities=most_common_localities,
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
+            journey_pattern_tracks = journey_pattern_tracks,
             serviced_organisations=df_merged_serviced_organisations,
             flexible_operation_periods=df_flexible_operation_periods,
             operating_profiles=operating_profiles,

@@ -12,6 +12,7 @@ class ExtractedData(object):
     flexible_stop_points: pd.DataFrame
     provisional_stops: pd.DataFrame
     journey_patterns: pd.DataFrame
+    journey_pattern_tracks: pd.DataFrame
     flexible_journey_patterns: pd.DataFrame
     flexible_journey_details: pd.DataFrame
     flexible_vehicle_journeys: pd.DataFrame
@@ -49,6 +50,7 @@ class TransformedData(object):
     service_pattern_stops: pd.DataFrame
     booking_arrangements: pd.DataFrame
     vehicle_journeys: pd.DataFrame
+    journey_pattern_tracks: pd.DataFrame
     serviced_organisations: pd.DataFrame
     flexible_operation_periods: pd.DataFrame
     operating_profiles: pd.DataFrame

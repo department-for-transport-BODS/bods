@@ -87,6 +87,9 @@ class TransXChangeDataLoader:
         vehicle_journeys = self.load_vehicle_journeys(service_patterns)
         adapter.info("Finished vehicle journeys.")
 
+        adapter.info("Loading tracks.")
+        Journey_tracks = self.load_journey_tracks(self.transformed.journey_pattern_tracks)
+
         adapter.info("Loading flexible operation periods.")
         self.load_flexible_service_operation_periods(vehicle_journeys)
         adapter.info("Finished flexible operation periods.")
@@ -213,8 +216,20 @@ class TransXChangeDataLoader:
             vehicle_journeys["id"] = pd.Series(
                 (obj.id for obj in created), index=vehicle_journeys.index
             )
+            print("created")
+            print(vehicle_journeys)
+            # print(type(created))
+            # print(dir(created))
+
+        print("loading vehicle_journeys")
+        print(vehicle_journeys)
 
         return vehicle_journeys
+
+    def load_journey_tracks(self):
+        tracks = self.transformed.journey_pattern_tracks
+        if tracks.empty:
+            return pd.DataFrame()
 
     def load_flexible_service_operation_periods(self, vehicle_journeys):
         flexible_service_operation_periods = self.transformed.flexible_operation_periods
