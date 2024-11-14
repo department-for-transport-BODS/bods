@@ -585,6 +585,7 @@ class TXCFileAttributes(models.Model):
     origin = models.CharField(_("Origin"), max_length=512, default="")
     destination = models.CharField(_("Destination"), max_length=512, default="")
     hash = models.CharField(_("Hash of file"), max_length=40, default="")
+    mode = models.CharField(_("Mode"), max_length=20, default="Bus")
 
     objects = TXCFileAttributesQuerySet.as_manager()
 
@@ -624,6 +625,7 @@ class TXCFileAttributes(models.Model):
             public_use=txc_file.service.public_use,
             line_names=[line.line_name for line in txc_file.service.lines],
             hash=txc_file.hash,
+            mode=txc_file.service.mode,
         )
 
 
