@@ -2,13 +2,18 @@ from math import floor
 
 from django.db.models import Avg
 from django_hosts import reverse
+from waffle import flag_is_active
 
 from config.hosts import PUBLISH_HOST
 from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.avl.tables import AVLDataFeedTable
+from transit_odp.browse.common import get_in_scope_in_season_services_line_level
 from transit_odp.organisation.constants import AVLType
+from transit_odp.publish.requires_attention import (
+    get_avl_requires_attention_line_level_data,
+)
 from transit_odp.publish.views.base import BasePublishListView
 
 
@@ -45,18 +50,30 @@ class ListView(BasePublishListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        org_id = context["pk1"]
         overall_ppc_score = self.get_overall_ppc_score()["percent_matching__avg"]
+        is_avl_require_attention_active = flag_is_active(
+            "", "is_avl_require_attention_active"
+        )
+
         context.update(
             {
-                "overall_ppc_score": floor(overall_ppc_score)
-                if overall_ppc_score
-                else overall_ppc_score,
+                "overall_ppc_score": (
+                    floor(overall_ppc_score) if overall_ppc_score else overall_ppc_score
+                ),
                 "data_activity_url": reverse(
                     "data-activity",
                     kwargs={"pk1": self.organisation.id},
                     host=PUBLISH_HOST,
                 )
                 + "?prev=avl-feed-list",
+                "services_requiring_attention": len(
+                    get_avl_requires_attention_line_level_data(org_id)
+                ),
+                "total_in_scope_in_season_services": len(
+                    get_in_scope_in_season_services_line_level(org_id)
+                ),
+                "is_avl_require_attention_active": is_avl_require_attention_active,
             }
         )
         return context
