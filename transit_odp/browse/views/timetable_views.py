@@ -85,7 +85,6 @@ class DatasetDetailView(DetailView):
             .add_live_data()
             .add_nocs()
             .select_related("live_revision")
-            .add_is_live_pti_compliant()
         )
 
     def get_distinct_dataset_txc_attributes(self, revision_id):
@@ -148,7 +147,6 @@ class DatasetDetailView(DetailView):
             live_revision.created.date() >= settings.PTI_START_DATE.date()
         )
         kwargs["pti_enforced_date"] = settings.PTI_ENFORCED_DATE
-        kwargs["show_pti_link"] = not dataset.is_pti_compliant
 
         is_subscribed = None
         feed_api = None
