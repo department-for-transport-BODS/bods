@@ -1,5 +1,6 @@
 """updaters.py Module for automatically updating datasets uploaded via url.
 """
+
 import hashlib
 import logging
 
@@ -108,9 +109,11 @@ class DatasetUpdater:
             return False
 
         new_hash = hashlib.sha1(self.content).hexdigest()
+        if self.live_revision.original_file_hash:
+            return new_hash != self.live_revision.original_file_hash
+
         with self.live_revision.upload_file.open("rb") as f:
             live_hash = hashlib.sha1(f.read()).hexdigest()
-
         return new_hash != live_hash
 
     def draft_is_different(self):
@@ -119,6 +122,9 @@ class DatasetUpdater:
         draft.
         """
         new_hash = hashlib.sha1(self.content).hexdigest()
+        if self.draft.original_file_hash:
+            return new_hash != self.draft.original_file_hash
+
         with self.draft.upload_file.open("rb") as f:
             draft_hash = hashlib.sha1(f.read()).hexdigest()
         return new_hash != draft_hash
