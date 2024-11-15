@@ -403,12 +403,11 @@ def task_rerun_fares_validation_specific_datasets():
     """
     csv_file_name = CSVFileName.RERUN_FARES_VALIDATION.value
     _ids, _id_type, _ = read_datasets_file_from_s3(csv_file_name)
-    logger.info(
-        f"RerunFaresValidationSpecificDatasets {revision_id} => Starting fares ETL pipeline."
-    )
+
     if not _ids and not _id_type == "dataset_ids":
         logger.info("No valid dataset IDs found in the file.")
         return
+
     logger.info(f"Total number of datasets to be processed: {len(_ids)}")
     fares_datasets = Dataset.objects.filter(id__in=_ids).get_active()
 

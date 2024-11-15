@@ -123,7 +123,7 @@ class BaseViolationsCSVFileView(DetailView):
                 pti_report_filename = (
                     f"BODS_TXC_validation_{revision.dataset.organisation.name}"
                     f"_{revision.dataset_id}"
-                    f"_{revision.pti_observations.last().created:%H:%M_%d%m%Y}.csv"
+                    f"_{revision.pti_observations.last().created:%H_%M_%d%m%Y}.csv"
                 )
                 builder = PTICSV(revision_id=revision.id)
                 output = builder.to_string()

@@ -103,7 +103,7 @@ def test_pti_observations_filename(client_factory):
     expected_filename = (
         f"BODS_TXC_validation_{revision.dataset.organisation.name}"
         f"_{revision.dataset_id}"
-        f"_{now():%H:%M_%d%m%Y}.csv"
+        f"_{now():%H_%M_%d%m%Y}.csv"
     )
     response = client.get(url)
     response_file = io.BytesIO(b"".join(response.streaming_content))

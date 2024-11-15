@@ -655,6 +655,14 @@ AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
 AWS_ENVIRONMENT = env("AWS_ENVIRONMENT", default="LOCAL")
 
+# ABODS AVL LINE LEVEL DETAILS
+# -------------------------------------------------------------------------------
+ABODS_AVL_LINE_LEVEL_DETAILS_URL = env(
+    "ABODS_AVL_LINE_LEVEL_DETAILS_URL", default="https://abods_api.url"
+)
+ABODS_AVL_AUTH_TOKEN = env("ABODS_AVL_AUTH_TOKEN", default="")
+
+
 # Crispy forms
 # ------------------------------------------------------------------------------
 CRISPY_ALLOWED_TEMPLATE_PACKS = (

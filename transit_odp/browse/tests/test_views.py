@@ -82,6 +82,9 @@ from unittest import TestCase
 
 
 pytestmark = pytest.mark.django_db
+AVL_LINE_LEVEL_REQUIRE_ATTENTION = (
+    "transit_odp.browse.views.operators.get_avl_requires_attention_line_level_data"
+)
 
 
 def get_lta_complaint_data_queryset():
@@ -1154,13 +1157,16 @@ class TestOperatorsView:
 
 
 class TestOperatorDetailView:
+    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     def test_operator_detail_view_timetable_stats_not_compliant(
-        self, request_factory: RequestFactory
+        self, mock_avl_requires_attention, request_factory: RequestFactory
     ):
         org = OrganisationFactory()
         today = timezone.now().date()
         month = timezone.now().date() + datetime.timedelta(weeks=4)
         two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+
+        mock_avl_requires_attention.return_value = []
 
         total_services = 9
         licence_number = "PD5000229"
@@ -1269,8 +1275,9 @@ class TestOperatorDetailView:
         # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
         assert context["services_require_attention_percentage"] == 75
 
+    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     def test_operator_detail_weca_view_timetable_stats_not_compliant(
-        self, request_factory: RequestFactory
+        self, mock_avl_line_level_require_attention, request_factory: RequestFactory
     ):
         """Test Operator WECA details view stat with non complaint data in_scope_in_season
         Count there are few which required attention
@@ -1282,6 +1289,7 @@ class TestOperatorDetailView:
         today = timezone.now().date()
         month = timezone.now().date() + datetime.timedelta(weeks=4)
         two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+        mock_avl_line_level_require_attention.return_value = []
 
         total_services = 9
         licence_number = "PD5000229"
@@ -1397,12 +1405,14 @@ class TestOperatorDetailView:
         # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
         assert context["services_require_attention_percentage"] == 75
 
+    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     def test_operator_detail_view_timetable_stats_compliant(
-        self, request_factory: RequestFactory
+        self, mock_avl_line_level, request_factory: RequestFactory
     ):
         org = OrganisationFactory()
         month = timezone.now().date() + datetime.timedelta(weeks=4)
         two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+        mock_avl_line_level.return_value = []
 
         total_services = 4
         licence_number = "PD5000123"
@@ -1483,8 +1493,9 @@ class TestOperatorDetailView:
         # 3 services up to date, including one in season. 0/3 requiring attention = 0%
         assert context["services_require_attention_percentage"] == 0
 
+    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     def test_operator_detail_weca_view_timetable_stats_compliant(
-        self, request_factory: RequestFactory
+        self, avl_line_level_require_attention, request_factory: RequestFactory
     ):
         """Test Operator WECA details view stat with complaint data in_scope_in_season
         Count there are zero which required attention
@@ -1495,6 +1506,7 @@ class TestOperatorDetailView:
         org = OrganisationFactory()
         month = timezone.now().date() + datetime.timedelta(weeks=4)
         two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+        avl_line_level_require_attention.return_value = []
 
         total_services = 4
         licence_number = "PD5000123"
@@ -1582,12 +1594,16 @@ class TestOperatorDetailView:
         # 3 services up to date, including one in season. 0/3 requiring attention = 0%
         assert context["services_require_attention_percentage"] == 0
 
-    def test_operator_detail_view_avl_stats(self, request_factory: RequestFactory):
+    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
+    def test_operator_detail_view_avl_stats(
+        self, mock_avl_line_level_require_attention, request_factory: RequestFactory
+    ):
         org = OrganisationFactory()
         num_datasets = 5
         datasets = DatasetFactory.create_batch(
             num_datasets, organisation=org, dataset_type=DatasetType.AVL.value
         )
+        mock_avl_line_level_require_attention.return_value = []
         revisions = [DatasetRevisionFactory(dataset=d) for d in datasets]
         AVLValidationReportFactory(
             created=datetime.datetime.now().date(),
@@ -1609,7 +1625,10 @@ class TestOperatorDetailView:
 
         assert context["overall_ppc_score"] is None
 
-    def test_operator_detail_view_fares_stats(self, request_factory: RequestFactory):
+    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
+    def test_operator_detail_view_fares_stats(
+        self, mock_avl_line_level_require_attention, request_factory: RequestFactory
+    ):
         org = OrganisationFactory()
         num_datasets = 5
         datasets = DatasetFactory.create_batch(
@@ -1618,6 +1637,8 @@ class TestOperatorDetailView:
         revisions = [DatasetRevisionFactory(dataset=d) for d in datasets]
         FaresMetadataFactory(revision=revisions[0], num_of_fare_products=1)
         FaresMetadataFactory(revision=revisions[1], num_of_fare_products=2)
+
+        mock_avl_line_level_require_attention.return_value = []
 
         request = request_factory.get("/operators/")
         request.user = UserFactory()
@@ -1631,11 +1652,15 @@ class TestOperatorDetailView:
         assert timetable_stats.total_fare_products == 3
         assert context["fares_non_compliant"] == 0
 
-    def test_operator_detail_view_urls(self, request_factory: RequestFactory):
+    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
+    def test_operator_detail_view_urls(
+        self, mock_line_level_require_attention, request_factory: RequestFactory
+    ):
         nocs = ["NOC1", "NOC2"]
         org = OrganisationFactory(nocs=nocs)
         user = UserFactory()
 
+        mock_line_level_require_attention.return_value = []
         request = request_factory.get("/operators/")
         request.user = user
 
