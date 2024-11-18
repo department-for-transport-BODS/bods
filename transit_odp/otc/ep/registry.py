@@ -80,6 +80,88 @@ class Registry:
         services_list = [service.model_dump() for service in self.data]
         self.services = pd.DataFrame(services_list)
 
+    def map_operatorname(self) -> None:
+        """
+        Map the Operator name with the services, so that EP services will have OTC_Operator link
+        We will not create Operators if they are missing in database table,
+        We will leave operator_id field blank
+        """
+        operator_df = pd.DataFrame.from_records(
+            Operator.objects.values("id", "operator_name")
+        )
+
+        operator_df_duplicate = operator_df[
+            operator_df.duplicated(subset="operator_name", keep=False)
+        ]
+
+        logger.info(
+            "EP API: Found {} operator duplicate {}".format(
+                len(operator_df_duplicate), operator_df_duplicate
+            )
+        )
+        operator_df = operator_df[
+            ~operator_df.duplicated(subset="operator_name", keep=False)
+        ]
+
+        operator_df.rename(columns={"id": "operator_id"}, inplace=True)
+        if not operator_df.empty:
+            logger.info("EP API: Mapping unique operator ids to services dataframe")
+            self.services = pd.merge(
+                self.services,
+                operator_df,
+                left_on="operator_name",
+                right_on="operator_name",
+                how="left",
+            )
+        else:
+            self.services["operator_id"] = None
+
+        if not operator_df_duplicate.empty:
+            self.map_duplicate_operatorname(operator_df_duplicate)
+
+    def map_duplicate_operatorname(self, operator_df_duplicate) -> None:
+        """
+        Map the Operator name with the services, for which we found multiple
+        operator ids in bods database, Operator will be linked using their licences.
+        so that EP services will have OTC_Operator link
+        We will not create Operators if they are missing in database table,
+        We will leave operator_id field blank
+        """
+        logger.info("EP API: Finding operator licences for duplicate operators")
+        operator_licences_df = pd.DataFrame.from_records(
+            Service.objects.filter(
+                operator_id__in=list(operator_df_duplicate["id"])
+            ).values(
+                "operator__id",
+                "operator__operator_name",
+                "licence__number",
+            )
+        )
+        operator_licences_df.drop_duplicates(inplace=True)
+        operator_licences_df.rename(
+            columns={
+                "operator__id": "operator_id",
+                "operator__operator_name": "operator_name",
+                "licence__number": "licence",
+            },
+            inplace=True,
+        )
+        logger.info("EP API: Linking duplicate operators to services")
+
+        self.services = pd.merge(
+            self.services,
+            operator_licences_df,
+            left_on=["operator_name", "licence"],
+            right_on=["operator_name", "licence"],
+            how="left",
+        )
+        self.services.rename(columns={"operator_id_x": "operator_id"}, inplace=True)
+        self.services["operator_id"] = self.services["operator_id"].fillna(
+            self.services["operator_id_y"]
+        )
+        self.services.drop(columns=["operator_id_y"], inplace=True)
+        self.services.operator_id.replace({np.nan: None}, inplace=True)
+
     def map_licences(self) -> None:
         """
         Map the licences with the services, so that EP services will have OTC_LICENCE link
@@ -142,4 +224,6 @@ class Registry:
             self.ignore_existing_services()
             logger.info("Map licences to database")
             self.map_licences()
+            logger.info("Map operator name to database")
+            self.map_operatorname()
             self.remove_columns()

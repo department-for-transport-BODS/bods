@@ -201,6 +201,10 @@ class TransXChangeDocument:
         xpath = ["Services", "Service", "ServiceCode"]
         return self.find_anywhere(xpath)
 
+    def get_mode(self):
+        xpath = ["Services", "Service", "Mode"]
+        return self.find_anywhere(xpath)
+
     def get_lines(self):
         """Get all the Line elements in the TransXChangeDocument.
 

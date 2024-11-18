@@ -41,3 +41,5 @@ OTC_STATUS_UNREGISTERED = "Unregistered"
 OTC_SCOPE_STATUS_OUT_OF_SCOPE = "Out of Scope"
 OTC_SCOPE_STATUS_IN_SCOPE = "In Scope"
 OTC_NOT_SEASONAL = "Not Seasonal"
+
+UNDER_MAINTENANCE = "Under maintenance"
