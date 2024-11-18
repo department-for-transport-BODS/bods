@@ -474,7 +474,6 @@ def task_rerun_fares_validation_specific_datasets():
                     )
                     task.to_error("", DatasetETLTaskResult.FAILURE)
                     raise
-
         except Exception as exc:
             failed_datasets.append(fares_dataset.id)
             message = f"Error processing fares dataset id {fares_dataset.id}: {exc}"
