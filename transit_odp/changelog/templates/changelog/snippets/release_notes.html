@@ -1,4 +1,29 @@
 {% load i18n %}
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "December 2024 (1.43.0)" %}</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      An improvement to simplify dataset pages and the browse section the way compliance
+      is measured for timetables.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A fix to the way datasets detect updates when hosted via URL and were queried too frequently.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A fix for the way registrations are imported from the PD BRD API
+      (for registrations managed by Enhanced Partnerships and Franchises).
+    {% endblocktrans %}
+  </li>
+</ul>
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "November 2024 (1.42.0)" %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}
