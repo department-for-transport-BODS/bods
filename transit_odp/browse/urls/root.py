@@ -17,6 +17,7 @@ from transit_odp.browse.views.contact_operator import (
 from transit_odp.browse.views.data_catalogue import DownloadDataCatalogueView
 from transit_odp.browse.views.guide_me import BrowseGuideMeView
 from transit_odp.browse.views.local_authority import (
+    LocalAuthorityComplianceReportView,
     LocalAuthorityDetailView,
     LocalAuthorityExportView,
     LocalAuthorityLineLevelExportView,
@@ -88,6 +89,11 @@ urlpatterns = [
                     name="local-authority-detail",
                 ),
                 path(
+                    "compliance-report/",
+                    view=LocalAuthorityComplianceReportView.as_view(),
+                    name="local-authority-compliance-report",
+                ),
+                path(
                     "export/",
                     view=LocalAuthorityExportView.as_view(),
                     name="local-authority-export",
@@ -131,11 +137,15 @@ urlpatterns = [
                     path("", view=MyAccountView.as_view(), name="home"),
                     path("settings/", view=SettingsView.as_view(), name="settings"),
                     path(
-                        "manage/", view=DatasetManageView.as_view(), name="feeds-manage"
+                        "manage/",
+                        view=DatasetManageView.as_view(),
+                        name="feeds-manage",
                     ),
                     # Used to redirect back to user's account page
                     path(
-                        "~redirect/", view=UserRedirectView.as_view(), name="redirect"
+                        "~redirect/",
+                        view=UserRedirectView.as_view(),
+                        name="redirect",
                     ),
                     path("agent/", include(AGENT_PATHS)),
                 ],
@@ -156,6 +166,7 @@ urlpatterns = [
     path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
     path("django_axe/", include("django_axe.urls")),
 ]
+
 
 if settings.DEBUG:
     from django.conf.urls.static import static
