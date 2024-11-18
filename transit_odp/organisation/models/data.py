@@ -6,6 +6,7 @@ from typing import Optional, cast
 from django.conf import settings
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.files.base import ContentFile
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Index, Q, UniqueConstraint
 from django.db.models.functions import Length
@@ -45,8 +46,6 @@ from transit_odp.pipelines.signals import dataset_etl
 from transit_odp.timetables.dataclasses.transxchange import TXCFile
 from transit_odp.users.models import User
 from transit_odp.validate.utils import filter_and_repackage_zip
-from django.core.validators import RegexValidator
-
 
 logger = logging.getLogger(__name__)
 
@@ -282,6 +281,12 @@ class DatasetRevision(
     requestor_ref = models.CharField(
         _("Requestor ref to access the resource, if any"), max_length=255, blank=True
     )
+    original_file_hash = models.CharField(
+        _("Hash of original upload file"), max_length=40, default=""
+    )
+    modified_file_hash = models.CharField(
+        _("Hash of modified file"), max_length=40, default=""
+    )
 
     objects = DatasetRevisionManager()
     tracker = FieldTracker()
@@ -360,6 +365,8 @@ class DatasetRevision(
                 new_zip_stream.read(), name=self.upload_file.name
             )
             self.upload_file = new_zip_content
+            with new_zip_content.open("rb") as f:
+                self.modified_file_hash = self.compute_hash(f.read())
             self.save()
 
     def publish(self, user=None):
