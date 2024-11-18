@@ -60,24 +60,36 @@
           </div>
         </div>
       </div>
-      <ul class="govuk-list govuk-!-margin-top-5">
-        <li>
-          <a class="govuk-link" href="{% url 'local-authority-export' host hosts.data %}?auth_ids={{ auth_ids }}">
-            {% filter force_escape %}
-              {% trans "Download detailed export" %}
-            {% endfilter %}
-          </a>
-        </li>
-      </ul>
-      <ul class="govuk-list govuk-!-margin-top-5">
-        <li>
-          <a class="govuk-link" href="{% url 'local-authority-line-level-export' host hosts.data %}?auth_ids={{ auth_ids }}">
-            {% filter force_escape %}
-              {% trans "Download detailed line level export" %}
-            {% endfilter %}
-          </a>
-        </li>
-      </ul>
+      {% if is_avl_require_attention_active %}
+        <ul class="govuk-list govuk-!-margin-top-5">
+          <li>
+            <a class="govuk-link" href="{% url 'local-authority-compliance-report' host hosts.data %}?auth_ids={{ auth_ids }}">
+              {% filter force_escape %}
+                {% trans "Download detailed export" %}
+              {% endfilter %}
+            </a>
+          </li>
+        </ul>
+      {% else %}
+        <ul class="govuk-list govuk-!-margin-top-5">
+          <li>
+            <a class="govuk-link" href="{% url 'local-authority-export' host hosts.data %}?auth_ids={{ auth_ids }}">
+              {% filter force_escape %}
+                {% trans "Download detailed export" %}
+              {% endfilter %}
+            </a>
+          </li>
+        </ul>
+        <ul class="govuk-list govuk-!-margin-top-5">
+          <li>
+            <a class="govuk-link" href="{% url 'local-authority-line-level-export' host hosts.data %}?auth_ids={{ auth_ids }}">
+              {% filter force_escape %}
+                {% trans "Download detailed line level export" %}
+              {% endfilter %}
+            </a>
+          </li>
+        </ul>
+      {% endif %}
     </div>
     <div class="govuk-grid-column-one-third">
       <h3 class="govuk-heading-m">{% trans "Need further help?" %}</h3>

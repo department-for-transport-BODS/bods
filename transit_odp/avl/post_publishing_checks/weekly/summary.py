@@ -7,7 +7,6 @@ import pandas as pd
 from django.db.models import F
 
 from transit_odp.avl.models import PostPublishingCheckReport
-from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.avl.post_publishing_checks.weekly.constants import DailyReport
 from transit_odp.avl.post_publishing_checks.weekly.fields import (
     BLOCK_REF_FIELDS,

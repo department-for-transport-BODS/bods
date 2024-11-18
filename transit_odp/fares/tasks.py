@@ -421,40 +421,63 @@ def task_rerun_fares_validation_specific_datasets():
 
     total_count = fares_datasets.count()
     for fares_dataset in fares_datasets:
-        logger.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
-        revision = fares_dataset.live_revision
-        if revision:
-            revision_id = revision.id
-            try:
-                revision = DatasetRevision.objects.get(
-                    pk=revision_id, dataset__dataset_type=FaresType
+        try:
+            logger.info(f"Running fares ETL pipeline for dataset id {fares_dataset.id}")
+            revision = fares_dataset.live_revision
+
+            if revision:
+                revision_id = revision.id
+                try:
+                    revision = DatasetRevision.objects.get(
+                        pk=revision_id, dataset__dataset_type=FaresType
+                    )
+                except DatasetRevision.DoesNotExist as exc:
+                    message = f"DatasetRevision {revision_id} does not exist."
+                    failed_datasets.append(fares_dataset.id)
+                    logger.exception(message, exc_info=True)
+                    raise PipelineException(message) from exc
+
+                context = DatasetPipelineLoggerContext(
+                    component_name="RerunFaresCatalogueDataExistingDatasets",
+                    object_id=revision.dataset.id,
                 )
-            except DatasetRevision.DoesNotExist as exc:
-                message = f"DatasetRevision {revision_id} does not exist."
-                failed_datasets.append(fares_dataset.id)
-                logger.exception(message, exc_info=True)
-                raise PipelineException(message) from exc
+                adapter = PipelineAdapter(logger, {"context": context})
 
-            context = DatasetPipelineLoggerContext(
-                component_name="RerunFaresCatalogueDataExistingDatasets",
-                object_id=revision.dataset.id,
-            )
-            adapter = PipelineAdapter(logger, {"context": context})
+                task_id = uuid.uuid4()
+                task = DatasetETLTaskResult.objects.create(
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=task_id,
+                )
 
-            task_id = uuid.uuid4()
-            task = DatasetETLTaskResult.objects.create(
-                revision=revision, status=DatasetETLTaskResult.STARTED, task_id=task_id
-            )
+                try:
+                    task_download_fares_file(task.id, adapter)
+                    task_set_fares_validation_result(task.id, adapter)
+                    task_run_fares_etl(task.id, adapter)
 
-            task_download_fares_file(task.id, adapter)
-            task_set_fares_validation_result(task.id, adapter)
-            task_run_fares_etl(task.id, adapter)
-
-            task.update_progress(100)
-            task.to_success()
-            successfully_processed_ids.append(fares_dataset.id)
-            processed_count += 1
-            adapter.info(f"The task completed for {processed_count} of {total_count}")
+                    task.update_progress(100)
+                    task.to_success()
+                    successfully_processed_ids.append(fares_dataset.id)
+                    processed_count += 1
+                    adapter.info(
+                        f"The task completed for {processed_count} of {total_count}"
+                    )
+                except ValueError as e:
+                    logger.error(
+                        f"ValueError for fares dataset id {fares_dataset.id}: {e}"
+                    )
+                    task.to_error("", DatasetETLTaskResult.FAILURE)
+                    raise
+                except Exception as e:
+                    logger.error(
+                        f"Pipeline failure for fares dataset id {fares_dataset.id}: {str(e)}"
+                    )
+                    task.to_error("", DatasetETLTaskResult.FAILURE)
+                    raise
+        except Exception as exc:
+            failed_datasets.append(fares_dataset.id)
+            message = f"Error processing fares dataset id {fares_dataset.id}: {exc}"
+            logger.exception(message, exc_info=True)
 
     logger.info(
         f"Total number of datasets processed successfully is {len(successfully_processed_ids)} out of {total_count}"
