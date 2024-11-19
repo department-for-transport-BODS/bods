@@ -755,6 +755,7 @@ CSP_SCRIPT_SRC = (
     "'unsafe-inline'",
     "https://www.googletagmanager.com",
     "https://ajax.googleapis.com/ajax/libs/jquery",
+    "https://www.google-analytics.com/*",
 )
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
 CSP_IMG_SRC = (
