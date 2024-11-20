@@ -4,13 +4,13 @@ import uuid
 
 from celery.utils.log import get_task_logger
 
+from transit_odp.common.utils.geometry import grid_gemotry_from_str
 from transit_odp.naptan.models import StopPoint, FlexibleZone
 from transit_odp.pipelines.pipelines.dataset_etl.utils.etl_base import ETLUtility
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import (
     ExtractedData,
     TransformedData,
 )
-
 from .utils.dataframes import (
     create_naptan_stoppoint_df,
     create_naptan_stoppoint_df_from_queryset,
@@ -40,6 +40,9 @@ from .utils.transform import (
     merge_journey_pattern_with_vj_for_departure_time,
     merge_serviced_organisations_with_operating_profile,
     transform_flexible_service_pattern_to_service_links,
+    transform_geometry_tracks,
+    add_tracks_sequence
+    
 )
 
 logger = get_task_logger(__name__)
@@ -161,6 +164,12 @@ class Transform(ETLUtility):
 
         stop_points.drop(columns=["common_name"], axis=1, inplace=True)
 
+        ### Tracks geometry transformation
+        if not journey_pattern_tracks.empty:
+            journey_pattern_tracks = transform_geometry_tracks(journey_pattern_tracks)
+            journey_pattern_tracks = add_tracks_sequence(journey_pattern_tracks)
+
+
         ### logic for flexible stop points transformation
         if not flexible_stop_points.empty:
             # 2. extract flexible zone data
@@ -262,6 +271,7 @@ class Transform(ETLUtility):
             most_common_localities=most_common_localities,
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
+            journey_pattern_tracks = journey_pattern_tracks,
             serviced_organisations=df_merged_serviced_organisations,
             flexible_operation_periods=df_flexible_operation_periods,
             operating_profiles=self.extracted_data.operating_profiles,
@@ -299,12 +309,16 @@ class Transform(ETLUtility):
                     {
                         "atco_code": index,
                         "naptan_id": np.nan,
-                        "geometry": provisional_stops.loc[index, "geometry"]
-                        if index in provisional_stops.index.values
-                        else None,
-                        "locality_id": provisional_stops.loc[index, "locality"]
-                        if index in provisional_stops.index
-                        else "",
+                        "geometry": (
+                            provisional_stops.loc[index, "geometry"]
+                            if index in provisional_stops.index.values
+                            else None
+                        ),
+                        "locality_id": (
+                            provisional_stops.loc[index, "locality"]
+                            if index in provisional_stops.index
+                            else ""
+                        ),
                     }
                     for index in missing_stops
                 )
@@ -337,10 +351,10 @@ class Transform(ETLUtility):
         ].reset_index()
 
         if not provisional_flexible_stops.empty:
-            provisional_flexible_stops[
-                "flexible_location"
-            ] = provisional_flexible_stops["geometry"].apply(
-                lambda row: [row] if not isinstance(row, list) else row
+            provisional_flexible_stops["flexible_location"] = (
+                provisional_flexible_stops["geometry"].apply(
+                    lambda row: [row] if not isinstance(row, list) else row
+                )
             )
 
         filtered_stop_points = flexible_stop_points[

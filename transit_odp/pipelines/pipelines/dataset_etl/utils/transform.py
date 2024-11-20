@@ -940,3 +940,20 @@ def merge_flexible_jd_with_jp(
         journey_patterns, how="left", on=["file_id", "journey_pattern_id"]
     )
     return journey_details
+
+
+
+def transform_geometry_tracks(self,df):
+    if df.empty:
+        return df 
+    if "geometry" in df.columns:
+        df["geometry"] = df["geometry"].apply(
+            lambda points: LineString([(float(long),float(lat)) for long,lat in points]) 
+        )
+    return df
+    
+def add_tracks_sequence(self, df):
+    if df.empty:
+        return df
+    df['sequence'] = df.index
+    return df

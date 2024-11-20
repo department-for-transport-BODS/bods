@@ -31,6 +31,8 @@ from transit_odp.transmodel.models import (
     StopActivity,
     StopPoint,
     VehicleJourney,
+    Tracks,
+    TracksVehicleJourney
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
@@ -295,6 +297,54 @@ def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
             block_number=record["block_number"],
         )
 
+
+def df_to_tracks(df:pd.DataFrame) -> Iterator[Tracks]:
+    """Generator function to return Tracks records to be loaded into tracks table"""
+    for record in df.to_dict("records"):
+        yield Tracks(
+            from_atco_code = record["from_atco_code"],
+            to_atco_code = record["to_atco_code"],
+            geometry = record["geometry"],
+            distance = record["distance"],
+        )
+
+def merge_vj_tracks_df(tracks: pd.DataFrame, vehicle_journeys: pd.DataFrame) -> pd.DataFrame:
+    """
+    Merging vehicle_journeys and tracks dataframes toget the relation ship table.
+    """
+    tracks_columns_to_keep = ['route_ref', 'jp_ref', 'sequence', 'id']
+    # Filter the tracks DataFrame to keep only the specified columns
+    tracks = tracks[tracks_columns_to_keep]
+    
+    # Explode the 'jp_ref' column so that each list item becomes a separate row
+    tracks_extended = tracks.explode('jp_ref')
+    tracks_extended.rename(columns={'id': 'tracks_id'}, inplace=True)
+    
+    internal_vjs_columns_to_keep = ['jp_ref', 'id']
+    # Filter the vehicle_journeys DataFrame to keep only the specified columns
+    internal_vjs = vehicle_journeys[internal_vjs_columns_to_keep]
+    internal_vjs.rename(columns={'id': 'vj_id'}, inplace=True)
+    
+    # Merge the extended tracks DataFrame with the vehicle_journeys DataFrame on 'jp_ref' column
+    merged_df = pd.merge(tracks_extended, internal_vjs, on='jp_ref', how='left')
+    
+    if merged_df.empty:
+        return pd.DataFrame()
+    
+    return merged_df
+
+
+def df_to_journeys_tracks(df:pd.DataFrame) -> Iterator[TracksVehicleJourney]:
+    """
+    Generator function returns Tracks vehice journey records to be loaded into the table.
+    """
+    for record in df.to_dict("records"):
+        vehicle_journey_id = record['vj_id']
+        yield TracksVehicleJourney(
+            vehicle_journey_id = vehicle_journey_id,
+            tracks_id = record['tracks_id'],
+            sequence_number = record['sequence']
+        )
 
 def get_time_field_or_none(time_in_text):
     time_field = None

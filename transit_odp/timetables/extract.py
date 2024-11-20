@@ -324,10 +324,8 @@ class TransXChangeExtractor:
     def extract_journey_rout_link(self):
         services = self.doc.get_services()
         journey_patterns = journey_patterns_to_dataframe(services,False)
-        journey_patterns = journey_patterns[["pattern_id","route_ref"]]
-        grouped_df = journey_patterns.groupby('route_ref')['pattern_id'].apply(list).reset_index()
-        print("groupded_df")
-        print(grouped_df)
+        jp_route_ref = journey_patterns[["pattern_id","route_ref"]]
+        df_vj_grouped = jp_route_ref.groupby('route_ref')['pattern_id'].apply(list).reset_index()
         routes = self.doc.get_route()
         route_ref_link = {} 
         for route in routes: 
@@ -340,9 +338,10 @@ class TransXChangeExtractor:
         route_sections = self.doc.get_route_sections()
         sections_tracks = []
         for route_section in route_sections:
-            route_section_id = route_section['id']
-            route_ref = route_ref_link.get(route_section_id, '')
             try:
+                route_section_id = route_section['id']
+                route_ref = route_ref_link.get(route_section_id, '')
+                jp_ref = df_vj_grouped[df_vj_grouped['route_ref'] == route_ref]['pattern_id'].iloc[0] 
                 route_links = route_section.get_elements_or_none(["RouteLink"])
                 for route_link in route_links:
                     route_from = route_link.get_element(['From','StopPointRef'])
@@ -355,10 +354,7 @@ class TransXChangeExtractor:
                         for location in locations:
                             Longitude = location.get_element_or_none(['Longitude'])
                             Latitude = location.get_element_or_none(['Latitude'])
-                            geometry.append(Longitude.text)
-                            geometry.append(Latitude.text)
-                print("list of patter_ids")
-                print(grouped_df[grouped_df['route_ref'] == route_ref]['pattern_id']) 
+                            geometry.append((Longitude.text,Latitude.text))
                 sections_tracks.append(
                     {
                         "route_section_id" : route_section_id,
@@ -367,7 +363,7 @@ class TransXChangeExtractor:
                         "distance" : distance.text,
                         "geometry": geometry,
                         "route_ref": route_ref,
-                        "patter_ids": grouped_df[grouped_df['route_ref'] == route_ref]['pattern_id']
+                        "jp_ref": jp_ref
                     }
                 )
             except Exception as e:
@@ -376,8 +372,6 @@ class TransXChangeExtractor:
                 
 
         sections_tracks_df = pd.DataFrame(sections_tracks)
-        print("sections_tracks_df")
-        print(sections_tracks_df)
         return sections_tracks_df
 
 

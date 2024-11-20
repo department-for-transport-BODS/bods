@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from waffle import flag_is_active
 
+from transit_odp.common.utils.geometry import grid_gemotry_from_str
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_naptan_stoppoint_df,
     create_naptan_stoppoint_df_from_queryset,
@@ -37,6 +38,8 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     transform_flexible_service_pattern_to_service_links,
     create_flexible_routes,
     merge_flexible_jd_with_jp,
+    transform_geometry_tracks,
+    add_tracks_sequence,
 )
 from transit_odp.naptan.models import StopPoint, FlexibleZone
 from transit_odp.timetables.utils import get_line_description_based_on_direction
@@ -84,6 +87,12 @@ class TransXChangeTransformer:
         stop_points = stop_points.loc[
             ~stop_points.index.isin(flexible_stop_points.index)
         ]
+
+
+        if not journey_pattern_tracks.empty:
+            journey_pattern_tracks = transform_geometry_tracks(journey_pattern_tracks)
+            journey_pattern_tracks = add_tracks_sequence(journey_pattern_tracks)
+
         # Create missing route information
         route_links = pd.DataFrame()
         if not timing_links.empty:
@@ -317,11 +326,6 @@ class TransXChangeTransformer:
                                 df_merged_vehicle_journeys,
                             ]
                         )
-        print("df_merged_vehicle_journeys")
-        print(df_merged_vehicle_journeys.shape)
-        print(df_merged_vehicle_journeys.columns)
-        print(df_merged_vehicle_journeys.iloc[0:5])
-        print(journey_pattern_tracks)
         return TransformedData(
             services=services,
             service_patterns=service_patterns,
@@ -346,6 +350,8 @@ class TransXChangeTransformer:
             flexible_operation_periods=df_flexible_operation_periods,
             operating_profiles=operating_profiles,
         )
+
+
 
     def sync_stop_points(self, stop_points, provisional_stops):
         stop_point_cache = self.stop_point_cache

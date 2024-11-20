@@ -340,7 +340,6 @@ def journey_patterns_to_dataframe(services, drop_route_ref=True):
             for pattern in standard_service.get_elements(["JourneyPattern"]):
                 section_refs = pattern.get_elements(["JourneyPatternSectionRefs"])
                 direction = pattern.get_element_or_none(["Direction"])
-                # route_refs = pattern.get_elements(["RouteRef"]) 
                 route_refs = pattern.get_element_or_none(["RouteRef"]) 
                 all_items.append(
                     {
@@ -348,7 +347,6 @@ def journey_patterns_to_dataframe(services, drop_route_ref=True):
                         "journey_pattern_id": pattern["id"],
                         "pattern_id": pattern["id"],
                         "direction": direction.text if direction is not None else "",
-                        # "route_ref": [route_ref.text for route_ref in route_refs],
                         "route_ref": route_refs.text if route_refs is not None else "",
                         "jp_section_refs": [ref.text for ref in section_refs],
                     }
@@ -364,7 +362,6 @@ def journey_patterns_to_dataframe(services, drop_route_ref=True):
     if drop_route_ref:
         journey_patterns = journey_patterns.drop(["route_ref","pattern_id"],axis=1)
         
-
     return journey_patterns
 
 

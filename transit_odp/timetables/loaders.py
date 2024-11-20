@@ -21,6 +21,9 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     df_to_serviced_org_vehicle_journey,
     get_max_date_or_none,
     get_min_date_or_none,
+    df_to_tracks,
+    merge_vj_tracks_df,
+    df_to_journeys_tracks,
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result import (
     ETLReport,
@@ -55,6 +58,8 @@ from transit_odp.transmodel.models import (
     ServicedOrganisations,
     OperatingProfile,
     ServicedOrganisationVehicleJourney,
+    Tracks,
+    TracksVehicleJourney
 )
 
 BATCH_SIZE = 2000
@@ -86,9 +91,15 @@ class TransXChangeDataLoader:
         adapter.info("Loading vehicle journeys.")
         vehicle_journeys = self.load_vehicle_journeys(service_patterns)
         adapter.info("Finished vehicle journeys.")
-
-        adapter.info("Loading tracks.")
-        Journey_tracks = self.load_journey_tracks(self.transformed.journey_pattern_tracks)
+        tracks = self.transformed.journey_pattern_tracks
+        if not tracks.empty and not vehicle_journeys.empty:
+            adapter.info("Loading tracks.")
+            tracks = self.load_journey_tracks()
+            adapter.info("Finished Tracks")
+            
+            adapter.info("Loading vehicle_journeys tracks")
+            self.load_vj_tracks(tracks,vehicle_journeys)
+            adapter.info("Finished vehicle journey tracks")
 
         adapter.info("Loading flexible operation periods.")
         self.load_flexible_service_operation_periods(vehicle_journeys)
@@ -216,20 +227,27 @@ class TransXChangeDataLoader:
             vehicle_journeys["id"] = pd.Series(
                 (obj.id for obj in created), index=vehicle_journeys.index
             )
-            print("created")
-            print(vehicle_journeys)
-            # print(type(created))
-            # print(dir(created))
-
-        print("loading vehicle_journeys")
-        print(vehicle_journeys)
-
         return vehicle_journeys
 
     def load_journey_tracks(self):
         tracks = self.transformed.journey_pattern_tracks
-        if tracks.empty:
-            return pd.DataFrame()
+        tracks_objs = list(df_to_tracks(tracks))
+        created = Tracks.objects.bulk_create(tracks_objs,batch_size=BATCH_SIZE)
+        tracks['id'] = pd.Series(
+            (obj.id for obj in created), index=tracks.index
+        )
+        return tracks
+
+    def load_vj_tracks(self,tracks, vehicle_journeys):
+        tracks_vjs = merge_vj_tracks_df(tracks,vehicle_journeys)
+        if tracks_vjs.empty:
+            return
+        vj_tracks_objs = list(df_to_journeys_tracks(tracks_vjs))
+        created = TracksVehicleJourney.objects.bulk_create(vj_tracks_objs,batch_size=BATCH_SIZE)
+        tracks_vjs['id'] = pd.Series(
+            (obj.id for obj in created), index=tracks_vjs.index
+        ) 
+        return tracks_vjs
 
     def load_flexible_service_operation_periods(self, vehicle_journeys):
         flexible_service_operation_periods = self.transformed.flexible_operation_periods
