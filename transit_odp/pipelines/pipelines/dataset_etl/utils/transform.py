@@ -943,7 +943,7 @@ def merge_flexible_jd_with_jp(
 
 
 
-def transform_geometry_tracks(self,df):
+def transform_geometry_tracks(df):
     if df.empty:
         return df 
     if "geometry" in df.columns:
@@ -952,7 +952,7 @@ def transform_geometry_tracks(self,df):
         )
     return df
     
-def add_tracks_sequence(self, df):
+def add_tracks_sequence(df):
     if df.empty:
         return df
     df['sequence'] = df.index
