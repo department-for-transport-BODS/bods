@@ -18,6 +18,7 @@ from transit_odp.common.loggers import (
     PipelineAdapter,
     get_dataset_adapter_from_revision,
 )
+from transit_odp.common.utils import sha1sum
 from transit_odp.common.utils.aws_common import SQSClientWrapper
 from transit_odp.common.utils.s3_bucket_connection import (
     get_file_name_by_id,
@@ -96,6 +97,7 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
             task_dataset_download.signature(args),
             task_scan_timetables.signature(args),
             task_timetable_file_check.signature(args),
+            task_populate_original_file_hash.signature(args),
             task_timetable_schema_check.signature(args),
             task_post_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
@@ -440,6 +442,21 @@ def task_pti_validation(revision_id: int, task_id: int):
 
 
 @shared_task()
+def task_populate_original_file_hash(revision_id: int, task_id: int):
+    task = get_etl_task_or_pipeline_exception(task_id)
+    revision = TimetableDatasetRevision.objects.get(id=revision_id)
+
+    adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
+    with revision.upload_file.open("rb") as f:
+        original_hash = sha1sum(f.read())
+
+    revision.original_file_hash = original_hash
+    revision.save()
+
+    return revision_id
+
+
+@shared_task()
 def task_dataset_etl(revision_id: int, task_id: int):
     """A task that runs the ETL pipeline on a timetable dataset.
     N.B. this is just a proxy to `run_timetable_etl_pipeline` as part of a refactor.
@@ -757,6 +774,7 @@ def task_rerun_timetables_etl_specific_datasets():
                 )
                 try:
                     task_dataset_download(revision_id, task.id, reprocess_flag=True)
+                    task_populate_original_file_hash(revision_id, task.id)
                     task_extract_txc_file_data(revision_id, task.id)
                     task_dataset_etl(revision_id, task.id)
 
