@@ -65,7 +65,9 @@
                                      type="checkbox"
                                      {% if row.cells.is_suppressed is True %} checked {% else %}  {% endif %}
                                      onclick="BODSFrontend.suppressObservation({{ row.cells.organisation_id }}, {{ row.cells.revision_id }}, {{ row.cells.report_id }}, '{{ row.cells.service_code }}','{{ row.cells.line_name }}', '{{ row.cells.observation }}', '{{ forloop.counter }}' );" />
-                              <label class="govuk-label govuk-checkboxes__label" for="suppress" id="row-{{ forloop.counter }}">
+                              <label class="govuk-label govuk-checkboxes__label"
+                                     for="checkbox-suppress-{{ forloop.counter }}"
+                                     id="row-{{ forloop.counter }}">
                                 {% if row.cells.is_suppressed is True %}
                                   Suppressed
                                 {% else %}
