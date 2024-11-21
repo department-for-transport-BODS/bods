@@ -130,7 +130,8 @@ class Registry:
         logger.info("EP API: Finding operator licences for duplicate operators")
         operator_licences_df = pd.DataFrame.from_records(
             Service.objects.filter(
-                operator_id__in=list(operator_df_duplicate["id"])
+                operator_id__in=list(operator_df_duplicate["id"]),
+                api_type__isnull=True,
             ).values(
                 "operator__id",
                 "operator__operator_name",
@@ -204,12 +205,6 @@ class Registry:
                 if column in self.services.columns:
                     self.services.drop([column], axis=1, inplace=True)
 
-    def print_logs(self):
-        # TODO: this is only for testing
-        logger.info(
-            f"no of records for service: PD0000479/43010386: {len(self.services[(self.services['registration_number'] == 'PD0000479/43010386') & (self.services['service_number'] == '169')])}"
-        )
-
     def process_services(self) -> None:
         """
         Fetch records from the EP api, and implement following
@@ -223,18 +218,13 @@ class Registry:
         if not self.services.empty:
             logger.info("Removing EP duplicates.")
             self.remove_duplicates()
-            self.print_logs()
             logger.info(
                 "Merging EP records for same registration numbers by making service name seprated from pipe."
             )
             logger.info("Ignoring OTC services present in EP records.")
             self.ignore_existing_services()
-            self.print_logs()
             logger.info("Map licences to database")
             self.map_licences()
-            self.print_logs()
             logger.info("Map operator name to database")
             self.map_operatorname()
-            self.print_logs()
             self.remove_columns()
-            self.print_logs()
