@@ -4,32 +4,48 @@
  * @param {string} rowIndex - Row index of the table
  * @param {string} direction - Direction whether the inbound or outbound
  *
- * @example toggleTooltip('1', 'inbound') will add the class to show the tooltip
+ * @example toggleTooltip('1','0', 'inbound') will add the class to show the tooltip
  */
-function showTooltip(event, rowIndex, direction=null, type=null) {
-  hideAllTooltips();
+
+function showTooltip(event, rowIndex, direction = null, type = null) {
+  const manageTooltip = (id) => {
+    hideAllTooltips(id);
+    const target = document.getElementById(id);
+    if (isToolTipOpen(target)) {
+      target.classList.remove("showtooltip");
+    } else {
+      target.classList.add("showtooltip");
+    }
+  };
   if (type === "observation") {
-  const TARGET = document.getElementById(rowIndex);
-  TARGET.classList.add("showtooltip");
-  return;
+    manageTooltip(rowIndex);
+    return;
   }
-  // Only call the function when the event is triggered by the stop
   if (event.target.id.startsWith("stop-")) {
-    const elemId = "tooltip-" + direction + "-" + rowIndex;
-    document.getElementById(elemId).classList.add("showtooltip");
+    const elemId = `tooltip-${direction}-${rowIndex}`;
+    manageTooltip(elemId);
   }
 }
 
+function isToolTipOpen(element) {
+  // Check if element has showtooltip class
+  const classes = element.classList;
+  if (element.classList.contains("showtooltip")) {
+    return true;
+  }
+  return false;
+}
 /**
  * Remove all the tooltip(s) if present
  *
  */
-function hideAllTooltips() {
-  document.querySelectorAll("p.tooltiptext.showtooltip, div.tooltiptext.showtooltip").forEach((element) => {
-    element.classList.remove("showtooltip");
+function hideAllTooltips(exception = null) {
+  document.querySelectorAll(".tooltiptext.showtooltip").forEach((element) => {
+    if (!(exception && element.id === exception)) {
+      element.classList.remove("showtooltip");
+    }
   });
 }
-
 /**
  *
  * Remove the class to hide the tooltip
