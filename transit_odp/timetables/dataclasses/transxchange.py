@@ -24,11 +24,15 @@ class Service(BaseModel):
     lines: List[Line]
     origin: str
     destination: str
+    service_mode: str
 
     @classmethod
     def from_txc_document(cls, doc: TransXChangeDocument):
         lines = [Line(line_name=line) for line in doc.get_all_line_names()]
         service_code = doc.get_service_codes()[0].text
+        mode = doc.get_mode()
+        mode = mode[0] if len(mode) > 0 else None
+        mode = mode.text if mode and mode.text and mode.text != "" else "bus"
 
         start_date = None
         if start_dates := doc.get_operating_period_start_date():
@@ -50,6 +54,7 @@ class Service(BaseModel):
             public_use=public_use,
             origin=doc.get_service_origin(),
             destination=doc.get_service_destination(),
+            service_mode=mode,
         )
 
 

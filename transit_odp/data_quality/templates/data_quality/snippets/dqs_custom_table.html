@@ -35,7 +35,7 @@
                 <tr class="govuk-table__row {{ row.attrs.class }}">
                   <td class="govuk-table__cell govuk-!-padding-bottom-0  {{ column.attrs.td.class |default_if_none:"" }}">
                     {% if row.cells.is_published %}
-                      <a href="{% url 'line-detail' pk1=request.resolver_match.kwargs.pk1 pk=request.resolver_match.kwargs.pk host hosts.publish %}?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
+                      <a href="{% url 'feed-line-detail' pk=request.resolver_match.kwargs.pk host hosts.data %}?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
                         {{ row.cells.line_name }} - {{ row.cells.service_code }}
                       </a>
                     {% else %}
