@@ -11,7 +11,6 @@ from tenacity import (
     stop_after_attempt,
     wait_random_exponential,
 )
-from waffle import flag_is_active
 
 from transit_odp.validate.exceptions import ValidationException
 
@@ -89,18 +88,11 @@ class FileScanner:
         Args:
             file_: File being scanned
         """
-        is_clamav_found_active = flag_is_active("", "is_clamav_found_active")
-        is_clamav_error_active = flag_is_active("", "is_clamav_error_active")
         try:
             result = self._perform_scan(file_)
         except ClamdConnectionError as exc:
             logger.info("Issue wih ClamAV connection: Re-attempting connection.")
             raise ClamConnectionError(file_.name) from exc
-
-        if is_clamav_found_active:
-            result.status = "FOUND"
-        if is_clamav_error_active:
-            result.status = "ERROR"
 
         if result.status == "ERROR":
             logger.info("Antivirus scan: FAILED")
