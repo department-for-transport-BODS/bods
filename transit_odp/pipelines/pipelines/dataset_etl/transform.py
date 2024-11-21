@@ -41,8 +41,7 @@ from .utils.transform import (
     merge_serviced_organisations_with_operating_profile,
     transform_flexible_service_pattern_to_service_links,
     transform_geometry_tracks,
-    add_tracks_sequence
-    
+    add_tracks_sequence,
 )
 
 logger = get_task_logger(__name__)
@@ -170,7 +169,6 @@ class Transform(ETLUtility):
             journey_pattern_tracks = transform_geometry_tracks(journey_pattern_tracks)
             journey_pattern_tracks = add_tracks_sequence(journey_pattern_tracks)
 
-
         ### logic for flexible stop points transformation
         if not flexible_stop_points.empty:
             # 2. extract flexible zone data
@@ -272,8 +270,8 @@ class Transform(ETLUtility):
             most_common_localities=most_common_localities,
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
-            journey_pattern_tracks = journey_pattern_tracks,
-            route_map = route_map,
+            journey_pattern_tracks=journey_pattern_tracks,
+            route_map=route_map,
             serviced_organisations=df_merged_serviced_organisations,
             flexible_operation_periods=df_flexible_operation_periods,
             operating_profiles=self.extracted_data.operating_profiles,
@@ -353,10 +351,10 @@ class Transform(ETLUtility):
         ].reset_index()
 
         if not provisional_flexible_stops.empty:
-            provisional_flexible_stops["flexible_location"] = (
-                provisional_flexible_stops["geometry"].apply(
-                    lambda row: [row] if not isinstance(row, list) else row
-                )
+            provisional_flexible_stops[
+                "flexible_location"
+            ] = provisional_flexible_stops["geometry"].apply(
+                lambda row: [row] if not isinstance(row, list) else row
             )
 
         filtered_stop_points = flexible_stop_points[

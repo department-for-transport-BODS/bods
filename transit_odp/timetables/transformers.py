@@ -89,14 +89,15 @@ class TransXChangeTransformer:
             ~stop_points.index.isin(flexible_stop_points.index)
         ]
 
-
         if not journey_pattern_tracks.empty:
             journey_pattern_tracks = transform_geometry_tracks(journey_pattern_tracks)
             journey_pattern_tracks = add_tracks_sequence(journey_pattern_tracks)
-        
+
         if not route_map.empty:
-                # Add 'rs_order' column to tracks_map indicating the order of each stop reference
-                route_map['rs_order'] = route_map['rs_ref'].apply(lambda x: list(range(0, len(x))))
+            # Add 'rs_order' column to tracks_map indicating the order of each stop reference
+            route_map["rs_order"] = route_map["rs_ref"].apply(
+                lambda x: list(range(0, len(x)))
+            )
 
         # Create missing route information
         route_links = pd.DataFrame()
@@ -350,14 +351,12 @@ class TransXChangeTransformer:
             most_common_localities=most_common_localities,
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
-            journey_pattern_tracks = journey_pattern_tracks,
-            route_map = route_map,
+            journey_pattern_tracks=journey_pattern_tracks,
+            route_map=route_map,
             serviced_organisations=df_merged_serviced_organisations,
             flexible_operation_periods=df_flexible_operation_periods,
             operating_profiles=operating_profiles,
         )
-
-
 
     def sync_stop_points(self, stop_points, provisional_stops):
         stop_point_cache = self.stop_point_cache

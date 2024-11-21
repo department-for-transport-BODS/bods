@@ -32,7 +32,7 @@ from transit_odp.transmodel.models import (
     StopPoint,
     VehicleJourney,
     Tracks,
-    TracksVehicleJourney
+    TracksVehicleJourney,
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
@@ -308,7 +308,7 @@ def df_to_tracks(df: pd.DataFrame) -> Iterator[Dict]:
             geometry=record["geometry"],
             distance=record["distance"],
         )
-        
+
         # If the model instance is valid, yield it as a dictionary
         yield {
             "from_atco_code": track.from_atco_code,
@@ -318,7 +318,9 @@ def df_to_tracks(df: pd.DataFrame) -> Iterator[Dict]:
         }
 
 
-def merge_vj_tracks_df(tracks: pd.DataFrame, vehicle_journeys: pd.DataFrame, tracks_map: pd.DataFrame) -> pd.DataFrame:
+def merge_vj_tracks_df(
+    tracks: pd.DataFrame, vehicle_journeys: pd.DataFrame, tracks_map: pd.DataFrame
+) -> pd.DataFrame:
     """
     Merges vehicle_journeys and tracks DataFrames to get the relationship table.
 
@@ -331,47 +333,52 @@ def merge_vj_tracks_df(tracks: pd.DataFrame, vehicle_journeys: pd.DataFrame, tra
         pd.DataFrame: The merged DataFrame with track and vehicle journey information.
     """
     # Explode the 'jp_ref' and 'rs_ref' columns along with their corresponding 'rs_order'
-    tracks_map_extended = tracks_map.explode('jp_ref').explode(['rs_ref', 'rs_order'])
-    
-    tracks_columns_to_keep = ['rl_ref', 'rs_ref', 'rl_order', 'id']
+    tracks_map_extended = tracks_map.explode("jp_ref").explode(["rs_ref", "rs_order"])
+
+    tracks_columns_to_keep = ["rl_ref", "rs_ref", "rl_order", "id"]
     tracks = tracks[tracks_columns_to_keep]
     tracks = tracks.copy()
-    tracks.rename(columns={'id': 'tracks_id'}, inplace=True)
-    
+    tracks.rename(columns={"id": "tracks_id"}, inplace=True)
+
     # Merge tracks DataFrame with the extended tracks_map DataFrame on 'rs_ref'
-    merged_tracks_map = pd.merge(tracks, tracks_map_extended, on='rs_ref', how='right')
-    
+    merged_tracks_map = pd.merge(tracks, tracks_map_extended, on="rs_ref", how="right")
+
     # Create 'sequence' column by combining 'rs_order' and 'rl_order'
-    merged_tracks_map['sequence'] = merged_tracks_map.apply(lambda row: f"{row['rs_order']}_{row['rl_order']}", axis=1)
-    
+    merged_tracks_map["sequence"] = merged_tracks_map.apply(
+        lambda row: f"{row['rs_order']}_{row['rl_order']}", axis=1
+    )
+
     # Drop 'rl_order' and 'rs_order' columns as they are no longer needed
-    merged_tracks_map.drop(['rl_order', 'rs_order'], inplace=True, axis=1)
-    
-    internal_vjs_columns_to_keep = ['jp_ref', 'id']
+    merged_tracks_map.drop(["rl_order", "rs_order"], inplace=True, axis=1)
+
+    internal_vjs_columns_to_keep = ["jp_ref", "id"]
     internal_vjs = vehicle_journeys[internal_vjs_columns_to_keep]
     internal_vjs = internal_vjs.copy()
-    internal_vjs.rename(columns={'id': 'vj_id'}, inplace=True)
-    
+    internal_vjs.rename(columns={"id": "vj_id"}, inplace=True)
+
     # Merge the merged_tracks_map DataFrame with the internal_vjs DataFrame on 'jp_ref'
-    merged_vjs_tracks_map = pd.merge(merged_tracks_map, internal_vjs, on='jp_ref', how='left')
-    
+    merged_vjs_tracks_map = pd.merge(
+        merged_tracks_map, internal_vjs, on="jp_ref", how="left"
+    )
+
     if merged_vjs_tracks_map.empty:
         return pd.DataFrame()
-    
+
     return merged_vjs_tracks_map
 
 
-def df_to_journeys_tracks(df:pd.DataFrame) -> Iterator[TracksVehicleJourney]:
+def df_to_journeys_tracks(df: pd.DataFrame) -> Iterator[TracksVehicleJourney]:
     """
     Generator function returns Tracks vehice journey records to be loaded into the table.
     """
     for record in df.to_dict("records"):
-        vehicle_journey_id = record['vj_id']
+        vehicle_journey_id = record["vj_id"]
         yield TracksVehicleJourney(
-            vehicle_journey_id = vehicle_journey_id,
-            tracks_id = record['tracks_id'],
-            sequence_number = record['sequence']
+            vehicle_journey_id=vehicle_journey_id,
+            tracks_id=record["tracks_id"],
+            sequence_number=record["sequence"],
         )
+
 
 def get_time_field_or_none(time_in_text):
     time_field = None

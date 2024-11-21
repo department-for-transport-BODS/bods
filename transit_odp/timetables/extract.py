@@ -40,10 +40,8 @@ from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
 
 logger = get_task_logger(__name__)
-pd.set_option('display.max_columns',None)
-pd.set_option('display.max_rows', None)
-pd.set_option('display.width', 1000)
-pd.set_option('display.max_colwidth', 1000)
+
+
 class TransXChangeExtractor:
     """An API equivalent replacement for XmlFileParser."""
 
@@ -206,8 +204,8 @@ class TransXChangeExtractor:
             flexible_stop_points=flexible_stop_points,
             provisional_stops=provisional_stops,
             journey_patterns=journey_patterns,
-            journey_pattern_tracks = journey_pattern_tracks,
-            route_map = route_map,
+            journey_pattern_tracks=journey_pattern_tracks,
+            route_map=route_map,
             flexible_journey_patterns=flexible_journey_patterns,
             flexible_journey_details=flexible_journey_details,
             flexible_vehicle_journeys=flexible_vehicle_journeys,
@@ -320,47 +318,51 @@ class TransXChangeExtractor:
 
         return journey_patterns, jp_to_jps
 
-
-
     def extract_journey_rout_link(self):
         # Get services and journey patterns
         services = self.doc.get_services()
-        journey_patterns = journey_patterns_to_dataframe(services,False)
-        
+        journey_patterns = journey_patterns_to_dataframe(services, False)
+
         # Create a DataFrame with pattern_id and route_ref
-        jp_route_ref = journey_patterns[["pattern_id","route_ref"]]
+        jp_route_ref = journey_patterns[["pattern_id", "route_ref"]]
 
         # Group by route_ref and create a list of pattern_ids
-        df_vj_grouped = jp_route_ref.groupby('route_ref')['pattern_id'].apply(list).reset_index()
-        df_vj_grouped = df_vj_grouped.rename(columns={'pattern_id':'jp_ref'})
+        df_vj_grouped = (
+            jp_route_ref.groupby("route_ref")["pattern_id"].apply(list).reset_index()
+        )
+        df_vj_grouped = df_vj_grouped.rename(columns={"pattern_id": "jp_ref"})
 
         # Get routes and create a route reference link dictionary
         routes = self.doc.get_route()
-        route_ref_link = {} 
+        route_ref_link = {}
 
-        for route in routes: 
+        for route in routes:
             route.text
             route_section_refs = route.get_elements_or_none(["RouteSectionRef"])
             route_ref_ids = []
 
             # Extract route section references and update route_ref_link dictionary
             for route_section_ref in route_section_refs:
-                route_id = route.get('id')
-                if route_section_ref and route_id: 
-                    route_section_ref_text = route_section_ref.text if route_section_ref else '' 
+                route_id = route.get("id")
+                if route_section_ref and route_id:
+                    route_section_ref_text = (
+                        route_section_ref.text if route_section_ref else ""
+                    )
                     route_ref_ids.append(route_section_ref_text)
 
-            route_ref_link.update({route.get('id'): route_ref_ids})
+            route_ref_link.update({route.get("id"): route_ref_ids})
 
         # Convert route_ref_link dictionary to DataFrame
-        route_map = pd.DataFrame(list(route_ref_link.items()), columns=['route_ref', 'rs_ref'])
-        route_map = pd.merge(route_map,df_vj_grouped, on='route_ref',how='right' )
+        route_map = pd.DataFrame(
+            list(route_ref_link.items()), columns=["route_ref", "rs_ref"]
+        )
+        route_map = pd.merge(route_map, df_vj_grouped, on="route_ref", how="right")
 
         # Collect all unique route sections used in tracks
         used_route_sections = set()
         for tracks in route_ref_link.values():
             used_route_sections.update(tracks)
-        
+
         unique_tracks_list = list(used_route_sections)
 
         # Get route sections and create tracks DataFrame
@@ -369,42 +371,47 @@ class TransXChangeExtractor:
 
         for route_section in route_sections:
             try:
-                route_section_id = route_section['id']
+                route_section_id = route_section["id"]
                 if route_section_id in unique_tracks_list:
                     route_links = route_section.get_elements_or_none(["RouteLink"])
                     for route_link in route_links:
-                        route_link_id = route_link['id']
-                        route_from = route_link.get_element(['From','StopPointRef'])
-                        route_to =  route_link.get_element(['To','StopPointRef']) 
-                        distance =  route_link.get_element_or_none(['Distance']) 
-                        track_list = route_link.get_elements(['Track','Mapping'])
-
+                        route_link_id = route_link["id"]
+                        route_from = route_link.get_element(["From", "StopPointRef"])
+                        route_to = route_link.get_element(["To", "StopPointRef"])
+                        distance = route_link.get_element_or_none(["Distance"])
+                        track_list = route_link.get_elements(["Track", "Mapping"])
 
                         # Extract geometry for each track
-                        for track  in track_list:
-                            locations = track.get_elements_or_none(['Location','Translation'])
+                        for track in track_list:
+                            locations = track.get_elements_or_none(
+                                ["Location", "Translation"]
+                            )
                             geometry = []
                             if locations:
                                 for location in locations:
-                                    Longitude = location.get_element_or_none(['Longitude'])
-                                    Latitude = location.get_element_or_none(['Latitude'])
-                                    geometry.append((Longitude.text,Latitude.text))
+                                    Longitude = location.get_element_or_none(
+                                        ["Longitude"]
+                                    )
+                                    Latitude = location.get_element_or_none(
+                                        ["Latitude"]
+                                    )
+                                    geometry.append((Longitude.text, Latitude.text))
 
                             # Append track information to sections_tracks list
                             sections_tracks.append(
-                                    {
-                                        "rl_ref": route_link_id,
-                                        "rs_ref" : route_section_id,
-                                        "from_atco_code": route_from.text,
-                                        "to_atco_code" : route_to.text,
-                                        "distance" : distance.text,
-                                        "geometry": geometry,
-                                    }
-                                )
+                                {
+                                    "rl_ref": route_link_id,
+                                    "rs_ref": route_section_id,
+                                    "from_atco_code": route_from.text,
+                                    "to_atco_code": route_to.text,
+                                    "distance": distance.text,
+                                    "geometry": geometry,
+                                }
+                            )
             except Exception as e:
                 print(e)
                 logger.warning(f"Route link is missing for {route_section_id}")
-                
+
         tracks = pd.DataFrame(sections_tracks)
         return tracks, route_map
 
@@ -593,12 +600,10 @@ class TransXChangeZipExtractor:
             flexible_vehicle_journeys=concat_and_dedupe(
                 (extract.flexible_vehicle_journeys for extract in extracts)
             ),
-            journey_pattern_tracks = concat_and_dedupe(
+            journey_pattern_tracks=concat_and_dedupe(
                 extract.journey_pattern_tracks for extract in extracts
             ),
-            route_map = concat_and_dedupe(
-                extract.route_map for extract in extracts
-            ),
+            route_map=concat_and_dedupe(extract.route_map for extract in extracts),
             jp_to_jps=concat_and_dedupe((extract.jp_to_jps for extract in extracts)),
             jp_sections=concat_and_dedupe(
                 (extract.jp_sections for extract in extracts)

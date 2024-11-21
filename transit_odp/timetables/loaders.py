@@ -59,7 +59,7 @@ from transit_odp.transmodel.models import (
     OperatingProfile,
     ServicedOrganisationVehicleJourney,
     Tracks,
-    TracksVehicleJourney
+    TracksVehicleJourney,
 )
 
 BATCH_SIZE = 2000
@@ -97,9 +97,9 @@ class TransXChangeDataLoader:
             adapter.info("Loading tracks.")
             tracks = self.load_journey_tracks()
             adapter.info("Finished Tracks")
-            
+
             adapter.info("Loading vehicle_journeys tracks")
-            self.load_vj_tracks(tracks,vehicle_journeys,tracks_map)
+            self.load_vj_tracks(tracks, vehicle_journeys, tracks_map)
             adapter.info("Finished vehicle journey tracks")
 
         adapter.info("Loading flexible operation periods.")
@@ -230,36 +230,35 @@ class TransXChangeDataLoader:
             )
         return vehicle_journeys
 
-
     def load_journey_tracks(self):
         create_or_update = []
         tracks = self.transformed.journey_pattern_tracks
         tracks_dicts = list(df_to_tracks(tracks))
-        
+
         for track_dict in tracks_dicts:
             obj, created = Tracks.objects.update_or_create(
-                from_atco_code=track_dict['from_atco_code'],
-                to_atco_code=track_dict['to_atco_code'],
-                defaults=track_dict
+                from_atco_code=track_dict["from_atco_code"],
+                to_atco_code=track_dict["to_atco_code"],
+                defaults=track_dict,
             )
             create_or_update.append(obj)
-        
-        
-        tracks['id'] = pd.Series(
+
+        tracks["id"] = pd.Series(
             (obj.id for obj in create_or_update), index=tracks.index
         )
         return tracks
 
-
-    def load_vj_tracks(self,tracks, vehicle_journeys,tracks_map):
-        tracks_vjs = merge_vj_tracks_df(tracks,vehicle_journeys,tracks_map)
+    def load_vj_tracks(self, tracks, vehicle_journeys, tracks_map):
+        tracks_vjs = merge_vj_tracks_df(tracks, vehicle_journeys, tracks_map)
         if tracks_vjs.empty:
             return
         vj_tracks_objs = list(df_to_journeys_tracks(tracks_vjs))
-        created = TracksVehicleJourney.objects.bulk_create(vj_tracks_objs,batch_size=BATCH_SIZE)
-        tracks_vjs['id'] = pd.Series(
+        created = TracksVehicleJourney.objects.bulk_create(
+            vj_tracks_objs, batch_size=BATCH_SIZE
+        )
+        tracks_vjs["id"] = pd.Series(
             (obj.id for obj in created), index=tracks_vjs.index
-        ) 
+        )
         return tracks_vjs
 
     def load_flexible_service_operation_periods(self, vehicle_journeys):
