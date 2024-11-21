@@ -348,7 +348,6 @@ class TransXChangeExtractor:
         route_ref_link = {}
 
         for route in routes:
-            route.text
             route_section_refs = route.get_elements_or_none(["RouteSectionRef"])
             route_ref_ids = []
             route_id = route.get("id")
