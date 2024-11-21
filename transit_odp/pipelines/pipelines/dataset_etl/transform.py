@@ -54,7 +54,7 @@ class Transform(ETLUtility):
     def transform(self, extracted_data: ExtractedData) -> TransformedData:
         services = extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = extracted_data.journey_patterns.copy()
-        journey_pattern_tracks = extracted_data.journey_pattern_tracks.copy
+        journey_pattern_tracks = extracted_data.journey_pattern_tracks.copy()
         route_map = extracted_data.route_map.copy()
         flexible_journey_patterns = extracted_data.flexible_journey_patterns.copy()
         jp_to_jps = extracted_data.jp_to_jps.copy()

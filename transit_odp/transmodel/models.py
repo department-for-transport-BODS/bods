@@ -125,7 +125,7 @@ class TracksVehicleJourney(models.Model):
         related_name="vehicle_journey_tracks",
     )
     tracks = models.ForeignKey(Tracks, on_delete=models.CASCADE, related_name="tracks")
-    sequence_number = models.CharField(max_length=255, blank=True, null=True)
+    sequence_number = models.IntegerField(blank=True, null=True)
 
 
 class StopActivity(models.Model):

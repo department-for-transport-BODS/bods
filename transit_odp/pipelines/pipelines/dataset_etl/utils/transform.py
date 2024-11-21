@@ -943,9 +943,10 @@ def merge_flexible_jd_with_jp(
 
 
 def transform_geometry_tracks(df):
-    if df.empty:
-        return df
-    if "geometry" in df.columns:
+    """
+    Transforming geometry point lest to LinsString
+    """
+    if not df.empty and "geometry" in df.columns:
         df["geometry"] = df["geometry"].apply(
             lambda points: LineString(
                 [(float(long), float(lat)) for long, lat in points]

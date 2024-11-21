@@ -337,23 +337,19 @@ def merge_vj_tracks_df(
 
     tracks_columns_to_keep = ["rl_ref", "rs_ref", "rl_order", "id"]
     tracks = tracks[tracks_columns_to_keep]
-    tracks = tracks.copy()
     tracks.rename(columns={"id": "tracks_id"}, inplace=True)
 
     # Merge tracks DataFrame with the extended tracks_map DataFrame on 'rs_ref'
     merged_tracks_map = pd.merge(tracks, tracks_map_extended, on="rs_ref", how="right")
 
     # Create 'sequence' column by combining 'rs_order' and 'rl_order'
-    merged_tracks_map["sequence"] = merged_tracks_map.apply(
-        lambda row: f"{row['rs_order']}_{row['rl_order']}", axis=1
-    )
-
+    merged_tracks_map['sequence'] = merged_tracks_map.groupby('jp_ref').cumcount()
     # Drop 'rl_order' and 'rs_order' columns as they are no longer needed
     merged_tracks_map.drop(["rl_order", "rs_order"], inplace=True, axis=1)
-
+    # Extract jp_ref from journey_pattern_ref
+    vehicle_journeys['jp_ref'] = vehicle_journeys['journey_pattern_ref'].apply(lambda x: x.split('-')[1])
     internal_vjs_columns_to_keep = ["jp_ref", "id"]
     internal_vjs = vehicle_journeys[internal_vjs_columns_to_keep]
-    internal_vjs = internal_vjs.copy()
     internal_vjs.rename(columns={"id": "vj_id"}, inplace=True)
 
     # Merge the merged_tracks_map DataFrame with the internal_vjs DataFrame on 'jp_ref'

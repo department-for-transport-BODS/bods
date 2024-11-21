@@ -425,6 +425,18 @@ class TransXChangeDocument:
         xpath = ["RouteSections", "RouteSection"]
         return self._root.get_elements(xpath)
 
+    def get_tracks_geolocation(self,node):
+        #Check if geolocation is inside Translation
+        locations = node.get_elements_or_none(
+            ["Location", "Translation"]
+        )
+        if locations:
+            return locations
+        if not locations:
+            # Check if geolocation is inside Location
+            print("Get locations from Location only")
+            locations = node.get_elements_or_none(["Location"])
+            return locations
 
 class TransXChangeZip(ZippedValidator):
     """A class for working with a zip file containing transxchange files."""
