@@ -10,11 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name="tracksvehiclejourney",
-            name="sequence_number",
-            field=models.CharField(blank=True, max_length=255, null=True),
-        ),
         migrations.AddConstraint(
             model_name="tracks",
             constraint=models.UniqueConstraint(

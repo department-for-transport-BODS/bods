@@ -35,6 +35,7 @@ from transit_odp.timetables.dataframes import (
     services_to_dataframe,
     standard_vehicle_journeys_to_dataframe,
     stop_point_refs_to_dataframe,
+    create_vj_tracks_map,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -106,7 +107,7 @@ class TransXChangeExtractor:
         # Extract JourneyPattern and JourneyPatternSections
         logger.debug("Extracting journey_patterns")
         journey_patterns, jp_to_jps = self.extract_journey_patterns()
-        journey_pattern_tracks, route_map = self.extract_journey_rout_link()
+        journey_pattern_tracks, route_map = self.extract_journey_route_link()
         logger.debug("Finished extracting journey_patterns")
 
         # Extract JourneyPatternSections, TimingLinks and RouteLinks
@@ -318,19 +319,29 @@ class TransXChangeExtractor:
 
         return journey_patterns, jp_to_jps
 
-    def extract_journey_rout_link(self):
+    def extract_journey_route_link(self):
+        """
+        Extract journey route link data.
+
+        This method processes route and journey pattern data to create dataframes containing 
+        information about tracks and their corresponding route maps.
+
+        Steps:
+        1. Retrieves services and journey patterns, converting them to a dataframe.
+        2. Groups journey patterns by route reference.
+        3. Retrieves route data and constructs a route reference link dictionary.
+        4. Converts the route reference link dictionary to a dataframe and merges with journey patterns.
+        5. Identifies and collects unique route sections.
+        6. Processes route sections to extract route links and their geometries.
+        7. Creates a dataframe of tracks based on the extracted route link data.
+
+        Returns:
+            pd.DataFrame: A dataframe containing track information, including references, distances, and geometries.
+            pd.DataFrame: A dataframe containing the route map, linking routes to their respective journey patterns.
+        """
         # Get services and journey patterns
         services = self.doc.get_services()
         journey_patterns = journey_patterns_to_dataframe(services, False)
-
-        # Create a DataFrame with pattern_id and route_ref
-        jp_route_ref = journey_patterns[["pattern_id", "route_ref"]]
-
-        # Group by route_ref and create a list of pattern_ids
-        df_vj_grouped = (
-            jp_route_ref.groupby("route_ref")["pattern_id"].apply(list).reset_index()
-        )
-        df_vj_grouped = df_vj_grouped.rename(columns={"pattern_id": "jp_ref"})
 
         # Get routes and create a route reference link dictionary
         routes = self.doc.get_route()
@@ -340,23 +351,23 @@ class TransXChangeExtractor:
             route.text
             route_section_refs = route.get_elements_or_none(["RouteSectionRef"])
             route_ref_ids = []
+            route_id = route.get("id")
 
             # Extract route section references and update route_ref_link dictionary
             for route_section_ref in route_section_refs:
-                route_id = route.get("id")
                 if route_section_ref and route_id:
                     route_section_ref_text = (
                         route_section_ref.text if route_section_ref else ""
                     )
                     route_ref_ids.append(route_section_ref_text)
 
-            route_ref_link.update({route.get("id"): route_ref_ids})
+            route_ref_link.update({route_id: route_ref_ids})
 
         # Convert route_ref_link dictionary to DataFrame
         route_map = pd.DataFrame(
             list(route_ref_link.items()), columns=["route_ref", "rs_ref"]
         )
-        route_map = pd.merge(route_map, df_vj_grouped, on="route_ref", how="right")
+        vj_tracks_map= create_vj_tracks_map(journey_patterns,route_map)
 
         # Collect all unique route sections used in tracks
         used_route_sections = set()
@@ -383,9 +394,7 @@ class TransXChangeExtractor:
 
                         # Extract geometry for each track
                         for track in track_list:
-                            locations = track.get_elements_or_none(
-                                ["Location", "Translation"]
-                            )
+                            locations = self.doc.get_tracks_geolocation(track)
                             geometry = []
                             if locations:
                                 for location in locations:
@@ -413,7 +422,7 @@ class TransXChangeExtractor:
                 logger.warning(f"Route link is missing for {route_section_id}")
 
         tracks = pd.DataFrame(sections_tracks)
-        return tracks, route_map
+        return tracks, vj_tracks_map
 
     def extract_vehicle_journeys(self):
         """

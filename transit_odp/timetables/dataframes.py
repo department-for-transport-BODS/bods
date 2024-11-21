@@ -1168,3 +1168,33 @@ def flexible_stop_points_from_journey_details(flexible_journey_details):
         ].set_index("atco_code")
         return flexible_stop_points
     return pd.DataFrame()
+
+
+def create_vj_tracks_map(journey_patterns:pd.DataFrame,route_map:pd.DataFrame):
+    """
+    Create a vehicle journey tracks map.
+
+    Steps:
+    1. Create a DataFrame with `pattern_id` and `route_ref` from the journey patterns.
+    2. Group the journey patterns by `route_ref` and create a list of `pattern_id`s for each route.
+    3. Rename the grouped `pattern_id` column to `jp_ref`.
+    4. Merge the route map with the grouped journey patterns on `route_ref`.
+
+    Args:
+        journey_patterns (pd.DataFrame): DataFrame containing journey pattern information.
+        route_map (pd.DataFrame): DataFrame containing route mapping information.
+
+    Returns:
+        pd.DataFrame: A DataFrame that maps vehicle journey patterns to their respective routes.
+    """
+    # Create a DataFrame with pattern_id and route_ref
+    jp_route_ref = journey_patterns[["pattern_id", "route_ref"]]
+            # Group by route_ref and create a list of pattern_ids
+    df_vj_grouped = (
+        jp_route_ref.groupby("route_ref")["pattern_id"].apply(list).reset_index()
+    )
+    df_vj_grouped = df_vj_grouped.rename(columns={"pattern_id": "jp_ref"})
+
+    vj_route_map = pd.merge(route_map, df_vj_grouped, on="route_ref", how="right")
+
+    return vj_route_map 

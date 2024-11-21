@@ -231,6 +231,23 @@ class TransXChangeDataLoader:
         return vehicle_journeys
 
     def load_journey_tracks(self):
+        """
+        Load journey tracks and update the Tracks model.
+
+        This method processes the transformed journey pattern tracks and updates the Tracks model 
+        using the update_or_create method to ensure records are created or updated based on the 
+        unique combination of 'from_atco_code' and 'to_atco_code'.
+
+        Steps:
+        1. Extract the journey pattern tracks from the transformed data.
+        2. Convert the DataFrame of tracks into a list of dictionaries.
+        3. Iterate through each track dictionary and use update_or_create to update existing records or create new ones in the Tracks model.
+        4. Collect the created or updated track objects.
+        5. Update the 'id' column in the original DataFrame with the IDs of the created or updated track objects.
+
+        Returns:
+            pd.DataFrame: The original DataFrame with the 'id' column updated to reflect the IDs of the created or updated track records.
+        """
         create_or_update = []
         tracks = self.transformed.journey_pattern_tracks
         tracks_dicts = list(df_to_tracks(tracks))
@@ -249,6 +266,18 @@ class TransXChangeDataLoader:
         return tracks
 
     def load_vj_tracks(self, tracks, vehicle_journeys, tracks_map):
+        """
+        Load vehicle journey tracks and update the TracksVehicleJourney model.
+
+        Steps:
+        1. Merge the tracks, vehicle journeys, and tracks map DataFrames using the `merge_vj_tracks_df` function.
+        2. Convert the merged DataFrame to a list of TracksVehicleJourney model instances.
+        3. Use `bulk_create` to insert the instances into the TracksVehicleJourney table in batches.
+        4. Update the 'id' column in the original DataFrame with the IDs of the created track journey records.
+
+        Returns:
+            pd.DataFrame: The merged DataFrame with the 'id' column updated to reflect the IDs of the created track journey records.
+        """
         tracks_vjs = merge_vj_tracks_df(tracks, vehicle_journeys, tracks_map)
         if tracks_vjs.empty:
             return
