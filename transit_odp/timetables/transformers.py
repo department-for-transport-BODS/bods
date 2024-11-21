@@ -55,6 +55,7 @@ class TransXChangeTransformer:
         services = self.extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = self.extracted_data.journey_patterns.copy()
         journey_pattern_tracks = self.extracted_data.journey_pattern_tracks.copy()
+        route_map = self.extracted_data.route_map.copy()
         flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
         flexible_vehicle_journeys = self.extracted_data.flexible_vehicle_journeys.copy()
         jp_to_jps = self.extracted_data.jp_to_jps.copy()
@@ -92,6 +93,10 @@ class TransXChangeTransformer:
         if not journey_pattern_tracks.empty:
             journey_pattern_tracks = transform_geometry_tracks(journey_pattern_tracks)
             journey_pattern_tracks = add_tracks_sequence(journey_pattern_tracks)
+        
+        if not route_map.empty:
+                # Add 'rs_order' column to tracks_map indicating the order of each stop reference
+                route_map['rs_order'] = route_map['rs_ref'].apply(lambda x: list(range(0, len(x))))
 
         # Create missing route information
         route_links = pd.DataFrame()
@@ -346,6 +351,7 @@ class TransXChangeTransformer:
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
             journey_pattern_tracks = journey_pattern_tracks,
+            route_map = route_map,
             serviced_organisations=df_merged_serviced_organisations,
             flexible_operation_periods=df_flexible_operation_periods,
             operating_profiles=operating_profiles,

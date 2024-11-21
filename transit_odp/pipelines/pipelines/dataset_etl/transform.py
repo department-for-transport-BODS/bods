@@ -56,6 +56,7 @@ class Transform(ETLUtility):
         services = extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = extracted_data.journey_patterns.copy()
         journey_pattern_tracks = extracted_data.journey_pattern_tracks.copy
+        route_map = extracted_data.route_map.copy()
         flexible_journey_patterns = extracted_data.flexible_journey_patterns.copy()
         jp_to_jps = extracted_data.jp_to_jps.copy()
         jp_sections = extracted_data.jp_sections.copy()
@@ -272,6 +273,7 @@ class Transform(ETLUtility):
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
             journey_pattern_tracks = journey_pattern_tracks,
+            route_map = route_map,
             serviced_organisations=df_merged_serviced_organisations,
             flexible_operation_periods=df_flexible_operation_periods,
             operating_profiles=self.extracted_data.operating_profiles,

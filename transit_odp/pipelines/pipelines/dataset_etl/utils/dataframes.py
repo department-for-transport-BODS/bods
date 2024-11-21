@@ -6,7 +6,7 @@ BODS transxchange models.
 import logging
 from collections import OrderedDict
 from datetime import datetime
-from typing import Iterator, List
+from typing import Iterator, List, Dict
 
 import geopandas
 import pandas as pd
@@ -298,40 +298,67 @@ def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
         )
 
 
-def df_to_tracks(df:pd.DataFrame) -> Iterator[Tracks]:
-    """Generator function to return Tracks records to be loaded into tracks table"""
+def df_to_tracks(df: pd.DataFrame) -> Iterator[Dict]:
+    """Generator function to yield records as dictionaries after verifying with the Tracks model"""
     for record in df.to_dict("records"):
-        yield Tracks(
-            from_atco_code = record["from_atco_code"],
-            to_atco_code = record["to_atco_code"],
-            geometry = record["geometry"],
-            distance = record["distance"],
+        # Verify with the Tracks model
+        track = Tracks(
+            from_atco_code=record["from_atco_code"],
+            to_atco_code=record["to_atco_code"],
+            geometry=record["geometry"],
+            distance=record["distance"],
         )
+        
+        # If the model instance is valid, yield it as a dictionary
+        yield {
+            "from_atco_code": track.from_atco_code,
+            "to_atco_code": track.to_atco_code,
+            "geometry": track.geometry,
+            "distance": track.distance,
+        }
 
-def merge_vj_tracks_df(tracks: pd.DataFrame, vehicle_journeys: pd.DataFrame) -> pd.DataFrame:
+
+def merge_vj_tracks_df(tracks: pd.DataFrame, vehicle_journeys: pd.DataFrame, tracks_map: pd.DataFrame) -> pd.DataFrame:
     """
-    Merging vehicle_journeys and tracks dataframes toget the relation ship table.
+    Merges vehicle_journeys and tracks DataFrames to get the relationship table.
+
+    Args:
+        tracks (pd.DataFrame): DataFrame containing track information.
+        vehicle_journeys (pd.DataFrame): DataFrame containing vehicle journey information.
+        tracks_map (pd.DataFrame): DataFrame containing the mapping of journey patterns to route links.
+
+    Returns:
+        pd.DataFrame: The merged DataFrame with track and vehicle journey information.
     """
-    tracks_columns_to_keep = ['route_ref', 'jp_ref', 'sequence', 'id']
-    # Filter the tracks DataFrame to keep only the specified columns
-    tracks = tracks[tracks_columns_to_keep]
+    # Explode the 'jp_ref' and 'rs_ref' columns along with their corresponding 'rs_order'
+    tracks_map_extended = tracks_map.explode('jp_ref').explode(['rs_ref', 'rs_order'])
     
-    # Explode the 'jp_ref' column so that each list item becomes a separate row
-    tracks_extended = tracks.explode('jp_ref')
-    tracks_extended.rename(columns={'id': 'tracks_id'}, inplace=True)
+    tracks_columns_to_keep = ['rl_ref', 'rs_ref', 'rl_order', 'id']
+    tracks = tracks[tracks_columns_to_keep]
+    tracks = tracks.copy()
+    tracks.rename(columns={'id': 'tracks_id'}, inplace=True)
+    
+    # Merge tracks DataFrame with the extended tracks_map DataFrame on 'rs_ref'
+    merged_tracks_map = pd.merge(tracks, tracks_map_extended, on='rs_ref', how='right')
+    
+    # Create 'sequence' column by combining 'rs_order' and 'rl_order'
+    merged_tracks_map['sequence'] = merged_tracks_map.apply(lambda row: f"{row['rs_order']}_{row['rl_order']}", axis=1)
+    
+    # Drop 'rl_order' and 'rs_order' columns as they are no longer needed
+    merged_tracks_map.drop(['rl_order', 'rs_order'], inplace=True, axis=1)
     
     internal_vjs_columns_to_keep = ['jp_ref', 'id']
-    # Filter the vehicle_journeys DataFrame to keep only the specified columns
     internal_vjs = vehicle_journeys[internal_vjs_columns_to_keep]
+    internal_vjs = internal_vjs.copy()
     internal_vjs.rename(columns={'id': 'vj_id'}, inplace=True)
     
-    # Merge the extended tracks DataFrame with the vehicle_journeys DataFrame on 'jp_ref' column
-    merged_df = pd.merge(tracks_extended, internal_vjs, on='jp_ref', how='left')
+    # Merge the merged_tracks_map DataFrame with the internal_vjs DataFrame on 'jp_ref'
+    merged_vjs_tracks_map = pd.merge(merged_tracks_map, internal_vjs, on='jp_ref', how='left')
     
-    if merged_df.empty:
+    if merged_vjs_tracks_map.empty:
         return pd.DataFrame()
     
-    return merged_df
+    return merged_vjs_tracks_map
 
 
 def df_to_journeys_tracks(df:pd.DataFrame) -> Iterator[TracksVehicleJourney]:

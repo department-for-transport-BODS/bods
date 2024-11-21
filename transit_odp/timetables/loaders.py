@@ -92,13 +92,14 @@ class TransXChangeDataLoader:
         vehicle_journeys = self.load_vehicle_journeys(service_patterns)
         adapter.info("Finished vehicle journeys.")
         tracks = self.transformed.journey_pattern_tracks
+        tracks_map = self.transformed.route_map
         if not tracks.empty and not vehicle_journeys.empty:
             adapter.info("Loading tracks.")
             tracks = self.load_journey_tracks()
             adapter.info("Finished Tracks")
             
             adapter.info("Loading vehicle_journeys tracks")
-            self.load_vj_tracks(tracks,vehicle_journeys)
+            self.load_vj_tracks(tracks,vehicle_journeys,tracks_map)
             adapter.info("Finished vehicle journey tracks")
 
         adapter.info("Loading flexible operation periods.")
@@ -229,17 +230,29 @@ class TransXChangeDataLoader:
             )
         return vehicle_journeys
 
+
     def load_journey_tracks(self):
+        create_or_update = []
         tracks = self.transformed.journey_pattern_tracks
-        tracks_objs = list(df_to_tracks(tracks))
-        created = Tracks.objects.bulk_create(tracks_objs,batch_size=BATCH_SIZE)
+        tracks_dicts = list(df_to_tracks(tracks))
+        
+        for track_dict in tracks_dicts:
+            obj, created = Tracks.objects.update_or_create(
+                from_atco_code=track_dict['from_atco_code'],
+                to_atco_code=track_dict['to_atco_code'],
+                defaults=track_dict
+            )
+            create_or_update.append(obj)
+        
+        
         tracks['id'] = pd.Series(
-            (obj.id for obj in created), index=tracks.index
+            (obj.id for obj in create_or_update), index=tracks.index
         )
         return tracks
 
-    def load_vj_tracks(self,tracks, vehicle_journeys):
-        tracks_vjs = merge_vj_tracks_df(tracks,vehicle_journeys)
+
+    def load_vj_tracks(self,tracks, vehicle_journeys,tracks_map):
+        tracks_vjs = merge_vj_tracks_df(tracks,vehicle_journeys,tracks_map)
         if tracks_vjs.empty:
             return
         vj_tracks_objs = list(df_to_journeys_tracks(tracks_vjs))
