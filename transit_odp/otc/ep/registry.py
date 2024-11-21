@@ -138,7 +138,6 @@ class Registry:
                 "licence__number",
             )
         )
-        logger.info(f"operator_licences_df: {operator_licences_df}")
         operator_licences_df.drop_duplicates(inplace=True)
         operator_licences_df.rename(
             columns={
@@ -148,7 +147,6 @@ class Registry:
             },
             inplace=True,
         )
-        logger.info(f"operator_licences_df: {operator_licences_df}")
         logger.info("EP API: Linking duplicate operators to services")
 
         self.services = pd.merge(
