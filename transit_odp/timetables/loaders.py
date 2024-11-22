@@ -234,8 +234,8 @@ class TransXChangeDataLoader:
         """
         Load journey tracks and update the Tracks model.
 
-        This method processes the transformed journey pattern tracks and updates the Tracks model 
-        using the update_or_create method to ensure records are created or updated based on the 
+        This method processes the transformed journey pattern tracks and updates the Tracks model
+        using the update_or_create method to ensure records are created or updated based on the
         unique combination of 'from_atco_code' and 'to_atco_code'.
 
         Steps:

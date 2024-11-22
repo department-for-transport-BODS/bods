@@ -94,7 +94,7 @@ class TransXChangeTransformer:
             journey_pattern_tracks = add_tracks_sequence(journey_pattern_tracks)
 
         if not route_map.empty:
-            
+
             # Add 'rs_order' column to tracks_map indicating the order of each stop reference
             route_map["rs_order"] = route_map["rs_ref"].apply(
                 lambda x: list(range(0, len(x)))

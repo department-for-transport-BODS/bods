@@ -1170,7 +1170,7 @@ def flexible_stop_points_from_journey_details(flexible_journey_details):
     return pd.DataFrame()
 
 
-def create_vj_tracks_map(journey_patterns:pd.DataFrame,route_map:pd.DataFrame):
+def create_vj_tracks_map(journey_patterns: pd.DataFrame, route_map: pd.DataFrame):
     """
     Create a vehicle journey tracks map.
 
@@ -1189,7 +1189,7 @@ def create_vj_tracks_map(journey_patterns:pd.DataFrame,route_map:pd.DataFrame):
     """
     # Create a DataFrame with pattern_id and route_ref
     jp_route_ref = journey_patterns[["pattern_id", "route_ref"]]
-            # Group by route_ref and create a list of pattern_ids
+    # Group by route_ref and create a list of pattern_ids
     df_vj_grouped = (
         jp_route_ref.groupby("route_ref")["pattern_id"].apply(list).reset_index()
     )
@@ -1197,4 +1197,4 @@ def create_vj_tracks_map(journey_patterns:pd.DataFrame,route_map:pd.DataFrame):
 
     vj_route_map = pd.merge(route_map, df_vj_grouped, on="route_ref", how="right")
 
-    return vj_route_map 
+    return vj_route_map

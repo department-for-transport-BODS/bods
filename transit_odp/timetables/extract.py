@@ -323,7 +323,7 @@ class TransXChangeExtractor:
         """
         Extract journey route link data.
 
-        This method processes route and journey pattern data to create dataframes containing 
+        This method processes route and journey pattern data to create dataframes containing
         information about tracks and their corresponding route maps.
 
         Steps:
@@ -366,7 +366,7 @@ class TransXChangeExtractor:
         route_map = pd.DataFrame(
             list(route_ref_link.items()), columns=["route_ref", "rs_ref"]
         )
-        vj_tracks_map= create_vj_tracks_map(journey_patterns,route_map)
+        vj_tracks_map = create_vj_tracks_map(journey_patterns, route_map)
 
         # Collect all unique route sections used in tracks
         used_route_sections = set()

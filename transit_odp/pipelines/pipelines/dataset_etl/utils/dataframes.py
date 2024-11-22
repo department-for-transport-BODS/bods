@@ -343,11 +343,13 @@ def merge_vj_tracks_df(
     merged_tracks_map = pd.merge(tracks, tracks_map_extended, on="rs_ref", how="right")
 
     # Create 'sequence' column by combining 'rs_order' and 'rl_order'
-    merged_tracks_map['sequence'] = merged_tracks_map.groupby('jp_ref').cumcount()
+    merged_tracks_map["sequence"] = merged_tracks_map.groupby("jp_ref").cumcount()
     # Drop 'rl_order' and 'rs_order' columns as they are no longer needed
     merged_tracks_map.drop(["rl_order", "rs_order"], inplace=True, axis=1)
     # Extract jp_ref from journey_pattern_ref
-    vehicle_journeys['jp_ref'] = vehicle_journeys['journey_pattern_ref'].apply(lambda x: x.split('-')[1])
+    vehicle_journeys["jp_ref"] = vehicle_journeys["journey_pattern_ref"].apply(
+        lambda x: x.split("-")[1]
+    )
     internal_vjs_columns_to_keep = ["jp_ref", "id"]
     internal_vjs = vehicle_journeys[internal_vjs_columns_to_keep]
     internal_vjs.rename(columns={"id": "vj_id"}, inplace=True)
