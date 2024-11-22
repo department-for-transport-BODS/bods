@@ -21,6 +21,9 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     df_to_serviced_org_vehicle_journey,
     get_max_date_or_none,
     get_min_date_or_none,
+    df_to_tracks,
+    merge_vj_tracks_df,
+    df_to_journeys_tracks,
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.extract_meta_result import (
     ETLReport,
@@ -55,6 +58,8 @@ from transit_odp.transmodel.models import (
     ServicedOrganisations,
     OperatingProfile,
     ServicedOrganisationVehicleJourney,
+    Tracks,
+    TracksVehicleJourney,
 )
 
 BATCH_SIZE = 2000
@@ -86,6 +91,16 @@ class TransXChangeDataLoader:
         adapter.info("Loading vehicle journeys.")
         vehicle_journeys = self.load_vehicle_journeys(service_patterns)
         adapter.info("Finished vehicle journeys.")
+        tracks = self.transformed.journey_pattern_tracks
+        tracks_map = self.transformed.route_map
+        if not tracks.empty and not vehicle_journeys.empty:
+            adapter.info("Loading tracks.")
+            tracks = self.load_journey_tracks()
+            adapter.info("Finished Tracks")
+
+            adapter.info("Loading vehicle_journeys tracks")
+            self.load_vj_tracks(tracks, vehicle_journeys, tracks_map)
+            adapter.info("Finished vehicle journey tracks")
 
         adapter.info("Loading flexible operation periods.")
         self.load_flexible_service_operation_periods(vehicle_journeys)
@@ -213,8 +228,67 @@ class TransXChangeDataLoader:
             vehicle_journeys["id"] = pd.Series(
                 (obj.id for obj in created), index=vehicle_journeys.index
             )
-
         return vehicle_journeys
+
+    def load_journey_tracks(self):
+        """
+        Load journey tracks and update the Tracks model.
+
+        This method processes the transformed journey pattern tracks and updates the Tracks model
+        using the update_or_create method to ensure records are created or updated based on the
+        unique combination of 'from_atco_code' and 'to_atco_code'.
+
+        Steps:
+        1. Extract the journey pattern tracks from the transformed data.
+        2. Convert the DataFrame of tracks into a list of dictionaries.
+        3. Iterate through each track dictionary and use update_or_create to update existing records or create new ones in the Tracks model.
+        4. Collect the created or updated track objects.
+        5. Update the 'id' column in the original DataFrame with the IDs of the created or updated track objects.
+
+        Returns:
+            pd.DataFrame: The original DataFrame with the 'id' column updated to reflect the IDs of the created or updated track records.
+        """
+        create_or_update = []
+        tracks = self.transformed.journey_pattern_tracks
+        tracks_dicts = list(df_to_tracks(tracks))
+
+        for track_dict in tracks_dicts:
+            obj, created = Tracks.objects.update_or_create(
+                from_atco_code=track_dict["from_atco_code"],
+                to_atco_code=track_dict["to_atco_code"],
+                defaults=track_dict,
+            )
+            create_or_update.append(obj)
+
+        tracks["id"] = pd.Series(
+            (obj.id for obj in create_or_update), index=tracks.index
+        )
+        return tracks
+
+    def load_vj_tracks(self, tracks, vehicle_journeys, tracks_map):
+        """
+        Load vehicle journey tracks and update the TracksVehicleJourney model.
+
+        Steps:
+        1. Merge the tracks, vehicle journeys, and tracks map DataFrames using the `merge_vj_tracks_df` function.
+        2. Convert the merged DataFrame to a list of TracksVehicleJourney model instances.
+        3. Use `bulk_create` to insert the instances into the TracksVehicleJourney table in batches.
+        4. Update the 'id' column in the original DataFrame with the IDs of the created track journey records.
+
+        Returns:
+            pd.DataFrame: The merged DataFrame with the 'id' column updated to reflect the IDs of the created track journey records.
+        """
+        tracks_vjs = merge_vj_tracks_df(tracks, vehicle_journeys, tracks_map)
+        if tracks_vjs.empty:
+            return
+        vj_tracks_objs = list(df_to_journeys_tracks(tracks_vjs))
+        created = TracksVehicleJourney.objects.bulk_create(
+            vj_tracks_objs, batch_size=BATCH_SIZE
+        )
+        tracks_vjs["id"] = pd.Series(
+            (obj.id for obj in created), index=tracks_vjs.index
+        )
+        return tracks_vjs
 
     def load_flexible_service_operation_periods(self, vehicle_journeys):
         flexible_service_operation_periods = self.transformed.flexible_operation_periods
