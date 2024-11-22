@@ -4,13 +4,13 @@ import uuid
 
 from celery.utils.log import get_task_logger
 
+from transit_odp.common.utils.geometry import grid_gemotry_from_str
 from transit_odp.naptan.models import StopPoint, FlexibleZone
 from transit_odp.pipelines.pipelines.dataset_etl.utils.etl_base import ETLUtility
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import (
     ExtractedData,
     TransformedData,
 )
-
 from .utils.dataframes import (
     create_naptan_stoppoint_df,
     create_naptan_stoppoint_df_from_queryset,
@@ -40,6 +40,8 @@ from .utils.transform import (
     merge_journey_pattern_with_vj_for_departure_time,
     merge_serviced_organisations_with_operating_profile,
     transform_flexible_service_pattern_to_service_links,
+    transform_geometry_tracks,
+    add_tracks_sequence,
 )
 
 logger = get_task_logger(__name__)
@@ -52,6 +54,8 @@ class Transform(ETLUtility):
     def transform(self, extracted_data: ExtractedData) -> TransformedData:
         services = extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = extracted_data.journey_patterns.copy()
+        journey_pattern_tracks = extracted_data.journey_pattern_tracks.copy()
+        route_map = extracted_data.route_map.copy()
         flexible_journey_patterns = extracted_data.flexible_journey_patterns.copy()
         jp_to_jps = extracted_data.jp_to_jps.copy()
         jp_sections = extracted_data.jp_sections.copy()
@@ -160,6 +164,11 @@ class Transform(ETLUtility):
 
         stop_points.drop(columns=["common_name"], axis=1, inplace=True)
 
+        ### Tracks geometry transformation
+        if not journey_pattern_tracks.empty:
+            journey_pattern_tracks = transform_geometry_tracks(journey_pattern_tracks)
+            journey_pattern_tracks = add_tracks_sequence(journey_pattern_tracks)
+
         ### logic for flexible stop points transformation
         if not flexible_stop_points.empty:
             # 2. extract flexible zone data
@@ -242,7 +251,6 @@ class Transform(ETLUtility):
                     service_pattern_stops.dropna(
                         subset=["stop_atco", "geometry"], inplace=True
                     )
-
         return TransformedData(
             services=services,
             service_patterns=service_patterns,
@@ -262,6 +270,8 @@ class Transform(ETLUtility):
             most_common_localities=most_common_localities,
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
+            journey_pattern_tracks=journey_pattern_tracks,
+            route_map=route_map,
             serviced_organisations=df_merged_serviced_organisations,
             flexible_operation_periods=df_flexible_operation_periods,
             operating_profiles=self.extracted_data.operating_profiles,
@@ -299,12 +309,16 @@ class Transform(ETLUtility):
                     {
                         "atco_code": index,
                         "naptan_id": np.nan,
-                        "geometry": provisional_stops.loc[index, "geometry"]
-                        if index in provisional_stops.index.values
-                        else None,
-                        "locality_id": provisional_stops.loc[index, "locality"]
-                        if index in provisional_stops.index
-                        else "",
+                        "geometry": (
+                            provisional_stops.loc[index, "geometry"]
+                            if index in provisional_stops.index.values
+                            else None
+                        ),
+                        "locality_id": (
+                            provisional_stops.loc[index, "locality"]
+                            if index in provisional_stops.index
+                            else ""
+                        ),
                     }
                     for index in missing_stops
                 )

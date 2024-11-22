@@ -109,6 +109,14 @@ class Tracks(models.Model):
     geometry = models.LineStringField(null=True, blank=True)
     distance = models.IntegerField(blank=True, null=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["from_atco_code", "to_atco_code"],
+                name="unique_from_to_atco_code",
+            )
+        ]
+
 
 class TracksVehicleJourney(models.Model):
     vehicle_journey = models.ForeignKey(
