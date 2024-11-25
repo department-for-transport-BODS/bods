@@ -340,11 +340,9 @@ class TransXChangeExtractor:
             pd.DataFrame: A dataframe containing the route map, linking routes to their respective journey patterns.
         """
         # Get services and journey patterns
-        extract_tracks_data = flag_is_active(
-        "", "extract_tracks_data"
-            )
+        extract_tracks_data = flag_is_active("", "extract_tracks_data")
         if not extract_tracks_data:
-            return pd.DataFrame(),pd.DataFrame()
+            return pd.DataFrame(), pd.DataFrame()
         services = self.doc.get_services()
         journey_patterns = journey_patterns_to_dataframe(services, False)
 
