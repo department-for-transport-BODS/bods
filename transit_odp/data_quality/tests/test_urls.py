@@ -185,15 +185,6 @@ class TestGlossaryUrl(DqUrlsTestBase):
 
 
 @pytest.mark.django_db
-class TestFastTimingWarningUrls(WarningUrlsTestBase):
-    url_segment = "fast-timings"
-    list_url_name = "dq:fast-timings-list"
-    list_view = views.FastTimingListView
-    detail_url_name = "dq:fast-timings-detail"
-    detail_view = views.FastTimingDetailView
-
-
-@pytest.mark.django_db
 class TestSlowTimingWarningUrls(WarningUrlsTestBase):
     url_segment = "slow-timings"
     list_url_name = "dq:slow-timings-list"
