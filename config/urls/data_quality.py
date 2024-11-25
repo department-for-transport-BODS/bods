@@ -20,12 +20,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.FastTimingListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="fast-timings-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.FastTimingDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="fast-timings-detail",
                 ),
             ]

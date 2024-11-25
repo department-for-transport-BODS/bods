@@ -343,26 +343,7 @@ LastStopNotTimingPointObservation = Observation(
     level=Level.critical,
     category=Category.timing,
 )
-FastTimingPointObservation = Observation(
-    title="Fast timing between timing points",
-    text=(
-        "This observation identifies links between timing points that "
-        "appear unfeasibly "
-        "fast, meaning it would require a vehicle to travel between the "
-        'points as the "crow flies" at over 70mph.'
-    ),
-    impacts=(
-        "The information provided is inaccurate and do not reflect the "
-        "actual operations of "
-        "the bus. This will lower the quality of data provided to passengers. "
-    ),
-    model=models.FastTimingWarning,
-    list_url_name="dq:fast-timings-list",
-    level=Level.critical,
-    category=Category.timing,
-    weighting=0.10,
-    check_basis=CheckBasis.timing_patterns,
-)
+
 SlowTimingPointObservation = Observation(
     title="Slow timing between timing points",
     text=(
@@ -376,24 +357,6 @@ SlowTimingPointObservation = Observation(
     ),
     model=models.SlowTimingWarning,
     list_url_name="dq:slow-timings-list",
-    level=Level.advisory,
-    category=Category.timing,
-)
-FastLinkObservation = Observation(
-    title="Fast running time between stops",
-    text=(
-        "This observation identifies links between stops that appear "
-        "unfeasibly fast, "
-        "meaning it would require a vehicle to travel between the stops "
-        'as the "crow flies" at over 70mph. '
-    ),
-    impacts=(
-        "The information provided is inaccurate and do not reflect the "
-        "actual operation of "
-        "the bus. This will lower the quality of data provided to passengers. "
-    ),
-    model=models.FastLinkWarning,
-    list_url_name="dq:fast-link-list",
     level=Level.advisory,
     category=Category.timing,
 )
@@ -524,7 +487,6 @@ OBSERVATIONS = (
     BackwardsTimingObservation,
     DuplicateJourneyObservation,
     ExpiredLines,
-    FastLinkObservation,
     FastTimingPointObservation,
     FirstStopNotTimingPointObservation,
     FirstStopSetDownOnlyObservation,
