@@ -9,7 +9,6 @@ from .base import (
     WarningListBaseView,
 )
 from .duplicate_journey import DuplicateJourneyDetailView, DuplicateJourneyListView
-from .fast_link import FastLinkDetailView, FastLinkListView
 from .fast_timings import FastTimingDetailView, FastTimingListView
 from .glossary import DataQualityGlossaryView
 from .incorrect_noc import IncorrectNOCListView
@@ -53,8 +52,6 @@ __all__ = [
     "DetailBaseView",
     "DuplicateJourneyDetailView",
     "DuplicateJourneyListView",
-    "FastLinkDetailView",
-    "FastLinkListView",
     "FastTimingDetailView",
     "FastTimingListView",
     "FirstStopDropOffDetailView",

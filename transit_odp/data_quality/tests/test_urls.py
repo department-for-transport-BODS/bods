@@ -203,15 +203,6 @@ class TestSlowTimingWarningUrls(WarningUrlsTestBase):
 
 
 @pytest.mark.django_db
-class TestFastLinkWarningUrls(WarningUrlsTestBase):
-    url_segment = "fast-links"
-    list_url_name = "dq:fast-link-list"
-    list_view = views.FastLinkListView
-    detail_url_name = "dq:fast-link-detail"
-    detail_view = views.FastLinkDetailView
-
-
-@pytest.mark.django_db
 class TestSlowLinkWarningUrls(WarningUrlsTestBase):
     url_segment = "slow-links"
     list_url_name = "dq:slow-link-list"

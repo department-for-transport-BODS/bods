@@ -54,12 +54,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.FastLinkListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="fast-link-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.FastLinkDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="fast-link-detail",
                 ),
             ]
