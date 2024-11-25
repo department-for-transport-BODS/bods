@@ -227,6 +227,39 @@ def get_line_level_txc_map(org_id: int) -> Dict[tuple, TXCFileAttributes]:
     return line_level_txc_map
 
 
+def get_line_level_txc_map_service_base(
+    service_codes: List,
+) -> Dict[tuple, TXCFileAttributes]:
+    """
+    Get a list of dictionaries of live TXCFileAttributes for an organisation
+    with relevant effective staleness dates annotated.
+    """
+    line_level_txc_map = {}
+
+    txc_file_attributes = (
+        TXCFileAttributes.objects.filter(service_code__in=service_codes)
+        .get_active_live_revisions()
+        .add_staleness_dates()
+        .add_split_linenames()
+        .order_by(
+            "service_code",
+            "line_name_unnested",
+            "-revision__published_at",
+            "-revision_number",
+            "-modification_datetime",
+            "-operating_period_start_date",
+            "-filename",
+        )
+        .distinct("service_code", "line_name_unnested")
+    )
+
+    for txc_file in txc_file_attributes:
+        key = (txc_file.service_code, txc_file.line_name_unnested)
+        if key not in line_level_txc_map:
+            line_level_txc_map[key] = txc_file
+    return line_level_txc_map
+
+
 def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
     """
     Get a list of dictionaries of live TXCFileAttributes for a LTA
