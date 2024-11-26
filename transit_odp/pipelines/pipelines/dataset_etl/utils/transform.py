@@ -81,10 +81,6 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     
     departure_time = None
     
-    is_flexible_departure_time = False
-    # Departure time for flexible stops is null
-    if stops_atcos["departure_time"].isna().any():
-        is_flexible_departure_time = True
 
     use_vehicle_journey_runtime = False
     # run_time_vj is set only when run_time is found in VehicleJourney element
@@ -120,7 +116,6 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
 
     if vehicle_journey_exists:
         columns.extend(["journey_pattern_id"])
-        last_stop_columns.extend(["journey_pattern_id"])
 
 
     stops_atcos = (
@@ -135,7 +130,14 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
             }
         )
     )
-    departure_time = stops_atcos.iloc[0]["departure_time"]
+
+    is_flexible_departure_time = False
+    # Departure time for flexible stops is null
+    if df["departure_time"].isna().any():
+        is_flexible_departure_time = True
+
+
+    departure_time = df.iloc[0]["departure_time"]
     # Extract all remaining stop to be placed below the principal stop
     stops_atcos = (
         df[last_stop_columns]
@@ -165,8 +167,8 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     if use_vehicle_journey_runtime and not is_flexible_departure_time:
         if not main_set_stops["wait_time_vj"].isnull().all():
             main_set_stops["wait_time"] = main_set_stops["wait_time_vj"].fillna(pd.Timedelta(0))
-        if not last_stop_columns["wait_time_vj"].isnull().all():
-            last_stop_columns["wait_time"] = last_stop_columns["wait_time_vj"].fillna(pd.Timedelta(0))
+        if not stops_atcos["wait_time_vj"].isnull().all():
+            stops_atcos["wait_time"] = stops_atcos["wait_time_vj"].fillna(pd.Timedelta(0))
 
         main_set_stops["departure_time"] = main_set_stops["run_time_vj"].replace(
             "", pd.NaT
@@ -175,9 +177,9 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         ].fillna(
             pd.Timedelta(0)
         )
-        last_stop_columns["departure_time"] = last_stop_columns["run_time_vj"].replace(
+        stops_atcos["departure_time"] = stops_atcos["run_time_vj"].replace(
             "", pd.NaT
-        ).combine_first(last_stop_columns["run_time"]).fillna(pd.Timedelta(0)) + last_stop_columns[
+        ).combine_first(stops_atcos["run_time"]).fillna(pd.Timedelta(0)) + stops_atcos[
             "wait_time"
         ].fillna(
             pd.Timedelta(0)
@@ -188,19 +190,21 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
             pd.Timedelta(0)
         ) + main_set_stops["wait_time"].fillna(pd.Timedelta(0))
 
-        last_stop_columns["departure_time"] = last_stop_columns["run_time"].fillna(
+        stops_atcos["departure_time"] = stops_atcos["run_time"].fillna(
             pd.Timedelta(0)
-        ) + last_stop_columns["wait_time"].fillna(pd.Timedelta(0))
+        ) + stops_atcos["wait_time"].fillna(pd.Timedelta(0))
     # Calculate departure time for flexible stops
     else:
         main_set_stops["departure_time"] = None
-        last_stop_columns["departure_time"] = None
+        stops_atcos["departure_time"] = None
 
     main_set_stops.drop(columns=columns_to_drop, axis=1, inplace=True)
+    stops_atcos = stops_atcos[main_set_stops.columns]
     stops_atcos.info()
+    print(stops_atcos)
     main_set_stops.info() 
-    print("before concat")
     print(main_set_stops)
+    print("before concat")
     # stops_atcos = pd.concat([stops_atcos, main_set_stops], ignore_index=True)
     stops_atcos = pd.concat([main_set_stops,stops_atcos], ignore_index=True)
     print("after concat")
