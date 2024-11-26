@@ -86,12 +86,12 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     # run_time_vj is set only when run_time is found in VehicleJourney element
     # and hence needs to be conditionally removed to avoid exceptions in dataframes
     columns = [
-        "to_stop_atco",
-        "to_stop_sequence_number",
-        "to_is_timing_status",
+        "from_stop_atco",
+        "from_stop_sequence_number",
+        "from_is_timing_status",
         "run_time",
         "wait_time",
-        "to_activity_id",
+        "from_activity_id",
     ]
 
     if "run_time_vj" in df_columns:
