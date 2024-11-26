@@ -544,7 +544,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
             if block_number_element:
                 block_number = block_number_element.text
 
-            to_wait_time_exists = False
+            prev_to_wait_time = pd.NaT
             if vj_timing_links:
                 len_timing_links = len(vj_timing_links)
                 for index, links in enumerate(vj_timing_links):
@@ -567,7 +567,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                     from_wait_time = None
                     to_wait_time = None
 
-                    if from_wait_time_element and not to_wait_time_exists:
+                    if not pd.isna(prev_to_wait_time):
                         from_wait_time = from_wait_time_element.get_element_or_none(
                             ["WaitTime"]
                         )
@@ -578,27 +578,25 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                             wait_time = pd.to_timedelta(
                                 parsed_from_wait_time.total_seconds(), unit="s"
                             )
-
+                        else: 
+                            wait_time = prev_to_wait_time
+                
                     if to_wait_time_element and (index + 1 != len_timing_links):
                         to_wait_time = to_wait_time_element.get_element_or_none(
                             ["WaitTime"]
                         )
                         if to_wait_time:
-                            to_wait_time_exists = True
                             parsed_to_wait_time = isodate.parse_duration(
                                 to_wait_time.text
                             )
-                            if pd.isna(wait_time):
-                                wait_time = pd.to_timedelta(
+                            prev_to_wait_time = pd.to_timedelta(
                                     parsed_to_wait_time.total_seconds(), unit="s"
                                 )
-                            else:
-                                wait_time = wait_time + pd.to_timedelta(
-                                    parsed_to_wait_time.total_seconds(), unit="s"
-                                )
-
+                        else:
+                            prev_to_wait_time = pd.NaT
                     else:
-                        to_wait_time_exists = False
+                            prev_to_wait_time = pd.NaT
+
 
                     all_vehicle_journeys.append(
                         {
