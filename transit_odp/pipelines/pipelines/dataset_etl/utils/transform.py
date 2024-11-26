@@ -138,19 +138,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
 
 
     departure_time = df.iloc[0]["departure_time"]
-    # Extract all remaining stop to be placed below the principal stop
-    # stops_atcos = (
-    #     original_df[last_stop_columns]
-    #     .iloc[[-1]]
-    #     .rename(
-    #         columns={
-    #             "to_stop_atco": "stop_atco",
-    #             "to_stop_sequence_number": "sequence_number",
-    #             "to_activity_id": "activity_id",
-    #             "to_is_timing_status": "is_timing_status",
-    #         }
-    #     )
-    # )
+
     main_set_stops = df[columns].rename(
         columns={
             "from_stop_atco": "stop_atco",
