@@ -40,9 +40,8 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     into ServicePatternStop model
     """
     original_df = df.copy()
-    df["run_time"] = df["run_time"].shift(1, fill_value=pd.NaT)
-    df["run_time_vj"] = df["run_time_vj"].shift(1, fill_value=pd.NaT)
-    # df = df.iloc[:-1]
+    if "run_time" in df.columns:
+        df["run_time"] = df["run_time"].shift(1, fill_value=pd.NaT)
     df = df.reset_index()
     df = df.sort_values("order")
     vehicle_journey_exists = False
@@ -85,7 +84,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     ]
     columns_to_drop = ["run_time", "wait_time"]
     if "run_time_vj" in df_columns:
-
+        df["run_time_vj"] = df["run_time_vj"].shift(1, fill_value=pd.NaT)
         use_vehicle_journey_runtime = True
         columns.extend(
             [
