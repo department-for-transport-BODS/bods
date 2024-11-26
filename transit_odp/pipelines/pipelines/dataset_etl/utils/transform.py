@@ -10,10 +10,10 @@ from .dataframes import create_naptan_locality_df
 import pandas as pd
 
 # Set display options to show all rows and columns
-pd.set_option('display.max_rows', None)  # Show all rows
-pd.set_option('display.max_columns', None)  # Show all columns
-pd.set_option('display.width', None)  # Set the display width to be unlimited
-pd.set_option('display.max_colwidth', None)  # Show full content of each column
+pd.set_option("display.max_rows", None)  # Show all rows
+pd.set_option("display.max_columns", None)  # Show all columns
+pd.set_option("display.width", None)  # Set the display width to be unlimited
+pd.set_option("display.max_colwidth", None)  # Show full content of each column
 
 logger = get_task_logger(__name__)
 
@@ -47,8 +47,8 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     into ServicePatternStop model
     """
     original_df = df.copy()
-    df['run_time'] = df['run_time'].shift(1, fill_value=pd.NaT)
-    df['run_time_vj'] = df['run_time_vj'].shift(1, fill_value=pd.NaT)
+    df["run_time"] = df["run_time"].shift(1, fill_value=pd.NaT)
+    df["run_time_vj"] = df["run_time_vj"].shift(1, fill_value=pd.NaT)
     # df = df.iloc[:-1]
     df = df.reset_index()
     df = df.sort_values("order")
@@ -77,9 +77,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
             ]
         )
 
-    
     departure_time = None
-    
 
     use_vehicle_journey_runtime = False
     # run_time_vj is set only when run_time is found in VehicleJourney element
@@ -103,19 +101,22 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
             ]
         )
 
-        columns_to_drop.extend([
+        columns_to_drop.extend(
+            [
                 "run_time_vj",
                 "wait_time_vj",
-        ])
+            ]
+        )
 
-        last_stop_columns.extend([
+        last_stop_columns.extend(
+            [
                 "run_time_vj",
                 "wait_time_vj",
-        ])
+            ]
+        )
 
     if vehicle_journey_exists:
         columns.extend(["journey_pattern_id"])
-
 
     # Extract all remaining stop to be placed below the principal stop
     stops_atcos = (
@@ -136,7 +137,6 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     if df["departure_time"].isna().any():
         is_flexible_departure_time = True
 
-
     departure_time = df.iloc[0]["departure_time"]
 
     main_set_stops = df[columns].rename(
@@ -154,13 +154,19 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     # Calculate departure time for standard stops where run_time is found in VehicleJourney
     if use_vehicle_journey_runtime and not is_flexible_departure_time:
         if not main_set_stops["wait_time_vj"].isnull().all():
-            main_set_stops["wait_time"] = main_set_stops["wait_time_vj"].fillna(pd.Timedelta(0))
+            main_set_stops["wait_time"] = main_set_stops["wait_time_vj"].fillna(
+                pd.Timedelta(0)
+            )
         if not stops_atcos["wait_time_vj"].isnull().all():
-            stops_atcos["wait_time"] = stops_atcos["wait_time_vj"].fillna(pd.Timedelta(0))
+            stops_atcos["wait_time"] = stops_atcos["wait_time_vj"].fillna(
+                pd.Timedelta(0)
+            )
 
         main_set_stops["departure_time"] = main_set_stops["run_time_vj"].replace(
             "", pd.NaT
-        ).combine_first(main_set_stops["run_time"]).fillna(pd.Timedelta(0)) + main_set_stops[
+        ).combine_first(main_set_stops["run_time"]).fillna(
+            pd.Timedelta(0)
+        ) + main_set_stops[
             "wait_time"
         ].fillna(
             pd.Timedelta(0)
@@ -189,7 +195,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     main_set_stops.drop(columns=columns_to_drop, axis=1, inplace=True)
     stops_atcos = stops_atcos[main_set_stops.columns]
     # stops_atcos = pd.concat([stops_atcos, main_set_stops], ignore_index=True)
-    stops_atcos = pd.concat([main_set_stops,stops_atcos], ignore_index=True)
+    stops_atcos = pd.concat([main_set_stops, stops_atcos], ignore_index=True)
     if not is_flexible_departure_time:
         stops_atcos["departure_time"] = stops_atcos["departure_time"].cumsum()
         stops_atcos["departure_time"] = stops_atcos["departure_time"] + departure_time
