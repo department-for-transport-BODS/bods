@@ -7,13 +7,6 @@ from django.contrib.gis.geos import LineString
 from transit_odp.naptan.models import Locality
 
 from .dataframes import create_naptan_locality_df
-import pandas as pd
-
-# Set display options to show all rows and columns
-pd.set_option("display.max_rows", None)  # Show all rows
-pd.set_option("display.max_columns", None)  # Show all columns
-pd.set_option("display.width", None)  # Set the display width to be unlimited
-pd.set_option("display.max_colwidth", None)  # Show full content of each column
 
 logger = get_task_logger(__name__)
 
