@@ -566,8 +566,9 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                     wait_time = pd.NaT
                     from_wait_time = None
                     to_wait_time = None
-
-                    if not pd.isna(prev_to_wait_time):
+                    print(f"check the conditions: {pd.isna(prev_to_wait_time)}, value: {prev_to_wait_time}")
+                    if (pd.isna(prev_to_wait_time) or index == 0)  and from_wait_time_element :
+                        print("geting wait time FROM")
                         from_wait_time = from_wait_time_element.get_element_or_none(
                             ["WaitTime"]
                         )
@@ -580,8 +581,12 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                             )
                         else: 
                             wait_time = prev_to_wait_time
+                    
+                    elif not pd.isna(prev_to_wait_time):
+                        wait_time = prev_to_wait_time
+                        
                 
-                    if to_wait_time_element and (index + 1 != len_timing_links):
+                    if to_wait_time_element : # and (index + 1 != len_timing_links):
                         to_wait_time = to_wait_time_element.get_element_or_none(
                             ["WaitTime"]
                         )
@@ -597,7 +602,10 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                     else:
                             prev_to_wait_time = pd.NaT
 
-
+                    print("prev_to_wait_time")
+                    print(prev_to_wait_time)
+                    print(wait_time)
+                    print(journey_code)
                     all_vehicle_journeys.append(
                         {
                             "service_code": service_ref,
@@ -637,7 +645,6 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                         "vj_departure_time": vj_departure_time,
                     }
                 )
-
     return pd.DataFrame(all_vehicle_journeys)
 
 
