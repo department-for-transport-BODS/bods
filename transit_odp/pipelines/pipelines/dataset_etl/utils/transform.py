@@ -140,7 +140,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
         main_set_stops["departure_time"] = None
 
     main_set_stops.drop(columns=columns_to_drop, axis=1, inplace=True)
-    stops_atcos = pd.concat([stops_atcos, main_set_stops], ignore_index=True)
+    stops_atcos = pd.concat([ main_set_stops, stops_atcos], ignore_index=True)
     if not is_flexible_departure_time:
         stops_atcos["departure_time"] = stops_atcos["departure_time"].cumsum()
         stops_atcos["departure_time"] = stops_atcos["departure_time"].apply(
