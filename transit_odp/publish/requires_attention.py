@@ -430,7 +430,8 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     object_list = []
 
     otc_map = get_line_level_in_scope_otc_map(org_id)
-    txcfa_map = get_line_level_txc_map(org_id)
+    service_codes = [service_code for (service_code, line_name) in otc_map]
+    txcfa_map = get_line_level_txc_map_service_base(service_codes)
 
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
@@ -452,7 +453,9 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     object_list = []
 
     otc_map = get_line_level_in_scope_otc_map(org_id)
-    txcfa_map = get_line_level_txc_map(org_id)
+    service_codes = [service_code for (service_code, line_name) in otc_map]
+    txcfa_map = get_line_level_txc_map_service_base(service_codes)
+
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
     abods_registry = AbodsRegistery()
     synced_in_last_month = abods_registry.records()
