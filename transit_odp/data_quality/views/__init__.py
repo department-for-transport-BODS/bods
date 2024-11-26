@@ -12,7 +12,6 @@ from .duplicate_journey import DuplicateJourneyDetailView, DuplicateJourneyListV
 from .glossary import DataQualityGlossaryView
 from .incorrect_noc import IncorrectNOCListView
 from .incorrect_stop_type import IncorrectStopTypeDetailView, IncorrectStopTypeListView
-from .journey_overlap import JourneyOverlapDetailView, JourneyOverlapListView
 from .lines import (
     LineExpiredListView,
     LineMissingBlockIDDetailView,
@@ -59,8 +58,6 @@ __all__ = [
     "IncorrectStopTypeDetailView",
     "IncorrectStopTypeListView",
     "JourneyListBaseView",
-    "JourneyOverlapDetailView",
-    "JourneyOverlapListView",
     "LastStopNotTimingDetailView",
     "LastStopNotTimingListView",
     "LastStopPickUpDetailView",

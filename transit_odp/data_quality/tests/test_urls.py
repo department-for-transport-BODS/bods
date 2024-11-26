@@ -320,15 +320,6 @@ class TestMissingStopWarningUrls(WarningUrlsTestBase):
 
 
 @pytest.mark.django_db
-class TestJourneyOverlapWarningUrls(WarningUrlsTestBase):
-    url_segment = "journey-overlap"
-    list_url_name = "dq:journey-overlap-list"
-    list_view = views.JourneyOverlapListView
-    detail_url_name = "dq:journey-overlap-detail"
-    detail_view = views.JourneyOverlapDetailView
-
-
-@pytest.mark.django_db
 class TestBackwardDateRangeWarningUrls(WarningUrlsTestBase):
     url_segment = "backward-date-range"
     list_url_name = "dq:backward-date-range-list"

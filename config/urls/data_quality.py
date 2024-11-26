@@ -118,7 +118,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.IncorrectNOCListView.as_view(),
+                    view=DQSviews.IncorrectNOCListView.as_view(),
                     name="incorrect-noc-list",
                 ),
             ]
@@ -291,12 +291,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.JourneyOverlapListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="journey-overlap-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.JourneyOverlapDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="journey-overlap-detail",
                 ),
             ]

@@ -343,7 +343,26 @@ LastStopNotTimingPointObservation = Observation(
     level=Level.critical,
     category=Category.timing,
 )
-
+FastTimingPointObservation = Observation(
+    title="Fast timing between timing points",
+    text=(
+        "This observation identifies links between timing points that "
+        "appear unfeasibly "
+        "fast, meaning it would require a vehicle to travel between the "
+        'points as the "crow flies" at over 70mph.'
+    ),
+    impacts=(
+        "The information provided is inaccurate and do not reflect the "
+        "actual operations of "
+        "the bus. This will lower the quality of data provided to passengers. "
+    ),
+    model=models.FastTimingWarning,
+    list_url_name="dq:fast-timings-list",
+    level=Level.critical,
+    category=Category.timing,
+    weighting=0.10,
+    check_basis=CheckBasis.timing_patterns,
+)
 SlowTimingPointObservation = Observation(
     title="Slow timing between timing points",
     text=(
@@ -449,24 +468,6 @@ BackwardDateRangeObservation = Observation(
     weighting=0.12,
     check_basis=CheckBasis.vehicle_journeys,
 )
-JourneyOverlapObservation = Observation(
-    title="Journey overlap",
-    text=(
-        "This observation identifies cases where journeys partially overlap. "
-        "A journey is "
-        "considered to partial overlap if they follow the same timing pattern "
-        "for at least ten "
-        "stops and there is at least one day of their operating period in which "
-        "they both "
-        "run. "
-        "</br></br>"
-        "Operators should investigate the observation and address any errors found."
-    ),
-    model=models.JourneyConflictWarning,
-    list_url_name="dq:journey-overlap-list",
-    level=Level.advisory,
-    category=Category.journey,
-)
 ExpiredLines = Observation(
     title="Expired lines",
     text=(
@@ -492,7 +493,6 @@ OBSERVATIONS = (
     FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,
     IncorrectStopTypeObservation,
-    JourneyOverlapObservation,
     LastStopNotTimingPointObservation,
     LastStopPickUpOnlyObservation,
     MissingBlockNumber,
