@@ -46,6 +46,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     Additional fields are included so that these fields can be stored
     into ServicePatternStop model
     """
+    original_df = df.copy()
     df['run_time'] = df['run_time'].shift(1, fill_value=pd.NaT)
     df['run_time_vj'] = df['run_time_vj'].shift(1, fill_value=pd.NaT)
     # df = df.iloc[:-1]
@@ -117,7 +118,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
 
 
     stops_atcos = (
-        df[last_stop_columns]
+        original_df[last_stop_columns]
         .iloc[[-1]]
         .rename(
             columns={
@@ -138,7 +139,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     departure_time = df.iloc[0]["departure_time"]
     # Extract all remaining stop to be placed below the principal stop
     stops_atcos = (
-        df[last_stop_columns]
+        original_df[last_stop_columns]
         .iloc[[-1]]
         .rename(
             columns={
