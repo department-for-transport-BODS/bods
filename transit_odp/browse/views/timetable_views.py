@@ -775,8 +775,6 @@ class SearchView(BaseSearchView):
             .get_viewable_statuses()
             .add_organisation_name()
             .add_live_data()
-            .add_admin_area_names()
-            .add_is_live_pti_compliant()
             .order_by(*self.get_ordering())
         )
 
