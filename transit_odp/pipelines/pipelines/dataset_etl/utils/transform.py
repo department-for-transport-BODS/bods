@@ -46,8 +46,6 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     Additional fields are included so that these fields can be stored
     into ServicePatternStop model
     """
-    print("original df")
-    print(df)
     df['run_time'] = df['run_time'].shift(1, fill_value=pd.NaT)
     df['run_time_vj'] = df['run_time_vj'].shift(1, fill_value=pd.NaT)
     # df = df.iloc[:-1]
@@ -200,16 +198,8 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
 
     main_set_stops.drop(columns=columns_to_drop, axis=1, inplace=True)
     stops_atcos = stops_atcos[main_set_stops.columns]
-    stops_atcos.info()
-    print(stops_atcos)
-    main_set_stops.info() 
-    print(main_set_stops)
-    print("before concat")
     # stops_atcos = pd.concat([stops_atcos, main_set_stops], ignore_index=True)
     stops_atcos = pd.concat([main_set_stops,stops_atcos], ignore_index=True)
-    print("after concat")
-    print(stops_atcos)
-    stops_atcos.info()
     if not is_flexible_departure_time:
         stops_atcos["departure_time"] = stops_atcos["departure_time"].cumsum()
         stops_atcos["departure_time"] = stops_atcos["departure_time"] + departure_time
@@ -217,8 +207,6 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
             convert_to_time_field
         )
     stops_atcos.index.name = "order"
-    print("stops_atcos")
-    print(stops_atcos)
     return stops_atcos
 
 
