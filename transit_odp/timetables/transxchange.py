@@ -201,6 +201,10 @@ class TransXChangeDocument:
         xpath = ["Services", "Service", "ServiceCode"]
         return self.find_anywhere(xpath)
 
+    def get_mode(self):
+        xpath = ["Services", "Service", "Mode"]
+        return self.find_anywhere(xpath)
+
     def get_lines(self):
         """Get all the Line elements in the TransXChangeDocument.
 
@@ -398,6 +402,39 @@ class TransXChangeDocument:
         """
         xpath = ["ServicedOrganisations", "ServicedOrganisation"]
         return self._root.get_elements(xpath)
+
+    def get_JourneyPatternRef(self):
+        """
+        Get all Journey Pattern Ref
+        """
+        xpath = ["VehicleJourneys", "VehicleJourney", "JourneyPatternRef"]
+        return self._root.get_elements(xpath)
+
+    def get_route(self):
+        """
+        Get all routes
+        """
+        xpath = ["Routes", "Route"]
+
+        return self._root.get_elements(xpath)
+
+    def get_route_sections(self):
+        """
+        Get all route sections
+        """
+        xpath = ["RouteSections", "RouteSection"]
+        return self._root.get_elements(xpath)
+
+    def get_tracks_geolocation(self, node):
+        # Check if geolocation is inside Translation
+        locations = node.get_elements_or_none(["Location", "Translation"])
+        if locations:
+            return locations
+        if not locations:
+            # Check if geolocation is inside Location
+            print("Get locations from Location only")
+            locations = node.get_elements_or_none(["Location"])
+            return locations
 
 
 class TransXChangeZip(ZippedValidator):

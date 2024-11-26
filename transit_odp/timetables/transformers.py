@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from waffle import flag_is_active
 
+from transit_odp.common.utils.geometry import grid_gemotry_from_str
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
     create_naptan_stoppoint_df,
     create_naptan_stoppoint_df_from_queryset,
@@ -37,6 +38,8 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     transform_flexible_service_pattern_to_service_links,
     create_flexible_routes,
     merge_flexible_jd_with_jp,
+    transform_geometry_tracks,
+    add_tracks_sequence,
 )
 from transit_odp.naptan.models import StopPoint, FlexibleZone
 from transit_odp.timetables.utils import get_line_description_based_on_direction
@@ -51,6 +54,8 @@ class TransXChangeTransformer:
         """Transform various dataframes created during the extraction stage, so that these records can be loaded into expected tables in the loader stage"""
         services = self.extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = self.extracted_data.journey_patterns.copy()
+        journey_pattern_tracks = self.extracted_data.journey_pattern_tracks.copy()
+        route_map = self.extracted_data.route_map.copy()
         flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
         flexible_vehicle_journeys = self.extracted_data.flexible_vehicle_journeys.copy()
         jp_to_jps = self.extracted_data.jp_to_jps.copy()
@@ -83,6 +88,18 @@ class TransXChangeTransformer:
         stop_points = stop_points.loc[
             ~stop_points.index.isin(flexible_stop_points.index)
         ]
+
+        if not journey_pattern_tracks.empty:
+            journey_pattern_tracks = transform_geometry_tracks(journey_pattern_tracks)
+            journey_pattern_tracks = add_tracks_sequence(journey_pattern_tracks)
+
+        if not route_map.empty:
+
+            # Add 'rs_order' column to tracks_map indicating the order of each stop reference
+            route_map["rs_order"] = route_map["rs_ref"].apply(
+                lambda x: list(range(0, len(x)))
+            )
+
         # Create missing route information
         route_links = pd.DataFrame()
         if not timing_links.empty:
@@ -335,6 +352,8 @@ class TransXChangeTransformer:
             most_common_localities=most_common_localities,
             timing_point_count=self.extracted_data.timing_point_count,
             vehicle_journeys=df_merged_vehicle_journeys,
+            journey_pattern_tracks=journey_pattern_tracks,
+            route_map=route_map,
             serviced_organisations=df_merged_serviced_organisations,
             flexible_operation_periods=df_flexible_operation_periods,
             operating_profiles=operating_profiles,
