@@ -7,6 +7,13 @@ from django.contrib.gis.geos import LineString
 from transit_odp.naptan.models import Locality
 
 from .dataframes import create_naptan_locality_df
+import pandas as pd
+
+# Set display options to show all rows and columns
+pd.set_option('display.max_rows', None)  # Show all rows
+pd.set_option('display.max_columns', None)  # Show all columns
+pd.set_option('display.width', None)  # Set the display width to be unlimited
+pd.set_option('display.max_colwidth', None)  # Show full content of each column
 
 logger = get_task_logger(__name__)
 
@@ -39,6 +46,8 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     Additional fields are included so that these fields can be stored
     into ServicePatternStop model
     """
+    print("original df")
+    print(df)
     df = df.reset_index()
     df = df.sort_values("order")
     vehicle_journey_exists = False
@@ -67,7 +76,7 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
 
     stops_atcos = (
         df[last_stop_columns]
-        .iloc[-1]
+        .iloc[[-1]]
         .rename(
             columns={
                 "to_stop_atco": "stop_atco",
@@ -147,7 +156,8 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
             convert_to_time_field
         )
     stops_atcos.index.name = "order"
-
+    print("stops_atcos")
+    print(stops_atcos)
     return stops_atcos
 
 
