@@ -190,27 +190,6 @@ LastStopPickUpOnlyObservation = Observation(
     weighting=0.10,
     check_basis=CheckBasis.timing_patterns,
 )
-MissingStopsObservation = Observation(
-    title="Missing stops",
-    text=(
-        "This observation identifies cases where a stop may be missing from a stopping "
-        "pattern from this data set provided. For example, if some journeys "
-        "cover stops A, "
-        "B, C and D and another journey stops at only A, B and D, stop C will "
-        "be identified "
-        "as a possible missing stop. If a stop is missing in the data, it cannot "
-        "be show by "
-        "journey planners to passengers. "
-        "</br></br>"
-        "Operators should investigate the observation and address any errors "
-        "found."
-    ),
-    impacts=None,
-    model=models.ServiceLinkMissingStopWarning,
-    list_url_name="dq:service-link-missing-stops-list",
-    level=Level.advisory,
-    category=Category.stops,
-)
 StopsRepeatedObservation = Observation(
     title="Same stop is found multiple times",
     text=(
@@ -468,26 +447,11 @@ BackwardDateRangeObservation = Observation(
     weighting=0.12,
     check_basis=CheckBasis.vehicle_journeys,
 )
-ExpiredLines = Observation(
-    title="Expired lines",
-    text=(
-        "This observation identifies any lines that have expired data associated "
-        "with them. "
-        "If you are uploading data please deactivate the file. "
-        "If you are using a URL please remove the file from the url endpoint."
-    ),
-    impacts=None,
-    model=LineExpiredWarning,
-    list_url_name="dq:line-expired-list",
-    level=Level.advisory,
-    category=Category.journey,
-)
 
 OBSERVATIONS = (
     BackwardDateRangeObservation,
     BackwardsTimingObservation,
     DuplicateJourneyObservation,
-    ExpiredLines,
     FastTimingPointObservation,
     FirstStopNotTimingPointObservation,
     FirstStopSetDownOnlyObservation,
@@ -496,7 +460,6 @@ OBSERVATIONS = (
     LastStopNotTimingPointObservation,
     LastStopPickUpOnlyObservation,
     MissingBlockNumber,
-    MissingStopsObservation,
     NoTimingPointFor15MinutesObservation,
     SlowLinkObservation,
     SlowTimingPointObservation,

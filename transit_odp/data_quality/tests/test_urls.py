@@ -293,15 +293,6 @@ class TestStopNotInNaptanWarningUrls(WarningUrlsTestBase):
 
 
 @pytest.mark.django_db
-class TestServiceLinkMissingStopWarningUrls(WarningUrlsTestBase):
-    url_segment = "service-link-missing-stops"
-    list_url_name = "dq:service-link-missing-stops-list"
-    list_view = views.ServiceLinkMissingStopListView
-    detail_url_name = "dq:service-link-missing-stops-detail"
-    detail_view = views.ServiceLinkMissingStopDetailView
-
-
-@pytest.mark.django_db
 class TestStopRepeatedWarningUrls(WarningUrlsTestBase):
     url_segment = "multiple-stops"
     list_url_name = "dq:stop-repeated-list"
