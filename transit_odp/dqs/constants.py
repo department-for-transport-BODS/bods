@@ -173,7 +173,7 @@ class Observation:
     list_url_name: str
     extra_info: Optional[Dict[str, str]] = None
     impacts: str = None
-    weighting: float = None
+    weighting: float = None  # TODO: Need to remove the weighting as not required now
     check_basis: CheckBasis = None
     resolve: str = None
     preamble: str = None

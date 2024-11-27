@@ -21,7 +21,6 @@ from .pick_up_and_drop_off import (
 from .report import ReportCSVDownloadView, ReportOverviewView
 from .slow_timings import SlowTimingsDetailView, SlowTimingsListView
 from .stop_missing import MissingStopDetailView, MissingStopListView
-from .stop_missing_naptan import StopMissingNaptanDetailView, StopMissingNaptanListView
 from .stop_repeated import StopRepeatedDetailView, StopRepeatedListView
 from .timing_last_and_timing_first import (
     FirstStopNotTimingDetailView,
@@ -56,8 +55,6 @@ __all__ = [
     "ReportOverviewView",
     "SlowTimingsDetailView",
     "SlowTimingsListView",
-    "StopMissingNaptanDetailView",
-    "StopMissingNaptanListView",
     "StopRepeatedDetailView",
     "StopRepeatedListView",
     "TimingPatternsListBaseView",

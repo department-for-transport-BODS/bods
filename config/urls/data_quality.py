@@ -220,12 +220,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.StopMissingNaptanListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="stop-missing-naptan-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.StopMissingNaptanDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="stop-missing-naptan-detail",
                 ),
                 path(
