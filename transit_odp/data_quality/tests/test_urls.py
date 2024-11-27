@@ -203,15 +203,6 @@ class TestDuplicateJourneyWarningUrls(WarningUrlsTestBase):
 
 
 @pytest.mark.django_db
-class TestBackwardTimingWarningUrls(WarningUrlsTestBase):
-    url_segment = "backward-timing"
-    list_url_name = "dq:backward-timing-list"
-    list_view = views.BackwardTimingListView
-    detail_url_name = "dq:backward-timing-detail"
-    detail_view = views.BackwardTimingDetailView
-
-
-@pytest.mark.django_db
 class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
     url_segment = "incorrect-noc"
     list_url_name = "dq:incorrect-noc-list"

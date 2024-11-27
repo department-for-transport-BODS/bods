@@ -1,5 +1,4 @@
 from .backward_date_range import BackwardDateRangeDetailView, BackwardDateRangeListView
-from .backward_timing import BackwardTimingDetailView, BackwardTimingListView
 from .base import (
     DetailBaseView,
     JourneyListBaseView,
@@ -32,8 +31,6 @@ from .timing_last_and_timing_first import (
 __all__ = [
     "BackwardDateRangeDetailView",
     "BackwardDateRangeListView",
-    "BackwardTimingDetailView",
-    "BackwardTimingListView",
     "DataQualityGlossaryView",
     "DetailBaseView",
     "DuplicateJourneyDetailView",
