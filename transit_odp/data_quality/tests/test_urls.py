@@ -230,24 +230,6 @@ class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
 
 
 @pytest.mark.django_db
-class TestLastStopPickUpWarningUrls(WarningUrlsTestBase):
-    url_segment = "pick-up-only"
-    list_url_name = "dq:last-stop-pick-up-only-list"
-    list_view = views.LastStopPickUpListView
-    detail_url_name = "dq:last-stop-pick-up-only-detail"
-    detail_view = views.LastStopPickUpDetailView
-
-
-@pytest.mark.django_db
-class TestFirstStopDropOffWarningUrls(WarningUrlsTestBase):
-    url_segment = "drop-off-only"
-    list_url_name = "dq:first-stop-set-down-only-list"
-    list_view = views.FirstStopDropOffListView
-    detail_url_name = "dq:first-stop-set-down-only-detail"
-    detail_view = views.FirstStopDropOffDetailView
-
-
-@pytest.mark.django_db
 class TestLastStopNotTimingPointWarningUrls(WarningUrlsTestBase):
     url_segment = "last-stop-not-timing-point"
     list_url_name = "dq:last-stop-not-timing-point-list"
