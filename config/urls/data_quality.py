@@ -240,12 +240,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.ServiceLinkMissingStopListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="service-link-missing-stops-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.ServiceLinkMissingStopDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="service-link-missing-stops-detail",
                 ),
             ]
@@ -347,7 +347,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.LineExpiredListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="line-expired-list",
                 )
             ]
@@ -359,12 +359,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.LineMissingBlockIDListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="line-missing-block-id-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.LineMissingBlockIDDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="line-missing-block-id-detail",
                 ),
             ]
