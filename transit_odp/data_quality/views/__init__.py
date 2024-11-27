@@ -12,7 +12,6 @@ from .glossary import DataQualityGlossaryView
 from .incorrect_noc import IncorrectNOCListView
 from .mixins import WithDraftRevision, WithPublishedRevision
 from .report import ReportCSVDownloadView, ReportOverviewView
-from .slow_timings import SlowTimingsDetailView, SlowTimingsListView
 from .stop_missing import MissingStopDetailView, MissingStopListView
 from .stop_repeated import StopRepeatedDetailView, StopRepeatedListView
 from .timing_last_and_timing_first import (
@@ -40,8 +39,6 @@ __all__ = [
     "OneTableDetailView",
     "ReportCSVDownloadView",
     "ReportOverviewView",
-    "SlowTimingsDetailView",
-    "SlowTimingsListView",
     "StopRepeatedDetailView",
     "StopRepeatedListView",
     "TimingPatternsListBaseView",

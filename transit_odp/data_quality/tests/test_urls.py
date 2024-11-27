@@ -183,16 +183,6 @@ class TestGlossaryUrl(DqUrlsTestBase):
             ),
         )
 
-
-@pytest.mark.django_db
-class TestSlowTimingWarningUrls(WarningUrlsTestBase):
-    url_segment = "slow-timings"
-    list_url_name = "dq:slow-timings-list"
-    list_view = views.SlowTimingsListView
-    detail_url_name = "dq:slow-timings-detail"
-    detail_view = views.SlowTimingsDetailView
-
-
 @pytest.mark.django_db
 class TestDuplicateJourneyWarningUrls(WarningUrlsTestBase):
     url_segment = "duplicate-journeys"
