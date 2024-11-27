@@ -11,12 +11,6 @@ from .duplicate_journey import DuplicateJourneyDetailView, DuplicateJourneyListV
 from .glossary import DataQualityGlossaryView
 from .incorrect_noc import IncorrectNOCListView
 from .mixins import WithDraftRevision, WithPublishedRevision
-from .pick_up_and_drop_off import (
-    FirstStopDropOffDetailView,
-    FirstStopDropOffListView,
-    LastStopPickUpDetailView,
-    LastStopPickUpListView,
-)
 from .report import ReportCSVDownloadView, ReportOverviewView
 from .slow_timings import SlowTimingsDetailView, SlowTimingsListView
 from .stop_missing import MissingStopDetailView, MissingStopListView
@@ -35,16 +29,12 @@ __all__ = [
     "DetailBaseView",
     "DuplicateJourneyDetailView",
     "DuplicateJourneyListView",
-    "FirstStopDropOffDetailView",
-    "FirstStopDropOffListView",
     "FirstStopNotTimingDetailView",
     "FirstStopNotTimingListView",
     "IncorrectNOCListView",
     "JourneyListBaseView",
     "LastStopNotTimingDetailView",
     "LastStopNotTimingListView",
-    "LastStopPickUpDetailView",
-    "LastStopPickUpListView",
     "MissingStopDetailView",
     "MissingStopListView",
     "OneTableDetailView",

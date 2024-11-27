@@ -132,12 +132,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.LastStopPickUpListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="last-stop-pick-up-only-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.LastStopPickUpDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="last-stop-pick-up-only-detail",
                 ),
                 path(
@@ -154,12 +154,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.FirstStopDropOffListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="first-stop-set-down-only-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.FirstStopDropOffDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="first-stop-set-down-only-detail",
                 ),
                 path(
