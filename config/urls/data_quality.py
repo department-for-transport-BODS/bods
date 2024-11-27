@@ -103,12 +103,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.BackwardTimingListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="backward-timing-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.BackwardTimingDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="backward-timing-detail",
                 ),
             ]
