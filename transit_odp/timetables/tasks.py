@@ -95,13 +95,13 @@ def task_dataset_pipeline(self, revision_id: int, do_publish=False):
 
         jobs = [
             task_dataset_download.signature(args),
-            # task_scan_timetables.signature(args),
-            # task_timetable_file_check.signature(args),
+            task_scan_timetables.signature(args),
+            task_timetable_file_check.signature(args),
             task_populate_original_file_hash.signature(args),
-            # task_timetable_schema_check.signature(args),
-            # task_post_schema_check.signature(args),
+            task_timetable_schema_check.signature(args),
+            task_post_schema_check.signature(args),
             task_extract_txc_file_data.signature(args),
-            # task_pti_validation.signature(args),
+            task_pti_validation.signature(args),
         ]
 
         if is_new_data_quality_service_active:
