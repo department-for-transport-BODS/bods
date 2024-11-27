@@ -11,7 +11,6 @@ from .base import (
 from .duplicate_journey import DuplicateJourneyDetailView, DuplicateJourneyListView
 from .glossary import DataQualityGlossaryView
 from .incorrect_noc import IncorrectNOCListView
-from .incorrect_stop_type import IncorrectStopTypeDetailView, IncorrectStopTypeListView
 from .mixins import WithDraftRevision, WithPublishedRevision
 from .pick_up_and_drop_off import (
     FirstStopDropOffDetailView,
@@ -20,7 +19,6 @@ from .pick_up_and_drop_off import (
     LastStopPickUpListView,
 )
 from .report import ReportCSVDownloadView, ReportOverviewView
-from .slow_link import SlowLinkDetailView, SlowLinkListView
 from .slow_timings import SlowTimingsDetailView, SlowTimingsListView
 from .stop_missing import MissingStopDetailView, MissingStopListView
 from .stop_missing_naptan import StopMissingNaptanDetailView, StopMissingNaptanListView
@@ -46,8 +44,6 @@ __all__ = [
     "FirstStopNotTimingDetailView",
     "FirstStopNotTimingListView",
     "IncorrectNOCListView",
-    "IncorrectStopTypeDetailView",
-    "IncorrectStopTypeListView",
     "JourneyListBaseView",
     "LastStopNotTimingDetailView",
     "LastStopNotTimingListView",
@@ -58,8 +54,6 @@ __all__ = [
     "OneTableDetailView",
     "ReportCSVDownloadView",
     "ReportOverviewView",
-    "SlowLinkDetailView",
-    "SlowLinkListView",
     "SlowTimingsDetailView",
     "SlowTimingsListView",
     "StopMissingNaptanDetailView",

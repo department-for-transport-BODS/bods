@@ -10,11 +10,12 @@ from transit_odp.data_quality.constants import (
     FastTimingPointObservation,
     FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,
-    IncorrectStopTypeObservation,
     LastStopPickUpOnlyObservation,
     MissingBlockNumber,
     StopNotInNaptanObservation,
 )
+from transit_odp.dqs.constants import IncorrectStopTypeObservation
+
 from transit_odp.data_quality.etl import TransXChangeDQPipeline
 from transit_odp.data_quality.factories.transmodel import (
     DataQualityReportFactory,
