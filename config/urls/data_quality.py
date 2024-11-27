@@ -37,12 +37,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.SlowTimingsListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="slow-timings-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.SlowTimingsDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="slow-timings-detail",
                 ),
             ]
