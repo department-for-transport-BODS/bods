@@ -275,15 +275,6 @@ class TestFirstStopNotTimingPointWarningUrls(WarningUrlsTestBase):
 
 
 @pytest.mark.django_db
-class TestStopNotInNaptanWarningUrls(WarningUrlsTestBase):
-    url_segment = "stop-not-in-naptan"
-    list_url_name = "dq:stop-missing-naptan-list"
-    list_view = views.StopMissingNaptanListView
-    detail_url_name = "dq:stop-missing-naptan-detail"
-    detail_view = views.StopMissingNaptanDetailView
-
-
-@pytest.mark.django_db
 class TestStopRepeatedWarningUrls(WarningUrlsTestBase):
     url_segment = "multiple-stops"
     list_url_name = "dq:stop-repeated-list"
