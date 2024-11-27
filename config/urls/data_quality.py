@@ -69,10 +69,12 @@ urlpatterns = [
         "slow-links/",
         include(
             [
-                path("", view=views.SlowLinkListView.as_view(), name="slow-link-list"),
+                path(
+                    "", view=views.ReportOverviewView.as_view(), name="slow-link-list"
+                ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.SlowLinkDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="slow-link-detail",
                 ),
             ]
@@ -325,12 +327,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.IncorrectStopTypeListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="incorrect-stop-type-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.IncorrectStopTypeDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="incorrect-stop-type-detail",
                 ),
                 path(

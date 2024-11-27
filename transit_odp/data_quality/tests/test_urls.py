@@ -194,15 +194,6 @@ class TestSlowTimingWarningUrls(WarningUrlsTestBase):
 
 
 @pytest.mark.django_db
-class TestSlowLinkWarningUrls(WarningUrlsTestBase):
-    url_segment = "slow-links"
-    list_url_name = "dq:slow-link-list"
-    list_view = views.SlowLinkListView
-    detail_url_name = "dq:slow-link-detail"
-    detail_view = views.SlowLinkDetailView
-
-
-@pytest.mark.django_db
 class TestDuplicateJourneyWarningUrls(WarningUrlsTestBase):
     url_segment = "duplicate-journeys"
     list_url_name = "dq:duplicate-journey-list"
@@ -317,12 +308,3 @@ class TestBackwardDateRangeWarningUrls(WarningUrlsTestBase):
     list_view = views.BackwardDateRangeListView
     detail_url_name = "dq:backward-date-range-detail"
     detail_view = views.BackwardDateRangeDetailView
-
-
-@pytest.mark.django_db
-class TestIncorrectStopTypeWarningUrls(WarningUrlsTestBase):
-    url_segment = "incorrect-stop-type"
-    list_url_name = "dq:incorrect-stop-type-list"
-    list_view = views.IncorrectStopTypeListView
-    detail_url_name = "dq:incorrect-stop-type-detail"
-    detail_view = views.IncorrectStopTypeDetailView

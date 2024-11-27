@@ -358,22 +358,7 @@ SlowTimingPointObservation = Observation(
     level=Level.advisory,
     category=Category.timing,
 )
-SlowLinkObservation = Observation(
-    title="Slow running time between stops",
-    text=(
-        "This observation identifies links between stops that appear unfeasibly slow, "
-        "meaning it would require a vehicle to travel between the stops "
-        'as the "crow flies" '
-        "at a speed of less than 1 mph. This implies the data provided could be "
-        "inaccurate. "
-        "</br></br>"
-        "Operators should investigate the observation and address any errors found."
-    ),
-    model=models.SlowLinkWarning,
-    list_url_name="dq:slow-link-list",
-    level=Level.advisory,
-    category=Category.timing,
-)
+
 BackwardsTimingObservation = Observation(
     title="Backwards timing",
     text=(
@@ -461,7 +446,6 @@ OBSERVATIONS = (
     LastStopPickUpOnlyObservation,
     MissingBlockNumber,
     NoTimingPointFor15MinutesObservation,
-    SlowLinkObservation,
     SlowTimingPointObservation,
     StopNotInNaptanObservation,
     StopsRepeatedObservation,
