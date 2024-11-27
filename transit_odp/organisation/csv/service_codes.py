@@ -429,7 +429,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         ),
         CSVColumn(
             header="Timetables critical DQ issues",
-            accessor=UNDER_MAINTENANCE,
+            accessor=lambda otc_service: UNDER_MAINTENANCE,
         ),
         CSVColumn(
             header="AVL requires attention",
@@ -445,19 +445,19 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         ),
         CSVColumn(
             header="Fares requires attention",
-            accessor=UNDER_MAINTENANCE,
+            accessor=lambda otc_service: UNDER_MAINTENANCE,
         ),
         CSVColumn(
             header="Fares Published Status",
-            accessor=UNDER_MAINTENANCE,
+            accessor=lambda otc_service: UNDER_MAINTENANCE,
         ),
         CSVColumn(
             header="Fares Timeliness Status",
-            accessor=UNDER_MAINTENANCE,
+            accessor=lambda otc_service: UNDER_MAINTENANCE,
         ),
         CSVColumn(
             header="Fares Compliance Status",
-            accessor=UNDER_MAINTENANCE,
+            accessor=lambda otc_service: UNDER_MAINTENANCE,
         ),
         CSVColumn(
             header="Timetables Data set ID",
@@ -487,23 +487,23 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         ),
         CSVColumn(
             header="Fares Data set ID",
-            accessor=UNDER_MAINTENANCE,
+            accessor=lambda otc_service: UNDER_MAINTENANCE,
         ),
         CSVColumn(
             header="NETEX:Filename",
-            accessor=UNDER_MAINTENANCE,
+            accessor=lambda otc_service: UNDER_MAINTENANCE,
         ),
         CSVColumn(
             header="NETEX:Last Modified Date",
-            accessor=UNDER_MAINTENANCE,
+            accessor=lambda otc_service: UNDER_MAINTENANCE,
         ),
         CSVColumn(
             header="Date when fares data is over 1 year old",
-            accessor=UNDER_MAINTENANCE,
+            accessor=lambda otc_service: UNDER_MAINTENANCE,
         ),
         CSVColumn(
             header="NETEX:Operating Period End Date",
-            accessor=UNDER_MAINTENANCE,
+            accessor=lambda otc_service: UNDER_MAINTENANCE,
         ),
         CSVColumn(
             header="Date Registration variation needs to be published",
