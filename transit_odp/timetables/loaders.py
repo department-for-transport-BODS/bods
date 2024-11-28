@@ -200,21 +200,24 @@ class TransXChangeDataLoader:
 
     def load_vehicle_journeys(self, service_patterns):
         vehicle_journeys = self.transformed.vehicle_journeys
-
         if not vehicle_journeys.empty:
             if not service_patterns.empty:
                 service_patterns = (
                     service_patterns.reset_index()[
-                        ["service_pattern_id", "id", "file_id"]
+                        ["service_pattern_id", "id", "file_id", "line_name"]
                     ]
                     .drop_duplicates()
                     .rename(columns={"id": "id_service"})
+                )
+                # add line_name to the VJs
+                vehicle_journeys["line_name"] = (
+                    vehicle_journeys["line_ref"].str.split(":").str[-1]
                 )
                 vehicle_journeys = (
                     vehicle_journeys.reset_index()
                     .merge(
                         service_patterns,
-                        on=["file_id", "service_pattern_id"],
+                        on=["file_id", "service_pattern_id", "line_name"],
                         how="left",
                     )
                     .reset_index()
@@ -228,7 +231,10 @@ class TransXChangeDataLoader:
             vehicle_journeys["id"] = pd.Series(
                 (obj.id for obj in created), index=vehicle_journeys.index
             )
-        return vehicle_journeys
+
+        vjs = vehicle_journeys.drop("line_name")
+
+        return vjs
 
     def load_journey_tracks(self):
         """
