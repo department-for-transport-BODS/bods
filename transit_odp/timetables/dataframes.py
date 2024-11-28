@@ -414,6 +414,7 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
         for section in sections:
             id_ = section["id"]
             links = section.get_elements(["JourneyPatternTimingLink"])
+            prev_to_wait_time = pd.NaT
             for order, link in enumerate(links):
                 from_stop = link.get_element(["From"])
                 to_stop = link.get_element(["To"])
@@ -440,15 +441,46 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                     run_time = pd.to_timedelta(
                         parsed_run_time.total_seconds(), unit="s"
                     )
-                element_wait_time = link.get_element_or_none(["To", "WaitTime"])
+                from_element_wait_time = link.get_element_or_none(["From", "WaitTime"])
+                to_element_wait_time = link.get_element_or_none(["To", "WaitTime"])
                 wait_time = pd.NaT
-                if element_wait_time:
-                    parsed_from_wait_time = isodate.parse_duration(
-                        element_wait_time.text
+                from_wait_time = None
+                to_wait_time = None
+
+                if (
+                        pd.isna(prev_to_wait_time) or order == 0
+                    ) and from_element_wait_time:
+                    from_wait_time = from_element_wait_time.get_element_or_none(
+                        ["WaitTime"]
                     )
-                    wait_time = pd.to_timedelta(
-                        parsed_from_wait_time.total_seconds(), unit="s"
+                    if from_wait_time:
+                        parsed_from_wait_time = isodate.parse_duration(
+                            from_wait_time.text
+                        )
+                        wait_time = pd.to_timedelta(
+                            parsed_from_wait_time.total_seconds(), unit="s"
+                        )
+                    else:
+                        wait_time = prev_to_wait_time
+
+                elif not pd.isna(prev_to_wait_time):
+                    wait_time = prev_to_wait_time
+
+                if to_element_wait_time:  # and (index + 1 != len_timing_links):
+                    to_wait_time = to_element_wait_time.get_element_or_none(
+                        ["WaitTime"]
                     )
+                    if to_wait_time:
+                        parsed_to_wait_time = isodate.parse_duration(
+                            to_wait_time.text
+                        )
+                        prev_to_wait_time = pd.to_timedelta(
+                            parsed_to_wait_time.total_seconds(), unit="s"
+                        )
+                    else:
+                        prev_to_wait_time = pd.NaT
+                else:
+                    prev_to_wait_time = pd.NaT
 
                 route_link_ref = link.get_element_or_none(["RouteLinkRef"])
                 if route_link_ref:
