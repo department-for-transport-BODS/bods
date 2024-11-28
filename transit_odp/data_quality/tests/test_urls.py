@@ -183,6 +183,7 @@ class TestGlossaryUrl(DqUrlsTestBase):
             ),
         )
 
+
 @pytest.mark.django_db
 class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
     url_segment = "incorrect-noc"
@@ -208,4 +209,3 @@ class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
 
     def get_url_resolves_to_correct_view_scenarios(self):
         return (UrlResolvesViewScenario(self.generate_list_url_path(), self.list_view),)
-

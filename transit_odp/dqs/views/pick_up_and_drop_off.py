@@ -7,7 +7,6 @@ from transit_odp.dqs.views.base import DQSWarningListBaseView
 
 
 class LastStopPickUpListView(DQSWarningListBaseView):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
