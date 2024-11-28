@@ -487,7 +487,7 @@ ServicedOrganisationOutOfDateObservation = Observation(
     list_url_name="dq:serviced-organisation-out-of-date-list",
     level=Level.advisory,
     category=Category.data_set,
-    is_active=False,
+    is_active=True,
 )
 
 ServiceNumberNotMatchingRegistrationObservation = Observation(
@@ -621,6 +621,5 @@ OBSERVATIONS = (
     ServiceNumberNotMatchingRegistrationObservation,
     MissingDataObservation,
     MissingBusWorkingNumberObservation,
-    DuplicateJourneysObservation,
     NoTimingPointMoreThan15MinsObservation,
 )
