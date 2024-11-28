@@ -1,11 +1,41 @@
-from transit_odp.data_quality.constants import IncorrectStopTypeObservation
-
-from transit_odp.dqs.models import ObservationResults
-from transit_odp.dqs.constants import Checks
-from transit_odp.dqs.views.base import DQSWarningDetailBaseView
-from transit_odp.dqs.tables.base import DQSWarningDetailsBaseTable
+from transit_odp.dqs.constants import Checks, IncorrectStopTypeObservation
+from transit_odp.dqs.views.base import DQSWarningListBaseView, DQSWarningDetailBaseView
 from transit_odp.dqs.tables.incorrect_stop_type import IncorrectStopTypeTable
-from transit_odp.dqs.models import Report
+
+
+class IncorrectStopTypeListView(DQSWarningListBaseView):
+    data = IncorrectStopTypeObservation
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    check = Checks.IncorrectStopType
+    dqs_details = "There is at least one stop with an incorrect stop type"
+
+    def get_queryset(self):
+
+        # Calling the qs method of DQSWarningListBaseView
+        return DQSWarningListBaseView.get_queryset(self)
+
+    def get_context_data(self, **kwargs):
+
+        self.data = IncorrectStopTypeObservation
+        context = super().get_context_data(**kwargs)
+
+        context.update(
+            {
+                "title": self.data.title,
+                "definition": self.data.text,
+                "preamble": self.data.preamble,
+                "extra_info": self.data.extra_info,
+                "resolve": self.data.resolve,
+            }
+        )
+        return context
+
+    def get_table_kwargs(self):
+
+        return {}
 
 
 class IncorrectStopTypeDetailView(DQSWarningDetailBaseView):

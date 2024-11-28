@@ -132,7 +132,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.ReportOverviewView.as_view(),
+                    view=DQSviews.LastStopPickUpListView.as_view(),
                     name="last-stop-pick-up-only-list",
                 ),
                 path(
@@ -154,7 +154,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.ReportOverviewView.as_view(),
+                    view=DQSviews.FirstStopDropOffListView.as_view(),
                     name="first-stop-set-down-only-list",
                 ),
                 path(
@@ -220,7 +220,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.ReportOverviewView.as_view(),
+                    view=DQSviews.StopNotFoundInNaptanListView.as_view(),
                     name="stop-missing-naptan-list",
                 ),
                 path(
@@ -230,7 +230,7 @@ urlpatterns = [
                 ),
                 path(
                     "detail/",
-                    view=DQSviews.StopMissingNaptanDetailView.as_view(),
+                    view=DQSviews.StopNotFoundInNaptanDetailView.as_view(),
                     name="dqs-stop-missing-naptan-detail",
                 ),
             ]
@@ -327,7 +327,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.ReportOverviewView.as_view(),
+                    view=DQSviews.IncorrectStopTypeListView.as_view(),
                     name="incorrect-stop-type-list",
                 ),
                 path(
