@@ -1,46 +1,17 @@
-from transit_odp.data_quality.constants import (
-    FirstStopNotTimingPointObservation,
-    LastStopNotTimingPointObservation,
-)
-
-# TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
-from transit_odp.data_quality.models.warnings import (
-    TimingFirstWarning,
-    TimingLastWarning,
-)
-
-# TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
-from transit_odp.data_quality.tables import (
-    TimingFirstWarningDetailTable,
-    TimingFirstWarningVehicleTable,
-    TimingLastWarningDetailTable,
-    TimingLastWarningVehicleTable,
-)
-
-# TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
-from transit_odp.data_quality.tables.base import TimingPatternListTable
-
-# TODO: DQSMIGRATION: FLAGBASED: Remove after flag is enabled (by default)
-from transit_odp.data_quality.views.base import (
-    TimingPatternsListBaseView,
-    TwoTableDetailView,
-)
 from transit_odp.dqs.constants import (
     Checks,
-    FirstStopNotTimingPointObservation as DQSFirstStopNotTimingPointObservation,
-    LastStopNotTimingPointObservation as DQSLastStopNotTimingPointObservation,
+    FirstStopNotTimingPointObservation,
+    LastStopNotTimingPointObservation,
 )
 from transit_odp.dqs.views.base import DQSWarningListBaseView
 from waffle import flag_is_active
 
 
-class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseView):
+class LastStopNotTimingListView(DQSWarningListBaseView):
     data = LastStopNotTimingPointObservation
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.model = TimingLastWarning
-        self.table_class = TimingPatternListTable
 
     @property
     def is_new_data_quality_service_active(self):
@@ -52,14 +23,12 @@ class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseVi
     )
 
     def get_queryset(self):
-        if not self.is_dqs_new_report:
-            return super().get_queryset().add_message().add_line()
 
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
-        if self.is_dqs_new_report:
-            self.data = DQSLastStopNotTimingPointObservation
+
+        self.data = LastStopNotTimingPointObservation
         context = super().get_context_data(**kwargs)
 
         context.update(
@@ -80,31 +49,11 @@ class LastStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseVi
         return kwargs
 
 
-class LastStopNotTimingDetailView(TwoTableDetailView):
-    data = LastStopNotTimingPointObservation
-
-    model = TimingLastWarning
-    tables = [TimingLastWarningDetailTable, TimingLastWarningVehicleTable]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        title = self.data.title
-        line_name = self.warning.get_timing_pattern().service_pattern.service.name
-
-        context["title"] = self.data.title
-        context[
-            "subtitle"
-        ] = f"Line {line_name} has at least one journey where the {title.lower()}"
-        return context
-
-
-class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseView):
+class FirstStopNotTimingListView(DQSWarningListBaseView):
     data = FirstStopNotTimingPointObservation
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.model = TimingFirstWarning
-        self.table_class = TimingPatternListTable
 
     @property
     def is_new_data_quality_service_active(self):
@@ -116,14 +65,12 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseV
     )
 
     def get_queryset(self):
-        if not self.is_dqs_new_report:
-            return super().get_queryset().add_message().add_line()
 
         return DQSWarningListBaseView.get_queryset(self)
 
     def get_context_data(self, **kwargs):
-        if self.is_dqs_new_report:
-            self.data = DQSFirstStopNotTimingPointObservation
+
+        self.data = FirstStopNotTimingPointObservation
         context = super().get_context_data(**kwargs)
 
         context.update(
@@ -141,20 +88,3 @@ class FirstStopNotTimingListView(TimingPatternsListBaseView, DQSWarningListBaseV
         if not self.is_dqs_new_report:
             kwargs = super().get_table_kwargs()
         return kwargs
-
-
-class FirstStopNotTimingDetailView(TwoTableDetailView):
-    data = FirstStopNotTimingPointObservation
-    model = TimingFirstWarning
-    tables = [TimingFirstWarningDetailTable, TimingFirstWarningVehicleTable]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        title = self.data.title
-        line_name = self.warning.get_timing_pattern().service_pattern.service.name
-
-        context["title"] = title
-        context[
-            "subtitle"
-        ] = f"Line {line_name} has at least one journey where the {title.lower()}"
-        return context
