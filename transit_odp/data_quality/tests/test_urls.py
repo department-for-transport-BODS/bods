@@ -184,15 +184,6 @@ class TestGlossaryUrl(DqUrlsTestBase):
         )
 
 @pytest.mark.django_db
-class TestDuplicateJourneyWarningUrls(WarningUrlsTestBase):
-    url_segment = "duplicate-journeys"
-    list_url_name = "dq:duplicate-journey-list"
-    list_view = views.DuplicateJourneyListView
-    detail_url_name = "dq:duplicate-journey-detail"
-    detail_view = views.DuplicateJourneyDetailView
-
-
-@pytest.mark.django_db
 class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
     url_segment = "incorrect-noc"
     list_url_name = "dq:incorrect-noc-list"
@@ -217,24 +208,6 @@ class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
 
     def get_url_resolves_to_correct_view_scenarios(self):
         return (UrlResolvesViewScenario(self.generate_list_url_path(), self.list_view),)
-
-
-@pytest.mark.django_db
-class TestLastStopNotTimingPointWarningUrls(WarningUrlsTestBase):
-    url_segment = "last-stop-not-timing-point"
-    list_url_name = "dq:last-stop-not-timing-point-list"
-    list_view = views.LastStopNotTimingListView
-    detail_url_name = "dq:last-stop-not-timing-point-detail"
-    detail_view = views.LastStopNotTimingDetailView
-
-
-@pytest.mark.django_db
-class TestFirstStopNotTimingPointWarningUrls(WarningUrlsTestBase):
-    url_segment = "first-stop-not-timing-point"
-    list_url_name = "dq:first-stop-not-timing-point-list"
-    list_view = views.FirstStopNotTimingListView
-    detail_url_name = "dq:first-stop-not-timing-point-detail"
-    detail_view = views.FirstStopNotTimingDetailView
 
 
 @pytest.mark.django_db

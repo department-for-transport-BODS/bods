@@ -7,7 +7,6 @@ from .base import (
     TwoTableDetailView,
     WarningListBaseView,
 )
-from .duplicate_journey import DuplicateJourneyDetailView, DuplicateJourneyListView
 from .glossary import DataQualityGlossaryView
 from .incorrect_noc import IncorrectNOCListView
 from .mixins import WithDraftRevision, WithPublishedRevision
@@ -15,9 +14,7 @@ from .report import ReportCSVDownloadView, ReportOverviewView
 from .stop_missing import MissingStopDetailView, MissingStopListView
 from .stop_repeated import StopRepeatedDetailView, StopRepeatedListView
 from .timing_last_and_timing_first import (
-    FirstStopNotTimingDetailView,
     FirstStopNotTimingListView,
-    LastStopNotTimingDetailView,
     LastStopNotTimingListView,
 )
 
@@ -26,13 +23,9 @@ __all__ = [
     "BackwardDateRangeListView",
     "DataQualityGlossaryView",
     "DetailBaseView",
-    "DuplicateJourneyDetailView",
-    "DuplicateJourneyListView",
-    "FirstStopNotTimingDetailView",
     "FirstStopNotTimingListView",
     "IncorrectNOCListView",
     "JourneyListBaseView",
-    "LastStopNotTimingDetailView",
     "LastStopNotTimingListView",
     "MissingStopDetailView",
     "MissingStopListView",

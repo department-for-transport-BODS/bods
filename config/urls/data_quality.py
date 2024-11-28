@@ -86,12 +86,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.DuplicateJourneyListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="duplicate-journey-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.DuplicateJourneyDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="duplicate-journey-detail",
                 ),
             ]
@@ -181,7 +181,7 @@ urlpatterns = [
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.LastStopNotTimingDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="last-stop-not-timing-point-detail",
                 ),
                 path(
@@ -203,7 +203,7 @@ urlpatterns = [
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.FirstStopNotTimingDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="first-stop-not-timing-point-detail",
                 ),
                 path(

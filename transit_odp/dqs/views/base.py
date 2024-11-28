@@ -25,6 +25,11 @@ class DQSWarningListBaseView(SingleTableView):
     is_details_link = True
     col_name = ""
 
+    def __init__(self, *args, **kwargs):
+        self.model = ObservationResults
+        self.table_class = DQSWarningListBaseTable
+        super().__init__(*args, **kwargs)
+
     @property
     def is_dqs_new_report(self):
         if self._is_dqs_new_report is None:
