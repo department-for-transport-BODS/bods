@@ -446,16 +446,13 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                 wait_time = pd.NaT
                 from_wait_time = None
                 to_wait_time = None
-
                 if (
-                        pd.isna(prev_to_wait_time) or order == 0
-                    ) and from_element_wait_time:
-                    from_wait_time = from_element_wait_time.get_element_or_none(
-                        ["WaitTime"]
-                    )
-                    if from_wait_time:
+                    pd.isna(prev_to_wait_time) or order == 0
+                ) and from_element_wait_time:
+                    # from_wait_time = from_element_wait_time.get_element_or_none(["WaitTime"])
+                    if from_element_wait_time:
                         parsed_from_wait_time = isodate.parse_duration(
-                            from_wait_time.text
+                            from_element_wait_time.text
                         )
                         wait_time = pd.to_timedelta(
                             parsed_from_wait_time.total_seconds(), unit="s"
@@ -467,18 +464,12 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                     wait_time = prev_to_wait_time
 
                 if to_element_wait_time:  # and (index + 1 != len_timing_links):
-                    to_wait_time = to_element_wait_time.get_element_or_none(
-                        ["WaitTime"]
+                    parsed_to_wait_time = isodate.parse_duration(
+                        to_element_wait_time.text
                     )
-                    if to_wait_time:
-                        parsed_to_wait_time = isodate.parse_duration(
-                            to_wait_time.text
-                        )
-                        prev_to_wait_time = pd.to_timedelta(
-                            parsed_to_wait_time.total_seconds(), unit="s"
-                        )
-                    else:
-                        prev_to_wait_time = pd.NaT
+                    prev_to_wait_time = pd.to_timedelta(
+                        parsed_to_wait_time.total_seconds(), unit="s"
+                    )
                 else:
                     prev_to_wait_time = pd.NaT
 
@@ -501,7 +492,6 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
 
                 from_activity_id = get_stop_activity_id(stop_activities, from_activity)
                 to_activity_id = get_stop_activity_id(stop_activities, to_activity)
-
                 all_links.append(
                     {
                         "jp_section_id": id_,
