@@ -209,29 +209,3 @@ class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
     def get_url_resolves_to_correct_view_scenarios(self):
         return (UrlResolvesViewScenario(self.generate_list_url_path(), self.list_view),)
 
-
-@pytest.mark.django_db
-class TestStopRepeatedWarningUrls(WarningUrlsTestBase):
-    url_segment = "multiple-stops"
-    list_url_name = "dq:stop-repeated-list"
-    list_view = views.StopRepeatedListView
-    detail_url_name = "dq:stop-repeated-detail"
-    detail_view = views.StopRepeatedDetailView
-
-
-@pytest.mark.django_db
-class TestMissingStopWarningUrls(WarningUrlsTestBase):
-    url_segment = "missing-stops"
-    list_url_name = "dq:missing-stops-list"
-    list_view = views.MissingStopListView
-    detail_url_name = "dq:missing-stops-detail"
-    detail_view = views.MissingStopDetailView
-
-
-@pytest.mark.django_db
-class TestBackwardDateRangeWarningUrls(WarningUrlsTestBase):
-    url_segment = "backward-date-range"
-    list_url_name = "dq:backward-date-range-list"
-    list_view = views.BackwardDateRangeListView
-    detail_url_name = "dq:backward-date-range-detail"
-    detail_view = views.BackwardDateRangeDetailView

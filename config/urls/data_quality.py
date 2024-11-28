@@ -176,7 +176,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.LastStopNotTimingListView.as_view(),
+                    view=DQSviews.LastStopNotTimingListView.as_view(),
                     name="last-stop-not-timing-point-list",
                 ),
                 path(
@@ -198,7 +198,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.FirstStopNotTimingListView.as_view(),
+                    view=DQSviews.FirstStopNotTimingListView.as_view(),
                     name="first-stop-not-timing-point-list",
                 ),
                 path(
@@ -259,12 +259,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.StopRepeatedListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="stop-repeated-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.StopRepeatedDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="stop-repeated-detail",
                 ),
             ]
@@ -276,12 +276,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.MissingStopListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="missing-stops-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.MissingStopDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="missing-stops-detail",
                 ),
             ]
@@ -310,12 +310,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.BackwardDateRangeListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="backward-date-range-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.BackwardDateRangeDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="backward-date-range-detail",
                 ),
             ]

@@ -37,7 +37,7 @@ from .serviced_organisation_out_of_date import (
     ServicedOrganisationOutOfDateDetailView,
 )
 from .incorrect_noc import IncorrectNOCListView
-
+from .timing_point import LastStopNotTimingListView, FirstStopNotTimingListView
 from .suppress_observation import SuppressObservationView
 
 __all__ = [
@@ -63,4 +63,6 @@ __all__ = [
     "ServicedOrganisationOutOfDateListView",
     "ServicedOrganisationOutOfDateDetailView",
     "IncorrectNOCListView",
+    "LastStopNotTimingListView",
+    "FirstStopNotTimingListView",
 ]
