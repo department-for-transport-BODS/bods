@@ -6,6 +6,11 @@ app_name = "avl"
 urlpatterns = [
     path("", views.ListView.as_view(), name="feed-list"),
     path(
+        "attention/",
+        views.AVLRequiresAttentionView.as_view(),
+        name="requires-attention",
+    ),
+    path(
         "new/",
         views.AVLUploadWizard.as_view(),
         name="new-feed",

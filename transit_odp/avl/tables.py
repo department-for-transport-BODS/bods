@@ -1,6 +1,8 @@
 from math import floor
 
 import django_tables2 as tables
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 
 from transit_odp.avl.constants import PENDING
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
@@ -34,3 +36,21 @@ class AVLDataFeedTable(GovUkTable):
         if value == float(NO_PPC_DATA):
             return PENDING
         return str(int(floor(value))) + "%"
+
+
+class AVLLineColumn(tables.Column):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.verbose_name = "Line"
+        self.attrs["annotation"] = mark_safe(
+            render_to_string("publish/snippets/help_modals/line_service_number.html")
+        )
+
+
+class AVLRequiresAttentionTable(GovUkTable):
+    class Meta(GovUkTable.Meta):
+        pass
+
+    licence_number = tables.Column(verbose_name="Licence number")
+    service_code = tables.Column(verbose_name="Service code")
+    line_number = AVLLineColumn(verbose_name="Line", accessor="line_number")
