@@ -237,11 +237,7 @@ class TransXChangeDataLoader:
             vehicle_journeys["id"] = pd.Series(
                 (obj.id for obj in created), index=vehicle_journeys.index
             )
-        if "line_name" in vehicle_journeys.columns:
-            vjs = vehicle_journeys.drop("line_name")
-            return vjs
-        else:
-            return vehicle_journeys
+        return vehicle_journeys
 
     def load_journey_tracks(self):
         """
