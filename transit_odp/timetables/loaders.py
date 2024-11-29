@@ -209,7 +209,6 @@ class TransXChangeDataLoader:
                     .drop_duplicates()
                     .rename(columns={"id": "id_service"})
                 )
-                # Add line_name to the vehicle_journeys DataFrame if line_ref is not None
                 vehicle_journeys["line_name"] = vehicle_journeys["line_ref"].apply(
                     lambda x: str(x).split(":")[-1] if pd.notnull(x) else None
                 )
