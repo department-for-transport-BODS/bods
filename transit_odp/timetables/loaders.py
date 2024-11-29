@@ -209,10 +209,15 @@ class TransXChangeDataLoader:
                     .drop_duplicates()
                     .rename(columns={"id": "id_service"})
                 )
-                # add line_name to the VJs
-                vehicle_journeys["line_name"] = (
-                    vehicle_journeys["line_ref"].str.split(":").str[-1]
-                )
+                # # add line_name to the VJs
+                # vehicle_journeys["line_name"] = (
+                #     vehicle_journeys["line_ref"].str.split(":").str[-1]
+                # )
+
+                # Add line_name to the vehicle_journeys DataFrame if line_ref is not None 
+                vehicle_journeys["line_name"] = vehicle_journeys["line_ref"].apply( lambda x: x.str.split(":")[-1] if pd.notnull(x) else None)
+
+
                 vehicle_journeys = (
                     vehicle_journeys.reset_index()
                     .merge(
@@ -231,10 +236,11 @@ class TransXChangeDataLoader:
             vehicle_journeys["id"] = pd.Series(
                 (obj.id for obj in created), index=vehicle_journeys.index
             )
-
-        vjs = vehicle_journeys.drop("line_name")
-
-        return vjs
+        if "line_name" in vehicle_journeys.columns:
+            vjs = vehicle_journeys.drop("line_name")
+            return vjs
+        else: 
+            return vehicle_journeys
 
     def load_journey_tracks(self):
         """
