@@ -214,9 +214,10 @@ class TransXChangeDataLoader:
                 #     vehicle_journeys["line_ref"].str.split(":").str[-1]
                 # )
 
-                # Add line_name to the vehicle_journeys DataFrame if line_ref is not None 
-                vehicle_journeys["line_name"] = vehicle_journeys["line_ref"].apply( lambda x: x.str.split(":")[-1] if pd.notnull(x) else None)
-
+                # Add line_name to the vehicle_journeys DataFrame if line_ref is not None
+                vehicle_journeys["line_name"] = vehicle_journeys["line_ref"].apply(
+                    lambda x: x.str.split(":")[-1] if pd.notnull(x) else None
+                )
 
                 vehicle_journeys = (
                     vehicle_journeys.reset_index()
@@ -239,7 +240,7 @@ class TransXChangeDataLoader:
         if "line_name" in vehicle_journeys.columns:
             vjs = vehicle_journeys.drop("line_name")
             return vjs
-        else: 
+        else:
             return vehicle_journeys
 
     def load_journey_tracks(self):
