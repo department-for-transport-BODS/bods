@@ -249,6 +249,7 @@ def get_line_level_txc_map_service_base(
         .get_active_live_revisions()
         .add_staleness_dates()
         .add_split_linenames()
+        .add_organisation_name()
         .order_by(
             "service_code",
             "line_name_unnested",

@@ -27,7 +27,7 @@ from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
     get_all_line_level_otc_map,
-    get_line_level_txc_map,
+    get_line_level_txc_map_service_base,
     is_stale,
 )
 
@@ -295,7 +295,8 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
         Staleness conditions.
         """
         otc_map = get_all_line_level_otc_map(organisation_id)
-        txcfa_map = get_line_level_txc_map(organisation_id)
+        service_codes = [service_code for (service_code, line_name) in otc_map]
+        txcfa_map = get_line_level_txc_map_service_base(service_codes)
 
         seasonal_service_map = get_seasonal_service_map(organisation_id)
         service_code_exemption_map = get_service_code_exemption_map(organisation_id)
@@ -662,7 +663,8 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         Staleness conditions.
         """
         otc_map = get_all_line_level_otc_map(organisation_id)
-        txcfa_map = get_line_level_txc_map(organisation_id)
+        service_codes = [service_code for (service_code, line_name) in otc_map]
+        txcfa_map = get_line_level_txc_map_service_base(service_codes)
 
         seasonal_service_map = get_seasonal_service_map(organisation_id)
         service_code_exemption_map = get_service_code_exemption_map(organisation_id)
