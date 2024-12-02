@@ -319,52 +319,6 @@ class SlowLinkQuerySet(TimingPatternLineQuerySet):
             ),
         )
 
-
-class JourneyDuplicateQuerySet(JourneyQuerySet):
-    def add_message(self):
-        return (
-            self.add_first_stop()
-            .add_first_date()
-            .annotate(
-                message=Concat(
-                    Func(
-                        F("vehicle_journey__start_time"),
-                        Value("HH24:MI", output_field=CharField()),
-                        function="to_char",
-                    ),
-                    Value(" from ", output_field=CharField()),
-                    "first_stop_name",
-                    Value(" on ", output_field=CharField()),
-                    Func(
-                        F("first_date"),
-                        Value("DD/MM/YYYY", output_field=CharField()),
-                        function="to_char",
-                    ),
-                    Value(
-                        " has at least one duplicate journey", output_field=CharField()
-                    ),
-                    output_field=CharField(),
-                ),
-            )
-        )
-
-    def apply_deduplication(self):
-        # TODO de-duplication needs to be done in pipeline adding count to the model
-        #  -------------------
-        # | id | x | y | max |
-        # |-------------------
-        # | 1  | 2 | 3 |  3  |
-        # | 2  | 3 | 2 |  3  |
-        #
-        # To perform the deduplication we annotate the query set with the max of
-        # x and y this means we can then use distinct to give us only one vehicle
-        # journey.
-        # see #BODP-2237 for more details.
-        return self.annotate(
-            max=Greatest(F("duplicate_id"), F("vehicle_journey_id")),
-        ).distinct("max")
-
-
 class JourneyConflictQuerySet(JourneyQuerySet):
     def add_conflict_stop(self):
         from transit_odp.data_quality.models import VehicleJourney

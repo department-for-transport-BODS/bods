@@ -342,22 +342,7 @@ NoTimingPointFor15MinutesObservation = Observation(
     level=Level.advisory,
     category=Category.timing,
 )
-DuplicateJourneyObservation = Observation(
-    title="Duplicate journeys",
-    text=(
-        "This observation identifies any journeys that are included in data "
-        "sets more than "
-        "once. Journeys are considered to be duplicated if they have the same date "
-        "range, follow the same timing pattern and have the same operating period and "
-        "operating days. "
-        "</br></br>"
-        "Operators should investigate the observation and address any errors found."
-    ),
-    model=models.JourneyDuplicateWarning,
-    list_url_name="dq:duplicate-journey-list",
-    level=Level.advisory,
-    category=Category.journey,
-)
+
 BackwardDateRangeObservation = Observation(
     title="Backward date range",
     text=(
@@ -382,7 +367,6 @@ BackwardDateRangeObservation = Observation(
 OBSERVATIONS = (
     BackwardDateRangeObservation,
     BackwardsTimingObservation,
-    DuplicateJourneyObservation,
     FirstStopNotTimingPointObservation,
     FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,

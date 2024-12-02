@@ -10,7 +10,6 @@ from transit_odp.data_quality.models.querysets import (
     IncorrectNOCQuerySet,
     JourneyConflictQuerySet,
     JourneyDateRangeBackwardsQuerySet,
-    JourneyDuplicateQuerySet,
     JourneyStopInappropriateQuerySet,
     JourneyWithoutHeadsignQuerySet,
     LineExpiredQuerySet,
@@ -101,18 +100,6 @@ class JourneyWarningBase(DataQualityWarningBase):
     # the route happens to be very simple in this case!
     def get_vehicle_journey(self):
         return self.vehicle_journey
-
-
-class JourneyDuplicateWarning(JourneyWarningBase):
-    viewname = "dq:duplicate-journey-detail"
-    duplicate = models.ForeignKey(
-        "data_quality.VehicleJourney",
-        related_name="duplicate",
-        on_delete=models.CASCADE,
-        null=False,
-    )
-
-    objects = JourneyDuplicateQuerySet.as_manager()
 
 
 class JourneyConflictWarning(JourneyWarningBase):
@@ -382,7 +369,6 @@ WARNING_MODELS = [
     IncorrectNOCWarning,
     JourneyConflictWarning,
     JourneyDateRangeBackwardsWarning,
-    JourneyDuplicateWarning,
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
