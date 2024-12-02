@@ -106,9 +106,17 @@
     <div class="govuk-grid-row govuk-!-margin-top-5">
       <p class="govuk-body-s">{% trans "Use the link below to download and view the entire list of service codes" %}</p>
       <p class="govuk-body-s">
-        <a class="govuk-link" href={% url 'service-codes' pk1=org_id host hosts.publish %}>
-          {% trans "Download detailed export" %}
-        </a>
+        {% if is_avl_require_attention_active %}
+          <a class="govuk-link" href={% url 'compliance-report' pk1=org_id host hosts.publish %}>
+            {% filter force_escape %}
+              {% trans "Download detailed export" %}
+            {% endfilter %}
+          </a>
+        {% else %}
+          <a class="govuk-link" href={% url 'service-codes' pk1=org_id host hosts.publish %}>
+            {% trans "Download detailed export" %}
+          </a>
+        {% endif %}
       </p>
     </div>
   </div>
