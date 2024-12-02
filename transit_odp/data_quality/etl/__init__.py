@@ -8,7 +8,6 @@ from transit_odp.common.loggers import get_dataset_adapter_from_revision
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.etl.warnings import (
     JourneyPartialTimingOverlapETL,
-    LineExpiredETL,
     LineMissingBlockIDETL,
     ServiceLinkMissingStopsETL,
     TimingFirstETL,
@@ -92,11 +91,6 @@ class TransXChangeDQPipeline:
         pipeline = JourneyPartialTimingOverlapETL(self.report_id, warnings)
         pipeline.load()
 
-    def create_line_expired_warning(self) -> None:
-        warnings = self.report.filter_by_warning_type("line-expired")
-        pipeline = LineExpiredETL(self.report_id, warnings)
-        pipeline.load()
-
     def create_line_missing_block_id_warnings(self) -> None:
         warnings = self.report.filter_by_warning_type("line-missing-block-id")
         pipeline = LineMissingBlockIDETL(self.report_id, warnings)
@@ -142,8 +136,7 @@ class TransXChangeDQPipeline:
         self.create_incorrect_nocs_warning()
         adapter.info("Creating JourneyConflictWarning.")
         self.create_journey_conflict_warning()
-        adapter.info("Creating LineExpiredWarning.")
-        self.create_line_expired_warning()
+        adapter.info("Creating LineExpiredWarning - Skipped as OLD ITO.")
         adapter.info("Creating LineMissingBlockIDWarning.")
         self.create_line_missing_block_id_warnings()
         adapter.info("Creating TimingFirstWarning.")

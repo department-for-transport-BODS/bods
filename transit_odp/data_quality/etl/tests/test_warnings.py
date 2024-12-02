@@ -7,7 +7,6 @@ from django.contrib.gis.geos import LineString
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.etl.warnings import (
     JourneyPartialTimingOverlapETL,
-    LineExpiredETL,
     LineMissingBlockIDETL,
     ServiceLinkMissingStopsETL,
     TimingFirstETL,
@@ -19,7 +18,6 @@ from transit_odp.data_quality.factories.transmodel import DataQualityReportFacto
 from transit_odp.data_quality.models import ServiceLink
 from transit_odp.data_quality.models.warnings import (
     JourneyConflictWarning,
-    LineExpiredWarning,
     LineMissingBlockIDWarning,
     ServiceLinkMissingStopWarning,
     TimingFirstWarning,
@@ -67,30 +65,6 @@ def test_run_journey_partial_timing_overlap_pipeline():
 
     stop_ito_ids = db_warning.stops.order_by("ito_id").values_list("ito_id", flat=True)
     assert list(stop_ito_ids) == sorted(json_warning.stops)
-
-
-def test_run_line_expired_pipeline():
-    reportfile = DATA_DIR / "line-expired.json"
-    dq_report = DataQualityReportFactory(
-        file__from_path=reportfile,
-        revision__upload_file__from_path=TXCFILE,
-    )
-
-    # use old pipeline to add the features to the transmodel tables
-    extracted = extract.run(dq_report.id)
-    transform_model.run(extracted)
-
-    report = Report(dq_report.file)
-    warnings = report.filter_by_warning_type("line-expired")
-    pipeline = LineExpiredETL(report_id=dq_report.id, warnings=warnings)
-    pipeline.load()
-
-    json_warning = report.warnings[0]
-    warnings = LineExpiredWarning.objects.all()
-    assert warnings.count() == len(report.warnings)
-    assert warnings.first().service.ito_id == json_warning.id
-    ito_ids = list(warnings.first().vehicle_journeys.values_list("ito_id", flat=True))
-    assert sorted(ito_ids) == sorted(json_warning.journeys)
 
 
 def test_run_line_missing_block_id_pipeline():

@@ -12,7 +12,6 @@ from transit_odp.data_quality.models.querysets import (
     JourneyDateRangeBackwardsQuerySet,
     JourneyStopInappropriateQuerySet,
     JourneyWithoutHeadsignQuerySet,
-    LineExpiredQuerySet,
     LineMissingBlockIDQuerySet,
     ServiceLinkMissingStopQuerySet,
     SlowLinkQuerySet,
@@ -339,16 +338,6 @@ class JourneyStopInappropriateWarning(StopWarningBase):
     objects = JourneyStopInappropriateQuerySet.as_manager()
 
 
-class LineExpiredWarning(DataQualityWarningBase):
-    service = models.ForeignKey("data_quality.Service", on_delete=models.CASCADE)
-    vehicle_journeys = models.ManyToManyField("data_quality.VehicleJourney")
-
-    objects = LineExpiredQuerySet.as_manager()
-
-    class Meta:
-        unique_together = (("report", "service"),)
-
-
 class LineMissingBlockIDWarning(DataQualityWarningBase):
     viewname = "dq:line-missing-block-id-detail"
     service = models.ForeignKey("data_quality.Service", on_delete=models.CASCADE)
@@ -364,7 +353,6 @@ class LineMissingBlockIDWarning(DataQualityWarningBase):
 
 
 WARNING_MODELS = [
-    LineExpiredWarning,
     LineMissingBlockIDWarning,
     IncorrectNOCWarning,
     JourneyConflictWarning,

@@ -4,7 +4,6 @@ from typing import Dict, Final, Optional
 
 from transit_odp.data_quality import models
 from transit_odp.data_quality.models.warnings import (
-    LineExpiredWarning,
     LineMissingBlockIDWarning,
 )
 from transit_odp.dqs.constants import Level, Category
