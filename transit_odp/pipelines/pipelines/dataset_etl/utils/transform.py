@@ -39,21 +39,25 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     Additional fields are included so that these fields can be stored
     into ServicePatternStop model
     """
+    original_df = df.copy()
+    if "run_time" in df.columns:
+        df["run_time"] = df["run_time"].shift(1, fill_value=pd.NaT)
     df = df.reset_index()
     df = df.sort_values("order")
     vehicle_journey_exists = False
     df_columns = df.columns
-    first_stop_columns = [
-        "from_stop_atco",
-        "departure_time",
-        "from_is_timing_status",
-        "from_stop_sequence_number",
-        "from_activity_id",
+    last_stop_columns = [
+        "to_stop_atco",
+        "run_time",
+        "wait_time",
+        "to_is_timing_status",
+        "to_stop_sequence_number",
+        "to_activity_id",
     ]
 
     if "vehicle_journey_code" in df.columns:
         vehicle_journey_exists = True
-        first_stop_columns.extend(["journey_pattern_id"])
+        last_stop_columns.extend(["journey_pattern_id"])
     else:
         df = df.drop_duplicates(
             subset=[
@@ -65,38 +69,38 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
             ]
         )
 
-    stops_atcos = (
-        df[first_stop_columns]
-        .iloc[[0]]
-        .rename(
-            columns={
-                "from_stop_atco": "stop_atco",
-                "from_stop_sequence_number": "sequence_number",
-                "from_activity_id": "activity_id",
-                "from_is_timing_status": "is_timing_status",
-            }
-        )
-    )
-    is_flexible_departure_time = False
-    # Departure time for flexible stops is null
-    if stops_atcos["departure_time"].isna().any():
-        is_flexible_departure_time = True
+    departure_time = None
 
     use_vehicle_journey_runtime = False
     # run_time_vj is set only when run_time is found in VehicleJourney element
     # and hence needs to be conditionally removed to avoid exceptions in dataframes
     columns = [
-        "to_stop_atco",
-        "to_stop_sequence_number",
-        "to_is_timing_status",
+        "from_stop_atco",
+        "from_stop_sequence_number",
+        "from_is_timing_status",
         "run_time",
         "wait_time",
-        "to_activity_id",
+        "from_activity_id",
     ]
-
+    columns_to_drop = ["run_time", "wait_time"]
     if "run_time_vj" in df_columns:
+        df["run_time_vj"] = df["run_time_vj"].shift(1, fill_value=pd.NaT)
         use_vehicle_journey_runtime = True
         columns.extend(
+            [
+                "run_time_vj",
+                "wait_time_vj",
+            ]
+        )
+
+        columns_to_drop.extend(
+            [
+                "run_time_vj",
+                "wait_time_vj",
+            ]
+        )
+
+        last_stop_columns.extend(
             [
                 "run_time_vj",
                 "wait_time_vj",
@@ -106,48 +110,91 @@ def create_stop_sequence(df: pd.DataFrame) -> pd.DataFrame:
     if vehicle_journey_exists:
         columns.extend(["journey_pattern_id"])
 
-    columns_to_drop = ["run_time", "wait_time"]
     # Extract all remaining stop to be placed below the principal stop
-    last_stop = df[columns].rename(
+    stops_atcos = (
+        original_df[last_stop_columns]
+        .iloc[[-1]]
+        .rename(
+            columns={
+                "to_stop_atco": "stop_atco",
+                "to_stop_sequence_number": "sequence_number",
+                "to_activity_id": "activity_id",
+                "to_is_timing_status": "is_timing_status",
+            }
+        )
+    )
+
+    is_flexible_departure_time = False
+    # Departure time for flexible stops is null
+    if df["departure_time"].isna().any():
+        is_flexible_departure_time = True
+
+    departure_time = df.iloc[0]["departure_time"]
+
+    main_set_stops = df[columns].rename(
         columns={
-            "to_stop_atco": "stop_atco",
-            "to_stop_sequence_number": "sequence_number",
-            "to_activity_id": "activity_id",
-            "to_is_timing_status": "is_timing_status",
+            "from_stop_atco": "stop_atco",
+            "from_stop_sequence_number": "sequence_number",
+            "from_activity_id": "activity_id",
+            "from_is_timing_status": "is_timing_status",
         }
     )
-    columns.remove("to_stop_atco")
-    columns.remove("to_is_timing_status")
+    last_stop_columns.remove("to_stop_atco")
+    last_stop_columns.remove("to_is_timing_status")
+    columns.remove("from_stop_atco")
+    columns.remove("from_is_timing_status")
     # Calculate departure time for standard stops where run_time is found in VehicleJourney
     if use_vehicle_journey_runtime and not is_flexible_departure_time:
-        if not last_stop["wait_time_vj"].isnull().all():
-            last_stop["wait_time"] = last_stop["wait_time_vj"].fillna(pd.Timedelta(0))
+        if not main_set_stops["wait_time_vj"].isnull().all():
+            main_set_stops["wait_time"] = main_set_stops["wait_time_vj"].fillna(
+                pd.Timedelta(0)
+            )
+        if not stops_atcos["wait_time_vj"].isnull().all():
+            stops_atcos["wait_time"] = stops_atcos["wait_time_vj"].fillna(
+                pd.Timedelta(0)
+            )
 
-        last_stop["departure_time"] = last_stop["run_time_vj"].replace(
+        main_set_stops["departure_time"] = main_set_stops["run_time_vj"].replace(
             "", pd.NaT
-        ).combine_first(last_stop["run_time"]).fillna(pd.Timedelta(0)) + last_stop[
+        ).combine_first(main_set_stops["run_time"]).fillna(
+            pd.Timedelta(0)
+        ) + main_set_stops[
+            "wait_time"
+        ].fillna(
+            pd.Timedelta(0)
+        )
+        stops_atcos["departure_time"] = stops_atcos["run_time_vj"].replace(
+            "", pd.NaT
+        ).combine_first(stops_atcos["run_time"]).fillna(pd.Timedelta(0)) + stops_atcos[
             "wait_time"
         ].fillna(
             pd.Timedelta(0)
         )
     # Calculate departure time for standard stops where run_time is NOT found in VehicleJourney
     elif not is_flexible_departure_time:
-        last_stop["departure_time"] = last_stop["run_time"].fillna(
+        main_set_stops["departure_time"] = main_set_stops["run_time"].fillna(
             pd.Timedelta(0)
-        ) + last_stop["wait_time"].fillna(pd.Timedelta(0))
+        ) + main_set_stops["wait_time"].fillna(pd.Timedelta(0))
+
+        stops_atcos["departure_time"] = stops_atcos["run_time"].fillna(
+            pd.Timedelta(0)
+        ) + stops_atcos["wait_time"].fillna(pd.Timedelta(0))
     # Calculate departure time for flexible stops
     else:
-        last_stop["departure_time"] = None
+        main_set_stops["departure_time"] = None
+        stops_atcos["departure_time"] = None
 
-    last_stop.drop(columns=columns_to_drop, axis=1, inplace=True)
-    stops_atcos = pd.concat([stops_atcos, last_stop], ignore_index=True)
+    main_set_stops.drop(columns=columns_to_drop, axis=1, inplace=True)
+    stops_atcos = stops_atcos[main_set_stops.columns]
+    # stops_atcos = pd.concat([stops_atcos, main_set_stops], ignore_index=True)
+    stops_atcos = pd.concat([main_set_stops, stops_atcos], ignore_index=True)
     if not is_flexible_departure_time:
         stops_atcos["departure_time"] = stops_atcos["departure_time"].cumsum()
+        stops_atcos["departure_time"] = stops_atcos["departure_time"] + departure_time
         stops_atcos["departure_time"] = stops_atcos["departure_time"].apply(
             convert_to_time_field
         )
     stops_atcos.index.name = "order"
-
     return stops_atcos
 
 
@@ -940,3 +987,24 @@ def merge_flexible_jd_with_jp(
         journey_patterns, how="left", on=["file_id", "journey_pattern_id"]
     )
     return journey_details
+
+
+def transform_geometry_tracks(df):
+    """
+    Transforming geometry point lest to LinsString
+    """
+    if not df.empty and "geometry" in df.columns:
+        df["geometry"] = df["geometry"].apply(
+            lambda points: LineString(
+                [(float(long), float(lat)) for long, lat in points]
+            )
+        )
+    return df
+
+
+def add_tracks_sequence(df):
+    if df.empty:
+        return df
+    df["rl_order"] = df.index
+    df["rl_order"] = df["rl_order"].apply(lambda x: x + 1)
+    return df

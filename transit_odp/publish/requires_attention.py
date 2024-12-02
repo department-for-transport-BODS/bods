@@ -235,6 +235,39 @@ def get_line_level_txc_map(org_id: int) -> Dict[tuple, TXCFileAttributes]:
     return line_level_txc_map
 
 
+def get_line_level_txc_map_service_base(
+    service_codes: List,
+) -> Dict[tuple, TXCFileAttributes]:
+    """
+    Get a list of dictionaries of live TXCFileAttributes for an organisation
+    with relevant effective staleness dates annotated.
+    """
+    line_level_txc_map = {}
+
+    txc_file_attributes = (
+        TXCFileAttributes.objects.filter(service_code__in=service_codes)
+        .get_active_live_revisions()
+        .add_staleness_dates()
+        .add_split_linenames()
+        .order_by(
+            "service_code",
+            "line_name_unnested",
+            "-revision__published_at",
+            "-revision_number",
+            "-modification_datetime",
+            "-operating_period_start_date",
+            "-filename",
+        )
+        .distinct("service_code", "line_name_unnested")
+    )
+
+    for txc_file in txc_file_attributes:
+        key = (txc_file.service_code, txc_file.line_name_unnested)
+        if key not in line_level_txc_map:
+            line_level_txc_map[key] = txc_file
+    return line_level_txc_map
+
+
 def get_txc_map_lta(lta_list) -> Dict[str, TXCFileAttributes]:
     """
     Get a list of dictionaries of live TXCFileAttributes for a LTA
@@ -405,7 +438,8 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     object_list = []
 
     otc_map = get_line_level_in_scope_otc_map(org_id)
-    txcfa_map = get_line_level_txc_map(org_id)
+    service_codes = [service_code for (service_code, line_name) in otc_map]
+    txcfa_map = get_line_level_txc_map_service_base(service_codes)
 
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
@@ -427,7 +461,9 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     object_list = []
 
     otc_map = get_line_level_in_scope_otc_map(org_id)
-    txcfa_map = get_line_level_txc_map(org_id)
+    service_codes = [service_code for (service_code, line_name) in otc_map]
+    txcfa_map = get_line_level_txc_map_service_base(service_codes)
+
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
     abods_registry = AbodsRegistery()
     synced_in_last_month = abods_registry.records()

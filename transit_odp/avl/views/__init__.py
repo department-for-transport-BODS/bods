@@ -8,6 +8,7 @@ from .detail import (
     ValidationFileDownloadView,
 )
 from .list import ListView
+from .requires_attention import AVLRequiresAttentionView
 from .review import (
     PublishErrorView,
     ReviewView,
@@ -29,6 +30,7 @@ __all__ = [
     "AVLUploadWizard",
     "AvlFeedDetailView",
     "AVLChangeLogView",
+    "AVLRequiresAttentionView",
     "DraftExistsView",
     "EditDraftRevisionDescriptionView",
     "EditLiveRevisionDescriptionView",

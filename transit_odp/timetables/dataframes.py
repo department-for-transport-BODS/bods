@@ -330,7 +330,7 @@ def provisional_stops_to_dataframe(stops, doc: TransXChangeDocument):
     return pd.DataFrame(stop_points, columns=columns).set_index("atco_code")
 
 
-def journey_patterns_to_dataframe(services):
+def journey_patterns_to_dataframe(services, drop_route_ref=True):
     all_items = []
     for service in services:
         service_code = service.get_element(["ServiceCode"]).text
@@ -340,11 +340,14 @@ def journey_patterns_to_dataframe(services):
             for pattern in standard_service.get_elements(["JourneyPattern"]):
                 section_refs = pattern.get_elements(["JourneyPatternSectionRefs"])
                 direction = pattern.get_element_or_none(["Direction"])
+                route_refs = pattern.get_element_or_none(["RouteRef"])
                 all_items.append(
                     {
                         "service_code": service_code,
                         "journey_pattern_id": pattern["id"],
+                        "pattern_id": pattern["id"],
                         "direction": direction.text if direction is not None else "",
+                        "route_ref": route_refs.text if route_refs is not None else "",
                         "jp_section_refs": [ref.text for ref in section_refs],
                     }
                 )
@@ -356,6 +359,8 @@ def journey_patterns_to_dataframe(services):
         journey_patterns["journey_pattern_id"] = journey_patterns[
             "service_code"
         ].str.cat(journey_patterns["journey_pattern_id"], sep="-")
+    if drop_route_ref:
+        journey_patterns = journey_patterns.drop(["route_ref", "pattern_id"], axis=1)
 
     return journey_patterns
 
@@ -409,6 +414,7 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
         for section in sections:
             id_ = section["id"]
             links = section.get_elements(["JourneyPatternTimingLink"])
+            prev_to_wait_time = pd.NaT
             for order, link in enumerate(links):
                 from_stop = link.get_element(["From"])
                 to_stop = link.get_element(["To"])
@@ -435,15 +441,37 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                     run_time = pd.to_timedelta(
                         parsed_run_time.total_seconds(), unit="s"
                     )
-                element_wait_time = link.get_element_or_none(["To", "WaitTime"])
+                from_element_wait_time = link.get_element_or_none(["From", "WaitTime"])
+                to_element_wait_time = link.get_element_or_none(["To", "WaitTime"])
                 wait_time = pd.NaT
-                if element_wait_time:
-                    parsed_from_wait_time = isodate.parse_duration(
-                        element_wait_time.text
+                from_wait_time = None
+                to_wait_time = None
+                if (
+                    pd.isna(prev_to_wait_time) or order == 0
+                ) and from_element_wait_time:
+                    # from_wait_time = from_element_wait_time.get_element_or_none(["WaitTime"])
+                    if from_element_wait_time:
+                        parsed_from_wait_time = isodate.parse_duration(
+                            from_element_wait_time.text
+                        )
+                        wait_time = pd.to_timedelta(
+                            parsed_from_wait_time.total_seconds(), unit="s"
+                        )
+                    else:
+                        wait_time = prev_to_wait_time
+
+                elif not pd.isna(prev_to_wait_time):
+                    wait_time = prev_to_wait_time
+
+                if to_element_wait_time:  # and (index + 1 != len_timing_links):
+                    parsed_to_wait_time = isodate.parse_duration(
+                        to_element_wait_time.text
                     )
-                    wait_time = pd.to_timedelta(
-                        parsed_from_wait_time.total_seconds(), unit="s"
+                    prev_to_wait_time = pd.to_timedelta(
+                        parsed_to_wait_time.total_seconds(), unit="s"
                     )
+                else:
+                    prev_to_wait_time = pd.NaT
 
                 route_link_ref = link.get_element_or_none(["RouteLinkRef"])
                 if route_link_ref:
@@ -464,7 +492,6 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
 
                 from_activity_id = get_stop_activity_id(stop_activities, from_activity)
                 to_activity_id = get_stop_activity_id(stop_activities, to_activity)
-
                 all_links.append(
                     {
                         "jp_section_id": id_,
@@ -539,7 +566,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
             if block_number_element:
                 block_number = block_number_element.text
 
-            to_wait_time_exists = False
+            prev_to_wait_time = pd.NaT
             if vj_timing_links:
                 len_timing_links = len(vj_timing_links)
                 for index, links in enumerate(vj_timing_links):
@@ -561,8 +588,9 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                     wait_time = pd.NaT
                     from_wait_time = None
                     to_wait_time = None
-
-                    if from_wait_time_element and not to_wait_time_exists:
+                    if (
+                        pd.isna(prev_to_wait_time) or index == 0
+                    ) and from_wait_time_element:
                         from_wait_time = from_wait_time_element.get_element_or_none(
                             ["WaitTime"]
                         )
@@ -573,27 +601,27 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                             wait_time = pd.to_timedelta(
                                 parsed_from_wait_time.total_seconds(), unit="s"
                             )
+                        else:
+                            wait_time = prev_to_wait_time
 
-                    if to_wait_time_element and (index + 1 != len_timing_links):
+                    elif not pd.isna(prev_to_wait_time):
+                        wait_time = prev_to_wait_time
+
+                    if to_wait_time_element:  # and (index + 1 != len_timing_links):
                         to_wait_time = to_wait_time_element.get_element_or_none(
                             ["WaitTime"]
                         )
                         if to_wait_time:
-                            to_wait_time_exists = True
                             parsed_to_wait_time = isodate.parse_duration(
                                 to_wait_time.text
                             )
-                            if pd.isna(wait_time):
-                                wait_time = pd.to_timedelta(
-                                    parsed_to_wait_time.total_seconds(), unit="s"
-                                )
-                            else:
-                                wait_time = wait_time + pd.to_timedelta(
-                                    parsed_to_wait_time.total_seconds(), unit="s"
-                                )
-
+                            prev_to_wait_time = pd.to_timedelta(
+                                parsed_to_wait_time.total_seconds(), unit="s"
+                            )
+                        else:
+                            prev_to_wait_time = pd.NaT
                     else:
-                        to_wait_time_exists = False
+                        prev_to_wait_time = pd.NaT
 
                     all_vehicle_journeys.append(
                         {
@@ -634,7 +662,6 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                         "vj_departure_time": vj_departure_time,
                     }
                 )
-
     return pd.DataFrame(all_vehicle_journeys)
 
 
@@ -1163,3 +1190,33 @@ def flexible_stop_points_from_journey_details(flexible_journey_details):
         ].set_index("atco_code")
         return flexible_stop_points
     return pd.DataFrame()
+
+
+def create_vj_tracks_map(journey_patterns: pd.DataFrame, route_map: pd.DataFrame):
+    """
+    Create a vehicle journey tracks map.
+
+    Steps:
+    1. Create a DataFrame with `pattern_id` and `route_ref` from the journey patterns.
+    2. Group the journey patterns by `route_ref` and create a list of `pattern_id`s for each route.
+    3. Rename the grouped `pattern_id` column to `jp_ref`.
+    4. Merge the route map with the grouped journey patterns on `route_ref`.
+
+    Args:
+        journey_patterns (pd.DataFrame): DataFrame containing journey pattern information.
+        route_map (pd.DataFrame): DataFrame containing route mapping information.
+
+    Returns:
+        pd.DataFrame: A DataFrame that maps vehicle journey patterns to their respective routes.
+    """
+    # Create a DataFrame with pattern_id and route_ref
+    jp_route_ref = journey_patterns[["pattern_id", "route_ref"]]
+    # Group by route_ref and create a list of pattern_ids
+    df_vj_grouped = (
+        jp_route_ref.groupby("route_ref")["pattern_id"].apply(list).reset_index()
+    )
+    df_vj_grouped = df_vj_grouped.rename(columns={"pattern_id": "jp_ref"})
+
+    vj_route_map = pd.merge(route_map, df_vj_grouped, on="route_ref", how="right")
+
+    return vj_route_map

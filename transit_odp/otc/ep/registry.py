@@ -130,7 +130,8 @@ class Registry:
         logger.info("EP API: Finding operator licences for duplicate operators")
         operator_licences_df = pd.DataFrame.from_records(
             Service.objects.filter(
-                operator_id__in=list(operator_df_duplicate["id"])
+                operator_id__in=list(operator_df_duplicate["id"]),
+                api_type__isnull=True,
             ).values(
                 "operator__id",
                 "operator__operator_name",
