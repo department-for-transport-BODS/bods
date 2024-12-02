@@ -7,7 +7,6 @@ from transit_odp.data_quality.constants import (
     BackwardDateRangeObservation,
     BackwardsTimingObservation,
     CheckBasis,
-    FastTimingPointObservation,
     FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,
     LastStopPickUpOnlyObservation,
@@ -24,7 +23,6 @@ from transit_odp.data_quality.factories.transmodel import (
     ServicePatternStopFactory,
 )
 from transit_odp.data_quality.factories.warnings import (
-    FastTimingWarningFactory,
     IncorrectNOCWarningFactory,
     JourneyDateRangeBackwardsWarningFactory,
     JourneyStopInappropriateWarningFactory,
@@ -209,13 +207,6 @@ def test_score_calculation_timing_patterns_component(from_report_id):
         if not o.check_basis == CheckBasis.timing_patterns
     )
 
-    fast_timing_count = 6
-    fast_timing_weight = FastTimingPointObservation.weighting
-    FastTimingWarningFactory.create_batch(fast_timing_count, report=report)
-    fast_timing_score = score_contribution(
-        fast_timing_count, timing_patterns, fast_timing_weight
-    )
-
     pickup_count = 1
     pickup_weight = LastStopPickUpOnlyObservation.weighting
     TimingPickUpWarningFactory.create_batch(pickup_count, report=report)
@@ -233,7 +224,7 @@ def test_score_calculation_timing_patterns_component(from_report_id):
         backwards_count, timing_patterns, backwards_weight
     )
 
-    expected_score += fast_timing_score + dropoff_score + pickup_score + backwards_score
+    expected_score += dropoff_score + pickup_score + backwards_score
     pipeline = TransXChangeDQPipeline(report)
     pipeline.load_summary()
     calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)

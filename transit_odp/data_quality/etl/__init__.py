@@ -7,7 +7,6 @@ from django.db.models.query_utils import Q
 from transit_odp.common.loggers import get_dataset_adapter_from_revision
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.etl.warnings import (
-    FastTimingETL,
     JourneyPartialTimingOverlapETL,
     LineExpiredETL,
     LineMissingBlockIDETL,
@@ -123,11 +122,6 @@ class TransXChangeDQPipeline:
         pipeline = TimingMissingPointETL(self.report_id, warnings)
         pipeline.load()
 
-    def create_fast_timing_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("timing-fast")
-        pipeline = FastTimingETL(self.report_id, warnings)
-        pipeline.load()
-
     def create_service_link_missing_stop_warnings(self) -> None:
         warnings = self.report.filter_by_warning_type("service-link-missing-stops")
         pipeline = ServiceLinkMissingStopsETL(self.report_id, warnings)
@@ -160,8 +154,7 @@ class TransXChangeDQPipeline:
         self.create_timing_multiple_warnings()
         adapter.info("Creating TimingMissingPointWarning.")
         self.create_timing_missing_point_15_warnings()
-        adapter.info("Creating FastTimingWarning.")
-        self.create_fast_timing_warnings()
+        adapter.info("Creating FastTimingWarning - Skipped as OLD ITO.")
         adapter.info("Creating ServiceLinkMissingStopWarning.")
         self.create_service_link_missing_stop_warnings()
 

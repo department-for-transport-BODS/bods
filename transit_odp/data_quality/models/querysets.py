@@ -173,15 +173,6 @@ class TimingPickUpQuerySet(TimingQuerySet):
         )
 
 
-class FastTimingQuerySet(TimingPatternLineQuerySet):
-    def add_message(self):
-        message = (
-            "There is at least one journey with fast timing link between timing points"
-        )
-
-        return self.annotate(message=Value(message, CharField()))
-
-
 class SlowTimingQuerySet(TimingPatternLineQuerySet):
     def add_message(self):
         message = (

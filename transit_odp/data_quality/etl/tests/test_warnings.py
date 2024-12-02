@@ -6,7 +6,6 @@ from django.contrib.gis.geos import LineString
 
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.etl.warnings import (
-    FastTimingETL,
     JourneyPartialTimingOverlapETL,
     LineExpiredETL,
     LineMissingBlockIDETL,
@@ -19,7 +18,6 @@ from transit_odp.data_quality.etl.warnings import (
 from transit_odp.data_quality.factories.transmodel import DataQualityReportFactory
 from transit_odp.data_quality.models import ServiceLink
 from transit_odp.data_quality.models.warnings import (
-    FastTimingWarning,
     JourneyConflictWarning,
     LineExpiredWarning,
     LineMissingBlockIDWarning,
@@ -125,7 +123,6 @@ TIMING_DATA = [
     ("timing-first", TimingFirstETL, TimingFirstWarning),
     ("timing-last", TimingLastETL, TimingLastWarning),
     ("timing-multiple", TimingMultipleETL, TimingMultipleWarning),
-    ("timing-fast", FastTimingETL, FastTimingWarning),
 ]
 
 timing_ids = [t[0] for t in TIMING_DATA]

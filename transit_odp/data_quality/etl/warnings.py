@@ -15,7 +15,6 @@ from transit_odp.data_quality.models.transmodel import (
 )
 from transit_odp.data_quality.models.warnings import (
     DataQualityWarningBase,
-    FastTimingWarning,
     JourneyConflictWarning,
     LineExpiredWarning,
     LineMissingBlockIDWarning,
@@ -266,11 +265,6 @@ class TimingMultipleETL(TimingBaseETL):
 class TimingMissingPointETL(TimingBaseETL):
     WarningClass = TimingMissingPointWarning
     ThroughClass = TimingMissingPointWarning.timings.through
-
-
-class FastTimingETL(TimingBaseETL):
-    WarningClass = FastTimingWarning
-    ThroughClass = FastTimingWarning.timings.through
 
 
 class LineWarningETL:

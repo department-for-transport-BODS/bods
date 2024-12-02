@@ -19,7 +19,6 @@ from transit_odp.data_quality.factories.transmodel import (
 )
 from transit_odp.data_quality.models.transmodel import ServiceLink, TimingPatternStop
 from transit_odp.data_quality.models.warnings import (
-    FastTimingWarning,
     IncorrectNOCWarning,
     JourneyDateRangeBackwardsWarning,
     JourneyStopInappropriateWarning,
@@ -115,16 +114,6 @@ class TimingPatternTimingWarningBaseFactory(DjangoModelFactory):
                         "arguments must be timing pattern stop(s) and "
                         "/ or number of timing pattern stops to create"
                     )
-
-
-class FastTimingWarningFactory(TimingPatternTimingWarningBaseFactory):
-    class Meta:
-        model = FastTimingWarning
-        exclude = ("common_service_pattern",)
-
-    report = factory.SubFactory(
-        DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
-    )
 
 
 class SlowLinkWarningFactory(TimingPatternTimingWarningBaseFactory):

@@ -7,7 +7,6 @@ from django_hosts import reverse
 import config.hosts
 from transit_odp.data_quality.models.managers import TimingMissingPointManager
 from transit_odp.data_quality.models.querysets import (
-    FastTimingQuerySet,
     IncorrectNOCQuerySet,
     JourneyConflictQuerySet,
     JourneyDateRangeBackwardsQuerySet,
@@ -235,12 +234,6 @@ class TimingPatternTimingWarningBase(BadTimingsMixin, TimingPatternWarningBase):
         abstract = True
 
 
-class FastTimingWarning(TimingPatternTimingWarningBase):
-    viewname = "dq:fast-timings-detail"
-
-    objects = FastTimingQuerySet.as_manager()
-
-
 class SlowLinkWarning(TimingPatternTimingWarningBase):
     viewname = "dq:slow-link-detail"
 
@@ -384,7 +377,6 @@ class LineMissingBlockIDWarning(DataQualityWarningBase):
 
 
 WARNING_MODELS = [
-    FastTimingWarning,
     LineExpiredWarning,
     LineMissingBlockIDWarning,
     IncorrectNOCWarning,

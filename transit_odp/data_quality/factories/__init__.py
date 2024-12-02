@@ -15,7 +15,6 @@ from transit_odp.data_quality.factories.transmodel import (
     VehicleJourneyFactory,
 )
 from transit_odp.data_quality.factories.warnings import (
-    FastTimingWarningFactory,
     IncorrectNOCWarningFactory,
     SlowLinkWarningFactory,
     SlowTimingWarningFactory,
@@ -30,7 +29,6 @@ from transit_odp.data_quality.factories.warnings import (
 __all__ = [
     "DataQualityReportFactory",
     "DataQualityReportSummaryFactory",
-    "FastTimingWarningFactory",
     "IncorrectNOCWarningFactory",
     "PTIObservationFactory",
     "PTIValidationResultFactory",
