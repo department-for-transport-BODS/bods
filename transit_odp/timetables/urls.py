@@ -27,6 +27,11 @@ urlpatterns = [
         name="service-codes",
     ),
     path(
+        "compliance-report/",
+        view=timetable.ComplianceReportView.as_view(),
+        name="compliance-report",
+    ),
+    path(
         "seasonal-service/",
         include(
             [
