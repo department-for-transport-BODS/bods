@@ -3,11 +3,48 @@ from transit_odp.dqs.constants import (
     FirstStopNotTimingPointObservation,
     LastStopNotTimingPointObservation,
 )
-from transit_odp.dqs.views.base import DQSWarningDetailBaseView
+from transit_odp.dqs.views.base import DQSWarningDetailBaseView, DQSWarningListBaseView
 from transit_odp.dqs.tables.timing_point import (
     FirstStopIsTimingPointOnlyTable,
     LastStopIsTimingPointOnlyTable,
 )
+
+
+class FirstStopNotTimingListView(DQSWarningListBaseView):
+    data = FirstStopNotTimingPointObservation
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    check = Checks.FirstStopIsNotATimingPoint
+    dqs_details = (
+        "There is at least one journey where the first stop is not a timing point"
+    )
+
+    def get_queryset(self):
+
+        return DQSWarningListBaseView.get_queryset(self)
+
+    def get_context_data(self, **kwargs):
+
+        self.data = FirstStopNotTimingPointObservation
+        context = super().get_context_data(**kwargs)
+
+        context.update(
+            {
+                "title": self.data.title,
+                "definition": self.data.text,
+                "preamble": self.data.preamble,
+                "resolve": self.data.resolve,
+            }
+        )
+        return context
+
+    def get_table_kwargs(self):
+        kwargs = {}
+        if not self.is_dqs_new_report:
+            kwargs = super().get_table_kwargs()
+        return kwargs
 
 
 class FirstStopNotTimingPointDetailView(DQSWarningDetailBaseView):
@@ -29,6 +66,41 @@ class FirstStopNotTimingPointDetailView(DQSWarningDetailBaseView):
             }
         )
         return context
+
+
+class LastStopNotTimingListView(DQSWarningListBaseView):
+    data = LastStopNotTimingPointObservation
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    check = Checks.LastStopIsNotATimingPoint
+    dqs_details = (
+        "There is at least one journey where the last stop is not a timing point"
+    )
+
+    def get_queryset(self):
+
+        return DQSWarningListBaseView.get_queryset(self)
+
+    def get_context_data(self, **kwargs):
+
+        self.data = LastStopNotTimingPointObservation
+        context = super().get_context_data(**kwargs)
+
+        context.update(
+            {
+                "title": self.data.title,
+                "definition": self.data.text,
+                "preamble": self.data.preamble,
+                "resolve": self.data.resolve,
+            }
+        )
+        return context
+
+    def get_table_kwargs(self):
+
+        return {}
 
 
 class LastStopNotTimingPointDetailView(DQSWarningDetailBaseView):
