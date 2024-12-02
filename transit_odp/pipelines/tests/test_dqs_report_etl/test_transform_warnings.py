@@ -7,7 +7,6 @@ from dateutil.parser import parse
 
 from transit_odp.data_quality.factories import DataQualityReportFactory
 from transit_odp.data_quality.models import (
-    FastLinkWarning,
     JourneyConflictWarning,
     JourneyDateRangeBackwardsWarning,
     JourneyDuplicateWarning,
@@ -44,7 +43,6 @@ pytestmark = pytest.mark.django_db
 @pytest.mark.parametrize(
     "filename, warning_class",
     [
-        ["data/timing-fast-link.json", FastLinkWarning],
         ["data/timing-slow-link.json", SlowLinkWarning],
         ["data/timing-slow.json", SlowTimingWarning],
     ],
