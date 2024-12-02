@@ -2,7 +2,6 @@ import datetime
 
 import pytest
 
-from transit_odp.data_quality.factories import FastLinkWarningFactory
 from transit_odp.data_quality.helpers import (
     construct_journey_overlap_message,
     convert_date_to_dmY_string,
@@ -65,17 +64,4 @@ class TestConvertTimeToHmsString:
     )
     def test_returns_expected_time_string(self, test_input, expected_output):
         output = convert_time_to_HMS_string(test_input)
-        assert output == expected_output
-
-
-class TestConstructJourneyOverlapMessage:
-    # TODO: finish this test
-    @pytest.mark.skip(reason="Can't test until VehicleJourneyFactory ready to use")
-    def test_returns_expected_message(self):
-        # warning factories don't yet have associated vehicle journeys
-        warning = FastLinkWarningFactory.create()  # arbitrary warning type
-
-        output = construct_journey_overlap_message(warning)
-        expected_output = ""
-
         assert output == expected_output

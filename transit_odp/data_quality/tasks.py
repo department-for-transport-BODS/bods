@@ -9,13 +9,11 @@ from transit_odp.common.loggers import (
     PipelineAdapter,
     get_dataset_adapter_from_revision,
 )
-from transit_odp.data_quality.constants import WEIGHTED_OBSERVATIONS
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.dqs.client import STATUS_FAILURE, STATUS_SUCCESS
 from transit_odp.data_quality.etl import TransXChangeDQPipeline
 from transit_odp.data_quality.etl.model import DQModelPipeline
 from transit_odp.data_quality.models import DataQualityReport
-from transit_odp.data_quality.scoring import DataQualityCalculator
 from transit_odp.data_quality.utils import (
     create_dqs_report,
     get_data_quality_task_or_pipeline_error,
@@ -29,7 +27,6 @@ from transit_odp.pipelines.models import DataQualityTask
 from transit_odp.pipelines.pipelines.dqs_report_etl import (
     extract,
     transform_model,
-    transform_warnings,
 )
 from transit_odp.timetables.loggers import DQSTaskLogger
 
@@ -61,16 +58,12 @@ def run_dqs_report_etl_pipeline(report_id: int):
             adapter.info("Transforming and loading data.")
             model = transform_model.run(extracted)
 
-            adapter.info("Transforming and loading warnings.")
-            transform_warnings.run(extracted.report, model, extracted.warnings)
+            adapter.info("Transforming and loading warnings - Skipped as OLD ITO.")
 
             pipeline = TransXChangeDQPipeline(dq_report)
             pipeline.run()
 
-            adapter.info("Calculating Data Quality Score.")
-            calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
-            score = calculator.calculate(report_id=dq_report.id)
-            dq_report.score = score
+            adapter.info("Calculating Data Quality Score - Skipped as OLD ITO.")
             dq_report.save()
 
     except Exception as exc:

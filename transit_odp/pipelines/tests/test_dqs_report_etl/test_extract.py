@@ -5,10 +5,6 @@ import pandas as pd
 import pytest
 
 import transit_odp.pipelines.pipelines.dqs_report_etl.utils
-from transit_odp.data_quality.etl import TransXChangeDQPipeline
-from transit_odp.data_quality.factories import DataQualityReportFactory
-from transit_odp.data_quality.models.warnings import IncorrectNOCWarning
-from transit_odp.organisation.factories import OrganisationFactory
 from transit_odp.pipelines.pipelines.dqs_report_etl import extract
 from transit_odp.pipelines.tests.utils import assert_frame_equal_basic
 
@@ -161,30 +157,3 @@ def test_load_geojson():
     )
 
     assert_frame_equal_basic(actual, expected)
-
-
-class TestExtractIncorrectNocWarnings:
-    def test_extract(self):
-        organisation = OrganisationFactory(nocs=["XYZ"])
-        report = DataQualityReportFactory(
-            revision__dataset__organisation=organisation,
-            revision__upload_file__from_path=str(TXCFILE),
-        )
-        pipeline = TransXChangeDQPipeline(report)
-        pipeline.extract()
-        pipeline.create_incorrect_nocs_warning()
-        warning = IncorrectNOCWarning.objects.get(report_id=report.id, noc="DEWS")
-        assert warning.report_id == report.id
-        assert warning.noc == "DEWS"
-
-    @pytest.mark.parametrize(
-        "filepath,expected",
-        [(TXCFILE, ["DEWS"]), (ZIPFILE, ["DEWS"])],
-    )
-    def test_process_file(self, filepath, expected):
-        report = DataQualityReportFactory(
-            revision__upload_file__from_path=str(filepath),
-        )
-        pipeline = TransXChangeDQPipeline(report)
-        extract = pipeline.extract()
-        assert extract.nocs == expected

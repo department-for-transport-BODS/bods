@@ -182,30 +182,3 @@ class TestGlossaryUrl(DqUrlsTestBase):
                 f"{self.generate_dq_base_url_path()}{self.url_segment}", self.view
             ),
         )
-
-
-@pytest.mark.django_db
-class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
-    url_segment = "incorrect-noc"
-    list_url_name = "dq:incorrect-noc-list"
-    list_view = views.IncorrectNOCListView
-    detail_url_name = ""
-    detail_view = None
-
-    # Incorrect NOC warning only has list page (not detail page), so re-implement the
-    # scenario methods
-    def get_url_name_scenarios(self):
-        return (
-            UrlNameScenario(
-                self.generate_list_url_path(),
-                self.list_url_name,
-                {
-                    "pk": self.dataset_id,
-                    "pk1": self.org_id,
-                    "report_id": self.report_id,
-                },
-            ),
-        )
-
-    def get_url_resolves_to_correct_view_scenarios(self):
-        return (UrlResolvesViewScenario(self.generate_list_url_path(), self.list_view),)
