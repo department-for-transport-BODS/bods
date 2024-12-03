@@ -24,7 +24,6 @@ from transit_odp.data_quality.models.warnings import (
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
-    StopMissingNaptanWarning,
     TimingBackwardsWarning,
     TimingDropOffWarning,
     TimingFirstWarning,
@@ -241,13 +240,6 @@ class IncorrectNOCWarningFactory(DjangoModelFactory):
     report = factory.SubFactory(
         DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
     )
-
-
-class StopMissingNaptanWarningFactory(DjangoModelFactory):
-    class Meta:
-        model = StopMissingNaptanWarning
-
-    stop = factory.SubFactory(StopPointFactory)
 
 
 class JourneyStopInappropriateWarningFactory(DjangoModelFactory):

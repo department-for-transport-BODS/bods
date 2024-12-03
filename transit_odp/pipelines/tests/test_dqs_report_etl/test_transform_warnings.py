@@ -12,7 +12,6 @@ from transit_odp.data_quality.models import (
     JourneyWithoutHeadsignWarning,
     ServiceLink,
     ServicePattern,
-    StopMissingNaptanWarning,
     StopPoint,
     TimingBackwardsWarning,
     TimingDropOffWarning,
@@ -166,45 +165,6 @@ def test_transform_timing_drop_off():
     # Check it matches the stop set in the TimingLastWarning
     assert set(warning.timings.values_list("id", flat=True)) == set(
         timing_pattern_stops.values_list("id", flat=True)
-    )
-
-
-def test_transform_stop_missing_naptan():
-    # Setup
-    testfile = os.path.join(FILE_DIR, "data/stop-missing-naptan.json")
-    report = DataQualityReportFactory(
-        file__from_path=testfile, revision__upload_file__from_path=TXCFILE
-    )
-
-    # get data from report
-    with report.file.open("r") as fin:
-        data = json.load(fin)["warnings"][0]
-        data["warning_type"].replace("-", "_")
-        warning_json = data["values"][0]
-
-    extracted = extract.run(report.id)
-    model = transform_model.run(extracted)
-
-    # Test
-    transform_warnings.transform_stop_missing_naptan_warning(
-        report, model, extracted.warnings.stop_missing_naptan
-    )
-
-    # Assert
-    warnings = StopMissingNaptanWarning.objects.all()
-    assert len(warnings) == 1
-
-    warning = warnings[0]
-    assert warning.report == report
-
-    stop = StopPoint.objects.get(ito_id=warning_json["id"])
-    assert warning.stop == stop
-
-    service_patterns = ServicePattern.objects.filter(
-        ito_id__in=warning_json["service_patterns"]
-    )
-    assert set(sp.id for sp in warning.service_patterns.all()) == set(
-        sp.id for sp in service_patterns
     )
 
 

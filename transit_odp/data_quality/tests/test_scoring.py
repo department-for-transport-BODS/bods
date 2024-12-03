@@ -25,7 +25,6 @@ from transit_odp.data_quality.factories.warnings import (
     IncorrectNOCWarningFactory,
     JourneyDateRangeBackwardsWarningFactory,
     JourneyStopInappropriateWarningFactory,
-    StopMissingNaptanWarningFactory,
     TimingBackwardsWarningFactory,
     TimingDropOffWarningFactory,
     TimingPickUpWarningFactory,
@@ -125,17 +124,6 @@ def test_score_calculation_with_stops_component(from_report_id):
     )
 
     sps = ServicePatternStopFactory()
-
-    missing_count = 3
-    missing_weight = StopNotInNaptanObservation.weighting
-    StopMissingNaptanWarningFactory.create_batch(
-        missing_count, stop=sps.stop, report=report
-    )
-    missing_score = score_contribution(missing_count, stops_count, missing_weight)
-
-    # add in warning where stop has no service pattern
-    # this should have no impact on the score
-    StopMissingNaptanWarningFactory(report=report)
 
     incorrect_count = 2
     incorrect_weight = IncorrectStopTypeObservation.weighting

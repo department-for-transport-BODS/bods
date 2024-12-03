@@ -21,7 +21,6 @@ from transit_odp.data_quality.models.warnings import (
     WARNING_MODELS,
     IncorrectNOCWarning,
     JourneyStopInappropriateWarning,
-    StopMissingNaptanWarning,
 )
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 
@@ -155,17 +154,18 @@ class TransXChangeDQPipeline:
         # service pattern. These warnings aren't shown to the user, so don't include
         # them in the count
         maybe_null_service_pattern = [
-            StopMissingNaptanWarning,
             JourneyStopInappropriateWarning,
         ]
 
         null_service_pattern = Q(stop__service_patterns__isnull=True)
         counts = {
-            model.__name__: model.objects.filter(report=self._model_report).count()
-            if model not in maybe_null_service_pattern
-            else model.objects.filter(report=self._model_report)
-            .exclude(null_service_pattern)
-            .count()
+            model.__name__: (
+                model.objects.filter(report=self._model_report).count()
+                if model not in maybe_null_service_pattern
+                else model.objects.filter(report=self._model_report)
+                .exclude(null_service_pattern)
+                .count()
+            )
             for model in WARNING_MODELS
         }
 

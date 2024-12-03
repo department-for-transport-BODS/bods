@@ -10,7 +10,6 @@ from transit_odp.data_quality.models import (
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServicePattern,
-    StopMissingNaptanWarning,
     StopPoint,
     TimingBackwardsWarning,
     TimingDropOffWarning,
@@ -36,7 +35,6 @@ def run(
     transform_timing_pick_up_warning(report, model, warnings.timing_pick_up)
     transform_timing_drop_off_warning(report, model, warnings.timing_drop_off)
 
-    transform_stop_missing_naptan_warning(report, model, warnings.stop_missing_naptan)
     transform_journey_stop_inappropriate_warning(
         report, model, warnings.journey_stop_inappropriate
     )
@@ -208,77 +206,6 @@ def transform_timing_pick_up_warning(
                 )
 
     through_timings.objects.bulk_create(create_stops_m2m())
-
-
-class StopMissingNaptanWarningLoader:
-    def __init__(self, report_id, data):
-        self.report_id = report_id
-        self.data = data
-        self._service_patterns = None
-
-    def load(self, model):
-        if len(self.data) == 0:
-            return
-
-        self.data = self.data.merge(
-            model.stops["id"].rename("stop_id"),
-            how="left",
-            left_on="stop_ito_id",
-            right_index=True,
-        )
-
-        self.create_warnings()
-
-    @property
-    def stop_ids(self):
-        return self.data["stop_id"].tolist()
-
-    @property
-    def service_patterns(self):
-        """Cache the service patterns so we only need to make one request per set
-        of stop missing naptan warnings."""
-        if self._service_patterns is not None:
-            return self._service_patterns
-
-        ito_ids = self.data.service_patterns.tolist()[0]
-        self._service_patterns = list(ServicePattern.objects.filter(ito_id__in=ito_ids))
-        return self._service_patterns
-
-    def get_service_patterns(self, stop_id):
-        """Filter the cached service patterns by stop id"""
-        mask = self.data["stop_id"] == stop_id
-        ito_ids = self.data[mask].iloc[0].service_patterns
-        patterns = [sp for sp in self.service_patterns if sp.ito_id in ito_ids]
-        return patterns
-
-    def create_warnings(self):
-        WarningClass = StopMissingNaptanWarning
-        ThroughModel = StopMissingNaptanWarning.service_patterns.through
-
-        warnings = [
-            WarningClass(report_id=self.report_id, stop_id=stop_id)
-            for stop_id in self.stop_ids
-        ]
-        warnings = WarningClass.objects.bulk_create(warnings)
-
-        models = []
-        for warning in warnings:
-            patterns = self.get_service_patterns(warning.stop_id)
-            for pattern in patterns:
-                models.append(
-                    ThroughModel(
-                        servicepattern_id=pattern.id,
-                        stopmissingnaptanwarning_id=warning.id,
-                    )
-                )
-        ThroughModel.objects.bulk_create(models)
-
-
-def transform_stop_missing_naptan_warning(
-    report: DataQualityReport, model: TransformedModel, df: pd.DataFrame
-):
-    loader = StopMissingNaptanWarningLoader(report.id, df)
-    loader.load(model)
 
 
 def transform_journey_stop_inappropriate_warning(

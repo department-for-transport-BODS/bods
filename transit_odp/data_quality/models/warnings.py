@@ -12,7 +12,6 @@ from transit_odp.data_quality.models.querysets import (
     JourneyStopInappropriateQuerySet,
     JourneyWithoutHeadsignQuerySet,
     ServiceLinkMissingStopQuerySet,
-    StopMissingNaptanQuerySet,
     TimingDropOffQuerySet,
     TimingFirstQuerySet,
     TimingLastQuerySet,
@@ -273,13 +272,6 @@ class StopWarningBase(DataQualityWarningBase):
         return effected_tps.add_position().add_stop_name().order_by("position")
 
 
-class StopMissingNaptanWarning(StopWarningBase):
-    viewname = "dq:stop-missing-naptan-detail"
-    service_patterns = models.ManyToManyField("data_quality.ServicePattern")
-
-    objects = StopMissingNaptanQuerySet.as_manager()
-
-
 class JourneyStopInappropriateWarning(StopWarningBase):
     viewname = "dq:incorrect-stop-type-detail"
     stop_type = models.TextField()
@@ -297,7 +289,6 @@ WARNING_MODELS = [
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
-    StopMissingNaptanWarning,
     TimingBackwardsWarning,
     TimingDropOffWarning,
     TimingFirstWarning,

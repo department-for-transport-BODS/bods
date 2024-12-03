@@ -87,23 +87,6 @@ class JourneyStopInappropriateQuerySet(models.QuerySet):
         return self.annotate(message=Concat(*message_args, output_field=CharField()))
 
 
-class StopMissingNaptanQuerySet(models.QuerySet):
-    def add_message(self):
-        message = "There is at least one journey where stop(s) are not in NaPTAN"
-        return self.annotate(message=Value(message, CharField()))
-
-    def add_line(self, *args):
-        # Using Min to make the first line name appear
-        return self.annotate(line=Min("service_patterns__service__name"))
-
-    def exclude_null_service_patterns(self):
-        return self.exclude(stop__service_patterns__isnull=True)
-
-    def get_csv_queryset(self):
-        """A queryset to be applied by only in the CSV generation code."""
-        return self.exclude_null_service_patterns()
-
-
 class TimingMissingPointQueryset(TimingPatternLineQuerySet):
     def add_message(self):
         return (
