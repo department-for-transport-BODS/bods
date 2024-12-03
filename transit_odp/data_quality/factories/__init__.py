@@ -16,7 +16,6 @@ from transit_odp.data_quality.factories.transmodel import (
 )
 from transit_odp.data_quality.factories.warnings import (
     IncorrectNOCWarningFactory,
-    TimingPickUpWarningFactory,
 )
 
 __all__ = [

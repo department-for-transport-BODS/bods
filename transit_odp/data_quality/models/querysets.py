@@ -119,17 +119,6 @@ class JourneyQuerySet(models.QuerySet):
         return self.annotate(first_date=Subquery(subquery))
 
 
-class TimingPickUpQuerySet(TimingQuerySet):
-    def add_message(self):
-        return self.annotate(
-            message=Value(
-                "There is at least one journey where the first stop is designated as "
-                "set down only",
-                output_field=CharField(),
-            )
-        )
-
-
 class JourneyDateRangeBackwardsQuerySet(JourneyQuerySet):
     def add_message(self):
         return self.add_first_stop().annotate(

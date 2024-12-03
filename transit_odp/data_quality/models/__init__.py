@@ -29,7 +29,6 @@ from .warnings import (
     StopWarningBase,
     TimingPatternTimingWarningBase,
     TimingPatternWarningBase,
-    TimingPickUpWarning,
 )
 
 __all__ = [
@@ -56,7 +55,6 @@ __all__ = [
     "TimingPatternStop",
     "TimingPatternTimingWarningBase",
     "TimingPatternWarningBase",
-    "TimingPickUpWarning",
     "VehicleJourney",
     "WARNING_MODELS",
 ]

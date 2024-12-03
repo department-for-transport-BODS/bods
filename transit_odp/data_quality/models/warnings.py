@@ -13,7 +13,6 @@ from transit_odp.data_quality.models.querysets import (
     JourneyWithoutHeadsignQuerySet,
     ServiceLinkMissingStopQuerySet,
     TimingPatternLineQuerySet,
-    TimingPickUpQuerySet,
 )
 from transit_odp.data_quality.models.report import DataQualityReport
 from transit_odp.data_quality.models.transmodel import TimingPatternStop
@@ -189,12 +188,6 @@ class TimingPatternTimingWarningBase(BadTimingsMixin, TimingPatternWarningBase):
         abstract = True
 
 
-class TimingPickUpWarning(TimingPatternTimingWarningBase):
-    viewname = "dq:first-stop-set-down-only-detail"
-
-    objects = TimingPickUpQuerySet.as_manager()
-
-
 class StopWarningBase(DataQualityWarningBase):
     stop = models.ForeignKey("data_quality.StopPoint", on_delete=models.CASCADE)
 
@@ -238,5 +231,4 @@ WARNING_MODELS = [
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
-    TimingPickUpWarning,
 ]

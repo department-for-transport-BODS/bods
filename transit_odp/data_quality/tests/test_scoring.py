@@ -6,7 +6,6 @@ from transit_odp.data_quality.constants import (
     WEIGHTED_OBSERVATIONS,
     BackwardDateRangeObservation,
     CheckBasis,
-    FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,
 )
 from transit_odp.dqs.constants import (
@@ -23,7 +22,6 @@ from transit_odp.data_quality.factories.warnings import (
     IncorrectNOCWarningFactory,
     JourneyDateRangeBackwardsWarningFactory,
     JourneyStopInappropriateWarningFactory,
-    TimingPickUpWarningFactory,
 )
 from transit_odp.data_quality.scoring import (
     AMBER,

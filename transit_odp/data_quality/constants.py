@@ -71,29 +71,6 @@ IncorrectNocObservation = Observation(
 )
 
 
-FirstStopSetDownOnlyObservation = Observation(
-    title="First stop is found to be set down only",
-    text=(
-        "This observation identifies timing patterns where the first stop "
-        "is designated as "
-        "set down only, meaning the bus is not scheduled to pick up passengers at this "
-        "stop. "
-    ),
-    impacts=(
-        "Journey planners may not be able to show journeys ending at this "
-        "stop correctly "
-        "to passengers, disrupting their journeys. "
-    ),
-    preamble="The following timing pattern(s) have been observed to have first stop as set down only.",
-    model=models.TimingPickUpWarning,
-    list_url_name="dq:first-stop-set-down-only-list",
-    category=Category.stops,
-    level=Level.critical,
-    weighting=0.10,
-    check_basis=CheckBasis.timing_patterns,
-)
-
-
 IncorrectStopTypeObservation = Observation(
     title="Incorrect stop type",
     text=(
@@ -167,7 +144,6 @@ BackwardDateRangeObservation = Observation(
 
 OBSERVATIONS = (
     BackwardDateRangeObservation,
-    FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,
     IncorrectStopTypeObservation,
 )

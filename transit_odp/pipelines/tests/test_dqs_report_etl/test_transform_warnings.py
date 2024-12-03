@@ -15,7 +15,6 @@ from transit_odp.data_quality.models import (
     StopPoint,
     TimingPattern,
     TimingPatternStop,
-    TimingPickUpWarning,
     VehicleJourney,
 )
 from transit_odp.pipelines.pipelines.dqs_report_etl import (
@@ -30,50 +29,6 @@ TXCFILE = str(DATA_DIR.joinpath("ea_20-1A-A-y08-1.xml"))
 
 
 pytestmark = pytest.mark.django_db
-
-
-def test_transform_timing_pick_up():
-    # Setup
-    testfile = os.path.join(FILE_DIR, "data/timing-pick_up.json")
-    report = DataQualityReportFactory(
-        file__from_path=testfile, revision__upload_file__from_path=TXCFILE
-    )
-
-    # get data from report
-    with report.file.open("r") as fin:
-        data = json.load(fin)["warnings"][0]
-        data["warning_type"].replace("-", "_")
-        warning_json = data["values"][0]
-
-    extracted = extract.run(report.id)
-    model = transform_model.run(extracted)
-
-    # Test
-    transform_warnings.transform_timing_pick_up_warning(
-        report, model, extracted.warnings.timing_pick_up
-    )
-
-    # Assert
-    warnings = TimingPickUpWarning.objects.all()
-    assert len(warnings) == 1
-
-    warning = warnings[0]
-    assert warning.report == report
-
-    # Lookup the TimingPattern mentioned in the warnings doc
-    timing_pattern = TimingPattern.objects.get(ito_id=warning_json["id"])
-    assert warning.timing_pattern == timing_pattern
-
-    # Lookup the stop mentioned in the warnings doc
-    timing_pattern_stops = TimingPatternStop.objects.filter(
-        timing_pattern=timing_pattern,
-        service_pattern_stop__position__in=warning_json["indexes"],
-    )
-
-    # Check it matches the stop set in the TimingPickUpWarning
-    assert set(warning.timings.values_list("id", flat=True)) == set(
-        timing_pattern_stops.values_list("id", flat=True)
-    )
 
 
 def test_transform_journey_stop_inappropriate():

@@ -12,7 +12,6 @@ from transit_odp.data_quality.models import (
     ServicePattern,
     StopPoint,
     TimingPatternStop,
-    TimingPickUpWarning,
     VehicleJourney,
 )
 from transit_odp.pipelines.pipelines.dqs_report_etl.models import (
