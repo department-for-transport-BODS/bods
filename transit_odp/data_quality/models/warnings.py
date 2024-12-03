@@ -280,14 +280,6 @@ class StopMissingNaptanWarning(StopWarningBase):
     objects = StopMissingNaptanQuerySet.as_manager()
 
 
-# TODO: delete warning? seemingly replaced by JourneyStopInappropriateWarning
-# though possibly still being used in dqs_report_tel/transform_warnings.py
-class StopIncorrectTypeWarning(StopWarningBase):
-    viewname = "dq:incorrect-stop-type-detail"
-    stop_type = models.TextField()
-    service_patterns = models.ManyToManyField("data_quality.ServicePattern")
-
-
 class JourneyStopInappropriateWarning(StopWarningBase):
     viewname = "dq:incorrect-stop-type-detail"
     stop_type = models.TextField()
@@ -305,7 +297,6 @@ WARNING_MODELS = [
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
-    StopIncorrectTypeWarning,
     StopMissingNaptanWarning,
     TimingBackwardsWarning,
     TimingDropOffWarning,

@@ -10,7 +10,6 @@ from transit_odp.data_quality.models import (
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServicePattern,
-    StopIncorrectTypeWarning,
     StopMissingNaptanWarning,
     StopPoint,
     TimingBackwardsWarning,
@@ -49,8 +48,6 @@ def run(
     transform_journey_without_headsign_warning(
         report, model, warnings.journeys_without_headsign
     )
-
-    transform_stop_incorrect_type_warning(report, model, warnings.stop_incorrect_type)
 
 
 def transform_timing_backwards_warning(
@@ -374,41 +371,5 @@ def transform_journey_without_headsign_warning(
                 report=report,
                 vehicle_journey_id=warning.vehicle_journey_id,
             )
-
-    warning_class.objects.bulk_create(inner())
-
-
-def transform_stop_incorrect_type_warning(
-    report: DataQualityReport, model: TransformedModel, warnings: pd.DataFrame
-):
-    if len(warnings) == 0:
-        return
-
-    # Join stop_id
-    warnings = warnings.merge(
-        model.stops["id"].rename("stop_id"),
-        how="left",
-        left_on="stop_ito_id",
-        right_index=True,
-    )
-
-    warning_class = StopIncorrectTypeWarning
-
-    # Create warnings and associate with missing StopPoint
-    def inner():
-        for warning in warnings.itertuples():
-            obj = warning_class(
-                report=report,
-                stop_id=warning.stop_id,
-                stop=StopPoint.objects.get(ito_id=warning.stop_ito_id),
-                stop_type=warning.stop_type,
-            )
-
-            service_patterns = ServicePattern.objects.filter(
-                ito_id__in=warning.service_patterns
-            )
-
-            obj.service_patterns.set(service_patterns)
-            yield obj
 
     warning_class.objects.bulk_create(inner())
