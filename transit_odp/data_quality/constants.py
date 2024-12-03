@@ -248,22 +248,6 @@ LastStopNotTimingPointObservation = Observation(
     category=Category.timing,
 )
 
-SlowTimingPointObservation = Observation(
-    title="Slow timing between timing points",
-    text=(
-        "This observation identifies links between timing points that "
-        "appear unfeasibly "
-        "slow, meaning it would require a vehicle to travel between the "
-        'points as the "crow flies" at a speed of less than 1 mph. This '
-        "implies the data provided could be inaccurate. "
-        "</br></br>"
-        "Operators should investigate the observation and address any errors found."
-    ),
-    model=models.SlowTimingWarning,
-    list_url_name="dq:slow-timings-list",
-    level=Level.advisory,
-    category=Category.timing,
-)
 
 BackwardsTimingObservation = Observation(
     title="Backwards timing",
@@ -334,7 +318,6 @@ OBSERVATIONS = (
     LastStopNotTimingPointObservation,
     LastStopPickUpOnlyObservation,
     NoTimingPointFor15MinutesObservation,
-    SlowTimingPointObservation,
     StopsRepeatedObservation,
 )
 

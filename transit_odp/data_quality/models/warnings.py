@@ -12,7 +12,6 @@ from transit_odp.data_quality.models.querysets import (
     JourneyStopInappropriateQuerySet,
     JourneyWithoutHeadsignQuerySet,
     ServiceLinkMissingStopQuerySet,
-    SlowTimingQuerySet,
     StopMissingNaptanQuerySet,
     TimingDropOffQuerySet,
     TimingFirstQuerySet,
@@ -193,11 +192,6 @@ class TimingPatternTimingWarningBase(BadTimingsMixin, TimingPatternWarningBase):
     class Meta:
         abstract = True
 
-class SlowTimingWarning(TimingPatternTimingWarningBase):
-    viewname = "dq:slow-timings-detail"
-
-    objects = SlowTimingQuerySet.as_manager()
-
 
 class TimingFirstWarning(TimingPatternTimingWarningBase):
     viewname = "dq:first-stop-not-timing-point-detail"
@@ -311,7 +305,6 @@ WARNING_MODELS = [
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
-    SlowTimingWarning,
     StopIncorrectTypeWarning,
     StopMissingNaptanWarning,
     TimingBackwardsWarning,

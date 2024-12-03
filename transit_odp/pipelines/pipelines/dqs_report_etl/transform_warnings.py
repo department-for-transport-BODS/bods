@@ -10,7 +10,6 @@ from transit_odp.data_quality.models import (
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServicePattern,
-    SlowTimingWarning,
     StopIncorrectTypeWarning,
     StopMissingNaptanWarning,
     StopPoint,
@@ -33,13 +32,6 @@ BATCH_SIZE = 100000
 def run(
     report: DataQualityReport, model: TransformedModel, warnings: ExtractedWarnings
 ):
-    transform_timing_warning(
-        report, model, warnings.timing_fast_link, "timing_fast_link"
-    )
-    transform_timing_warning(
-        report, model, warnings.timing_slow_link, "timing_slow_link"
-    )
-    transform_timing_warning(report, model, warnings.timing_slow, "timing_slow")
 
     transform_timing_backwards_warning(report, model, warnings.timing_backwards)
     transform_timing_pick_up_warning(report, model, warnings.timing_pick_up)
@@ -59,107 +51,6 @@ def run(
     )
 
     transform_stop_incorrect_type_warning(report, model, warnings.stop_incorrect_type)
-
-
-def transform_timing_warning(
-    report: DataQualityReport,
-    model: TransformedModel,
-    warnings: pd.DataFrame,
-    warning_type: str,
-):
-    if len(warnings) == 0:
-        return
-
-    # Join timing_pattern_id and service_pattern_id
-    warnings = warnings.merge(
-        model.timing_patterns[["id", "service_pattern_id"]].rename(
-            columns={"id": "timing_pattern_id"}
-        ),
-        how="left",
-        left_on="timing_pattern_ito_id",
-        right_index=True,
-    )
-
-    warning_class_lookup = {
-        "timing_slow": SlowTimingWarning,
-    }
-
-    warning_class = warning_class_lookup[warning_type]
-
-    # Load warnings
-    def inner():
-        for record in warnings.itertuples():
-            yield warning_class(
-                report=report, timing_pattern_id=record.timing_pattern_id
-            )
-
-    warnings_objs = warning_class.objects.bulk_create(inner())
-
-    # Create m2m of associated stops and service links
-
-    # Join internal ids onto DataFrame
-    warnings["id"] = [w.id for w in warnings_objs]
-
-    # Convert 'indexes' list into TPSs
-    warnings["tps_ids"] = warnings[["timing_pattern_id", "indexes"]].apply(
-        lambda x: set(
-            model.timing_pattern_stops.loc[
-                [(x["timing_pattern_id"], indx) for indx in x["indexes"]],
-                "timing_pattern_stop_id",
-            ]
-        ),
-        axis=1,
-    )
-
-    through_timings = warning_class.timings.through
-
-    # map the warning-type to the name of the rel on the through table back
-    # to the warning class
-    warning_class_rel_lookup = {
-        "timing_fast_link": "fastlinkwarning_id",
-        "timing_slow_link": "slowlinkwarning_id",
-        "timing_slow": "slowtimingwarning_id",
-    }
-    warning_class_rel = warning_class_rel_lookup[warning_type]
-
-    def create_stops_m2m():
-        for warning in warnings[["id", "tps_ids"]].itertuples():
-            for stop_id in list(warning.tps_ids):
-                yield through_timings(
-                    timingpatternstop_id=stop_id,
-                    **{warning_class_rel: warning.id},
-                )
-
-    through_timings.objects.bulk_create(create_stops_m2m())
-
-    # Create m2m with ServiceLink
-
-    def get_service_links(service_links):
-        if warning_type == "timing_fast_link" or warning_type == "timing_slow_link":
-            service_links = [service_links]
-
-        result = set(model.service_links.loc[list(set(service_links)), "id"])
-        return list(result)
-
-    if warning_type == "timing_fast_link" or warning_type == "timing_slow_link":
-        related_service_links_field = "service_link"
-    else:
-        related_service_links_field = "entities"
-
-    warnings["sl_ids"] = warnings[related_service_links_field].apply(
-        lambda service_links: get_service_links(service_links)
-    )
-
-    through_sls = warning_class.service_links.through
-
-    def create_service_link_m2m():
-        for warning in warnings[["id", "sl_ids"]].itertuples():
-            for sl_id in list(warning.sl_ids):
-                yield through_sls(
-                    servicelink_id=sl_id, **{warning_class_rel: warning.id}
-                )
-
-    through_sls.objects.bulk_create(create_service_link_m2m())
 
 
 def transform_timing_backwards_warning(

@@ -26,7 +26,6 @@ from .warnings import (
     JourneyWarningBase,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
-    SlowTimingWarning,
     StopIncorrectTypeWarning,
     StopMissingNaptanWarning,
     StopWarningBase,

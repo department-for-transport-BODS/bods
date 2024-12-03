@@ -12,7 +12,6 @@ from transit_odp.data_quality.models import (
     JourneyWithoutHeadsignWarning,
     ServiceLink,
     ServicePattern,
-    SlowTimingWarning,
     StopIncorrectTypeWarning,
     StopMissingNaptanWarning,
     StopPoint,
@@ -35,67 +34,6 @@ TXCFILE = str(DATA_DIR.joinpath("ea_20-1A-A-y08-1.xml"))
 
 
 pytestmark = pytest.mark.django_db
-
-
-@pytest.mark.parametrize(
-    "filename, warning_class",
-    [
-        ["data/timing-slow.json", SlowTimingWarning],
-    ],
-)
-def test_transform_timing_speed_warnings(filename, warning_class):
-    # Setup
-    testfile = os.path.join(FILE_DIR, filename)
-    report = DataQualityReportFactory(
-        file__from_path=testfile, revision__upload_file__from_path=TXCFILE
-    )
-
-    # get data from report
-    with report.file.open("r") as fin:
-        data = json.load(fin)["warnings"][0]
-        warning_type = data["warning_type"].replace("-", "_")
-        warning_json = data["values"][0]
-
-    extracted = extract.run(report.id)
-    model = transform_model.run(extracted)
-
-    # Test
-    transform_warnings.transform_timing_warning(
-        report, model, getattr(extracted.warnings, warning_type), warning_type
-    )
-
-    # Assert
-    warnings = warning_class.objects.all()
-    assert len(warnings) == 1
-
-    warning = warnings[0]
-    assert warning.report == report
-
-    timing_pattern = TimingPattern.objects.get(ito_id=warning_json["id"])
-    assert warning.timing_pattern == timing_pattern
-
-    timing_pattern_stops = TimingPatternStop.objects.filter(
-        timing_pattern=timing_pattern,
-        service_pattern_stop__position__in=warning_json["indexes"],
-    )
-
-    assert set(warning.timings.values_list("id", flat=True)) == set(
-        timing_pattern_stops.values_list("id", flat=True)
-    )
-
-    if warning_type == "timing_fast_link" or warning_type == "timing_slow_link":
-        sl_id = warning_json["service_link"]
-        service_link = ServiceLink.objects.get(ito_id=sl_id)
-
-        assert warning.service_links.values_list("id", flat=True)[0] == service_link.id
-
-    else:
-        service_links = ServiceLink.objects.filter(ito_id__in=warning_json["entities"])
-
-        assert set(warning.service_links.values_list("id", flat=True)) == set(
-            service_links.values_list("id", flat=True)
-        )
-
 
 def test_transform_timing_backwards():
     # Setup

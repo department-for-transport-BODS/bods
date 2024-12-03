@@ -232,7 +232,6 @@ def test_transform_service_links(report):
         "timing-last.json",
         "timing-fast-link.json",
         "timing-fast.json",
-        "timing-slow.json",
     ),
 )
 def test_transform_timing_patterns(filename):
