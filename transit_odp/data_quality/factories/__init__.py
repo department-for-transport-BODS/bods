@@ -16,7 +16,6 @@ from transit_odp.data_quality.factories.transmodel import (
 )
 from transit_odp.data_quality.factories.warnings import (
     IncorrectNOCWarningFactory,
-    TimingDropOffWarningFactory,
     TimingFirstWarningFactory,
     TimingLastWarningFactory,
     TimingMissingPointWarningFactory,
@@ -34,7 +33,6 @@ __all__ = [
     "ServicePatternFactory",
     "ServicePatternStopFactory",
     "StopPointFactory",
-    "TimingDropOffWarningFactory",
     "TimingFirstWarningFactory",
     "TimingLastWarningFactory",
     "TimingMissingPointWarningFactory",

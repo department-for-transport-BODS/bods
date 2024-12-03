@@ -24,7 +24,6 @@ from transit_odp.data_quality.models.warnings import (
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
-    TimingDropOffWarning,
     TimingFirstWarning,
     TimingLastWarning,
     TimingMissingPointWarning,
@@ -154,16 +153,6 @@ class TimingLastWarningFactory(TimingPatternTimingWarningBaseFactory):
 class TimingPickUpWarningFactory(TimingPatternTimingWarningBaseFactory):
     class Meta:
         model = TimingPickUpWarning
-        exclude = ("common_service_pattern",)
-
-    report = factory.SubFactory(
-        DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
-    )
-
-
-class TimingDropOffWarningFactory(TimingPatternTimingWarningBaseFactory):
-    class Meta:
-        model = TimingDropOffWarning
         exclude = ("common_service_pattern",)
 
     report = factory.SubFactory(

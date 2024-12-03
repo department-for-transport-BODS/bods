@@ -12,7 +12,6 @@ from transit_odp.data_quality.models.querysets import (
     JourneyStopInappropriateQuerySet,
     JourneyWithoutHeadsignQuerySet,
     ServiceLinkMissingStopQuerySet,
-    TimingDropOffQuerySet,
     TimingFirstQuerySet,
     TimingLastQuerySet,
     TimingPatternLineQuerySet,
@@ -210,12 +209,6 @@ class TimingPickUpWarning(TimingPatternTimingWarningBase):
     objects = TimingPickUpQuerySet.as_manager()
 
 
-class TimingDropOffWarning(TimingPatternTimingWarningBase):
-    viewname = "dq:last-stop-pick-up-only-detail"
-
-    objects = TimingDropOffQuerySet.as_manager()
-
-
 class TimingMissingPointWarning(TimingPatternTimingWarningBase):
     viewname = "dq:missing-stops-detail"
     objects = TimingMissingPointManager()
@@ -268,7 +261,6 @@ WARNING_MODELS = [
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
-    TimingDropOffWarning,
     TimingFirstWarning,
     TimingLastWarning,
     TimingMissingPointWarning,

@@ -8,7 +8,6 @@ from transit_odp.data_quality.constants import (
     CheckBasis,
     FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,
-    LastStopPickUpOnlyObservation,
 )
 from transit_odp.dqs.constants import (
     IncorrectStopTypeObservation,
@@ -24,7 +23,6 @@ from transit_odp.data_quality.factories.warnings import (
     IncorrectNOCWarningFactory,
     JourneyDateRangeBackwardsWarningFactory,
     JourneyStopInappropriateWarningFactory,
-    TimingDropOffWarningFactory,
     TimingPickUpWarningFactory,
 )
 from transit_odp.data_quality.scoring import (
@@ -157,44 +155,6 @@ def test_score_calculation_lines_component(from_report_id):
         if not o.check_basis == CheckBasis.lines
     )
 
-    pipeline = TransXChangeDQPipeline(report)
-    pipeline.load_summary()
-    calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
-    score = calculator.calculate(report.id)
-    assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
-
-
-@patch(DQC_FROM_REPORT_ID, return_value=DQ_COUNTS)
-def test_score_calculation_timing_patterns_component(from_report_id):
-    """
-    Test that the score is calculated correctly with one or more observations
-    that are concerned with the `timing_patterns` feature.
-
-    Possible warnings:
-        FastTimingWarning
-        TimingBackwardsWarning
-        TimingDropOffWarning
-        TimingPickUpWarning
-    """
-    report = DataQualityReportFactory()
-    timing_patterns = DQ_COUNTS.timing_patterns
-    expected_score = sum(
-        o.weighting
-        for o in WEIGHTED_OBSERVATIONS
-        if not o.check_basis == CheckBasis.timing_patterns
-    )
-
-    pickup_count = 1
-    pickup_weight = LastStopPickUpOnlyObservation.weighting
-    TimingPickUpWarningFactory.create_batch(pickup_count, report=report)
-    pickup_score = score_contribution(pickup_count, timing_patterns, pickup_weight)
-
-    dropoff_count = 0
-    dropoff_weight = FirstStopSetDownOnlyObservation.weighting
-    TimingDropOffWarningFactory.create_batch(dropoff_count, report=report)
-    dropoff_score = score_contribution(dropoff_count, timing_patterns, dropoff_weight)
-
-    expected_score += dropoff_score + pickup_score
     pipeline = TransXChangeDQPipeline(report)
     pipeline.load_summary()
     calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
