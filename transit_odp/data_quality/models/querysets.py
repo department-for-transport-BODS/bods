@@ -319,44 +319,6 @@ class SlowLinkQuerySet(TimingPatternLineQuerySet):
             ),
         )
 
-class JourneyConflictQuerySet(JourneyQuerySet):
-    def add_conflict_stop(self):
-        from transit_odp.data_quality.models import VehicleJourney
-
-        vj_subquery = (
-            VehicleJourney.objects.filter(id=OuterRef("conflict_id"))
-            .add_first_stop()
-            .values_list("first_stop_name", flat=True)
-        )
-        return self.annotate(conflict_stop_name=Subquery(vj_subquery))
-
-    def add_message(self):
-        return (
-            self.add_first_stop()
-            .add_conflict_stop()
-            .annotate(
-                message=Concat(
-                    Func(
-                        F("vehicle_journey__start_time"),
-                        Value("HH24:MI", output_field=CharField()),
-                        function="to_char",
-                    ),
-                    Value(" from ", output_field=CharField()),
-                    "first_stop_name",
-                    Value(" and ", output_field=CharField()),
-                    Func(
-                        F("conflict__start_time"),
-                        Value("HH24:MI", output_field=CharField()),
-                        function="to_char",
-                    ),
-                    Value(" from ", output_field=CharField()),
-                    "conflict_stop_name",
-                    Value(" overlaps", output_field=CharField()),
-                    output_field=CharField(),
-                ),
-            )
-        )
-
 
 class LineMissingBlockIDQuerySet(models.QuerySet):
     def add_line(self, *args):

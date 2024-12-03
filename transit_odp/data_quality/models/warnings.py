@@ -101,29 +101,6 @@ class JourneyWarningBase(DataQualityWarningBase):
         return self.vehicle_journey
 
 
-class JourneyConflictWarning(JourneyWarningBase):
-    viewname = "dq:journey-overlap-detail"
-    conflict = models.ForeignKey(
-        "data_quality.VehicleJourney",
-        related_name="conflict",
-        on_delete=models.CASCADE,
-        null=False,
-    )
-
-    stops = models.ManyToManyField("data_quality.StopPoint")
-    objects = JourneyConflictQuerySet.as_manager()
-
-    def get_affected_stops(self):
-        affected_stops = self.stops.all()
-        affected_tps = self.vehicle_journey.timing_pattern.timing_pattern_stops.filter(
-            service_pattern_stop__stop__in=affected_stops
-        )
-        return affected_tps.add_position().add_stop_name().order_by("position")
-
-    def get_effected_stops(self):
-        return self.get_affected_stops()
-
-
 class JourneyWithoutHeadsignWarning(JourneyWarningBase):
     viewname = "dq:missing-headsign-detail"
 
@@ -355,7 +332,6 @@ class LineMissingBlockIDWarning(DataQualityWarningBase):
 WARNING_MODELS = [
     LineMissingBlockIDWarning,
     IncorrectNOCWarning,
-    JourneyConflictWarning,
     JourneyDateRangeBackwardsWarning,
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,

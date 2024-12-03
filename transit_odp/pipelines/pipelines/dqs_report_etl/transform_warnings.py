@@ -6,7 +6,6 @@ from django.db.models import Q
 
 from transit_odp.data_quality.models import (
     DataQualityReport,
-    JourneyConflictWarning,
     JourneyDateRangeBackwardsWarning,
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
@@ -55,8 +54,6 @@ def run(
     transform_date_range_backwards_warning(
         report, model, warnings.journey_date_range_backwards
     )
-
-    transform_journey_conflict_warning(report, model, warnings.journey_conflict)
 
     transform_journey_without_headsign_warning(
         report, model, warnings.journeys_without_headsign
@@ -461,50 +458,6 @@ def transform_date_range_backwards_warning(
                 start=parse(warning.start),
                 end=parse(warning.end),
             )
-
-    warning_class.objects.bulk_create(inner())
-
-
-def transform_journey_conflict_warning(
-    report: DataQualityReport, model: TransformedModel, warnings: pd.DataFrame
-):
-    if len(warnings) == 0:
-        return
-
-    # Join vehicle_journey_id
-    warnings = warnings.merge(
-        model.vehicle_journeys[["id"]].rename(columns={"id": "vehicle_journey_id"}),
-        how="left",
-        left_on="vehicle_journey_ito_id",
-        right_index=True,
-    )
-
-    # Join conflict vehicle_journey_id
-    warnings = warnings.merge(
-        model.vehicle_journeys[["id"]].rename(
-            columns={"id": "conflict_vehicle_journey_id"}
-        ),
-        how="left",
-        left_on="conflict",
-        right_index=True,
-    )
-
-    warning_class = JourneyConflictWarning
-
-    # Create warnings and associate with missing StopPoint
-    def inner():
-        for warning in warnings.itertuples():
-            obj = warning_class(
-                report=report,
-                vehicle_journey_id=warning.vehicle_journey_id,
-                conflict=VehicleJourney.objects.get(
-                    id=warning.conflict_vehicle_journey_id
-                ),
-            )
-
-            stops = StopPoint.objects.filter(ito_id__in=warning.stops)
-            obj.stops.set(stops),
-            yield obj
 
     warning_class.objects.bulk_create(inner())
 

@@ -6,7 +6,6 @@ from django.contrib.gis.geos import LineString
 
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.etl.warnings import (
-    JourneyPartialTimingOverlapETL,
     LineMissingBlockIDETL,
     ServiceLinkMissingStopsETL,
     TimingFirstETL,
@@ -17,7 +16,6 @@ from transit_odp.data_quality.etl.warnings import (
 from transit_odp.data_quality.factories.transmodel import DataQualityReportFactory
 from transit_odp.data_quality.models import ServiceLink
 from transit_odp.data_quality.models.warnings import (
-    JourneyConflictWarning,
     LineMissingBlockIDWarning,
     ServiceLinkMissingStopWarning,
     TimingFirstWarning,
@@ -36,35 +34,6 @@ TXCFILE = str(DATA_DIR.joinpath("ea_20-1A-A-y08-1.xml"))
 
 
 pytestmark = pytest.mark.django_db
-
-
-def test_run_journey_partial_timing_overlap_pipeline():
-    reportfile = DATA_DIR / "journey-partial-timing-overlap.json"
-    dq_report = DataQualityReportFactory(
-        file__from_path=reportfile,
-        revision__upload_file__from_path=TXCFILE,
-    )
-
-    # use old pipeline to add the features to the transmodel tables
-    extracted = extract.run(dq_report.id)
-    transform_model.run(extracted)
-
-    report = Report(dq_report.file)
-    pipeline = JourneyPartialTimingOverlapETL(
-        report_id=dq_report.id, warnings=report.warnings
-    )
-    pipeline.load()
-
-    json_warning = report.warnings[0]
-    warnings = JourneyConflictWarning.objects.all()
-    assert warnings.count() == len(report.warnings)
-
-    db_warning = warnings.first()
-    assert db_warning.vehicle_journey.ito_id == json_warning.id
-    assert db_warning.conflict.ito_id == json_warning.conflict
-
-    stop_ito_ids = db_warning.stops.order_by("ito_id").values_list("ito_id", flat=True)
-    assert list(stop_ito_ids) == sorted(json_warning.stops)
 
 
 def test_run_line_missing_block_id_pipeline():

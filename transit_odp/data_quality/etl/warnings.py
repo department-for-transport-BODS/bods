@@ -15,7 +15,6 @@ from transit_odp.data_quality.models.transmodel import (
 )
 from transit_odp.data_quality.models.warnings import (
     DataQualityWarningBase,
-    JourneyConflictWarning,
     LineMissingBlockIDWarning,
     ServiceLinkMissingStopWarning,
     TimingFirstWarning,
@@ -25,91 +24,6 @@ from transit_odp.data_quality.models.warnings import (
 )
 
 logger = getLogger(__name__)
-
-
-class JourneyPartialTimingOverlapETL:
-    def __init__(self, report_id: int, warnings: List[JourneyPartialTimingOverlap]):
-        self.warnings = warnings
-        self.report_id = report_id
-        self._vehicle_journeys = None
-        self._conflicts = None
-        self._stop_points = None
-        self._warning_stops_map = {}
-
-    @property
-    def vehicle_journeys(self) -> List[VehicleJourney]:
-        if self._vehicle_journeys:
-            return self._vehicle_journeys
-
-        ito_ids = [w.id for w in self.warnings]
-        self._vehicle_journeys = list(VehicleJourney.objects.filter(ito_id__in=ito_ids))
-        return self._vehicle_journeys
-
-    def get_vehicle_journey_by_ito_id(self, ito_id: str) -> VehicleJourney:
-        vehicle_journeys = [vj for vj in self.vehicle_journeys if vj.ito_id == ito_id]
-        return vehicle_journeys[0]
-
-    @property
-    def conflicts(self) -> List[VehicleJourney]:
-        if self._conflicts:
-            return self._conflicts
-        ito_ids = [w.conflict for w in self.warnings]
-        self._conflicts = list(VehicleJourney.objects.filter(ito_id__in=ito_ids))
-        return self._conflicts
-
-    def get_conflict_journey_by_ito_id(self, ito_id: str) -> VehicleJourney:
-        vehicle_journeys = [vj for vj in self.conflicts if vj.ito_id == ito_id]
-        return vehicle_journeys[0]
-
-    @property
-    def stops(self) -> List[StopPoint]:
-        if self._stop_points:
-            return self._stop_points
-
-        ito_ids = []
-        for warning in self.warnings:
-            ito_ids += warning.stops
-
-        self._stop_points = list(StopPoint.objects.filter(ito_id__in=ito_ids))
-        return self._stop_points
-
-    def get_stops_by_ito_id(self, ito_ids: List[str]) -> List[StopPoint]:
-        stops = [sp for sp in self.stops if sp.ito_id in ito_ids]
-        return stops
-
-    def map_stops(self, obj: JourneyConflictWarning, stops: List[StopPoint]):
-        key = (obj.report_id, obj.vehicle_journey_id, obj.conflict_id)
-        self._warning_stops_map[key] = stops
-
-    def get_stops_from_map(self, obj: JourneyConflictWarning) -> List[StopPoint]:
-        key = (obj.report_id, obj.vehicle_journey_id, obj.conflict_id)
-        return self._warning_stops_map.get(key)
-
-    def load(self) -> None:
-        ThroughModel = JourneyConflictWarning.stops.through
-
-        models = []
-        for warning in self.warnings:
-            vehicle_journey = self.get_vehicle_journey_by_ito_id(warning.id)
-            conflict = self.get_conflict_journey_by_ito_id(warning.conflict)
-            jcw = JourneyConflictWarning(
-                report_id=self.report_id,
-                vehicle_journey_id=vehicle_journey.id,
-                conflict_id=conflict.id,
-            )
-            stops = self.get_stops_by_ito_id(warning.stops)
-            self.map_stops(jcw, stops)
-            models.append(jcw)
-        objs = JourneyConflictWarning.objects.bulk_create(models)
-
-        through_models = []
-        for obj in objs:
-            stops = self.get_stops_from_map(obj)
-            for stop in stops:
-                through_models.append(
-                    ThroughModel(journeyconflictwarning_id=obj.id, stoppoint_id=stop.id)
-                )
-        ThroughModel.objects.bulk_create(through_models)
 
 
 class TimingBaseETL:

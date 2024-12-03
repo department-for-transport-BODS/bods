@@ -7,7 +7,6 @@ from dateutil.parser import parse
 
 from transit_odp.data_quality.factories import DataQualityReportFactory
 from transit_odp.data_quality.models import (
-    JourneyConflictWarning,
     JourneyDateRangeBackwardsWarning,
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
@@ -345,40 +344,6 @@ def test_transform_date_range_backwards():
 
     assert warning.start == parse(warning_json["start"]).date()
     assert warning.end == parse(warning_json["end"]).date()
-
-
-def test_transform_journey_conflict():
-    # Setup
-    testfile = os.path.join(FILE_DIR, "data/journey-conflict.json")
-    report = DataQualityReportFactory(
-        file__from_path=testfile, revision__upload_file__from_path=TXCFILE
-    )
-
-    # get data from report
-    with report.file.open("r") as fin:
-        data = json.load(fin)["warnings"][0]
-        data["warning_type"].replace("-", "_")
-        warning_json = data["values"][0]
-
-    extracted = extract.run(report.id)
-    model = transform_model.run(extracted)
-
-    # Test
-    transform_warnings.transform_journey_conflict_warning(
-        report, model, extracted.warnings.journey_conflict
-    )
-
-    # Assert
-    warnings = JourneyConflictWarning.objects.all()
-    assert len(warnings) == 1
-
-    warning = warnings[0]
-    assert warning.report == report
-
-    assert warning.conflict.ito_id == warning_json["conflict"]
-
-    stops = StopPoint.objects.filter(ito_id__in=warning_json["stops"])
-    assert set(s.ito_id for s in stops) == set(warning_json["stops"])
 
 
 def test_transform_journey_without_headsign():
