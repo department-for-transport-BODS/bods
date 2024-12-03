@@ -15,7 +15,6 @@ from transit_odp.data_quality.models.transmodel import (
 )
 from transit_odp.data_quality.models.warnings import (
     DataQualityWarningBase,
-    LineMissingBlockIDWarning,
     ServiceLinkMissingStopWarning,
     TimingFirstWarning,
     TimingLastWarning,
@@ -289,11 +288,6 @@ class LineWarningETL:
     def load(self):
         warnings = self.load_warnings()
         self.load_through_models(warnings)
-
-
-class LineMissingBlockIDETL(LineWarningETL):
-    WarningClass = LineMissingBlockIDWarning
-    ThroughClass = LineMissingBlockIDWarning.vehicle_journeys.through
 
 
 class ServiceLinkMissingStopsETL:

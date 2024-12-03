@@ -3,9 +3,6 @@ from enum import Enum, unique
 from typing import Dict, Final, Optional
 
 from transit_odp.data_quality import models
-from transit_odp.data_quality.models.warnings import (
-    LineMissingBlockIDWarning,
-)
 from transit_odp.dqs.constants import Level, Category
 
 
@@ -71,42 +68,6 @@ IncorrectNocObservation = Observation(
     category=Category.data_set,
     weighting=0.12,
     check_basis=CheckBasis.data_set,
-)
-MissingBlockNumber = Observation(
-    title="Missing block number",
-    text=(
-        "This observation highlights missing valid block numbers for services "
-        "which are beginning in 7 days time. "
-        "The block number needs to be the same as the "
-        "corresponding object in the bus location data field ‘BlockRef’. "
-        "</br></br>"
-        "Block number is also known as bus workings number, most frequently "
-        "populated using running board information. "
-        "It’s a unique identifier or code (usually a simple number) that "
-        "is used for all the journeys an individual bus is scheduled to work. "
-        "</br></br>"
-        "If an operator does not have a documented running board, they can "
-        "create one by allocating each of their vehicles a ‘code’. "
-        "For each of the journeys operated by the same vehicle, the journey "
-        "should be given a consistent identifier as the input for "
-        "both the TransXChange (Block number) and SIRI-VM (Block ref). "
-        "For example, Vehicle 1, could have block number = 1 allocated to all "
-        "the journeys that will be completed by vehicle 1."
-    ),
-    impacts=(
-        "This is a key piece of information for consumers to use in order to match "
-        "across different data types. "
-        "This enables consumers to improve their journey predictions for passengers "
-        "by considering cross journey predictions. "
-        "Meaning if a vehicle is late on a journey, the next journey is likely to "
-        "also be running late."
-    ),
-    model=LineMissingBlockIDWarning,
-    list_url_name="dq:line-missing-block-id-list",
-    level=Level.critical,
-    category=Category.data_set,
-    weighting=0.12,
-    check_basis=CheckBasis.lines,
 )
 
 
@@ -372,7 +333,6 @@ OBSERVATIONS = (
     IncorrectStopTypeObservation,
     LastStopNotTimingPointObservation,
     LastStopPickUpOnlyObservation,
-    MissingBlockNumber,
     NoTimingPointFor15MinutesObservation,
     SlowTimingPointObservation,
     StopsRepeatedObservation,

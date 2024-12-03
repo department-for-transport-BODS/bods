@@ -319,11 +319,3 @@ class SlowLinkQuerySet(TimingPatternLineQuerySet):
             ),
         )
 
-
-class LineMissingBlockIDQuerySet(models.QuerySet):
-    def add_line(self, *args):
-        return self.annotate(line=F("service__name"))
-
-    def add_message(self):
-        message = "There is at least one journey which has missing block number"
-        return self.annotate(message=Value(message, output_field=CharField()))

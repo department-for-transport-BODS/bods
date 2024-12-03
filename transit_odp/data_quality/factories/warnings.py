@@ -23,7 +23,6 @@ from transit_odp.data_quality.models.warnings import (
     JourneyDateRangeBackwardsWarning,
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
-    LineMissingBlockIDWarning,
     ServiceLinkMissingStopWarning,
     SlowLinkWarning,
     SlowTimingWarning,
@@ -254,16 +253,6 @@ class JourneyDateRangeBackwardsWarningFactory(DjangoModelFactory):
     vehicle_journey = factory.SubFactory(VehicleJourneyFactory)
     start = date(2020, 1, 1)
     end = date(2019, 12, 1)
-
-
-class LineMissingBlockIDWarningFactory(DjangoModelFactory):
-    class Meta:
-        model = LineMissingBlockIDWarning
-
-    report = factory.SubFactory(
-        DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
-    )
-    service = factory.SubFactory(ServiceFactory)
 
 
 class IncorrectNOCWarningFactory(DjangoModelFactory):

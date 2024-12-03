@@ -8,11 +8,9 @@ import config.hosts
 from transit_odp.data_quality.models.managers import TimingMissingPointManager
 from transit_odp.data_quality.models.querysets import (
     IncorrectNOCQuerySet,
-    JourneyConflictQuerySet,
     JourneyDateRangeBackwardsQuerySet,
     JourneyStopInappropriateQuerySet,
     JourneyWithoutHeadsignQuerySet,
-    LineMissingBlockIDQuerySet,
     ServiceLinkMissingStopQuerySet,
     SlowLinkQuerySet,
     SlowTimingQuerySet,
@@ -315,22 +313,7 @@ class JourneyStopInappropriateWarning(StopWarningBase):
     objects = JourneyStopInappropriateQuerySet.as_manager()
 
 
-class LineMissingBlockIDWarning(DataQualityWarningBase):
-    viewname = "dq:line-missing-block-id-detail"
-    service = models.ForeignKey("data_quality.Service", on_delete=models.CASCADE)
-    vehicle_journeys = models.ManyToManyField("data_quality.VehicleJourney")
-
-    objects = LineMissingBlockIDQuerySet.as_manager()
-
-    class Meta:
-        unique_together = (("report", "service"),)
-
-    def get_vehicle_journeys(self):
-        return self.vehicle_journeys.all()
-
-
 WARNING_MODELS = [
-    LineMissingBlockIDWarning,
     IncorrectNOCWarning,
     JourneyDateRangeBackwardsWarning,
     JourneyStopInappropriateWarning,

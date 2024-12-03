@@ -10,7 +10,6 @@ from transit_odp.data_quality.constants import (
     FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,
     LastStopPickUpOnlyObservation,
-    MissingBlockNumber,
 )
 from transit_odp.dqs.constants import (
     IncorrectStopTypeObservation,
@@ -26,7 +25,6 @@ from transit_odp.data_quality.factories.warnings import (
     IncorrectNOCWarningFactory,
     JourneyDateRangeBackwardsWarningFactory,
     JourneyStopInappropriateWarningFactory,
-    LineMissingBlockIDWarningFactory,
     StopMissingNaptanWarningFactory,
     TimingBackwardsWarningFactory,
     TimingDropOffWarningFactory,
@@ -172,13 +170,6 @@ def test_score_calculation_lines_component(from_report_id):
         for o in WEIGHTED_OBSERVATIONS
         if not o.check_basis == CheckBasis.lines
     )
-
-    block_count = 4
-    block_weight = MissingBlockNumber.weighting
-    LineMissingBlockIDWarningFactory.create_batch(block_count, report=report)
-    block_score = score_contribution(block_count, line_count, block_weight)
-
-    expected_score += block_score
 
     pipeline = TransXChangeDQPipeline(report)
     pipeline.load_summary()

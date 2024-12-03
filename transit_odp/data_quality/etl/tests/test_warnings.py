@@ -6,7 +6,6 @@ from django.contrib.gis.geos import LineString
 
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.etl.warnings import (
-    LineMissingBlockIDETL,
     ServiceLinkMissingStopsETL,
     TimingFirstETL,
     TimingLastETL,
@@ -16,7 +15,6 @@ from transit_odp.data_quality.etl.warnings import (
 from transit_odp.data_quality.factories.transmodel import DataQualityReportFactory
 from transit_odp.data_quality.models import ServiceLink
 from transit_odp.data_quality.models.warnings import (
-    LineMissingBlockIDWarning,
     ServiceLinkMissingStopWarning,
     TimingFirstWarning,
     TimingLastWarning,
@@ -34,31 +32,6 @@ TXCFILE = str(DATA_DIR.joinpath("ea_20-1A-A-y08-1.xml"))
 
 
 pytestmark = pytest.mark.django_db
-
-
-def test_run_line_missing_block_id_pipeline():
-    reportfile = DATA_DIR / "line-missing-block-id.json"
-    dq_report = DataQualityReportFactory(
-        file__from_path=reportfile,
-        revision__upload_file__from_path=TXCFILE,
-    )
-
-    # use old pipeline to add the features to the transmodel tables
-    extracted = extract.run(dq_report.id)
-    transform_model.run(extracted)
-
-    report = Report(dq_report.file)
-    warnings = report.filter_by_warning_type("line-missing-block-id")
-    pipeline = LineMissingBlockIDETL(report_id=dq_report.id, warnings=warnings)
-    pipeline.load()
-
-    json_warning = warnings[0]
-    warnings = LineMissingBlockIDWarning.objects.all()
-
-    assert warnings.count() == len(report.warnings)
-    assert warnings.first().service.ito_id == json_warning.id
-    ito_ids = list(warnings.first().vehicle_journeys.values_list("ito_id", flat=True))
-    assert sorted(ito_ids) == sorted(json_warning.journeys)
 
 
 TIMING_DATA = [

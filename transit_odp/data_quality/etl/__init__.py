@@ -7,7 +7,6 @@ from django.db.models.query_utils import Q
 from transit_odp.common.loggers import get_dataset_adapter_from_revision
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.etl.warnings import (
-    LineMissingBlockIDETL,
     ServiceLinkMissingStopsETL,
     TimingFirstETL,
     TimingLastETL,
@@ -85,11 +84,6 @@ class TransXChangeDQPipeline:
         if warnings:
             IncorrectNOCWarning.objects.bulk_create(warnings, ignore_conflicts=True)
 
-    def create_line_missing_block_id_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("line-missing-block-id")
-        pipeline = LineMissingBlockIDETL(self.report_id, warnings)
-        pipeline.load()
-
     def create_timing_first_warnings(self) -> None:
         warnings = self.report.filter_by_warning_type("timing-first")
         pipeline = TimingFirstETL(self.report_id, warnings)
@@ -130,8 +124,8 @@ class TransXChangeDQPipeline:
         self.create_incorrect_nocs_warning()
         adapter.info("Creating JourneyConflictWarning - Skipped as OLD ITO.")
         adapter.info("Creating LineExpiredWarning - Skipped as OLD ITO.")
-        adapter.info("Creating LineMissingBlockIDWarning.")
-        self.create_line_missing_block_id_warnings()
+        adapter.info("Creating LineMissingBlockIDWarning - Skipped as OLD ITO.")
+
         adapter.info("Creating TimingFirstWarning.")
         self.create_timing_first_warnings()
         adapter.info("Creating TimingLastWarning.")
