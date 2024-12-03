@@ -204,27 +204,6 @@ class TimingLastWarning(TimingPatternTimingWarningBase):
     objects = TimingLastQuerySet.as_manager()
 
 
-class TimingBackwardsWarning(TimingPatternTimingWarningBase):
-    viewname = "dq:backward-timing-detail"
-
-    from_stop = models.ForeignKey(
-        "data_quality.TimingPatternStop",
-        related_name="from_stop",
-        on_delete=models.CASCADE,
-    )
-    to_stop = models.ForeignKey(
-        "data_quality.TimingPatternStop",
-        related_name="to_stop",
-        on_delete=models.CASCADE,
-    )
-
-    def get_effected_stops(self):
-        effected_tps = TimingPatternStop.objects.filter(
-            id__in=[self.from_stop_id, self.to_stop_id]
-        )
-        return effected_tps.add_position().add_stop_name().order_by("position")
-
-
 class TimingPickUpWarning(TimingPatternTimingWarningBase):
     viewname = "dq:first-stop-set-down-only-detail"
 
@@ -289,7 +268,6 @@ WARNING_MODELS = [
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
-    TimingBackwardsWarning,
     TimingDropOffWarning,
     TimingFirstWarning,
     TimingLastWarning,

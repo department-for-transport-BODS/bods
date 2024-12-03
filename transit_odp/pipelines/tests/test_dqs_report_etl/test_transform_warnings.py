@@ -13,7 +13,6 @@ from transit_odp.data_quality.models import (
     ServiceLink,
     ServicePattern,
     StopPoint,
-    TimingBackwardsWarning,
     TimingDropOffWarning,
     TimingPattern,
     TimingPatternStop,
@@ -32,52 +31,6 @@ TXCFILE = str(DATA_DIR.joinpath("ea_20-1A-A-y08-1.xml"))
 
 
 pytestmark = pytest.mark.django_db
-
-def test_transform_timing_backwards():
-    # Setup
-    testfile = os.path.join(FILE_DIR, "data/timing-backwards.json")
-    report = DataQualityReportFactory(
-        file__from_path=testfile, revision__upload_file__from_path=TXCFILE
-    )
-
-    # get data from report
-    with report.file.open("r") as fin:
-        data = json.load(fin)["warnings"][0]
-        data["warning_type"].replace("-", "_")
-        warning_json = data["values"][0]
-
-    extracted = extract.run(report.id)
-    model = transform_model.run(extracted)
-
-    # Test
-    transform_warnings.transform_timing_backwards_warning(
-        report, model, extracted.warnings.timing_backwards
-    )
-
-    # Assert
-    warnings = TimingBackwardsWarning.objects.all()
-    assert len(warnings) == 1
-
-    warning = warnings[0]
-    assert warning.report == report
-
-    # Lookup the TimingPattern mentioned in the warnings doc
-    timing_pattern = TimingPattern.objects.get(ito_id=warning_json["id"])
-    assert warning.timing_pattern == timing_pattern
-
-    # Lookup the stop mentioned in the warnings doc
-    service_link_index = warning_json["indexes"][0]
-    from_stop = TimingPatternStop.objects.get(
-        timing_pattern=timing_pattern,
-        service_pattern_stop__position=service_link_index,
-    )
-    to_stop = TimingPatternStop.objects.get(
-        timing_pattern=timing_pattern,
-        service_pattern_stop__position=service_link_index + 1,
-    )
-
-    assert warning.from_stop == from_stop
-    assert warning.to_stop == to_stop
 
 
 def test_transform_timing_pick_up():

@@ -249,28 +249,6 @@ LastStopNotTimingPointObservation = Observation(
 )
 
 
-BackwardsTimingObservation = Observation(
-    title="Backwards timing",
-    text=(
-        "This observation identifies timing patterns with incorrect time sequences. A "
-        "timing pattern is considered to include a backwards "
-        "timing if the timing of the "
-        "next stop is before the current stop, or if the departure "
-        "time is prior to the arrival time. "
-    ),
-    impacts=(
-        "A backward timing indicates inaccurate scheduling, "
-        "invalidating part of the route "
-        "and can prevents it being displayed to passengers by journey planners. "
-        "This can cause severe problems for passengers. "
-    ),
-    model=models.TimingBackwardsWarning,
-    list_url_name="dq:backward-timing-list",
-    level=Level.critical,
-    category=Category.timing,
-    weighting=0.12,
-    check_basis=CheckBasis.timing_patterns,
-)
 NoTimingPointFor15MinutesObservation = Observation(
     title="No timing point for more than 15 minutes",
     text=(
@@ -310,7 +288,6 @@ BackwardDateRangeObservation = Observation(
 
 OBSERVATIONS = (
     BackwardDateRangeObservation,
-    BackwardsTimingObservation,
     FirstStopNotTimingPointObservation,
     FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,

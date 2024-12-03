@@ -5,7 +5,6 @@ import pytest
 from transit_odp.data_quality.constants import (
     WEIGHTED_OBSERVATIONS,
     BackwardDateRangeObservation,
-    BackwardsTimingObservation,
     CheckBasis,
     FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,
@@ -25,7 +24,6 @@ from transit_odp.data_quality.factories.warnings import (
     IncorrectNOCWarningFactory,
     JourneyDateRangeBackwardsWarningFactory,
     JourneyStopInappropriateWarningFactory,
-    TimingBackwardsWarningFactory,
     TimingDropOffWarningFactory,
     TimingPickUpWarningFactory,
 )
@@ -196,14 +194,7 @@ def test_score_calculation_timing_patterns_component(from_report_id):
     TimingDropOffWarningFactory.create_batch(dropoff_count, report=report)
     dropoff_score = score_contribution(dropoff_count, timing_patterns, dropoff_weight)
 
-    backwards_count = 0
-    backwards_weight = BackwardsTimingObservation.weighting
-    TimingBackwardsWarningFactory.create_batch(backwards_count, report=report)
-    backwards_score = score_contribution(
-        backwards_count, timing_patterns, backwards_weight
-    )
-
-    expected_score += dropoff_score + pickup_score + backwards_score
+    expected_score += dropoff_score + pickup_score
     pipeline = TransXChangeDQPipeline(report)
     pipeline.load_summary()
     calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)

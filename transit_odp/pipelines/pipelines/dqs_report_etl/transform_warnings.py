@@ -11,7 +11,6 @@ from transit_odp.data_quality.models import (
     JourneyWithoutHeadsignWarning,
     ServicePattern,
     StopPoint,
-    TimingBackwardsWarning,
     TimingDropOffWarning,
     TimingPatternStop,
     TimingPickUpWarning,
@@ -31,7 +30,6 @@ def run(
     report: DataQualityReport, model: TransformedModel, warnings: ExtractedWarnings
 ):
 
-    transform_timing_backwards_warning(report, model, warnings.timing_backwards)
     transform_timing_pick_up_warning(report, model, warnings.timing_pick_up)
     transform_timing_drop_off_warning(report, model, warnings.timing_drop_off)
 
@@ -46,50 +44,6 @@ def run(
     transform_journey_without_headsign_warning(
         report, model, warnings.journeys_without_headsign
     )
-
-
-def transform_timing_backwards_warning(
-    report: DataQualityReport, model: TransformedModel, warnings: pd.DataFrame
-):
-    if len(warnings) == 0:
-        return
-
-    # Join timing_pattern_id and service_pattern_id
-    warnings = warnings.merge(
-        model.timing_patterns[["id", "service_pattern_id"]].rename(
-            columns={"id": "timing_pattern_id"}
-        ),
-        how="left",
-        left_on="timing_pattern_ito_id",
-        right_index=True,
-    )
-
-    warning_class = TimingBackwardsWarning
-
-    # Load warnings
-    def inner():
-        for warning in warnings.itertuples():
-
-            service_link_index = warning.indexes[0]
-
-            from_stop = TimingPatternStop.objects.add_position().get(
-                Q(timing_pattern_id=warning.timing_pattern_id)
-                & Q(position=service_link_index)
-            )
-
-            to_stop = TimingPatternStop.objects.add_position().get(
-                Q(timing_pattern_id=warning.timing_pattern_id)
-                & Q(position=service_link_index + 1)
-            )
-
-            yield warning_class(
-                report=report,
-                timing_pattern_id=warning.timing_pattern_id,
-                from_stop=from_stop,
-                to_stop=to_stop,
-            )
-
-    warning_class.objects.bulk_create(inner())
 
 
 def transform_timing_drop_off_warning(
