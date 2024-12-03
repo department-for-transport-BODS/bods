@@ -94,24 +94,6 @@ FirstStopSetDownOnlyObservation = Observation(
 )
 
 
-StopsRepeatedObservation = Observation(
-    title="Same stop is found multiple times",
-    text=(
-        "This observation identified timing patterns that feature the "
-        "same stop multiple "
-        "times. It is raised if a stop is included in a timing pattern four or "
-        "more times. "
-        "While this may not be an error, it is often caused by stringing many journeys "
-        "together. "
-        "</br></br>"
-        "Operators should investigate the observation and address any errors found."
-    ),
-    model=models.TimingMultipleWarning,
-    list_url_name="dq:stop-repeated-list",
-    level=Level.advisory,
-    category=Category.stops,
-)
-
 IncorrectStopTypeObservation = Observation(
     title="Incorrect stop type",
     text=(
@@ -161,88 +143,6 @@ IncorrectStopTypeObservation = Observation(
     check_basis=CheckBasis.stops,
 )
 
-FirstStopNotTimingPointObservation = Observation(
-    title="First stop is not a timing point",
-    text=(
-        "A timing point is a designated stop where the bus has been registered"
-        " to depart "
-        "from at a specific time. The Traffic Commissioner requires registered "
-        "services "
-        "have the first and last stop designated as timing points for the main "
-        "route variant. "
-    ),
-    impacts=(
-        "The Traffic Commissioner requires “a timetable for the service indicating the "
-        "proposed times (on the days when the service is to run) of "
-        "individual services at "
-        "principal points on the route” and it is these points that a "
-        "service's punctuality is "
-        "monitored. Timing points are used to generate hard copy "
-        "'shortened' timetables "
-        "at bus stops, as well as their soft copy counterparts online. "
-        "If the first and last "
-        "stop are not timing points, these will not be printed correctly. "
-        "In turn reducing the "
-        "quality of information available to passengers. This effect is "
-        "particularly negative "
-        "for low digital passengers who rely on hard copy timetables. "
-    ),
-    preamble="First stop in the following timing pattern(s) have been observed to not have timing points.",
-    model=models.TimingFirstWarning,
-    list_url_name="dq:first-stop-not-timing-point-list",
-    level=Level.critical,
-    category=Category.timing,
-)
-
-LastStopNotTimingPointObservation = Observation(
-    title="Last stop is not a timing point",
-    text=(
-        "A timing point is a designated stop where the bus has been "
-        "registered to depart "
-        "from at a specific time. The Traffic Commissioner requires "
-        "registered services "
-        "have the first and last stop designated as timing points for "
-        "the main route variant. "
-    ),
-    impacts=(
-        "The Traffic Commissioner requires “a timetable for the service indicating the "
-        "proposed times (on the days when the service is to run) of "
-        "individual services at "
-        "principal points on the route” and it is these points that a "
-        "service's punctuality is "
-        "monitored. Timing points are used to generate hard copy "
-        "'shortened' timetables "
-        "at bus stops, as well as their soft copy counterparts online. "
-        "If the first and last "
-        "stop are not timing points, these will not be printed correctly. "
-        "In turn reducing the "
-        "quality of information available to passengers. This effect is "
-        "particularly negative "
-        "for low digital passengers who rely on hard copy timetables. "
-    ),
-    preamble="Last stop in the following timing pattern(s) have been observed to not have timing points.",
-    model=models.TimingLastWarning,
-    list_url_name="dq:last-stop-not-timing-point-list",
-    level=Level.critical,
-    category=Category.timing,
-)
-
-
-NoTimingPointFor15MinutesObservation = Observation(
-    title="No timing point for more than 15 minutes",
-    text=(
-        "This observation identifies timing patterns where the interval "
-        "between a pair of "
-        "timing points is more than 15 minutes. It is recommended by the Traffic "
-        "Commissioner that services have a stop at least every 15 minutes. "
-        "</br></br>"
-        "Operators should investigate the observation and address any errors found."
-    ),
-    model=models.TimingMissingPointWarning,
-    list_url_name="dq:missing-stops-list",
-    level=Level.advisory,
-    category=Category.timing,
-)
 
 BackwardDateRangeObservation = Observation(
     title="Backward date range",
@@ -267,13 +167,9 @@ BackwardDateRangeObservation = Observation(
 
 OBSERVATIONS = (
     BackwardDateRangeObservation,
-    FirstStopNotTimingPointObservation,
     FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,
     IncorrectStopTypeObservation,
-    LastStopNotTimingPointObservation,
-    NoTimingPointFor15MinutesObservation,
-    StopsRepeatedObservation,
 )
 
 

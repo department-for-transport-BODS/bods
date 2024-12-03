@@ -87,21 +87,6 @@ class JourneyStopInappropriateQuerySet(models.QuerySet):
         return self.annotate(message=Concat(*message_args, output_field=CharField()))
 
 
-class TimingMissingPointQueryset(TimingPatternLineQuerySet):
-    def add_message(self):
-        return (
-            self.annotate(
-                message=Concat(
-                    Value("Timing point after ", output_field=CharField()),
-                    "timings__service_pattern_stop__stop__name",
-                    Value(" is missing", output_field=CharField()),
-                )
-            )
-            .order_by("timing_pattern_id")
-            .distinct("timing_pattern_id")
-        )
-
-
 class TimingQuerySet(models.QuerySet):
     def add_line(self, *args):
         return self.annotate(line=F("timing_pattern__service_pattern__service__name"))
@@ -245,25 +230,3 @@ class ServiceLinkMissingStopQuerySet(models.QuerySet):
         )
 
         return qs
-
-
-class TimingFirstQuerySet(TimingPatternLineQuerySet):
-    def add_message(self):
-        return self.annotate(
-            message=Value(
-                "There is at least one journey where the first stop is not a timing "
-                "point",
-                output_field=CharField(),
-            )
-        )
-
-
-class TimingLastQuerySet(TimingPatternLineQuerySet):
-    def add_message(self):
-        return self.annotate(
-            message=Value(
-                "There is at least one journey where the last stop is not a timing "
-                "point",
-                output_field=CharField(),
-            )
-        )

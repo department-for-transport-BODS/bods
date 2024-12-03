@@ -5,15 +5,13 @@ from django.db import models
 from django_hosts import reverse
 
 import config.hosts
-from transit_odp.data_quality.models.managers import TimingMissingPointManager
+
 from transit_odp.data_quality.models.querysets import (
     IncorrectNOCQuerySet,
     JourneyDateRangeBackwardsQuerySet,
     JourneyStopInappropriateQuerySet,
     JourneyWithoutHeadsignQuerySet,
     ServiceLinkMissingStopQuerySet,
-    TimingFirstQuerySet,
-    TimingLastQuerySet,
     TimingPatternLineQuerySet,
     TimingPickUpQuerySet,
 )
@@ -191,31 +189,10 @@ class TimingPatternTimingWarningBase(BadTimingsMixin, TimingPatternWarningBase):
         abstract = True
 
 
-class TimingFirstWarning(TimingPatternTimingWarningBase):
-    viewname = "dq:first-stop-not-timing-point-detail"
-
-    objects = TimingFirstQuerySet.as_manager()
-
-
-class TimingLastWarning(TimingPatternTimingWarningBase):
-    viewname = "dq:last-stop-not-timing-point-detail"
-
-    objects = TimingLastQuerySet.as_manager()
-
-
 class TimingPickUpWarning(TimingPatternTimingWarningBase):
     viewname = "dq:first-stop-set-down-only-detail"
 
     objects = TimingPickUpQuerySet.as_manager()
-
-
-class TimingMissingPointWarning(TimingPatternTimingWarningBase):
-    viewname = "dq:missing-stops-detail"
-    objects = TimingMissingPointManager()
-
-
-class TimingMultipleWarning(BadTimingsMixin, TimingPatternWarningBase):
-    viewname = "dq:stop-repeated-detail"
 
 
 class StopWarningBase(DataQualityWarningBase):
@@ -261,9 +238,5 @@ WARNING_MODELS = [
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
-    TimingFirstWarning,
-    TimingLastWarning,
-    TimingMissingPointWarning,
-    TimingMultipleWarning,
     TimingPickUpWarning,
 ]

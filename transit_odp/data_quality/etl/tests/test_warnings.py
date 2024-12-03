@@ -7,19 +7,11 @@ from django.contrib.gis.geos import LineString
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.etl.warnings import (
     ServiceLinkMissingStopsETL,
-    TimingFirstETL,
-    TimingLastETL,
-    TimingMissingPointETL,
-    TimingMultipleETL,
 )
 from transit_odp.data_quality.factories.transmodel import DataQualityReportFactory
 from transit_odp.data_quality.models import ServiceLink
 from transit_odp.data_quality.models.warnings import (
     ServiceLinkMissingStopWarning,
-    TimingFirstWarning,
-    TimingLastWarning,
-    TimingMissingPointWarning,
-    TimingMultipleWarning,
 )
 from transit_odp.data_quality.tasks import run_dqs_report_etl_pipeline
 from transit_odp.organisation.factories import DatasetRevisionFactory
@@ -32,46 +24,6 @@ TXCFILE = str(DATA_DIR.joinpath("ea_20-1A-A-y08-1.xml"))
 
 
 pytestmark = pytest.mark.django_db
-
-
-TIMING_DATA = [
-    ("timing-missing-point-15", TimingMissingPointETL, TimingMissingPointWarning),
-    ("timing-first", TimingFirstETL, TimingFirstWarning),
-    ("timing-last", TimingLastETL, TimingLastWarning),
-    ("timing-multiple", TimingMultipleETL, TimingMultipleWarning),
-]
-
-timing_ids = [t[0] for t in TIMING_DATA]
-
-
-@pytest.mark.parametrize("warning_type,ETL,WarningModel", TIMING_DATA, ids=timing_ids)
-def test_run_timing_pipeline(warning_type, ETL, WarningModel):
-    reportfile = DATA_DIR / f"{warning_type}.json"
-    dq_report = DataQualityReportFactory(
-        file__from_path=reportfile,
-        revision__upload_file__from_path=TXCFILE,
-    )
-
-    # use old pipeline to add the features to the transmodel tables
-    extracted = extract.run(dq_report.id)
-    transform_model.run(extracted)
-
-    report = Report(dq_report.file)
-    report_warning = report.filter_by_warning_type(warning_type)[0]
-
-    pipeline = ETL(report_id=dq_report.id, warnings=[report_warning])
-    pipeline.load()
-
-    warnings = WarningModel.objects.all()
-    assert warnings.count() == len(report.warnings)
-
-    warning = warnings.first()
-    assert warning.timing_pattern.ito_id == report_warning.id
-    assert warning.timings.count() == len(report_warning.indexes)
-
-    for i, position in enumerate(report_warning.indexes):
-        timing_pattern_stop = warning.timings.all()[i]
-        assert timing_pattern_stop.service_pattern_stop.position == position
 
 
 # def test_notify_on_dqs_completion(mailoutbox):

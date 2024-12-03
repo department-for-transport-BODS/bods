@@ -8,10 +8,6 @@ from transit_odp.common.loggers import get_dataset_adapter_from_revision
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.etl.warnings import (
     ServiceLinkMissingStopsETL,
-    TimingFirstETL,
-    TimingLastETL,
-    TimingMissingPointETL,
-    TimingMultipleETL,
 )
 from transit_odp.data_quality.models.report import (
     DataQualityReport,
@@ -83,26 +79,6 @@ class TransXChangeDQPipeline:
         if warnings:
             IncorrectNOCWarning.objects.bulk_create(warnings, ignore_conflicts=True)
 
-    def create_timing_first_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("timing-first")
-        pipeline = TimingFirstETL(self.report_id, warnings)
-        pipeline.load()
-
-    def create_timing_last_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("timing-last")
-        pipeline = TimingLastETL(self.report_id, warnings)
-        pipeline.load()
-
-    def create_timing_multiple_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("timing-multiple")
-        pipeline = TimingMultipleETL(self.report_id, warnings)
-        pipeline.load()
-
-    def create_timing_missing_point_15_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("timing-missing-point-15")
-        pipeline = TimingMissingPointETL(self.report_id, warnings)
-        pipeline.load()
-
     def create_service_link_missing_stop_warnings(self) -> None:
         warnings = self.report.filter_by_warning_type("service-link-missing-stops")
         pipeline = ServiceLinkMissingStopsETL(self.report_id, warnings)
@@ -124,15 +100,10 @@ class TransXChangeDQPipeline:
         adapter.info("Creating JourneyConflictWarning - Skipped as OLD ITO.")
         adapter.info("Creating LineExpiredWarning - Skipped as OLD ITO.")
         adapter.info("Creating LineMissingBlockIDWarning - Skipped as OLD ITO.")
-
-        adapter.info("Creating TimingFirstWarning.")
-        self.create_timing_first_warnings()
-        adapter.info("Creating TimingLastWarning.")
-        self.create_timing_last_warnings()
-        adapter.info("Creating TimingMultipleWarning.")
-        self.create_timing_multiple_warnings()
-        adapter.info("Creating TimingMissingPointWarning.")
-        self.create_timing_missing_point_15_warnings()
+        adapter.info("Creating TimingFirstWarning - Skipped as OLD ITO.")
+        adapter.info("Creating TimingLastWarning - Skipped as OLD ITO.")
+        adapter.info("Creating TimingMultipleWarning - Skipped as OLD ITO.")
+        adapter.info("Creating TimingMissingPointWarning - Skipped as OLD ITO.")
         adapter.info("Creating FastTimingWarning - Skipped as OLD ITO.")
         adapter.info("Creating ServiceLinkMissingStopWarning.")
         self.create_service_link_missing_stop_warnings()
