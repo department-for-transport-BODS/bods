@@ -305,17 +305,3 @@ class TimingLastQuerySet(TimingPatternLineQuerySet):
                 output_field=CharField(),
             )
         )
-
-
-class SlowLinkQuerySet(TimingPatternLineQuerySet):
-    def add_message(self):
-        return self.annotate(
-            message=Concat(
-                Value("Slow running time between ", output_field=CharField()),
-                "service_links__from_stop__name",
-                Value(" and ", output_field=CharField()),
-                "service_links__to_stop__name",
-                output_field=CharField(),
-            ),
-        )
-

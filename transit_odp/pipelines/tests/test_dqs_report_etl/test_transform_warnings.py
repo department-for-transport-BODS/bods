@@ -12,7 +12,6 @@ from transit_odp.data_quality.models import (
     JourneyWithoutHeadsignWarning,
     ServiceLink,
     ServicePattern,
-    SlowLinkWarning,
     SlowTimingWarning,
     StopIncorrectTypeWarning,
     StopMissingNaptanWarning,
@@ -41,7 +40,6 @@ pytestmark = pytest.mark.django_db
 @pytest.mark.parametrize(
     "filename, warning_class",
     [
-        ["data/timing-slow-link.json", SlowLinkWarning],
         ["data/timing-slow.json", SlowTimingWarning],
     ],
 )

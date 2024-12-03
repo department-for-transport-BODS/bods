@@ -10,7 +10,6 @@ from transit_odp.data_quality.models import (
     JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServicePattern,
-    SlowLinkWarning,
     SlowTimingWarning,
     StopIncorrectTypeWarning,
     StopMissingNaptanWarning,
@@ -82,7 +81,6 @@ def transform_timing_warning(
     )
 
     warning_class_lookup = {
-        "timing_slow_link": SlowLinkWarning,
         "timing_slow": SlowTimingWarning,
     }
 
