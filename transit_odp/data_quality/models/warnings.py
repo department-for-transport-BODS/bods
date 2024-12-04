@@ -8,7 +8,6 @@ import config.hosts
 
 from transit_odp.data_quality.models.querysets import (
     IncorrectNOCQuerySet,
-    JourneyWithoutHeadsignQuerySet,
     ServiceLinkMissingStopQuerySet,
     TimingPatternLineQuerySet,
 )
@@ -88,12 +87,6 @@ class JourneyWarningBase(DataQualityWarningBase):
     # the route happens to be very simple in this case!
     def get_vehicle_journey(self):
         return self.vehicle_journey
-
-
-class JourneyWithoutHeadsignWarning(JourneyWarningBase):
-    viewname = "dq:missing-headsign-detail"
-
-    objects = JourneyWithoutHeadsignQuerySet.as_manager()
 
 
 class ServiceLinkMissingStopWarning(DataQualityWarningBase):
@@ -206,6 +199,5 @@ class StopWarningBase(DataQualityWarningBase):
 
 WARNING_MODELS = [
     IncorrectNOCWarning,
-    JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
 ]

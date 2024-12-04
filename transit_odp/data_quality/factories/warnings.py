@@ -20,7 +20,6 @@ from transit_odp.data_quality.factories.transmodel import (
 from transit_odp.data_quality.models.transmodel import ServiceLink, TimingPatternStop
 from transit_odp.data_quality.models.warnings import (
     IncorrectNOCWarning,
-    JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
     TimingPatternTimingWarningBase,
 )
@@ -122,17 +121,6 @@ class ServiceLinkMissingStopWarningFactory(DjangoModelFactory):
         if extracted:
             for stop in extracted:
                 self.stops.add(stop)
-
-
-class JourneyWithoutHeadsignWarningFactory(DjangoModelFactory):
-    class Meta:
-        model = JourneyWithoutHeadsignWarning
-        exclude = ("common_service_pattern",)
-
-    report = factory.SubFactory(
-        DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
-    )
-    vehicle_journey = factory.SubFactory(VehicleJourneyFactory)
 
 
 class IncorrectNOCWarningFactory(DjangoModelFactory):

@@ -105,35 +105,6 @@ class JourneyQuerySet(models.QuerySet):
         return self.annotate(first_date=Subquery(subquery))
 
 
-class JourneyWithoutHeadsignQuerySet(JourneyQuerySet):
-    def add_message(self):
-        return (
-            self.add_first_stop()
-            .add_first_date()
-            .annotate(
-                message=Concat(
-                    Func(
-                        F("vehicle_journey__start_time"),
-                        Value("HH24:MI", output_field=CharField()),
-                        function="to_char",
-                    ),
-                    Value(" from ", output_field=CharField()),
-                    "first_stop_name",
-                    Value(" on ", output_field=CharField()),
-                    Func(
-                        F("first_date"),
-                        Value("DD/MM/YYYY", output_field=CharField()),
-                        function="to_char",
-                    ),
-                    Value(
-                        " is missing a destination display", output_field=CharField()
-                    ),
-                    output_field=CharField(),
-                ),
-            )
-        )
-
-
 class ServiceLinkMissingStopQuerySet(models.QuerySet):
     def add_message(self):
         return self.annotate(

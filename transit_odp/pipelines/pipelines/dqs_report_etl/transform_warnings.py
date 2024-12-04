@@ -6,7 +6,6 @@ from django.db.models import Q
 
 from transit_odp.data_quality.models import (
     DataQualityReport,
-    JourneyWithoutHeadsignWarning,
     ServicePattern,
     StopPoint,
     TimingPatternStop,
@@ -27,10 +26,6 @@ def run(
 ):
 
     transform_timing_pick_up_warning(report, model, warnings.timing_pick_up)
-
-    transform_journey_without_headsign_warning(
-        report, model, warnings.journeys_without_headsign
-    )
 
 
 def transform_timing_pick_up_warning(
@@ -89,30 +84,3 @@ def transform_timing_pick_up_warning(
                 )
 
     through_timings.objects.bulk_create(create_stops_m2m())
-
-
-def transform_journey_without_headsign_warning(
-    report: DataQualityReport, model: TransformedModel, warnings: pd.DataFrame
-):
-    if len(warnings) == 0:
-        return
-
-    # Join vehicle_journey_id
-    warnings = warnings.merge(
-        model.vehicle_journeys[["id"]].rename(columns={"id": "vehicle_journey_id"}),
-        how="left",
-        left_on="vehicle_journey_ito_id",
-        right_index=True,
-    )
-
-    warning_class = JourneyWithoutHeadsignWarning
-
-    # Create warnings and associate with missing StopPoint
-    def inner():
-        for warning in warnings.itertuples():
-            yield warning_class(
-                report=report,
-                vehicle_journey_id=warning.vehicle_journey_id,
-            )
-
-    warning_class.objects.bulk_create(inner())
