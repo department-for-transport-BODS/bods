@@ -151,7 +151,7 @@ class DatasetRevisionFactory(DjangoModelFactory):
 
     # live_revision is automatically by a post-save signal
     dataset = factory.SubFactory(DatasetFactory, live_revision=None)
-    name = factory.Sequence(lambda n: faker.Faker().sentence() + f" {n}")
+    name = factory.Sequence(lambda n: faker.Faker().unique.sentence() + f" {n}")
     description = factory.Faker("paragraph")
     short_description = factory.Faker("pystr", min_chars=1, max_chars=30)
     comment = factory.Faker("paragraph")
