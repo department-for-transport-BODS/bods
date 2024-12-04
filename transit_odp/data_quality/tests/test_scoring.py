@@ -4,7 +4,6 @@ import pytest
 
 from transit_odp.data_quality.constants import (
     WEIGHTED_OBSERVATIONS,
-    BackwardDateRangeObservation,
     CheckBasis,
     IncorrectNocObservation,
 )
@@ -20,8 +19,6 @@ from transit_odp.data_quality.factories.transmodel import (
 )
 from transit_odp.data_quality.factories.warnings import (
     IncorrectNOCWarningFactory,
-    JourneyDateRangeBackwardsWarningFactory,
-    JourneyStopInappropriateWarningFactory,
 )
 from transit_odp.data_quality.scoring import (
     AMBER,
@@ -100,43 +97,6 @@ def test_score_calculation_with_data_set_component(from_report_id):
 
 
 @patch(DQC_FROM_REPORT_ID, return_value=DQ_COUNTS)
-def test_score_calculation_with_stops_component(from_report_id):
-    """
-    Given that the data quality report contains various `stop` related warnings
-    calculate the data quality score correctly.
-
-    Possible warnings:
-        JourneyStopInappropriateWarning
-        StopMissingNaptanWarning
-    """
-    stops_count = DQ_COUNTS.stops
-    report = DataQualityReportFactory()
-    expected_score = sum(
-        o.weighting
-        for o in WEIGHTED_OBSERVATIONS
-        if not o.check_basis == CheckBasis.stops
-    )
-
-    sps = ServicePatternStopFactory()
-
-    incorrect_count = 2
-    incorrect_weight = IncorrectStopTypeObservation.weighting
-    JourneyStopInappropriateWarningFactory.create_batch(
-        incorrect_count, report=report, stop=sps.stop
-    )
-    incorrect_score = score_contribution(incorrect_count, stops_count, incorrect_weight)
-
-    expected_score += missing_score + incorrect_score
-
-    pipeline = TransXChangeDQPipeline(report)
-    pipeline.load_summary()
-
-    calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
-    score = calculator.calculate(report.id)
-    assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
-
-
-@patch(DQC_FROM_REPORT_ID, return_value=DQ_COUNTS)
 def test_score_calculation_lines_component(from_report_id):
     """
     Test that the score is calculated correctly with one or more observations
@@ -152,40 +112,6 @@ def test_score_calculation_lines_component(from_report_id):
         for o in WEIGHTED_OBSERVATIONS
         if not o.check_basis == CheckBasis.lines
     )
-
-    pipeline = TransXChangeDQPipeline(report)
-    pipeline.load_summary()
-    calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
-    score = calculator.calculate(report.id)
-    assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
-
-
-@patch(DQC_FROM_REPORT_ID, return_value=DQ_COUNTS)
-def test_score_calculation_vehicle_journeys_component(from_report_id):
-    """
-    Test that the score is calculated correctly with one or more observations
-    that are concerned with the `timing_patterns` feature.
-
-    Possible warnings:
-        JourneyWithoutHeadsignWarning
-        JourneyDateRangeBackwardsWarning
-    """
-    report = DataQualityReportFactory()
-    vehicle_journeys = DQ_COUNTS.vehicle_journeys
-    expected_score = sum(
-        o.weighting
-        for o in WEIGHTED_OBSERVATIONS
-        if not o.check_basis == CheckBasis.vehicle_journeys
-    )
-
-    backwards_count = 4
-    backwards_weight = BackwardDateRangeObservation.weighting
-    JourneyDateRangeBackwardsWarningFactory.create_batch(backwards_count, report=report)
-    backwards_score = score_contribution(
-        backwards_count, vehicle_journeys, backwards_weight
-    )
-
-    expected_score += backwards_score
 
     pipeline = TransXChangeDQPipeline(report)
     pipeline.load_summary()

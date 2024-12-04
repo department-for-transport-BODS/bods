@@ -73,20 +73,6 @@ class IncorrectNOCQuerySet(models.QuerySet):
         )
 
 
-class JourneyStopInappropriateQuerySet(models.QuerySet):
-    def add_line(self, *args):
-        return self.annotate(line=Min("stop__service_patterns__service__name"))
-
-    def add_message(self):
-        message_args = (
-            Value("Includes stop ", output_field=CharField()),
-            "stop__name",
-            Value(" of type ", output_field=CharField()),
-            "stop__type",
-        )
-        return self.annotate(message=Concat(*message_args, output_field=CharField()))
-
-
 class TimingQuerySet(models.QuerySet):
     def add_line(self, *args):
         return self.annotate(line=F("timing_pattern__service_pattern__service__name"))
@@ -117,29 +103,6 @@ class JourneyQuerySet(models.QuerySet):
             .values_list("first_date", flat=True)
         )
         return self.annotate(first_date=Subquery(subquery))
-
-
-class JourneyDateRangeBackwardsQuerySet(JourneyQuerySet):
-    def add_message(self):
-        return self.add_first_stop().annotate(
-            message=Concat(
-                Func(
-                    F("vehicle_journey__start_time"),
-                    Value("HH24:MI", output_field=CharField()),
-                    function="to_char",
-                ),
-                Value(" from ", output_field=CharField()),
-                "first_stop_name",
-                Value(" on ", output_field=CharField()),
-                Func(
-                    F("start"),
-                    Value("DD/MM/YYYY", output_field=CharField()),
-                    function="to_char",
-                ),
-                Value(" has a backwards date range", output_field=CharField()),
-                output_field=CharField(),
-            )
-        )
 
 
 class JourneyWithoutHeadsignQuerySet(JourneyQuerySet):

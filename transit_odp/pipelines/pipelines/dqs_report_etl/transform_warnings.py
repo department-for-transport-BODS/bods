@@ -6,8 +6,6 @@ from django.db.models import Q
 
 from transit_odp.data_quality.models import (
     DataQualityReport,
-    JourneyDateRangeBackwardsWarning,
-    JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServicePattern,
     StopPoint,
@@ -29,14 +27,6 @@ def run(
 ):
 
     transform_timing_pick_up_warning(report, model, warnings.timing_pick_up)
-
-    transform_journey_stop_inappropriate_warning(
-        report, model, warnings.journey_stop_inappropriate
-    )
-
-    transform_date_range_backwards_warning(
-        report, model, warnings.journey_date_range_backwards
-    )
 
     transform_journey_without_headsign_warning(
         report, model, warnings.journeys_without_headsign
@@ -99,73 +89,6 @@ def transform_timing_pick_up_warning(
                 )
 
     through_timings.objects.bulk_create(create_stops_m2m())
-
-
-def transform_journey_stop_inappropriate_warning(
-    report: DataQualityReport, model: TransformedModel, warnings: pd.DataFrame
-):
-    if len(warnings) == 0:
-        return
-
-    # Join stop_id
-    warnings = warnings.merge(
-        model.stops["id"].rename("stop_id"),
-        how="left",
-        left_on="stop_ito_id",
-        right_index=True,
-    )
-
-    warning_class = JourneyStopInappropriateWarning
-
-    # Create warnings and associate with missing StopPoint
-    def inner():
-        for warning in warnings.itertuples():
-            if warning.stop_type == "BCT":
-                continue
-            obj = warning_class(
-                report=report,
-                stop_id=warning.stop_id,
-                stop=StopPoint.objects.get(ito_id=warning.stop_ito_id),
-                stop_type=warning.stop_type,
-            )
-
-            vehicle_journeys = VehicleJourney.objects.filter(
-                ito_id__in=warning.vehicle_journeys
-            )
-
-            obj.vehicle_journeys.set(vehicle_journeys)
-            yield obj
-
-    warning_class.objects.bulk_create(inner())
-
-
-def transform_date_range_backwards_warning(
-    report: DataQualityReport, model: TransformedModel, warnings: pd.DataFrame
-):
-    if len(warnings) == 0:
-        return
-
-    # Join vehicle_journey_id
-    warnings = warnings.merge(
-        model.vehicle_journeys[["id"]].rename(columns={"id": "vehicle_journey_id"}),
-        how="left",
-        left_on="vehicle_journey_ito_id",
-        right_index=True,
-    )
-
-    warning_class = JourneyDateRangeBackwardsWarning
-
-    # Create warnings and associate with missing StopPoint
-    def inner():
-        for warning in warnings.itertuples():
-            yield warning_class(
-                report=report,
-                vehicle_journey_id=warning.vehicle_journey_id,
-                start=parse(warning.start),
-                end=parse(warning.end),
-            )
-
-    warning_class.objects.bulk_create(inner())
 
 
 def transform_journey_without_headsign_warning(

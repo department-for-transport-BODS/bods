@@ -8,8 +8,6 @@ import config.hosts
 
 from transit_odp.data_quality.models.querysets import (
     IncorrectNOCQuerySet,
-    JourneyDateRangeBackwardsQuerySet,
-    JourneyStopInappropriateQuerySet,
     JourneyWithoutHeadsignQuerySet,
     ServiceLinkMissingStopQuerySet,
     TimingPatternLineQuerySet,
@@ -96,14 +94,6 @@ class JourneyWithoutHeadsignWarning(JourneyWarningBase):
     viewname = "dq:missing-headsign-detail"
 
     objects = JourneyWithoutHeadsignQuerySet.as_manager()
-
-
-class JourneyDateRangeBackwardsWarning(JourneyWarningBase):
-    viewname = "dq:backward-date-range-detail"
-    start = models.DateField()
-    end = models.DateField()
-
-    objects = JourneyDateRangeBackwardsQuerySet.as_manager()
 
 
 class ServiceLinkMissingStopWarning(DataQualityWarningBase):
@@ -214,21 +204,8 @@ class StopWarningBase(DataQualityWarningBase):
         return effected_tps.add_position().add_stop_name().order_by("position")
 
 
-class JourneyStopInappropriateWarning(StopWarningBase):
-    viewname = "dq:incorrect-stop-type-detail"
-    stop_type = models.TextField()
-    vehicle_journeys = models.ManyToManyField("data_quality.VehicleJourney")
-
-    def get_vehicle_journeys(self):
-        return self.vehicle_journeys.all()
-
-    objects = JourneyStopInappropriateQuerySet.as_manager()
-
-
 WARNING_MODELS = [
     IncorrectNOCWarning,
-    JourneyDateRangeBackwardsWarning,
-    JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
 ]

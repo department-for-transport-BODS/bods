@@ -20,8 +20,6 @@ from transit_odp.data_quality.factories.transmodel import (
 from transit_odp.data_quality.models.transmodel import ServiceLink, TimingPatternStop
 from transit_odp.data_quality.models.warnings import (
     IncorrectNOCWarning,
-    JourneyDateRangeBackwardsWarning,
-    JourneyStopInappropriateWarning,
     JourneyWithoutHeadsignWarning,
     ServiceLinkMissingStopWarning,
     TimingPatternTimingWarningBase,
@@ -137,19 +135,6 @@ class JourneyWithoutHeadsignWarningFactory(DjangoModelFactory):
     vehicle_journey = factory.SubFactory(VehicleJourneyFactory)
 
 
-class JourneyDateRangeBackwardsWarningFactory(DjangoModelFactory):
-    class Meta:
-        model = JourneyDateRangeBackwardsWarning
-        exclude = ("common_service_pattern",)
-
-    report = factory.SubFactory(
-        DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
-    )
-    vehicle_journey = factory.SubFactory(VehicleJourneyFactory)
-    start = date(2020, 1, 1)
-    end = date(2019, 12, 1)
-
-
 class IncorrectNOCWarningFactory(DjangoModelFactory):
     class Meta:
         model = IncorrectNOCWarning
@@ -158,11 +143,3 @@ class IncorrectNOCWarningFactory(DjangoModelFactory):
     report = factory.SubFactory(
         DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
     )
-
-
-class JourneyStopInappropriateWarningFactory(DjangoModelFactory):
-    class Meta:
-        model = JourneyStopInappropriateWarning
-
-    stop = factory.SubFactory(StopPointFactory)
-    stop_type = FuzzyText(length=3)

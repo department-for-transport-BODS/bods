@@ -16,7 +16,6 @@ from transit_odp.data_quality.models.report import (
 from transit_odp.data_quality.models.warnings import (
     WARNING_MODELS,
     IncorrectNOCWarning,
-    JourneyStopInappropriateWarning,
 )
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 
@@ -124,9 +123,7 @@ class TransXChangeDQPipeline:
         # For certain warnings we can't be certain that the stop has a
         # service pattern. These warnings aren't shown to the user, so don't include
         # them in the count
-        maybe_null_service_pattern = [
-            JourneyStopInappropriateWarning,
-        ]
+        maybe_null_service_pattern = []
 
         null_service_pattern = Q(stop__service_patterns__isnull=True)
         counts = {
