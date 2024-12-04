@@ -220,15 +220,29 @@ def create_feed_name(
 
 
 def get_line_name_from_line_ref(line_ref):
+    """
+    Extracts the last non-empty element from a colon-separated string.
+
+    Args:
+        line_ref (str): String with colon-separated elements.
+
+    Returns:
+        str: Last non-empty element, or second-to-last if the last is empty.
+             None if input is None or empty, or on error.
+    """
     try:
-        line_ref_elments = str(line_ref).split(":")
-        # return line_ref_elments[-1]
-        last_elm = line_ref_elments[-1]
+        if line_ref is None or line_ref == "":
+            return None
+        
+        line_ref_elements = str(line_ref).split(":")
+        last_elm = line_ref_elements[-1]
+        
         if last_elm != "":
             return last_elm
-        if len(line_ref_elments) > 1:
-            return line_ref_elments[-2]
-
+        if len(line_ref_elements) > 1:
+            return line_ref_elements[-2]
+    
     except Exception as e:
-        print(e)
-    return
+        print(f"Error: {e}")
+    
+    return None
