@@ -217,3 +217,18 @@ def create_feed_name(
     clash_count = int(highest_match.split("_")[-1])
     clash_count += 1
     return f"{feed_name}_{clash_count}"
+
+
+def get_line_name_from_line_ref(line_ref):
+    try:
+        line_ref_elments = str(line_ref).split(":")
+        # return line_ref_elments[-1]
+        last_elm = line_ref_elments[-1]
+        if last_elm != "":
+            return last_elm
+        if len(line_ref_elments) > 1:
+            return line_ref_elments[-2]
+
+    except Exception as e:
+        print(e)
+    return
