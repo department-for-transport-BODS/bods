@@ -192,9 +192,7 @@ def test_get_df_timetable_visualiser():
     Test the get_df_timetable_visualiser() based on target date
     """
 
-    actual_df_vehicle_journey, *_ = get_df_timetable_visualiser(
-        pd.DataFrame(), {}, pd.DataFrame()
-    )
+    actual_df_vehicle_journey, *_ = get_df_timetable_visualiser(pd.DataFrame(), {},())
     assert actual_df_vehicle_journey.empty
 
 
