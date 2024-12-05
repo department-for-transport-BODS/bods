@@ -6,9 +6,7 @@ from django.db.models.query_utils import Q
 
 from transit_odp.common.loggers import get_dataset_adapter_from_revision
 from transit_odp.data_quality.dataclasses import Report
-from transit_odp.data_quality.etl.warnings import (
-    ServiceLinkMissingStopsETL,
-)
+
 from transit_odp.data_quality.models.report import (
     DataQualityReport,
     DataQualityReportSummary,
@@ -78,11 +76,6 @@ class TransXChangeDQPipeline:
         if warnings:
             IncorrectNOCWarning.objects.bulk_create(warnings, ignore_conflicts=True)
 
-    def create_service_link_missing_stop_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("service-link-missing-stops")
-        pipeline = ServiceLinkMissingStopsETL(self.report_id, warnings)
-        pipeline.load()
-
     def extract(self) -> TransXChangeExtract:
         if self._extract is not None:
             return self._extract
@@ -104,8 +97,7 @@ class TransXChangeDQPipeline:
         adapter.info("Creating TimingMultipleWarning - Skipped as OLD ITO.")
         adapter.info("Creating TimingMissingPointWarning - Skipped as OLD ITO.")
         adapter.info("Creating FastTimingWarning - Skipped as OLD ITO.")
-        adapter.info("Creating ServiceLinkMissingStopWarning.")
-        self.create_service_link_missing_stop_warnings()
+        adapter.info("Creating ServiceLinkMissingStopWarning - Skipped as OLD ITO.")
 
     def load(self) -> None:
         self.load_warnings()

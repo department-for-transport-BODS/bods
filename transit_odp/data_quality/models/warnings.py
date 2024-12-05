@@ -9,7 +9,6 @@ import config.hosts
 from transit_odp.data_quality.models.querysets import (
     IncorrectNOCQuerySet,
     ServiceLinkMissingStopQuerySet,
-    TimingPatternLineQuerySet,
 )
 from transit_odp.data_quality.models.report import DataQualityReport
 from transit_odp.data_quality.models.transmodel import TimingPatternStop
@@ -72,59 +71,6 @@ class DataQualityWarningBase(models.Model):
         return effected_stop_ids
 
 
-class JourneyWarningBase(DataQualityWarningBase):
-    vehicle_journey = models.ForeignKey(
-        "data_quality.VehicleJourney", on_delete=models.CASCADE
-    )
-
-    class Meta:
-        abstract = True
-
-    def get_timing_pattern(self):
-        return self.vehicle_journey.timing_pattern
-
-    # route to vehicle_journey varies, so views often use warning.get_vehicle_journey()
-    # the route happens to be very simple in this case!
-    def get_vehicle_journey(self):
-        return self.vehicle_journey
-
-
-class ServiceLinkMissingStopWarning(DataQualityWarningBase):
-    viewname = "dq:service-link-missing-stops-detail"
-    service_link = models.ForeignKey(
-        "data_quality.ServiceLink", on_delete=models.CASCADE
-    )
-    stops = models.ManyToManyField("data_quality.StopPoint")
-
-    objects = ServiceLinkMissingStopQuerySet.as_manager()
-
-    # choose one arbitrary service pattern and timing pattern for use in frontend
-    def get_service_pattern(self):
-        txc_files = TXCFileAttributes.objects.filter(revision__report=self.report_id)
-        txc_line_names = list(
-            np.concatenate([txc.line_names for txc in txc_files]).flat
-        )
-        for service_pattern in self.service_link.service_patterns.all().order_by(
-            "service__name"
-        ):
-            if service_pattern.service.name.split(":")[0] in txc_line_names:
-                return service_pattern
-        return None
-
-    def get_timing_pattern(self):
-        return self.get_service_pattern().timing_patterns.earliest("ito_id")
-
-    def get_vehicle_journeys(self):
-        return self.get_timing_pattern().vehicle_journeys.all()
-
-    def get_effected_stops(self):
-        effected_stop_points = self.stops.all()
-        effected_tps = self.get_timing_pattern().timing_pattern_stops.filter(
-            service_pattern_stop__stop__in=effected_stop_points
-        )
-        return effected_tps.add_position().add_stop_name().order_by("position")
-
-
 class IncorrectNOCWarning(DataQualityWarningBase):
     noc = models.TextField()
 
@@ -132,23 +78,6 @@ class IncorrectNOCWarning(DataQualityWarningBase):
 
     class Meta(DataQualityWarningBase.Meta):
         unique_together = (("report", "noc"),)
-
-
-class TimingPatternWarningBase(DataQualityWarningBase):
-    timing_pattern = models.ForeignKey(
-        "data_quality.TimingPattern", on_delete=models.CASCADE
-    )
-
-    class Meta:
-        abstract = True
-
-    def get_timing_pattern(self):
-        return self.timing_pattern
-
-    def get_vehicle_journeys(self):
-        return self.get_timing_pattern().vehicle_journeys.all()
-
-    objects = TimingPatternLineQuerySet.as_manager()
 
 
 class BadTimingsMixin(models.Model):
@@ -162,13 +91,6 @@ class BadTimingsMixin(models.Model):
 
     def get_effected_stops(self):
         return self.timings.add_position().add_stop_name().order_by("position")
-
-
-class TimingPatternTimingWarningBase(BadTimingsMixin, TimingPatternWarningBase):
-    service_links = models.ManyToManyField("data_quality.ServiceLink")
-
-    class Meta:
-        abstract = True
 
 
 class StopWarningBase(DataQualityWarningBase):
@@ -196,8 +118,6 @@ class StopWarningBase(DataQualityWarningBase):
         )
         return effected_tps.add_position().add_stop_name().order_by("position")
 
-
 WARNING_MODELS = [
     IncorrectNOCWarning,
-    ServiceLinkMissingStopWarning,
 ]

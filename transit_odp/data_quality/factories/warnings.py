@@ -1,126 +1,13 @@
-import random
-from datetime import date
-
 import factory
 from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyText
 
 from transit_odp.data_quality.factories import (
     DataQualityReportFactory,
-    ServiceLinkFactory,
-    ServicePatternFactory,
-    TimingPatternFactory,
-    TimingPatternStopFactory,
 )
-from transit_odp.data_quality.factories.transmodel import (
-    ServiceFactory,
-    StopPointFactory,
-    VehicleJourneyFactory,
-)
-from transit_odp.data_quality.models.transmodel import ServiceLink, TimingPatternStop
 from transit_odp.data_quality.models.warnings import (
     IncorrectNOCWarning,
-    ServiceLinkMissingStopWarning,
-    TimingPatternTimingWarningBase,
 )
-
-
-class TimingPatternTimingWarningBaseFactory(DjangoModelFactory):
-    class Meta:
-        model = TimingPatternTimingWarningBase
-        exclude = ("common_service_pattern",)
-
-    report = factory.SubFactory(DataQualityReportFactory)
-    timing_pattern = factory.SubFactory(
-        TimingPatternFactory,
-        service_pattern=factory.SelfAttribute("..common_service_pattern"),
-    )
-
-    # convenience field to ensure related models share same service pattern
-    common_service_pattern = factory.SubFactory(ServicePatternFactory)
-
-    @factory.post_generation
-    def service_links(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            # allow user to pass ServiceLinks, num ServiceLinks to create or
-            # combination of the two
-            for item in extracted:
-                if isinstance(item, ServiceLink):
-                    self.service_links.add(item)
-                elif isinstance(item, int):
-                    service_links = ServiceLinkFactory.create_batch(item)
-                    for link in service_links:
-                        self.service_links.add(link)
-                else:
-                    raise Exception(
-                        "arguments must be service link(s) and / or number "
-                        "of service links to create"
-                    )
-
-    # TODO: tighten up logic, e.g. doesn't currently account for user passing
-    # multiple ints
-    @factory.post_generation
-    def timings(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            # allow user to pass TimingPatternStops, num TimingPatternStops to
-            # create or combination of the two
-            tps = self.timing_pattern.timing_pattern_stops
-            max_position = tps.latest(
-                "service_pattern_stop__position"
-            ).service_pattern_stop.position
-
-            for item in extracted:
-                if isinstance(item, TimingPatternStop):
-                    if item in tps:
-                        self.timings.add(item)
-                    else:
-                        raise Exception(
-                            "timings must be in "
-                            "warning.timing_pattern.timing_pattern_stops"
-                        )
-                elif isinstance(item, int):
-                    # service pattern stops on a service pattern should always start
-                    # at position 0
-                    start_position = random.randint(0, max_position - item)
-                    tps_for_timings = tps.filter(
-                        service_pattern_stop__position__gte=start_position,
-                        service_pattern_stop__position__lt=start_position + item,
-                    )
-                    for stop in tps_for_timings:
-                        self.timings.add(stop)
-                else:
-                    raise Exception(
-                        "arguments must be timing pattern stop(s) and "
-                        "/ or number of timing pattern stops to create"
-                    )
-
-
-class ServiceLinkMissingStopWarningFactory(DjangoModelFactory):
-    class Meta:
-        model = ServiceLinkMissingStopWarning
-
-    service_link = factory.SubFactory(ServiceLinkFactory)
-    stops = factory.SubFactory(StopPointFactory)
-    report = factory.SubFactory(
-        DataQualityReportFactory, summary__data={Meta.model.__name__: 1}
-    )
-
-    @factory.post_generation
-    def stops(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            for stop in extracted:
-                self.stops.add(stop)
 
 
 class IncorrectNOCWarningFactory(DjangoModelFactory):

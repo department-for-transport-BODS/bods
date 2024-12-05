@@ -22,11 +22,6 @@ class TimingPatternStopQueryset(models.QuerySet):
         )
 
 
-class TimingPatternLineQuerySet(models.QuerySet):
-    def add_line(self, *args):
-        return self.annotate(line=F("timing_pattern__service_pattern__service__name"))
-
-
 class VehicleJourneyQueryset(models.QuerySet):
     def add_line_name(self):
         return self.select_related("timing_pattern__service_pattern__service").annotate(
