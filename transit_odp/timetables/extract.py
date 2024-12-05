@@ -9,7 +9,7 @@ from django.core.files.base import File
 from shapely.geometry import Point
 from waffle import flag_is_active
 
-from transit_odp.common.utils.geometry import construct_geometry
+from transit_odp.common.utils.geometry import construct_geometry, grid_gemotry_from_str
 from transit_odp.common.utils.timestamps import extract_timestamp
 from transit_odp.pipelines import exceptions
 from transit_odp.pipelines.pipelines.dataset_etl.utils.aggregations import (
@@ -350,6 +350,26 @@ class TransXChangeExtractor:
         routes = self.doc.get_route()
         route_ref_link = {}
 
+        self.doc.check_long_lat_in_location()
+
+        # Check the presence of longitude and latitude in different locations
+        long_lat_in_location = None
+        long_lat_in_translation = None
+        long_lat_in_location = self.doc.check_long_lat_in_location()
+        long_lat_in_translation = (
+            not long_lat_in_location
+            and self.doc.check_long_lat_in_translation_location()
+        )
+        easting_northing_in_translation = (
+            not long_lat_in_translation
+            and not long_lat_in_location
+            and self.doc.check_easting_northing_in_location_translation()
+        )
+        # Determine the location type based on the checks
+        location_type = (
+            ["Location"] if long_lat_in_location else ["Location", "Translation"]
+        )
+
         for route in routes:
             route_section_refs = route.get_elements_or_none(["RouteSectionRef"])
             route_ref_ids = []
@@ -381,7 +401,6 @@ class TransXChangeExtractor:
         # Get route sections and create tracks DataFrame
         route_sections = self.doc.get_route_sections()
         sections_tracks = []
-
         for route_section in route_sections:
             try:
                 route_section_id = route_section["id"]
@@ -396,17 +415,36 @@ class TransXChangeExtractor:
 
                         # Extract geometry for each track
                         for track in track_list:
-                            locations = self.doc.get_tracks_geolocation(track)
                             geometry = []
+                            locations = track.get_elements_or_none(location_type)
                             if locations:
                                 for location in locations:
-                                    Longitude = location.get_element_or_none(
-                                        ["Longitude"]
-                                    )
-                                    Latitude = location.get_element_or_none(
-                                        ["Latitude"]
-                                    )
-                                    geometry.append((Longitude.text, Latitude.text))
+                                    if easting_northing_in_translation:
+                                        print("Get easting and northing")
+                                        easting = location.get_element_or_none(
+                                            ["Easting"]
+                                        )
+                                        northing = location.get_element_or_none(
+                                            ["Northing"]
+                                        )
+                                        point = grid_gemotry_from_str(
+                                            easting.text, northing.text
+                                        )
+                                        geometry.append(
+                                            (
+                                                "{:.7f}".format(point.x),
+                                                "{:.7f}".format(point.y),
+                                            )
+                                        )
+                                    else:
+                                        print("get long lat")
+                                        Longitude = location.get_element_or_none(
+                                            ["Longitude"]
+                                        )
+                                        Latitude = location.get_element_or_none(
+                                            ["Latitude"]
+                                        )
+                                        geometry.append((Longitude.text, Latitude.text))
 
                             # Append track information to sections_tracks list
                             sections_tracks.append(
