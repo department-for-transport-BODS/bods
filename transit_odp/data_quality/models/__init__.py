@@ -20,7 +20,6 @@ from .warnings import (
     WARNING_MODELS,
     BadTimingsMixin,
     DataQualityWarningBase,
-    IncorrectNOCWarning,
     StopWarningBase,
 )
 
@@ -29,7 +28,6 @@ __all__ = [
     "DataQualityReport",
     "DataQualityReportSummary",
     "DataQualityWarningBase",
-    "IncorrectNOCWarning",
     "PTIObservation",
     "SchemaViolation",
     "Service",

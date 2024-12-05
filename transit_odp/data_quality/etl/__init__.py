@@ -13,7 +13,6 @@ from transit_odp.data_quality.models.report import (
 )
 from transit_odp.data_quality.models.warnings import (
     WARNING_MODELS,
-    IncorrectNOCWarning,
 )
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 
@@ -67,15 +66,6 @@ class TransXChangeDQPipeline:
         self._parser = TransXChangeDatasetParser(self.transxchange_file)
         return self._parser
 
-    def create_incorrect_nocs_warning(self) -> None:
-        extract: TransXChangeExtract = self.extract()
-        nocs = [noc for noc in set(extract.nocs) if noc not in self.organistion_nocs]
-        warnings = [
-            IncorrectNOCWarning(report_id=self.report_id, noc=noc) for noc in nocs
-        ]
-        if warnings:
-            IncorrectNOCWarning.objects.bulk_create(warnings, ignore_conflicts=True)
-
     def extract(self) -> TransXChangeExtract:
         if self._extract is not None:
             return self._extract
@@ -87,8 +77,7 @@ class TransXChangeDQPipeline:
 
     def load_warnings(self) -> None:
         adapter = get_dataset_adapter_from_revision(logger, self._revision)
-        adapter.info("Creating IncorrectNOCWarning.")
-        self.create_incorrect_nocs_warning()
+        adapter.info("Creating IncorrectNOCWarning - Skipped as OLD ITO.")
         adapter.info("Creating JourneyConflictWarning - Skipped as OLD ITO.")
         adapter.info("Creating LineExpiredWarning - Skipped as OLD ITO.")
         adapter.info("Creating LineMissingBlockIDWarning - Skipped as OLD ITO.")

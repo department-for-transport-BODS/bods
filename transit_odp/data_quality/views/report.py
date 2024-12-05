@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.views.generic import DetailView
 from django.views.generic.base import RedirectView, View
 
-from transit_odp.data_quality.constants import OBSERVATIONS
+
 from transit_odp.data_quality.csv import ObservationCSV
 from transit_odp.data_quality.models import DataQualityReport
 from transit_odp.data_quality.scoring import get_data_quality_rag
@@ -133,17 +133,8 @@ class ReportCSVDownloadView(View):
         return super().get_queryset().filter(revision__dataset_id=dataset_id)
 
     def render_to_response(self, *args, **kwargs):
-        dataset_id = self.kwargs.get("pk")
-        report_id = self.kwargs.get("report_id")
-        if self.is_dqs_new_report:
-            return get_dqs_report_from_s3(self.report_file_name)
-        now = timezone.now()
-        filename = f"{now:%Y-%m-%d_%H%M%S}_ID{dataset_id}.csv"
-        observations = ObservationCSV(report_id, observations=OBSERVATIONS)
-        file_ = observations.to_csv()
-        response = HttpResponse(file_, content_type="text/csv")
-        response["Content-Disposition"] = f"attachment; filename={filename}"
-        return response
+
+        return get_dqs_report_from_s3(self.report_file_name)
 
     def get(self, *args, **kwargs):
         return self.render_to_response(*args, **kwargs)

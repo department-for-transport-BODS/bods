@@ -1,25 +1,11 @@
 from unittest.mock import patch
-
 import pytest
-
-from transit_odp.data_quality.constants import (
-    WEIGHTED_OBSERVATIONS,
-    CheckBasis,
-    IncorrectNocObservation,
-)
-from transit_odp.dqs.constants import (
-    IncorrectStopTypeObservation,
-    StopNotInNaptanObservation,
-)
 
 from transit_odp.data_quality.etl import TransXChangeDQPipeline
 from transit_odp.data_quality.factories.transmodel import (
     DataQualityReportFactory,
-    ServicePatternStopFactory,
 )
-from transit_odp.data_quality.factories.warnings import (
-    IncorrectNOCWarningFactory,
-)
+
 from transit_odp.data_quality.scoring import (
     AMBER,
     GREEN,
@@ -44,96 +30,6 @@ def score_contribution(warning_count: int, check_basis_count: int, weighting: fl
     Returns the score a particular check will contribute.
     """
     return (1 - warning_count / check_basis_count) * weighting
-
-
-def test_weightings_add_to_one():
-    total_weighting = sum(o.weighting for o in WEIGHTED_OBSERVATIONS)
-    expected_score = 1.0
-    assert len(WEIGHTED_OBSERVATIONS) == 9
-    assert pytest.approx(total_weighting, SCORE_TOLERANCE) == expected_score
-
-
-@patch(DQC_FROM_REPORT_ID, return_value=DQ_COUNTS)
-def test_score_calculation_with_no_observations(DQC: DataQualityCounts):
-    """
-    Given that there are no observations a score of 1 is calculated.
-    """
-    calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
-    report = DataQualityReportFactory()
-    score = calculator.calculate(report_id=report.id)
-    expected_score = 1.0
-    assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
-
-
-@patch(DQC_FROM_REPORT_ID, return_value=DQ_COUNTS)
-def test_score_calculation_with_data_set_component(from_report_id):
-    """
-    Given that a report contain a mixture of `data_set` warnings a correct score is
-    calculated.
-
-    Possible warnings:
-        IncorrectNOCWarning
-    """
-    report = DataQualityReportFactory()
-    expected_score = sum(
-        o.weighting
-        for o in WEIGHTED_OBSERVATIONS
-        if not o.check_basis == CheckBasis.data_set
-    )
-    data_set_count = 1
-
-    # even if 5 are created the warning should be counted once
-    IncorrectNOCWarningFactory.create_batch(5, report=report)
-    incorrect_weight = IncorrectNocObservation.weighting
-    incorrect_score = score_contribution(1, data_set_count, incorrect_weight)
-
-    expected_score += incorrect_score
-
-    pipeline = TransXChangeDQPipeline(report)
-    pipeline.load_summary()
-    calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
-    score = calculator.calculate(report.id)
-    assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
-
-
-@patch(DQC_FROM_REPORT_ID, return_value=DQ_COUNTS)
-def test_score_calculation_lines_component(from_report_id):
-    """
-    Test that the score is calculated correctly with one or more observations
-    that are concerned with the `lines` feature.
-
-    Possible warnings:
-        LineMissingBlockIDWarning
-    """
-    report = DataQualityReportFactory()
-    line_count = DQ_COUNTS.lines
-    expected_score = sum(
-        o.weighting
-        for o in WEIGHTED_OBSERVATIONS
-        if not o.check_basis == CheckBasis.lines
-    )
-
-    pipeline = TransXChangeDQPipeline(report)
-    pipeline.load_summary()
-    calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
-    score = calculator.calculate(report.id)
-    assert pytest.approx(score, SCORE_TOLERANCE) == expected_score
-
-
-@patch(DQC_FROM_REPORT_ID)
-def test_score_calculation_dq_score_exception(from_report_id):
-    """
-    Given a DataQualityCounts object where one of the attributes is 0, throw
-    a DQScoreException.
-    """
-    from_report_id.return_value = DataQualityCounts(
-        lines=2, vehicle_journeys=120, data_set=1, timing_patterns=0, stops=40
-    )
-    report = DataQualityReportFactory()
-
-    calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
-    with pytest.raises(DQScoreException):
-        calculator.calculate(report_id=report.id)
 
 
 @pytest.mark.parametrize(

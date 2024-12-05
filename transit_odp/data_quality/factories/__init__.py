@@ -14,14 +14,11 @@ from transit_odp.data_quality.factories.transmodel import (
     TimingPatternStopFactory,
     VehicleJourneyFactory,
 )
-from transit_odp.data_quality.factories.warnings import (
-    IncorrectNOCWarningFactory,
-)
+
 
 __all__ = [
     "DataQualityReportFactory",
     "DataQualityReportSummaryFactory",
-    "IncorrectNOCWarningFactory",
     "PTIObservationFactory",
     "PTIValidationResultFactory",
     "ServiceFactory",

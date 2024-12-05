@@ -7,7 +7,6 @@ from .base import (
     WarningListBaseView,
 )
 from .glossary import DataQualityGlossaryView
-from .incorrect_noc import IncorrectNOCListView
 from .mixins import WithDraftRevision, WithPublishedRevision
 from .report import ReportCSVDownloadView, ReportOverviewView
 
@@ -15,7 +14,6 @@ from .report import ReportCSVDownloadView, ReportOverviewView
 __all__ = [
     "DataQualityGlossaryView",
     "DetailBaseView",
-    "IncorrectNOCListView",
     "JourneyListBaseView",
     "OneTableDetailView",
     "ReportCSVDownloadView",

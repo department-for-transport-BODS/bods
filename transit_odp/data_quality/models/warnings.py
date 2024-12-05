@@ -71,15 +71,6 @@ class DataQualityWarningBase(models.Model):
         return effected_stop_ids
 
 
-class IncorrectNOCWarning(DataQualityWarningBase):
-    noc = models.TextField()
-
-    objects = IncorrectNOCQuerySet.as_manager()
-
-    class Meta(DataQualityWarningBase.Meta):
-        unique_together = (("report", "noc"),)
-
-
 class BadTimingsMixin(models.Model):
     # Note each bad 'timing' should belong to the same 'timing_pattern'
     # (declared in the parent model). However, this type of constraint
@@ -118,6 +109,4 @@ class StopWarningBase(DataQualityWarningBase):
         )
         return effected_tps.add_position().add_stop_name().order_by("position")
 
-WARNING_MODELS = [
-    IncorrectNOCWarning,
-]
+WARNING_MODELS = []

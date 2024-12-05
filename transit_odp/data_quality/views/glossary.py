@@ -3,10 +3,8 @@ from dataclasses import dataclass
 from typing import List
 
 from django.views.generic import TemplateView
-
-from transit_odp.data_quality.constants import OBSERVATIONS
 from transit_odp.dqs.constants import (
-    OBSERVATIONS as DQSOBSERVATIONS,
+    OBSERVATIONS,
     Level,
     Observation,
 )
@@ -38,8 +36,6 @@ class DataQualityGlossaryView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         observations = OBSERVATIONS
-        if self.is_dqs_new_report:
-            observations = DQSOBSERVATIONS
 
         critical = get_glossary_category_by_level(observations, Level.critical)
         critical_count = sum(len(c.observations) for c in critical)
@@ -66,6 +62,7 @@ class DataQualityScoreGuidanceView(TemplateView):
     template_name = "data_quality/score_description.html"
 
     def get_context_data(self, **kwargs):
+        # TODO: It will be removed in another BODS ticket
         context = super().get_context_data(**kwargs)
         observations = [o for o in OBSERVATIONS if o.weighting]
         observations = sorted(observations, key=lambda o: (-o.weighting, o.title))
