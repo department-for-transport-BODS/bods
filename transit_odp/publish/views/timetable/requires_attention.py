@@ -2,9 +2,13 @@ from django.http import HttpResponse
 from django.utils.timezone import now
 from django.views import View
 from django_tables2 import SingleTableView
+from waffle import flag_is_active
 
 from transit_odp.browse.common import get_in_scope_in_season_services_line_level
-from transit_odp.organisation.csv.service_codes import ServiceCodesCSV
+from transit_odp.organisation.csv.service_codes import (
+    ComplianceReportCSV,
+    ServiceCodesCSV,
+)
 from transit_odp.organisation.models import Organisation
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
@@ -21,11 +25,15 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
     paginate_by = 10
 
     def get_context_data(self, **kwargs):
+        is_avl_require_attention_active = flag_is_active(
+            "", "is_avl_require_attention_active"
+        )
         context = super().get_context_data(**kwargs)
         org_id = self.kwargs["pk1"]
         context["org_id"] = org_id
         data_owner = self.organisation.name if self.request.user.is_agent_user else "My"
 
+        context["is_avl_require_attention_active"] = is_avl_require_attention_active
         context["ancestor"] = f"Review {data_owner} Timetables Data"
         context["services_requiring_attention"] = len(self.object_list)
         context["total_in_scope_in_season_services"] = len(
@@ -73,6 +81,20 @@ class ServiceCodeView(View):
             f"{self.org.name}.csv"
         )
         csv_export = ServiceCodesCSV(self.org.id)
+        file_ = csv_export.to_string()
+        response = HttpResponse(file_, content_type="text/csv")
+        response["Content-Disposition"] = f"attachment; filename={csv_filename}"
+        return response
+
+
+class ComplianceReportView(View):
+    def get(self, *args, **kwargs):
+        self.org = Organisation.objects.get(id=kwargs["pk1"])
+        return self.render_to_response()
+
+    def render_to_response(self):
+        csv_filename = f"{self.org.name} compliance report.csv"
+        csv_export = ComplianceReportCSV(self.org.id)
         file_ = csv_export.to_string()
         response = HttpResponse(file_, content_type="text/csv")
         response["Content-Disposition"] = f"attachment; filename={csv_filename}"
