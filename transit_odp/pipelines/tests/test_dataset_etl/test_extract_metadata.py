@@ -1118,6 +1118,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
         timing_point_count = ""
         vehicle_journeys = pd.DataFrame()
         serviced_organisations = pd.DataFrame()
+        journey_pattern_tracks = pd.DataFrame()
+        route_map = pd.DataFrame()
         flexible_operation_periods = pd.DataFrame()
         operating_profiles = pd.DataFrame()
 
@@ -1142,6 +1144,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
             serviced_organisations=serviced_organisations,
             flexible_operation_periods=flexible_operation_periods,
             operating_profiles=operating_profiles,
+            journey_pattern_tracks= journey_pattern_tracks,
+            route_map= route_map,
         )
 
         service_cache = []
