@@ -6,26 +6,13 @@ from django.db.models.query_utils import Q
 
 from transit_odp.common.loggers import get_dataset_adapter_from_revision
 from transit_odp.data_quality.dataclasses import Report
-from transit_odp.data_quality.etl.warnings import (
-    FastTimingETL,
-    JourneyPartialTimingOverlapETL,
-    LineExpiredETL,
-    LineMissingBlockIDETL,
-    ServiceLinkMissingStopsETL,
-    TimingFirstETL,
-    TimingLastETL,
-    TimingMissingPointETL,
-    TimingMultipleETL,
-)
+
 from transit_odp.data_quality.models.report import (
     DataQualityReport,
     DataQualityReportSummary,
 )
 from transit_odp.data_quality.models.warnings import (
     WARNING_MODELS,
-    IncorrectNOCWarning,
-    JourneyStopInappropriateWarning,
-    StopMissingNaptanWarning,
 )
 from transit_odp.timetables.transxchange import TransXChangeDatasetParser
 
@@ -79,60 +66,6 @@ class TransXChangeDQPipeline:
         self._parser = TransXChangeDatasetParser(self.transxchange_file)
         return self._parser
 
-    def create_incorrect_nocs_warning(self) -> None:
-        extract: TransXChangeExtract = self.extract()
-        nocs = [noc for noc in set(extract.nocs) if noc not in self.organistion_nocs]
-        warnings = [
-            IncorrectNOCWarning(report_id=self.report_id, noc=noc) for noc in nocs
-        ]
-        if warnings:
-            IncorrectNOCWarning.objects.bulk_create(warnings, ignore_conflicts=True)
-
-    def create_journey_conflict_warning(self) -> None:
-        warnings = self.report.filter_by_warning_type("journey-partial-timing-overlap")
-        pipeline = JourneyPartialTimingOverlapETL(self.report_id, warnings)
-        pipeline.load()
-
-    def create_line_expired_warning(self) -> None:
-        warnings = self.report.filter_by_warning_type("line-expired")
-        pipeline = LineExpiredETL(self.report_id, warnings)
-        pipeline.load()
-
-    def create_line_missing_block_id_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("line-missing-block-id")
-        pipeline = LineMissingBlockIDETL(self.report_id, warnings)
-        pipeline.load()
-
-    def create_timing_first_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("timing-first")
-        pipeline = TimingFirstETL(self.report_id, warnings)
-        pipeline.load()
-
-    def create_timing_last_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("timing-last")
-        pipeline = TimingLastETL(self.report_id, warnings)
-        pipeline.load()
-
-    def create_timing_multiple_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("timing-multiple")
-        pipeline = TimingMultipleETL(self.report_id, warnings)
-        pipeline.load()
-
-    def create_timing_missing_point_15_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("timing-missing-point-15")
-        pipeline = TimingMissingPointETL(self.report_id, warnings)
-        pipeline.load()
-
-    def create_fast_timing_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("timing-fast")
-        pipeline = FastTimingETL(self.report_id, warnings)
-        pipeline.load()
-
-    def create_service_link_missing_stop_warnings(self) -> None:
-        warnings = self.report.filter_by_warning_type("service-link-missing-stops")
-        pipeline = ServiceLinkMissingStopsETL(self.report_id, warnings)
-        pipeline.load()
-
     def extract(self) -> TransXChangeExtract:
         if self._extract is not None:
             return self._extract
@@ -144,26 +77,16 @@ class TransXChangeDQPipeline:
 
     def load_warnings(self) -> None:
         adapter = get_dataset_adapter_from_revision(logger, self._revision)
-        adapter.info("Creating IncorrectNOCWarning.")
-        self.create_incorrect_nocs_warning()
-        adapter.info("Creating JourneyConflictWarning.")
-        self.create_journey_conflict_warning()
-        adapter.info("Creating LineExpiredWarning.")
-        self.create_line_expired_warning()
-        adapter.info("Creating LineMissingBlockIDWarning.")
-        self.create_line_missing_block_id_warnings()
-        adapter.info("Creating TimingFirstWarning.")
-        self.create_timing_first_warnings()
-        adapter.info("Creating TimingLastWarning.")
-        self.create_timing_last_warnings()
-        adapter.info("Creating TimingMultipleWarning.")
-        self.create_timing_multiple_warnings()
-        adapter.info("Creating TimingMissingPointWarning.")
-        self.create_timing_missing_point_15_warnings()
-        adapter.info("Creating FastTimingWarning.")
-        self.create_fast_timing_warnings()
-        adapter.info("Creating ServiceLinkMissingStopWarning.")
-        self.create_service_link_missing_stop_warnings()
+        adapter.info("Creating IncorrectNOCWarning - Skipped as OLD ITO.")
+        adapter.info("Creating JourneyConflictWarning - Skipped as OLD ITO.")
+        adapter.info("Creating LineExpiredWarning - Skipped as OLD ITO.")
+        adapter.info("Creating LineMissingBlockIDWarning - Skipped as OLD ITO.")
+        adapter.info("Creating TimingFirstWarning - Skipped as OLD ITO.")
+        adapter.info("Creating TimingLastWarning - Skipped as OLD ITO.")
+        adapter.info("Creating TimingMultipleWarning - Skipped as OLD ITO.")
+        adapter.info("Creating TimingMissingPointWarning - Skipped as OLD ITO.")
+        adapter.info("Creating FastTimingWarning - Skipped as OLD ITO.")
+        adapter.info("Creating ServiceLinkMissingStopWarning - Skipped as OLD ITO.")
 
     def load(self) -> None:
         self.load_warnings()
@@ -181,18 +104,17 @@ class TransXChangeDQPipeline:
         # For certain warnings we can't be certain that the stop has a
         # service pattern. These warnings aren't shown to the user, so don't include
         # them in the count
-        maybe_null_service_pattern = [
-            StopMissingNaptanWarning,
-            JourneyStopInappropriateWarning,
-        ]
+        maybe_null_service_pattern = []
 
         null_service_pattern = Q(stop__service_patterns__isnull=True)
         counts = {
-            model.__name__: model.objects.filter(report=self._model_report).count()
-            if model not in maybe_null_service_pattern
-            else model.objects.filter(report=self._model_report)
-            .exclude(null_service_pattern)
-            .count()
+            model.__name__: (
+                model.objects.filter(report=self._model_report).count()
+                if model not in maybe_null_service_pattern
+                else model.objects.filter(report=self._model_report)
+                .exclude(null_service_pattern)
+                .count()
+            )
             for model in WARNING_MODELS
         }
 

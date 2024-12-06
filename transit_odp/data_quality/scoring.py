@@ -4,9 +4,8 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel
 
 from transit_odp.common.utils import round_down
+from transit_odp.dqs.constants import CheckBasis
 from transit_odp.data_quality.constants import (
-    WEIGHTED_OBSERVATIONS,
-    CheckBasis,
     Observation,
 )
 from transit_odp.data_quality.models.report import (
@@ -153,14 +152,5 @@ def get_data_quality_rag(report: DataQualityReport):
     if report.score > 0.0:
         return DataQualityRAG.from_score(report.score)
 
-    calculator = DataQualityCalculator(WEIGHTED_OBSERVATIONS)
-    try:
-        score = calculator.calculate(report_id=report.id)
-    except DQScoreException:
-        rag = None
-    else:
-        report.score = score
-        report.save()
-        rag = DataQualityRAG.from_score(score)
-
-    return rag
+    return None
+    # Removed the code as OLD ITO is decommissioned

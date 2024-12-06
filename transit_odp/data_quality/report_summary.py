@@ -16,9 +16,14 @@ from django.db.models.functions import (
 from pydantic import BaseModel
 from waffle import flag_is_active
 
-from transit_odp.data_quality.constants import OBSERVATIONS, Category, Level
+from transit_odp.data_quality.constants import Category, Level
 from transit_odp.data_quality.models import DataQualityReportSummary
-from transit_odp.dqs.constants import BUS_SERVICES_AFFECTED_SUBSET, ReportStatus, Checks
+from transit_odp.dqs.constants import (
+    BUS_SERVICES_AFFECTED_SUBSET,
+    ReportStatus,
+    Checks,
+    OBSERVATIONS,
+)
 from transit_odp.dqs.models import ObservationResults
 
 CRITICAL_INTRO = (

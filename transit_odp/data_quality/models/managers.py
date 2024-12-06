@@ -2,7 +2,6 @@ from django.db import models
 
 from .querysets import (
     DataQualityReportQueryset,
-    TimingMissingPointQueryset,
     TimingPatternStopQueryset,
     VehicleJourneyQueryset,
 )
@@ -17,10 +16,4 @@ class VehicleJourneyManager(models.Manager.from_queryset(VehicleJourneyQueryset)
 
 
 class DataQualityReportManager(models.Manager.from_queryset(DataQualityReportQueryset)):
-    pass
-
-
-class TimingMissingPointManager(
-    models.Manager.from_queryset(TimingMissingPointQueryset)
-):
     pass
