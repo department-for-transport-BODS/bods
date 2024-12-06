@@ -127,7 +127,6 @@ class LineMetadataDetailView(OrgUserViewMixin, BaseDetailView):
             .get_published()
             .add_admin_area_names()
             .add_live_data()
-            .add_is_live_pti_compliant()
             .select_related("live_revision")
         )
 
