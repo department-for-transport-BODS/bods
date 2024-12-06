@@ -110,41 +110,6 @@ MissingBlockNumber = Observation(
     check_basis=CheckBasis.lines,
 )
 
-# TODO: DQSMIGRATION: Move to dqs module
-StopNotInNaptanObservation = Observation(
-    title="Stop(s) are not found in NaPTAN",
-    text=(
-        "Operators should notify the relevant Local Transport Authority to request "
-        "a stop "
-        "in advance of the timetable being published.</br></br>"
-        "This observation identifies cases where a stop used in a timetable is "
-        "still not in "
-        "the NaPTAN reference database. Operators should notify the relevant Local "
-        "Transport Authority immediately to request the stops, notifying them of "
-        "issues "
-        "found by this observation.</br></br>"
-        "For temporary stops that do not include a reference to NaPTAN, they must be "
-        "defined geographically using a latitude and longitude in the data. This "
-        "will support consumers to provide accurate stop information to passengers. "
-    ),
-    impacts=(
-        "NaPTAN provides key stop information across different transport types, "
-        "enabling "
-        "multi-modal journey planning that can encourage bus patronage. It is "
-        "therefore "
-        "important for the public transport ecosystem to work together to ensure "
-        "the stop "
-        "data inputted is correctly detailed and can be referenced to the NaPTAN "
-        "database. "
-    ),
-    preamble="The following timing pattern(s) have been observed to have stops that are not in NaPTAN.",
-    model=models.StopMissingNaptanWarning,
-    list_url_name="dq:stop-missing-naptan-list",
-    level=Level.advisory,
-    category=Category.stops,
-    weighting=0.12,
-    check_basis=CheckBasis.stops,
-)
 
 FirstStopSetDownOnlyObservation = Observation(
     title="First stop is found to be set down only",
@@ -358,22 +323,7 @@ SlowTimingPointObservation = Observation(
     level=Level.advisory,
     category=Category.timing,
 )
-SlowLinkObservation = Observation(
-    title="Slow running time between stops",
-    text=(
-        "This observation identifies links between stops that appear unfeasibly slow, "
-        "meaning it would require a vehicle to travel between the stops "
-        'as the "crow flies" '
-        "at a speed of less than 1 mph. This implies the data provided could be "
-        "inaccurate. "
-        "</br></br>"
-        "Operators should investigate the observation and address any errors found."
-    ),
-    model=models.SlowLinkWarning,
-    list_url_name="dq:slow-link-list",
-    level=Level.advisory,
-    category=Category.timing,
-)
+
 BackwardsTimingObservation = Observation(
     title="Backwards timing",
     text=(
@@ -461,9 +411,7 @@ OBSERVATIONS = (
     LastStopPickUpOnlyObservation,
     MissingBlockNumber,
     NoTimingPointFor15MinutesObservation,
-    SlowLinkObservation,
     SlowTimingPointObservation,
-    StopNotInNaptanObservation,
     StopsRepeatedObservation,
 )
 
