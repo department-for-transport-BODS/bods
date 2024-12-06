@@ -9,8 +9,8 @@
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
-  {% breadcrumb_url ancestor 'feed-list' pk1=org_id host hosts.publish %}
-  {% breadcrumb_url 'Service Codes Requiring Attention' 'requires-attention' pk1=org_id host hosts.publish %}
+  {% breadcrumb_url ancestor 'avl:feed-list' pk1=org_id host hosts.publish %}
+  {% breadcrumb_url 'Service Codes Requiring Attention' 'avl:requires-attention' pk1=org_id host hosts.publish %}
 {% endblock %}
 {% block full_width_content %}
   <div class="app-masthead">
@@ -29,16 +29,16 @@
           <p class="govuk-body">
             {% filter force_escape %}
               {% blocktrans %}
-                  Download the detailed export at the bottom of the page to determine the reason your
-                  service code is listed here.
-              {% endblocktrans %}
+                    Download the detailed export at the bottom of the page to determine the reason your
+                    service code is listed here.
+                {% endblocktrans %}
             {% endfilter %}
           </p>
           <p class="govuk-body">
             {% filter force_escape %}
               {% blocktrans %}
-                                Contact the service desk if you have any questions or require any support.
-                            {% endblocktrans %}
+                    Contact the service desk if you have any questions or require any support.
+                {% endblocktrans %}
             {% endfilter %}
           </p>
         </div>
@@ -106,17 +106,9 @@
     <div class="govuk-grid-row govuk-!-margin-top-5">
       <p class="govuk-body-s">{% trans "Use the link below to download and view the entire list of service codes" %}</p>
       <p class="govuk-body-s">
-        {% if is_avl_require_attention_active %}
-          <a class="govuk-link" href={% url 'compliance-report' pk1=org_id host hosts.publish %}>
-            {% filter force_escape %}
-              {% trans "Download detailed export" %}
-            {% endfilter %}
-          </a>
-        {% else %}
-          <a class="govuk-link" href={% url 'service-codes' pk1=org_id host hosts.publish %}>
-            {% trans "Download detailed export" %}
-          </a>
-        {% endif %}
+        <a class="govuk-link" href={% url 'compliance-report' pk1=org_id host hosts.publish %}>
+          {% trans "Download detailed export" %}
+        </a>
       </p>
     </div>
   </div>
