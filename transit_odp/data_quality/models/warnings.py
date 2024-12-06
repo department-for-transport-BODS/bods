@@ -109,4 +109,5 @@ class StopWarningBase(DataQualityWarningBase):
         )
         return effected_tps.add_position().add_stop_name().order_by("position")
 
+
 WARNING_MODELS = []
