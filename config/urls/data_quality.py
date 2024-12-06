@@ -37,12 +37,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.SlowTimingsListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="slow-timings-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.SlowTimingsDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="slow-timings-detail",
                 ),
             ]
@@ -69,10 +69,12 @@ urlpatterns = [
         "slow-links/",
         include(
             [
-                path("", view=views.SlowLinkListView.as_view(), name="slow-link-list"),
+                path(
+                    "", view=views.ReportOverviewView.as_view(), name="slow-link-list"
+                ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.SlowLinkDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="slow-link-detail",
                 ),
             ]
@@ -84,12 +86,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.DuplicateJourneyListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="duplicate-journey-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.DuplicateJourneyDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="duplicate-journey-detail",
                 ),
             ]
@@ -101,12 +103,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.BackwardTimingListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="backward-timing-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.BackwardTimingDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="backward-timing-detail",
                 ),
             ]
@@ -130,12 +132,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.LastStopPickUpListView.as_view(),
+                    view=DQSviews.LastStopPickUpListView.as_view(),
                     name="last-stop-pick-up-only-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.LastStopPickUpDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="last-stop-pick-up-only-detail",
                 ),
                 path(
@@ -152,12 +154,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.FirstStopDropOffListView.as_view(),
+                    view=DQSviews.FirstStopDropOffListView.as_view(),
                     name="first-stop-set-down-only-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.FirstStopDropOffDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="first-stop-set-down-only-detail",
                 ),
                 path(
@@ -174,12 +176,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.LastStopNotTimingListView.as_view(),
+                    view=DQSviews.LastStopNotTimingListView.as_view(),
                     name="last-stop-not-timing-point-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.LastStopNotTimingDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="last-stop-not-timing-point-detail",
                 ),
                 path(
@@ -196,12 +198,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.FirstStopNotTimingListView.as_view(),
+                    view=DQSviews.FirstStopNotTimingListView.as_view(),
                     name="first-stop-not-timing-point-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.FirstStopNotTimingDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="first-stop-not-timing-point-detail",
                 ),
                 path(
@@ -218,17 +220,17 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.StopMissingNaptanListView.as_view(),
+                    view=DQSviews.StopNotFoundInNaptanListView.as_view(),
                     name="stop-missing-naptan-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.StopMissingNaptanDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="stop-missing-naptan-detail",
                 ),
                 path(
                     "detail/",
-                    view=DQSviews.StopMissingNaptanDetailView.as_view(),
+                    view=DQSviews.StopNotFoundInNaptanDetailView.as_view(),
                     name="dqs-stop-missing-naptan-detail",
                 ),
             ]
@@ -257,12 +259,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.StopRepeatedListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="stop-repeated-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.StopRepeatedDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="stop-repeated-detail",
                 ),
             ]
@@ -274,12 +276,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.MissingStopListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="missing-stops-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.MissingStopDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="missing-stops-detail",
                 ),
             ]
@@ -308,12 +310,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.BackwardDateRangeListView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="backward-date-range-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.BackwardDateRangeDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="backward-date-range-detail",
                 ),
             ]
@@ -325,12 +327,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.IncorrectStopTypeListView.as_view(),
+                    view=DQSviews.IncorrectStopTypeListView.as_view(),
                     name="incorrect-stop-type-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.IncorrectStopTypeDetailView.as_view(),
+                    view=views.ReportOverviewView.as_view(),
                     name="incorrect-stop-type-detail",
                 ),
                 path(
