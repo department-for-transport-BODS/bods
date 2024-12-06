@@ -190,27 +190,6 @@ LastStopPickUpOnlyObservation = Observation(
     weighting=0.10,
     check_basis=CheckBasis.timing_patterns,
 )
-MissingStopsObservation = Observation(
-    title="Missing stops",
-    text=(
-        "This observation identifies cases where a stop may be missing from a stopping "
-        "pattern from this data set provided. For example, if some journeys "
-        "cover stops A, "
-        "B, C and D and another journey stops at only A, B and D, stop C will "
-        "be identified "
-        "as a possible missing stop. If a stop is missing in the data, it cannot "
-        "be show by "
-        "journey planners to passengers. "
-        "</br></br>"
-        "Operators should investigate the observation and address any errors "
-        "found."
-    ),
-    impacts=None,
-    model=models.ServiceLinkMissingStopWarning,
-    list_url_name="dq:service-link-missing-stops-list",
-    level=Level.advisory,
-    category=Category.stops,
-)
 StopsRepeatedObservation = Observation(
     title="Same stop is found multiple times",
     text=(
@@ -379,24 +358,6 @@ SlowTimingPointObservation = Observation(
     level=Level.advisory,
     category=Category.timing,
 )
-FastLinkObservation = Observation(
-    title="Fast running time between stops",
-    text=(
-        "This observation identifies links between stops that appear "
-        "unfeasibly fast, "
-        "meaning it would require a vehicle to travel between the stops "
-        'as the "crow flies" at over 70mph. '
-    ),
-    impacts=(
-        "The information provided is inaccurate and do not reflect the "
-        "actual operation of "
-        "the bus. This will lower the quality of data provided to passengers. "
-    ),
-    model=models.FastLinkWarning,
-    list_url_name="dq:fast-link-list",
-    level=Level.advisory,
-    category=Category.timing,
-)
 SlowLinkObservation = Observation(
     title="Slow running time between stops",
     text=(
@@ -486,55 +447,19 @@ BackwardDateRangeObservation = Observation(
     weighting=0.12,
     check_basis=CheckBasis.vehicle_journeys,
 )
-JourneyOverlapObservation = Observation(
-    title="Journey overlap",
-    text=(
-        "This observation identifies cases where journeys partially overlap. "
-        "A journey is "
-        "considered to partial overlap if they follow the same timing pattern "
-        "for at least ten "
-        "stops and there is at least one day of their operating period in which "
-        "they both "
-        "run. "
-        "</br></br>"
-        "Operators should investigate the observation and address any errors found."
-    ),
-    model=models.JourneyConflictWarning,
-    list_url_name="dq:journey-overlap-list",
-    level=Level.advisory,
-    category=Category.journey,
-)
-ExpiredLines = Observation(
-    title="Expired lines",
-    text=(
-        "This observation identifies any lines that have expired data associated "
-        "with them. "
-        "If you are uploading data please deactivate the file. "
-        "If you are using a URL please remove the file from the url endpoint."
-    ),
-    impacts=None,
-    model=LineExpiredWarning,
-    list_url_name="dq:line-expired-list",
-    level=Level.advisory,
-    category=Category.journey,
-)
 
 OBSERVATIONS = (
     BackwardDateRangeObservation,
     BackwardsTimingObservation,
     DuplicateJourneyObservation,
-    ExpiredLines,
-    FastLinkObservation,
     FastTimingPointObservation,
     FirstStopNotTimingPointObservation,
     FirstStopSetDownOnlyObservation,
     IncorrectNocObservation,
     IncorrectStopTypeObservation,
-    JourneyOverlapObservation,
     LastStopNotTimingPointObservation,
     LastStopPickUpOnlyObservation,
     MissingBlockNumber,
-    MissingStopsObservation,
     NoTimingPointFor15MinutesObservation,
     SlowLinkObservation,
     SlowTimingPointObservation,
