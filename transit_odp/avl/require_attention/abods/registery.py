@@ -44,8 +44,7 @@ class AbodsClient:
         headers = {"Authorization": f"Bearer {settings.ABODS_AVL_AUTH_TOKEN}"}
 
         try:
-            print("url:::", url)
-            print("headers:::", headers)
+            print("ABODS URL:", url)
             response = requests.post(
                 url=url,
                 headers=headers,
@@ -55,7 +54,7 @@ class AbodsClient:
                 files=files,
                 timeout=timeout,
             )
-            print("Request Response:", response)
+            print("REQUEST RESPONSE:", response)
             response.raise_for_status()
         except Timeout as e:
             msg = f"Timeout Error: {e}"
@@ -112,12 +111,12 @@ class AbodsRegistery:
 
     def records(self):
         self.fetch_records()
-        self.normailze()
+        self.normalize()
         self.remove_duplicate()
         return self.lines
 
-    def normailze(self):
-        logger.info("ABODSRegistery: Nomalizing line details")
+    def normalize(self):
+        logger.info("ABODSRegistery: Normalizing line details")
         for line_details in self.data.avlLineLevelStatus:
             date_one_month_ago = datetime.today() - timedelta(days=30)
             if line_details.lastRecordedAtTime.date() >= date_one_month_ago.date():
