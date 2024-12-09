@@ -1,14 +1,13 @@
 import logging
-import requests
-from http import HTTPStatus
 from datetime import datetime, timedelta
-from typing import Optional, List, Union
-from requests import HTTPError, RequestException, Timeout
+from http import HTTPStatus
+from typing import List, Optional, Union
 
+import requests
 from django.conf import settings
 from django.core.exceptions import ValidationError
-
 from pydantic.main import BaseModel
+from requests import HTTPError, RequestException, Timeout
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +44,8 @@ class AbodsClient:
         headers = {"Authorization": f"Bearer {settings.ABODS_AVL_AUTH_TOKEN}"}
 
         try:
+            print("url:::", url)
+            print("headers:::", headers)
             response = requests.post(
                 url=url,
                 headers=headers,
@@ -54,6 +55,7 @@ class AbodsClient:
                 files=files,
                 timeout=timeout,
             )
+            print("Request Response:", response)
             response.raise_for_status()
         except Timeout as e:
             msg = f"Timeout Error: {e}"
@@ -98,6 +100,7 @@ class AbodsClient:
         Return Pydentic model response
         """
         response = self._make_request()
+        print("fetch_line_details response:", response)
         return response
 
 
