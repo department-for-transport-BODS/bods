@@ -1,15 +1,16 @@
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
 from transit_odp.browse.common import (
     LTACSVHelper,
     get_all_naptan_atco_df,
     get_all_weca_traveline_region_map,
 )
 from transit_odp.browse.lta_column_headers import (
-    get_avl_published_status,
-    get_avl_requires_attention,
-    get_avl_to_timetable_match_status,
     get_operator_name,
     get_overall_requires_attention,
 )
@@ -434,15 +435,17 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         ),
         CSVColumn(
             header="AVL requires attention",
-            accessor=lambda otc_service: get_avl_requires_attention(otc_service),
+            accessor=lambda otc_service: otc_service.get("avl_requires_attention"),
         ),
         CSVColumn(
             header="AVL Published Status",
-            accessor=lambda otc_service: get_avl_published_status(otc_service),
+            accessor=lambda otc_service: otc_service.get("avl_published_status"),
         ),
         CSVColumn(
             header="AVL to Timetable Match Status",
-            accessor=lambda otc_service: get_avl_to_timetable_match_status(otc_service),
+            accessor=lambda otc_service: otc_service.get(
+                "avl_to_timetable_match_status"
+            ),
         ),
         CSVColumn(
             header="Fares requires attention",
@@ -584,6 +587,9 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         traveline_region: str,
         ui_lta_name: str,
         line_name: str,
+        avl_published_status: str,
+        avl_to_timetable_match_status: str,
+        avl_requires_attention: str,
     ) -> None:
         self._object_list.append(
             {
@@ -624,6 +630,9 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 "expiry_date": service and service.licence.expiry_date,
                 "effective_date": service and service.effective_date,
                 "received_date": service and service.received_date,
+                "avl_published_status": avl_published_status,
+                "avl_to_timetable_match_status": avl_to_timetable_match_status,
+                "avl_requires_attention": avl_requires_attention,
             }
         )
 
@@ -654,6 +663,71 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 return "No"
         return "Yes"
 
+    def get_avl_published_status(
+        self, operator_ref: str, line_name: str, synced_in_last_month
+    ) -> str:
+        """
+        Returns value for 'AVL Published Status' column.
+
+        Args:
+            operator_ref (str): National Operator Code
+            line_name (str): Service Number
+            synced_in_last_month: Records from ABODS API
+
+        Returns:
+            str: Yes or No for 'AVL Published Status' column
+        """
+        if f"{line_name}__{operator_ref}" in synced_in_last_month:
+            return "Yes"
+        return "No"
+
+    def get_avl_to_timetable_match_status(
+        self, operator_ref: str, line_name: str
+    ) -> str:
+        """
+        Returns value for 'AVL to Timetable Match Status' column.
+
+        Args:
+            operator_ref (str): National Operator Code
+            line_name (str): Service Number
+
+        Returns:
+            str: Yes or No for 'AVL to Timetable Match Status' column
+        """
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+
+        if not uncounted_activity_df.loc[
+            (uncounted_activity_df["OperatorRef"] == operator_ref)
+            & (
+                uncounted_activity_df["LineRef"].isin(
+                    [line_name, line_name.replace(" ", "_")]
+                )
+            )
+        ].empty:
+            return "Yes"
+        return "No"
+
+    def get_avl_requires_attention(
+        self, avl_published_status: str, avl_to_timetable_match_status: str
+    ) -> str:
+        """
+        Returns value for 'AVL requires attention' column based on the following logic:
+            If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to Yes,
+            then 'AVL requires attention' = No.
+            If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to No,
+            then 'AVL requires attention' = Yes.
+
+        Args:
+            avl_published_status (str): Value of 'AVL Published Status'
+            avl_to_timetable__match_status (str): Value of 'AVL to Timetable Match Status'
+
+        Returns:
+            str: Yes or No for 'AVL requires attention' column
+        """
+        if (avl_published_status == "Yes") and (avl_to_timetable_match_status == "Yes"):
+            return "No"
+        return "Yes"
+
     def get_otc_service_bods_data(self, organisation_id: int) -> None:
         """
         Compares an organisation's OTC Services dictionaries list with
@@ -672,6 +746,8 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         traveline_region_map_weca = get_all_weca_traveline_region_map()
         services_code = set(otc_map)
         services_code = sorted(services_code)
+        abods_registry = AbodsRegistery()
+        synced_in_last_month = abods_registry.records()
 
         for service_code, line_name in services_code:
             service = otc_map.get((service_code, line_name))
@@ -722,6 +798,29 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             else:
                 require_attention = "No"
 
+            if file_attribute is not None:
+                avl_published_status = self.get_avl_published_status(
+                    file_attribute.national_operator_code,
+                    line_name,
+                    synced_in_last_month,
+                )
+                avl_to_timetable_match_status = self.get_avl_to_timetable_match_status(
+                    file_attribute.national_operator_code,
+                    line_name,
+                )
+            else:
+                avl_published_status = self.get_avl_published_status(
+                    "", line_name, synced_in_last_month
+                )
+                avl_to_timetable_match_status = self.get_avl_to_timetable_match_status(
+                    "", line_name
+                )
+
+            avl_requires_attention = self.get_avl_requires_attention(
+                avl_published_status,
+                avl_to_timetable_match_status,
+            )
+
             self._update_data(
                 service,
                 file_attribute,
@@ -732,6 +831,9 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 traveline_region,
                 ui_lta_name,
                 line_name,
+                avl_published_status,
+                avl_to_timetable_match_status,
+                avl_requires_attention,
             )
 
     def get_queryset(self):
