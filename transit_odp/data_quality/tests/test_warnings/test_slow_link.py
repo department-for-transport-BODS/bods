@@ -22,7 +22,7 @@ def warning():
         common_service_pattern=timing_pattern.service_pattern,
     )
 
-    return factories.FastTimingWarningFactory.create(
+    return factories.SlowLinkWarningFactory.create(
         timing_pattern=timing_pattern,
         # 5 of the 10 timing pattern stops should be considered "effected" by
         # the warning and stored as timings
@@ -33,37 +33,35 @@ def warning():
 
 
 @pytest.mark.django_db
-class TestFastTimingListPage(ListPageBaseTest):
-    """Test Fast Timing Warnings list page"""
+class TestSlowLinkListPage(ListPageBaseTest):
+    """Test Slow Link Warnings list page"""
 
-    model = models.FastTimingWarning
-    factory = factories.FastTimingWarningFactory
-    view = views.FastTimingListView
+    model = models.SlowLinkWarning
+    factory = factories.SlowLinkWarningFactory
+    view = views.SlowLinkListView
     expected_output = {
         "test_get_queryset_adds_correct_message_annotation": (
-            "There is at least one journey with fast timing link between timing points"
+            "Slow running time between {from_stop_name} and {to_stop_name}"
         ),
         "test_get_table_creates_correct_column_headers": ["Line", "Timing pattern (1)"],
         "test_preamble_text": (
-            "Following timing pattern(s) have been observed to have fast timing links."
+            "Following timing pattern(s) have been observed to have slow links."
         ),
     }
 
 
 @pytest.mark.django_db
-class TestFastTimingDetailPage(DetailPageBaseTest):
-    """Test Fast Timing Warnings detail page"""
+class TestSlowLinkDetailPage(DetailPageBaseTest):
+    """Test Slow Link Warnings detail page"""
 
-    model = models.FastTimingWarning
-    factory = factories.FastTimingWarningFactory
-    view = views.FastTimingDetailView
-    list_url_name = "dq:fast-timings-list"
+    model = models.SlowLinkWarning
+    factory = factories.SlowLinkWarningFactory
+    view = views.SlowLinkDetailView
+    list_url_name = "dq:slow-link-list"
 
     expected_output = {
         "test_timing_pattern_table_caption": (
             "between {first_effected_stop_name} and {last_effected_stop_name}"
         ),
-        "test_subtitle_text": (
-            "Line {service_name} has fast timing between timing points"
-        ),
+        "test_subtitle_text": "Line {service_name} has slow running time between stops",
     }
