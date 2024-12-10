@@ -1144,8 +1144,8 @@ class ETLBookingArrangements(ExtractBaseTestCase):
             serviced_organisations=serviced_organisations,
             flexible_operation_periods=flexible_operation_periods,
             operating_profiles=operating_profiles,
-            journey_pattern_tracks= journey_pattern_tracks,
-            route_map= route_map,
+            journey_pattern_tracks=journey_pattern_tracks,
+            route_map=route_map,
         )
 
         service_cache = []

@@ -204,15 +204,13 @@ class TransXChangeDataLoader:
         service_patterns_require_cols = ["service_pattern_id", "id", "file_id"]
         merge_fields = ["file_id", "service_pattern_id"]
         if "line_name" in service_patterns.columns:
-            service_patterns_require_cols.append('line_name')
-            merge_fields.append('line_name')
+            service_patterns_require_cols.append("line_name")
+            merge_fields.append("line_name")
 
         if not vehicle_journeys.empty:
             if not service_patterns.empty:
                 service_patterns = (
-                    service_patterns.reset_index()[
-                       service_patterns_require_cols 
-                    ]
+                    service_patterns.reset_index()[service_patterns_require_cols]
                     .drop_duplicates()
                     .rename(columns={"id": "id_service"})
                 )
