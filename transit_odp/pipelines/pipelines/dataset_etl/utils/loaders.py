@@ -243,6 +243,6 @@ def get_line_name_from_line_ref(line_ref):
             return line_ref_elements[-2]
 
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error: {e}")
 
     return None

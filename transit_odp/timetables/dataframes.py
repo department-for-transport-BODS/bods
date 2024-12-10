@@ -359,8 +359,12 @@ def journey_patterns_to_dataframe(services, drop_route_ref=True):
         journey_patterns["journey_pattern_id"] = journey_patterns[
             "service_code"
         ].str.cat(journey_patterns["journey_pattern_id"], sep="-")
+
     if drop_route_ref:
-        journey_patterns = journey_patterns.drop(["route_ref", "pattern_id"], axis=1)
+        columns_to_drop = ["route_ref", "pattern_id"]
+        journey_patterns = journey_patterns.drop(
+            [col for col in columns_to_drop if col in journey_patterns.columns], axis=1
+        )
 
     return journey_patterns
 
