@@ -9,9 +9,11 @@ import boto3
 
 
 def get_private_key():
-    ssm_client = boto3.client('ssm', region_name=settings.AWS_REGION)
-    parameter = ssm_client.get_parameter(Name=settings.CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER, WithDecryption=True)
-    private_key = parameter['Parameter']['Value']
+    ssm_client = boto3.client("ssm", region_name=settings.AWS_REGION)
+    parameter = ssm_client.get_parameter(
+        Name=settings.CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER, WithDecryption=True
+    )
+    private_key = parameter["Parameter"]["Value"]
     return private_key
 
 
