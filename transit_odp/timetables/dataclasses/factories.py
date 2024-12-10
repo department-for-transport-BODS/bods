@@ -45,6 +45,7 @@ class ServiceFactory(Factory):
     lines = [LineFactory()]
     origin = "Milton Keynes"
     destination = "Bedford"
+    service_mode = "bus"
 
 
 class TXCFileFactory(Factory):
