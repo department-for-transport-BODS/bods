@@ -948,12 +948,15 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
         )
         return data
 
+
 class CFNDownloadBulkDataArchiveView(DownloadBulkDataArchiveView):
     def get_download_file(self):
-        return (generate_signed_url(self.object.data.url))
+        return generate_signed_url(self.object.data.url)
+
     def render_to_response(self, **response_kwargs):
         download_file = self.get_download_file()
         return redirect(download_file)
+
 
 class DownloadBulkDataArchiveRegionsView(DownloadView):
     def get(self, request, *args, **kwargs):
