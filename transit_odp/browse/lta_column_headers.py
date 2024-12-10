@@ -8,34 +8,6 @@ from transit_odp.otc.constants import (
 )
 
 
-def get_overall_requires_attention(otc_service: dict) -> str:
-    """
-    Returns value for 'Requires attention' column based on the following logic:
-        If 'Scope Status' = Out of Scope OR 'Seasonal Status' = Out of Season,
-        then 'Requires attention' = No.
-        If 'Timetables requires attention' = No AND 'AVL requires attention' = No,
-        then 'Requires attention' = No.
-        If 'Timetables requires attention' = Yes OR 'AVL requires attention' = Yes,
-        then 'Requires attention' = Yes.
-
-    Args:
-        otc_service (dict): OTC Service dictionary
-
-    Returns:
-        str: Yes or No for 'Requires attention' column
-    """
-    timetable_requires_attention = otc_service.get("timetable_requires_attention")
-    avl_requires_attention = otc_service.get("avl_requires_attention")
-    scope_status = otc_service.get("scope_status")
-    seasonal_status = otc_service.get("seasonal_status")
-
-    if (scope_status == "Out of Scope") or (seasonal_status == "Out of Season"):
-        return "No"
-    if (timetable_requires_attention == "No") and (avl_requires_attention == "No"):
-        return "No"
-    return "Yes"
-
-
 def get_42_day_look_ahead_date() -> str:
     """
     Returns date for the 'Date for complete 42 day look ahead' column by
@@ -225,7 +197,7 @@ header_accessor_data_compliance_report = [
     ),
     (
         "Requires Attention",
-        lambda otc_service: get_overall_requires_attention(otc_service),
+        lambda otc_service: otc_service.get("overall_requires_attention"),
     ),
     (
         "Timetables requires attention",
