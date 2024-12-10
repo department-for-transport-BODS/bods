@@ -185,6 +185,42 @@ class TestGlossaryUrl(DqUrlsTestBase):
 
 
 @pytest.mark.django_db
+class TestSlowTimingWarningUrls(WarningUrlsTestBase):
+    url_segment = "slow-timings"
+    list_url_name = "dq:slow-timings-list"
+    list_view = views.SlowTimingsListView
+    detail_url_name = "dq:slow-timings-detail"
+    detail_view = views.SlowTimingsDetailView
+
+
+@pytest.mark.django_db
+class TestSlowLinkWarningUrls(WarningUrlsTestBase):
+    url_segment = "slow-links"
+    list_url_name = "dq:slow-link-list"
+    list_view = views.SlowLinkListView
+    detail_url_name = "dq:slow-link-detail"
+    detail_view = views.SlowLinkDetailView
+
+
+@pytest.mark.django_db
+class TestDuplicateJourneyWarningUrls(WarningUrlsTestBase):
+    url_segment = "duplicate-journeys"
+    list_url_name = "dq:duplicate-journey-list"
+    list_view = views.DuplicateJourneyListView
+    detail_url_name = "dq:duplicate-journey-detail"
+    detail_view = views.DuplicateJourneyDetailView
+
+
+@pytest.mark.django_db
+class TestBackwardTimingWarningUrls(WarningUrlsTestBase):
+    url_segment = "backward-timing"
+    list_url_name = "dq:backward-timing-list"
+    list_view = views.BackwardTimingListView
+    detail_url_name = "dq:backward-timing-detail"
+    detail_view = views.BackwardTimingDetailView
+
+
+@pytest.mark.django_db
 class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
     url_segment = "incorrect-noc"
     list_url_name = "dq:incorrect-noc-list"
@@ -209,3 +245,84 @@ class TestIncorrectNOCWarningUrls(WarningUrlsTestBase):
 
     def get_url_resolves_to_correct_view_scenarios(self):
         return (UrlResolvesViewScenario(self.generate_list_url_path(), self.list_view),)
+
+
+@pytest.mark.django_db
+class TestLastStopPickUpWarningUrls(WarningUrlsTestBase):
+    url_segment = "pick-up-only"
+    list_url_name = "dq:last-stop-pick-up-only-list"
+    list_view = views.LastStopPickUpListView
+    detail_url_name = "dq:last-stop-pick-up-only-detail"
+    detail_view = views.LastStopPickUpDetailView
+
+
+@pytest.mark.django_db
+class TestFirstStopDropOffWarningUrls(WarningUrlsTestBase):
+    url_segment = "drop-off-only"
+    list_url_name = "dq:first-stop-set-down-only-list"
+    list_view = views.FirstStopDropOffListView
+    detail_url_name = "dq:first-stop-set-down-only-detail"
+    detail_view = views.FirstStopDropOffDetailView
+
+
+@pytest.mark.django_db
+class TestLastStopNotTimingPointWarningUrls(WarningUrlsTestBase):
+    url_segment = "last-stop-not-timing-point"
+    list_url_name = "dq:last-stop-not-timing-point-list"
+    list_view = views.LastStopNotTimingListView
+    detail_url_name = "dq:last-stop-not-timing-point-detail"
+    detail_view = views.LastStopNotTimingDetailView
+
+
+@pytest.mark.django_db
+class TestFirstStopNotTimingPointWarningUrls(WarningUrlsTestBase):
+    url_segment = "first-stop-not-timing-point"
+    list_url_name = "dq:first-stop-not-timing-point-list"
+    list_view = views.FirstStopNotTimingListView
+    detail_url_name = "dq:first-stop-not-timing-point-detail"
+    detail_view = views.FirstStopNotTimingDetailView
+
+
+@pytest.mark.django_db
+class TestStopNotInNaptanWarningUrls(WarningUrlsTestBase):
+    url_segment = "stop-not-in-naptan"
+    list_url_name = "dq:stop-missing-naptan-list"
+    list_view = views.StopMissingNaptanListView
+    detail_url_name = "dq:stop-missing-naptan-detail"
+    detail_view = views.StopMissingNaptanDetailView
+
+
+@pytest.mark.django_db
+class TestStopRepeatedWarningUrls(WarningUrlsTestBase):
+    url_segment = "multiple-stops"
+    list_url_name = "dq:stop-repeated-list"
+    list_view = views.StopRepeatedListView
+    detail_url_name = "dq:stop-repeated-detail"
+    detail_view = views.StopRepeatedDetailView
+
+
+@pytest.mark.django_db
+class TestMissingStopWarningUrls(WarningUrlsTestBase):
+    url_segment = "missing-stops"
+    list_url_name = "dq:missing-stops-list"
+    list_view = views.MissingStopListView
+    detail_url_name = "dq:missing-stops-detail"
+    detail_view = views.MissingStopDetailView
+
+
+@pytest.mark.django_db
+class TestBackwardDateRangeWarningUrls(WarningUrlsTestBase):
+    url_segment = "backward-date-range"
+    list_url_name = "dq:backward-date-range-list"
+    list_view = views.BackwardDateRangeListView
+    detail_url_name = "dq:backward-date-range-detail"
+    detail_view = views.BackwardDateRangeDetailView
+
+
+@pytest.mark.django_db
+class TestIncorrectStopTypeWarningUrls(WarningUrlsTestBase):
+    url_segment = "incorrect-stop-type"
+    list_url_name = "dq:incorrect-stop-type-list"
+    list_view = views.IncorrectStopTypeListView
+    detail_url_name = "dq:incorrect-stop-type-detail"
+    detail_view = views.IncorrectStopTypeDetailView
