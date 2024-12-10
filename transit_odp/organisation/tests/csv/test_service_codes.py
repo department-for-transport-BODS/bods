@@ -854,7 +854,7 @@ def test_csv_output():
     assert csv_output["row0"][3] == '"In Scope"'  # Scope Status
     assert csv_output["row0"][4] == '"Out of Season"'  # Seasonal Status
     assert csv_output["row0"][5] == '"test_org_1"'  # Organisation Name
-    assert csv_output["row0"][6] == '"Yes"'  # Requires Attention
+    assert csv_output["row0"][6] == '"No"'  # Requires Attention
     assert csv_output["row0"][7] == '"No"'  # Timetables requires attention
     assert csv_output["row0"][8] == '"Unpublished"'  # Timetables Published Status
     assert csv_output["row0"][9] == '"Up to date"'  # Timetables Timeliness Status
@@ -960,7 +960,7 @@ def test_csv_output():
     assert csv_output["row2"][3] == '"Out of Scope"'
     assert csv_output["row2"][4] == '"Not Seasonal"'
     assert csv_output["row2"][5] == '"test_org_1"'
-    assert csv_output["row2"][6] == '"Yes"'
+    assert csv_output["row2"][6] == '"No"'
     assert csv_output["row2"][7] == '"No"'
     assert csv_output["row2"][8] == '"Unpublished"'
     assert csv_output["row2"][9] == '"Up to date"'
@@ -1180,7 +1180,7 @@ def test_csv_output():
     assert csv_output["row7"][3] == '"Out of Scope"'
     assert csv_output["row7"][4] == '"In Season"'
     assert csv_output["row7"][5] == '"test_org_1"'
-    assert csv_output["row7"][6] == '"Yes"'
+    assert csv_output["row7"][6] == '"No"'
     assert csv_output["row7"][7] == '"No"'
     assert csv_output["row7"][8] == '"Published"'
     assert csv_output["row7"][9] == '"Service hasn\'t been updated within a year"'
@@ -1483,7 +1483,7 @@ def test_weca_seasonal_status_csv_output():
     assert csv_output["row1"][3] == '"In Scope"'
     assert csv_output["row1"][4] == '"Out of Season"'
     assert csv_output["row1"][5] == '"test_org_1"'
-    assert csv_output["row1"][6] == '"Yes"'
+    assert csv_output["row1"][6] == '"No"'
     assert csv_output["row1"][7] == '"No"'
     assert csv_output["row1"][8] == '"Published"'
     assert csv_output["row1"][9] == '"Service hasn\'t been updated within a year"'
@@ -1815,7 +1815,7 @@ def test_seasonal_status_csv_output():
     assert csv_output["row1"][3] == '"In Scope"'
     assert csv_output["row1"][4] == '"Out of Season"'
     assert csv_output["row1"][5] == '"test_org_1"'
-    assert csv_output["row1"][6] == '"Yes"'
+    assert csv_output["row1"][6] == '"No"'
     assert csv_output["row1"][7] == '"No"'
     assert csv_output["row1"][8] == '"Published"'
     assert csv_output["row1"][9] == '"Service hasn\'t been updated within a year"'

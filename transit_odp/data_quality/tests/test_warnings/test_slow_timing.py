@@ -1,6 +1,8 @@
 import pytest
 
 from transit_odp.data_quality import factories, models, views
+
+# allow tests to access db
 from transit_odp.data_quality.tests.test_warnings.base_warning_test import (
     DetailPageBaseTest,
     ListPageBaseTest,
@@ -22,10 +24,10 @@ def warning():
         common_service_pattern=timing_pattern.service_pattern,
     )
 
-    return factories.FastTimingWarningFactory.create(
+    return factories.SlowTimingWarningFactory.create(
         timing_pattern=timing_pattern,
-        # 5 of the 10 timing pattern stops should be considered "effected" by
-        # the warning and stored as timings
+        # 5 of the 10 timing pattern stops should be considered "effected" by the
+        # warning and stored as timings
         timings=(5,),
         common_service_pattern=timing_pattern.service_pattern,
         service_links=(1,),
@@ -33,37 +35,39 @@ def warning():
 
 
 @pytest.mark.django_db
-class TestFastTimingListPage(ListPageBaseTest):
-    """Test Fast Timing Warnings list page"""
+class TestSlowTimingListPage(ListPageBaseTest):
+    """Test Slow Timing Warnings list page"""
 
-    model = models.FastTimingWarning
-    factory = factories.FastTimingWarningFactory
-    view = views.FastTimingListView
+    model = models.SlowTimingWarning
+    factory = factories.SlowTimingWarningFactory
+    view = views.SlowTimingsListView
     expected_output = {
         "test_get_queryset_adds_correct_message_annotation": (
-            "There is at least one journey with fast timing link between timing points"
+            "There is at least one journey with "
+            "slow timing link between timing points"
         ),
         "test_get_table_creates_correct_column_headers": ["Line", "Timing pattern (1)"],
         "test_preamble_text": (
-            "Following timing pattern(s) have been observed to have fast timing links."
+            "Following timing pattern(s) have been observed to "
+            "have slow timing links."
         ),
     }
 
 
 @pytest.mark.django_db
-class TestFastTimingDetailPage(DetailPageBaseTest):
-    """Test Fast Timing Warnings detail page"""
+class TestSlowTimingDetailPage(DetailPageBaseTest):
+    """Test Slow Timing Warnings detail page"""
 
-    model = models.FastTimingWarning
-    factory = factories.FastTimingWarningFactory
-    view = views.FastTimingDetailView
-    list_url_name = "dq:fast-timings-list"
+    model = models.SlowTimingWarning
+    factory = factories.SlowTimingWarningFactory
+    view = views.SlowTimingsDetailView
+    list_url_name = "dq:slow-timings-list"
 
     expected_output = {
         "test_timing_pattern_table_caption": (
-            "between {first_effected_stop_name} and {last_effected_stop_name}"
+            "between {first_effected_stop_name} and " "{last_effected_stop_name}"
         ),
         "test_subtitle_text": (
-            "Line {service_name} has fast timing between timing points"
+            "Line {service_name} has slow timing between " "timing points"
         ),
     }

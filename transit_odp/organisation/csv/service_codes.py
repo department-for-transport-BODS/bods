@@ -10,10 +10,7 @@ from transit_odp.browse.common import (
     get_all_naptan_atco_df,
     get_all_weca_traveline_region_map,
 )
-from transit_odp.browse.lta_column_headers import (
-    get_operator_name,
-    get_overall_requires_attention,
-)
+from transit_odp.browse.lta_column_headers import get_operator_name
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
@@ -413,7 +410,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         ),
         CSVColumn(
             header="Requires Attention",
-            accessor=lambda otc_service: get_overall_requires_attention(otc_service),
+            accessor=lambda otc_service: otc_service.get("overall_requires_attention"),
         ),
         CSVColumn(
             header="Timetables requires attention",
@@ -590,6 +587,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         avl_published_status: str,
         avl_to_timetable_match_status: str,
         avl_requires_attention: str,
+        overall_requires_attention: str,
     ) -> None:
         self._object_list.append(
             {
@@ -633,11 +631,40 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 "avl_published_status": avl_published_status,
                 "avl_to_timetable_match_status": avl_to_timetable_match_status,
                 "avl_requires_attention": avl_requires_attention,
+                "overall_requires_attention": overall_requires_attention,
             }
         )
 
     def modify_dataset_line_name(self, line_names: list) -> str:
         return " ".join(line_name for line_name in line_names)
+
+    def get_overall_requires_attention(
+        self,
+        timetable_requires_attention: Optional[str],
+        avl_requires_attention: Optional[str],
+        exempted: Optional[bool],
+        seasonal_service: Optional[SeasonalService],
+    ) -> str:
+        """
+        Returns value for 'Requires attention' column based on the following logic:
+            If 'Scope Status' = Out of Scope OR 'Seasonal Status' = Out of Season,
+            then 'Requires attention' = No.
+            If 'Timetables requires attention' = No AND 'AVL requires attention' = No,
+            then 'Requires attention' = No.
+            If 'Timetables requires attention' = Yes OR 'AVL requires attention' = Yes,
+            then 'Requires attention' = Yes.
+
+        Args:
+            otc_service (dict): OTC Service dictionary
+
+        Returns:
+            str: Yes or No for 'Requires attention' column
+        """
+        if exempted or (seasonal_service and not seasonal_service.seasonal_status):
+            return "No"
+        if (timetable_requires_attention == "No") and (avl_requires_attention == "No"):
+            return "No"
+        return "Yes"
 
     def _get_require_attention(
         self,
@@ -821,6 +848,13 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 avl_to_timetable_match_status,
             )
 
+            overall_requires_attention = self.get_overall_requires_attention(
+                require_attention,
+                avl_requires_attention,
+                exempted,
+                seasonal_service,
+            )
+
             self._update_data(
                 service,
                 file_attribute,
@@ -834,6 +868,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 avl_published_status,
                 avl_to_timetable_match_status,
                 avl_requires_attention,
+                overall_requires_attention,
             )
 
     def get_queryset(self):
