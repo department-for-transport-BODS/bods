@@ -105,6 +105,18 @@
           <StopPointRef>3290YYA00384</StopPointRef>
         </To>
         <Distance>1340</Distance>
+        <Track>
+          <Mapping>
+            <Location id="L1">
+              <Longitude>-1.122750</Longitude>
+              <Latitude>53.984560</Latitude>
+            </Location>
+            <Location id="L2">
+              <Longitude>-1.122540</Longitude>
+              <Latitude>53.984470</Latitude>
+            </Location>
+          </Mapping>
+        </Track>
       </RouteLink>
       <RouteLink id="RL2" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
         <From>
@@ -113,428 +125,19 @@
         <To>
           <StopPointRef>3290YYA00895</StopPointRef>
         </To>
-      </RouteLink>
-      <RouteLink id="RL3" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00895</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00209</StopPointRef>
-        </To>
-        <Distance>1943</Distance>
-      </RouteLink>
-      <RouteLink id="RL4" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00209</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00130</StopPointRef>
-        </To>
-        <Distance>573</Distance>
-      </RouteLink>
-      <RouteLink id="RL5" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00130</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00124</StopPointRef>
-        </To>
-        <Distance>336</Distance>
-      </RouteLink>
-      <RouteLink id="RL6" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00124</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00162</StopPointRef>
-        </To>
-        <Distance>650</Distance>
-      </RouteLink>
-      <RouteLink id="RL7" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00162</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00375</StopPointRef>
-        </To>
-        <Distance>617</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL8" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00375</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00383</StopPointRef>
-        </To>
-        <Distance>1539</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL9" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00383</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>0100BRP90310</StopPointRef>
-        </To>
-        <Distance>1213</Distance>
-        
-      </RouteLink>
-    </RouteSection>
-    <RouteSection id="RS2">
-      <RouteLink id="RL10" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>0100BRP90310</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA01595</StopPointRef>
-        </To>
-        <Distance>24</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL11" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA01595</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00700</StopPointRef>
-        </To>
-        <Distance>456</Distance>
-      </RouteLink>
-      <RouteLink id="RL12" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00700</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00002</StopPointRef>
-        </To>
-      </RouteLink>
-      <RouteLink id="RL13" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00002</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00384</StopPointRef>
-        </To>
-        <Distance>375</Distance>
-      </RouteLink>
-      <RouteLink id="RL14" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00384</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00382</StopPointRef>
-        </To>
-        <Distance>376</Distance>
-      </RouteLink>
-      <RouteLink id="RL15" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00382</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00380</StopPointRef>
-        </To>
-        <Distance>500</Distance>
-      </RouteLink>
-      <RouteLink id="RL16" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00380</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00895</StopPointRef>
-        </To>
-        <Distance>440</Distance>
-      </RouteLink>
-      <RouteLink id="RL17" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00895</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00370</StopPointRef>
-        </To>
-        <Distance>887</Distance>
-      </RouteLink>
-      <RouteLink id="RL18" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00370</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00374</StopPointRef>
-        </To>
-        <Distance>297</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL19" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00374</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00371</StopPointRef>
-        </To>
-        <Distance>377</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL20" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00371</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00209</StopPointRef>
-        </To>
-        <Distance>392</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL21" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00209</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00212</StopPointRef>
-        </To>
-        <Distance>412</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL22" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00212</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00130</StopPointRef>
-        </To>
-        <Distance>163</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL23" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00130</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00124</StopPointRef>
-        </To>
-        <Distance>336</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL24" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00124</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00162</StopPointRef>
-        </To>
-        <Distance>650</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL25" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00162</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00163</StopPointRef>
-        </To>
-        <Distance>364</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL26" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00163</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00375</StopPointRef>
-        </To>
-        <Distance>259</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL27" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00375</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00379</StopPointRef>
-        </To>
-        <Distance>579</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL28" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00379</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00381</StopPointRef>
-        </To>
-        <Distance>544</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL29" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00381</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00383</StopPointRef>
-        </To>
-        <Distance>432</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL30" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00383</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00001</StopPointRef>
-        </To>
-        <Distance>290</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL31" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00001</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00701</StopPointRef>
-        </To>
-        <Distance>612</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL32" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00701</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>0100BRP90310</StopPointRef>
-        </To>
-        <Distance>312</Distance>
-        
-      </RouteLink>
-    </RouteSection>
-    <RouteSection id="RS3">
-      <RouteLink id="RL33" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>0100BRP90310</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA01595</StopPointRef>
-        </To>
-        <Distance>24</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL34" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA01595</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00700</StopPointRef>
-        </To>
-        <Distance>456</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL35" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00700</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00002</StopPointRef>
-        </To>
-        <Distance>499</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL36" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00002</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00384</StopPointRef>
-        </To>
-        <Distance>375</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL37" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00384</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00382</StopPointRef>
-        </To>
-        <Distance>376</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL38" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00382</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00380</StopPointRef>
-        </To>
-        <Distance>500</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL39" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00380</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00895</StopPointRef>
-        </To>
-        <Distance>440</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL40" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00895</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00370</StopPointRef>
-        </To>
-        <Distance>887</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL41" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00370</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00374</StopPointRef>
-        </To>
-        <Distance>297</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL42" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00374</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00371</StopPointRef>
-        </To>
-        <Distance>377</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL43" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00371</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00209</StopPointRef>
-        </To>
-        <Distance>392</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL44" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00209</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00212</StopPointRef>
-        </To>
-        <Distance>412</Distance>
-        
-      </RouteLink>
-      <RouteLink id="RL45" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
-        <From>
-          <StopPointRef>3290YYA00212</StopPointRef>
-        </From>
-        <To>
-          <StopPointRef>3290YYA00130</StopPointRef>
-        </To>
-        <Distance>163</Distance>
-        
+        <Distance>1306</Distance>
+        <Track>
+          <Mapping>
+            <Location id="L63">
+              <Longitude>-1.108960</Longitude>
+              <Latitude>53.977150</Latitude>
+            </Location>
+            <Location id="L64">
+              <Longitude>-1.108920</Longitude>
+              <Latitude>53.977120</Latitude>
+            </Location>
+          </Mapping>
+        </Track>
       </RouteLink>
     </RouteSection>
   </RouteSections>
@@ -547,12 +150,12 @@
     <Route id="RT43" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
       <PrivateCode>YFAO002A-43</PrivateCode>
       <Description>Rawcliffe Bar - Rawcliffe Bar</Description>
-      <RouteSectionRef>RS2</RouteSectionRef>
+      <RouteSectionRef>RS1</RouteSectionRef>
     </Route>
     <Route id="RT44" CreationDateTime="2020-11-22T11:00:00" ModificationDateTime="2022-12-01T06:59:36" Modification="revise" RevisionNumber="262">
       <PrivateCode>YFAO002A-44</PrivateCode>
       <Description>Rawcliffe Bar - Rawcliffe Bar</Description>
-      <RouteSectionRef>RS3</RouteSectionRef>
+      <RouteSectionRef>RS1</RouteSectionRef>
     </Route>
   </Routes>
   <JourneyPatternSections>

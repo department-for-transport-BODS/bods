@@ -390,6 +390,7 @@ class TransXChangeExtractor:
             list(route_ref_link.items()), columns=["route_ref", "rs_ref"]
         )
         vj_tracks_map = create_vj_tracks_map(journey_patterns, route_map)
+        vj_tracks_map["file_id"] = self.file_id
 
         # Collect all unique route sections used in tracks
         used_route_sections = set()
@@ -420,7 +421,6 @@ class TransXChangeExtractor:
                             if locations:
                                 for location in locations:
                                     if easting_northing_in_translation:
-                                        print("Get easting and northing")
                                         easting = location.get_element_or_none(
                                             ["Easting"]
                                         )
@@ -437,7 +437,6 @@ class TransXChangeExtractor:
                                             )
                                         )
                                     else:
-                                        print("get long lat")
                                         Longitude = location.get_element_or_none(
                                             ["Longitude"]
                                         )
@@ -462,6 +461,7 @@ class TransXChangeExtractor:
                 logger.warning(f"Route link is missing for {route_section_id}")
 
         tracks = pd.DataFrame(sections_tracks)
+        tracks["file_id"] = self.file_id
         return tracks, vj_tracks_map
 
     def extract_vehicle_journeys(self):
