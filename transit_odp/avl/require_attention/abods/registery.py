@@ -44,7 +44,6 @@ class AbodsClient:
         headers = {"Authorization": f"Bearer {settings.ABODS_AVL_AUTH_TOKEN}"}
 
         try:
-            print("ABODS URL:", url)
             response = requests.post(
                 url=url,
                 headers=headers,
@@ -54,7 +53,6 @@ class AbodsClient:
                 files=files,
                 timeout=timeout,
             )
-            print("REQUEST RESPONSE:", response)
             response.raise_for_status()
         except Timeout as e:
             msg = f"Timeout Error: {e}"
@@ -99,7 +97,6 @@ class AbodsClient:
         Return Pydentic model response
         """
         response = self._make_request()
-        print("fetch_line_details response:", response)
         return response
 
 
