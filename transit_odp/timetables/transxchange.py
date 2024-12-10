@@ -416,7 +416,7 @@ class TransXChangeDocument:
         """
         xpath = ["Routes", "Route"]
 
-        return self._root.get_elements(xpath)
+        return self._root.get_elements_or_none(xpath)
 
     def get_route_sections(self):
         """

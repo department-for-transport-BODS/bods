@@ -348,6 +348,8 @@ class TransXChangeExtractor:
 
         # Get routes and create a route reference link dictionary
         routes = self.doc.get_route()
+        if not routes:
+            return pd.DataFrame(), pd.DataFrame()
         route_ref_link = {}
 
         self.doc.check_long_lat_in_location()
