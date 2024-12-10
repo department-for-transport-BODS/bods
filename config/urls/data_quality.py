@@ -20,12 +20,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.ReportOverviewView.as_view(),
+                    view=views.FastTimingListView.as_view(),
                     name="fast-timings-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.ReportOverviewView.as_view(),
+                    view=views.FastTimingDetailView.as_view(),
                     name="fast-timings-detail",
                 ),
             ]
@@ -54,12 +54,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.ReportOverviewView.as_view(),
+                    view=views.FastLinkListView.as_view(),
                     name="fast-link-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.ReportOverviewView.as_view(),
+                    view=views.FastLinkDetailView.as_view(),
                     name="fast-link-detail",
                 ),
             ]
@@ -118,7 +118,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=DQSviews.IncorrectNOCListView.as_view(),
+                    view=views.IncorrectNOCListView.as_view(),
                     name="incorrect-noc-list",
                 ),
             ]
@@ -240,12 +240,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.ReportOverviewView.as_view(),
+                    view=views.ServiceLinkMissingStopListView.as_view(),
                     name="service-link-missing-stops-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.ReportOverviewView.as_view(),
+                    view=views.ServiceLinkMissingStopDetailView.as_view(),
                     name="service-link-missing-stops-detail",
                 ),
             ]
@@ -291,12 +291,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.ReportOverviewView.as_view(),
+                    view=views.JourneyOverlapListView.as_view(),
                     name="journey-overlap-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.ReportOverviewView.as_view(),
+                    view=views.JourneyOverlapDetailView.as_view(),
                     name="journey-overlap-detail",
                 ),
             ]
@@ -347,7 +347,7 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.ReportOverviewView.as_view(),
+                    view=views.LineExpiredListView.as_view(),
                     name="line-expired-list",
                 )
             ]
@@ -359,12 +359,12 @@ urlpatterns = [
             [
                 path(
                     "",
-                    view=views.ReportOverviewView.as_view(),
+                    view=views.LineMissingBlockIDListView.as_view(),
                     name="line-missing-block-id-list",
                 ),
                 path(
                     "<uuid:warning_pk>/",
-                    view=views.ReportOverviewView.as_view(),
+                    view=views.LineMissingBlockIDDetailView.as_view(),
                     name="line-missing-block-id-detail",
                 ),
             ]

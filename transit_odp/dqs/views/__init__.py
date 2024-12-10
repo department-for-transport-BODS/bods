@@ -36,7 +36,6 @@ from .serviced_organisation_out_of_date import (
     ServicedOrganisationOutOfDateListView,
     ServicedOrganisationOutOfDateDetailView,
 )
-from .incorrect_noc import IncorrectNOCListView
 
 from .suppress_observation import SuppressObservationView
 
@@ -62,5 +61,4 @@ __all__ = [
     "SuppressObservationView",
     "ServicedOrganisationOutOfDateListView",
     "ServicedOrganisationOutOfDateDetailView",
-    "IncorrectNOCListView",
 ]

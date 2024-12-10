@@ -185,12 +185,30 @@ class TestGlossaryUrl(DqUrlsTestBase):
 
 
 @pytest.mark.django_db
+class TestFastTimingWarningUrls(WarningUrlsTestBase):
+    url_segment = "fast-timings"
+    list_url_name = "dq:fast-timings-list"
+    list_view = views.FastTimingListView
+    detail_url_name = "dq:fast-timings-detail"
+    detail_view = views.FastTimingDetailView
+
+
+@pytest.mark.django_db
 class TestSlowTimingWarningUrls(WarningUrlsTestBase):
     url_segment = "slow-timings"
     list_url_name = "dq:slow-timings-list"
     list_view = views.SlowTimingsListView
     detail_url_name = "dq:slow-timings-detail"
     detail_view = views.SlowTimingsDetailView
+
+
+@pytest.mark.django_db
+class TestFastLinkWarningUrls(WarningUrlsTestBase):
+    url_segment = "fast-links"
+    list_url_name = "dq:fast-link-list"
+    list_view = views.FastLinkListView
+    detail_url_name = "dq:fast-link-detail"
+    detail_view = views.FastLinkDetailView
 
 
 @pytest.mark.django_db
@@ -293,6 +311,15 @@ class TestStopNotInNaptanWarningUrls(WarningUrlsTestBase):
 
 
 @pytest.mark.django_db
+class TestServiceLinkMissingStopWarningUrls(WarningUrlsTestBase):
+    url_segment = "service-link-missing-stops"
+    list_url_name = "dq:service-link-missing-stops-list"
+    list_view = views.ServiceLinkMissingStopListView
+    detail_url_name = "dq:service-link-missing-stops-detail"
+    detail_view = views.ServiceLinkMissingStopDetailView
+
+
+@pytest.mark.django_db
 class TestStopRepeatedWarningUrls(WarningUrlsTestBase):
     url_segment = "multiple-stops"
     list_url_name = "dq:stop-repeated-list"
@@ -308,6 +335,15 @@ class TestMissingStopWarningUrls(WarningUrlsTestBase):
     list_view = views.MissingStopListView
     detail_url_name = "dq:missing-stops-detail"
     detail_view = views.MissingStopDetailView
+
+
+@pytest.mark.django_db
+class TestJourneyOverlapWarningUrls(WarningUrlsTestBase):
+    url_segment = "journey-overlap"
+    list_url_name = "dq:journey-overlap-list"
+    list_view = views.JourneyOverlapListView
+    detail_url_name = "dq:journey-overlap-detail"
+    detail_view = views.JourneyOverlapDetailView
 
 
 @pytest.mark.django_db
