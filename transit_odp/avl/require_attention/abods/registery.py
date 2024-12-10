@@ -1,14 +1,13 @@
 import logging
-import requests
-from http import HTTPStatus
 from datetime import datetime, timedelta
-from typing import Optional, List, Union
-from requests import HTTPError, RequestException, Timeout
+from http import HTTPStatus
+from typing import List, Optional, Union
 
+import requests
 from django.conf import settings
 from django.core.exceptions import ValidationError
-
 from pydantic.main import BaseModel
+from requests import HTTPError, RequestException, Timeout
 
 logger = logging.getLogger(__name__)
 
@@ -109,12 +108,12 @@ class AbodsRegistery:
 
     def records(self):
         self.fetch_records()
-        self.normailze()
+        self.normalize()
         self.remove_duplicate()
         return self.lines
 
-    def normailze(self):
-        logger.info("ABODSRegistery: Nomalizing line details")
+    def normalize(self):
+        logger.info("ABODSRegistery: Normalizing line details")
         for line_details in self.data.avlLineLevelStatus:
             date_one_month_ago = datetime.today() - timedelta(days=30)
             if line_details.lastRecordedAtTime.date() >= date_one_month_ago.date():
