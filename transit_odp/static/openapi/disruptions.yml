@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Disruption data API
+  title: Disruptions data API
   version: 1.0.0
 
 servers:
