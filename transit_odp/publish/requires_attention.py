@@ -486,7 +486,8 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
                 or f"{line_name}__{operator_ref}" not in synced_in_last_month
             ):
                 _update_data(object_list, service)
-
+        else:
+            _update_data(object_list, service)
     return object_list
 
 
