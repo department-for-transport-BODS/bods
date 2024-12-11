@@ -60,9 +60,7 @@ def _get_consumer_api_response(url: str, query_params: QueryDict):
     params = query_params.copy()
     params.pop(BODS_USER_API_KEY_PROPERTY, None)
 
-    ALLOWED_PARAMETERS = (
-        "subscriptionId",
-    )
+    ALLOWED_PARAMETERS = ("subscriptionId",)
 
     for key in params:
         if key not in ALLOWED_PARAMETERS:
