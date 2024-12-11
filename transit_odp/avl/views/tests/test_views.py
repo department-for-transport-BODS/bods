@@ -154,8 +154,6 @@ def test_avl_require_attention_search_results(publish_client):
     licence_number = "PD5000229"
     all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
     all_line_names = [f"line:{n}" for n in range(total_services)]
-    print("all_service_codes>>", all_service_codes)
-    print("all_line_names>>", all_line_names)
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
