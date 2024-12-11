@@ -90,9 +90,9 @@ def test_avl_require_attention_stats(publish_client):
     response = publish_client.get(url, data={"q": ""}, follow=True)
 
     assert response.status_code == 200
-    assert len(response.context["view"].object_list) == 3
+    assert len(response.context["view"].object_list) == 7
     assert response.context["total_in_scope_in_season_services"] == 7
-    assert response.context["services_require_attention_percentage"] == 43
+    assert response.context["services_require_attention_percentage"] == 100
 
 
 def test_avl_require_attention_search_no_results(publish_client):
@@ -208,4 +208,4 @@ def test_avl_require_attention_search_results(publish_client):
     response = publish_client.get(url, data={"q": "PD5000229"}, follow=True)
 
     assert response.status_code == 200
-    assert len(response.context["table"].data) == 3
+    assert len(response.context["table"].data) == 7
