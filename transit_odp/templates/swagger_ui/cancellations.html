@@ -3,13 +3,14 @@
 {% load breadcrumbs %}
 {% load i18n %}
 {% block title_tag %}
-  {% trans "Fares data API" %}
+  {% trans "Cancellations data API" %}
 {% endblock %}
 {# c.f. https://petstore.swagger.io/?_ga=2.232423831.96874064.1570887934-705927868.1570887934 #}
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'Try API Service' 'api-select' host hosts.data %}
-  {% breadcrumb_url 'Fares data API' 'api:faresopenapi' host hosts.data %}
+  {% breadcrumb_url 'Cancellations data API' 'api:cancellationsapioverview' host hosts.data %}
+  {% breadcrumb_url 'Cancellations data API' 'api:cancellationsopenapi' host hosts.data %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
@@ -20,7 +21,7 @@
         to customise your API response using the available query parameters.
         If you are registered and logged in, you will be given a full response.
         Otherwise you will be given an example response.
-        You can also <a class="govuk-link" href="{% static 'openapi/fares.yml' %}">download the fares OpenAPI specification</a>.
+        You can also <a class="govuk-link" href="{% static 'openapi/cancellations.yml' %}">download the cancellations OpenAPI specification</a>.
       </p>
       <h3 class="govuk-heading-m">Ready to use the API?</h3>
       <p><a class="govuk-link" href="/guidance/requirements/?section=api">View developer documentation</a></p>
@@ -33,27 +34,15 @@
 {% block scripts %}
   {{ block.super }}
   <script nonce="{{request.csp_nonce}}" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script nonce="{{request.csp_nonce}}">BODSFrontend.initAPIDocs('#swagger-ui', "{% static 'openapi/fares.yml' %}")</script>
+  <script nonce="{{request.csp_nonce}}">BODSFrontend.initAPIDocs('#swagger-ui', "{% static 'openapi/cancellations.yml' %}")</script>
   <script nonce="{{request.csp_nonce}}">
-        function bindExecuteButtonClickEvent() {
-
-            const executeButton = document.querySelector('button.execute');
-            if(executeButton) {
-                executeButton.addEventListener('click', function () {
-                    gtag('event', 'Execute API button', {
-                        'event_category': 'button',
-                        'event_label': 'timetables swagger',
-                        'event_action': 'click'
-                    });
-                });
-            }
-
-        }
-
         $(document).ready(function () {
-            $(document).on("click", "button.btn.try-out__btn", function () {
-                // After "Try it out" is clicked, bind the click event to the "Execute" button
-                bindExecuteButtonClickEvent()
+            $(document).on("click", "button.btn.execute", function () {
+                gtag('event', 'Execute API button', {
+                    'event_category': 'button',
+                    'event_label': 'cancellations swagger',
+                    'event_action': 'click'
+                });
             });
         });
   </script>

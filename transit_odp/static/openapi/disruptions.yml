@@ -1,25 +1,6 @@
 openapi: 3.0.3
 info:
-  description:
-    You can use the interactive documentation
-    to customise your API response using the available query parameters.
-    If you are registered and logged in, you will be given a full response.
-    Otherwise you will be given an example response.
-
-    <h1>Ready to use the API?</h1>
-
-    <a href="/guidance/requirements/?section=api">
-      View developer documentation
-    </a>
-
-    <h1>First time API user?</h1>
-
-    <a href="/guide-me">
-    Guide Me
-    </a>
-
   title: Disruption data API
-
   version: 1.0.0
 
 servers:
@@ -36,7 +17,7 @@ paths:
       description: Returns all disruptions
       responses:
         200:
-          description: Successfully retrieved all disruptions.
+          description: Successfully retrieved all disruptions
           content:
             text/xml:
               schema:
