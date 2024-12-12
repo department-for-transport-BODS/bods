@@ -184,7 +184,6 @@ class LineMetadataDetailView(DetailView):
             .add_live_data()
             .add_nocs()
             .select_related("live_revision")
-            .add_is_live_pti_compliant()
         )
 
     def get_service_type(self, revision_id, service_code, line_name) -> str:
@@ -776,7 +775,6 @@ class SearchView(BaseSearchView):
             .add_organisation_name()
             .add_live_data()
             .add_admin_area_names()
-            .add_is_live_pti_compliant()
             .order_by(*self.get_ordering())
         )
 
