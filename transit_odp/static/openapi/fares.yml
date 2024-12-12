@@ -1,19 +1,5 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  description: |
-    You can use the interactive documentation
-    to customise your API response using the available query parameters.
-    If you are registered and logged in, you will be given a full response.
-    Otherwise you will be given an example response.
-
-    ## Ready to use the API?
-
-    [View developer documentation](/guidance/requirements/?section=api)
-
-    ## First time API user?
-
-    [Guide me](/guide-me/)
-
   title: Fares data API
   version: 1.0.0
 
