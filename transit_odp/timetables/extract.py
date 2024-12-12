@@ -420,7 +420,6 @@ class TransXChangeExtractor:
                             if locations:
                                 for location in locations:
                                     if easting_northing_in_translation:
-                                        print("Get easting and northing")
                                         easting = location.get_element_or_none(
                                             ["Easting"]
                                         )
@@ -437,7 +436,6 @@ class TransXChangeExtractor:
                                             )
                                         )
                                     else:
-                                        print("get long lat")
                                         Longitude = location.get_element_or_none(
                                             ["Longitude"]
                                         )
