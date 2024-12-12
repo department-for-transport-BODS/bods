@@ -23,6 +23,7 @@ from transit_odp.avl.tasks import (
     task_create_sirivm_tfl_zipfile,
     task_create_sirivm_zipfile,
     task_monitor_avl_feeds,
+    task_reset_avl_weekly_cache,
     task_run_feed_validation,
     task_weekly_assimilate_post_publishing_check_reports,
 )
@@ -38,6 +39,7 @@ from transit_odp.organisation.factories import (
 from transit_odp.organisation.models import Dataset
 from transit_odp.users.constants import DeveloperType, OrgAdminType
 from transit_odp.users.factories import UserFactory
+from waffle.testutils import override_flag
 
 pytestmark = pytest.mark.django_db
 CAVL_PATH = "transit_odp.avl.tasks.CAVLService"
@@ -455,10 +457,43 @@ def test_feed_validation_can_handle_empty_response(get_client):
     "start_date,expected_date",
     [("2022-05-24", date(2022, 5, 24)), (None, date(2022, 5, 25))],
 )
+@patch("transit_odp.avl.tasks.reset_vehicle_activity_in_cache")
 @patch("transit_odp.avl.tasks.WeeklyReport")
 def test_weekly_ppc_report_started_with_correct_date(
-    weekly_report_mock: Mock, start_date: str, expected_date: date
+    weekly_report_mock: Mock,
+    reset_vehicle_activity_in_cache: Mock,
+    start_date: str,
+    expected_date: date,
 ):
     task_weekly_assimilate_post_publishing_check_reports(start_date)
 
     weekly_report_mock.assert_called_once_with(expected_date)
+    reset_vehicle_activity_in_cache.assert_not_called()
+
+
+@freeze_time("2022-05-25")
+@pytest.mark.parametrize(
+    "start_date,expected_date",
+    [("2022-05-24", date(2022, 5, 24)), (None, date(2022, 5, 25))],
+)
+@override_flag("is_avl_require_attention_active", active=True)
+@patch("transit_odp.avl.tasks.reset_vehicle_activity_in_cache")
+@patch("transit_odp.avl.tasks.WeeklyReport")
+def test_weekly_ppc_report_started_with_correct_date_flag_on(
+    weekly_report_mock: Mock,
+    reset_vehicle_activity_in_cache: Mock,
+    start_date: str,
+    expected_date: date,
+):
+    task_weekly_assimilate_post_publishing_check_reports(start_date)
+
+    weekly_report_mock.assert_called_once_with(expected_date)
+    reset_vehicle_activity_in_cache.assert_called_once()
+
+
+@patch("transit_odp.avl.tasks.reset_vehicle_activity_in_cache")
+def test_reset_vehicle_activity_in_cache(
+    reset_vehicle_activity_in_cache: Mock,
+):
+    task_reset_avl_weekly_cache()
+    reset_vehicle_activity_in_cache.assert_called_once()

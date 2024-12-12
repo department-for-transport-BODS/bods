@@ -34,6 +34,7 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.loaders import (
     add_service_pattern_to_localities,
     add_service_pattern_to_service_pattern_stops,
     create_feed_name,
+    get_line_name_from_line_ref,
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import TransformedData
 from transit_odp.pipelines.pipelines.dataset_etl.utils.timestamping import (
@@ -200,24 +201,28 @@ class TransXChangeDataLoader:
 
     def load_vehicle_journeys(self, service_patterns):
         vehicle_journeys = self.transformed.vehicle_journeys
+        service_patterns_require_cols = ["service_pattern_id", "id", "file_id"]
+        merge_fields = ["file_id", "service_pattern_id"]
+        if "line_name" in service_patterns.columns:
+            service_patterns_require_cols.append("line_name")
+            merge_fields.append("line_name")
+
         if not vehicle_journeys.empty:
             if not service_patterns.empty:
                 service_patterns = (
-                    service_patterns.reset_index()[
-                        ["service_pattern_id", "id", "file_id", "line_name"]
-                    ]
+                    service_patterns.reset_index()[service_patterns_require_cols]
                     .drop_duplicates()
                     .rename(columns={"id": "id_service"})
                 )
                 vehicle_journeys["line_name"] = vehicle_journeys["line_ref"].apply(
-                    lambda x: str(x).split(":")[-1] if pd.notnull(x) else None
+                    lambda x: get_line_name_from_line_ref(x) if pd.notnull(x) else None
                 )
 
                 vehicle_journeys = (
                     vehicle_journeys.reset_index()
                     .merge(
                         service_patterns,
-                        on=["file_id", "service_pattern_id", "line_name"],
+                        on=merge_fields,
                         how="left",
                     )
                     .reset_index()

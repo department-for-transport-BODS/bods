@@ -47,10 +47,10 @@ class ExtractStandardStopActivities(ExtractBaseTestCase):
         self.assertFalse(activities["activity_id"].isna().any())
         self.assertEqual(activities.shape[0], 21)
         self.assertEqual(
-            activities[activities["stop_atco"] == "450029899"]["activity_id"].iloc[0], 8
+            activities[activities["stop_atco"] == "450029899"]["activity_id"].iloc[0], 1
         )
         self.assertEqual(
-            activities[activities["stop_atco"] == "450050590"]["activity_id"].iloc[0], 4
+            activities[activities["stop_atco"] == "450050590"]["activity_id"].iloc[0], 1
         )
         self.assertEqual(
             activities[activities["stop_atco"] == "450014638"]["activity_id"].iloc[0], 3

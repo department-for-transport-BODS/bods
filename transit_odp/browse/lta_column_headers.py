@@ -1,94 +1,11 @@
 from datetime import datetime, timedelta
 
-from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
-from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
-    get_vehicle_activity_operatorref_linename,
-)
 from transit_odp.organisation.models import Organisation
 from transit_odp.otc.constants import (
     OTC_SCOPE_STATUS_IN_SCOPE,
     OTC_SCOPE_STATUS_OUT_OF_SCOPE,
     UNDER_MAINTENANCE,
 )
-
-
-def get_overall_requires_attention(otc_service: dict) -> str:
-    """
-    Returns value for 'Requires attention' column based on the following logic:
-        If 'Scope Status' = Out of Scope OR 'Seasonal Status' = Out of Season,
-        then 'Requires attention' = No.
-        If 'Timetables requires attention' = No AND 'AVL requires attention' = No,
-        then 'Requires attention' = No.
-        If 'Timetables requires attention' = Yes OR 'AVL requires attention' = Yes,
-        then 'Requires attention' = Yes.
-
-    Args:
-        otc_service (dict): OTC Service dictionary
-
-    Returns:
-        str: Yes or No for 'Requires attention' column
-    """
-    timetable_requires_attention = otc_service.get("timetable_requires_attention")
-    avl_requires_attention = otc_service.get("avl_requires_attention")
-    scope_status = otc_service.get("scope_status")
-    seasonal_status = otc_service.get("seasonal_status")
-
-    if (scope_status == "Out of Scope") or (seasonal_status == "Out of Season"):
-        return "No"
-    if (timetable_requires_attention == "No") and (avl_requires_attention == "No"):
-        return "No"
-    return "Yes"
-
-
-def get_avl_requires_attention(otc_service: dict) -> str:
-    """
-    Returns value for 'AVL requires attention' column based on the following logic:
-        If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to Yes,
-        then 'AVL requires attention' = No.
-        If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to No,
-        then 'AVL requires attention' = Yes.
-
-    Args:
-        avl_published_status (str): Value of 'AVL Published Status'
-        avl_to_timetable__match_status (str): Value of 'AVL to Timetable Match Status'
-
-    Returns:
-        str: Yes or No for 'AVL requires attention' column
-    """
-    avl_published_status = otc_service.get("avl_published_status")
-    avl_to_timetable_match_status = otc_service.get("avl_to_timetable_match_status")
-
-    if (avl_published_status == "Yes") and (avl_to_timetable_match_status == "Yes"):
-        return "No"
-    return "Yes"
-
-
-def get_avl_published_status(otc_service: dict) -> str:
-    abods_registry = AbodsRegistery()
-    synced_in_last_month = abods_registry.records()
-    operator_ref = otc_service.get("national_operator_code")
-    line_name = otc_service.get("otc_service_number")
-
-    if f"{line_name}__{operator_ref}" in synced_in_last_month:
-        return "Yes"
-    return "No"
-
-
-def get_avl_to_timetable_match_status(otc_service: dict) -> str:
-    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
-    operator_ref = otc_service.get("national_operator_code")
-    line_name = otc_service.get("otc_service_number")
-
-    if not uncounted_activity_df.loc[
-        (uncounted_activity_df["OperatorRef"] == operator_ref)
-        & (
-            uncounted_activity_df["LineRef"].isin(
-                [line_name, line_name.replace(" ", "_")]
-            )
-        )
-    ].empty:
-        return "Yes"
-    return "No"
 
 
 def get_42_day_look_ahead_date() -> str:
@@ -280,7 +197,7 @@ header_accessor_data_compliance_report = [
     ),
     (
         "Requires Attention",
-        lambda otc_service: get_overall_requires_attention(otc_service),
+        lambda otc_service: otc_service.get("overall_requires_attention"),
     ),
     (
         "Timetables requires attention",
@@ -299,15 +216,15 @@ header_accessor_data_compliance_report = [
     ("Timetables critical DQ issues", lambda otc_service: UNDER_MAINTENANCE),
     (
         "AVL requires attention",
-        lambda otc_service: get_avl_requires_attention(otc_service),
+        lambda otc_service: otc_service.get("avl_requires_attention"),
     ),
     (
         "AVL Published Status",
-        lambda otc_service: get_avl_published_status(otc_service),
+        lambda otc_service: otc_service.get("avl_published_status"),
     ),
     (
         "AVL to Timetable Match Status",
-        lambda otc_service: get_avl_to_timetable_match_status(otc_service),
+        lambda otc_service: otc_service.get("avl_to_timetable_match_status"),
     ),
     ("Fares requires attention", lambda otc_service: UNDER_MAINTENANCE),
     ("Fares Published Status", lambda otc_service: UNDER_MAINTENANCE),
