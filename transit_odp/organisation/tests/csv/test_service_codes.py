@@ -1760,11 +1760,6 @@ def test_seasonal_status_csv_output():
     csv_string = service_codes_csv.to_string()
     csv_output = get_csv_output(csv_string)
 
-    print("row0>>", csv_output["row0"])
-    print("row1>>", csv_output["row1"])
-    print("row2>>", csv_output["row2"])
-    print("row3>>", csv_output["row3"])
-
     assert csv_output["row0"][0] == '"PD0001111:0"'
     assert csv_output["row0"][1] == '"Line0"'
     assert csv_output["row0"][2] == '"Registered"'
