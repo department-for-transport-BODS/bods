@@ -1,9 +1,9 @@
-import logging
 import json
+import logging
 
+import boto3
 from django.conf import settings
 from storages.backends.s3boto3 import S3Boto3Storage
-import boto3
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,42 @@ def get_s3_bucket_storage() -> object:
     except Exception as e:
         logger.error(f"Error connecting to S3 bucket {bucket_name}: {str(e)}")
         raise
+
+
+class StepFunctionsClientWrapper:
+    def __init__(self):
+        try:
+            if settings.AWS_ENVIRONMENT == "LOCAL":
+                self.sm_client = boto3.client(
+                    "stepfunctions",
+                    region_name=settings.AWS_REGION_NAME,
+                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                    aws_session_token=settings.AWS_SESSION_TOKEN,
+                )
+            else:
+                self.sm_client = boto3.client("stepfunctions")
+        except Exception as e:
+            logger.info(
+                f"DQS-StepFunctions:General exception when initialising Step Functions client wrapper: {e}"
+            )
+            logger.exception(e)
+            raise
+
+    def start_execution(self, state_machine_arn: str, input: dict, name: str) -> str:
+        """
+        Start a Step Functions execution and return the execution ARN.
+        """
+        try:
+            response = self.sm_client.start_execution(
+                stateMachineArn=state_machine_arn, input=json.dumps(input), name=name
+            )
+            return response["executionArn"]
+        except Exception as e:
+            logger.info(
+                f"DQS-StepFunctions:General exception when starting Step Functions execution: {e}"
+            )
+            raise
 
 
 class SQSClientWrapper:
@@ -102,7 +138,8 @@ class SQSClientWrapper:
 
                                 for error in response_send_messages.get("Failed", []):
                                     logger.info(
-                                        f"DQS-SQS:Failed to send message to {queue_url}: {error['MessageId'] if 'MessageId' in error else error['Id']} - {error['Message']}"
+                                        f"DQS-SQS:Failed to send message to {queue_url}: "
+                                        f"{error['MessageId'] if 'MessageId' in error else error['Id']} - {error['Message']}"
                                     )
                         except Exception as e:
                             logger.error(
