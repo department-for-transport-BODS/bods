@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 from typing import Dict, List, Optional
 
@@ -11,6 +12,8 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
+
+logger = logging.getLogger(__name__)
 
 
 def get_line_level_in_scope_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
@@ -470,10 +473,33 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     synced_in_last_month = abods_registry.records()
 
     for service_key, service in otc_map.items():
+        logging.info(f"AVL-REQUIRE-ATTENTION: {service_key}")
         file_attribute = txcfa_map.get(service_key)
         if file_attribute is not None:
+            logging.info(f"AVL-REQUIRE-ATTENTION: {service_key} File attribute found")
+
             operator_ref = file_attribute.national_operator_code
             line_name = service_key[1]
+            logging.info(
+                f"AVL-REQUIRE-ATTENTION: {service_key} Operator Ref {operator_ref} Line name {line_name}"
+            )
+            if not uncounted_activity_df.loc[
+                (uncounted_activity_df["OperatorRef"] == operator_ref)
+                & (
+                    uncounted_activity_df["LineRef"].isin(
+                        [line_name, line_name.replace(" ", "_")]
+                    )
+                )
+            ].empty:
+                logging.info(
+                    f"AVL-REQUIRE-ATTENTION: {service_key} Operator Ref {operator_ref} Condition one is yes"
+                )
+
+            if f"{line_name}__{operator_ref}" not in synced_in_last_month:
+                logging.info(
+                    f"AVL-REQUIRE-ATTENTION: {service_key} Operator Ref {operator_ref} Condition two is yes"
+                )
+
             if (
                 not uncounted_activity_df.loc[
                     (uncounted_activity_df["OperatorRef"] == operator_ref)
@@ -487,7 +513,11 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
             ):
                 _update_data(object_list, service)
         else:
+            logging.info(
+                f"AVL-REQUIRE-ATTENTION: {service_key} No File attribute found"
+            )
             _update_data(object_list, service)
+    logging.info(f"AVL-REQUIRE-ATTENTION: total objects {len(object_list)}")
     return object_list
 
 

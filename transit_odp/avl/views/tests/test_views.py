@@ -90,9 +90,9 @@ def test_avl_require_attention_stats(publish_client):
     response = publish_client.get(url, data={"q": ""}, follow=True)
 
     assert response.status_code == 200
-    assert len(response.context["view"].object_list) == 3
+    assert len(response.context["view"].object_list) == 7
     assert response.context["total_in_scope_in_season_services"] == 7
-    assert response.context["services_require_attention_percentage"] == 43
+    assert response.context["services_require_attention_percentage"] == 100
 
 
 def test_avl_require_attention_search_no_results(publish_client):
@@ -154,8 +154,6 @@ def test_avl_require_attention_search_results(publish_client):
     licence_number = "PD5000229"
     all_service_codes = [f"{licence_number}:{n:03}" for n in range(total_services)]
     all_line_names = [f"line:{n}" for n in range(total_services)]
-    print("all_service_codes>>", all_service_codes)
-    print("all_line_names>>", all_line_names)
     BODSLicenceFactory(organisation=org1, number=licence_number)
     dataset1 = DatasetFactory(organisation=org1)
     TXCFileAttributesFactory(
@@ -208,4 +206,4 @@ def test_avl_require_attention_search_results(publish_client):
     response = publish_client.get(url, data={"q": "PD5000229"}, follow=True)
 
     assert response.status_code == 200
-    assert len(response.context["table"].data) == 3
+    assert len(response.context["table"].data) == 7

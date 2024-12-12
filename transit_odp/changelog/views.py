@@ -20,18 +20,10 @@ class ChangelogView(ListView):
             if not issue.deleted:
                 grouped_issues[issue.category].append(issue)
 
-        last_modified_issue = self.object_list.first()
-
-        if not last_modified_issue:
-            last_modified_time = roadmap.modified
-        else:
-            last_modified_time = max([last_modified_issue.modified, roadmap.modified])
-
         context = super().get_context_data(**kwargs)
         context.update(
             {
                 "known_issues": grouped_issues,
-                "last_updated": last_modified_time,
                 "roadmap": roadmap,
             }
         )

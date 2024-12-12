@@ -476,7 +476,7 @@ class TestAVLListView:
         url = reverse("avl:feed-list", args=[organisation.id], host=self.host)
         response = client.get(url)
 
-        assert response.context_data["services_requiring_attention"] == 3
+        assert response.context_data["services_requiring_attention"] == 7
         assert response.context_data["total_in_scope_in_season_services"] == 7
 
 

@@ -1,11 +1,13 @@
 import json
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
+from freezegun import freeze_time
 from requests import HTTPError
+
 from transit_odp.avl.require_attention.abods.registery import (
-    APIResponse,
-    AbodsRegistery,
     AbodsClient,
+    AbodsRegistery,
+    APIResponse,
 )
 
 MODULE_PATH = "transit_odp.avl.require_attention.abods.registery"
@@ -110,6 +112,7 @@ def get_abods_client_blank_response():
 
 
 @patch(CLIENT)
+@freeze_time("2024-11-30")
 def test_registry_with_success_api_response(mock_client):
     mock_client.return_value = get_abods_client_response()
     registry = AbodsRegistery()
