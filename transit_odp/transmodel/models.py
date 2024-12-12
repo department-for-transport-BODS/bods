@@ -136,6 +136,7 @@ class StopActivity(models.Model):
 
 
 class ServicePatternStop(models.Model):
+    id = models.BigAutoField(primary_key=True)
     service_pattern = models.ForeignKey(
         ServicePattern, on_delete=models.CASCADE, related_name="service_pattern_stops"
     )
