@@ -442,7 +442,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         CSVColumn(
             header="Error in AVL to Timetable Matching",
             accessor=lambda otc_service: otc_service.get(
-                "avl_to_timetable_match_status"
+                "error_in_avl_to_timetable_matching"
             ),
         ),
         CSVColumn(
@@ -586,7 +586,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         ui_lta_name: str,
         line_name: str,
         avl_published_status: str,
-        avl_to_timetable_match_status: str,
+        error_in_avl_to_timetable_matching: str,
         avl_requires_attention: str,
         overall_requires_attention: str,
     ) -> None:
@@ -630,7 +630,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 "effective_date": service and service.effective_date,
                 "received_date": service and service.received_date,
                 "avl_published_status": avl_published_status,
-                "avl_to_timetable_match_status": avl_to_timetable_match_status,
+                "error_in_avl_to_timetable_matching": error_in_avl_to_timetable_matching,
                 "avl_requires_attention": avl_requires_attention,
                 "overall_requires_attention": overall_requires_attention,
             }
@@ -709,7 +709,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             return "Yes"
         return "No"
 
-    def get_error_in_avl_to_timetable_match_status(
+    def get_error_in_avl_to_timetable_matching(
         self, operator_ref: str, line_name: str
     ) -> str:
         """
@@ -736,7 +736,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         return "No"
 
     def get_avl_requires_attention(
-        self, avl_published_status: str, avl_to_timetable_match_status: str
+        self, avl_published_status: str, error_in_avl_to_timetable_matching: str
     ) -> str:
         """
         Returns value for 'AVL requires attention' column based on the following logic:
@@ -752,7 +752,9 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         Returns:
             str: Yes or No for 'AVL requires attention' column
         """
-        if (avl_published_status == "Yes") and (avl_to_timetable_match_status == "No"):
+        if (avl_published_status == "Yes") and (
+            error_in_avl_to_timetable_matching == "No"
+        ):
             return "No"
         return "Yes"
 
@@ -832,8 +834,8 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     line_name,
                     synced_in_last_month,
                 )
-                eror_in_avl_to_timetable_matching = (
-                    self.get_error_in_avl_to_timetable_match_status(
+                erorr_in_avl_to_timetable_matching = (
+                    self.get_error_in_avl_to_timetable_matching(
                         file_attribute.national_operator_code,
                         line_name,
                     )
@@ -842,13 +844,13 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 avl_published_status = self.get_avl_published_status(
                     "", line_name, synced_in_last_month
                 )
-                eror_in_avl_to_timetable_matching = (
-                    self.get_error_in_avl_to_timetable_match_status("", line_name)
+                erorr_in_avl_to_timetable_matching = (
+                    self.get_error_in_avl_to_timetable_matching("", line_name)
                 )
 
             avl_requires_attention = self.get_avl_requires_attention(
                 avl_published_status,
-                eror_in_avl_to_timetable_matching,
+                erorr_in_avl_to_timetable_matching,
             )
 
             overall_requires_attention = self.get_overall_requires_attention(
@@ -869,7 +871,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 ui_lta_name,
                 line_name,
                 avl_published_status,
-                avl_to_timetable_match_status,
+                erorr_in_avl_to_timetable_matching,
                 avl_requires_attention,
                 overall_requires_attention,
             )

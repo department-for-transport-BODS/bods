@@ -223,8 +223,8 @@ header_accessor_data_compliance_report = [
         lambda otc_service: otc_service.get("avl_published_status"),
     ),
     (
-        "AVL to Timetable Match Status",
-        lambda otc_service: otc_service.get("avl_to_timetable_match_status"),
+        "Error in AVL to Timetable Matching",
+        lambda otc_service: otc_service.get("error_in_avl_to_timetable_matching"),
     ),
     ("Fares requires attention", lambda otc_service: UNDER_MAINTENANCE),
     ("Fares Published Status", lambda otc_service: UNDER_MAINTENANCE),
