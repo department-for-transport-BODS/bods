@@ -59,7 +59,9 @@ def test_get_cancellations_api_invalid_query_params(mrequests):
     mrequests.get.side_effect = requests.Timeout
     actual_content, actual_status = _get_consumer_api_response(url, query_params)
     mrequests.get.assert_not_called()
-    assert actual_content == create_xml_error_response("Parameter unknownParam is not valid.", HTTP_400_BAD_REQUEST)
+    assert actual_content == create_xml_error_response(
+        "Parameter unknownParam is not valid.", HTTP_400_BAD_REQUEST
+    )
     assert actual_status == HTTP_400_BAD_REQUEST
 
 
