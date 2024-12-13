@@ -587,14 +587,14 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
 
     def get_error_in_avl_to_timetable_matching(self, operator_ref, line_name) -> str:
         """
-        Returns value for 'AVL to Timetable Match Status' column.
+        Returns value for 'Error in AVL to Timetable Matching' column.
 
         Args:
             operator_ref (str): National Operator Code
             line_name (str): Service Number
 
         Returns:
-            str: Yes or No for 'AVL to Timetable Match Status' column
+            str: Yes or No for 'Error in AVL to Timetable Matching' column
         """
         uncounted_activity_df = get_vehicle_activity_operatorref_linename()
 
@@ -614,10 +614,10 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
     ) -> str:
         """
         Returns value for 'AVL requires attention' column based on the following logic:
-            If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to Yes,
+            If both 'AVL Published Status' equal to Yes and 'Error in AVL to Timetable Matching' equal to No,
             then 'AVL requires attention' = No.
-            If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to No,
-            then 'AVL requires attention' = Yes.
+            else
+            the value 'AVL requires attention' = Yes.
 
         Args:
             avl_published_status (str): Value of 'AVL Published Status'

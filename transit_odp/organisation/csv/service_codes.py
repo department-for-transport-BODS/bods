@@ -740,14 +740,14 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
     ) -> str:
         """
         Returns value for 'AVL requires attention' column based on the following logic:
-            If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to Yes,
+            If both 'AVL Published Status' equal to Yes or 'Error in AVL to Timetable Matching' equal to No,
             then 'AVL requires attention' = No.
-            If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to No,
-            then 'AVL requires attention' = Yes.
+            Else
+            the 'AVL requires attention' = Yes.
 
         Args:
             avl_published_status (str): Value of 'AVL Published Status'
-            avl_to_timetable__match_status (str): Value of 'AVL to Timetable Match Status'
+            avl_to_timetable__match_status (str): Value of 'Error in AVL to Timetable Matching'
 
         Returns:
             str: Yes or No for 'AVL requires attention' column

@@ -863,7 +863,7 @@ def test_csv_output():
     )  # Timetables critical DQ issues
     assert csv_output["row0"][11] == '"Yes"'  # AVL requires attention
     assert csv_output["row0"][12] == '"No"'  # AVL Published Status
-    assert csv_output["row0"][13] == '"No"'  # AVL to Timetable Match Status
+    assert csv_output["row0"][13] == '"No"'  # Error in AVL to Timetable Matching
     assert csv_output["row0"][14] == '"Under maintenance"'  # Fares requires attention
     assert csv_output["row0"][15] == '"Under maintenance"'  # Fares Published Status
     assert csv_output["row0"][16] == '"Under maintenance"'  # Fares Timeliness Status
