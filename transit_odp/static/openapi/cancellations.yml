@@ -15,12 +15,6 @@ paths:
       tags:
         - SIRI-SX Cancellations
       description: Returns all cancellations
-      parameters:
-        - name: subscriptionId
-          description: Optional subscription ID filter
-          in: query
-          schema:
-            type: string
       responses:
         200:
           description: Successfully retrieved all cancellations

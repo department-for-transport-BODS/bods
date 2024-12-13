@@ -43,7 +43,7 @@ class CancellationsApiView(views.APIView):
 
 
 def _get_consumer_api_response(url: str, query_params: QueryDict):
-    """Gets response from CAVL consumer api.
+    """Gets response from consumer api.
 
     Args:
         url (str): URL to send request to.
