@@ -1,9 +1,9 @@
-import logging
 import json
+import logging
 
+import boto3
 from django.conf import settings
 from storages.backends.s3boto3 import S3Boto3Storage
-import boto3
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,6 @@ def get_s3_bucket_storage() -> object:
 
 
 class StepFunctionsClientWrapper:
-
     def __init__(self):
         try:
             self.endpoint_url = settings.STEP_FUNCTIONS_ENDPOINT_URL
@@ -65,6 +64,7 @@ class StepFunctionsClientWrapper:
                 f"DQS-StepFunctions:General exception when starting Step Functions execution: {e}"
             )
             raise
+
 
 class SQSClientWrapper:
     """Initialize SQS client, get queue names and send messages to the queues"""
@@ -142,7 +142,8 @@ class SQSClientWrapper:
 
                                 for error in response_send_messages.get("Failed", []):
                                     logger.info(
-                                        f"DQS-SQS:Failed to send message to {queue_url}: {error['MessageId'] if 'MessageId' in error else error['Id']} - {error['Message']}"
+                                        f"DQS-SQS:Failed to send message to {queue_url}: "
+                                        f"{error['MessageId'] if 'MessageId' in error else error['Id']} - {error['Message']}"
                                     )
                         except Exception as e:
                             logger.error(
