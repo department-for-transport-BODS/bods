@@ -440,9 +440,9 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             accessor=lambda otc_service: otc_service.get("avl_published_status"),
         ),
         CSVColumn(
-            header="Error For AVL to Timetable Matching",
+            header="Error in AVL to Timetable Matching",
             accessor=lambda otc_service: otc_service.get(
-                "avl_to_timetable_match_status"
+                "error_in_avl_to_timetable_matching"
             ),
         ),
         CSVColumn(
@@ -586,7 +586,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         ui_lta_name: str,
         line_name: str,
         avl_published_status: str,
-        avl_to_timetable_match_status: str,
+        error_in_avl_to_timetable_matching: str,
         avl_requires_attention: str,
         overall_requires_attention: str,
     ) -> None:
@@ -630,7 +630,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 "effective_date": service and service.effective_date,
                 "received_date": service and service.received_date,
                 "avl_published_status": avl_published_status,
-                "avl_to_timetable_match_status": avl_to_timetable_match_status,
+                "error_in_avl_to_timetable_matching": error_in_avl_to_timetable_matching,
                 "avl_requires_attention": avl_requires_attention,
                 "overall_requires_attention": overall_requires_attention,
             }
@@ -709,18 +709,18 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             return "Yes"
         return "No"
 
-    def get_avl_to_timetable_match_status(
+    def get_error_in_avl_to_timetable_matching(
         self, operator_ref: str, line_name: str
     ) -> str:
         """
-        Returns value for 'AVL to Timetable Match Status' column.
+        Returns value for 'Error in AVL to Timetable Matching' column.
 
         Args:
             operator_ref (str): National Operator Code
             line_name (str): Service Number
 
         Returns:
-            str: Yes or No for 'AVL to Timetable Match Status' column
+            str: Yes or No for 'Error in AVL to Timetable Matching' column
         """
         uncounted_activity_df = get_vehicle_activity_operatorref_linename()
 
@@ -736,23 +736,25 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         return "No"
 
     def get_avl_requires_attention(
-        self, avl_published_status: str, avl_to_timetable_match_status: str
+        self, avl_published_status: str, error_in_avl_to_timetable_matching: str
     ) -> str:
         """
         Returns value for 'AVL requires attention' column based on the following logic:
-            If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to Yes,
+            If both 'AVL Published Status' equal to Yes or 'Error in AVL to Timetable Matching' equal to No,
             then 'AVL requires attention' = No.
-            If both 'AVL Published Status' or 'AVL to Timetable Match Status' equal to No,
-            then 'AVL requires attention' = Yes.
+            Else
+            the 'AVL requires attention' = Yes.
 
         Args:
             avl_published_status (str): Value of 'AVL Published Status'
-            avl_to_timetable__match_status (str): Value of 'AVL to Timetable Match Status'
+            avl_to_timetable__match_status (str): Value of 'Error in AVL to Timetable Matching'
 
         Returns:
             str: Yes or No for 'AVL requires attention' column
         """
-        if (avl_published_status == "Yes") and (avl_to_timetable_match_status == "No"):
+        if (avl_published_status == "Yes") and (
+            error_in_avl_to_timetable_matching == "No"
+        ):
             return "No"
         return "Yes"
 
@@ -826,46 +828,29 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             else:
                 require_attention = "No"
 
-            logging.info(f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name}")
             if file_attribute is not None:
-                logging.info(
-                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} File attribute found {file_attribute.national_operator_code}"
-                )
                 avl_published_status = self.get_avl_published_status(
                     file_attribute.national_operator_code,
                     line_name,
                     synced_in_last_month,
                 )
-                logging.info(
-                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} Condition two {avl_published_status}"
-                )
-                avl_to_timetable_match_status = self.get_avl_to_timetable_match_status(
-                    file_attribute.national_operator_code,
-                    line_name,
-                )
-                logging.info(
-                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} Condition one {avl_to_timetable_match_status}"
+                erorr_in_avl_to_timetable_matching = (
+                    self.get_error_in_avl_to_timetable_matching(
+                        file_attribute.national_operator_code,
+                        line_name,
+                    )
                 )
             else:
-                logging.info(
-                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} File attribute Missing no operator"
-                )
                 avl_published_status = self.get_avl_published_status(
                     "", line_name, synced_in_last_month
                 )
-                logging.info(
-                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} Condition two {avl_published_status}"
-                )
-                avl_to_timetable_match_status = self.get_avl_to_timetable_match_status(
-                    "", line_name
-                )
-                logging.info(
-                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} Condition one {avl_to_timetable_match_status}"
+                erorr_in_avl_to_timetable_matching = (
+                    self.get_error_in_avl_to_timetable_matching("", line_name)
                 )
 
             avl_requires_attention = self.get_avl_requires_attention(
                 avl_published_status,
-                avl_to_timetable_match_status,
+                erorr_in_avl_to_timetable_matching,
             )
 
             overall_requires_attention = self.get_overall_requires_attention(
@@ -886,7 +871,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 ui_lta_name,
                 line_name,
                 avl_published_status,
-                avl_to_timetable_match_status,
+                erorr_in_avl_to_timetable_matching,
                 avl_requires_attention,
                 overall_requires_attention,
             )
