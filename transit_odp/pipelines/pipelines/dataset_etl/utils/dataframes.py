@@ -363,8 +363,9 @@ def merge_vj_tracks_df(
 
     if merged_vjs_tracks_map.empty:
         return pd.DataFrame()
-
-    return merged_vjs_tracks_map
+    # Drop vj with id is None
+    df_cleaned = merged_vjs_tracks_map.dropna(subset=["vj_id"])
+    return df_cleaned
 
 
 def df_to_journeys_tracks(df: pd.DataFrame) -> Iterator[TracksVehicleJourney]:
