@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
@@ -439,7 +440,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             accessor=lambda otc_service: otc_service.get("avl_published_status"),
         ),
         CSVColumn(
-            header="AVL to Timetable Match Status",
+            header="Error For AVL to Timetable Matching",
             accessor=lambda otc_service: otc_service.get(
                 "avl_to_timetable_match_status"
             ),
@@ -751,7 +752,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         Returns:
             str: Yes or No for 'AVL requires attention' column
         """
-        if (avl_published_status == "Yes") and (avl_to_timetable_match_status == "Yes"):
+        if (avl_published_status == "Yes") and (avl_to_timetable_match_status == "No"):
             return "No"
         return "Yes"
 
@@ -825,22 +826,41 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             else:
                 require_attention = "No"
 
+            logging.info(f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name}")
             if file_attribute is not None:
+                logging.info(
+                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} File attribute found {file_attribute.national_operator_code}"
+                )
                 avl_published_status = self.get_avl_published_status(
                     file_attribute.national_operator_code,
                     line_name,
                     synced_in_last_month,
                 )
+                logging.info(
+                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} Condition two {avl_published_status}"
+                )
                 avl_to_timetable_match_status = self.get_avl_to_timetable_match_status(
                     file_attribute.national_operator_code,
                     line_name,
                 )
+                logging.info(
+                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} Condition one {avl_to_timetable_match_status}"
+                )
             else:
+                logging.info(
+                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} File attribute Missing no operator"
+                )
                 avl_published_status = self.get_avl_published_status(
                     "", line_name, synced_in_last_month
                 )
+                logging.info(
+                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} Condition two {avl_published_status}"
+                )
                 avl_to_timetable_match_status = self.get_avl_to_timetable_match_status(
                     "", line_name
+                )
+                logging.info(
+                    f"AVL-REQUIRE-ATTENTION: {service_code} - {line_name} Condition one {avl_to_timetable_match_status}"
                 )
 
             avl_requires_attention = self.get_avl_requires_attention(

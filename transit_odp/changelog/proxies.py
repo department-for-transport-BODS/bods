@@ -14,9 +14,9 @@ class ConsumerKnownIssues(KnownIssues):
 
     objects = ConsumerKnownIssueManager()
 
-    def __init__(self, *args, **kwargs):
-        kwargs.update({"category": ConsumerIssue})
-        super().__init__(**kwargs)
+    def save(self, *args, **kwargs):
+        self.category = ConsumerIssue
+        super(ConsumerKnownIssues, self).save(*args, **kwargs)
 
 
 class PublisherKnownIssues(KnownIssues):
@@ -27,6 +27,6 @@ class PublisherKnownIssues(KnownIssues):
 
     objects = PublisherKnownIssueManager()
 
-    def __init__(self, *args, **kwargs):
-        kwargs.update({"category": PublisherIssue})
-        super().__init__(**kwargs)
+    def save(self, *args, **kwargs):
+        self.category = PublisherIssue
+        super(PublisherKnownIssues, self).save(*args, **kwargs)
