@@ -479,7 +479,7 @@ def test_csv_output_columns_order():
     assert actual_columns[10] == "Timetables critical DQ issues"
     assert actual_columns[11] == "AVL requires attention"
     assert actual_columns[12] == "AVL Published Status"
-    assert actual_columns[13] == "AVL to Timetable Match Status"
+    assert actual_columns[13] == "Error in AVL to Timetable Matching"
     assert actual_columns[14] == "Fares requires attention"
     assert actual_columns[15] == "Fares Published Status"
     assert actual_columns[16] == "Fares Timeliness Status"
