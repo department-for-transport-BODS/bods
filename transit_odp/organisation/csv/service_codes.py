@@ -440,7 +440,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             accessor=lambda otc_service: otc_service.get("avl_published_status"),
         ),
         CSVColumn(
-            header="AVL to Timetable Match Status",
+            header="Error For AVL to Timetable Matching",
             accessor=lambda otc_service: otc_service.get(
                 "avl_to_timetable_match_status"
             ),
@@ -752,7 +752,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         Returns:
             str: Yes or No for 'AVL requires attention' column
         """
-        if (avl_published_status == "Yes") and (avl_to_timetable_match_status == "Yes"):
+        if (avl_published_status == "Yes") and (avl_to_timetable_match_status == "No"):
             return "No"
         return "Yes"
 
