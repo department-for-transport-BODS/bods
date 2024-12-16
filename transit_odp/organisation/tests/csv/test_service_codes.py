@@ -479,7 +479,7 @@ def test_csv_output_columns_order():
     assert actual_columns[10] == "Timetables critical DQ issues"
     assert actual_columns[11] == "AVL requires attention"
     assert actual_columns[12] == "AVL Published Status"
-    assert actual_columns[13] == "AVL to Timetable Match Status"
+    assert actual_columns[13] == "Error in AVL to Timetable Matching"
     assert actual_columns[14] == "Fares requires attention"
     assert actual_columns[15] == "Fares Published Status"
     assert actual_columns[16] == "Fares Timeliness Status"
@@ -863,7 +863,7 @@ def test_csv_output():
     )  # Timetables critical DQ issues
     assert csv_output["row0"][11] == '"Yes"'  # AVL requires attention
     assert csv_output["row0"][12] == '"No"'  # AVL Published Status
-    assert csv_output["row0"][13] == '"No"'  # AVL to Timetable Match Status
+    assert csv_output["row0"][13] == '"No"'  # Error in AVL to Timetable Matching
     assert csv_output["row0"][14] == '"Under maintenance"'  # Fares requires attention
     assert csv_output["row0"][15] == '"Under maintenance"'  # Fares Published Status
     assert csv_output["row0"][16] == '"Under maintenance"'  # Fares Timeliness Status
@@ -1759,11 +1759,6 @@ def test_seasonal_status_csv_output():
     service_codes_csv = ComplianceReportCSV(org.id)
     csv_string = service_codes_csv.to_string()
     csv_output = get_csv_output(csv_string)
-
-    print("row0>>", csv_output["row0"])
-    print("row1>>", csv_output["row1"])
-    print("row2>>", csv_output["row2"])
-    print("row3>>", csv_output["row3"])
 
     assert csv_output["row0"][0] == '"PD0001111:0"'
     assert csv_output["row0"][1] == '"Line0"'

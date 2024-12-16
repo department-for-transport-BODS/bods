@@ -382,7 +382,7 @@ def test_run_task_post_schema_check(mocker, tmp_path, mock_post_schema_validator
     testzip = tmp_path / "test_pii.zip"
     create_text_file(
         file1,
-        r'<TransXChange FileName="C:\Users\test\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml">',
+        r'<TransXChange FileName="C:\Users\test\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml"></TransXChange>',
     )
     create_zip_file(testzip, [file1])
     with open(testzip, "rb") as zout:

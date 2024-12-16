@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 from typing import Dict, List, Optional
 
@@ -11,6 +12,8 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
+
+logger = logging.getLogger(__name__)
 
 
 def get_line_level_in_scope_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
@@ -470,10 +473,12 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     synced_in_last_month = abods_registry.records()
 
     for service_key, service in otc_map.items():
+        logging.info(f"AVL-REQUIRE-ATTENTION: {service_key}")
         file_attribute = txcfa_map.get(service_key)
         if file_attribute is not None:
             operator_ref = file_attribute.national_operator_code
             line_name = service_key[1]
+
             if (
                 not uncounted_activity_df.loc[
                     (uncounted_activity_df["OperatorRef"] == operator_ref)
@@ -488,6 +493,7 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
                 _update_data(object_list, service)
         else:
             _update_data(object_list, service)
+    logging.info(f"AVL-REQUIRE-ATTENTION: total objects {len(object_list)}")
     return object_list
 
 
