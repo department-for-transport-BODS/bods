@@ -527,6 +527,10 @@ def task_dqs_upload(revision_id: int, task_id: int):
 
 @shared_task()
 def task_data_quality_service(revision_id: int, task_id: int) -> int:
+    is_using_step_function_for_dqs = flag_is_active(
+        "", "is_using_step_function_for_dqs"
+    )
+
     """A task that runs the DQS checks on TxC file(s)."""
     task = get_etl_task_or_pipeline_exception(task_id)
     revision = task.revision
@@ -542,7 +546,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
             revision.id
         )
-        if settings.USE_STATE_MACHINE_FOR_DQS == "TRUE":
+        if is_using_step_function_for_dqs:
             adapter.info(
                 f"Using state machine to run checks on {len(txc_file_attributes_objects)} files"
             )

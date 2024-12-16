@@ -27,27 +27,25 @@ def get_s3_bucket_storage() -> object:
 
 
 class StepFunctionsClientWrapper:
+
     def __init__(self):
         try:
-            self.endpoint_url = settings.STEP_FUNCTIONS_ENDPOINT_URL
 
             if settings.AWS_ENVIRONMENT == "LOCAL":
                 self.sm_client = boto3.client(
                     "stepfunctions",
-                    endpoint_url=self.endpoint_url,
                     region_name=settings.AWS_REGION_NAME,
                     aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                     aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                    aws_session_token=settings.AWS_SESSION_TOKEN,
                 )
             else:
-                self.sm_client = boto3.client(
-                    "stepfunctions",
-                    endpoint_url=self.endpoint_url,
-                )
+                self.sm_client = boto3.client("stepfunctions")
         except Exception as e:
             logger.info(
                 f"DQS-StepFunctions:General exception when initialising Step Functions client wrapper: {e}"
             )
+            logger.exception(e)
             raise
 
     def start_execution(self, state_machine_arn: str, input: dict, name: str) -> str:
