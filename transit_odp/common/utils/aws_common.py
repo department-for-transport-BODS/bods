@@ -27,10 +27,8 @@ def get_s3_bucket_storage() -> object:
 
 
 class StepFunctionsClientWrapper:
-
     def __init__(self):
         try:
-
             if settings.AWS_ENVIRONMENT == "LOCAL":
                 self.sm_client = boto3.client(
                     "stepfunctions",
