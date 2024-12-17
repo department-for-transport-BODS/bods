@@ -11,6 +11,7 @@ from transit_odp.browse.views.timetable_views import (
     DatasetSubscriptionView,
     DownloadBulkDataArchiveRegionsView,
     DownloadBulkDataArchiveView,
+    CFNDownloadBulkDataArchiveView,
     DownloadChangeDataArchiveView,
     DownloadCompliantBulkDataArchiveView,
     DownloadRegionalGTFSFileView,
@@ -84,6 +85,11 @@ urlpatterns = [
         "download/bulk_archive",
         view=DownloadBulkDataArchiveView.as_view(),
         name="downloads-bulk",
+    ),
+    path(
+        "download/bulk_archive/cdn",
+        view=CFNDownloadBulkDataArchiveView.as_view(),
+        name="downloads-bulk-cdn",
     ),
     path(
         "download/bulk_archive/<str:region_code>",

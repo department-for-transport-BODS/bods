@@ -63,6 +63,7 @@ from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
 from transit_odp.transmodel.models import BookingArrangements, Service
 from transit_odp.users.constants import SiteAdminType
+from transit_odp.browse.cfn import generate_signed_url
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -946,6 +947,15 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
             f"S3 bucket download for bulk archive took {(s3_endtime - s3_start).total_seconds()} seconds"
         )
         return data
+
+
+class CFNDownloadBulkDataArchiveView(DownloadBulkDataArchiveView):
+    def get_download_file(self):
+        return generate_signed_url(self.object.data.url)
+
+    def render_to_response(self, **response_kwargs):
+        download_file = self.get_download_file()
+        return redirect(download_file)
 
 
 class DownloadBulkDataArchiveRegionsView(DownloadView):
