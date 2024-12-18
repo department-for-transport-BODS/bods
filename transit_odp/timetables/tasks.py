@@ -575,7 +575,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
             queues_payload = create_queue_payload(pending_checks)
             sqs_queue_client = SQSClientWrapper()
             sqs_queue_client.send_message_to_queue(queues_payload)
-            adapter.info("DQS-SQS:SQS queue messsages sent successfully.")
+            adapter.info("DQS-SQS:SQS queue messages sent successfully.")
 
     except (DatabaseError, IntegrityError) as db_exc:
         task.handle_general_pipeline_exception(
