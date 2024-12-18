@@ -277,7 +277,7 @@ jobs:
         id: run_tests
         run: |
           pip install --upgrade typing-extensions
-          pytest -vv --junitxml=junit_report.xml || [ $? = 1 ]
+          pytest -n auto -vv --junitxml=junit_report.xml || [ $? = 1 ]
 
       - name: Pytest coverage comment
         if: always()
