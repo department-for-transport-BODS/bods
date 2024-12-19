@@ -139,6 +139,15 @@ Restore the db after the service is up using the below command.
 make local-db-restore
 ```
 
+## Feature flags
+
+BODS uses Django Waffle to dynamically set feature flags to toggle behaviour on or off, or test new functionality.
+Within the admin page under [waffle flags](http://admin.localhost:8000/admin/waffle/flag) you can set these flags on or off.
+At the time of writing it's advisable to create at least the following 2 flags and set them for "everyone":
+
+- is_new_gtfs_api_active
+- is_new_data_quality_service_active
+
 ## OTC Dataset
 
 BODS utilises the Office of Traffic Commissioners Bus Service dataset for

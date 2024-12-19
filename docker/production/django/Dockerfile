@@ -19,8 +19,11 @@ ENV PYTHONUNBUFFERED=1 \
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
 
-RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /etc/apt/sources.list
-RUN apt-get update && apt-get install -y \
+RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /etc/apt/sources.list &&  \
+    echo 'Acquire::http::Timeout "10";' >> /etc/apt/apt.conf.d/80-connection && \
+    echo 'Acquire::ftp::Timeout "10";' >> /etc/apt/apt.conf.d/80-connection && \
+    echo 'Acquire::Retries "5";' >> /etc/apt/apt.conf.d/80-connection && \
+    apt-get update && apt-get install -y \
             libgdal-dev \
             g++ \
             proj-bin \
@@ -46,7 +49,6 @@ RUN apt-get update && apt-get install -y \
             setuptools \
             wheel \
             cython
-
 
 # Install python packages
 # Copy the compiled frontend from step 1 - this ensures production image
