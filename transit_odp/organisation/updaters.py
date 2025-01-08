@@ -38,7 +38,7 @@ class DatasetUpdater:
     Class to handle how and when an automated data set update occurs.
     """
 
-    def __init__(self, dataset, adapter):
+    def __init__(self, dataset, adapter=logger):
         self.dataset: Dataset = dataset
         self.live_revision: DatasetRevision = dataset.live_revision
         self.adapter = adapter
