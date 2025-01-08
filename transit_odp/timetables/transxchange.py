@@ -468,6 +468,19 @@ class TransXChangeDocument:
         if elements:
             return True
 
+    def check_easting_northing_in_location(self):
+        xpath = [
+            "RouteSections",
+            "RouteSection",
+            "RouteLink",
+            "Track",
+            "Mapping",
+            "Location",
+            "Easting",
+        ]
+        elements = self._root.get_elements_or_none(xpath)
+        if elements:
+            return True
 
 class TransXChangeZip(ZippedValidator):
     """A class for working with a zip file containing transxchange files."""
