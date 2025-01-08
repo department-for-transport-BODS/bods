@@ -91,6 +91,15 @@ class SignupView(SignupViewBase):
         return super().dispatch(request, *args, **kwargs)
 
 
+class AccountExistsView(TemplateView):
+    """
+    View for when a user attempts to create an
+    account that is already registered on BODS.
+    """
+
+    template_name = "account/account_exists.html"
+
+
 class InviteOnlySignupView(PermissionRequiredMixin, SignupViewBase):
     """Signup view which only shows signup form if user has come from invitation flow"""
 

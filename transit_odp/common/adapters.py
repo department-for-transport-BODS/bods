@@ -6,6 +6,7 @@ from allauth.account.utils import user_email
 from django.conf import settings
 from django.contrib.sessions.exceptions import InvalidSessionKey
 from django.http import HttpRequest
+from django.shortcuts import redirect
 from django.urls import NoReverseMatch
 from django_hosts import reverse
 from invitations.utils import get_invitation_model
@@ -135,6 +136,10 @@ class AccountAdapter(DefaultAccountAdapter):
         Hook into here to stash user's email when they signup
         so we can display it on the email_verification_sent page
         """
+        # If user has an existing account registered on BODS
+        if user is None:
+            return redirect("account_exists")
+
         email = user_email(user)
         self.stash_verification_email(request, email)
         return super().respond_email_verification_sent(request, user)
