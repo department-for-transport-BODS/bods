@@ -481,7 +481,10 @@ class TransXChangeDocument:
         elements = self._root.get_elements_or_none(xpath)
         if elements:
             return True
+<<<<<<< HEAD
 
+=======
+>>>>>>> 79ef84e9 (initial commit)
 
 class TransXChangeZip(ZippedValidator):
     """A class for working with a zip file containing transxchange files."""
