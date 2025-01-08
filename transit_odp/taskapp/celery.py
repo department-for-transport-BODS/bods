@@ -57,7 +57,7 @@ class CeleryAppConfig(AppConfig):
             },
             "retry_unavailable_feeds": {
                 "task": TIMETABLE_TASKS + "task_retry_unavailable_timetables",
-                "schedule": crontab(minute=0),
+                "schedule": crontab(minute=0, hour=3),
             },
             "monitor_fares_dataset": {
                 "task": FARES_TASKS + "task_update_remote_fares",

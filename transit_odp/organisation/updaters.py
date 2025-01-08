@@ -17,6 +17,9 @@ from transit_odp.organisation.notifications import (
     send_feed_monitor_fail_final_try_notification,
     send_feed_monitor_fail_first_try_notification,
 )
+from tenacity import retry, wait_exponential
+from tenacity.retry import retry_if_exception_type
+from tenacity.stop import stop_after_attempt
 
 ERROR = "error"
 DEFUALT_COMMENT = "Automatically detected change in data set"
@@ -35,9 +38,10 @@ class DatasetUpdater:
     Class to handle how and when an automated data set update occurs.
     """
 
-    def __init__(self, dataset):
+    def __init__(self, dataset, adapter):
         self.dataset: Dataset = dataset
         self.live_revision: DatasetRevision = dataset.live_revision
+        self.adapter = adapter
         self._content = None
 
     @property
@@ -76,11 +80,18 @@ class DatasetUpdater:
         self.live_revision.comment = DEACTIVATE_COMMENT
         self.live_revision.save()
 
+    @retry(
+        retry=retry_if_exception_type(DatasetUpdateException),
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=60, min=60, max=180),
+        reraise=True,
+    )
     def get_content(self):
         """
         Retrieve content from the datasets url.
         """
         try:
+            self.adapter.info("Sending request to dataset URL.")
             response = requests.get(self.url, timeout=TIMEOUT)
             if response.ok:
                 return response.content
@@ -146,7 +157,7 @@ class DatasetUpdater:
 def update_dataset(dataset: Dataset, publish_task):
     context = MonitoringLoggerContext(object_id=dataset.id)
     adapter = PipelineAdapter(logger, {"context": context})
-    updater = DatasetUpdater(dataset)
+    updater = DatasetUpdater(dataset, adapter)
     try:
         adapter.info("Checking for update.")
         if updater.content is not None and updater.retry_count > 0:
@@ -179,6 +190,11 @@ def update_dataset(dataset: Dataset, publish_task):
         updater.retry_count += 1
         if updater.retry_count == 1:
             adapter.warning("First retry failed. Email operator.")
+            send_feed_monitor_fail_first_try_notification(updater.dataset)
+        elif updater.retry_count == settings.FEED_MONITOR_MAX_RETRY_ATTEMPTS // 2:
+            adapter.warning(
+                "Retry failed and attempts are half way through. Email operator."
+            )
             send_feed_monitor_fail_first_try_notification(updater.dataset)
         elif updater.retry_count >= settings.FEED_MONITOR_MAX_RETRY_ATTEMPTS:
             adapter.warning("Max retries reached. Expiring data set.")
