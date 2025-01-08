@@ -359,7 +359,6 @@ class TransXChangeExtractor:
         if geo_type is None:
             logger.error("Geometry type is not found")
 
-
         for route in routes:
             route_section_refs = route.get_elements_or_none(["RouteSectionRef"])
             route_ref_ids = []
@@ -490,7 +489,9 @@ class TransXChangeExtractor:
         )
         # Determine the location type based on the checks
         location_type = (
-            ["Location"] if long_lat_in_location or easting_northing_in_location else ["Location", "Translation"]
+            ["Location"]
+            if long_lat_in_location or easting_northing_in_location
+            else ["Location", "Translation"]
         )
         if easting_northing_in_translation or easting_northing_in_location:
             geo_type = "Easting/Northing"

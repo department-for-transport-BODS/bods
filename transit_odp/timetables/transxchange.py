@@ -482,6 +482,7 @@ class TransXChangeDocument:
         if elements:
             return True
 
+
 class TransXChangeZip(ZippedValidator):
     """A class for working with a zip file containing transxchange files."""
 
