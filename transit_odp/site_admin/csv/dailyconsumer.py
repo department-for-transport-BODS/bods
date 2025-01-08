@@ -1,6 +1,8 @@
 import tempfile
+from datetime import datetime
 
 import pandas as pd
+from pandas import DataFrame
 
 from transit_odp.site_admin.models import APIRequest, ResourceRequestCounter
 
@@ -37,7 +39,20 @@ def get_resource_queryset(start, end):
     )
 
 
-def get_consumer_breakdown_df(start, end):
+def get_consumer_breakdown_df(start: datetime, end: datetime) -> DataFrame:
+    """
+    Returns dataframe for the dailyconsumerbreakdown.csv.
+    Includes API consumer metrics for every month, such as
+    number of daily API requests, timetables downloads,
+    location downloads, and fares downloads per consumer.
+
+    Args:
+        start (datetime): Start date
+        end (datetime): End date
+
+    Returns:
+        DataFrame: Daily consumer breakdown dataframe
+    """
     api_df = pd.DataFrame.from_records(get_api_queryset(start, end))
     request_df = pd.DataFrame.from_records(get_resource_queryset(start, end))
     if api_df.empty and request_df.empty:
@@ -61,11 +76,11 @@ def get_consumer_breakdown_df(start, end):
         )
         # We need to sort the final df after merging
         consumer_breakdown = consumer_breakdown.sort_values(by=["date"])
-        consumer_breakdown.fillna(0, inplace=True)
-        # Not sure why but fields that are not joining fields are cast to float
-        # this casts them back to integers
+
         for metric in API_METRICS + REQUEST_METRICS:
-            consumer_breakdown[metric] = consumer_breakdown[metric].astype(int)
+            consumer_breakdown[metric] = (
+                consumer_breakdown[metric].fillna(value=0).astype(int)
+            )
 
     consumer_breakdown = consumer_breakdown[CONSUMER_BREAKDOWN_COLUMN_MAP.keys()]
 
