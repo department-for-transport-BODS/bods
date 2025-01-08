@@ -486,6 +486,7 @@ class TransXChangeDocument:
 =======
 >>>>>>> 79ef84e9 (initial commit)
 
+
 class TransXChangeZip(ZippedValidator):
     """A class for working with a zip file containing transxchange files."""
 
