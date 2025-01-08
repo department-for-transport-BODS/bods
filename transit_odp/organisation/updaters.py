@@ -16,6 +16,7 @@ from transit_odp.organisation.notifications import (
     send_endpoint_available_notification,
     send_feed_monitor_fail_final_try_notification,
     send_feed_monitor_fail_first_try_notification,
+    send_feed_monitor_fail_half_way_try_notification,
 )
 from tenacity import retry, wait_exponential
 from tenacity.retry import retry_if_exception_type
@@ -195,7 +196,7 @@ def update_dataset(dataset: Dataset, publish_task):
             adapter.warning(
                 "Retry failed and attempts are half way through. Email operator."
             )
-            send_feed_monitor_fail_first_try_notification(updater.dataset)
+            send_feed_monitor_fail_half_way_try_notification(updater.dataset)
         elif updater.retry_count >= settings.FEED_MONITOR_MAX_RETRY_ATTEMPTS:
             adapter.warning("Max retries reached. Expiring data set.")
             send_feed_monitor_fail_final_try_notification(updater.dataset)
