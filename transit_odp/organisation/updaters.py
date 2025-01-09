@@ -26,6 +26,9 @@ ERROR = "error"
 DEFUALT_COMMENT = "Automatically detected change in data set"
 DEACTIVATE_COMMENT = "Data set is not reachable"
 TIMEOUT = 90
+RETRY_MULTIPLIER = 60
+RETRY_MIN = 60
+RETRY_STOP = 3
 
 logger = logging.getLogger(__name__)
 
@@ -83,8 +86,8 @@ class DatasetUpdater:
 
     @retry(
         retry=retry_if_exception_type(DatasetUpdateException),
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=60, min=60, max=180),
+        stop=stop_after_attempt(RETRY_STOP),
+        wait=wait_exponential(multiplier=RETRY_MULTIPLIER, min=RETRY_MIN, max=180),
         reraise=True,
     )
     def get_content(self):
