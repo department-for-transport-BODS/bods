@@ -89,6 +89,7 @@ class TransXChangePipeline:
     def transform(self, extracted: ExtractedData) -> TransformedData:
         logger.info("Begin transformation step")
         self.clean_down()
+        logger.info("Completed clean down step")
         transformer = TransXChangeTransformer(extracted, self.stop_point_cache)
         transformed = transformer.transform()
         logger.info("Finished transformation step.")

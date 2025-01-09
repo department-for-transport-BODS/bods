@@ -1,18 +1,22 @@
 import numpy as np
 import pandas as pd
+from celery.utils.log import get_task_logger
 from waffle import flag_is_active
 
 from transit_odp.common.utils.geometry import grid_gemotry_from_str
+from transit_odp.naptan.models import FlexibleZone, StopPoint
 from transit_odp.pipelines.pipelines.dataset_etl.utils.dataframes import (
+    create_naptan_flexible_zone_df_from_queryset,
     create_naptan_stoppoint_df,
     create_naptan_stoppoint_df_from_queryset,
-    create_naptan_flexible_zone_df_from_queryset,
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import (
     ExtractedData,
     TransformedData,
 )
 from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
+    add_tracks_sequence,
+    create_flexible_routes,
     create_route_links,
     create_route_to_route_links,
     create_routes,
@@ -20,29 +24,28 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     get_most_common_localities,
     get_vehicle_journey_with_timing_refs,
     get_vehicle_journey_without_timing_refs,
+    merge_flexible_jd_with_jp,
     merge_flexible_jp_with_vehicle_journey,
     merge_journey_pattern_with_vj_for_departure_time,
-    merge_vehicle_journeys_with_jp,
-    merge_serviced_organisations_with_operating_profile,
     merge_lines_with_vehicle_journey,
+    merge_serviced_organisations_with_operating_profile,
+    merge_vehicle_journeys_with_jp,
     sync_localities_and_adminareas,
+    transform_flexible_service_pattern_to_service_links,
+    transform_flexible_service_patterns,
+    transform_flexible_stop_sequence,
+    transform_geometry,
+    transform_geometry_tracks,
     transform_line_names,
     transform_service_links,
     transform_service_pattern_stops,
     transform_service_pattern_to_service_links,
     transform_service_patterns,
     transform_stop_sequence,
-    transform_geometry,
-    transform_flexible_stop_sequence,
-    transform_flexible_service_patterns,
-    transform_flexible_service_pattern_to_service_links,
-    create_flexible_routes,
-    merge_flexible_jd_with_jp,
-    transform_geometry_tracks,
-    add_tracks_sequence,
 )
-from transit_odp.naptan.models import StopPoint, FlexibleZone
 from transit_odp.timetables.utils import get_line_description_based_on_direction
+
+logger = get_task_logger(__name__)
 
 
 class TransXChangeTransformer:
@@ -52,31 +55,52 @@ class TransXChangeTransformer:
 
     def transform(self) -> TransformedData:
         """Transform various dataframes created during the extraction stage, so that these records can be loaded into expected tables in the loader stage"""
+        logger.info("Copying step started")
         services = self.extracted_data.services.iloc[:]  # make transform immutable
         journey_patterns = self.extracted_data.journey_patterns.copy()
+        logger.info("copying journey_patterns completed")
         journey_pattern_tracks = self.extracted_data.journey_pattern_tracks.copy()
+        logger.info("copying journey_pattern_tracks completed")
         route_map = self.extracted_data.route_map.copy()
+        logger.info("copying route_map completed")
         flexible_journey_patterns = self.extracted_data.flexible_journey_patterns.copy()
+        logger.info("copying flexible_journey_patterns completed")
         flexible_vehicle_journeys = self.extracted_data.flexible_vehicle_journeys.copy()
+        logger.info("copying flexible_vehicle_journeys completed")
         jp_to_jps = self.extracted_data.jp_to_jps.copy()
+        logger.info("copying jp_to_jps completed")
         jp_sections = self.extracted_data.jp_sections.copy()
+        logger.info("copying jp_sections completed")
         timing_links = self.extracted_data.timing_links.copy()
+        logger.info("copying timing_links completed")
         stop_points = self.extracted_data.stop_points.copy()
+        logger.info("copying stop_points completed")
         provisional_stops = self.extracted_data.provisional_stops.copy()
+        logger.info("copying provisional_stops completed")
         booking_arrangements = self.extracted_data.booking_arrangements.copy()
+        logger.info("copying booking_arrangements completed")
         vehicle_journeys = self.extracted_data.vehicle_journeys.copy()
+        logger.info("copying vehicle_journeys completed")
         serviced_organisations = self.extracted_data.serviced_organisations.copy()
+        logger.info("copying serviced_organisations completed")
         operating_profiles = self.extracted_data.operating_profiles.copy()
+        logger.info("copying operating_profiles completed")
         flexible_stop_points = self.extracted_data.flexible_stop_points.copy()
+        logger.info("copying flexible_stop_points completed")
         flexible_journey_details = self.extracted_data.flexible_journey_details.copy()
+        logger.info("copying flexible_journey_details completed")
         df_flexible_operation_periods = (
             self.extracted_data.flexible_operation_periods.copy()
         )
+        logger.info("copying df_flexible_operation_periods completed")
         lines = self.extracted_data.lines.copy()
+        logger.info("copying lines completed")
+
         is_timetable_visualiser_active = flag_is_active(
             "", "is_timetable_visualiser_active"
         )
         # Match stop_points with DB
+        logger.info("Match stops points with DB")
         stop_points = self.sync_stop_points(stop_points, provisional_stops)
         stop_points = sync_localities_and_adminareas(stop_points)
         # stop_points = self.sync_admin_areas(stop_points)
@@ -101,6 +125,7 @@ class TransXChangeTransformer:
             )
 
         # Create missing route information
+        logger.info("Create missing route information")
         route_links = pd.DataFrame()
         if not timing_links.empty:
             route_links = create_route_links(timing_links, stop_points)
@@ -112,9 +137,11 @@ class TransXChangeTransformer:
         ):
             create_routes(journey_patterns, jp_to_jps, jp_sections, timing_links)
 
+        logger.info("Create dataframes")
         df_merged_vehicle_journeys = pd.DataFrame()
         vehicle_journeys_with_timing_refs = pd.DataFrame()
 
+        logger.info("Filter operating profiles")
         operating_profiles = filter_operating_profiles(operating_profiles, services)
 
         if not vehicle_journeys.empty and not journey_patterns.empty:
@@ -137,6 +164,7 @@ class TransXChangeTransformer:
                 is_timetable_visualiser_active,
             )
 
+        logger.info("Serviced organisations dataframe")
         df_merged_serviced_organisations = pd.DataFrame()
         if not serviced_organisations.empty and not operating_profiles.empty:
             df_merged_serviced_organisations = (
@@ -145,6 +173,7 @@ class TransXChangeTransformer:
                 )
             )
 
+        logger.info("Route to route links dataframe")
         route_to_route_links = pd.DataFrame()
         if not journey_patterns.empty and not jp_to_jps.empty:
             route_to_route_links = create_route_to_route_links(
@@ -156,10 +185,13 @@ class TransXChangeTransformer:
         line_names = transform_line_names(
             self.extracted_data.line_names
         )  # Transform route information into service patterns
+
+        logger.info("Service links dataframe")
         service_links = pd.DataFrame()
         if not route_links.empty:
             service_links = transform_service_links(route_links)
 
+        logger.info("Service patterns dataframe")
         service_patterns = pd.DataFrame()
         service_pattern_to_service_links = pd.DataFrame()
         service_pattern_stops = pd.DataFrame()
@@ -210,12 +242,14 @@ class TransXChangeTransformer:
 
         stop_points.drop(columns=["common_name"], axis=1, inplace=True)
 
+        logger.info("Logic for flexible stop points transformation")
         ### logic for flexible stop points transformation
         if not flexible_stop_points.empty:
             # sync flexible stops with flexible zone
             flexible_zone = self.sync_flexible_zone(flexible_stop_points)
 
             # merge the flexible stop points and flexible zone to get the required geometry
+            logger.info("merge to get the required geometry")
             flexible_stop_points_with_geometry = (
                 (
                     flexible_stop_points.merge(
@@ -238,6 +272,7 @@ class TransXChangeTransformer:
                     flexible_journey_patterns
                 )
 
+                logger.info("create merged_flexible_vehicle_journeys df")
                 df_merged_flexible_vehicle_journeys = pd.DataFrame()
                 if not flexible_vehicle_journeys.empty:
                     flexible_vehicle_journeys.drop(
@@ -268,10 +303,12 @@ class TransXChangeTransformer:
                         flexible_journey_details, df_merged_flexible_journey_patterns
                     )
                     # create flexible timing link
+                    logger.info("create flexible timing link")
                     flexible_timing_links = self.create_flexible_timing_link(
                         flexible_journey_details
                     )
                     # create flexible service link
+                    logger.info("create flexible service link")
                     if not flexible_timing_links.empty:
                         flexible_service_links = transform_service_links(
                             flexible_timing_links
@@ -280,6 +317,9 @@ class TransXChangeTransformer:
                         flexible_service_patterns = pd.DataFrame()
                         flexible_service_pattern_stops = pd.DataFrame()
                         # create flexible service_patterns and service_patterns_stops/
+                        logger.info(
+                            "create flexible service_patterns and service_patterns_stops"
+                        )
                         flexible_service_patterns = transform_flexible_service_patterns(
                             flexible_timing_links
                         )
@@ -305,6 +345,9 @@ class TransXChangeTransformer:
                         )
 
                         # merge the required dataframes for standard and flexible
+                        logger.info(
+                            "merge the required dataframes for standard and flexible"
+                        )
                         service_links = pd.concat(
                             [service_links, flexible_service_links]
                         )
@@ -333,6 +376,7 @@ class TransXChangeTransformer:
                                 df_merged_vehicle_journeys,
                             ]
                         )
+        logger.info("Returning transformation")
         return TransformedData(
             services=services,
             service_patterns=service_patterns,
@@ -391,12 +435,16 @@ class TransXChangeTransformer:
                     {
                         "atco_code": index,
                         "naptan_id": np.nan,
-                        "geometry": provisional_stops.loc[index, "geometry"]
-                        if index in provisional_stops.index.values
-                        else None,
-                        "locality_id": provisional_stops.loc[index, "locality"]
-                        if index in provisional_stops.index
-                        else "",
+                        "geometry": (
+                            provisional_stops.loc[index, "geometry"]
+                            if index in provisional_stops.index.values
+                            else None
+                        ),
+                        "locality_id": (
+                            provisional_stops.loc[index, "locality"]
+                            if index in provisional_stops.index
+                            else ""
+                        ),
                     }
                     for index in missing_stops
                 )
@@ -434,10 +482,10 @@ class TransXChangeTransformer:
         ].reset_index()
 
         if not provisional_flexible_stops.empty:
-            provisional_flexible_stops[
-                "flexible_location"
-            ] = provisional_flexible_stops["geometry"].apply(
-                lambda row: [row] if not isinstance(row, list) else row
+            provisional_flexible_stops["flexible_location"] = (
+                provisional_flexible_stops["geometry"].apply(
+                    lambda row: [row] if not isinstance(row, list) else row
+                )
             )
 
         filtered_stop_points = flexible_stop_points[
