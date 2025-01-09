@@ -1,0 +1,16 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load breadcrumbs %}
+{% block breadcrumb.content %}{% endblock %}
+{% block head_title %}
+  {% trans "Account exists" %}
+{% endblock %}
+{% block inner %}
+  <p class="govuk-body-m">
+    {% trans "An account with this email address has already been registered on BODS. Please click below to sign in." %}
+  </p>
+  <p class="govuk-body-m govuk-!-margin-bottom-6">
+    {% trans "If there are any further issues, please contact the BODS help desk." %}
+  </p>
+  <a href="{% url 'account_login' host host.name %}" class="govuk-button">{% trans "Sign in" %}</a>
+{% endblock %}

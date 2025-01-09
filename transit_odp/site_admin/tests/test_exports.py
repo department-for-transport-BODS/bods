@@ -109,6 +109,44 @@ class TestPublisherCSV:
             "yes" if invitation.organisation.key_contact else "no",
         ]
 
+    @pytest.mark.parametrize(
+        "is_active, user_status, user_type",
+        [
+            (True, "Active", AgentUserType),
+            (False, "Inactive", AgentUserType),
+            (None, "Pending", AgentUserType),
+        ],
+    )
+    def test_agent_users_included(self, is_active, user_status, user_type):
+        invitation = InvitationFactory(account_type=user_type)
+        if is_active is not None:
+            user = UserFactory(
+                account_type=user_type, is_active=is_active, email=invitation.email
+            )
+            user.save()
+            invitation.save()
+
+        publisher_csv = PublisherCSV()
+        actual = publisher_csv.to_string()
+        csvfile = io.StringIO(actual)
+        reader = csv.reader(csvfile.getvalue().splitlines())
+        headers, first_row = list(reader)
+
+        assert headers == [
+            "Operator",
+            "Account type",
+            "Email",
+            "User Status",
+            "Key Contact",
+        ]
+        assert first_row == [
+            invitation.organisation.name,
+            "Agent",
+            invitation.email,
+            user_status,
+            "yes" if invitation.organisation.key_contact else "no",
+        ]
+
 
 class TestDatasetPublishingCSV:
     @pytest.mark.parametrize(
