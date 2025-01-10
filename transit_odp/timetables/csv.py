@@ -6,6 +6,10 @@ import numpy as np
 import pandas as pd
 from pandas import Series
 
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
 from transit_odp.common.collections import Column
 from transit_odp.organisation.constants import (
     ENGLISH_TRAVELINE_REGIONS,
@@ -477,6 +481,231 @@ TIMETABLE_LINE_LEVEL_COLUMN_MAP = OrderedDict(
     }
 )
 
+TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP = OrderedDict(
+    {
+        "registration_number": Column(
+            "Registration:Registration Number",
+            "The registration number element as extracted from the OTC database.",
+        ),
+        "service_number": Column(
+            "Registration:Service Number",
+            "The service number element as extracted from the OTC database.",
+        ),
+        "otc_status": Column(
+            "Registration Status",
+            "Registered: Registered and not cancelled within the OTC "
+            "database. </br></br>"
+            "Unregistered: Not Registered within the OTC.",
+        ),
+        "scope_status": Column(
+            "Scope Status",
+            "In scope: Default status for services registered with the OTC and "
+            "other enhanced partnerships. </br></br>"
+            "Out of Scope: Service code has been marked as exempt by the DVSA "
+            "or the BODS team.",
+        ),
+        "seasonal_status": Column(
+            "Seasonal Status",
+            "In season: Service code has been marked as seasonal by the "
+            "operator or their agent and todays date falls within the "
+            "relevant date range for that service code.  </br></br>"
+            "Out of Season: Service code has been marked as seasonal by "
+            "the operator or their agent and todays date falls outside "
+            "the relevant date range for that service code.  </br></br>"
+            "Not Seasonal: Default status for published or unpublished services"
+            "to BODS. </br> Assumed Not seasonal unless service code has been marked "
+            "with a date range within the seasonal services flow.",
+        ),
+        "organisation_name": Column(
+            "Organisation Name",
+            "The name of the operator/publisher providing data on BODS.",
+        ),
+        "overall_requires_attention": Column(
+            "Requires Attention",
+            "Overall Requires Attention.",
+        ),
+        "requires_attention": Column(
+            "Timetables requires attention",
+            "No: </br>"
+            "Default state for correctly published services, will be “No” "
+            "unless any of the logic below is met. </br></br>"
+            "Yes: </br>"
+            "Yes If OTC status = Registered and Scope Status = In scope and "
+            "Seasonal Status ≠ Out of season and Published Status = Unpublished. </br>"
+            "Yes if OTC status = Registered and Scope Status = In scope and "
+            "Seasonal Status ≠ Out of season and Published Status = Published "
+            "and Timeliness Status ≠ Up to date. ",
+        ),
+        "published_status": Column(
+            "Timetables Published Status",
+            "Published: Published to BODS by an Operator/Agent. </br></br>"
+            "Unpublished: Not published to BODS by an Operator/Agent.",
+        ),
+        "staleness_status": Column(
+            "Timetables Timeliness Status",
+            "Up to date: Default status for service codes published to BODS. </br></br>"
+            "Timeliness checks are evaluated in this order: </br></br>"
+            "1) OTC Variation not published: </br>"
+            "If 'XML:Last modified date' is earlier than 'Date OTC variation needs "
+            "to be published' </br> and </br> 'Date OTC variation needs to be "
+            "published'is earlier than today's date.</br> and </br>"
+            "No associated data has been published. </br>"
+            "NB there are two association methods: </br> Method 1: </br>"
+            "Data for that service code has been updated within 70 days before "
+            "the OTC variation effective date.</br> Method 2: </br>"
+            "Data for that service code has been updated with a 'XML:Operating "
+            "Period Start Date' which equals OTC variation effective date. </br></br>"
+            "2) 42 day look ahead is incomplete: </br> If not out of date due to  "
+            "'OTC variation not published' </br> and </br> 'XML:Operating Period "
+            "End Date' is earlier than 'Date for complete 42 day look "
+            "ahead'. </br></br>"
+            "3) Service hasn't been updated within a year: </br> If not out of date "
+            "due to '42 day lookahead is incomplete' or 'OTC variation not published'"
+            "</br> and </br> 'Date at which data is 1 year old' is earlier than "
+            "today's date.",
+        ),
+        "critical_dq_issues": Column(
+            "Timetables critical DQ issues",
+            "Under maintenance.",
+        ),
+        "avl_requires_attention": Column(
+            "AVL requires attention",
+            "AVL requires attention.",
+        ),
+        "avl_published_status": Column(
+            "AVL Published Status",
+            "AVL Published Status.",
+        ),
+        "error_in_avl_to_timetable_matching": Column(
+            "Error in AVL to Timetable Matching",
+            "Error in AVL to Timetable Matching.",
+        ),
+        "fares_requires_attention": Column(
+            "Fares requires attention",
+            "Under maintenance.",
+        ),
+        "fares_published_status": Column(
+            "Fares Published Status",
+            "Under maintenance.",
+        ),
+        "fares_timeliness_status": Column(
+            "Fares Timeliness Status",
+            "Under maintenance.",
+        ),
+        "fares_compliance_status": Column(
+            "Fares Compliance Status",
+            "Under maintenance.",
+        ),
+        "dataset_id": Column(
+            "Timetables Data set ID",
+            "The internal BODS generated ID of the dataset "
+            "that contains the data for this row.",
+        ),
+        "filename": Column(
+            "TXC:Filename",
+            "The exact name of the file provided to BODS. This is usually "
+            "generated by the publisher or their supplier.",
+        ),
+        "national_operator_code": Column(
+            "TXC:NOC",
+            "The National Operator Code(s) as extracted from the files provided "
+            "by the operator/publisher to BODS.",
+        ),
+        "last_modified_date": Column(
+            "TXC:Last Modified Date",
+            "Date of last modified file within the service codes dataset.",
+        ),
+        "effective_stale_date_from_last_modified": Column(
+            "Date when timetable data is over 1 year old",
+            "'XML:Last Modified date' from timetable data catalogue plus 12 months.",
+        ),
+        "operating_period_end_date": Column(
+            "TXC:Operating Period End Date",
+            "The operating period end date as extracted from the files "
+            "provided by the operator/publisher to BODS.",
+        ),
+        "fares_dataset_id": Column(
+            "Fares Data set ID",
+            "Under maintenance.",
+        ),
+        "fares_filename": Column(
+            "NETEX:Filename",
+            "Under maintenance.",
+        ),
+        "fares_last_modified_date": Column(
+            "NETEX:Last Modified Date",
+            "Under maintenance.",
+        ),
+        "fares_effective_stale_date_from_last_modified": Column(
+            "Date when fares data is over 1 year old",
+            "Under maintenance.",
+        ),
+        "fares_operating_period_end_date": Column(
+            "NETEX:Operating Period End Date",
+            "Under maintenance.",
+        ),
+        "effective_stale_date_from_otc_effective": Column(
+            "Date Registration variation needs to be published",
+            "Registration:Effective date from timetable data catalogue minus 42 days.",
+        ),
+        "date_42_day_look_ahead": Column(
+            "Date for complete 42 day look ahead",
+            "Today's date + 42 days.",
+        ),
+        "effective_seasonal_start": Column(
+            "Date seasonal service should be published",
+            "If Seasonal Start Date is present, then Seasonal Start Date minus "
+            "42 days, else null.",
+        ),
+        "seasonal_start": Column(
+            "Seasonal Start Date",
+            "If service has been assigned a date range from within the seasonal "
+            "services flow, then take start date, else null.",
+        ),
+        "seasonal_end": Column(
+            "Seasonal End Date",
+            "If service has been assigned a date range from within the "
+            "seasonal services flow, then take end date, else null.",
+        ),
+        "operator_name": Column(
+            "Registration:Operator Name",
+            "The operator name element as extracted from the OTC database.",
+        ),
+        "otc_licence_number": Column(
+            "Registration:Licence Number",
+            "The licence number element as extracted from the OTC database.",
+        ),
+        "service_type_description": Column(
+            "Registration:Service Type Description",
+            "The service type description element as extracted from the OTC database.",
+        ),
+        "variation_number": Column(
+            "Registration:Variation Number",
+            "The variation number element as extracted from the OTC database.",
+        ),
+        "expiry_date": Column(
+            "Registration:Expiry Date",
+            "The expiry date element as extracted from the OTC database.",
+        ),
+        "effective_date": Column(
+            "Registration:Effective Date",
+            "The effective date element as extracted from the OTC database.",
+        ),
+        "received_date": Column(
+            "Registration:Received Date",
+            "The received date element as extracted from the OTC database.",
+        ),
+        "traveline_region": Column(
+            "Traveline Region",
+            "The Traveline Region details element as extracted from the OTC database.",
+        ),
+        "local_authority_ui_lta": Column(
+            "Local Transport Authority",
+            "The Local Transport Authority element as extracted from the OTC database.",
+        ),
+    }
+)
+
 
 def add_operator_name(row: Series) -> str:
     if row["organisation_name"] is None or pd.isna(row["organisation_name"]):
@@ -699,9 +928,48 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     return df
 
 
-def add_requires_attention_column(
-    df: pd.DataFrame, today: datetime.date
-) -> pd.DataFrame:
+def add_timetables_requires_attention_column(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Logic for Requires Attention:
+    Yes if all of these are true:
+        Scope Status = In scope AND
+        Seasonal Status = Not Seasonal or In Season AND
+        Registration Status = Registered
+
+        AND
+
+        Published Status = Unpublished OR
+        Timeliness Status != Up to Date
+    No if all of these are true:
+        Scope Status = Out of Scope OR
+        Seasonal Status = Out of Season
+
+        Scope Status = In scope AND
+        Seasonal Status = Not Seasonal or In Season AND
+        Registration Status = Registered AND
+        Published Status = Published AND
+        Timeliness Status = Up to Date
+    """
+    timetables_requires_attention_unpublished = (
+        (df["scope_status"] == OTC_SCOPE_STATUS_IN_SCOPE)
+        & (
+            (df["seasonal_status"] == "Not Seasonal")
+            | (df["seasonal_status"] == "In Season")
+        )
+        & (df["otc_status"] == "Registered")
+    ) & (
+        (df["published_status"] == "Unpublished")
+        | (df["staleness_status"] != "Up to date")
+    )
+
+    df["requires_attention"] = np.where(
+        timetables_requires_attention_unpublished, "Yes", "No"
+    )
+
+    return df
+
+
+def add_requires_attention_column(df: pd.DataFrame) -> pd.DataFrame:
     """
     Logic for Requires Attention:
     Yes if all of these are true:
@@ -751,6 +1019,128 @@ def cast_boolean_to_string(value: Optional[bool]) -> str:
         return "NO"
 
 
+def add_under_maintenance_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Adds string value to specific columns that are under maintenance.
+
+    Args:
+        df (pd.DataFrame): Dataframe
+
+    Returns:
+        pd.DataFrame: Updated dataframe
+    """
+    df["critical_dq_issues"] = "Under maintenance"
+    df["fares_requires_attention"] = "Under maintenance"
+    df["fares_published_status"] = "Under maintenance"
+    df["fares_timeliness_status"] = "Under maintenance"
+    df["fares_compliance_status"] = "Under maintenance"
+    df["fares_dataset_id"] = "Under maintenance"
+    df["fares_filename"] = "Under maintenance"
+    df["fares_last_modified_date"] = "Under maintenance"
+    df["fares_effective_stale_date_from_last_modified"] = "Under maintenance"
+    df["fares_operating_period_end_date"] = "Under maintenance"
+
+    return df
+
+
+def add_avl_published_status(row: Series, synced_in_last_month) -> str:
+    """
+    Returns value for 'AVL Published Status' column.
+
+    Args:
+        row (Series): Row of the dataframe
+        synced_in_last_month: Records from ABODS API
+
+    Returns:
+        str: Yes or No for 'AVL Published Status' column
+    """
+    line_name = row["service_number"]
+    operator_ref = row["national_operator_code"]
+
+    if f"{line_name}__{operator_ref}" in synced_in_last_month:
+        return "Yes"
+    return "No"
+
+
+def add_error_in_avl_to_timetable_matching(row: Series) -> str:
+    """
+    Returns value for 'Error in AVL to Timetable Matching' column.
+
+    Args:
+        row (Series): Row of the dataframe
+
+    Returns:
+        str: Yes or No for 'Error in AVL to Timetable Matching' column
+    """
+    line_name = row["service_number"]
+    operator_ref = row["national_operator_code"]
+    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+
+    if not uncounted_activity_df.loc[
+        (uncounted_activity_df["OperatorRef"] == operator_ref)
+        & (
+            uncounted_activity_df["LineRef"].isin(
+                [line_name, line_name.replace(" ", "_")]
+            )
+        )
+    ].empty:
+        return "Yes"
+    return "No"
+
+
+def add_avl_requires_attention(row: Series) -> str:
+    """
+    Returns value for 'AVL requires attention' column based on the following logic:
+
+    If both 'AVL Published Status' equal to Yes
+    and 'Error in AVL to Timetable Matching' equal to No,
+    then 'AVL requires attention' = No.
+    else
+    the value 'AVL requires attention' = Yes.
+
+    Args:
+        row (Series): Row of the dataframe
+
+    Returns:
+        str: Yes or No for 'AVL requires attention' column
+    """
+    avl_published_status = row["avl_published_status"]
+    error_in_avl_to_timetable_matching = row["error_in_avl_to_timetable_matching"]
+
+    if (avl_published_status == "Yes") and (error_in_avl_to_timetable_matching == "No"):
+        return "No"
+    return "Yes"
+
+
+def add_overall_requires_attention(row: Series) -> str:
+    """
+    Updates value for 'Requires attention' column based on the following logic:
+
+    If 'Scope Status' = Out of Scope OR 'Seasonal Status' = Out of Season,
+    then 'Requires attention' = No.
+    If 'Timetables requires attention' = No AND 'AVL requires attention' = No,
+    then 'Requires attention' = No.
+    If 'Timetables requires attention' = Yes OR 'AVL requires attention' = Yes,
+    then 'Requires attention' = Yes.
+
+    Args:
+        row (Series): Row of the dataframe
+
+    Returns:
+        str: Value for the column
+    """
+    exempted = row["scope_status"]
+    seasonal_service = row["seasonal_status"]
+    timetable_requires_attention = row["requires_attention"]
+    avl_requires_attention = row["avl_requires_attention"]
+
+    if (exempted == "Out of Scope") or (seasonal_service == "Out of Season"):
+        return "No"
+    if (timetable_requires_attention == "No") and (avl_requires_attention == "No"):
+        return "No"
+    return "Yes"
+
+
 def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
     today = datetime.date.today()
 
@@ -781,7 +1171,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
-    merged = add_requires_attention_column(merged, today)
+    merged = add_requires_attention_column(merged)
     merged = add_traveline_regions(merged)
 
     rename_map = {
@@ -833,7 +1223,7 @@ def _get_timetable_line_level_catalogue_dataframe() -> pd.DataFrame:
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
-    merged = add_requires_attention_column(merged, today)
+    merged = add_requires_attention_column(merged)
     merged = add_traveline_regions(merged)
 
     merged = merged[merged["otc_status"] == OTC_STATUS_REGISTERED]
@@ -846,9 +1236,84 @@ def _get_timetable_line_level_catalogue_dataframe() -> pd.DataFrame:
     return merged
 
 
+def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
+    today = datetime.date.today()
+    abods_registry = AbodsRegistery()
+    synced_in_last_month = abods_registry.records()
+
+    txc_df = pd.DataFrame.from_records(
+        TXCFileAttributes.objects.get_active_txc_files_line_level().values(
+            *TXC_LINE_LEVEL_COLUMNS
+        )
+    )
+    otc_df = pd.DataFrame.from_records(
+        OTCService.objects.add_timetable_data_annotations().values(*OTC_COLUMNS)
+    )
+    if txc_df.empty or otc_df.empty:
+        raise EmptyDataFrame()
+
+    otc_df["service_number"] = otc_df["service_number"].str.split("|")
+    otc_df = otc_df.explode("service_number")
+
+    castings = (
+        ("dataset_id", "Int64"),
+        ("revision_number", "Int64"),
+        ("public_use", "boolean"),
+        ("variation_number", "Int64"),
+        ("otc_operator_id", "Int64"),
+    )
+
+    merged = pd.merge(
+        otc_df,
+        txc_df,
+        left_on=["service_code", "service_number"],
+        right_on=["service_code", "line_name_unnested"],
+        how="outer",
+    )
+
+    for field, type_ in castings:
+        merged[field] = merged[field].astype(type_)
+
+    merged.sort_values("dataset_id", inplace=True)
+    merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
+    merged = add_status_columns(merged)
+    merged = add_seasonal_status(merged, today)
+    merged = add_staleness_metrics(merged, today)
+    merged = add_timetables_requires_attention_column(merged)
+    merged = add_traveline_regions(merged)
+    merged = add_under_maintenance_columns(merged)
+    merged["avl_published_status"] = merged.apply(
+        lambda x: add_avl_published_status(x, synced_in_last_month), axis=1
+    )
+    merged["error_in_avl_to_timetable_matching"] = merged.apply(
+        lambda x: add_error_in_avl_to_timetable_matching(x), axis=1
+    )
+    merged["avl_requires_attention"] = merged.apply(
+        lambda x: add_avl_requires_attention(x), axis=1
+    )
+    merged["overall_requires_attention"] = merged.apply(
+        lambda x: add_overall_requires_attention(x), axis=1
+    )
+
+    merged = merged[merged["otc_status"] == OTC_STATUS_REGISTERED]
+
+    rename_map = {
+        old_name: column_tuple.field_name
+        for old_name, column_tuple in TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.items()
+    }
+    merged = merged[TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()].rename(
+        columns=rename_map
+    )
+    return merged
+
+
 def get_timetable_catalogue_csv():
     return _get_timetable_catalogue_dataframe().to_csv(index=False)
 
 
 def get_line_level_timetable_catalogue_csv():
     return _get_timetable_line_level_catalogue_dataframe().to_csv(index=False)
+
+
+def get_timetable_compliance_report():
+    return _get_timetable_compliance_report_dataframe().to_csv(index=False)
