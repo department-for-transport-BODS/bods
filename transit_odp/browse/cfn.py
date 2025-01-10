@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from django.conf import settings
 from botocore.signers import CloudFrontSigner
 from cryptography.hazmat.primitives import hashes
@@ -9,7 +9,7 @@ import boto3
 
 
 def get_private_key():
-    ssm_client = boto3.client("ssm", region_name=settings.AWS_REGION)
+    ssm_client = boto3.client("ssm", region_name=settings.SSM_PARAMETER_AWS_REGION)
     parameter = ssm_client.get_parameter(
         Name=settings.CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER, WithDecryption=True
     )
@@ -26,7 +26,7 @@ def rsa_signer(message):
 
 def generate_signed_url(file_key):
     cloudfront_signer = CloudFrontSigner(settings.CLOUDFRONT_PUBLIC_KEY_ID, rsa_signer)
-    expiration = datetime.now(datetime.timezone.utc) + timedelta(
+    expiration = datetime.now(timezone.utc) + timedelta(
         minutes=settings.S3_PRESIGNED_URL_TTL
     )
 
