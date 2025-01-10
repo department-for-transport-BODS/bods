@@ -1072,7 +1072,7 @@ def add_error_in_avl_to_timetable_matching(row: Series) -> str:
     Returns:
         str: Yes or No for 'Error in AVL to Timetable Matching' column
     """
-    line_name = row["service_number"]
+    line_name = str(row["service_number"])
     operator_ref = row["national_operator_code"]
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
 
