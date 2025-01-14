@@ -41,6 +41,7 @@ from transit_odp.timetables.csv import (
     TIMETABLE_COLUMN_MAP,
     get_line_level_timetable_catalogue_csv,
     get_timetable_catalogue_csv,
+    get_timetable_compliance_report,
 )
 
 logger = logging.getLogger(__name__)
@@ -51,6 +52,7 @@ GUIDANCE_FILENAME = "data_catalogue_guidance.txt"
 ORGANISATION_FILENAME = "organisations_data_catalogue.csv"
 TIMETABLE_FILENAME = "timetables_data_catalogue.csv"
 TIMETABLE_LINE_LEVEL_FILENAME = "timetables_line_level_data_catalogue.csv"
+TIMETABLE_COMPLIANCE_REPORT_FILENAME = "overall_compliance_report.csv"
 OVERALL_FILENAME = "overall_data_catalogue.csv"
 LOCATION_FILENAME = "location_data_catalogue.csv"
 NOC_FILENAME = "operator_noc_data_catalogue.csv"
@@ -220,6 +222,9 @@ def create_data_catalogue_file() -> BinaryIO:
     buffer_ = io.BytesIO()
     files = (CSVFile(NOC_FILENAME, DownloadOperatorNocCatalogueCSV),)
     is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
+    is_avl_require_attention_active = flag_is_active(
+        "", "is_avl_require_attention_active"
+    )
 
     with zipfile.ZipFile(buffer_, mode="w", compression=zipfile.ZIP_DEFLATED) as zin:
         for file_ in files:
@@ -239,13 +244,22 @@ def create_data_catalogue_file() -> BinaryIO:
         except EmptyDataFrame as exc:
             logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
 
-        try:
-            zin.writestr(
-                TIMETABLE_LINE_LEVEL_FILENAME, get_line_level_timetable_catalogue_csv()
-            )
-
-        except EmptyDataFrame as exc:
-            logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
+        if is_avl_require_attention_active:
+            try:
+                zin.writestr(
+                    TIMETABLE_COMPLIANCE_REPORT_FILENAME,
+                    get_timetable_compliance_report(),
+                )
+            except EmptyDataFrame:
+                pass
+        else:
+            try:
+                zin.writestr(
+                    TIMETABLE_LINE_LEVEL_FILENAME,
+                    get_line_level_timetable_catalogue_csv(),
+                )
+            except EmptyDataFrame as exc:
+                logger.warning(OTC_EMPTY_WARNING, exc_info=exc)
 
         try:
             zin.writestr(OVERALL_FILENAME, get_overall_data_catalogue_csv())
