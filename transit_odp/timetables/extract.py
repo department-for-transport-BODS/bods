@@ -352,25 +352,12 @@ class TransXChangeExtractor:
             return pd.DataFrame(), pd.DataFrame()
         route_ref_link = {}
 
-        self.doc.check_long_lat_in_location()
-
-        # Check the presence of longitude and latitude in different locations
-        long_lat_in_location = None
-        long_lat_in_translation = None
-        long_lat_in_location = self.doc.check_long_lat_in_location()
-        long_lat_in_translation = (
-            not long_lat_in_location
-            and self.doc.check_long_lat_in_translation_location()
-        )
-        easting_northing_in_translation = (
-            not long_lat_in_translation
-            and not long_lat_in_location
-            and self.doc.check_easting_northing_in_location_translation()
-        )
-        # Determine the location type based on the checks
-        location_type = (
-            ["Location"] if long_lat_in_location else ["Location", "Translation"]
-        )
+        northing_easting_geometry = False
+        location_type, geo_type = self.get_geometry_location_and_type()
+        northing_easting_geometry = geo_type == "Easting/Northing"
+        long_lat_geometry = geo_type == "Longitude/Latitude"
+        if geo_type is None:
+            logger.error("Geometry type is not found")
 
         for route in routes:
             route_section_refs = route.get_elements_or_none(["RouteSectionRef"])
@@ -422,7 +409,7 @@ class TransXChangeExtractor:
                             locations = track.get_elements_or_none(location_type)
                             if locations:
                                 for location in locations:
-                                    if easting_northing_in_translation:
+                                    if northing_easting_geometry:
                                         easting = location.get_element_or_none(
                                             ["Easting"]
                                         )
@@ -438,7 +425,7 @@ class TransXChangeExtractor:
                                                 "{:.7f}".format(point.y),
                                             )
                                         )
-                                    else:
+                                    if long_lat_geometry:
                                         Longitude = location.get_element_or_none(
                                             ["Longitude"]
                                         )
@@ -461,10 +448,56 @@ class TransXChangeExtractor:
             except Exception as e:
                 print(e)
                 logger.warning(f"Route link is missing for {route_section_id}")
-
         tracks = pd.DataFrame(sections_tracks)
         tracks["file_id"] = self.file_id
         return tracks, vj_tracks_map
+
+    def get_geometry_location_and_type(self):
+        """
+        This function determines the location type and geometry type based on the presence of longitude and latitude
+        1. Find out the type of the geometry and the location
+        geometry can be stored in ( long, lat) or (easting, northing)
+        2. Find out the location type it can be location or location/translation
+
+        Returns:
+        location type, northing_easting_geometry if the geometry is stored in easting and northings
+        """
+        # Check the presence of longitude and latitude in different locations
+        easting_northing_in_translation = None
+        geo_type = None
+        easting_northing_in_location = None
+        long_lat_in_location = None
+        long_lat_in_translation = None
+        # check if long and lat are in location
+        long_lat_in_location = self.doc.check_long_lat_in_location()
+        long_lat_in_translation = (
+            not long_lat_in_location
+            and self.doc.check_long_lat_in_translation_location()
+        )
+        # check if easting and northing are in location or translation
+        easting_northing_in_translation = (
+            not long_lat_in_translation
+            and not long_lat_in_location
+            and self.doc.check_easting_northing_in_location_translation()
+        )
+        # check if easting and northing are in location
+        easting_northing_in_location = (
+            not long_lat_in_translation
+            and not long_lat_in_location
+            and not easting_northing_in_translation
+            and self.doc.check_easting_northing_in_location()
+        )
+        # Determine the location type based on the checks
+        location_type = (
+            ["Location"]
+            if long_lat_in_location or easting_northing_in_location
+            else ["Location", "Translation"]
+        )
+        if easting_northing_in_translation or easting_northing_in_location:
+            geo_type = "Easting/Northing"
+        if long_lat_in_translation or long_lat_in_location:
+            geo_type = "Longitude/Latitude"
+        return location_type, geo_type
 
     def extract_vehicle_journeys(self):
         """
