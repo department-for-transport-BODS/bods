@@ -5,16 +5,11 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-import boto3
+from os import environ
 
 
 def get_private_key():
-    ssm_client = boto3.client("ssm", region_name=settings.SSM_PARAMETER_AWS_REGION)
-    parameter = ssm_client.get_parameter(
-        Name=settings.CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER, WithDecryption=True
-    )
-    private_key = parameter["Parameter"]["Value"]
-    return private_key
+    return environ.get("CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER")
 
 
 def rsa_signer(message):
