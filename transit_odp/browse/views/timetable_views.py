@@ -961,7 +961,7 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
 
 class CFNDownloadBulkDataArchiveView(DownloadBulkDataArchiveView):
     def get_download_file(self):
-        return generate_signed_url(self.object.data.name)
+        return generate_signed_url(self.object.data.path)
 
     def render_to_response(self, **response_kwargs):
         download_file = self.get_download_file()
