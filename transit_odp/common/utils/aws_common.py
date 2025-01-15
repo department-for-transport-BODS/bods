@@ -1,9 +1,9 @@
-import logging
 import json
+import logging
 
+import boto3
 from django.conf import settings
 from storages.backends.s3boto3 import S3Boto3Storage
-import boto3
 
 logger = logging.getLogger(__name__)
 
@@ -118,3 +118,53 @@ class SQSClientWrapper:
         except Exception as e:
             logger.error(f"DQS-SQS:Error when trying to access the queues: {e}")
             raise
+
+
+class StepFunctionsClientWrapper:
+    """Initialize Step Functions client, execute Step Functions and check for status"""
+
+    def __init__(self) -> object:
+        """
+        Initialize and return an Step Functions client.
+        """
+        try:
+            self.step_function_arn = (
+                settings.AWS_STEP_FUNCTION_ARN
+            )  # "arn:aws:states:eu-west-2:228266753808:stateMachine:bods-backend-dev-tt-sm"  # ARN of your Step Function
+
+            self.client = boto3.client(
+                "stepfunctions",
+                region_name=settings.AWS_REGION,
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            )
+        except Exception as e:
+            logger.info(
+                f"AWS Step Functions:General exception when initialising Step Functions client wrapper: {e}"
+            )
+            raise
+
+    # Initialize and call AWS Step Functions
+    def start_step_function(self, input_payload: dict):
+        try:
+            # Invoke the Step Function
+            response = self.client.start_execution(
+                stateMachineArn=self.step_function_arn,
+                input=json.dumps(
+                    input_payload
+                ),  # Convert Python dictionary to JSON string
+            )
+            self.execution_arn = response["executionArn"]
+        except Exception as e:
+            logger.info(
+                f"AWS Step Functions:General exception when starting Step Functions: {e}"
+            )
+            raise
+
+    def wait_for_completion(poll_interval=5):
+        while True:
+            response = self.client.describe_execution(executionArn=self.execution_arn)
+            status = response["status"]
+            if status in ["SUCCEEDED", "FAILED", "TIMED_OUT", "ABORTED"]:
+                return status, response
+            time.sleep(poll_interval)
