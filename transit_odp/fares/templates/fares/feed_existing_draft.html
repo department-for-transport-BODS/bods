@@ -16,9 +16,11 @@
 {% block body_section %}{% endblock %}
 {% block done_button %}
   <div class="button-holder">
+    <!-- TODO -->
     <a role="button" class="govuk-button" href="{% url 'fares:revision-update-publish' pk1=pk1 pk=pk %}">
       {% trans "View draft" %}
     </a>
+    <!-- TODO -->
     <a role="button" class="govuk-button govuk-button--secondary" href="{% url 'fares:feed-detail' pk=pk pk1=pk1 %}">
       {% trans "Cancel" %}
     </a>
