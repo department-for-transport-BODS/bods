@@ -6,16 +6,30 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from os import environ
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_private_key():
-    return environ.get("CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER")
+    pem_data = environ.get("CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER")
+    if pem_data is None:
+        logger.error("Private key not found in environment variables.")
+        raise ValueError("Private key not found in environment variables.")
+    logger.info("Private key retrieved from environment variables.")
+    if isinstance(pem_data, str):
+        return pem_data.encode("utf-8")
+    return pem_data
 
 
 def rsa_signer(message):
-    private_key = serialization.load_pem_private_key(
-        get_private_key(), password=None, backend=default_backend()
-    )
+    try:
+        private_key = serialization.load_pem_private_key(
+            get_private_key(), password=None, backend=default_backend()
+        )
+    except ValueError as e:
+        logger.error(f"Could not deserialize key data: {e}")
+        raise
     return private_key.sign(message, padding.PKCS1v15(), hashes.SHA1())
 
 
