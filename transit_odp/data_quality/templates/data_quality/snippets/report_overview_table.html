@@ -73,7 +73,7 @@
                   <td class="govuk-table__cell govuk-table__cell">{{ item.count }}</td>
                   <td class="govuk-table__cell govuk-table__cell">
                     <a class="govuk-link"
-                       href="{% url item.warning.list_url_name pk=view.kwargs.pk pk1=view.kwargs.pk1 report_id=view.kwargs.report_id %}">
+                       href="{% url item.warning.list_url_name pk=view.kwargs.pk pk1=view.kwargs.pk1 report_id=view.kwargs.report_id host hosts.publish %}">
                       {{ item.warning.title }}
                     </a>
                   </td>
