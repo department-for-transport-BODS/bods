@@ -889,9 +889,9 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             response = StreamingHttpResponse(
                 gtfs_region_file, content_type="application/zip"
             )
-            response[
-                "Content-Disposition"
-            ] = f'attachment; filename="itm_{id_}_gtfs.zip"'
+            response["Content-Disposition"] = (
+                f'attachment; filename="itm_{id_}_gtfs.zip"'
+            )
         else:
             gtfs = self.get_download_file(id_)
             if gtfs.file is None:
@@ -940,6 +940,9 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
             )
 
     def get_download_file(self):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return generate_signed_url(self.object.data.name)
         s3_start = datetime.now()
         data = self.object.data
         s3_endtime = datetime.now()
@@ -947,6 +950,13 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
             f"S3 bucket download for bulk archive took {(s3_endtime - s3_start).total_seconds()} seconds"
         )
         return data
+
+    def render_to_response(self, **response_kwargs):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            download_file = self.get_download_file()
+            return redirect(download_file)
+        super().render_to_response(**response_kwargs)
 
 
 class CFNDownloadBulkDataArchiveView(DownloadBulkDataArchiveView):

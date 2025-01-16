@@ -12,34 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_private_key():
-    pem_data = """-----BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDuK2siSasajxKX
-fus/6uNSsjXGTZyqwK9OitRJ8TwkexviRHAnPVXqjy4rH3WlrngaXOnb4jPBIB3R
-jQFVNY29tA+a6OkAaicryGX/8jCd60ebsBUZpX0hsZh1YyBPvm0P67i86zmUVH5Y
-uZG1nnz68a9YiPvSwnJSWC8y4k4urn87IrElif76I0t/42iSR0J+ZsbTVLR2LpQc
-4c3QkqFzHip1enJFkYL3c2VEW84clepcmSYW6zs/Nix+ktBejla2qz1XgMmQfjB3
-mkwYv5dJ1pTFKDmfkhUG85WcLG+qHmgZDokZHBCtH80cbJcOeOjXkg4sbcC2G9TF
-IV0WE5/LAgMBAAECggEAGSSHQk7hm8On1EtnPU+oINZEXANceyAtQY7hW072qOlA
-J9JOvq24cLMdzhqbmlqBPlM5suc9zHD+BN2sWtj09iZYkWNuGYebTAFzVyIzpLAu
-Vo6vo433WEO90wKcah6xt8EMNxFj+jczQV2Rtskc64bxGlkXsIerdurtTKNcWowI
-KpkkByVev5iKJ6RSqy7dvztqRMYKePDiywiw2Frwy1fIqyloOb0Iw/Kz0dx8ku7L
-ZV5HYmVS/NRcvoLCUV0KA1Xb91tIazHBmGWEwPm9neEHxsFnKIoG6HGXNXH8/YQU
-icbcmd/+e5wnMIdsNHNff4esB5IzCpcoetzZddcgJQKBgQD43BXLb8tvDonpf00r
-/ttncmJ8h4t1J97mRJZLbByrXibik/Sgy3lHg1u7E9dXl6EnXEwM6oAES177x1lZ
-mFpos32xbCRH7irAQot6Lxhii7odUChvU0twc4p4eseprd+2n0R+i1TMpK65WvAb
-kpNFbCTI0znkKcRcVKiIRgIqfQKBgQD1ANAUVzUaT1i2TiA5mNKFXVd4omWcEjmP
-w9oQoJjsP0/mleflmcvEWAvCOFm/C/axMnOEDEsLp3k4arjjNGtYXIsFhO4QIWwS
-MombOT7Dh6Nx7uC/n/yVuHMsOd0DuTG403MI9DcvLakyz/yq/+GR69F9P/Vlx18S
-Yuq/zpW95wKBgAKVBgTeXBYC6JtrnrleI5inLy5rmZ7VkxKAk66kqId+qpifQGKK
-ue9sBX+jbRCTmjB2XLOlmz5wKcQjBWJQml+LvToiDR5R8k+cYSYbZv1exceYFVNS
-Ye4AxOcLHxc7np6eeG93sqGM8+ModmVS2ARYYulSh78+T7NFjZocX9lhAoGBANS3
-6PHQKb33KFnYiSgY5KeAPILz1O7l7+4/qKSJG1z7N19HxjjWCFIn88WkcV9rfruo
-xxzeI4Yx2RC/sFksWQs2Bko7eQquSguer1UDJdhUevdf5Ojbek1wASdj8d3avC3y
-AM3EY+llZqNEa+b4FZxBN/jcQC8nJAdttM3mCqL/AoGAEJRsnVXuNr2YuCTu38Gp
-Nv9HmIDvcKQpBNlJrFhyCRdu8E0m500+Wm6DsWqFDTiuaEZIqvM1Ji7KvqaQltSL
-cYSMZFdhH6kWWjViPwou2KoUqwHjjIu9WL6U5PagcfnI1BFvi/L59aEkOcAZtK0J
-YMlan3LFQ7YgtqneaU/lZBs=
------END PRIVATE KEY-----"""
+    pem_data = environ.get("CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER")
     if pem_data is None:
         logger.error("Private key not found in environment variables.")
         raise ValueError("Private key not found in environment variables.")
