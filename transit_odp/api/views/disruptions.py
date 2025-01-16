@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status, views
 from rest_framework.response import Response
 from requests import RequestException
+from django.http import HttpResponse
+from waffle import flag_is_active
 
 from transit_odp.api.renders import XMLRender
 from transit_odp.api.utils.response_utils import create_xml_error_response
@@ -18,6 +20,13 @@ class DisruptionsOverview(LoginRequiredMixin, TemplateView):
     """View for Disruptions SIRI API Overview."""
 
     template_name = "api/disruptions_api_overview.html"
+
+    def get(self, request, *args, **kwargs):
+        """Check whether cancellations feature flag is active before rendering page."""
+        is_cancellations_live = flag_is_active("", "is_cancellations_live")
+        if is_cancellations_live is False:
+            return HttpResponse(status=404)
+        return super().get(request, *args, **kwargs)
 
 
 class DisruptionsOpenApiView(LoginRequiredMixin, TemplateView):
