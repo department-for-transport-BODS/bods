@@ -24,6 +24,7 @@ from requests import RequestException
 from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.browse.cfn import generate_signed_url
 from transit_odp.browse.constants import LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
 from transit_odp.browse.filters import TimetableSearchFilter
 from transit_odp.browse.forms import ConsumerFeedbackForm
@@ -63,7 +64,6 @@ from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
 from transit_odp.transmodel.models import BookingArrangements, Service
 from transit_odp.users.constants import SiteAdminType
-from transit_odp.browse.cfn import generate_signed_url
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -866,7 +866,8 @@ class DownloadTimetablesView(LoginRequiredMixin, BaseTemplateView):
 
 
 class DownloadRegionalGTFSFileView(BaseDownloadFileView):
-    """View for retrieving a GTFS region file from the GTFS API and returning it as a StreamingHttpResponse"""
+    """View for retrieving a GTFS region file from the GTFS API and
+    returning it as a StreamingHttpResponse"""
 
     def get(self, request, *args, **kwargs):
         self.is_new_gtfs_api_active = flag_is_active("", "is_new_gtfs_api_active")
@@ -875,7 +876,8 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             ResourceRequestCounter.from_request(request)
             db_endtime = datetime.now()
             logger.info(
-                f"Database call for GTFS ResourceRequestCounter took {(db_endtime - db_starttime).total_seconds()} seconds"
+                f"""Database call for GTFS ResourceRequestCounter took
+                {(db_endtime - db_starttime).total_seconds()} seconds"""
             )
         return self.render_to_response()
 
@@ -913,7 +915,8 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             gtfs_file = downloader.download_file_by_id(id_)
             s3_endtime = datetime.now()
             logger.info(
-                f"S3 bucket download for GTFS took {(s3_endtime - s3_start).total_seconds()} seconds"
+                f"""S3 bucket download for GTFS took
+                {(s3_endtime - s3_start).total_seconds()} seconds"""
             )
 
         return gtfs_file
@@ -930,7 +933,8 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
             ).earliest()  # as objects are already ordered by '-created' in model Meta
             db_endtime = datetime.now()
             logger.info(
-                f"Database call for bulk archive took {(db_endtime - db_starttime).total_seconds()} seconds"
+                f"""Database call for bulk archive took
+                {(db_endtime - db_starttime).total_seconds()} seconds"""
             )
             return bulk_data_archive
         except BulkDataArchive.DoesNotExist:
@@ -947,7 +951,8 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
         data = self.object.data
         s3_endtime = datetime.now()
         logger.info(
-            f"S3 bucket download for bulk archive took {(s3_endtime - s3_start).total_seconds()} seconds"
+            f"""S3 bucket download for bulk archive took
+            {(s3_endtime - s3_start).total_seconds()} seconds"""
         )
         return data
 
@@ -961,7 +966,7 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
 
 class CFNDownloadBulkDataArchiveView(DownloadBulkDataArchiveView):
     def get_download_file(self):
-        return generate_signed_url(self.object.data.path)
+        return generate_signed_url(self.object.data.name)
 
     def render_to_response(self, **response_kwargs):
         download_file = self.get_download_file()
@@ -983,7 +988,8 @@ class DownloadBulkDataArchiveRegionsView(DownloadView):
             ).earliest()  # as objects are already ordered by '-created' in model Meta
             db_endtime = datetime.now()
             logger.info(
-                f"Database call for region-wise bulk archive took {(db_endtime - db_starttime).total_seconds()} seconds"
+                f"""Database call for region-wise bulk archive
+                took {(db_endtime - db_starttime).total_seconds()} seconds"""
             )
             return region_bulk_data_archive
         except BulkDataArchive.DoesNotExist:
@@ -997,7 +1003,8 @@ class DownloadBulkDataArchiveRegionsView(DownloadView):
         data = self.object.data
         s3_endtime = datetime.now()
         logger.info(
-            f"S3 bucket download for region-wise bulk archive took {(s3_endtime - s3_start).total_seconds()} seconds"
+            f"""S3 bucket download for region-wise bulk archive took
+            {(s3_endtime - s3_start).total_seconds()} seconds"""
         )
         return data
 
