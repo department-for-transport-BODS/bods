@@ -1,5 +1,7 @@
 import json
 import logging
+import re
+from datetime import datetime
 
 import boto3
 from django.conf import settings
@@ -130,7 +132,7 @@ class StepFunctionsClientWrapper:
         try:
             self.step_function_arn = (
                 settings.AWS_STEP_FUNCTION_ARN
-            )  # "arn:aws:states:eu-west-2:228266753808:stateMachine:bods-backend-dev-tt-sm"  # ARN of your Step Function
+            )  # ARN of your Step Function
 
             self.client = boto3.client(
                 "stepfunctions",
@@ -145,14 +147,16 @@ class StepFunctionsClientWrapper:
             raise
 
     # Initialize and call AWS Step Functions
-    def start_step_function(self, input_payload: dict):
+    def start_step_function(self, revision_id, input_payload: dict):
         try:
+            self.revision_id = revision_id
+            clean_execution_name = self.clean_state_machine_name()
+
             # Invoke the Step Function
             response = self.client.start_execution(
                 stateMachineArn=self.step_function_arn,
-                input=json.dumps(
-                    input_payload
-                ),  # Convert Python dictionary to JSON string
+                name=clean_execution_name,
+                input=input_payload,
             )
             self.execution_arn = response["executionArn"]
         except Exception as e:
@@ -160,6 +164,22 @@ class StepFunctionsClientWrapper:
                 f"AWS Step Functions:General exception when starting Step Functions: {e}"
             )
             raise
+
+    def clean_state_machine_name(self) -> str:
+        """
+        Statemachine Names much only contain: 0-9, A-Z, a-z, - and _
+        If not, Cloudwatch Logging is disabled
+        """
+        now = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        execution_name = f"{self.revision_id}_{now}"
+        cleaned = re.sub(r"[^a-zA-Z0-9\-_]", "", execution_name)
+
+        if cleaned != execution_name:
+            logger.warning(
+                f"Name contained invalid characters: '{execution_name}' -> '{cleaned}'"
+            )
+
+        return cleaned
 
     def wait_for_completion(poll_interval=5):
         while True:

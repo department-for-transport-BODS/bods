@@ -33,6 +33,7 @@ from transit_odp.publish.forms import (
     FeedUploadForm,
     RevisionPublishForm,
 )
+from transit_odp.timetables.utils import create_state_machine_payload
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
@@ -507,22 +508,12 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
             revision.start_etl()
 
         else:
-            if all_data["url_link"]:
-                type_of_input = "URL_UPLOAD"
-            else:
-                type_of_input = "ZIP_UPLOAD"
-
-            # Payload to send to the Step Function
-            input_payload = {
-                "revision_id": revision.id,
-                "type_of_input": type_of_input,
-            }
-
+            # trigger state machine
+            input_payload = create_state_machine_payload(revision)
             try:
                 step_fucntions_client = StepFunctionsClientWrapper()
                 # Invoke the Step Function
-                step_fucntions_client.start_step_function(input_payload)
-                # status, result = step_fucntions_client.wait_for_completion()
+                step_fucntions_client.start_step_function(revision.id, input_payload)
 
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=500)
