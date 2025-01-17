@@ -52,6 +52,7 @@ from transit_odp.fares_validator.views.functions import (
     is_time_interval_name_present_in_tariffs,
     is_time_intervals_present_in_tarrifs,
     is_uk_pi_fare_price_frame_present,
+    validate_cappeddiscountright_rules,
 )
 
 
@@ -191,6 +192,9 @@ class FaresValidator:
         )
         self.register_function(
             "check_resource_frame_operator_name", check_resource_frame_operator_name
+        )
+        self.register_function(
+            "validate_cappeddiscountright_rules", validate_cappeddiscountright_rules
         )
 
     def register_function(self, key: str, function: Callable) -> None:

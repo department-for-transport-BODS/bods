@@ -2145,3 +2145,80 @@ def check_resource_frame_operator_name(context, composite_frames, *args):
                 )
                 response = response_details.__list__()
                 return response
+
+
+def validate_cappeddiscountright_rules(context, composite_frames, *args):
+    """
+    Check if mandatory capping rules element are present
+    """
+    for composite_frame in composite_frames:
+        try:
+            composite_frame_id = _extract_attribute(composite_frames, "id")
+        except KeyError:
+            sourceline = composite_frame.sourceline
+            response_details = XMLViolationDetail(
+                "violation",
+                sourceline,
+                msg.MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING,
+            )
+            response = response_details.__list__()
+            return response
+        if TYPE_OF_FRAME_METADATA_SUBSTRING not in composite_frame_id:
+            fareframes_xpath = "x:frames/x:FareFrame"
+            fareframes = composite_frame.xpath(fareframes_xpath, namespaces=NAMESPACE)
+            for fareframe in fareframes:
+                capped_discount_right_xpath = "x:fareProducts/x:CappedDiscountRight"
+                capped_discount_right = fareframe.xpath(
+                    capped_discount_right_xpath, namespaces=NAMESPACE
+                )
+                if capped_discount_right:
+                    capped_discount_right = capped_discount_right[0]
+                    if "id" not in capped_discount_right.attrib:
+                        sourceline = composite_frame.sourceline
+                        response_details = XMLViolationDetail(
+                            "violation",
+                            sourceline,
+                            msg.MESSAGE_OBSERVATION_MISSING_CAPPED_DISCOUNT_RIGHT_ID,
+                        )
+                        response = response_details.__list__()
+                        return response
+                    # capped_discount_right_id = capped_discount_right.attrib['id']
+                    capping_rule = capped_discount_right.xpath(
+                        "x:cappingRules/x:CappingRule", namespaces=NAMESPACE
+                    )[0]
+                    capping_rule_name = capping_rule.xpath(
+                        "string(x:Name)", namespaces=NAMESPACE
+                    )
+                    if not capping_rule_name:
+                        sourceline = capped_discount_right.sourceline
+                        response_details = XMLViolationDetail(
+                            "violation",
+                            sourceline,
+                            msg.MESSAGE_OBSERVATION_MISSING_CAPPING_RULE_NAME,
+                        )
+                        response = response_details.__list__()
+                        return response
+                    capping_rule_period = capping_rule.xpath(
+                        "string(x:CappingPeriod)", namespaces=NAMESPACE
+                    )
+                    if not capping_rule_period or len(capping_rule_period) == 0:
+                        sourceline = capped_discount_right.sourceline
+                        response_details = XMLViolationDetail(
+                            "violation",
+                            sourceline,
+                            msg.MESSAGE_OBSERVATION_MISSING_CAPPING_PERIOD,
+                        )
+                        response = response_details.__list__()
+                        return response
+                    capping_rule_validelelement_ref = capping_rule.xpath(
+                        "x:ValidableElementRef", namespaces=NAMESPACE
+                    )
+                    if not capping_rule_validelelement_ref:
+                        sourceline = capped_discount_right.sourceline
+                        response_details = XMLViolationDetail(
+                            "violation",
+                            sourceline,
+                            msg.MESSAGE_OBSERVATION_MISSING_VALIDABLE_ELEMENT_REF,
+                        )
+                        response = response_details.__list__()
+                        return response
