@@ -16,6 +16,7 @@ env:
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
   ECR_BASE_REPOSITORY_NAME: ${{ secrets.ECR_BASE_REPOSITORY }}
   ENVIRONMENT_NAME: dev
+  pg_mutation_json: ${{ secrets.pg_mutation }}
 
 jobs:
 
