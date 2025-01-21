@@ -14,6 +14,11 @@ env:
 jobs:
   configure_dependencies_container:
     runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
     if: |
       (
         github.base_ref == 'main' &&
