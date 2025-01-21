@@ -1,10 +1,6 @@
 ---
 name: Run Unit Test
 
-permissions:
-  id-token: write
-  contents: read
-
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -20,6 +16,10 @@ env:
 
 jobs:
   configure_dependencies_container:
+    permissions:
+      id-token: write
+      contents: read
+
     runs-on: ubuntu-latest
     if: |
       (
