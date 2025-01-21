@@ -1,10 +1,5 @@
 ---
 name: Run Unit Test
-
-permissions:
-  id-token: write
-  contents: read
-
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -14,9 +9,7 @@ on:
 
 env:
   ECR_PYTHON_DEPENDENCIES_REPO: python_dependencies
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  AWS_ASSUME_ROLE_NAME: ${{ secrets.AWS_ASSUME_ROLE_NAME }}
+  REGION: eu-west-2
 
 jobs:
   configure_dependencies_container:
@@ -95,11 +88,9 @@ jobs:
         id: login_aws
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.AWS_ASSUME_ROLE_NAME }}
-          role-session-name: unit-test
-          role-duration-seconds: 3600
-          role-skip-session-tagging: true
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
 
       - name: Login to Amazon ECR
         id: login_ecr
@@ -110,7 +101,7 @@ jobs:
       - name: Get region with underscores
         id: get_region_underscores
         run: |
-          REGION_DASHES=${{ env.AWS_REGION }}
+          REGION_DASHES=${{ env.REGION }}
           REGION_UNDERSCORES="${REGION_DASHES//-/_}"
           echo "REGION_UNDERSCORES=${REGION_UNDERSCORES}" >> $GITHUB_OUTPUT
 
@@ -269,26 +260,16 @@ jobs:
       - name: "Install git and github cli"
         id: install_git
         run: |
-          sudo apt update
-          sudo apt install -y git
+          apt update
+          apt install -y git
 
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install six
-        run: |
-          pip install six
-
-      - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.1.13
-          virtualenvs-create: false
-          virtualenvs-in-project: false
-
       - name: "Add dependencies"
         id: add_dependencies
         run: |
+          poetry config virtualenvs.create false
           poetry install
 
         # TODO: Currently passing on failed tests - remove || [ $? = 1 ] when tests are passing
