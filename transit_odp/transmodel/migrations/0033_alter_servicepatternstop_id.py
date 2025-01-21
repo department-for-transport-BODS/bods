@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("transmodel", "0032_alter_tracksvehiclejourney_sequence_number_and_more"),
+        ("transmodel", "0030_alter_vehiclejourney_block_number"),
     ]
 
     operations = [
