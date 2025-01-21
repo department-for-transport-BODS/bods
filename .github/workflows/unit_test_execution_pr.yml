@@ -275,6 +275,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install six
+        run: |
+          pip install six
+
       - name: Install and configure Poetry
         uses: snok/install-poetry@v1
         with:
