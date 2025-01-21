@@ -6,7 +6,7 @@ BODS transxchange models.
 import logging
 from collections import OrderedDict
 from datetime import datetime
-from typing import Iterator, List
+from typing import Iterator, List, Dict
 
 import geopandas
 import pandas as pd
@@ -31,6 +31,8 @@ from transit_odp.transmodel.models import (
     StopActivity,
     StopPoint,
     VehicleJourney,
+    Tracks,
+    TracksVehicleJourney,
 )
 
 ServicePatternThrough = ServicePattern.service_links.through
@@ -293,6 +295,89 @@ def df_to_vehicle_journeys(df: pd.DataFrame) -> Iterator[VehicleJourney]:
             departure_day_shift=record["departure_day_shift"],
             service_pattern_id=service_pattern_id,
             block_number=record["block_number"],
+        )
+
+
+def df_to_tracks(df: pd.DataFrame) -> Iterator[Dict]:
+    """Generator function to yield records as dictionaries after verifying with the Tracks model"""
+    for record in df.to_dict("records"):
+        # Verify with the Tracks model
+        track = Tracks(
+            from_atco_code=record["from_atco_code"],
+            to_atco_code=record["to_atco_code"],
+            geometry=record["geometry"],
+            distance=record["distance"],
+        )
+
+        # If the model instance is valid, yield it as a dictionary
+        yield {
+            "from_atco_code": track.from_atco_code,
+            "to_atco_code": track.to_atco_code,
+            "geometry": track.geometry,
+            "distance": track.distance,
+        }
+
+
+def merge_vj_tracks_df(
+    tracks: pd.DataFrame, vehicle_journeys: pd.DataFrame, tracks_map: pd.DataFrame
+) -> pd.DataFrame:
+    """
+    Merges vehicle_journeys and tracks DataFrames to get the relationship table.
+
+    Args:
+        tracks (pd.DataFrame): DataFrame containing track information.
+        vehicle_journeys (pd.DataFrame): DataFrame containing vehicle journey information.
+        tracks_map (pd.DataFrame): DataFrame containing the mapping of journey patterns to route links.
+
+    Returns:
+        pd.DataFrame: The merged DataFrame with track and vehicle journey information.
+    """
+    # Explode the 'jp_ref' and 'rs_ref' columns along with their corresponding 'rs_order'
+    tracks_map_extended = tracks_map.explode("jp_ref").explode(["rs_ref", "rs_order"])
+
+    tracks_columns_to_keep = ["rl_ref", "rs_ref", "rl_order", "id", "file_id"]
+    tracks = tracks[tracks_columns_to_keep]
+    tracks.rename(columns={"id": "tracks_id"}, inplace=True)
+
+    # Merge tracks DataFrame with the extended tracks_map DataFrame on 'rs_ref'
+    merged_tracks_map = pd.merge(
+        tracks, tracks_map_extended, on=["rs_ref", "file_id"], how="right"
+    )
+
+    # Create 'sequence' column by combining 'rs_order' and 'rl_order'
+    merged_tracks_map["sequence"] = merged_tracks_map.groupby("jp_ref").cumcount()
+    # Drop 'rl_order' and 'rs_order' columns as they are no longer needed
+    merged_tracks_map.drop(["rl_order", "rs_order"], inplace=True, axis=1)
+    # Extract jp_ref from journey_pattern_ref
+    vehicle_journeys["jp_ref"] = vehicle_journeys["journey_pattern_ref"].apply(
+        lambda x: x.split("-")[1]
+    )
+    internal_vjs_columns_to_keep = ["jp_ref", "id", "file_id"]
+    internal_vjs = vehicle_journeys[internal_vjs_columns_to_keep]
+    internal_vjs.rename(columns={"id": "vj_id"}, inplace=True)
+
+    # Merge the merged_tracks_map DataFrame with the internal_vjs DataFrame on 'jp_ref'
+    merged_vjs_tracks_map = pd.merge(
+        merged_tracks_map, internal_vjs, on=["jp_ref", "file_id"], how="left"
+    )
+
+    if merged_vjs_tracks_map.empty:
+        return pd.DataFrame()
+    # Drop vj with id is None
+    df_cleaned = merged_vjs_tracks_map.dropna(subset=["vj_id"])
+    return df_cleaned
+
+
+def df_to_journeys_tracks(df: pd.DataFrame) -> Iterator[TracksVehicleJourney]:
+    """
+    Generator function returns Tracks vehice journey records to be loaded into the table.
+    """
+    for record in df.to_dict("records"):
+        vehicle_journey_id = record["vj_id"]
+        yield TracksVehicleJourney(
+            vehicle_journey_id=vehicle_journey_id,
+            tracks_id=record["tracks_id"],
+            sequence_number=record["sequence"],
         )
 
 

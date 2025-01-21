@@ -9,7 +9,7 @@ from django.core.files.base import File
 from shapely.geometry import Point
 from waffle import flag_is_active
 
-from transit_odp.common.utils.geometry import construct_geometry
+from transit_odp.common.utils.geometry import construct_geometry, grid_gemotry_from_str
 from transit_odp.common.utils.timestamps import extract_timestamp
 from transit_odp.pipelines import exceptions
 from transit_odp.pipelines.pipelines.dataset_etl.utils.aggregations import (
@@ -35,6 +35,7 @@ from transit_odp.timetables.dataframes import (
     services_to_dataframe,
     standard_vehicle_journeys_to_dataframe,
     stop_point_refs_to_dataframe,
+    create_vj_tracks_map,
 )
 from transit_odp.timetables.exceptions import MissingLines
 from transit_odp.timetables.transxchange import TransXChangeDocument
@@ -96,7 +97,6 @@ class TransXChangeExtractor:
         logger.debug("Extracting services")
         services, lines = self.extract_services()
         logger.debug("Finished extracting services")
-
         # Extract StopPoints from doc and sync with DB (StopPoints should be 'readonly'
         # within this ETL process)
         logger.debug("Extracting stop points")
@@ -107,6 +107,7 @@ class TransXChangeExtractor:
         # Extract JourneyPattern and JourneyPatternSections
         logger.debug("Extracting journey_patterns")
         journey_patterns, jp_to_jps = self.extract_journey_patterns()
+        journey_pattern_tracks, route_map = self.extract_journey_route_link()
         logger.debug("Finished extracting journey_patterns")
 
         # Extract JourneyPatternSections, TimingLinks and RouteLinks
@@ -204,6 +205,8 @@ class TransXChangeExtractor:
             flexible_stop_points=flexible_stop_points,
             provisional_stops=provisional_stops,
             journey_patterns=journey_patterns,
+            journey_pattern_tracks=journey_pattern_tracks,
+            route_map=route_map,
             flexible_journey_patterns=flexible_journey_patterns,
             flexible_journey_details=flexible_journey_details,
             flexible_vehicle_journeys=flexible_vehicle_journeys,
@@ -316,6 +319,186 @@ class TransXChangeExtractor:
 
         return journey_patterns, jp_to_jps
 
+    def extract_journey_route_link(self):
+        """
+        Extract journey route link data.
+
+        This method processes route and journey pattern data to create dataframes containing
+        information about tracks and their corresponding route maps.
+
+        Steps:
+        1. Retrieves services and journey patterns, converting them to a dataframe.
+        2. Groups journey patterns by route reference.
+        3. Retrieves route data and constructs a route reference link dictionary.
+        4. Converts the route reference link dictionary to a dataframe and merges with journey patterns.
+        5. Identifies and collects unique route sections.
+        6. Processes route sections to extract route links and their geometries.
+        7. Creates a dataframe of tracks based on the extracted route link data.
+
+        Returns:
+            pd.DataFrame: A dataframe containing track information, including references, distances, and geometries.
+            pd.DataFrame: A dataframe containing the route map, linking routes to their respective journey patterns.
+        """
+        # Get services and journey patterns
+        extract_tracks_data = flag_is_active("", "extract_tracks_data")
+        if not extract_tracks_data:
+            return pd.DataFrame(), pd.DataFrame()
+        services = self.doc.get_services()
+        journey_patterns = journey_patterns_to_dataframe(services, False)
+
+        # Get routes and create a route reference link dictionary
+        routes = self.doc.get_route()
+        if not routes:
+            return pd.DataFrame(), pd.DataFrame()
+        route_ref_link = {}
+
+        northing_easting_geometry = False
+        location_type, geo_type = self.get_geometry_location_and_type()
+        northing_easting_geometry = geo_type == "Easting/Northing"
+        long_lat_geometry = geo_type == "Longitude/Latitude"
+        if geo_type is None:
+            logger.error("Geometry type is not found")
+
+        for route in routes:
+            route_section_refs = route.get_elements_or_none(["RouteSectionRef"])
+            route_ref_ids = []
+            route_id = route.get("id")
+
+            # Extract route section references and update route_ref_link dictionary
+            for route_section_ref in route_section_refs:
+                if route_section_ref and route_id:
+                    route_section_ref_text = (
+                        route_section_ref.text if route_section_ref else ""
+                    )
+                    route_ref_ids.append(route_section_ref_text)
+
+            route_ref_link.update({route_id: route_ref_ids})
+
+        # Convert route_ref_link dictionary to DataFrame
+        route_map = pd.DataFrame(
+            list(route_ref_link.items()), columns=["route_ref", "rs_ref"]
+        )
+        vj_tracks_map = create_vj_tracks_map(journey_patterns, route_map)
+        vj_tracks_map["file_id"] = self.file_id
+
+        # Collect all unique route sections used in tracks
+        used_route_sections = set()
+        for tracks in route_ref_link.values():
+            used_route_sections.update(tracks)
+
+        unique_tracks_list = list(used_route_sections)
+
+        # Get route sections and create tracks DataFrame
+        route_sections = self.doc.get_route_sections()
+        sections_tracks = []
+        for route_section in route_sections:
+            try:
+                route_section_id = route_section["id"]
+                if route_section_id in unique_tracks_list:
+                    route_links = route_section.get_elements_or_none(["RouteLink"])
+                    for route_link in route_links:
+                        route_link_id = route_link["id"]
+                        route_from = route_link.get_element(["From", "StopPointRef"])
+                        route_to = route_link.get_element(["To", "StopPointRef"])
+                        distance = route_link.get_element_or_none(["Distance"])
+                        track_list = route_link.get_elements(["Track", "Mapping"])
+
+                        # Extract geometry for each track
+                        for track in track_list:
+                            geometry = []
+                            locations = track.get_elements_or_none(location_type)
+                            if locations:
+                                for location in locations:
+                                    if northing_easting_geometry:
+                                        easting = location.get_element_or_none(
+                                            ["Easting"]
+                                        )
+                                        northing = location.get_element_or_none(
+                                            ["Northing"]
+                                        )
+                                        point = grid_gemotry_from_str(
+                                            easting.text, northing.text
+                                        )
+                                        geometry.append(
+                                            (
+                                                "{:.7f}".format(point.x),
+                                                "{:.7f}".format(point.y),
+                                            )
+                                        )
+                                    if long_lat_geometry:
+                                        Longitude = location.get_element_or_none(
+                                            ["Longitude"]
+                                        )
+                                        Latitude = location.get_element_or_none(
+                                            ["Latitude"]
+                                        )
+                                        geometry.append((Longitude.text, Latitude.text))
+
+                            # Append track information to sections_tracks list
+                            sections_tracks.append(
+                                {
+                                    "rl_ref": route_link_id,
+                                    "rs_ref": route_section_id,
+                                    "from_atco_code": route_from.text,
+                                    "to_atco_code": route_to.text,
+                                    "distance": distance.text if distance else None,
+                                    "geometry": geometry,
+                                }
+                            )
+            except Exception as e:
+                print(e)
+                logger.warning(f"Route link is missing for {route_section_id}")
+        tracks = pd.DataFrame(sections_tracks)
+        tracks["file_id"] = self.file_id
+        return tracks, vj_tracks_map
+
+    def get_geometry_location_and_type(self):
+        """
+        This function determines the location type and geometry type based on the presence of longitude and latitude
+        1. Find out the type of the geometry and the location
+        geometry can be stored in ( long, lat) or (easting, northing)
+        2. Find out the location type it can be location or location/translation
+
+        Returns:
+        location type, northing_easting_geometry if the geometry is stored in easting and northings
+        """
+        # Check the presence of longitude and latitude in different locations
+        easting_northing_in_translation = None
+        geo_type = None
+        easting_northing_in_location = None
+        long_lat_in_location = None
+        long_lat_in_translation = None
+        # check if long and lat are in location
+        long_lat_in_location = self.doc.check_long_lat_in_location()
+        long_lat_in_translation = (
+            not long_lat_in_location
+            and self.doc.check_long_lat_in_translation_location()
+        )
+        # check if easting and northing are in location or translation
+        easting_northing_in_translation = (
+            not long_lat_in_translation
+            and not long_lat_in_location
+            and self.doc.check_easting_northing_in_location_translation()
+        )
+        # check if easting and northing are in location
+        easting_northing_in_location = (
+            not long_lat_in_translation
+            and not long_lat_in_location
+            and not easting_northing_in_translation
+            and self.doc.check_easting_northing_in_location()
+        )
+        # Determine the location type based on the checks
+        location_type = (
+            ["Location"]
+            if long_lat_in_location or easting_northing_in_location
+            else ["Location", "Translation"]
+        )
+        if easting_northing_in_translation or easting_northing_in_location:
+            geo_type = "Easting/Northing"
+        if long_lat_in_translation or long_lat_in_location:
+            geo_type = "Longitude/Latitude"
+        return location_type, geo_type
+
     def extract_vehicle_journeys(self):
         """
         This function extract the standard vehicle journey, flexible vehicle journey
@@ -351,7 +534,6 @@ class TransXChangeExtractor:
         if not df_flexible_operation_period.empty:
             df_flexible_operation_period["file_id"] = self.file_id
             df_flexible_operation_period.set_index(["file_id"], inplace=True)
-
         return (
             df_standard_vehicle_journeys,
             df_flexible_vehicle_journeys,
@@ -502,6 +684,10 @@ class TransXChangeZipExtractor:
             flexible_vehicle_journeys=concat_and_dedupe(
                 (extract.flexible_vehicle_journeys for extract in extracts)
             ),
+            journey_pattern_tracks=concat_and_dedupe(
+                extract.journey_pattern_tracks for extract in extracts
+            ),
+            route_map=concat_and_dedupe(extract.route_map for extract in extracts),
             jp_to_jps=concat_and_dedupe((extract.jp_to_jps for extract in extracts)),
             jp_sections=concat_and_dedupe(
                 (extract.jp_sections for extract in extracts)

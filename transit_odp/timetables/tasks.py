@@ -188,7 +188,7 @@ def task_scan_timetables(revision_id: int, task_id: int) -> int:
         scanner.scan(revision.upload_file)
     except ValidationException as exc:
         logger.error(exc.message, exc_info=True)
-        task.to_error("dataset_validate", exc.code)
+        task.to_error("task_scan_timetables", exc.code)
         task.additional_info = exc.message
         task.save()
         raise PipelineException(exc.message) from exc
@@ -285,7 +285,7 @@ def task_post_schema_check(revision_id: int, task_id: int):
     adapter.info("Starting post schema validation check.")
     violations = []
     parser = TransXChangeDatasetParser(revision.upload_file)
-    doc_list = parser.get_documents()
+    doc_list = list(parser.get_documents())
     if not doc_list:
         message = f"Validation task: task_post_schema_check, no file to process, zip file: {revision.upload_file.name}"
         adapter.error(message, exc_info=True)

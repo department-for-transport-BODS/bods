@@ -36,7 +36,7 @@ from transit_odp.timetables.tasks import (
 from transit_odp.timetables.transxchange import BaseSchemaViolation
 from transit_odp.users.factories import OrgAdminFactory
 from transit_odp.validate import DownloadException, FileScanner
-from transit_odp.validate.antivirus import SuspiciousFile
+from transit_odp.validate.antivirus import AntiVirusError, SuspiciousFile
 from transit_odp.validate.tests.utils import (
     create_sparse_file,
     create_text_file,
@@ -382,7 +382,7 @@ def test_run_task_post_schema_check(mocker, tmp_path, mock_post_schema_validator
     testzip = tmp_path / "test_pii.zip"
     create_text_file(
         file1,
-        r'<TransXChange FileName="C:\Users\test\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml">',
+        r'<TransXChange FileName="C:\Users\test\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml"></TransXChange>',
     )
     create_zip_file(testzip, [file1])
     with open(testzip, "rb") as zout:
@@ -457,7 +457,7 @@ def test_run_task_post_schema_check_exception(
     assert task.error_code == task.NO_VALID_FILE_TO_PROCESS
 
 
-def test_antivirus_scan_exception(mocker, tmp_path):
+def test_antivirus_scan_suspicious_file_exception(mocker, tmp_path):
     """Given a suspicious file a PipelineException should be raised."""
     xml1 = tmp_path / "file1.xml"
     create_text_file(xml1, "<Root><Child>hello,world</Child></Root>")
@@ -478,7 +478,7 @@ def test_antivirus_scan_exception(mocker, tmp_path):
     assert str(exc_info.value) == expected
 
 
-def test_antivirus_scan_general_exception(mocker, tmp_path):
+def test_antivirus_scan_anti_virus_failure_exception(mocker, tmp_path):
     """Given an Exception a PipelineException should be raised."""
     xml1 = tmp_path / "file1.xml"
     create_text_file(xml1, "<Root><Child>hello,world</Child></Root>")
@@ -487,16 +487,16 @@ def test_antivirus_scan_general_exception(mocker, tmp_path):
 
     scanner = TASK_MODULE + ".FileScanner"
     scanner_obj = mocker.Mock(spec=FileScanner)
-    message = "A general exception"
-    scanner_obj.scan.side_effect = Exception(message)
+    scanner_obj.scan.side_effect = AntiVirusError(task.revision.upload_file.name)
     mocker.patch(scanner, return_value=scanner_obj)
 
     with pytest.raises(PipelineException) as exc_info:
         task_scan_timetables(task.revision.id, task.id)
 
     task.refresh_from_db()
-    assert task.error_code == task.SYSTEM_ERROR
-    assert str(exc_info.value) == message
+    expected = f"Antivirus failed validating file {task.revision.upload_file.name}."
+    assert task.error_code == task.ANTIVIRUS_FAILURE
+    assert str(exc_info.value) == expected
 
 
 def test_file_check_general_exception(mocker):

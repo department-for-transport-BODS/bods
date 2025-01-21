@@ -1,4 +1,4 @@
-from datetime import date, timedelta, datetime
+from datetime import date, datetime, timedelta
 from functools import cached_property
 from itertools import chain
 from logging import getLogger
@@ -107,19 +107,22 @@ class Loader:
 
         possible_services_to_update = self.registered_service + self.to_delete_service
         for updated_service in possible_services_to_update:
-            if updated_service.variation_number == 0:
-                # This is a new service and wont need to be updated
-                continue
-
             key = (
                 updated_service.registration_number,
                 updated_service.service_type_description,
             )
             db_service = service_map.get(key)
-
             if (
                 db_service
-                and db_service.variation_number < updated_service.variation_number
+                and updated_service.variation_number == 0
+                and db_service.last_modified >= updated_service.last_modified
+            ):
+                # This is a new service and wont need to be updated
+                continue
+
+            if db_service and (
+                db_service.variation_number < updated_service.variation_number
+                or db_service.variation_number == 0
             ):
                 # A change has been detected
                 updated_service_kwargs = updated_service.dict()

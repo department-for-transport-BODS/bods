@@ -330,7 +330,7 @@ def provisional_stops_to_dataframe(stops, doc: TransXChangeDocument):
     return pd.DataFrame(stop_points, columns=columns).set_index("atco_code")
 
 
-def journey_patterns_to_dataframe(services):
+def journey_patterns_to_dataframe(services, drop_route_ref=True):
     all_items = []
     for service in services:
         service_code = service.get_element(["ServiceCode"]).text
@@ -340,11 +340,14 @@ def journey_patterns_to_dataframe(services):
             for pattern in standard_service.get_elements(["JourneyPattern"]):
                 section_refs = pattern.get_elements(["JourneyPatternSectionRefs"])
                 direction = pattern.get_element_or_none(["Direction"])
+                route_refs = pattern.get_element_or_none(["RouteRef"])
                 all_items.append(
                     {
                         "service_code": service_code,
                         "journey_pattern_id": pattern["id"],
+                        "pattern_id": pattern["id"],
                         "direction": direction.text if direction is not None else "",
+                        "route_ref": route_refs.text if route_refs is not None else "",
                         "jp_section_refs": [ref.text for ref in section_refs],
                     }
                 )
@@ -356,6 +359,12 @@ def journey_patterns_to_dataframe(services):
         journey_patterns["journey_pattern_id"] = journey_patterns[
             "service_code"
         ].str.cat(journey_patterns["journey_pattern_id"], sep="-")
+
+    if drop_route_ref:
+        columns_to_drop = ["route_ref", "pattern_id"]
+        journey_patterns = journey_patterns.drop(
+            [col for col in columns_to_drop if col in journey_patterns.columns], axis=1
+        )
 
     return journey_patterns
 
@@ -1185,3 +1194,33 @@ def flexible_stop_points_from_journey_details(flexible_journey_details):
         ].set_index("atco_code")
         return flexible_stop_points
     return pd.DataFrame()
+
+
+def create_vj_tracks_map(journey_patterns: pd.DataFrame, route_map: pd.DataFrame):
+    """
+    Create a vehicle journey tracks map.
+
+    Steps:
+    1. Create a DataFrame with `pattern_id` and `route_ref` from the journey patterns.
+    2. Group the journey patterns by `route_ref` and create a list of `pattern_id`s for each route.
+    3. Rename the grouped `pattern_id` column to `jp_ref`.
+    4. Merge the route map with the grouped journey patterns on `route_ref`.
+
+    Args:
+        journey_patterns (pd.DataFrame): DataFrame containing journey pattern information.
+        route_map (pd.DataFrame): DataFrame containing route mapping information.
+
+    Returns:
+        pd.DataFrame: A DataFrame that maps vehicle journey patterns to their respective routes.
+    """
+    # Create a DataFrame with pattern_id and route_ref
+    jp_route_ref = journey_patterns[["pattern_id", "route_ref"]]
+    # Group by route_ref and create a list of pattern_ids
+    df_vj_grouped = (
+        jp_route_ref.groupby("route_ref")["pattern_id"].apply(list).reset_index()
+    )
+    df_vj_grouped = df_vj_grouped.rename(columns={"pattern_id": "jp_ref"})
+
+    vj_route_map = pd.merge(route_map, df_vj_grouped, on="route_ref", how="right")
+
+    return vj_route_map

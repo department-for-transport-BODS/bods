@@ -1,4 +1,67 @@
 {% load i18n %}
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "January 2025 (1.43.0)" %}</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      An improvement to simplify dataset pages and the browse section regarding the way
+      PTI compliance is displayed for timetables.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A fix to the way datasets detect updates when hosted via URL and were queried too frequently.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    A fix for the way registrations are imported from the PD BRD API for registrations
+    managed by Enhanced Partnerships and Franchises.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A fix to the 'No timing point for more than 15 minutes' Data Quality observation logic.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A fix to the Timetable Visualiser to correctly calculate stop departure time that use Wait Time(s).
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An improvement to the search function when browsing for datasets.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A fix to the way some services are identified as active or cancelled when these are maintained
+      by the Office of the Traffic Commissioner.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An enhancement to the line level compliance report which describes the health of data of all
+      registered services.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An enhancement to the compliance report which describes the health of data belonging to a
+      specific operator or local transport authority.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An improvement to the way we handle cases where hosted data is temporarily unavailable.
+    {% endblocktrans %}
+  </li>
+</ul>
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "November 2024 (1.42.0)" %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}

@@ -201,6 +201,10 @@ class TransXChangeDocument:
         xpath = ["Services", "Service", "ServiceCode"]
         return self.find_anywhere(xpath)
 
+    def get_mode(self):
+        xpath = ["Services", "Service", "Mode"]
+        return self.find_anywhere(xpath)
+
     def get_lines(self):
         """Get all the Line elements in the TransXChangeDocument.
 
@@ -398,6 +402,85 @@ class TransXChangeDocument:
         """
         xpath = ["ServicedOrganisations", "ServicedOrganisation"]
         return self._root.get_elements(xpath)
+
+    def get_JourneyPatternRef(self):
+        """
+        Get all Journey Pattern Ref
+        """
+        xpath = ["VehicleJourneys", "VehicleJourney", "JourneyPatternRef"]
+        return self._root.get_elements(xpath)
+
+    def get_route(self):
+        """
+        Get all routes
+        """
+        xpath = ["Routes", "Route"]
+
+        return self._root.get_elements_or_none(xpath)
+
+    def get_route_sections(self):
+        """
+        Get all route sections
+        """
+        xpath = ["RouteSections", "RouteSection"]
+        return self._root.get_elements(xpath)
+
+    def check_long_lat_in_translation_location(self):
+        xpath = [
+            "RouteSections",
+            "RouteSection",
+            "RouteLink",
+            "Track",
+            "Mapping",
+            "Location",
+            "Translation",
+            "Longitude",
+        ]
+        if self._root.get_elements_or_none(xpath):
+            return True
+
+    def check_long_lat_in_location(self):
+        xpath = [
+            "RouteSections",
+            "RouteSection",
+            "RouteLink",
+            "Track",
+            "Mapping",
+            "Location",
+            "Longitude",
+        ]
+        elements = self._root.get_elements_or_none(xpath)
+        if elements:
+            return True
+
+    def check_easting_northing_in_location_translation(self):
+        xpath = [
+            "RouteSections",
+            "RouteSection",
+            "RouteLink",
+            "Track",
+            "Mapping",
+            "Location",
+            "Translation",
+            "Easting",
+        ]
+        elements = self._root.get_elements_or_none(xpath)
+        if elements:
+            return True
+
+    def check_easting_northing_in_location(self):
+        xpath = [
+            "RouteSections",
+            "RouteSection",
+            "RouteLink",
+            "Track",
+            "Mapping",
+            "Location",
+            "Easting",
+        ]
+        elements = self._root.get_elements_or_none(xpath)
+        if elements:
+            return True
 
 
 class TransXChangeZip(ZippedValidator):

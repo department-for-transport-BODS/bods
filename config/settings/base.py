@@ -501,7 +501,7 @@ CLAMAV_PORT = env.int("CLAMAV_PORT", default=3310)
 
 DISABLE_NAPTAN_SCHEMA_VALIDATION = True
 FEED_MONITOR_MAX_RETRY_ATTEMPTS = env(
-    "DJANGO_FEED_MONITOR_MAX_RETRY_ATTEMPTS", default=6
+    "DJANGO_FEED_MONITOR_MAX_RETRY_ATTEMPTS", default=14
 )
 
 # NAPTAN import URL
@@ -655,6 +655,14 @@ AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
 AWS_ENVIRONMENT = env("AWS_ENVIRONMENT", default="LOCAL")
 
+# ABODS AVL LINE LEVEL DETAILS
+# -------------------------------------------------------------------------------
+ABODS_AVL_LINE_LEVEL_DETAILS_URL = env(
+    "ABODS_AVL_LINE_LEVEL_DETAILS_URL", default="https://abods_api.url"
+)
+ABODS_AVL_AUTH_TOKEN = env("ABODS_AVL_AUTH_TOKEN", default="")
+
+
 # Crispy forms
 # ------------------------------------------------------------------------------
 CRISPY_ALLOWED_TEMPLATE_PACKS = (
@@ -747,6 +755,7 @@ CSP_SCRIPT_SRC = (
     "'unsafe-inline'",
     "https://www.googletagmanager.com",
     "https://ajax.googleapis.com/ajax/libs/jquery",
+    "https://www.google-analytics.com/*",
 )
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
 CSP_IMG_SRC = (
@@ -765,3 +774,11 @@ CSP_OBJECT_SRC = ("'none'",)
 CSP_FRAME_ANCESTORS = ("'self'",)
 CSP_WORKER_SRC = ("'self'", "blob:")
 SECURE_CONTENT_TYPE_NOSNIFF = True
+
+CLOUDFRONT_PUBLIC_KEY_ID = env("CLOUDFRONT_PUBLIC_KEY_ID", default="")
+CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER = env(
+    "CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER", default=""
+)
+SSM_PARAMETER_AWS_REGION = env("SSM_PARAMETER_AWS_REGION", default="eu-west-2")
+S3_PRESIGNED_URL_TTL = env("S3_PRESIGNED_URL_TTL", default=300)
+CLOUDFRONT_CUSTOM_DOMAIN = env("CLOUDFRONT_CUSTOM_DOMAIN", default="")

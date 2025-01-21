@@ -144,3 +144,15 @@ jobs:
         aws lambda invoke \
         --function-name bodds_pg_mutate_lambda_${{ env.ENVIRONMENT_NAME }} \
         response.json
+
+    - name: Update Confluence Page
+      uses: robsteel24/update-confluence@v1
+      with:
+        confluence_base_url: ${{ vars.CONFLUENCE_BASE_URL }}
+        confluence_page_id: ${{ vars.CONFLUENCE_PAGE_ID }}
+        atlassian_username: ${{ secrets.ATLASSIAN_USERNAME }}
+        atlassian_api_token: ${{ secrets.ATLASSIAN_API_TOKEN }}
+        component: 'bods'
+        environment: ${{ env.ENVIRONMENT_NAME }}
+        version: ${{ steps.set-version-number.outputs.version }}
+      continue-on-error: true

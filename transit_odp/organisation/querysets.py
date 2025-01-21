@@ -53,6 +53,7 @@ from transit_odp.organisation.constants import (
     ORG_INACTIVE,
     ORG_NOT_YET_INVITED,
     ORG_PENDING_INVITE,
+    PENDING,
     AVLType,
     DatasetType,
     FaresType,
@@ -1161,7 +1162,7 @@ class DatasetRevisionQuerySet(models.QuerySet):
                 dataset__dataset_type=TimetableType,
                 latest_task_progress__lt=100,
                 created__lt=yesterday,
-                status=INDEXING,
+                status__in=[INDEXING, PENDING],
             )
             .exclude(
                 latest_task_status__in=["FAILURE", "SUCCESS"],
@@ -1178,7 +1179,7 @@ class DatasetRevisionQuerySet(models.QuerySet):
                 dataset__dataset_type=FaresType,
                 latest_task_progress__lt=100,
                 created__lt=yesterday,
-                status=INDEXING,
+                status__in=[INDEXING, PENDING],
             )
             .exclude(
                 latest_task_status__in=["FAILURE", "SUCCESS"],

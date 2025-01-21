@@ -40,6 +40,9 @@ from transit_odp.avl.notifications import (
 from transit_odp.avl.post_publishing_checks.daily.checker import PostPublishingChecker
 from transit_odp.avl.post_publishing_checks.weekly import WeeklyReport
 from transit_odp.avl.proxies import AVLDataset
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    reset_vehicle_activity_in_cache,
+)
 from transit_odp.avl.validation import get_validation_client
 from transit_odp.common.loggers import PipelineAdapter, get_datafeed_adapter
 from transit_odp.organisation.constants import AVLType, FeedStatus
@@ -377,3 +380,18 @@ def task_weekly_assimilate_post_publishing_check_reports(
 
     report = WeeklyReport(start_date)
     report.generate()
+
+    is_avl_require_attention_active = flag_is_active(
+        "", "is_avl_require_attention_active"
+    )
+    if is_avl_require_attention_active:
+        logger.info("Reseting the cache for weekly PPC")
+        reset_vehicle_activity_in_cache()
+        logger.info("Cache reset successfully")
+
+
+@shared_task()
+def task_reset_avl_weekly_cache():
+    logger.info("Reseting the cache for weekly PPC")
+    reset_vehicle_activity_in_cache()
+    logger.info("Cache reset successfully")

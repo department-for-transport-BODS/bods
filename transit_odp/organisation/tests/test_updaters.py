@@ -22,6 +22,11 @@ URL_AVAILABLE = UPDATERS_MODULE + "send_endpoint_available_notification"
 REQUESTS = UPDATERS_MODULE + "requests"
 
 
+@pytest.fixture(autouse=True)
+def tenacity_wait(mocker):
+    mocker.patch("tenacity.nap.time")
+
+
 def test_retry_count():
     dataset = DatasetFactory(dataset_type=TimetableType)
     updater = DatasetUpdater(dataset)
