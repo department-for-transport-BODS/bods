@@ -279,8 +279,15 @@ jobs:
         uses: snok/install-poetry@v1
         with:
           version: 1.1.13
-          virtualenvs-create: false
-          virtualenvs-in-project: false
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Set up cache
+        uses: actions/cache@v2
+        id: cached-poetry-dependencies
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: "Add dependencies"
         id: add_dependencies
