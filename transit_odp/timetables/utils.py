@@ -298,18 +298,18 @@ def get_df_timetable_visualiser(
             )
         ]
         # Add key to the filtered df.
-        df_vehicle_journey_with_pattern_stop[
-            "key"
-        ] = df_vehicle_journey_with_pattern_stop.apply(
-            lambda row: (
-                f"{str(row['common_name'])}_{str(row['stop_sequence'])}_{str(row['vehicle_journey_code'])}_{str(row['vehicle_journey_id'])}"
-                if pd.notnull(row["common_name"])
-                and pd.notnull(row["stop_sequence"])
-                and pd.notnull(row["vehicle_journey_code"])
-                and pd.notnull(row["vehicle_journey_id"])
-                else ""
-            ),
-            axis=1,
+        df_vehicle_journey_with_pattern_stop["key"] = (
+            df_vehicle_journey_with_pattern_stop.apply(
+                lambda row: (
+                    f"{str(row['common_name'])}_{str(row['stop_sequence'])}_{str(row['vehicle_journey_code'])}_{str(row['vehicle_journey_id'])}"
+                    if pd.notnull(row["common_name"])
+                    and pd.notnull(row["stop_sequence"])
+                    and pd.notnull(row["vehicle_journey_code"])
+                    and pd.notnull(row["vehicle_journey_id"])
+                    else ""
+                ),
+                axis=1,
+            )
         )
 
     # drop service pattern stop id column if exists:
@@ -648,6 +648,11 @@ def observation_contents_mapper(observations_list) -> Dict:
     return requested_observation
 
 
+class InputDataSourceEnum(Enum):
+    URL_UPLOAD = "URL_UPLOAD"
+    FILE_UPLOAD = "FILE_UPLOAD"
+
+
 class S3Object(BaseModel):
     key: Optional[str]  # Key is optional
 
@@ -666,11 +671,11 @@ class StepFunctionsPayload(BaseModel):
 
 def create_state_machine_payload(revision: DatasetRevision) -> json:
     if revision.url_link:
-        type_of_input = "URL_UPLOAD"
+        type_of_input = InputDataSourceEnum.URL_UPLOAD.value
         url = revision.url_link
         file = ""
     else:
-        type_of_input = "ZIP_UPLOAD"
+        type_of_input = InputDataSourceEnum.ZIP_UPLOAD.value
         url = ""
         file = revision.upload_file.name
 

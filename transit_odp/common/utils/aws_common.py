@@ -147,9 +147,10 @@ class StepFunctionsClientWrapper:
             raise
 
     # Initialize and call AWS Step Functions
-    def start_step_function(self, revision_id, input_payload: dict):
+    def start_step_function(self, input_payload: str):
         try:
-            self.revision_id = revision_id
+            input_payload_dict = json.loads(input_payload)
+            self.revision_id = input_payload_dict["detail"]["datasetRevisionId"]
             clean_execution_name = self.clean_state_machine_name()
 
             # Invoke the Step Function

@@ -513,7 +513,7 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
             try:
                 step_fucntions_client = StepFunctionsClientWrapper()
                 # Invoke the Step Function
-                step_fucntions_client.start_step_function(revision.id, input_payload)
+                step_fucntions_client.start_step_function(input_payload)
 
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=500)
