@@ -10,7 +10,6 @@ on:
 env:
   ECR_PYTHON_DEPENDENCIES_REPO: python_dependencies
   REGION: eu-west-2
-  AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   AWS_ASSUME_ROLE_NAME: ${{ secrets.AWS_ASSUME_ROLE_NAME }}
 
@@ -96,7 +95,7 @@ jobs:
         id: login_aws
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ env.REGION }}
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.AWS_ASSUME_ROLE_NAME }}
           role-session-name: unit-tests
           role-duration-seconds: 3600
