@@ -275,10 +275,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.1.13
+          virtualenvs-create: false
+          virtualenvs-in-project: false
+
       - name: "Add dependencies"
         id: add_dependencies
         run: |
-          poetry config virtualenvs.create false
           poetry install
 
         # TODO: Currently passing on failed tests - remove || [ $? = 1 ] when tests are passing
