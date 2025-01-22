@@ -16,7 +16,7 @@ env:
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
   ECR_BASE_REPOSITORY_NAME: ${{ secrets.ECR_BASE_REPOSITORY }}
   ENVIRONMENT_NAME: dev
-  pg_mutation_json: ${{ secrets.pg_mutation }}
+  pg_mutation_json: ${{ secrets.PG_MUTATION_DEV}}
 
 jobs:
 
@@ -180,7 +180,7 @@ jobs:
       uses: jsdaniell/create-json@v1.2.3
       with:
         name: "credentials.json"
-        json: ${{ secrets.pg_mutation }}
+        json: ${{ secrets.PG_MUTATION_DEV }}
   
     - name: Invoke Lambda Function
       shell: bash
