@@ -1,4 +1,5 @@
 import logging
+import pandas as pd
 from datetime import timedelta
 from typing import Dict, List, Optional
 
@@ -9,9 +10,13 @@ from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
+from transit_odp.dqs.constants import Level
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
+from transit_odp.transmodel.models import Service as TransmodelService
+from django.db.models import Q
+
 
 logger = logging.getLogger(__name__)
 
@@ -553,3 +558,68 @@ def get_requires_attention_data_lta_line_level_length(lta_list: List) -> int:
     lta_services_requiring_attention = len(object_list)
 
     return lta_services_requiring_attention
+
+
+def get_dq_critical_observation_services_map(
+    txc_map: Dict[tuple, TXCFileAttributes]
+) -> List[tuple]:
+    """Check for data quality critical issue for service code
+    and line name combination for the current revision only,
+    Method will receive the txcfileattributes table dictionary
+
+    Returns:
+        dict[tuple, str]: return a list of services
+    """
+    query = Q()
+    for (line_name, service) in txc_map:
+        query |= Q(
+            service_code=service,
+            name=line_name,
+            revision_id=txc_map[(line_name, service)].revision_id,
+        )
+    return query_dq_critical_observation(query)
+
+
+def query_dq_critical_observation(query) -> List[tuple]:
+    """Query for data quality critical issue for service code
+    and line name combination for the current revision only,
+    Using the Transmodel tables relations with dqs_observationresults
+    Transmodel services -> Transmodel Service Patterns
+    -> Transmodel Service Pattern Stops -> Dqs Observationresult
+
+    And for checking the observation result must be critical
+    Dqs Observationresult -> Taskresults -> checks
+
+    Returns:
+        dict[tuple, str]: return a list of services"""
+    transmodel_services = (
+        TransmodelService.objects.filter(
+            query,
+            service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__isnull=False,
+            service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__taskresults__checks__importance=Level.critical.value,
+        )
+        .values_list("service_code", "name")
+        .distinct()
+    )
+
+    return list(transmodel_services)
+
+
+def get_dq_critical_observation_services_map_from_dataframe(
+    txc_map: pd.DataFrame,
+) -> List[tuple]:
+    """Check for data quality critical issue for service code
+    and line name combination for the current revision only,
+    Method will receive a dataframe for the txc files
+
+    Returns:
+        dict[tuple, str]: return a list of services
+    """
+    query = Q()
+    for _, row in txc_map.iterrows():
+        query |= Q(
+            service_code=row["service_code"],
+            name=row["line_name_unnested"],
+            revision_id=row["revision_id"],
+        )
+    return query_dq_critical_observation(query)

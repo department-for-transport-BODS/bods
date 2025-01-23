@@ -1,6 +1,6 @@
 import datetime
 from collections import OrderedDict
-from typing import Optional
+from typing import List, Optional
 
 import numpy as np
 import pandas as pd
@@ -29,6 +29,9 @@ from transit_odp.otc.constants import (
     OTC_STATUS_UNREGISTERED,
 )
 from transit_odp.otc.models import Service as OTCService
+from transit_odp.publish.requires_attention import (
+    get_dq_critical_observation_services_map_from_dataframe,
+)
 
 TXC_COLUMNS = (
     "organisation_name",
@@ -47,7 +50,7 @@ TXC_COLUMNS = (
     "destination",
 )
 
-TXC_LINE_LEVEL_COLUMNS = TXC_COLUMNS + ("line_name_unnested",)
+TXC_LINE_LEVEL_COLUMNS = TXC_COLUMNS + ("line_name_unnested", "revision_id")
 
 OTC_COLUMNS = (
     "service_code",
@@ -939,7 +942,8 @@ def add_timetables_requires_attention_column(df: pd.DataFrame) -> pd.DataFrame:
         AND
 
         Published Status = Unpublished OR
-        Timeliness Status != Up to Date
+        Timeliness Status != Up to Date OR
+        Critical DQ Issues = Yes
     No if all of these are true:
         Scope Status = Out of Scope OR
         Seasonal Status = Out of Season
@@ -948,7 +952,8 @@ def add_timetables_requires_attention_column(df: pd.DataFrame) -> pd.DataFrame:
         Seasonal Status = Not Seasonal or In Season AND
         Registration Status = Registered AND
         Published Status = Published AND
-        Timeliness Status = Up to Date
+        Timeliness Status = Up to Date AND
+        Critical DQ Issues = No
     """
     timetables_requires_attention_unpublished = (
         (df["scope_status"] == OTC_SCOPE_STATUS_IN_SCOPE)
@@ -960,6 +965,7 @@ def add_timetables_requires_attention_column(df: pd.DataFrame) -> pd.DataFrame:
     ) & (
         (df["published_status"] == "Unpublished")
         | (df["staleness_status"] != "Up to date")
+        | (df["critical_dq_issues"] == "Yes")
     )
 
     df["requires_attention"] = np.where(
@@ -967,6 +973,12 @@ def add_timetables_requires_attention_column(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return df
+
+
+def add_critical_dq_issue_status(x, dq_issue_services: List[tuple]) -> str:
+    if (x["service_code"], x["line_name_unnested"]) in dq_issue_services:
+        return "Yes"
+    return "No"
 
 
 def add_requires_attention_column(df: pd.DataFrame) -> pd.DataFrame:
@@ -1029,7 +1041,6 @@ def add_under_maintenance_columns(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Updated dataframe
     """
-    df["critical_dq_issues"] = "Under maintenance"
     df["fares_requires_attention"] = "Under maintenance"
     df["fares_published_status"] = "Under maintenance"
     df["fares_timeliness_status"] = "Under maintenance"
@@ -1255,8 +1266,13 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     otc_df["service_number"] = otc_df["service_number"].str.split("|")
     otc_df = otc_df.explode("service_number")
 
+    dq_critical_observations_map = (
+        get_dq_critical_observation_services_map_from_dataframe(txc_df)
+    )
+
     castings = (
         ("dataset_id", "Int64"),
+        ("revision_id", "Int64"),
         ("revision_number", "Int64"),
         ("public_use", "boolean"),
         ("variation_number", "Int64"),
@@ -1279,6 +1295,9 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
+    merged["critical_dq_issues"] = merged.apply(
+        lambda x: add_critical_dq_issue_status(x, dq_critical_observations_map), axis=1
+    )
     merged = add_timetables_requires_attention_column(merged)
     merged = add_traveline_regions(merged)
     merged = add_under_maintenance_columns(merged)

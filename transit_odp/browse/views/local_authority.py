@@ -37,11 +37,13 @@ from transit_odp.otc.models import Service as OTCService
 from transit_odp.otc.models import UILta
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
+    get_dq_critical_observation_services_map,
     get_line_level_txc_map_lta,
     get_requires_attention_data_lta_line_level_length,
     get_txc_map_lta,
     is_stale,
 )
+from transit_odp.timetables.csv import _get_timetable_compliance_report_dataframe
 
 STALENESS_STATUS = [
     "42 day look ahead is incomplete",
@@ -296,6 +298,7 @@ class LocalAuthorityDetailView(BaseDetailView):
         return qs
 
     def get_context_data(self, **kwargs):
+        _get_timetable_compliance_report_dataframe()
         is_avl_require_attention_active = flag_is_active(
             "", "is_avl_require_attention_active"
         )
@@ -441,6 +444,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         error_in_avl_to_timetable_matching: str,
         avl_requires_attention: str,
         overall_requires_attention: str,
+        dq_require_attention: str,
     ) -> None:
         self._object_list.append(
             {
@@ -500,6 +504,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 "error_in_avl_to_timetable_matching": error_in_avl_to_timetable_matching,
                 "avl_requires_attention": avl_requires_attention,
                 "overall_requires_attention": overall_requires_attention,
+                "dq_require_attention": dq_require_attention,
             }
         )
 
@@ -530,7 +535,6 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
             then 'Requires attention' = No.
             If 'Timetables requires attention' = Yes OR 'AVL requires attention' = Yes,
             then 'Requires attention' = Yes.
-
         Args:
             otc_service (dict): OTC Service dictionary
 
@@ -550,6 +554,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         service: Optional[OTCService],
         file_attribute: Optional[TXCFileAttributes],
         staleness_status: Optional[str],
+        dq_require_attention: Optional[str],
     ) -> str:
         if exempted or (seasonal_service and not seasonal_service.seasonal_status):
             return "No"
@@ -563,6 +568,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 and (not exempted)
                 and published_status
                 and (staleness_status == "Up to date")
+                and dq_require_attention == "No"
             ):
                 return "No"
         return "Yes"
@@ -738,6 +744,9 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         ui_lta = lta_list[0].ui_lta
         otc_map = get_line_level_otc_map_lta(lta_list)
         txcfa_map = get_line_level_txc_map_lta(lta_list)
+        dq_critical_observation_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
         seasonal_service_map = get_seasonal_service_map(lta_list)
         service_code_exemption_map = get_service_code_exemption_map(lta_list)
         naptan_adminarea_df = get_all_naptan_atco_df()
@@ -777,10 +786,19 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
             ):
                 exempted = True
 
+            dq_require_attention = "No"
+            if (registration_number, service_number) in dq_critical_observation_map:
+                dq_require_attention = "Yes"
+
             staleness_status = "Up to date"
             if file_attribute is None:
                 require_attention = self._get_require_attention(
-                    exempted, seasonal_service, service, None, staleness_status
+                    exempted,
+                    seasonal_service,
+                    service,
+                    None,
+                    staleness_status,
+                    dq_require_attention,
                 )
             elif service and is_stale(service, file_attribute):
                 rad = evaluate_staleness(service, file_attribute)
@@ -791,6 +809,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     service,
                     file_attribute,
                     staleness_status,
+                    dq_require_attention,
                 )
             else:
                 require_attention = "No"
@@ -825,6 +844,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 avl_requires_attention,
                 exempted,
                 seasonal_service,
+                dq_require_attention,
             )
 
             self._update_data(
@@ -841,6 +861,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 error_in_avl_to_timetable_matching,
                 avl_requires_attention,
                 overall_requires_attention,
+                dq_require_attention,
             )
 
     def get_queryset(self):
