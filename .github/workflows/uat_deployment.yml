@@ -15,7 +15,6 @@ defaults:
 env:  
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
   ENVIRONMENT_NAME: uat
-  pg_mutation_json: ${{ secrets.PG_MUTATION_UAT }}
 
 jobs:
 
