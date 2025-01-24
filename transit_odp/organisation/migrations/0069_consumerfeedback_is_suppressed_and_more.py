@@ -7,8 +7,8 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("transmodel", "0033_alter_servicepatternstop_id"),
-        ("organisation", "0068_datasetrevision_modified_file_hash_and_more"),
+        ("transmodel", "0032_alter_tracksvehiclejourney_sequence_number_and_more"),
+        ("organisation", "0068_txcfileattributes_service_mode"),
     ]
 
     operations = [

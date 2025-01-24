@@ -19,6 +19,7 @@ class ReportStatus(Enum):
 class Level(Enum):
     critical = "Critical"
     advisory = "Advisory"
+    feedback = "Feedback"
 
 
 @unique

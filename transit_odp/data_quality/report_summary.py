@@ -1,6 +1,7 @@
 from typing import Dict
 
 import pandas as pd
+import numpy as np
 from django.db.models import CharField, F
 from django.db.models.expressions import Value
 from django.db.models.functions import (
@@ -31,6 +32,10 @@ ADVISORY_INTRO = (
     "Advisory observations should be investigated and addressed. "
     "If the observation is a result of intended behaviour, an operator can"
     " suppress the observation."
+)
+FEEDBACK_INTRO = (
+    "These observations are considered critical in terms of data quality. "
+    "An operator should aim to have zero critical observations in their data."
 )
 
 URL_MAPPING = {
@@ -224,11 +229,6 @@ class Summary(BaseModel):
 
             df.drop_duplicates(inplace=True)
             count = len(df)
-            for level in Level:
-                warning_data[level.value] = {}
-                warning_data[level.value]["count"] = len(
-                    df[df["importance"] == level.value]
-                )
 
             df = (
                 df.groupby(["observation", "category", "importance"])
@@ -247,6 +247,7 @@ class Summary(BaseModel):
             df["url"] = df["observation"].map(URL_MAPPING)
             # change nan to no-url in url column only
             df["url"] = df["url"].fillna("no-url")
+            print(f"df: {df}")
             for level in Level:
                 warning_data[level.value] = {}
                 warning_data[level.value]["count"] = (
@@ -260,9 +261,14 @@ class Summary(BaseModel):
                 importance_df = df[df["importance"] == level.value]
                 # TODO: change df to something like data, or better name in the dict
                 warning_data[level.value]["df"] = {}
-                warning_data[level.value]["intro"] = (
-                    CRITICAL_INTRO if level.value == "Critical" else ADVISORY_INTRO
-                )
+                if level.value == "Critical":
+                    intro = CRITICAL_INTRO
+                elif level.value == "Advisory":
+                    intro = ADVISORY_INTRO
+                else:
+                    intro = ""
+
+                warning_data[level.value]["intro"] = intro
                 for category in importance_df["category"].unique():
                     warning_data[level.value]["df"].update(
                         {
@@ -273,6 +279,24 @@ class Summary(BaseModel):
                         }
                     )
 
+            print(f"warning_data: {warning_data}")
+            warning_data["Feedback"]["count"] = 24
+            df2 = pd.DataFrame(
+                np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
+                columns=[
+                    "number_of_services_affected",
+                    "number_of_suppressed_observation",
+                    "c",
+                ],
+            )
+            pd.set_option("display.max_columns", None)
+            pd.set_option("display.max_rows", None)
+            df2 = pd.DataFrame()
+            df2 = warning_data["Critical"]["df"]["Data set"]
+            print(f"df structure: {type(warning_data['Critical']['df']['Data set'])}")
+            print(warning_data["Critical"]["df"]["Data set"])
+
+            warning_data["Feedback"]["df"]["Feedback"] = df2
             return cls(
                 data=warning_data,
                 count=count,

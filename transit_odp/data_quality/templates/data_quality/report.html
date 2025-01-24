@@ -82,6 +82,7 @@
                 </div>
               {% endif %}
             {% endif %}
+            
             <div class="govuk-grid-column-one-quarter-from-desktop">
               <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Critical.count }}</p>
               <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
@@ -92,6 +93,12 @@
               <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Advisory.count }}</p>
               <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
                 Advisory observation{{ warning_data.Advisory.count|pluralize:"s" }}
+              </p>
+            </div>
+            <div class="govuk-grid-column-one-quarter-from-desktop">
+              <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Feedback.count }}</p>
+              <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
+                Feedback observation{{ warning_data.Critical.count |pluralize:"s" }}
               </p>
             </div>
           </div>
