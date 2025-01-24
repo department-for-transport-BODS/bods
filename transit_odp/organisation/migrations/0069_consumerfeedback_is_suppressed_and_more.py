@@ -17,14 +17,14 @@ class Migration(migrations.Migration):
             name="is_suppressed",
             field=models.BooleanField(
                 blank=True,
-                default=None,
+                default=False,
                 help_text="Contains whether the observation result is suppressed",
                 null=True,
             ),
         ),
         migrations.AddField(
             model_name="consumerfeedback",
-            name="revision_id",
+            name="revision",
             field=models.ForeignKey(
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name="consumerfeedback",
-            name="service_id",
+            name="service",
             field=models.ForeignKey(
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name="consumerfeedback",
-            name="service_pattern_stop_id",
+            name="service_pattern_stop",
             field=models.ForeignKey(
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name="consumerfeedback",
-            name="vehicle_journey_id",
+            name="vehicle_journey",
             field=models.ForeignKey(
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,

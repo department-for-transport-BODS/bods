@@ -30,6 +30,7 @@ from transit_odp.browse.filters import TimetableSearchFilter
 from transit_odp.browse.forms import ConsumerFeedbackForm
 from transit_odp.browse.tables import DatasetPaginatorTable
 from transit_odp.browse.timetable_visualiser import TimetableVisualiser
+from transit_odp.browse.user_feedback import UserFeedback
 from transit_odp.browse.views.base_views import (
     BaseSearchView,
     BaseTemplateView,
@@ -1114,12 +1115,66 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
         )
         return super().post(request, *args, **kwargs)
 
+    def get_feedback_details(self) -> dict:
+        """
+        Get the details from the request query params and DB
+        """
+
+        live_revision = self.dataset.live_revision
+        revision_id = live_revision.id
+
+        service_name = self.request.GET.get("service", None)
+        line_name = self.request.GET.get("line", None)
+        journey_code = self.request.GET.get("journey_code", None)
+        stop = self.request.GET.get("stop", None)
+        direction = self.request.GET.get("direction", None)
+        atco_code = self.request.GET.get("atco_code", None)
+
+        user_feedback = UserFeedback(
+            revision_id,
+            service_name,
+            line_name,
+            stop,
+            direction,
+            atco_code,
+            journey_code,
+        )
+        # If service name is not found in query string of url
+        if not service_name:
+            return user_feedback.default()
+        else:
+            if journey_code or stop:
+                # If vehicle journey code is available
+                if journey_code:
+                    print("in journey code")
+                    qs = user_feedback.get_qs_journey_code()
+                # Check whether the stop info is there
+                if stop:
+                    print("in stop code")
+                    qs = user_feedback.get_qs_stop()
+            else:
+                qs = user_feedback.get_qs_service()
+
+            print(f"qs: {qs}")
+            if qs:
+                return user_feedback.data(qs)
+            else:
+                return user_feedback.default()
+
     def get_initial(self):
-        return {
+        initial_data = {
             "dataset_id": self.dataset.id,
             "organisation_id": self.dataset.organisation.id,
             "consumer_id": self.request.user.id,
         }
+        data: dict = self.get_feedback_details()
+
+        initial_data["service_id"] = data["service_id"]
+        initial_data["vehicle_journey_id"] = data["vehicle_journey_id"]
+        initial_data["revision_id"] = data["revision_id"]
+        initial_data["service_pattern_stop_id"] = data["service_pattern_stop_id"]
+
+        return initial_data
 
     @transaction.atomic
     def form_valid(self, form):
@@ -1165,6 +1220,22 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
             host=config.hosts.DATA_HOST,
         )
         context["dataset"] = self.dataset
+
+        data: dict = self.get_feedback_details()
+        context["revision_id"] = data["revision_id"]
+        # If service code and line are found in DB
+        if data["service_id"]:
+            context["service"] = data["service_name"]
+            context["line_name"] = data["line_name"]
+        # If vehicle journey details are found in DB
+        if data["vehicle_journey_id"]:
+            context["journey_start_time"] = data["start_time"]
+            context["direction"] = data["direction"]
+        # If stop details are found in DB
+        if data["service_pattern_stop_id"]:
+            context["stop_name"] = data["stop_name"]
+            context["atco_code"] = data["atco_code"]
+
         return context
 
 
