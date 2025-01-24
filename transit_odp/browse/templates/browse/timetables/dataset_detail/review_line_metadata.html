@@ -104,7 +104,7 @@
         {% else %}
           {% for direction, timetable_details in timetable.items %}
             {% if not timetable_details.df.empty %}
-              {% include "publish/dataset_detail/timetable_journey_stop.html" with direction=direction timetable_details=timetable_details is_feedback=True %}
+              {% include "publish/dataset_detail/timetable_journey_stop.html" with direction=direction timetable_details=timetable_details %}
             {% endif %}
           {% endfor %}
         {% endif %}

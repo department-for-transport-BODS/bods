@@ -49,28 +49,6 @@
       </span>
       <span class="govuk-body-l">{{ dataset.id }}</span>
     </p>
-    {% if service %}
-      <p class="govuk-body">
-        <span class="govuk-body-l govuk-!-font-weight-bold">{% trans "Service " %}</span>
-        <span class="govuk-body-l">{{ line_name }} - {{ service }}</span>
-      </p>
-    {% endif %}
-    {% if stop_name %}
-      <p class="govuk-body">
-        <span class="govuk-body-l govuk-!-font-weight-bold">{% trans "Timing Point " %}</span>
-        <span class="govuk-body-l">{{ stop_name }} - {{ atco_code }}</span>
-      </p>
-    {% endif %}
-    {% if journey_start_time %}
-      <p class="govuk-body">
-        <span class="govuk-body-l govuk-!-font-weight-bold">{% trans "Journey Start Time " %}</span>
-        <span class="govuk-body-l">{{ journey_start_time }}</span>
-      </p>
-      <p class="govuk-body">
-        <span class="govuk-body-l govuk-!-font-weight-bold">{% trans "Direction " %}</span>
-        <span class="govuk-body-l">{{ direction }}</span>
-      </p>
-    {% endif %}
     {% crispy form %}
   </div>
 </div>

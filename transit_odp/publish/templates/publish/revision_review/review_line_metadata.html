@@ -110,7 +110,7 @@
             </div>
           {% else %}
             {% for direction, timetable_details in timetable.items %}
-              {% include "publish/dataset_detail/timetable_journey_stop.html" with direction=direction timetable_details=timetable_details is_feedback=False %}
+              {% include "publish/dataset_detail/timetable_journey_stop.html" with direction=direction timetable_details=timetable_details %}
             {% endfor %}
           {% endif %}
         {% endif %}
