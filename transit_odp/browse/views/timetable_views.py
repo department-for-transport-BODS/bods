@@ -907,7 +907,6 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
 
     def get_download_file(self, id_=None):
         if self.is_new_gtfs_api_active:
-            print("I am getting here")
             id_ = self.kwargs.get("id", None)
             gtfs_file = _get_gtfs_file(id_)
         else:
@@ -1146,16 +1145,13 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
             if journey_code or stop:
                 # If vehicle journey code is available
                 if journey_code:
-                    print("in journey code")
                     qs = user_feedback.get_qs_journey_code()
                 # Check whether the stop info is there
                 if stop:
-                    print("in stop code")
                     qs = user_feedback.get_qs_stop()
             else:
                 qs = user_feedback.get_qs_service()
 
-            print(f"qs: {qs}")
             if qs:
                 return user_feedback.data(qs)
             else:
@@ -1214,8 +1210,8 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["back_url"] = reverse(
-            "feed-detail",
+        back_url = reverse(
+            "feed-line-detail",
             args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
@@ -1227,6 +1223,7 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
         if data["service_id"]:
             context["service"] = data["service_name"]
             context["line_name"] = data["line_name"]
+            back_url += f"?line={data['line_name']}&service={data['service_name']}"
         # If vehicle journey details are found in DB
         if data["vehicle_journey_id"]:
             context["journey_start_time"] = data["start_time"]
@@ -1235,6 +1232,7 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
         if data["service_pattern_stop_id"]:
             context["stop_name"] = data["stop_name"]
             context["atco_code"] = data["atco_code"]
+        context["back_url"] = back_url
 
         return context
 
