@@ -198,6 +198,18 @@ class ConsumerFeedbackForm(GOVUKModelForm):
     organisation_id = forms.IntegerField(
         show_hidden_initial=True, disabled=True, required=False
     )
+    revision_id = forms.IntegerField(
+        show_hidden_initial=True, disabled=True, required=False
+    )
+    service_id = forms.IntegerField(
+        show_hidden_initial=True, disabled=True, required=False
+    )
+    vehicle_journey_id = forms.IntegerField(
+        show_hidden_initial=True, disabled=True, required=False
+    )
+    service_pattern_stop_id = forms.IntegerField(
+        show_hidden_initial=True, disabled=True, required=False
+    )
 
     anonymous = forms.BooleanField(
         initial=False, label="Send this feedback anonymously", required=False
@@ -230,5 +242,10 @@ class ConsumerFeedbackForm(GOVUKModelForm):
         instance.dataset_id = self.cleaned_data["dataset_id"]
         instance.consumer_id = self.cleaned_data["consumer_id"]
         instance.organisation_id = self.cleaned_data["organisation_id"]
+        instance.service_id = self.cleaned_data["service_id"]
+        instance.revision_id = self.cleaned_data["revision_id"]
+        instance.vehicle_journey_id = self.cleaned_data["vehicle_journey_id"]
+        instance.service_pattern_stop_id = self.cleaned_data["service_pattern_stop_id"]
+
         instance.save()
         return instance

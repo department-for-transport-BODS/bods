@@ -9,28 +9,44 @@
     <tr class="govuk-table__row">
       {% for col in timetable_details.df.columns %}
         <th scope="col" class="govuk-table__header ">
-          {% if col == '-' %}
+          {% if forloop.counter0 != 0 %}
             {% with key=timetable_details.observations|get_value_from_dict:col %}
               <div class="tooltip govuk-link"
-                   style="color: #d4351c"
+                   {% if col == '-' %}style="color: #d4351c"{% endif %}
                    title="More information"
-                   id="stop-{{ direction }}-{{ cell.journey_id }}-{{ idx }}"
-                   onclick="BODSFrontend.showTooltip(event,'{{ cell.journey_id }}-{{ idx }}', '{{ direction }}', 'observation');">
+                   id="stop-{{ direction }}-{{ forloop.counter0 }}"
+                   onclick="BODSFrontend.showTooltip(event,'jc-{{ direction }}-{{ forloop.counter0 }}', '{{ direction }}', 'observation');">
                 <div class="tooltiptext"
                      style="width:550px"
-                     id="{{ cell.journey_id }}-{{ idx }}"
+                     id="jc-{{ direction }}-{{ forloop.counter0 }}"
                      onclick="BODSFrontend.disableClick(event);">
-                  <div id="timetable_tooltip">
-                    <div>
-                      <span>
-                        <span class="govuk-!-font-weight-bold govuk-!-font-size-27">{{ key.title }}</span>
-                      </span>
+                  {% if key %}
+                    <div id="timetable_tooltip">
+                      <div>
+                        <span>
+                          <span class="govuk-!-font-weight-bold govuk-!-font-size-27">{{ key.title }}</span>
+                        </span>
+                      </div>
+                      <div class="govuk-!-font-weight-regular">
+                        <p>{{ key.text }}</p>
+                        <p>{{ key.resolve }}</p>
+                      </div>
                     </div>
-                    <div class="govuk-!-font-weight-regular">
-                      <p>{{ key.text }}</p>
-                      <p>{{ key.resolve }}</p>
+                  {% else %}
+                    <div id="timetable_tooltip">
+                      <div>
+                        <p>
+                          <span class="govuk-!-font-weight-bold">Journey Code:</span>
+                          <span class="govuk-!-font-weight-regular">{{ col }}</span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  {% endif %}
+                  {% if is_feedback %}
+                    {% url 'feed-feedback' object.id host hosts.data as base_url %}
+                    {% query_transform journey_code=col direction=direction as query_params %}
+                    <a href="{{ base_url }}{{ query_params }}" class="govuk-button govuk-!-margin-top-2 govuk-!-margin-bottom-1">Add Feedback</a>
+                  {% endif %}
                   <button type="submit"
                           class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
                           onclick="BODSFrontend.hideTooltip(event);"
@@ -82,6 +98,11 @@
                           <span class="govuk-!-font-weight-bold text-color-red">Stop type:&nbsp;</span><span class="text-color-red">{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'stop_type' }}</span>
                         {% endif %}
                         <br />
+                        {% if is_feedback %}
+                          {% url 'feed-feedback' object.id host hosts.data as base_url %}
+                          {% query_transform stop=cell direction=direction atco_code=timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' as query_params %}
+                          <a href="{{ base_url }}{{ query_params }}" class="govuk-button govuk-!-margin-top-2 govuk-!-margin-bottom-1">Add Feedback</a>
+                        {% endif %}
                         <button type="submit"
                                 class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
                                 id="closeToolTip-{{ direction }}-{{ idx }}"
@@ -96,12 +117,18 @@
                          onclick="BODSFrontend.showTooltip(event,'{{ idx }}', '{{ direction }}');">
                       {{ cell }}
                       <p class="tooltiptext" id="tooltip-{{ direction }}-{{ idx }}" onclick="BODSFrontend.disableClick(event);">
+                        {{ key }}
                         <span class="govuk-!-font-weight-bold">ATCO Code:&nbsp;</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}
                         <br />
                         <span class="govuk-!-font-weight-bold">Street:&nbsp;</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'street' }}
                         <br />
                         <span class="govuk-!-font-weight-bold">Indicator:&nbsp;</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'indicator' }}
                         <br />
+                        {% if is_feedback %}
+                          {% url 'feed-feedback' object.id host hosts.data as base_url %}
+                          {% query_transform stop=cell direction=direction atco_code=timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' as query_params %}
+                          <a href="{{ base_url }}{{ query_params }}" class="govuk-button govuk-!-margin-top-2 govuk-!-margin-bottom-1">Add Feedback</a>
+                        {% endif %}
                         <button type="submit"
                                 class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
                                 id="closeToolTip-{{ direction }}-{{ idx }}"
