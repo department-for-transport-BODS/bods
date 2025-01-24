@@ -44,7 +44,7 @@
                   {% endif %}
                   {% if is_feedback %}
                     {% url 'feed-feedback' object.id host hosts.data as base_url %}
-                    {% query_transform journey_code=col direction=direction  as query_params %}
+                    {% query_transform journey_code=col direction=direction as query_params %}
                     <a href="{{ base_url }}{{ query_params }}" class="govuk-button govuk-!-margin-top-2 govuk-!-margin-bottom-1">Add Feedback</a>
                   {% endif %}
                   <button type="submit"
