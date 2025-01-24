@@ -19,6 +19,7 @@ from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.common.forms import ConfirmationForm
+from transit_odp.common.utils.aws_common import StepFunctionsClientWrapper
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
@@ -32,6 +33,7 @@ from transit_odp.publish.forms import (
     FeedUploadForm,
     RevisionPublishForm,
 )
+from transit_odp.timetables.utils import create_state_machine_payload
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
@@ -497,8 +499,24 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
             Q(dataset=dataset) & Q(is_published=False)
         ).update_or_create(dataset=dataset, is_published=False, defaults=all_data)[0]
 
-        # trigger ETL job to run
-        revision.start_etl()
+        is_serverless_publishing_active = flag_is_active(
+            "", "is_serverless_publishing_active"
+        )
+
+        if not is_serverless_publishing_active:
+            # trigger ETL job to run
+            revision.start_etl()
+
+        else:
+            # trigger state machine
+            input_payload = create_state_machine_payload(revision)
+            try:
+                step_fucntions_client = StepFunctionsClientWrapper()
+                # Invoke the Step Function
+                step_fucntions_client.start_step_function(input_payload)
+
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=500)
 
         return HttpResponseRedirect(
             reverse(
