@@ -583,20 +583,34 @@ def get_dq_critical_observation_services_map(
 def query_dq_critical_observation(query) -> List[tuple]:
     """Query for data quality critical issue for service code
     and line name combination for the current revision only,
-    Using the Transmodel tables relations with dqs_observationresults
+    Using two scenarions, Any of the scenario with mark
+    Dq require attention to True
+
+    1. the Transmodel tables relations with dqs_observationresults
     Transmodel services -> Transmodel Service Patterns
     -> Transmodel Service Pattern Stops -> Dqs Observationresult
 
     And for checking the observation result must be critical
     Dqs Observationresult -> Taskresults -> checks
 
+    2. Check for customer feedback present and not suppressed
+    Transmodel service -> Organisation feedback
+
     Returns:
         dict[tuple, str]: return a list of services"""
     transmodel_services = (
         TransmodelService.objects.filter(
             query,
-            service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__isnull=False,
-            service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__taskresults__checks__importance=Level.critical.value,
+            (
+                Q(
+                    service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__isnull=False,
+                    service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__taskresults__checks__importance=Level.critical.value,
+                )
+                | Q(
+                    feedback_service__isnull=False,
+                    feedback_service__is_suppressed=False,
+                )
+            ),
         )
         .values_list("service_code", "name")
         .distinct()
