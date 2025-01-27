@@ -131,18 +131,39 @@ class StepFunctionsClientWrapper:
         """
         try:
             self.step_function_arn = (
-                settings.AWS_STEP_FUNCTION_ARN
-            )  # ARN of your Step Function
+                settings.TIMETABLES_STEP_FUNCTIONS_ARN
+            )  # ARN of timetable pipeline Step Function
 
-            self.client = boto3.client(
-                "stepfunctions",
-                region_name=settings.AWS_REGION,
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            if not self.step_function_arn:
+                logger.error(
+                    "Timetable pipeline: AWS Step Function ARN is missing or invalid"
+                )
+                raise
+
+            if settings.AWS_ENVIRONMENT == "LOCAL":
+                self.step_function_client = boto3.client(
+                    "stepfunctions",
+                    region_name=settings.AWS_REGION,
+                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                )
+            else:
+                self.step_function_client = boto3.client(
+                    "stepfunctions",
+                )
+        except NoCredentialsError as e:
+            logger.error(
+                "Timetable pipeline AWS Step Functions Missing AWS credentials"
             )
+            raise
+        except PartialCredentialsError as e:
+            logger.error(
+                "Timetable pipeline: AWS Step Functions Incomplete AWS credentials"
+            )
+            raise
         except Exception as e:
-            logger.info(
-                f"AWS Step Functions:General exception when initialising Step Functions client wrapper: {e}"
+            logger.error(
+                f"Timetable pipeline: AWS Step Functions Error initializing client: {e}"
             )
             raise
 
@@ -154,15 +175,15 @@ class StepFunctionsClientWrapper:
             clean_execution_name = self.clean_state_machine_name()
 
             # Invoke the Step Function
-            response = self.client.start_execution(
+            response = self.step_function_client.start_execution(
                 stateMachineArn=self.step_function_arn,
                 name=clean_execution_name,
                 input=input_payload,
             )
             self.execution_arn = response["executionArn"]
         except Exception as e:
-            logger.info(
-                f"AWS Step Functions:General exception when starting Step Functions: {e}"
+            logger.exception(
+                f"Timetable pipeline: AWS Step Functions General exception when starting Step Functions: {e}"
             )
             raise
 
@@ -184,7 +205,9 @@ class StepFunctionsClientWrapper:
 
     def wait_for_completion(poll_interval=5):
         while True:
-            response = self.client.describe_execution(executionArn=self.execution_arn)
+            response = self.step_function_client.describe_execution(
+                executionArn=self.execution_arn
+            )
             status = response["status"]
             if status in ["SUCCEEDED", "FAILED", "TIMED_OUT", "ABORTED"]:
                 return status, response
