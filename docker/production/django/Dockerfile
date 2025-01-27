@@ -19,11 +19,15 @@ ENV PYTHONUNBUFFERED=1 \
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
 
-RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /etc/apt/sources.list &&  \
-    echo 'Acquire::http::Timeout "10";' >> /etc/apt/apt.conf.d/80-connection && \
-    echo 'Acquire::ftp::Timeout "10";' >> /etc/apt/apt.conf.d/80-connection && \
-    echo 'Acquire::Retries "5";' >> /etc/apt/apt.conf.d/80-connection && \
-    apt-get update && apt-get install -y \
+# Special installation of automake version (via wget) as it is conflicting dependency
+RUN apt-get update && \
+    apt-get install -y wget
+
+RUN wget http://mirrors.kernel.org/ubuntu/pool/main/a/automake-1.16/automake_1.16.1-4ubuntu6_all.deb && \
+    apt install -y ./automake_1.16.1-4ubuntu6_all.deb
+
+RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /etc/apt/sources.list
+RUN apt-get install -y \
             libgdal-dev \
             g++ \
             proj-bin \
@@ -48,6 +52,7 @@ RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /
             setuptools \
             wheel \
             cython
+
 
 # Install python packages
 # Copy the compiled frontend from step 1 - this ensures production image
