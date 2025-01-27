@@ -669,25 +669,38 @@ class StepFunctionsPayload(BaseModel):
     detail: Detail  # Nested Detail object
 
 
-def create_state_machine_payload(revision: DatasetRevision) -> json:
-    if revision.url_link:
-        type_of_input = InputDataSourceEnum.URL_UPLOAD.value
-        url = revision.url_link
-        file = ""
-    else:
-        type_of_input = InputDataSourceEnum.ZIP_UPLOAD.value
-        url = ""
-        file = revision.upload_file.name
+def create_state_machine_payload(revision: DatasetRevision) -> str:
+    """Creates payload for AWS Step Function execution."""
+
+    if not revision.url_link and not revision.upload_file:
+        logger.warning(
+            "Both URL link and uploaded file are missing in the dataset revision."
+        )
+
+    DATASET_TYPE_TIMETABLES = "timetables"
+
+    type_of_input = (
+        InputDataSourceEnum.URL_UPLOAD.value
+        if revision.url_link
+        else InputDataSourceEnum.FILE_UPLOAD.value
+    )
+    url = revision.url_link or ""
+    file = revision.upload_file.name if revision.upload_file else ""
 
     # Payload to send to the Step Function
     input_payload = {
         "detail": {
             "datasetRevisionId": str(revision.id),
-            "datasetType": "timetables",
+            "datasetType": DATASET_TYPE_TIMETABLES,
             "url": url,
             "inputDataSource": type_of_input,
-            "s3object": {"key": str(file)},
+            "s3object": {"key": file},
         }
     }
-    payload = StepFunctionsPayload(**input_payload)
-    return payload.json()
+    # Validate payload using Pydantic model
+    try:
+        payload = StepFunctionsPayload(**input_payload)
+        return payload.json()
+    except ValidationError as e:
+        logger.error(f"Payload validation failed: {e}")
+        raise ValueError("Invalid payload structure")
