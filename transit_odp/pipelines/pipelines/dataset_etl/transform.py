@@ -167,7 +167,6 @@ class Transform(ETLUtility):
         ### Tracks geometry transformation
         if not journey_pattern_tracks.empty:
             journey_pattern_tracks = transform_geometry_tracks(journey_pattern_tracks)
-            journey_pattern_tracks = add_tracks_sequence(journey_pattern_tracks)
 
         ### logic for flexible stop points transformation
         if not flexible_stop_points.empty:
