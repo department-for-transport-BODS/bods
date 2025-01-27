@@ -21,7 +21,7 @@ from transit_odp.common.loggers import (
 from transit_odp.common.utils import sha1sum
 from transit_odp.common.utils.aws_common import (
     SQSClientWrapper,
-    StepFunctionsClientWrapper,
+    DQSStepFunctionsClientWrapper,
 )
 from transit_odp.common.utils.s3_bucket_connection import (
     get_file_name_by_id,
@@ -550,7 +550,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
             adapter.info(
                 f"Using state machine to run checks on {len(txc_file_attributes_objects)} files"
             )
-            step_function_client = StepFunctionsClientWrapper()
+            step_function_client = DQSStepFunctionsClientWrapper()
             for file in txc_file_attributes_objects:
                 execution_arn = step_function_client.start_execution(
                     state_machine_arn=settings.DQS_STATE_MACHINE_ARN,
