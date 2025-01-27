@@ -349,8 +349,10 @@ def merge_vj_tracks_df(
         tracks, tracks_map_extended, on=["rs_ref", "file_id"], how="inner"
     )
 
-    # Create 'sequence' column by combining 'rs_order' and 'rl_order'   
-    merged_tracks_map["sequence"] = merged_tracks_map.groupby(["jp_ref", "file_id"]).cumcount()
+    # Create 'sequence' column by combining 'rs_order' and 'rl_order'
+    merged_tracks_map["sequence"] = merged_tracks_map.groupby(
+        ["jp_ref", "file_id"]
+    ).cumcount()
     # Drop 'rl_order' and 'rs_order' columns as they are no longer needed
     merged_tracks_map.drop(["rl_order", "rs_order"], inplace=True, axis=1)
     # Extract jp_ref from journey_pattern_ref
@@ -370,7 +372,7 @@ def merge_vj_tracks_df(
         return pd.DataFrame()
     # Drop nan from all columns
     df_cleaned = merged_vjs_tracks_map.dropna(axis=1, how="all")
-    # Check for NaN values 
+    # Check for NaN values
     if df_cleaned.size != merged_tracks_map.size:
         logger.warning(
             f"Merge_vj_tracks_df: NaN values found in the tracks extracted data"
