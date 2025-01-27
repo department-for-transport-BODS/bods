@@ -1,24 +1,24 @@
-import logging
+import copy
 import json
+import logging
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Dict, List, Optional, Tuple
+
 import pandas as pd
+import requests
+from django.conf import settings
+from pydantic import BaseModel, Field, ValidationError
+from requests import RequestException
+
+from transit_odp.common.utils.aws_common import get_s3_bucket_storage
+from transit_odp.dqs.constants import OBSERVATIONS, STOPNAMEOBSERVATION
+from transit_odp.organisation.models import DatasetRevision
 from transit_odp.pipelines.constants import SchemaCategory
 from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
 from transit_odp.timetables.constants import TXC_XSD_PATH
-from django.conf import settings
-from transit_odp.dqs.constants import OBSERVATIONS, STOPNAMEOBSERVATION
-import requests
-from requests import RequestException
-
-from enum import Enum
-from pydantic import BaseModel, ValidationError, Field
-from typing import List, Optional
-from datetime import datetime, timedelta
-from transit_odp.common.utils.aws_common import get_s3_bucket_storage
-
 from transit_odp.transmodel.models import BankHolidays
-from typing import Tuple, Dict
-import copy
 
 logger = logging.getLogger(__name__)
 
@@ -301,12 +301,14 @@ def get_df_timetable_visualiser(
         df_vehicle_journey_with_pattern_stop[
             "key"
         ] = df_vehicle_journey_with_pattern_stop.apply(
-            lambda row: f"{str(row['common_name'])}_{str(row['stop_sequence'])}_{str(row['vehicle_journey_code'])}_{str(row['vehicle_journey_id'])}"
-            if pd.notnull(row["common_name"])
-            and pd.notnull(row["stop_sequence"])
-            and pd.notnull(row["vehicle_journey_code"])
-            and pd.notnull(row["vehicle_journey_id"])
-            else "",
+            lambda row: (
+                f"{str(row['common_name'])}_{str(row['stop_sequence'])}_{str(row['vehicle_journey_code'])}_{str(row['vehicle_journey_id'])}"
+                if pd.notnull(row["common_name"])
+                and pd.notnull(row["stop_sequence"])
+                and pd.notnull(row["vehicle_journey_code"])
+                and pd.notnull(row["vehicle_journey_id"])
+                else ""
+            ),
             axis=1,
         )
 
@@ -644,3 +646,48 @@ def observation_contents_mapper(observations_list) -> Dict:
                 }
 
     return requested_observation
+
+
+class InputDataSourceEnum(Enum):
+    URL_UPLOAD = "URL_UPLOAD"
+    FILE_UPLOAD = "FILE_UPLOAD"
+
+
+class S3Object(BaseModel):
+    key: Optional[str]  # Key is optional
+
+
+class Detail(BaseModel):
+    datasetRevisionId: str  # Always a string
+    datasetType: str  # Always a string
+    url: Optional[str]  # Optional or can be an empty string
+    inputDataSource: str  # Always a string
+    s3object: S3Object  # Nested object
+
+
+class StepFunctionsPayload(BaseModel):
+    detail: Detail  # Nested Detail object
+
+
+def create_state_machine_payload(revision: DatasetRevision) -> json:
+    if revision.url_link:
+        type_of_input = InputDataSourceEnum.URL_UPLOAD.value
+        url = revision.url_link
+        file = ""
+    else:
+        type_of_input = InputDataSourceEnum.ZIP_UPLOAD.value
+        url = ""
+        file = revision.upload_file.name
+
+    # Payload to send to the Step Function
+    input_payload = {
+        "detail": {
+            "datasetRevisionId": str(revision.id),
+            "datasetType": "timetables",
+            "url": url,
+            "inputDataSource": type_of_input,
+            "s3object": {"key": str(file)},
+        }
+    }
+    payload = StepFunctionsPayload(**input_payload)
+    return payload.json()
