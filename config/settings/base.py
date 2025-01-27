@@ -646,7 +646,7 @@ S3_BUCKET_DQS_CSV_REPORT = env(
     default="bodds-dev-dqs-reports",
 )
 # DQS STEP FUNCTION PARAMETERS
-STATE_MACHINE_ARN = env("STATE_MACHINE_ARN", default="")
+DQS_STATE_MACHINE_ARN = env("DQS_STATE_MACHINE_ARN", default="")
 
 # SQS QUEUE
 # ------------------------------------------------------------------------------

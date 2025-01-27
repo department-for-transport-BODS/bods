@@ -553,7 +553,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
             step_function_client = StepFunctionsClientWrapper()
             for file in txc_file_attributes_objects:
                 execution_arn = step_function_client.start_execution(
-                    state_machine_arn=settings.STATE_MACHINE_ARN,
+                    state_machine_arn=settings.DQS_STATE_MACHINE_ARN,
                     input=dict(file_id=file.id),
                     name=f"DQSExecutionForRevision{file.id}",
                 )
