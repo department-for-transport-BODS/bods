@@ -192,8 +192,8 @@ class LineMetadataDetailView(DetailView):
         Determine the service type based on the provided parameters.
 
         This method queries the database to retrieve service types for a given revision,
-        service code, and line name. It then analyzes the retrieved service types to determine
-        the overall service type.
+        service code, and line name. It then analyzes the retrieved service types to
+        determine the overall service type.
 
         Parameters:
             revision_id (int): The ID of the revision.
@@ -205,7 +205,7 @@ class LineMetadataDetailView(DetailView):
                 - "Standard" if all retrieved service types are "standard".
                 - "Flexible" if all retrieved service types are "flexible".
                 - "Flexible/Standard" if both "standard" and "flexible" service types are present.
-        """
+        """  # noqa
         all_service_types_list = []
         service_types_qs = (
             Service.objects.filter(
@@ -242,7 +242,7 @@ class LineMetadataDetailView(DetailView):
                 - "filename": The name of the file.
                 - "start_date": The start date of the file's operating period.
                 - "end_date": The end date of the file's operating period, if available.
-        """
+        """  # noqa
         valid_file_names = []
         today = datetime.now().date()
 
@@ -318,7 +318,7 @@ class LineMetadataDetailView(DetailView):
 
         Returns:
             datetime: The most recent modification datetime, or None if no matching records are found.
-        """
+        """  # noqa
         return TXCFileAttributes.objects.filter(
             revision_id=revision_id,
             service_code=service_code,
@@ -346,7 +346,7 @@ class LineMetadataDetailView(DetailView):
 
         Returns:
             datetime: The latest operating period start date, or None if no matching records are found.
-        """
+        """  # noqa
         return TXCFileAttributes.objects.filter(
             revision_id=revision_id,
             service_code=service_code,
@@ -369,7 +369,7 @@ class LineMetadataDetailView(DetailView):
             service_code (str): The service code.
 
         Returns:
-            QuerySet or None"""
+            QuerySet or None"""  # noqa
         try:
             service_ids = (
                 Service.objects.filter(revision=revision_id)
@@ -388,15 +388,16 @@ class LineMetadataDetailView(DetailView):
         """
         Get the valid booking arrangements files based on the provided parameters.
 
-        This method determines the valid booking arrangements file(s) for a given revision,
-        service code, line name, and list of valid files. It considers various factors such
-        as the number of valid files, the most recent modification datetime, and the operating
-        period start date to determine the appropriate booking arrangements file(s) to return.
+        This method determines the valid booking arrangements file(s) for a given
+        revision, service code, line name, and list of valid files. It considers
+        various factors such as the number of valid files, the most recent
+        modification datetime, and the operating period start date to determine
+        the appropriate booking arrangements file(s) to return.
 
         Parameters:
             revision_id (int): The ID of the revision.
-            valid_files (list): A list of valid files containing information about each file,
-                including the filename, start date, and end date.
+            valid_files (list): A list of valid files containing information about
+            each file, including the filename, start date, and end date.
             service_code (str): The service code.
             line_name (str): The name of the line.
 
@@ -891,9 +892,9 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             response = StreamingHttpResponse(
                 gtfs_region_file, content_type="application/zip"
             )
-            response[
-                "Content-Disposition"
-            ] = f'attachment; filename="itm_{id_}_gtfs.zip"'
+            response["Content-Disposition"] = (
+                f'attachment; filename="itm_{id_}_gtfs.zip"'
+            )
         else:
             gtfs = self.get_download_file(id_)
             if gtfs.file is None:
@@ -998,15 +999,25 @@ class DownloadBulkDataArchiveRegionsView(DownloadView):
                 % {"verbose_name": BulkDataArchive._meta.verbose_name}
             )
 
-    def get_download_file(self, *args):
+    def get_download_file(self):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return generate_signed_url(self.object.data.name)
         s3_start = datetime.now()
         data = self.object.data
         s3_endtime = datetime.now()
         logger.info(
-            f"""S3 bucket download for region-wise bulk archive took
+            f"""S3 bucket download for bulk archive took
             {(s3_endtime - s3_start).total_seconds()} seconds"""
         )
         return data
+
+    def render_to_response(self, **response_kwargs):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            download_file = self.get_download_file()
+            return redirect(download_file)
+        super().render_to_response(**response_kwargs)
 
 
 class DownloadCompliantBulkDataArchiveView(DownloadView):
@@ -1026,7 +1037,24 @@ class DownloadCompliantBulkDataArchiveView(DownloadView):
             )
 
     def get_download_file(self):
-        return self.object.data
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return generate_signed_url(self.object.data.name)
+        s3_start = datetime.now()
+        data = self.object.data
+        s3_endtime = datetime.now()
+        logger.info(
+            f"""S3 bucket download for bulk archive took
+            {(s3_endtime - s3_start).total_seconds()} seconds"""
+        )
+        return data
+
+    def render_to_response(self, **response_kwargs):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            download_file = self.get_download_file()
+            return redirect(download_file)
+        super().render_to_response(**response_kwargs)
 
 
 class DownloadChangeDataArchiveView(DownloadView):
@@ -1052,7 +1080,24 @@ class DownloadChangeDataArchiveView(DownloadView):
         return ChangeDataArchive.objects.filter(published_at__gte=last_week)
 
     def get_download_file(self):
-        return self.object.data
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return generate_signed_url(self.object.data.name)
+        s3_start = datetime.now()
+        data = self.object.data
+        s3_endtime = datetime.now()
+        logger.info(
+            f"""S3 bucket download for bulk archive took
+            {(s3_endtime - s3_start).total_seconds()} seconds"""
+        )
+        return data
+
+    def render_to_response(self, **response_kwargs):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            download_file = self.get_download_file()
+            return redirect(download_file)
+        super().render_to_response(**response_kwargs)
 
 
 class DatasetDownloadView(ResourceCounterMixin, BaseDetailView):

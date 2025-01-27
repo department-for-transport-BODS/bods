@@ -10,7 +10,7 @@ def test_download_coach_data_view(request_factory: RequestFactory):
     Args:
         request_factory (RequestFactory): Request Factory
     """
-    request = request_factory.get(f"/coach/download")
+    request = request_factory.get("/coach/download")
 
     response = CoachDownloadView.as_view()(request)
 

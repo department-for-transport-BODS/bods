@@ -1,25 +1,25 @@
-from django.http import Http404
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django_hosts import reverse
-from django.core.paginator import Paginator
-from django.views.generic.list import ListView
-from django.utils.translation import gettext_lazy as _
-from django.conf import settings
+import logging
+from datetime import datetime
 
+import requests
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
+from django.http import Http404
+from django.shortcuts import redirect
+from django.utils.translation import gettext_lazy as _
+from django.views.generic.list import ListView
+from django_hosts import reverse
+from requests import RequestException
+from rest_framework import status
+from waffle import flag_is_active
+
+import config.hosts
+from transit_odp.browse.cfn import generate_signed_url
+from transit_odp.browse.views.base_views import BaseTemplateView
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
 from transit_odp.disruptions.models import DisruptionsDataArchive
 from transit_odp.organisation.constants import DatasetType
-from transit_odp.browse.views.base_views import (
-    BaseTemplateView,
-)
-
-import config.hosts
-import logging
-import requests
-from requests import RequestException
-from rest_framework import status
-from datetime import datetime
-
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,24 @@ class DownloadDisruptionsDataArchiveView(ResourceCounterMixin, DownloadView):
         return archive
 
     def get_download_file(self):
-        return self.object.data
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return generate_signed_url(self.object.data.name)
+        s3_start = datetime.now()
+        data = self.object.data
+        s3_endtime = datetime.now()
+        logger.info(
+            f"""S3 bucket download for bulk archive took
+            {(s3_endtime - s3_start).total_seconds()} seconds"""
+        )
+        return data
+
+    def render_to_response(self, **response_kwargs):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            download_file = self.get_download_file()
+            return redirect(download_file)
+        super().render_to_response(**response_kwargs)
 
 
 def _get_disruptions_organisation_data(url: str, headers: object):
@@ -105,11 +122,13 @@ class DisruptionsDataView(ListView):
         if ordering == "-modified":
             sorted_orgs = sorted(
                 orgs_to_show,
-                key=lambda item: datetime.strptime(
-                    item["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"
-                )
-                if item["stats"]["lastUpdated"]
-                else datetime.min,
+                key=lambda item: (
+                    datetime.strptime(
+                        item["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                    )
+                    if item["stats"]["lastUpdated"]
+                    else datetime.min
+                ),
                 reverse=reverse_order,
             )
         else:
@@ -127,11 +146,14 @@ class DisruptionsDataView(ListView):
                     "stats": dict(
                         item["stats"],
                         **{
-                            "lastUpdated": datetime.strptime(
-                                item["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                            "lastUpdated": (
+                                datetime.strptime(
+                                    item["stats"]["lastUpdated"],
+                                    "%Y-%m-%dT%H:%M:%S.%fZ",
+                                )
+                                if item["stats"]["lastUpdated"]
+                                else ""
                             )
-                            if item["stats"]["lastUpdated"]
-                            else ""
                         },
                     ),
                 },
@@ -188,7 +210,7 @@ class DisruptionDetailView(BaseTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['orgId'])}/disruptions/{str(kwargs['disruptionId'])}"
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations/{str(kwargs['orgId'])}/disruptions/{str(kwargs['disruptionId'])}"  # noqa
 
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content = None
@@ -215,9 +237,11 @@ class DisruptionDetailView(BaseTemplateView):
                     "consequenceType": type_of_consequence_dict[
                         consequence["consequenceType"]
                     ],
-                    "vehicleMode": vehicle_mode_dict[consequence["vehicleMode"]]
-                    if consequence["vehicleMode"] in vehicle_mode_dict
-                    else consequence["vehicleMode"],
+                    "vehicleMode": (
+                        vehicle_mode_dict[consequence["vehicleMode"]]
+                        if consequence["vehicleMode"] in vehicle_mode_dict
+                        else consequence["vehicleMode"]
+                    ),
                 }
                 for consequence in consequences
             ]
