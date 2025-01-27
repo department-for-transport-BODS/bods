@@ -43,7 +43,6 @@ from transit_odp.publish.requires_attention import (
     get_txc_map_lta,
     is_stale,
 )
-from transit_odp.timetables.csv import _get_timetable_compliance_report_dataframe
 
 STALENESS_STATUS = [
     "42 day look ahead is incomplete",
@@ -298,7 +297,6 @@ class LocalAuthorityDetailView(BaseDetailView):
         return qs
 
     def get_context_data(self, **kwargs):
-        _get_timetable_compliance_report_dataframe()
         is_avl_require_attention_active = flag_is_active(
             "", "is_avl_require_attention_active"
         )
