@@ -17,7 +17,8 @@ from transit_odp.organisation.managers import (
     ConsumerFeedbackManager,
     OrganisationManager,
 )
-from transit_odp.organisation.models import Dataset
+from transit_odp.organisation.models import Dataset, DatasetRevision
+from transit_odp.transmodel.models import Service, VehicleJourney, ServicePatternStop
 from transit_odp.users.models import User
 from transit_odp.naptan.models import AdminArea
 
@@ -143,6 +144,33 @@ class ConsumerFeedback(models.Model):
     feedback = models.TextField(blank=False, null=False)
     organisation = models.ForeignKey(
         Organisation, on_delete=models.CASCADE, related_name="feedback"
+    )
+    revision = models.ForeignKey(
+        DatasetRevision,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="feedback_revision",
+    )
+    service = models.ForeignKey(
+        Service, null=True, on_delete=models.CASCADE, related_name="feedback_service"
+    )
+    vehicle_journey = models.ForeignKey(
+        VehicleJourney,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="feedback_vehicle_journey",
+    )
+    service_pattern_stop = models.ForeignKey(
+        ServicePatternStop,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="feedback_service_pattern_stop",
+    )
+    is_suppressed = models.BooleanField(
+        default=None,
+        help_text="Contains whether the observation result is suppressed",
+        null=True,
+        blank=True,
     )
 
     objects = ConsumerFeedbackManager()
