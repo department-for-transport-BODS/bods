@@ -570,14 +570,14 @@ def get_dq_critical_observation_services_map(
     Returns:
         dict[tuple, str]: return a list of services
     """
-    query = Q()
-    for (line_name, service) in txc_map:
-        query |= Q(
-            service_code=service,
-            name=line_name,
-            revision_id=txc_map[(line_name, service)].revision_id,
-        )
-    return query_dq_critical_observation(query)
+    txc_map_df = pd.DataFrame(
+        [
+            {"id": key, **{k: v for k, v in vars(obj).items() if not k.startswith("_")}}
+            for key, obj in txc_map.items()
+        ]
+    )
+
+    return get_dq_critical_observation_services_map_from_dataframe(txc_map_df)
 
 
 def query_dq_critical_observation(query) -> List[tuple]:
