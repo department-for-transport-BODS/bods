@@ -193,3 +193,13 @@ MESSAGE_OBSERVATION_COMPOSITE_FRAME_ID_MISSING = (
     "Attribute 'id' of element 'CompositeFrame' is missing"
 )
 MESSAGE_OBSERVATION_MISSING_MULTI_OPERATOR_REFS = "At least two 'OperatorRef' should be present in 'ResourceFrame.groupsOfOperators.GroupOfOperators.members'"
+MESSAGE_OBSERVATION_MISSING_CAPPED_DISCOUNT_RIGHT_ID = (
+    "Attribute 'id' of element 'CappedDiscountRight' is missing"
+)
+MESSAGE_OBSERVATION_MISSING_CAPPING_RULE_NAME = (
+    "Mandatory element 'Name' within 'cappingRules.CappingRule' is missing"
+)
+MESSAGE_OBSERVATION_MISSING_CAPPING_PERIOD = (
+    "Mandatory element 'CappingPeriod' within 'cappingRules.CappingRule' is missing"
+)
+MESSAGE_OBSERVATION_MISSING_VALIDABLE_ELEMENT_REF = "Mandatory element 'ValidableElementRef' within 'cappingRules.CappingRule' is missing"
