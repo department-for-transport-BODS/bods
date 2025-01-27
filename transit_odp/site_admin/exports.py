@@ -185,7 +185,6 @@ class PublisherCSV(CSVBuilder):
     ]
 
     def get_queryset(self):
-        # TODO include agent users with a record per agent user org
         when_is_inactive = When(
             Q(is_active=False), then=Value("Inactive", output_field=CharField())
         )
@@ -198,9 +197,7 @@ class PublisherCSV(CSVBuilder):
         )
 
         user_subquery = Subquery(
-            User.objects.filter(email=OuterRef("email"))
-            .exclude(account_type=AgentUserType)
-            .values_list("is_active")[:1]
+            User.objects.filter(email=OuterRef("email")).values_list("is_active")[:1]
         )
         return (
             Invitation.objects.select_related("organisation")
@@ -221,7 +218,6 @@ class PublisherCSV(CSVBuilder):
                     output_field=CharField(),
                 )
             )
-            .exclude(account_type=AgentUserType)
             .order_by("pk")
         )
 

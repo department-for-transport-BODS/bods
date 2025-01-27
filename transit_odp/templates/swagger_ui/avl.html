@@ -14,6 +14,20 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-width-container">
+      <h1 class="govuk-heading-xl dont-break-out" aria-label="Heading Title">Location data API</h1>
+      <p class="govuk-body">
+        You can use the interactive documentation
+        to customise your API response using the available query parameters.
+        If you are registered and logged in, you will be given a full response.
+        Otherwise you will be given an example response.
+      </p>
+      <p class="govuk-body">
+        You can also <a class="govuk-link" href="{% static 'openapi/avl.yml' %}">download the location OpenAPI specification</a>.
+      </p>
+      <h3 class="govuk-heading-m">Ready to use the API?</h3>
+      <p><a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}?section=api">View developer documentation</a></p>
+      <h3 class="govuk-heading-m">First time API user?</h3>
+      <p><a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">Guide me</a></p>
       <div id="swagger-ui"></div>
     </div>
   </div>
@@ -21,7 +35,7 @@
 {% block scripts %}
   {{ block.super }}
   <script nonce="{{request.csp_nonce}}" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script nonce="{{request.csp_nonce}}">BODSFrontend.initAPIDocs('#swagger-ui', "{% static "openapi/avl.yml" %}")</script>
+  <script nonce="{{request.csp_nonce}}">BODSFrontend.initAPIDocs('#swagger-ui', "{% static 'openapi/avl.yml' %}")</script>
   <script nonce="{{request.csp_nonce}}">
         function bindExecuteButtonClickEvent() {
 

@@ -29,7 +29,6 @@ RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /
             proj-bin \
             pkg-config \
             autoconf \
-            automake \
             libtool \
             nasm \
             build-essential \

@@ -10,6 +10,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django_hosts import reverse
 
 import config.hosts
+from transit_odp.common.utils.aws_common import StepFunctionsClientWrapper
 from transit_odp.common.views import BaseDetailView, BaseTemplateView
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.publish.forms import (
@@ -18,6 +19,7 @@ from transit_odp.publish.forms import (
     FeedUploadForm,
 )
 from transit_odp.publish.views.base import FeedWizardBaseView
+from transit_odp.timetables.utils import create_state_machine_payload
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 
@@ -170,8 +172,24 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             setattr(revision, key, value)
         revision.save()
 
-        # trigger ETL job to run
-        revision.start_etl()
+        is_serverless_publishing_active = flag_is_active(
+            "", "is_serverless_publishing_active"
+        )
+
+        if not is_serverless_publishing_active:
+            # trigger ETL job to run
+            revision.start_etl()
+
+        else:
+            # trigger state machine
+            input_payload = create_state_machine_payload(revision)
+            try:
+                step_fucntions_client = StepFunctionsClientWrapper()
+                # Invoke the Step Function
+                step_fucntions_client.start_step_function(input_payload)
+
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=500)
 
         return HttpResponseRedirect(
             reverse(

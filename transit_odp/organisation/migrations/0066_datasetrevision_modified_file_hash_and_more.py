@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("organisation", "0067_txcfileattributes_service_mode"),
+        ("organisation", "0065_alter_servicecodeexemption_registration_code"),
     ]
 
     operations = [
