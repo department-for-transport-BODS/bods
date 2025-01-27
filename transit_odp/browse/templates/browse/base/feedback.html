@@ -12,7 +12,7 @@
 </h2>
 {% if request.GET|is_value_in_dict:'service' %}
   <p>
-    You can select a stop code or journey code above to provide feedback about specific element, or you can use this link to provide general feedback about this service.
+    You can select a stop code or journey code above to provide feedback about that specific element, or you can use this link to provide general feedback about this service.
   </p>
 {% endif %}
 {% url feedback_url_name object.id host hosts.data as base_url %}
