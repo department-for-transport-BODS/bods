@@ -513,7 +513,7 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
             try:
                 step_fucntions_client = StepFunctionsClientWrapper()
                 step_function_arn = (
-                    settings.TIMETABLES_STEP_FUNCTIONS_ARN
+                    settings.TIMETABLES_STATE_MACHINE_ARN
                 )  # ARN of timetable pipeline Step Function
 
                 if not step_function_arn:
