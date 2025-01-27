@@ -39,7 +39,6 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     create_flexible_routes,
     merge_flexible_jd_with_jp,
     transform_geometry_tracks,
-    add_tracks_sequence,
 )
 from transit_odp.naptan.models import StopPoint, FlexibleZone
 from transit_odp.timetables.utils import get_line_description_based_on_direction
