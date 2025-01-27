@@ -354,6 +354,16 @@
           "test": "check_resource_frame_operator_name(.)"
         }
       ]
+    },
+    {
+      "details": "Check if 'CappedDiscountRight' and it's children are present in fareProducts",
+      "category": "FareProducts",
+      "context": "//x:dataObjects/x:CompositeFrame",
+      "rules": [
+        {
+          "test": "validate_cappeddiscountright_rules(.)"
+        }
+      ]
     }
   ]
 }
