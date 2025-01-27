@@ -570,11 +570,14 @@ def get_dq_critical_observation_services_map(
     Returns:
         dict[tuple, str]: return a list of services
     """
-    filter_fields = ["service_code", "line_name_unnested", "revision_id"]
     txc_map_df = pd.DataFrame(
         [
-            {k: v for k, v in vars(obj).items() if k in filter_fields}
-            for key, obj in txc_map.items()
+            {
+                "service_code": obj.service_code,
+                "line_name_unnested": obj.line_name_unnested,
+                "revision_id": obj.revision_id,
+            }
+            for _, obj in txc_map.items()
         ]
     )
 
