@@ -19,14 +19,20 @@ ENV PYTHONUNBUFFERED=1 \
 ENV PATH=$PATH:/app/node_modules/.bin
 WORKDIR /app
 
+# Special installation of automake version (via wget) as it is conflicting dependency
+RUN apt-get update && \
+    apt-get install -y wget
+
+RUN wget http://mirrors.kernel.org/ubuntu/pool/main/a/automake-1.16/automake_1.16.1-4ubuntu6_all.deb && \
+    apt install -y ./automake_1.16.1-4ubuntu6_all.deb
+
 RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /etc/apt/sources.list
-RUN apt-get update && apt-get install -y \
+RUN apt-get install -y \
             libgdal-dev \
             g++ \
             proj-bin \
             pkg-config \
             autoconf \
-            automake \
             libtool \
             nasm \
             build-essential \
