@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 from django.core.files import File
@@ -20,13 +20,11 @@ from transit_odp.organisation.factories import (
     OrganisationFactory,
     TXCFileAttributesFactory,
 )
-from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.pipelines.exceptions import PipelineException
 from transit_odp.pipelines.factories import DatasetETLTaskResultFactory
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.constants import PII_ERROR
 from transit_odp.timetables.tasks import (
-    task_data_quality_service,
     task_dataset_download,
     task_dataset_etl,
     task_post_schema_check,
@@ -36,7 +34,6 @@ from transit_odp.timetables.tasks import (
     task_timetable_schema_check,
 )
 from transit_odp.timetables.transxchange import BaseSchemaViolation
-from transit_odp.transmodel.factories import ServiceFactory
 from transit_odp.users.factories import OrgAdminFactory
 from transit_odp.validate import DownloadException, FileScanner
 from transit_odp.validate.antivirus import AntiVirusError, SuspiciousFile
@@ -385,8 +382,7 @@ def test_run_task_post_schema_check(mocker, tmp_path, mock_post_schema_validator
     testzip = tmp_path / "test_pii.zip"
     create_text_file(
         file1,
-        r'<TransXChange FileName="C:\Users\test\Documents\Marshalls of Sutton 2021-01-08 '
-        r'15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml"></TransXChange>',
+        r'<TransXChange FileName="C:\Users\test\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml"></TransXChange>',
     )
     create_zip_file(testzip, [file1])
     with open(testzip, "rb") as zout:
@@ -443,8 +439,7 @@ def test_run_task_post_schema_check_exception(
     testzip = tmp_path / "test_pii.zip"
     create_text_file(
         file1,
-        r'<TransXChange FileName="C:\Users\test\Documents\Marshalls of Sutton 2021-01-08 '
-        r'15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml">',
+        r'<TransXChange FileName="C:\Users\test\Documents\Marshalls of Sutton 2021-01-08 15-54\Marshalls of Sutton 55 2021-01-08 15-54.xml">',
     )
     create_zip_file(testzip, [file1])
     with open(testzip, "rb") as zout:
@@ -577,74 +572,3 @@ def test_task_dataset_etl_exception():
         task_dataset_etl(revision.id, task.id)
     task.refresh_from_db()
     assert task.error_code == task.NO_VALID_FILE_TO_PROCESS
-
-
-@patch("transit_odp.timetables.tasks.SQSClientWrapper")
-@patch("transit_odp.timetables.tasks.flag_is_active")
-def test_task_data_quality_service_with_sqs(
-    mock_flag_is_active, mock_sqs_client_wrapper
-):
-    upload_file_path = DATA / "3_pti_pass.zip"
-
-    mock_flag_is_active.return_value = False
-    client = mock_sqs_client_wrapper.return_value
-
-    dataset = DatasetFactory(live_revision=None)
-    revision = add_draft_revision(
-        dataset,
-        txc_version=2.2,
-        upload_file__from_path=upload_file_path,
-        status=FeedStatus.indexing.value,
-    )
-    attr = TXCFileAttributesFactory(revision=revision)
-    ServiceFactory(revision=revision, txcfileattributes=attr)
-
-    revision = dataset.revisions.first()
-    task = revision.etl_results.first()
-
-    task_data_quality_service(revision.id, task.id)
-
-    task.refresh_from_db()
-    assert mock_sqs_client_wrapper.called
-    assert client.send_message_to_queue.called
-    client.send_message_to_queue.assert_called_once()
-    assert task.error_code == ""
-
-
-@patch("transit_odp.timetables.tasks.StepFunctionsClientWrapper")
-@patch("transit_odp.timetables.tasks.flag_is_active")
-def test_task_data_quality_service_with_step_function(
-    mock_flag_is_active, mock_step_function_client_wrapper
-):
-    upload_file_path = DATA / "3_pti_pass.zip"
-    arn = "arn:aws:states:eu-west-2:228266753808:stateMachine:dqs-dev-DQSStateMachine"
-
-    mock_flag_is_active.return_value = True
-    client = mock_step_function_client_wrapper.return_value
-
-    dataset = DatasetFactory(live_revision=None)
-    revision = add_draft_revision(
-        dataset,
-        txc_version=2.2,
-        upload_file__from_path=upload_file_path,
-        status=FeedStatus.indexing.value,
-    )
-    attr = TXCFileAttributesFactory(revision=revision)
-    ServiceFactory(revision=revision, txcfileattributes=attr)
-
-    revision = dataset.revisions.first()
-    task = revision.etl_results.first()
-
-    task_data_quality_service(None, task.id)
-
-    task.refresh_from_db()
-    assert mock_step_function_client_wrapper.called
-    assert client.start_execution.called
-    client.start_execution.assert_called_once
-    for file in TXCFileAttributes.objects.for_revision(revision.id):
-        client.start_execution.assert_called_with(
-            state_machine_arn=arn,
-            input=dict(file_id=file.id),
-            name=f"DQSExecutionForRevision{file.id}",
-        )
-    assert task.error_code == ""

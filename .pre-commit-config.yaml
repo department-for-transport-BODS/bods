@@ -22,9 +22,6 @@ repos:
     rev: 7.1.0
     hooks:
       - id: flake8
-        args:
-          - --max-line-length=130
-          - --extend-ignore=F841,E203
 
   - repo: https://github.com/timothycrosley/isort
     rev: 5.13.2
