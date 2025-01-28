@@ -669,7 +669,7 @@ class StepFunctionsPayload(BaseModel):
     detail: Detail  # Nested Detail object
 
 
-def create_state_machine_payload(revision: DatasetRevision) -> str:
+def create_tt_state_machine_payload(revision: DatasetRevision) -> str:
     """Creates payload for AWS Step Function execution."""
 
     if not revision.url_link and not revision.upload_file:
