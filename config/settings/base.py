@@ -655,6 +655,9 @@ AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
 AWS_ENVIRONMENT = env("AWS_ENVIRONMENT", default="LOCAL")
 
+# TT STATE MACHINE
+TIMETABLES_STATE_MACHINE_ARN = env("TIMETABLES_STATE_MACHINE_ARN", default="")
+
 # ABODS AVL LINE LEVEL DETAILS
 # -------------------------------------------------------------------------------
 ABODS_AVL_LINE_LEVEL_DETAILS_URL = env(
