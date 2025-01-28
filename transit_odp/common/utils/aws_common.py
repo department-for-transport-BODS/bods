@@ -154,10 +154,12 @@ class StepFunctionsClientWrapper:
             raise
 
     # Initialize and call AWS Step Functions
-    def start_step_function(self, input_payload: str, step_function_arn: str, name: str = ""):
+    def start_step_function(
+        self, input_payload: str, step_function_arn: str, name: str = ""
+    ):
         try:
             if not name:
-                name = self.clean_state_machine_name(input_payload)   
+                name = self.clean_state_machine_name(input_payload)
             # Invoke the Step Function
             response = self.step_function_client.start_execution(
                 stateMachineArn=step_function_arn,
