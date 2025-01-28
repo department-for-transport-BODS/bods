@@ -1,5 +1,6 @@
 import itertools
 import uuid
+import json
 from logging import getLogger
 from pathlib import Path
 from urllib.parse import unquote
@@ -21,7 +22,7 @@ from transit_odp.common.loggers import (
 from transit_odp.common.utils import sha1sum
 from transit_odp.common.utils.aws_common import (
     SQSClientWrapper,
-    DQSStepFunctionsClientWrapper,
+    StepFunctionsClientWrapper,
 )
 from transit_odp.common.utils.s3_bucket_connection import (
     get_file_name_by_id,
@@ -550,11 +551,11 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
             adapter.info(
                 f"Using state machine to run checks on {len(txc_file_attributes_objects)} files"
             )
-            step_function_client = DQSStepFunctionsClientWrapper()
+            step_function_client = StepFunctionsClientWrapper()
             for file in txc_file_attributes_objects:
-                execution_arn = step_function_client.start_execution(
+                execution_arn = step_function_client.start_step_function(
                     state_machine_arn=settings.DQS_STATE_MACHINE_ARN,
-                    input=dict(file_id=file.id),
+                    input=json.loads(file_id=file.id),
                     name=f"DQSExecutionForRevision{file.id}",
                 )
                 adapter.info(
