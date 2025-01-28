@@ -645,6 +645,9 @@ S3_BUCKET_DQS_CSV_REPORT = env(
     "S3_BUCKET_DQS_CSV_REPORT",
     default="bodds-dev-dqs-reports",
 )
+# DQS STEP FUNCTION PARAMETERS
+DQS_STATE_MACHINE_ARN = env("DQS_STATE_MACHINE_ARN", default="")
+
 # SQS QUEUE
 # ------------------------------------------------------------------------------
 SQS_QUEUE_ENDPOINT_URL = env(
@@ -653,6 +656,7 @@ SQS_QUEUE_ENDPOINT_URL = env(
 AWS_REGION_NAME = env("AWS_REGION_NAME", default="eu-west-2")
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
+AWS_SESSION_TOKEN = env("AWS_SESSION_TOKEN", default="test")
 AWS_ENVIRONMENT = env("AWS_ENVIRONMENT", default="LOCAL")
 
 # TT STATE MACHINE
