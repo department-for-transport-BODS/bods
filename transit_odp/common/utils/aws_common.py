@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+import time
 from datetime import datetime
 
 import boto3
@@ -134,7 +135,7 @@ class StepFunctionsClientWrapper:
             if settings.AWS_ENVIRONMENT == "LOCAL":
                 self.step_function_client = boto3.client(
                     "stepfunctions",
-                    region_name=settings.AWS_REGION,
+                    region_name=settings.AWS_REGION_NAME,
                     aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                     aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
                 )
