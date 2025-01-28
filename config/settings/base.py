@@ -755,6 +755,7 @@ CSP_SCRIPT_SRC = (
     "'unsafe-inline'",
     "https://www.googletagmanager.com",
     "https://ajax.googleapis.com/ajax/libs/jquery",
+    "http://www.google-analytics.com",
     "https://www.google-analytics.com",
 )
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
@@ -768,6 +769,7 @@ CSP_CONNECT_SRC = (
     "https://*.mapbox.com",
     "http://*.localhost:8000",
     "https://*.bus-data.dft.gov.uk",
+    "http://www.google-analytics.com",
     "https://www.google-analytics.com",
 )
 CSP_FONT_SRC = ("'self'",)
