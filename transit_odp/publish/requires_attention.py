@@ -459,7 +459,7 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
             _update_data(object_list, service)
         elif (
             is_stale(service, file_attribute)
-            or (service_key, service) in dqs_critical_issues_service_line_map
+            or service_key in dqs_critical_issues_service_line_map
         ):
             _update_data(object_list, service)
     return object_list
@@ -478,6 +478,9 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
+    dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+        txcfa_map
+    )
 
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
     abods_registry = AbodsRegistery()
@@ -502,6 +505,8 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
                 or f"{line_name}__{operator_ref}" not in synced_in_last_month
             ):
                 _update_data(object_list, service)
+        elif (service_key, service) in dqs_critical_issues_service_line_map:
+            _update_data(object_list, service)
         else:
             _update_data(object_list, service)
     logging.info(f"AVL-REQUIRE-ATTENTION: total objects {len(object_list)}")
