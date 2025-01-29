@@ -527,7 +527,7 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
 
                 # Invoke the Step Function
                 step_fucntions_client.start_step_function(
-                    input_payload, step_function_arn
+                    input_payload.json(), step_function_arn
                 )
 
             except Exception as e:
