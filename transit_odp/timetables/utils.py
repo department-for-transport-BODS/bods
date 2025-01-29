@@ -297,7 +297,7 @@ def get_df_timetable_visualiser(
                 list(df_full_observation_list["service_pattern_stop_id"])
             )
         ]
-         # Add key to the filtered df.
+        # Add key to the filtered df.
         df_vehicle_journey_with_pattern_stop[
             "key"
         ] = df_vehicle_journey_with_pattern_stop.apply(
