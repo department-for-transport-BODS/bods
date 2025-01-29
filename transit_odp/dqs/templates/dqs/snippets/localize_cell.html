@@ -1,0 +1,13 @@
+{% load django_tables2 %}
+{% load i18n %}
+{% load parse_dictionary %}
+
+{% if column.localize == None %}                        
+  {{ row|get_value_from_dict:column.attrs.column_key }}      
+{% else %}
+    {% if column.localize %}
+      {{ row|get_value_from_dict:column.attrs.column_key|localize }}
+    {% else %}
+      {{ row|get_value_from_dict:column.attrs.column_key|unlocalize }}
+    {% endif %}
+  {% endif %}

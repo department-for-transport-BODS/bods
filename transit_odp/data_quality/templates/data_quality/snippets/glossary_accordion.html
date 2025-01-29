@@ -1,5 +1,7 @@
 {% load i18n %}
-<h2 class="govuk-heading-l govuk-!-margin-bottom-3">{{ category.type }}</h2>
+{% if category.show_category_type %}
+  <h2 class="govuk-heading-l govuk-!-margin-bottom-3">{{ category.type }}</h2>
+{% endif %}
 <div class="govuk-accordion"
      data-module="govuk-accordion"
      id="accordion-default-{{ category.type|lower|slugify }}-{{ type }}">

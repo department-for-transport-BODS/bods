@@ -13,30 +13,89 @@
             <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:"" }}">
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
+                {% if not column.attrs.is_hidden %}
                   <th aria-sort="none" role="columnheader" scope="col" class="govuk-table__header">{{ column.header }}</th>
+                {% endif %}
                 {% endfor %}
+                {% if table.paginated_rows|length > 0 and table.paginated_rows.0|get_value_from_dict:'show_suppressed_button' %}
+                  <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
+                    <button type="submit"
+                            data-prevent-double-click="true"
+                            class="govuk-button govuk-button--secondary govuk-!-margin-0"
+                            id="button-suppress-observation"
+                            data-module="govuk-button"
+                            onclick="BODSFrontend.suppressAllObservations({{table.paginated_rows.0|get_value_from_dict:'is_feedback'|lower }}, true);">Suppress all observations</button>
+                  </th>
+                {% endif %}
               </tr>
             </thead>
           {% endif %}
         {% endblock table.thead %}
         {% block table.tbody %}
           <tbody class="govuk-table__body {{ table.attrs.tbody.class |default_if_none:"" }}">
-            {% for row in table.paginated_rows %}
-              {% block table.tbody.row %}
+            {% for row in table.paginated_rows %}            
+              {% block table.tbody.row %}              
                 <tr class="govuk-table__row {{ row.attrs.class }}">
-                  {% for column in table.columns %}
-                    <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
-                      {% if column.localize == None %}
-                        {{ row|get_value_from_dict:column.attrs.column_key }}
-                      {% else %}
-                        {% if column.localize %}
-                          {{ row|get_value_from_dict:column.attrs.column_key|localize }}
-                        {% else %}
-                          {{ row|get_value_from_dict:column.attrs.column_key|unlocalize }}
-                        {% endif %}
-                      {% endif %}
-                    </td>
+                  {% for column in table.columns %}                  
+                    {% if not column.attrs.is_hidden %}
+                      <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">                      
+                          {% if column.attrs.is_show_popup %}
+                          <div class="tooltip govuk-link" title="More information" id="stop-outbound-{{forloop.parentloop.counter}}" onclick="BODSFrontend.showTooltip(event,'feedback-{{forloop.parentloop.counter}}', 'outbound', 'observation');">
+                            {{ row|get_value_from_dict:column.attrs.column_key }}
+                            <p class="tooltiptext" style="width:350px;" id="feedback-{{forloop.parentloop.counter}}" onclick="BODSFrontend.disableClick(event);">
+                              <span>
+                                {{ row|get_value_from_dict:column.attrs.popup_column_key }}
+                              </span>
+                              <br/>
+                              <button type="submit"
+                          class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
+                          onclick="BODSFrontend.hideTooltip(event);"
+                          data-module="govuk-button">Close</button>
+                            </p>                        
+                          </div>
+                          {% else %}
+                            {% include "./localize_cell.html" with row=row column=column %}                          
+                          {% endif %}
+                      </td>
+                    {% endif %}                    
                   {% endfor %}
+
+                  {% if row|get_value_from_dict:'show_suppressed_button' %}
+                    <td class="govuk-table__cell govuk-!-padding-bottom-0 ">
+                      <div class="govuk-form-group">
+                        <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                          <div class="govuk-checkboxes__item">
+                            
+                            {% if row|get_value_from_dict:'show_suppressed' %}
+                              <input class="govuk-checkboxes__input checkbox-suppress"
+                                     id="checkbox-suppress-{{ forloop.counter }}"
+                                     name="suppress"
+                                     type="checkbox"
+                                     {% if row|get_value_from_dict:'is_suppressed' %} checked {% else %}  {% endif %}
+                                     onclick="BODSFrontend.suppressObservation('{{ request.GET|get_value_from_dict:'service' }}','{{ request.GET|get_value_from_dict:'line' }}', '{{ row|get_value_from_dict:'observation' }}', '{{ forloop.counter }}', {{row|get_value_from_dict:'is_feedback'|lower}}, true, '{{row|get_value_from_dict:'row_id'}}' );" />
+                              <label class="govuk-label govuk-checkboxes__label"
+                                     for="checkbox-suppress-{{ forloop.counter }}"
+                                     id="row-{{ forloop.counter }}">
+                                {% if row|get_value_from_dict:'is_suppressed' %}
+                                  Suppressed
+                                {% else %}
+                                  Suppress
+                                {% endif %}
+                              </label>
+                            {% else %}
+                              <label class="govuk-label" id="row-{{ forloop.counter }}">
+                                {% if row|get_value_from_dict:'is_suppressed'  %}
+                                  Suppressed
+                                {% else %}
+                                  Suppress
+                                {% endif %}
+                              </label>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    {% endif %}
                 </tr>
               {% endblock table.tbody.row %}
             {% empty %}

@@ -4,6 +4,12 @@ from enum import Enum, unique
 from typing import Dict, Final, Optional
 
 
+FEEDBACK_INTRO = (
+    "These observations are considered critical in terms of data quality. "
+    "An operator should aim to have zero critical observations in their data."
+)
+
+
 class TaskResultsStatus(Enum):
     PENDING = "PENDING"
 
@@ -29,6 +35,7 @@ class Category(Enum):
     journey = "Journey"
     data_set = "Data set"
     service = "Service"
+    feedback = "Consumer Feedback"
 
 
 class CheckBasis(Enum):
@@ -62,6 +69,7 @@ class Checks(Enum):
     ServiceNumberNotMatchingRegistration = "Service number does not match registration"
     MissingData = "Missing data"
     DuplicateJourneys = "Duplicate journeys"
+    ConsumerFeedback = "Consumer feedback"
 
 
 STOPNAMEOBSERVATION = [
@@ -180,6 +188,7 @@ class Observation:
     preamble: str = None
     is_active: bool = True
     order: int = 1
+    is_show_category: bool = True
 
     @property
     def type(self):
@@ -606,6 +615,30 @@ NoTimingPointMoreThan15MinsObservation = Observation(
     is_active=True,
 )
 
+ConsumerFeedbackObservation = Observation(
+    title=Checks.ConsumerFeedback.value,
+    text=(
+        "This observation identifies services where a consumer has identified an issue."
+    ),
+    impacts=(
+        "The feedback from consumers offer opportunities to improve the accuracy of your data for"
+        " downstream purposes. Consumers maintaining passenger facing technologies, or reviewing data"
+        " for other accuracy purposes should be considered of critical importance to ensure the"
+        " details of the schedules published are accurate."
+    ),
+    resolve=(
+        "The operator or agent maintaining the data can review the issue, and update the data set."
+        " If the feedback is not clear, then please contact the service desk for this feedback"
+        " to be discussed. If the feedback has been addressed, then please mark the feedback as addressed."
+    ),
+    preamble=("The following service(s) have received feedback."),
+    list_url_name="dq:consumer-feedback-list",
+    level=Level.feedback,
+    category=Category.feedback,
+    is_active=True,
+    is_show_category=False,
+)
+
 OBSERVATIONS = (
     DuplicateJourneyCodeObservation,
     FirstStopNotTimingPointObservation,
@@ -623,4 +656,5 @@ OBSERVATIONS = (
     MissingDataObservation,
     MissingBusWorkingNumberObservation,
     NoTimingPointMoreThan15MinsObservation,
+    ConsumerFeedbackObservation,
 )

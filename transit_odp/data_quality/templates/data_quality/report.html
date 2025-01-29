@@ -1,6 +1,7 @@
 {% extends "data_quality/base.html" %}
 {% load i18n %}
 {% load filters %}
+{% load parse_dictionary %}
 {% block title_tag %}
   {% trans "Data quality report" %}
 {% endblock %}
@@ -95,12 +96,14 @@
                 Advisory observation{{ warning_data.Advisory.count|pluralize:"s" }}
               </p>
             </div>
+            {% if warning_data|is_value_in_dict:'Feedback' %}
             <div class="govuk-grid-column-one-quarter-from-desktop">
               <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Feedback.count }}</p>
               <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
-                Feedback observation{{ warning_data.Critical.count |pluralize:"s" }}
+                Feedback observation{{ warning_data.Feedback.count |pluralize:"s" }}
               </p>
             </div>
+            {% endif %}
           </div>
         </div>
       </div>
