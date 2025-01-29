@@ -655,10 +655,11 @@ class InputDataSourceEnum(Enum):
 
 class S3Payload(BaseModel):
     object: str
+    bucket: Optional[str] = None
 
 
 class StepFunctionsTTPayload(BaseModel):
-    datasetRevisionId: str  # Always a string
+    datasetRevisionId: int  # Always a int
     datasetType: str  # Always a string
     url: Optional[str] = None  # Optional or can be an empty string
     inputDataSource: str  # Always a string
@@ -679,21 +680,19 @@ def create_tt_state_machine_payload(
     datasetRevisionId = revision.id
 
     if revision.url_link:
-        payload_with_s3 = StepFunctionsTTPayload(
+        payload = StepFunctionsTTPayload(
             url=revision.url_link,
             inputDataSource=InputDataSourceEnum.URL_UPLOAD.value,
-            datasetRevisionId=str(datasetRevisionId),
+            datasetRevisionId=datasetRevisionId,
             datasetType=DATASET_TYPE_TIMETABLES,
         )
-        final_payload = payload_with_s3.dict(exclude={"s3"})
 
     elif revision.upload_file:
-        payload_with_url = StepFunctionsTTPayload(
+        payload = StepFunctionsTTPayload(
             s3=S3Payload(object=revision.upload_file.name),
             inputDataSource=InputDataSourceEnum.FILE_UPLOAD.value,
-            datasetRevisionId=str(datasetRevisionId),
+            datasetRevisionId=datasetRevisionId,
             datasetType=DATASET_TYPE_TIMETABLES,
         )
-        final_payload = payload_with_url.dict(exclude={"url"})
 
-    return json.dumps(final_payload)
+    return payload.model_dump_json(exclude_none=True)
