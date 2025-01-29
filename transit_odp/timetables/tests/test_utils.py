@@ -1,15 +1,19 @@
+import json
 import os
+from unittest.mock import Mock
+
 import pandas as pd
+
 from transit_odp.timetables.utils import (
-    get_filtered_rows_by_journeys,
-    get_journey_mappings,
-    get_vehicle_journeyids_exceptions,
-    get_non_operating_vj_serviced_org,
+    create_tt_state_machine_payload,
     get_df_operating_vehicle_journey,
     get_df_timetable_visualiser,
+    get_filtered_rows_by_journeys,
+    get_journey_mappings,
+    get_non_operating_vj_serviced_org,
     get_vehicle_journey_codes_sorted,
+    get_vehicle_journeyids_exceptions,
 )
-from transit_odp.pipelines.tests.utils import check_frame_equal
 
 # setup
 cur_dir = os.path.abspath(os.path.dirname(__file__))
@@ -248,3 +252,55 @@ def test_filter_rows_by_journeys():
     )
 
     pd.testing.assert_frame_equal(filtered_data, df_output_operating_profiles)
+
+
+class TestCreateTTStateMachinePayload:
+    def test_create_payload_url_upload(self):
+        mock_revision = Mock()
+        mock_revision.id = "123"
+        mock_revision.url_link = "https://example.com"
+        mock_revision.upload_file = None
+
+        payload_json = create_tt_state_machine_payload(mock_revision)
+        payload = json.loads(payload_json)
+        assert payload["datasetRevisionId"] == "123"
+        assert payload["datasetType"] == "timetables"
+        assert payload["url"] == "https://example.com"
+        assert payload["inputDataSource"] == "URL_DOWNLOAD"
+        assert "s3" not in payload
+
+    def test_create_payload_file_upload(self):
+        mock_revision = Mock()
+        mock_revision.id = "123"
+        mock_revision.url_link = None
+        mock_file = Mock()
+        mock_file.name = "test_file"
+        mock_revision.upload_file = mock_file
+
+        payload_json = create_tt_state_machine_payload(mock_revision)
+        payload = json.loads(payload_json)
+        assert payload["datasetRevisionId"] == "123"
+        assert payload["datasetType"] == "timetables"
+        assert payload["inputDataSource"] == "S3_FILE"
+        assert payload["s3"]["object"] == "test_file"
+        assert "url" not in payload
+
+    def test_create_payload_missing_inputs(self, caplog):
+        mock_revision = Mock()
+        mock_revision.id = "123"
+        mock_revision.url_link = None
+        mock_revision.upload_file = None
+
+        payload_json = create_tt_state_machine_payload(mock_revision)
+        payload = json.loads(payload_json)
+        assert payload["datasetRevisionId"] == "123"
+        assert payload["datasetType"] == "timetables"
+        assert payload["inputDataSource"] in [
+            "URL_DOWNLOAD",
+            "S3_FILE",
+        ]  # Ensuring it's one of the enums
+        assert "s3" not in payload or "url" not in payload
+        assert (
+            "Both URL link and uploaded file are missing in the dataset revision."
+            in caplog.text
+        )
