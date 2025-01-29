@@ -260,7 +260,7 @@ class TestCreateTTStateMachinePayload:
         mock_revision.id = "123"
         mock_revision.url_link = "https://example.com"
         mock_revision.upload_file = None
-        
+
         payload_json = create_tt_state_machine_payload(mock_revision)
         payload = json.loads(payload_json)
         assert payload["datasetRevisionId"] == "123"
@@ -276,7 +276,7 @@ class TestCreateTTStateMachinePayload:
         mock_file = Mock()
         mock_file.name = "test_file"
         mock_revision.upload_file = mock_file
-        
+
         payload_json = create_tt_state_machine_payload(mock_revision)
         payload = json.loads(payload_json)
         assert payload["datasetRevisionId"] == "123"
@@ -284,18 +284,24 @@ class TestCreateTTStateMachinePayload:
         assert payload["inputDataSource"] == "S3_FILE"
         assert payload["s3"]["object"] == "test_file"
         assert "url" not in payload  # Ensure 'url' is excluded when None
-    
+
     def test_create_payload_missing_inputs(self, caplog):
         mock_revision = Mock()
         mock_revision.id = "123"
         mock_revision.url_link = None
         mock_revision.upload_file = None
-        
+
         payload_json = create_tt_state_machine_payload(mock_revision)
         payload = json.loads(payload_json)
         assert payload["datasetRevisionId"] == "123"
         assert payload["datasetType"] == "timetables"
-        assert payload["inputDataSource"] in ["URL_DOWNLOAD", "S3_FILE"]  # Ensuring it's one of the enums
+        assert payload["inputDataSource"] in [
+            "URL_DOWNLOAD",
+            "S3_FILE",
+        ]  # Ensuring it's one of the enums
         assert "s3" not in payload  # Ensure 's3' is excluded when None
         assert "url" not in payload  # Ensure 'url' is excluded when None
-        assert "Both URL link and uploaded file are missing in the dataset revision." in caplog.text
+        assert (
+            "Both URL link and uploaded file are missing in the dataset revision."
+            in caplog.text
+        )
