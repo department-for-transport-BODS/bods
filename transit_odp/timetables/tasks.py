@@ -548,14 +548,13 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
             revision.id
         )
         if is_using_step_function_for_dqs:
-            print("Using state machine to run checks on files")
             adapter.info(
                 f"Using state machine to run checks on {len(txc_file_attributes_objects)} files"
             )
             step_function_client = StepFunctionsClientWrapper()
             for file in txc_file_attributes_objects:
                 execution_arn = step_function_client.start_step_function(
-                    json.loads(str(file.id)),
+                    json.loads('{"file_id": file.id}'),
                     settings.DQS_STATE_MACHINE_ARN,
                     f"DQSExecutionForRevision{file.id}",
                 )
