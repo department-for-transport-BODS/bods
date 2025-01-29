@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Tuple
 import pandas as pd
 import requests
 from django.conf import settings
-from pydantic import AnyUrl, BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError
 from requests import RequestException
 
 from transit_odp.common.utils.aws_common import get_s3_bucket_storage
@@ -659,9 +659,9 @@ class S3Payload(BaseModel):
 
 
 class StepFunctionsTTPayload(BaseModel):
-    datasetRevisionId: str  # Always a string
+    datasetRevisionId: int  # Always a int
     datasetType: str  # Always a string
-    url: Optional[AnyUrl] = None  # Optional or can be an empty string
+    url: Optional[str] = None  # Optional or can be an empty string
     inputDataSource: str  # Always a string
     s3: Optional[S3Payload] = None  # Nested object
 
@@ -680,17 +680,19 @@ def create_tt_state_machine_payload(
     datasetRevisionId = revision.id
 
     if revision.url_link:
-        return StepFunctionsTTPayload(
+        payload = StepFunctionsTTPayload(
             url=revision.url_link,
             inputDataSource=InputDataSourceEnum.URL_UPLOAD.value,
-            datasetRevisionId=str(datasetRevisionId),
+            datasetRevisionId=datasetRevisionId,
             datasetType=DATASET_TYPE_TIMETABLES,
         )
 
     elif revision.upload_file:
-        return StepFunctionsTTPayload(
+        payload = StepFunctionsTTPayload(
             s3=S3Payload(object=revision.upload_file.name),
             inputDataSource=InputDataSourceEnum.FILE_UPLOAD.value,
-            datasetRevisionId=str(datasetRevisionId),
+            datasetRevisionId=datasetRevisionId,
             datasetType=DATASET_TYPE_TIMETABLES,
         )
+
+    return payload.model_dump_json(exclude_none=True)
