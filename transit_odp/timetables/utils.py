@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Tuple
 import pandas as pd
 import requests
 from django.conf import settings
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import AnyUrl, BaseModel, Field, ValidationError
 from requests import RequestException
 
 from transit_odp.common.utils.aws_common import get_s3_bucket_storage
@@ -298,18 +298,18 @@ def get_df_timetable_visualiser(
             )
         ]
         # Add key to the filtered df.
-        df_vehicle_journey_with_pattern_stop[
-            "key"
-        ] = df_vehicle_journey_with_pattern_stop.apply(
-            lambda row: (
-                f"{str(row['common_name'])}_{str(row['stop_sequence'])}_{str(row['vehicle_journey_code'])}_{str(row['vehicle_journey_id'])}"
-                if pd.notnull(row["common_name"])
-                and pd.notnull(row["stop_sequence"])
-                and pd.notnull(row["vehicle_journey_code"])
-                and pd.notnull(row["vehicle_journey_id"])
-                else ""
-            ),
-            axis=1,
+        df_vehicle_journey_with_pattern_stop["key"] = (
+            df_vehicle_journey_with_pattern_stop.apply(
+                lambda row: (
+                    f"{str(row['common_name'])}_{str(row['stop_sequence'])}_{str(row['vehicle_journey_code'])}_{str(row['vehicle_journey_id'])}"
+                    if pd.notnull(row["common_name"])
+                    and pd.notnull(row["stop_sequence"])
+                    and pd.notnull(row["vehicle_journey_code"])
+                    and pd.notnull(row["vehicle_journey_id"])
+                    else ""
+                ),
+                axis=1,
+            )
         )
 
     # drop service pattern stop id column if exists:
@@ -661,7 +661,7 @@ class S3Payload(BaseModel):
 class StepFunctionsTTPayload(BaseModel):
     datasetRevisionId: str  # Always a string
     datasetType: str  # Always a string
-    url: Optional[str] = None  # Optional or can be an empty string
+    url: Optional[AnyUrl] = None  # Optional or can be an empty string
     inputDataSource: str  # Always a string
     s3: Optional[S3Payload] = None  # Nested object
 
