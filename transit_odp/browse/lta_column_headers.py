@@ -213,7 +213,10 @@ header_accessor_data_compliance_report = [
         "Timetables Timeliness Status",
         lambda otc_service: otc_service.get("staleness_status"),
     ),
-    ("Timetables critical DQ issues", lambda otc_service: UNDER_MAINTENANCE),
+    (
+        "Timetables critical DQ issues",
+        lambda otc_service: otc_service.get("dq_require_attention"),
+    ),
     (
         "AVL requires attention",
         lambda otc_service: otc_service.get("avl_requires_attention"),
