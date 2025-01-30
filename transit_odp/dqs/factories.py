@@ -5,10 +5,6 @@ from transit_odp.transmodel.factories import (
     ServicePatternStopFactory,
 )
 from transit_odp.organisation.factories import TXCFileAttributesFactory
-from transit_odp.dqs.models import Checks, TaskResults, ObservationResults
-from transit_odp.dqs.constants import TaskResultsStatus
-from factory.fuzzy import FuzzyText
-from transit_odp.transmodel.factories import ServicePatternStopFactory
 from transit_odp.dqs.models import Checks, ObservationResults, TaskResults
 
 from transit_odp.dqs.constants import TaskResultsStatus
