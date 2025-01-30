@@ -317,17 +317,35 @@ def perform_feed_validation(adapter: PipelineAdapter, feed_id: int):
         ]
 
         if new_status != old_status:
-            adapter.info("Status has changed send status changed email.")
-            send_avl_compliance_status_changed(datafeed=feed, old_status=old_status)
+            if old_status == UNDERGOING and new_status == COMPLIANT:
+                adapter.info(
+                    f"SIRI-VM Compliance status change from {UNDERGOING} to {COMPLIANT} email has been turned off."
+                )
+            if old_status == UNDERGOING and new_status == MORE_DATA_NEEDED:
+                adapter.info(
+                    f"SIRI-VM Compliance status change from {UNDERGOING} to {MORE_DATA_NEEDED} email has been turned off."
+                )
+            if old_status == MORE_DATA_NEEDED and new_status == COMPLIANT:
+                adapter.info(
+                    f"SIRI-VM Compliance status change from {MORE_DATA_NEEDED} to {COMPLIANT} email has been turned off."
+                )
+            else:
+                adapter.info("Status has changed send status changed email.")
+                send_avl_compliance_status_changed(datafeed=feed, old_status=old_status)
 
         if was_compliant and report.critical_score < LOWER_THRESHOLD:
             adapter.info(f"Critical score below lower threshold of {LOWER_THRESHOLD}.")
             adapter.info("Sending major issue email.")
             send_avl_flagged_with_major_issue(dataset=feed)
         elif was_compliant and no_longer_compliant:
-            adapter.info(f"Feed has a compliance status of {new_status}.")
-            adapter.info("Sending compliance issue email.")
-            send_avl_flagged_with_compliance_issue(dataset=feed, status=new_status)
+            if new_status == MORE_DATA_NEEDED:
+                adapter.info(
+                    f"SIRI-VM validation status of {MORE_DATA_NEEDED} email has been turned off."
+                )
+            else:
+                adapter.info(f"Feed has a compliance status of {new_status}.")
+                adapter.info("Sending compliance issue email.")
+                send_avl_flagged_with_compliance_issue(dataset=feed, status=new_status)
 
 
 def cache_avl_compliance_status(adapter: PipelineAdapter, feed_id: int):
