@@ -17,7 +17,6 @@ from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.transmodel.models import Service as TransmodelService
 from django.db.models import Q
-from waffle import flag_is_active
 
 
 logger = logging.getLogger(__name__)
