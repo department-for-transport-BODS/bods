@@ -617,7 +617,7 @@ def query_dq_critical_observation(query) -> List[tuple]:
                 )
             ),
         )
-        .values_list("service_code", "name")
+        .values_list("service_code", "service_patterns__line_name")
         .distinct()
     )
 
