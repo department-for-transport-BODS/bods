@@ -846,8 +846,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 require_attention,
                 avl_requires_attention,
                 exempted,
-                seasonal_service,
-                dq_require_attention,
+                seasonal_service
             )
 
             if not dq_require_attention_active:
