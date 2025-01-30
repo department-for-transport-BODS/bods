@@ -16,6 +16,7 @@ from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.transmodel.models import Service as TransmodelService
 from django.db.models import Q
+from waffle import flag_is_active
 
 
 logger = logging.getLogger(__name__)
@@ -445,16 +446,24 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     Returns list of objects of each service requiring attention for an organisation.
     """
     object_list = []
-
+    dqs_critical_issues_service_line_map = []
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
+    is_dqs_require_attention = flag_is_active("", "dqs_require_attention")
+    if is_dqs_require_attention:
+        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
 
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
         if file_attribute is None:
             _update_data(object_list, service)
-        elif is_stale(service, file_attribute):
+        elif is_stale(service, file_attribute) or (
+            is_dqs_require_attention
+            and service_key in dqs_critical_issues_service_line_map
+        ):
             _update_data(object_list, service)
     return object_list
 
@@ -468,10 +477,15 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     Returns list of objects of each service requiring attention for an organisation.
     """
     object_list = []
-
+    dqs_critical_issues_service_line_map = []
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
+    is_dqs_require_attention = flag_is_active("", "dqs_require_attention")
+    if is_dqs_require_attention:
+        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
 
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
     abods_registry = AbodsRegistery()
@@ -496,6 +510,11 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
                 or f"{line_name}__{operator_ref}" not in synced_in_last_month
             ):
                 _update_data(object_list, service)
+        elif (
+            is_dqs_require_attention
+            and (service_key, service) in dqs_critical_issues_service_line_map
+        ):
+            _update_data(object_list, service)
         else:
             _update_data(object_list, service)
     logging.info(f"AVL-REQUIRE-ATTENTION: total objects {len(object_list)}")
@@ -514,7 +533,6 @@ def get_requires_attention_data_lta(lta_list: List) -> int:
     lta_services_requiring_attention = 0
     otc_map = get_otc_map_lta(lta_list)
     txcfa_map = get_txc_map_lta(lta_list)
-
     for service_code, service in otc_map.items():
         file_attribute = txcfa_map.get(service_code)
         if file_attribute is None:
@@ -545,15 +563,24 @@ def get_requires_attention_data_lta_line_level_length(lta_list: List) -> int:
         int: The count of services requiring attention.
     """
     object_list = []
+    dqs_critical_issues_service_line_map = []
     lta_services_requiring_attention = 0
     otc_map = get_line_level_otc_map_lta(lta_list)
     txcfa_map = get_line_level_txc_map_lta(lta_list)
-
+    is_dqs_require_attention = flag_is_active("", "dqs_require_attention")
+    if is_dqs_require_attention:
+        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
     for (service_number, registration_number), service in otc_map.items():
         file_attribute = txcfa_map.get((service_number, registration_number))
         if file_attribute is None:
             _update_data(object_list, service, line_number=service_number)
-        elif is_stale(service, file_attribute):
+        elif is_stale(service, file_attribute) or (
+            is_dqs_require_attention
+            and (registration_number, service_number)
+            in dqs_critical_issues_service_line_map
+        ):
             _update_data(object_list, service, line_number=service_number)
     lta_services_requiring_attention = len(object_list)
 
@@ -580,7 +607,6 @@ def get_dq_critical_observation_services_map(
             for _, obj in txc_map.items()
         ]
     )
-
     return get_dq_critical_observation_services_map_from_dataframe(txc_map_df)
 
 
