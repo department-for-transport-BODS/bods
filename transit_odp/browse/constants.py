@@ -322,3 +322,40 @@ GUIDANCE_TEXT_TIMETABLE_COLUMN_MAP = OrderedDict(
 )
 
 LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE = "Licence number not supplied"
+
+REPORT_BASE_PAGE_COLUMNS = [
+    "observation",
+    "service_code",
+    "line_name",
+    "message",
+    "dqs_details",
+    "revision_id",
+    "is_published",
+    "is_details_link",
+    "organisation_id",
+    "report_id",
+    "show_suppressed",
+    "show_suppressed_button",
+    "is_feedback",
+    "is_suppressed",
+]
+
+REPORT_DETAILS_PAGE_COLUMNS = [
+    "observation",
+    "journey_start_time",
+    "direction",
+    "stop_name",
+    "journey_code",
+    "stop_type",
+    "details",
+    "serviced_organisation",
+    "serviced_organisation_code",
+    "last_working_day",
+    "is_feedback",
+    "message",
+    "show_suppressed",
+    "show_suppressed_button",
+    "feedback",
+    "is_suppressed",
+    "row_id",
+]
