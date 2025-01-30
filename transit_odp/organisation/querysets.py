@@ -1404,7 +1404,6 @@ class TXCFileAttributesQuerySet(models.QuerySet):
 
 
 class ConsumerFeedbackQuerySet(models.QuerySet):
-
     def get_feedbacks(
         self,
         report_id: int,

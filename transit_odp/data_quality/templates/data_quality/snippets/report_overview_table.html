@@ -22,7 +22,7 @@
                   class="govuk-table__header govuk-!-font-weight-bold {% if level_title == "Advisory" or level_title == "Feedback" %} govuk-!-width-one-quarter {% else %} govuk-!-width-one-half {% endif %}">
                 {% trans "Number of observation" %}{{ df.number_of_services_affected.sum | subtract:df.number_of_suppressed_observation.sum |pluralize:"s" }}
               </th>
-              {% if level_title == "Advisory"  or level_title == "Feedback" %}
+              {% if level_title == "Advisory" or level_title == "Feedback" %}
                 <th scope="col" class="govuk-table__header govuk-!-font-weight-bold govuk-!-width-one-third">
                   {% trans "Number of suppressed observation" %}{{ df.number_of_suppressed_observation.sum|pluralize:"s" }}
                 </th>

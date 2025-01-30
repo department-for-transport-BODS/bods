@@ -21,7 +21,7 @@
                             class="govuk-button govuk-button--secondary govuk-!-margin-0"
                             id="button-suppress-observation"
                             data-module="govuk-button"
-                            onclick="BODSFrontend.suppressAllObservations({{table.rows.0.cells.is_feedback|lower}});">Suppress all observations</button>
+                            onclick="BODSFrontend.suppressAllObservations({{ table.rows.0.cells.is_feedback|lower }});">Suppress all observations</button>
                   </th>
                 {% endif %}
               </tr>
@@ -64,7 +64,7 @@
                                      name="suppress"
                                      type="checkbox"
                                      {% if row.cells.is_suppressed is True %} checked {% else %}  {% endif %}
-                                     onclick="BODSFrontend.suppressObservation('{{ row.cells.service_code }}','{{ row.cells.line_name }}', '{{ row.cells.observation }}', '{{ forloop.counter }}', {{row.cells.is_feedback|lower}} );" />
+                                     onclick="BODSFrontend.suppressObservation('{{ row.cells.service_code }}','{{ row.cells.line_name }}', '{{ row.cells.observation }}', '{{ forloop.counter }}', {{ row.cells.is_feedback|lower }} );" />
                               <label class="govuk-label govuk-checkboxes__label"
                                      for="checkbox-suppress-{{ forloop.counter }}"
                                      id="row-{{ forloop.counter }}">

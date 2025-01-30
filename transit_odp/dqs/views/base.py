@@ -17,6 +17,7 @@ from transit_odp.users.models import User
 
 from transit_odp.organisation.models import ConsumerFeedback
 
+
 class DQSWarningListBaseView(SingleTableView):
     template_name = "data_quality/warning_list.html"
     table_class = DQSWarningListBaseTable
@@ -111,7 +112,6 @@ class DQSWarningListBaseView(SingleTableView):
 
 
 class FeedbackListBaseView(DQSWarningListBaseView):
-
     def get_queryset(self):
         """
         Get the queryset for the summarised page of feedback
@@ -230,7 +230,6 @@ class DQSWarningDetailBaseView(MultiTableMixin, TemplateView):
 
 
 class FeedbackDetailBaseView(DQSWarningDetailBaseView):
-
     def get_queryset(self):
         """
         Get the queryset for the details page of feedback

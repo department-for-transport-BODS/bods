@@ -8,6 +8,7 @@ from transit_odp.users.models import User
 from transit_odp.dqs.constants import Checks
 from django.shortcuts import get_object_or_404
 
+
 class SuppressObservationView(viewsets.ViewSet):
     """
     Suppress Observation view to update the observation result
