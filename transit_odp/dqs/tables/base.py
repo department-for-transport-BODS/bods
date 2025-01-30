@@ -3,6 +3,39 @@ import django_tables2 as tables
 from django.core.paginator import Paginator
 
 
+class DQSWarningListBaseTable(GovUkTable):
+
+    observation = tables.Column(
+        verbose_name="Observation", orderable=False, empty_values=()
+    )
+    message = tables.Column(verbose_name="Service", orderable=False, empty_values=())
+    dqs_details = tables.Column(
+        verbose_name="Details",
+        orderable=False,
+        empty_values=(),
+        attrs={"is_link": True},
+    )
+    service_code = tables.Column(verbose_name="Service Code", visible=True)
+    line_name = tables.Column(verbose_name="Line Name", visible=True)
+    revision_id = tables.Column(verbose_name="Revision Id", visible=True)
+    is_published = tables.Column(verbose_name="Is Published", visible=True)
+    is_details_link = tables.Column(verbose_name="Is Details Link", visible=True)
+    is_suppressed = tables.Column(verbose_name="Is Suppressed")
+    organisation_id = tables.Column(verbose_name="Organisation Id")
+    report_id = tables.Column(verbose_name="Report Id")
+    show_suppressed = tables.Column(verbose_name="Show Suppressed")
+    show_suppressed_button = tables.Column(verbose_name="Show Suppressed Button")
+    is_feedback = tables.Column(verbose_name="Is Feedback")
+
+    class Meta:
+
+        attrs = {
+            "th": {"class": "govuk-table__header"},
+        }
+        sequence = ("message", "dqs_details")
+        template_name = "data_quality/snippets/dqs_custom_table.html"
+
+
 class DQSWarningDetailsBaseTable(GovUkTable):
     def __init__(self, *args, **kwargs):
 
@@ -55,6 +88,22 @@ class DQSWarningDetailsBaseTable(GovUkTable):
         self.last_working_day = tables.Column(
             verbose_name="Last working day",
             attrs={"column_key": "last_working_day"},
+        )
+        self.message = tables.Column(
+            verbose_name="Message",
+            attrs={
+                "column_key": "message",
+                "is_show_popup": True,
+                "popup_column_key": "feedback",
+            },
+        )
+        self.feedback = tables.Column(
+            verbose_name="Feedback",
+            attrs={"column_key": "feedback", "is_hidden": True},
+        )
+        self.show_suppressed_button = tables.Column(
+            verbose_name="Feedback",
+            attrs={"column_key": "show_suppressed_button", "is_hidden": True},
         )
         self.columns = [
             self.journey_start_time,

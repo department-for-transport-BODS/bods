@@ -12,8 +12,10 @@ from transit_odp.transmodel.models import (
     Service,
     ServicePattern,
     ServicePatternStop,
+    ServicedOrganisationVehicleJourney,
     ServicedOrganisations,
     StopActivity,
+    VehicleJourney,
 )
 from factory.django import DjangoModelFactory
 
@@ -133,3 +135,25 @@ class StopActivityFactory(DjangoModelFactory):
     is_pickup = FuzzyChoice(choices=[True, False])
     is_setdown = FuzzyChoice(choices=[True, False])
     is_driverrequest = FuzzyChoice(choices=[True, False])
+
+
+class VehicleJourneyFactory(DjangoModelFactory):
+    class Meta:
+        model = VehicleJourney
+
+    start_time = factory.Faker("time")
+    line_ref = FuzzyText(length=20)
+    journey_code = FuzzyText(length=20)
+    direction = FuzzyText(length=20)
+    departure_day_shift = factory.Faker("pybool")
+    service_pattern = factory.SubFactory(ServicePatternFactory)
+    block_number = FuzzyText(length=20)
+
+
+class ServicedOrganisationVehicleJourneyFactory(DjangoModelFactory):
+    class Meta:
+        model = ServicedOrganisationVehicleJourney
+
+    serviced_organisation = factory.SubFactory(ServicedOrganisationsFactory)
+    vehicle_journey = factory.SubFactory(VehicleJourneyFactory)
+    operating_on_working_days = factory.Faker("pybool")

@@ -4,23 +4,23 @@
 <h2 class="govuk-heading-m">
   {% if object.dataset_type == 2 %}
     {% trans "Noticed issues with this data feed?" %}
-  {% elif request.GET|is_value_in_dict:'service' %}
+  {% elif request.GET|is_value_in_dict:'service' and is_specific_feedback %}
     {% trans "Noticed issues with this service?" %}
   {% else %}
     {% trans "Noticed issues with this data set?" %}
   {% endif %}
 </h2>
-{% if request.GET|is_value_in_dict:'service' %}
+{% if request.GET|is_value_in_dict:'service' and is_specific_feedback %}
   <p>
-    You can select a stop code or journey code above to provide feedback about specific element, or you can use this link to provide general feedback about this service.
+    You can select a stop code or journey code above to provide feedback about that specific element, or you can use this link to provide general feedback about this service.
   </p>
 {% endif %}
 {% url feedback_url_name object.id host hosts.data as base_url %}
 <a class="govuk-link govuk-!-font-size-19"
-   href="{{ base_url }}{% if request.GET|is_value_in_dict:'service' %}{% query_transform %}{% endif %}">
+   href="{{ base_url }}{% if request.GET|is_value_in_dict:'service' and is_specific_feedback %}{% query_transform %}{% endif %}">
   {% if object.dataset_type == 2 %}
     {% trans "Contact data feed owner directly" %}
-  {% elif request.GET|is_value_in_dict:'service' %}
+  {% elif request.GET|is_value_in_dict:'service' and is_specific_feedback %}
     {% trans "Provide feedback about this service" %}
   {% else %}
     {% trans "Contact data set owner directly" %}

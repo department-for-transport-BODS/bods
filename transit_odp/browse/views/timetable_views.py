@@ -537,6 +537,7 @@ class LineMetadataDetailView(DetailView):
         kwargs["service_type"] = self.get_service_type(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
+        kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
         kwargs["current_valid_files"] = self.get_current_files(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )

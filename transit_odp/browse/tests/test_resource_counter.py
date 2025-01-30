@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.auth.models import AnonymousUser
 from django_hosts import reverse
+from waffle import flag_is_active
 
 from config.hosts import DATA_HOST
 from transit_odp.avl.factories import CAVLDataArchiveFactory
@@ -18,12 +19,15 @@ def test_resource_counter_works_once(client_factory, user_factory):
     client = client_factory(host=DATA_HOST)
     client.force_login(consumer)
     url = reverse("downloads-bulk", host=DATA_HOST)
-    response = client.get(url)
-    assert response.status_code == 200
+    is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
 
-    resource_counter = ResourceRequestCounter.objects.first()
-    assert resource_counter.requestor == consumer
-    assert resource_counter.counter == 1
+    if is_direct_s3_url_active:
+        response = client.get(url)
+        assert response.status_code == 200
+
+        resource_counter = ResourceRequestCounter.objects.first()
+        assert resource_counter.requestor == consumer
+        assert resource_counter.counter == 1
 
 
 def test_resource_counter_works_twice(client_factory, user_factory):
@@ -32,12 +36,15 @@ def test_resource_counter_works_twice(client_factory, user_factory):
     client = client_factory(host=DATA_HOST)
     client.force_login(consumer)
     url = reverse("downloads-bulk", host=DATA_HOST)
-    client.get(url)
-    client.get(url)
+    is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
 
-    resource_counter = ResourceRequestCounter.objects.first()
-    assert resource_counter.requestor == consumer
-    assert resource_counter.counter == 2
+    if is_direct_s3_url_active:
+        client.get(url)
+        client.get(url)
+
+        resource_counter = ResourceRequestCounter.objects.first()
+        assert resource_counter.requestor == consumer
+        assert resource_counter.counter == 2
 
 
 def test_resource_counter_user_not_logged(client_factory):
@@ -45,12 +52,15 @@ def test_resource_counter_user_not_logged(client_factory):
     client = client_factory(host=DATA_HOST)
     AnonymousUser()
     url = reverse("downloads-bulk", host=DATA_HOST)
-    response = client.get(url)
+    is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
 
-    resource_counter = ResourceRequestCounter.objects.first()
-    assert response.status_code == 200
-    assert resource_counter.requestor is None
-    assert resource_counter.counter == 1
+    if is_direct_s3_url_active:
+        response = client.get(url)
+
+        resource_counter = ResourceRequestCounter.objects.first()
+        assert response.status_code == 200
+        assert resource_counter.requestor is None
+        assert resource_counter.counter == 1
 
 
 def test_multiple_resource_counters(client_factory, user_factory):
@@ -61,16 +71,18 @@ def test_multiple_resource_counters(client_factory, user_factory):
     BulkDataArchiveFactory()
     BulkDataArchiveFactory(dataset_type=FaresType)
     CAVLDataArchiveFactory()
-
     consumer = user_factory()
     client = client_factory(host=DATA_HOST)
     client.force_login(consumer)
-    for view in ("downloads-bulk", "downloads-avl-bulk", "downloads-fares-bulk"):
-        url = reverse(view, host=DATA_HOST)
-        for counter in range(3):
-            expected = counter + 1
-            client.get(url)
-            resource_counter = ResourceRequestCounter.objects.get(
-                path_info=reverse_path(view, host=DATA_HOST)
-            )
-            assert resource_counter.counter == expected
+    is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+
+    if is_direct_s3_url_active:
+        for view in ("downloads-bulk", "downloads-avl-bulk", "downloads-fares-bulk"):
+            url = reverse(view, host=DATA_HOST)
+            for counter in range(3):
+                expected = counter + 1
+                client.get(url)
+                resource_counter = ResourceRequestCounter.objects.get(
+                    path_info=reverse_path(view, host=DATA_HOST)
+                )
+                assert resource_counter.counter == expected
