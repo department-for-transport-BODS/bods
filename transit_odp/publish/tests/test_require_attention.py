@@ -1,5 +1,6 @@
 import pytest
 from transit_odp.dqs.constants import Level, TaskResultsStatus
+from waffle.testutils import override_flag
 from transit_odp.organisation.factories import (
     ConsumerFeedbackFactory,
     TXCFileAttributesFactory,
@@ -22,6 +23,7 @@ from transit_odp.transmodel.factories import (
 pytestmark = pytest.mark.django_db
 
 
+@override_flag("dqs_require_attention", active=True)
 def test_dq_require_attention_with_only_critical_observation_results():
     services_list = [
         {
@@ -91,6 +93,7 @@ def test_dq_require_attention_with_only_critical_observation_results():
     assert len(services_with_critical) == len(dq_services)
 
 
+@override_flag("dqs_require_attention", active=True)
 def test_dq_require_attention_with_only_advisory_observation_results():
     services_list = [
         {
@@ -156,6 +159,7 @@ def test_dq_require_attention_with_only_advisory_observation_results():
     assert 0 == len(dq_services)
 
 
+@override_flag("dqs_require_attention", active=True)
 def test_dq_require_attention_with_only_feedback():
     services_list = [
         {
@@ -196,6 +200,7 @@ def test_dq_require_attention_with_only_feedback():
     assert services_objects[0].service_code == dq_services[0][0]
 
 
+@override_flag("dqs_require_attention", active=True)
 def test_dq_require_attention_without_feedback_and_dqsobservation():
     services_list = [
         {
@@ -232,6 +237,7 @@ def test_dq_require_attention_without_feedback_and_dqsobservation():
     assert 0 == len(dq_services)
 
 
+@override_flag("dqs_require_attention", active=True)
 def test_dq_require_attention_with_feedback_and_dqsobservation():
     services_list = [
         {

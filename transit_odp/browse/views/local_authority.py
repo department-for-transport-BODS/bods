@@ -31,7 +31,7 @@ from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
-from transit_odp.otc.constants import API_TYPE_EP, API_TYPE_WECA
+from transit_odp.otc.constants import API_TYPE_EP, API_TYPE_WECA, UNDER_MAINTENANCE
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.otc.models import UILta
@@ -742,9 +742,11 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         ui_lta = lta_list[0].ui_lta
         otc_map = get_line_level_otc_map_lta(lta_list)
         txcfa_map = get_line_level_txc_map_lta(lta_list)
-        dq_critical_observation_map = get_dq_critical_observation_services_map(
-            txcfa_map
-        )
+        dq_require_attention_active = flag_is_active("", "dq_require_attention")
+        if dq_require_attention_active:
+            dq_critical_observation_map = get_dq_critical_observation_services_map(
+                txcfa_map
+            )
         seasonal_service_map = get_seasonal_service_map(lta_list)
         service_code_exemption_map = get_service_code_exemption_map(lta_list)
         naptan_adminarea_df = get_all_naptan_atco_df()
@@ -785,7 +787,10 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 exempted = True
 
             dq_require_attention = "No"
-            if (registration_number, service_number) in dq_critical_observation_map:
+            if (
+                dq_require_attention_active
+                and (registration_number, service_number) in dq_critical_observation_map
+            ):
                 dq_require_attention = "Yes"
 
             staleness_status = "Up to date"
@@ -844,6 +849,9 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 seasonal_service,
                 dq_require_attention,
             )
+
+            if not dq_require_attention_active:
+                dq_require_attention = UNDER_MAINTENANCE
 
             self._update_data(
                 service,
