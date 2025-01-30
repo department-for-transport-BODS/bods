@@ -786,12 +786,12 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
             ):
                 exempted = True
 
-            dq_require_attention = "No"
-            if (
-                dq_require_attention_active
+            dq_require_attention = (
+                "Yes"
+                if dq_require_attention_active
                 and (registration_number, service_number) in dq_critical_observation_map
-            ):
-                dq_require_attention = "Yes"
+                else "No"
+            )
 
             staleness_status = "Up to date"
             if file_attribute is None:
