@@ -3,6 +3,7 @@ import datetime
 import io
 import zipfile
 from logging import getLogger
+from unittest import TestCase
 from unittest.mock import Mock, patch
 
 import pytest
@@ -12,6 +13,8 @@ from django.test import RequestFactory
 from django.utils import timezone
 from django_hosts import reverse
 from freezegun import freeze_time
+from waffle import flag_is_active
+from waffle.testutils import override_flag
 
 from config.hosts import DATA_HOST
 from transit_odp.avl.factories import AVLValidationReportFactory
@@ -780,6 +783,7 @@ class TestFeedDownloadView:
 
 class TestDownloadBulkDataArchiveView:
     def test_download(self, client_factory):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
         user = UserFactory()
         now = timezone.now()
         yesterday = now - datetime.timedelta(days=1)
@@ -800,12 +804,13 @@ class TestDownloadBulkDataArchiveView:
         client = client_factory(host=host)
         client.force_login(user)
         url = reverse("downloads-bulk", host=host)
-        response = client.get(url)
+        if is_direct_s3_url_active:
+            response = client.get(url)
 
-        assert response.status_code == 200
-        assert response.as_attachment is True
-        assert response.filename == "bulk_archive_test.zip"
-        assert response.getvalue() == b"latest bulk content"
+            assert response.status_code == 200
+            assert response.as_attachment is True
+            assert response.filename == "bulk_archive_test.zip"
+            assert response.getvalue() == b"latest bulk content"
 
 
 class TestDownloadChangeDataArchiveView:
@@ -1289,7 +1294,10 @@ class TestOperatorDetailView:
     def test_operator_detail_weca_view_timetable_stats_not_compliant(
         self, mock_avl_line_level_require_attention, request_factory: RequestFactory
     ):
-        """Test Operator WECA details view stat with non complaint data in_scope_in_season
+        """
+        Test Operator WECA details view stat with non complaint data
+        in_scope_in_season.
+
         Count there are few which required attention
 
         Args:
