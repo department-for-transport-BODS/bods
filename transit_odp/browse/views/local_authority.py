@@ -843,10 +843,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
             )
 
             overall_requires_attention = self.get_overall_requires_attention(
-                require_attention,
-                avl_requires_attention,
-                exempted,
-                seasonal_service
+                require_attention, avl_requires_attention, exempted, seasonal_service
             )
 
             if not dq_require_attention_active:
