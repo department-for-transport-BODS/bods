@@ -1,10 +1,18 @@
 import factory
 from factory.django import DjangoModelFactory
+from transit_odp.transmodel.factories import (
+    VehicleJourneyFactory,
+    ServicePatternStopFactory,
+)
 from transit_odp.organisation.factories import TXCFileAttributesFactory
 from transit_odp.dqs.models import Checks, TaskResults, ObservationResults
 from transit_odp.dqs.constants import TaskResultsStatus
 from factory.fuzzy import FuzzyText
 from transit_odp.transmodel.factories import ServicePatternStopFactory
+from transit_odp.dqs.models import Checks, ObservationResults, TaskResults
+
+from transit_odp.dqs.constants import TaskResultsStatus
+from transit_odp.transmodel.factories import ServicedOrganisationVehicleJourneyFactory
 
 
 class ChecksFactory(DjangoModelFactory):
@@ -21,7 +29,7 @@ class TaskResultsFactory(DjangoModelFactory):
     class Meta:
         model = TaskResults
 
-    status = factory.Iterator([TaskResultsStatus["PENDING"], "completed"])
+    status = factory.Iterator([TaskResultsStatus.PENDING.value, "completed"])
     message = factory.Faker("sentence")
     checks = factory.SubFactory(ChecksFactory)
     transmodel_txcfileattributes = factory.SubFactory(TXCFileAttributesFactory)
@@ -32,7 +40,11 @@ class ObservationResultsFactory(DjangoModelFactory):
     class Meta:
         model = ObservationResults
 
-    details = FuzzyText(length=12)
-    is_suppressed = False
-    service_pattern_stop = factory.SubFactory(ServicePatternStopFactory)
+    details = factory.Faker("sentence")
+    is_suppressed = factory.Faker("pybool")
+    serviced_organisation_vehicle_journey = factory.SubFactory(
+        ServicedOrganisationVehicleJourneyFactory
+    )
     taskresults = factory.SubFactory(TaskResultsFactory)
+    vehicle_journey = factory.SubFactory(VehicleJourneyFactory)
+    service_pattern_stop = factory.SubFactory(ServicePatternStopFactory)

@@ -628,6 +628,7 @@ def query_dq_critical_observation(query) -> List[tuple]:
 
     Returns:
         dict[tuple, str]: return a list of services"""
+
     transmodel_services = (
         TransmodelService.objects.filter(
             query,
@@ -663,7 +664,7 @@ def get_dq_critical_observation_services_map_from_dataframe(
     for _, row in txc_map.iterrows():
         query |= Q(
             service_code=row["service_code"],
-            name=row["line_name_unnested"],
+            service_patterns__line_name=row["line_name_unnested"],
             revision_id=row["revision_id"],
         )
     return query_dq_critical_observation(query)

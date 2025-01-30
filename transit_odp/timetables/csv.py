@@ -5,6 +5,7 @@ from typing import List, Optional
 import numpy as np
 import pandas as pd
 from pandas import Series
+from waffle import flag_is_active
 
 from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
@@ -27,6 +28,7 @@ from transit_odp.otc.constants import (
     OTC_SCOPE_STATUS_OUT_OF_SCOPE,
     OTC_STATUS_REGISTERED,
     OTC_STATUS_UNREGISTERED,
+    UNDER_MAINTENANCE,
 )
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
@@ -1265,10 +1267,11 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
 
     otc_df["service_number"] = otc_df["service_number"].str.split("|")
     otc_df = otc_df.explode("service_number")
-
-    dq_critical_observations_map = (
-        get_dq_critical_observation_services_map_from_dataframe(txc_df)
-    )
+    dq_require_attention_active = flag_is_active("", "dq_require_attention")
+    if dq_require_attention_active:
+        dq_critical_observations_map = (
+            get_dq_critical_observation_services_map_from_dataframe(txc_df)
+        )
 
     castings = (
         ("dataset_id", "Int64"),
@@ -1295,9 +1298,13 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
-    merged["critical_dq_issues"] = merged.apply(
-        lambda x: add_critical_dq_issue_status(x, dq_critical_observations_map), axis=1
-    )
+    if dq_require_attention_active:
+        merged["critical_dq_issues"] = merged.apply(
+            lambda x: add_critical_dq_issue_status(x, dq_critical_observations_map),
+            axis=1,
+        )
+    else:
+        merged["critical_dq_issues"] = UNDER_MAINTENANCE
     merged = add_timetables_requires_attention_column(merged)
     merged = add_traveline_regions(merged)
     merged = add_under_maintenance_columns(merged)

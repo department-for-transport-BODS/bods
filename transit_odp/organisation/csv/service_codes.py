@@ -2,6 +2,8 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
+from waffle import flag_is_active
+
 from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
@@ -774,9 +776,12 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         otc_map = get_all_line_level_otc_map(organisation_id)
         service_codes = [service_code for (service_code, line_name) in otc_map]
         txcfa_map = get_line_level_txc_map_service_base(service_codes)
-        dq_critical_observations_map = get_dq_critical_observation_services_map(
-            txcfa_map
-        )
+
+        dq_require_attention_active = flag_is_active("", "dq_require_attention")
+        if dq_require_attention_active:
+            dq_critical_observations_map = get_dq_critical_observation_services_map(
+                txcfa_map
+            )
 
         seasonal_service_map = get_seasonal_service_map(organisation_id)
         service_code_exemption_map = get_service_code_exemption_map(organisation_id)
@@ -818,9 +823,12 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             ):
                 exempted = True
 
-            dq_require_attention = "No"
-            if (service_code, line_name) in dq_critical_observations_map:
-                dq_require_attention = "Yes"
+            dq_require_attention = (
+                "Yes"
+                if dq_require_attention_active
+                and (service_code, line_name) in dq_critical_observations_map
+                else "No"
+            )
 
             staleness_status = "Up to date"
             if file_attribute is None:
@@ -877,6 +885,9 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 exempted,
                 seasonal_service,
             )
+
+            if not dq_require_attention_active:
+                dq_require_attention = UNDER_MAINTENANCE
 
             self._update_data(
                 service,
