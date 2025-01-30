@@ -128,7 +128,7 @@ class UserFeedback:
             ),
         )
 
-        qs = qs.filter(common_name=self._stop_name).first()
+        qs = qs.filter(common_name=self._stop).first()
         return qs
 
     def get_qs_journey_code(self) -> QuerySet:

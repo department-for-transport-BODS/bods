@@ -1,4 +1,5 @@
 import logging
+import pandas as pd
 from datetime import timedelta
 from typing import Dict, List, Optional
 
@@ -9,9 +10,14 @@ from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
+from transit_odp.dqs.constants import Level
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
+from transit_odp.transmodel.models import Service as TransmodelService
+from django.db.models import Q
+from waffle import flag_is_active
+
 
 logger = logging.getLogger(__name__)
 
@@ -440,16 +446,24 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     Returns list of objects of each service requiring attention for an organisation.
     """
     object_list = []
-
+    dqs_critical_issues_service_line_map = []
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
+    is_dqs_require_attention = flag_is_active("", "dqs_require_attention")
+    if is_dqs_require_attention:
+        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
 
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
         if file_attribute is None:
             _update_data(object_list, service)
-        elif is_stale(service, file_attribute):
+        elif is_stale(service, file_attribute) or (
+            is_dqs_require_attention
+            and service_key in dqs_critical_issues_service_line_map
+        ):
             _update_data(object_list, service)
     return object_list
 
@@ -463,10 +477,15 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     Returns list of objects of each service requiring attention for an organisation.
     """
     object_list = []
-
+    dqs_critical_issues_service_line_map = []
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
+    is_dqs_require_attention = flag_is_active("", "dqs_require_attention")
+    if is_dqs_require_attention:
+        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
 
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
     abods_registry = AbodsRegistery()
@@ -491,6 +510,11 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
                 or f"{line_name}__{operator_ref}" not in synced_in_last_month
             ):
                 _update_data(object_list, service)
+        elif (
+            is_dqs_require_attention
+            and (service_key, service) in dqs_critical_issues_service_line_map
+        ):
+            _update_data(object_list, service)
         else:
             _update_data(object_list, service)
     logging.info(f"AVL-REQUIRE-ATTENTION: total objects {len(object_list)}")
@@ -509,7 +533,6 @@ def get_requires_attention_data_lta(lta_list: List) -> int:
     lta_services_requiring_attention = 0
     otc_map = get_otc_map_lta(lta_list)
     txcfa_map = get_txc_map_lta(lta_list)
-
     for service_code, service in otc_map.items():
         file_attribute = txcfa_map.get(service_code)
         if file_attribute is None:
@@ -540,16 +563,108 @@ def get_requires_attention_data_lta_line_level_length(lta_list: List) -> int:
         int: The count of services requiring attention.
     """
     object_list = []
+    dqs_critical_issues_service_line_map = []
     lta_services_requiring_attention = 0
     otc_map = get_line_level_otc_map_lta(lta_list)
     txcfa_map = get_line_level_txc_map_lta(lta_list)
-
+    is_dqs_require_attention = flag_is_active("", "dqs_require_attention")
+    if is_dqs_require_attention:
+        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
     for (service_number, registration_number), service in otc_map.items():
         file_attribute = txcfa_map.get((service_number, registration_number))
         if file_attribute is None:
             _update_data(object_list, service, line_number=service_number)
-        elif is_stale(service, file_attribute):
+        elif is_stale(service, file_attribute) or (
+            is_dqs_require_attention
+            and (registration_number, service_number)
+            in dqs_critical_issues_service_line_map
+        ):
             _update_data(object_list, service, line_number=service_number)
     lta_services_requiring_attention = len(object_list)
 
     return lta_services_requiring_attention
+
+
+def get_dq_critical_observation_services_map(
+    txc_map: Dict[tuple, TXCFileAttributes]
+) -> List[tuple]:
+    """Check for data quality critical issue for service code
+    and line name combination for the current revision only,
+    Method will receive the txcfileattributes table dictionary
+
+    Returns:
+        dict[tuple, str]: return a list of services
+    """
+    txc_map_df = pd.DataFrame(
+        [
+            {
+                "service_code": obj.service_code,
+                "line_name_unnested": obj.line_name_unnested,
+                "revision_id": obj.revision_id,
+            }
+            for _, obj in txc_map.items()
+        ]
+    )
+    return get_dq_critical_observation_services_map_from_dataframe(txc_map_df)
+
+
+def query_dq_critical_observation(query) -> List[tuple]:
+    """Query for data quality critical issue for service code
+    and line name combination for the current revision only,
+    Using two scenarions, Any of the scenario with mark
+    Dq require attention to True
+
+    1. the Transmodel tables relations with dqs_observationresults
+    Transmodel services -> Transmodel Service Patterns
+    -> Transmodel Service Pattern Stops -> Dqs Observationresult
+
+    And for checking the observation result must be critical
+    Dqs Observationresult -> Taskresults -> checks
+
+    2. Check for customer feedback present and not suppressed
+    Transmodel service -> Organisation feedback
+
+    Returns:
+        dict[tuple, str]: return a list of services"""
+
+    transmodel_services = (
+        TransmodelService.objects.filter(
+            query,
+            (
+                Q(
+                    service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__isnull=False,
+                    service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__taskresults__checks__importance=Level.critical.value,
+                )
+                | Q(
+                    feedback_service__isnull=False,
+                    feedback_service__is_suppressed=False,
+                )
+            ),
+        )
+        .values_list("service_code", "service_patterns__line_name")
+        .distinct()
+    )
+
+    return list(transmodel_services)
+
+
+def get_dq_critical_observation_services_map_from_dataframe(
+    txc_map: pd.DataFrame,
+) -> List[tuple]:
+    """Check for data quality critical issue for service code
+    and line name combination for the current revision only,
+    Method will receive a dataframe for the txc files
+
+    Returns:
+        dict[tuple, str]: return a list of services
+    """
+    query = Q()
+    for _, row in txc_map.iterrows():
+        query |= Q(
+            service_code=row["service_code"],
+            service_patterns__line_name=row["line_name_unnested"],
+            revision_id=row["revision_id"],
+        )
+    return query_dq_critical_observation(query)
