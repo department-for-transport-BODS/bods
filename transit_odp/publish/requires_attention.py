@@ -5,6 +5,7 @@ from typing import Dict, List, Optional
 
 from django.db.models import Subquery
 from django.utils.timezone import now
+from waffle import flag_is_active
 
 from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
@@ -629,19 +630,22 @@ def query_dq_critical_observation(query) -> List[tuple]:
     Returns:
         dict[tuple, str]: return a list of services"""
 
+    dqs_query_check = Q(
+        service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__isnull=False,
+        service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__taskresults__checks__importance=Level.critical.value,
+    )
+
+    is_specific_feedback = flag_is_active("", "is_specific_feedback")
+    if is_specific_feedback:
+        dqs_query_check |= Q(
+            feedback_service__isnull=False,
+            feedback_service__is_suppressed=False,
+        )
+
     transmodel_services = (
         TransmodelService.objects.filter(
             query,
-            (
-                Q(
-                    service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__isnull=False,
-                    service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__taskresults__checks__importance=Level.critical.value,
-                )
-                | Q(
-                    feedback_service__isnull=False,
-                    feedback_service__is_suppressed=False,
-                )
-            ),
+            (dqs_query_check),
         )
         .values_list("service_code", "service_patterns__line_name")
         .distinct()

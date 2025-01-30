@@ -24,6 +24,7 @@ pytestmark = pytest.mark.django_db
 
 
 @override_flag("dqs_require_attention", active=True)
+@override_flag("is_specific_feedback", active=True)
 def test_dq_require_attention_with_only_critical_observation_results():
     services_list = [
         {
@@ -94,6 +95,7 @@ def test_dq_require_attention_with_only_critical_observation_results():
 
 
 @override_flag("dqs_require_attention", active=True)
+@override_flag("is_specific_feedback", active=True)
 def test_dq_require_attention_with_only_advisory_observation_results():
     services_list = [
         {
@@ -160,6 +162,7 @@ def test_dq_require_attention_with_only_advisory_observation_results():
 
 
 @override_flag("dqs_require_attention", active=True)
+@override_flag("is_specific_feedback", active=True)
 def test_dq_require_attention_with_only_feedback():
     services_list = [
         {
@@ -201,6 +204,7 @@ def test_dq_require_attention_with_only_feedback():
 
 
 @override_flag("dqs_require_attention", active=True)
+@override_flag("is_specific_feedback", active=True)
 def test_dq_require_attention_without_feedback_and_dqsobservation():
     services_list = [
         {
@@ -238,6 +242,7 @@ def test_dq_require_attention_without_feedback_and_dqsobservation():
 
 
 @override_flag("dqs_require_attention", active=True)
+@override_flag("is_specific_feedback", active=True)
 def test_dq_require_attention_with_feedback_and_dqsobservation():
     services_list = [
         {
