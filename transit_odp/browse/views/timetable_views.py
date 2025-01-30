@@ -132,7 +132,7 @@ class DatasetDetailView(DetailView):
             kwargs["is_new_data_quality_service_active"] = False
 
         kwargs["summary"] = summary
-
+        kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
         user = self.request.user
 
         kwargs["pk"] = dataset.id
