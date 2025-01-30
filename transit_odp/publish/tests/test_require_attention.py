@@ -21,6 +21,7 @@ from transit_odp.transmodel.factories import (
 
 pytestmark = pytest.mark.django_db
 
+
 def test_dq_require_attention_with_only_critical_observation_results():
     services_list = [
         {
