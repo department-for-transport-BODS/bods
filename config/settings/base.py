@@ -759,7 +759,7 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = (
     "'self'",
     "'unsafe-inline'",
-    "googletagmanager.com",
+    "www.googletagmanager.com",
     "ajax.googleapis.com/ajax/libs/jquery",
     "google-analytics.com",
 )

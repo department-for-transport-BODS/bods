@@ -547,15 +547,20 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
             revision.id
         )
+        combinations = itertools.product(txc_file_attributes_objects, checks)
+        TaskResults.initialize_task_results(report, combinations)
+        adapter.info(
+            f"TaskResults is initialised for with status PENDING for {revision}"
+        )
         if is_using_step_function_for_dqs:
-            print("Using state machine to run checks on files")
             adapter.info(
                 f"Using state machine to run checks on {len(txc_file_attributes_objects)} files"
             )
             step_function_client = StepFunctionsClientWrapper()
             for file in txc_file_attributes_objects:
+                input_payload = {"file_id": file.id}
                 execution_arn = step_function_client.start_step_function(
-                    json.loads(str(file.id)),
+                    json.dumps(input_payload),
                     settings.DQS_STATE_MACHINE_ARN,
                     f"DQSExecutionForRevision{file.id}",
                 )
@@ -563,11 +568,6 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
                     f"Began State Machine Execution for {file.id}: {execution_arn}"
                 )
         else:
-            combinations = itertools.product(txc_file_attributes_objects, checks)
-            TaskResults.initialize_task_results(report, combinations)
-            adapter.info(
-                f"TaskResults is initialised for with status PENDING for {revision}"
-            )
             pending_checks = TaskResults.objects.get_pending_objects(
                 txc_file_attributes_objects
             )
