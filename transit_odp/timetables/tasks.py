@@ -557,16 +557,15 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
                 f"Using state machine to run checks on {len(txc_file_attributes_objects)} files"
             )
             step_function_client = StepFunctionsClientWrapper()
-            for file in txc_file_attributes_objects:
-                input_payload = {"file_id": file.id}
-                execution_arn = step_function_client.start_step_function(
-                    json.dumps(input_payload),
-                    settings.DQS_STATE_MACHINE_ARN,
-                    f"DQSExecutionForRevision{file.id}",
-                )
-                adapter.info(
-                    f"Began State Machine Execution for {file.id}: {execution_arn}"
-                )
+            input_payload = {"revision_id": revision.id}
+            execution_arn = step_function_client.start_step_function(
+                json.dumps(input_payload),
+                settings.DQS_STATE_MACHINE_ARN,
+                f"DQSExecutionForRevision{revision.id}",
+            )
+            adapter.info(
+                f"Began DQS State Machine Execution for {revision.id}: {execution_arn}"
+            )
         else:
             pending_checks = TaskResults.objects.get_pending_objects(
                 txc_file_attributes_objects
