@@ -180,13 +180,13 @@ class StepFunctionsClientWrapper:
         """
         try:
             input_payload_dict = json.loads(input_payload)
+            if not isinstance(input_payload_dict, dict):  # Ensure it's a dictionary
+                raise ValueError("Invalid JSON payload: Expected a dictionary")
         except json.JSONDecodeError as e:
             logger.error(f"Invalid JSON input: {e}")
             raise ValueError("Invalid JSON payload")
 
-        revision_id = input_payload_dict.get("detail", {}).get(
-            "datasetRevisionId", "unknown"
-        )
+        revision_id = input_payload_dict.get("datasetRevisionId", "unknown")
         now = datetime.now().strftime("%Y%m%d_%H%M%S")
         execution_name = f"{revision_id}_{now}"
 

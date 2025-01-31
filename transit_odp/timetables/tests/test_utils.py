@@ -257,13 +257,13 @@ def test_filter_rows_by_journeys():
 class TestCreateTTStateMachinePayload:
     def test_create_payload_url_upload(self):
         mock_revision = Mock()
-        mock_revision.id = "123"
+        mock_revision.id = 123
         mock_revision.url_link = "https://example.com"
         mock_revision.upload_file = None
 
         payload_json = create_tt_state_machine_payload(mock_revision)
         payload = json.loads(payload_json)
-        assert payload["datasetRevisionId"] == "123"
+        assert payload["datasetRevisionId"] == 123
         assert payload["datasetType"] == "timetables"
         assert payload["url"] == "https://example.com"
         assert payload["inputDataSource"] == "URL_DOWNLOAD"
@@ -271,7 +271,7 @@ class TestCreateTTStateMachinePayload:
 
     def test_create_payload_file_upload(self):
         mock_revision = Mock()
-        mock_revision.id = "123"
+        mock_revision.id = 123
         mock_revision.url_link = None
         mock_file = Mock()
         mock_file.name = "test_file"
@@ -279,7 +279,7 @@ class TestCreateTTStateMachinePayload:
 
         payload_json = create_tt_state_machine_payload(mock_revision)
         payload = json.loads(payload_json)
-        assert payload["datasetRevisionId"] == "123"
+        assert payload["datasetRevisionId"] == 123
         assert payload["datasetType"] == "timetables"
         assert payload["inputDataSource"] == "S3_FILE"
         assert payload["s3"]["object"] == "test_file"
@@ -287,20 +287,12 @@ class TestCreateTTStateMachinePayload:
 
     def test_create_payload_missing_inputs(self, caplog):
         mock_revision = Mock()
-        mock_revision.id = "123"
+        mock_revision.id = 123
         mock_revision.url_link = None
         mock_revision.upload_file = None
 
         payload_json = create_tt_state_machine_payload(mock_revision)
-        payload = json.loads(payload_json)
-        assert payload["datasetRevisionId"] == "123"
-        assert payload["datasetType"] == "timetables"
-        assert payload["inputDataSource"] in [
-            "URL_DOWNLOAD",
-            "S3_FILE",
-        ]  # Ensuring it's one of the enums
-        assert "s3" not in payload  # Ensure 's3' is excluded when None
-        assert "url" not in payload  # Ensure 'url' is excluded when None
+        assert payload_json == {}
         assert (
             "Both URL link and uploaded file are missing in the dataset revision."
             in caplog.text
