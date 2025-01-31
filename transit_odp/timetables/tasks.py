@@ -550,8 +550,8 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
         combinations = itertools.product(txc_file_attributes_objects, checks)
         TaskResults.initialize_task_results(report, combinations)
         adapter.info(
-                f"TaskResults is initialised for with status PENDING for {revision}"
-            )
+            f"TaskResults is initialised for with status PENDING for {revision}"
+        )
         if is_using_step_function_for_dqs:
             adapter.info(
                 f"Using state machine to run checks on {len(txc_file_attributes_objects)} files"
