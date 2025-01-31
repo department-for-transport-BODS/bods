@@ -675,6 +675,7 @@ def create_tt_state_machine_payload(
         logger.warning(
             "Both URL link and uploaded file are missing in the dataset revision."
         )
+        return {}
 
     DATASET_TYPE_TIMETABLES = "timetables"
     datasetRevisionId = revision.id
