@@ -1,3 +1,4 @@
+import logging
 from typing import List, Tuple, Type
 
 from django.conf import settings
@@ -8,6 +9,7 @@ from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 from django.views.generic.detail import SingleObjectMixin
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.common.utils.aws_common import StepFunctionsClientWrapper
@@ -21,6 +23,8 @@ from transit_odp.publish.forms import (
 from transit_odp.publish.views.base import FeedWizardBaseView
 from transit_odp.timetables.utils import create_tt_state_machine_payload
 from transit_odp.users.views.mixins import OrgUserViewMixin
+
+logger = logging.getLogger(__name__)
 
 
 class RevisionUpdateSuccessView(OrgUserViewMixin, BaseDetailView):
