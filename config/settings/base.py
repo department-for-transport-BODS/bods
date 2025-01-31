@@ -759,10 +759,9 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = (
     "'self'",
     "'unsafe-inline'",
-    "https://www.googletagmanager.com",
-    "https://ajax.googleapis.com/ajax/libs/jquery",
-    "http://www.google-analytics.com",
-    "https://www.google-analytics.com",
+    "googletagmanager.com",
+    "ajax.googleapis.com/ajax/libs/jquery",
+    "google-analytics.com",
 )
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
 CSP_IMG_SRC = (
@@ -772,11 +771,10 @@ CSP_IMG_SRC = (
 )
 CSP_CONNECT_SRC = (
     "'self'",
-    "https://*.mapbox.com",
-    "http://*.localhost:8000",
-    "https://*.bus-data.dft.gov.uk",
-    "http://www.google-analytics.com",
-    "https://www.google-analytics.com",
+    "*.mapbox.com",
+    "*.localhost:8000",
+    "*.bus-data.dft.gov.uk",
+    "google-analytics.com",
 )
 CSP_FONT_SRC = ("'self'",)
 CSP_OBJECT_SRC = ("'none'",)
