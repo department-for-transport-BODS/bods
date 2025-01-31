@@ -649,27 +649,26 @@ def observation_contents_mapper(observations_list) -> Dict:
 
 
 class InputDataSourceEnum(Enum):
-    URL_UPLOAD = "URL_UPLOAD"
-    FILE_UPLOAD = "FILE_UPLOAD"
+    URL_UPLOAD = "URL_DOWNLOAD"
+    FILE_UPLOAD = "S3_FILE"
 
 
-class S3Object(BaseModel):
-    key: Optional[str]  # Key is optional
+class S3Payload(BaseModel):
+    object: str
+    bucket: Optional[str] = None
 
 
-class Detail(BaseModel):
-    datasetRevisionId: str  # Always a string
+class StepFunctionsTTPayload(BaseModel):
+    datasetRevisionId: int  # Always a int
     datasetType: str  # Always a string
-    url: Optional[str]  # Optional or can be an empty string
+    url: Optional[str] = None  # Optional or can be an empty string
     inputDataSource: str  # Always a string
-    s3object: S3Object  # Nested object
+    s3: Optional[S3Payload] = None  # Nested object
 
 
-class StepFunctionsPayload(BaseModel):
-    detail: Detail  # Nested Detail object
-
-
-def create_state_machine_payload(revision: DatasetRevision) -> str:
+def create_tt_state_machine_payload(
+    revision: DatasetRevision,
+) -> StepFunctionsTTPayload:
     """Creates payload for AWS Step Function execution."""
 
     if not revision.url_link and not revision.upload_file:
@@ -678,29 +677,22 @@ def create_state_machine_payload(revision: DatasetRevision) -> str:
         )
 
     DATASET_TYPE_TIMETABLES = "timetables"
+    datasetRevisionId = revision.id
 
-    type_of_input = (
-        InputDataSourceEnum.URL_UPLOAD.value
-        if revision.url_link
-        else InputDataSourceEnum.FILE_UPLOAD.value
-    )
-    url = revision.url_link or ""
-    file = revision.upload_file.name if revision.upload_file else ""
+    if revision.url_link:
+        payload = StepFunctionsTTPayload(
+            url=revision.url_link,
+            inputDataSource=InputDataSourceEnum.URL_UPLOAD.value,
+            datasetRevisionId=datasetRevisionId,
+            datasetType=DATASET_TYPE_TIMETABLES,
+        )
 
-    # Payload to send to the Step Function
-    input_payload = {
-        "detail": {
-            "datasetRevisionId": str(revision.id),
-            "datasetType": DATASET_TYPE_TIMETABLES,
-            "url": url,
-            "inputDataSource": type_of_input,
-            "s3object": {"key": file},
-        }
-    }
-    # Validate payload using Pydantic model
-    try:
-        payload = StepFunctionsPayload(**input_payload)
-        return payload.json()
-    except ValidationError as e:
-        logger.error(f"Payload validation failed: {e}")
-        raise ValueError("Invalid payload structure")
+    elif revision.upload_file:
+        payload = StepFunctionsTTPayload(
+            s3=S3Payload(object=revision.upload_file.name),
+            inputDataSource=InputDataSourceEnum.FILE_UPLOAD.value,
+            datasetRevisionId=datasetRevisionId,
+            datasetType=DATASET_TYPE_TIMETABLES,
+        )
+
+    return payload.model_dump_json(exclude_none=True)

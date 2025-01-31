@@ -645,6 +645,9 @@ S3_BUCKET_DQS_CSV_REPORT = env(
     "S3_BUCKET_DQS_CSV_REPORT",
     default="bodds-dev-dqs-reports",
 )
+# DQS STEP FUNCTION PARAMETERS
+DQS_STATE_MACHINE_ARN = env("DQS_STATE_MACHINE_ARN", default="")
+
 # SQS QUEUE
 # ------------------------------------------------------------------------------
 SQS_QUEUE_ENDPOINT_URL = env(
@@ -654,6 +657,9 @@ AWS_REGION_NAME = env("AWS_REGION_NAME", default="eu-west-2")
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
 AWS_ENVIRONMENT = env("AWS_ENVIRONMENT", default="LOCAL")
+
+# TT STATE MACHINE
+TIMETABLES_STATE_MACHINE_ARN = env("TIMETABLES_STATE_MACHINE_ARN", default="")
 
 # ABODS AVL LINE LEVEL DETAILS
 # -------------------------------------------------------------------------------
@@ -753,9 +759,9 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = (
     "'self'",
     "'unsafe-inline'",
-    "https://www.googletagmanager.com",
-    "https://ajax.googleapis.com/ajax/libs/jquery",
-    "https://www.google-analytics.com/*",
+    "www.googletagmanager.com",
+    "ajax.googleapis.com/ajax/libs/jquery",
+    "google-analytics.com",
 )
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
 CSP_IMG_SRC = (
@@ -765,9 +771,10 @@ CSP_IMG_SRC = (
 )
 CSP_CONNECT_SRC = (
     "'self'",
-    "https://*.mapbox.com",
-    "http://*.localhost:8000",
-    "https://*.bus-data.dft.gov.uk",
+    "*.mapbox.com",
+    "*.localhost:8000",
+    "*.bus-data.dft.gov.uk",
+    "google-analytics.com",
 )
 CSP_FONT_SRC = ("'self'",)
 CSP_OBJECT_SRC = ("'none'",)
