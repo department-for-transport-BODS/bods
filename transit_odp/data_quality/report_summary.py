@@ -20,6 +20,7 @@ from transit_odp.data_quality.constants import OBSERVATIONS, Category, Level
 from transit_odp.data_quality.models import DataQualityReportSummary
 from transit_odp.dqs.constants import BUS_SERVICES_AFFECTED_SUBSET, ReportStatus, Checks
 from transit_odp.dqs.models import ObservationResults
+from transit_odp.organisation.models import ConsumerFeedback
 
 CRITICAL_INTRO = (
     "These observations are considered critical in terms of data quality. "
@@ -171,6 +172,44 @@ class Summary(BaseModel):
         return pd.DataFrame(data)
 
     @classmethod
+    def get_dataframe_feedback(cls, revision_id):
+        """Get the feedback provided as a pandas dataframe
+        by revision_id
+        Returns:
+            DF : DataFrame contains the list of feedback with is_suppressed
+        """
+        columns = ["feedback", "is_suppressed"]
+        qs = (
+            ConsumerFeedback.objects.filter(
+                revision_id=revision_id,
+                service_id__isnull=False,
+            )
+            .annotate(
+                category=Value("Feedback"),
+                observation=Value("Consumer feedback"),
+                url=Value("feedback"),
+            )
+            .values(*columns)
+        )
+        suppressed_count = 0
+        for obj in qs:
+            suppressed_count += 1 if obj["is_suppressed"] else 0
+
+        feedback_count = len(qs)
+
+        df = pd.DataFrame(
+            {
+                "number_of_services_affected": [feedback_count],
+                "number_of_suppressed_observation": [suppressed_count],
+                "observation": ["Consumer feedback"],
+                "category": ["Feedback"],
+                "url": "feedback",
+                "feedback_observations": [feedback_count - suppressed_count],
+            }
+        )
+        return df
+
+    @classmethod
     def get_report(cls, report_id, revision_id):
         """Generate a summary of the data quality report
         Functionality:
@@ -224,11 +263,6 @@ class Summary(BaseModel):
 
             df.drop_duplicates(inplace=True)
             count = len(df)
-            for level in Level:
-                warning_data[level.value] = {}
-                warning_data[level.value]["count"] = len(
-                    df[df["importance"] == level.value]
-                )
 
             df = (
                 df.groupby(["observation", "category", "importance"])
@@ -248,6 +282,8 @@ class Summary(BaseModel):
             # change nan to no-url in url column only
             df["url"] = df["url"].fillna("no-url")
             for level in Level:
+                if level.value == Level.feedback:
+                    continue
                 warning_data[level.value] = {}
                 warning_data[level.value]["count"] = (
                     df[df["importance"] == level.value][
@@ -260,9 +296,14 @@ class Summary(BaseModel):
                 importance_df = df[df["importance"] == level.value]
                 # TODO: change df to something like data, or better name in the dict
                 warning_data[level.value]["df"] = {}
-                warning_data[level.value]["intro"] = (
-                    CRITICAL_INTRO if level.value == "Critical" else ADVISORY_INTRO
-                )
+                if level.value == "Critical":
+                    intro = CRITICAL_INTRO
+                elif level.value == "Advisory":
+                    intro = ADVISORY_INTRO
+                else:
+                    intro = ""
+
+                warning_data[level.value]["intro"] = intro
                 for category in importance_df["category"].unique():
                     warning_data[level.value]["df"].update(
                         {
@@ -272,6 +313,15 @@ class Summary(BaseModel):
                             ]
                         }
                     )
+
+            if flag_is_active("", "is_specific_feedback"):
+                df_feedback = cls.get_dataframe_feedback(revision_id)
+                warning_data["Feedback"]["count"] = df_feedback[
+                    "feedback_observations"
+                ].sum()
+                warning_data["Feedback"]["df"]["Feedback"] = df_feedback
+            else:
+                warning_data.pop(Level.feedback.value)
 
             return cls(
                 data=warning_data,

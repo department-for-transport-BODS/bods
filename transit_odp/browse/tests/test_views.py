@@ -80,6 +80,19 @@ from transit_odp.users.factories import (
 )
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.utils import create_verified_org_user
+from waffle.testutils import override_flag
+from unittest import TestCase
+from transit_odp.transmodel.factories import (
+    ServiceFactory,
+    ServicePatternStopFactory,
+    ServicePatternFactory,
+)
+from transit_odp.dqs.factories import (
+    ObservationResultsFactory,
+    ChecksFactory,
+    TaskResultsFactory,
+)
+
 
 pytestmark = pytest.mark.django_db
 AVL_LINE_LEVEL_REQUIRE_ATTENTION = (
@@ -1498,6 +1511,125 @@ class TestOperatorDetailView:
         # 3 services up to date, including one in season. 0/3 requiring attention = 0%
         assert context["services_require_attention_percentage"] == 0
 
+    @override_flag("dqs_require_attention", active=True)
+    def test_operator_detail_view_dqs_stats_compliant(
+        self, request_factory: RequestFactory
+    ):
+        org = OrganisationFactory()
+        month = timezone.now().date() + datetime.timedelta(weeks=4)
+        two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+
+        total_services = 4
+        licence_number = "PD5000123"
+        all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        all_line_names = [f"line:{n}" for n in range(total_services)]
+        bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+        dataset1 = DatasetFactory(organisation=org)
+        dataset2 = DatasetFactory(organisation=org)
+
+        request = request_factory.get("/operators/")
+        request.user = UserFactory()
+
+        # Setup three TXCFileAttributes that will be 'Up to Date'
+        txcfileattribute1 = TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[0],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
+        )
+        TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[1],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+            line_names=[all_line_names[1]],
+        )
+        TXCFileAttributesFactory(
+            revision=dataset2.live_revision,
+            service_code=all_service_codes[2],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+            line_names=[all_line_names[2]],
+        )
+
+        # Create Out of Season Seasonal Service
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=month,
+            end=two_months,
+            registration_code=int(all_service_codes[3][-1:]),
+        )
+        # Create In Season Seasonal Service for live, up to date service
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=timezone.now().date(),
+            end=month,
+            registration_code=int(all_service_codes[2][-1:]),
+        )
+
+        # create transmodel servicepattern
+        service_pattern = ServicePatternFactory(
+            revision=dataset1.live_revision, line_name=txcfileattribute1.line_names[0]
+        )
+
+        # create transmodel service
+        service = ServiceFactory(
+            revision=dataset1.live_revision,
+            name=all_line_names[0],
+            service_code=all_service_codes[0],
+            service_patterns=[service_pattern],
+        )
+
+        # create transmodel servicepatternstop
+        service_pattern_stop = ServicePatternStopFactory(
+            service_pattern=service_pattern
+        )
+
+        # create DQS observation result
+        check1 = ChecksFactory(queue_name="Queue1", importance="Critical")
+        check2 = ChecksFactory(queue_name="Queue1")
+        check1.importance = "Critical"
+
+        taskresult = TaskResultsFactory(
+            transmodel_txcfileattributes=txcfileattribute1,
+            checks=check1,
+        )
+        observation_result = ObservationResultsFactory(
+            service_pattern_stop=service_pattern_stop, taskresults=taskresult
+        )
+
+        otc_lic1 = LicenceModelFactory(number=licence_number)
+        services = []
+        for index, code in enumerate(all_service_codes):
+            services.append(
+                ServiceModelFactory(
+                    licence=otc_lic1,
+                    registration_number=code.replace(":", "/"),
+                    effective_date=datetime.date(year=2020, month=1, day=1),
+                    service_number=all_line_names[index],
+                )
+            )
+
+        ui_lta = UILtaFactory(name="UI_LTA")
+        LocalAuthorityFactory(
+            id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+        )
+        AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
+
+        response = OperatorDetailView.as_view()(request, pk=org.id)
+        assert response.status_code == 200
+        context = response.context_data
+        assert context["view"].template_name == "browse/operators/operator_detail.html"
+        # One out of season seasonal service reduces in scope services to 3
+        assert context["total_in_scope_in_season_services"] == 3
+        assert context["total_services_requiring_attention"] == 1  # DQS critical issues
+        # 3 services up to date, including one in season. 0/3 requiring attention = 0%
+        assert context["services_require_attention_percentage"] == 33
+
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     def test_operator_detail_weca_view_timetable_stats_compliant(
         self, avl_line_level_require_attention, request_factory: RequestFactory
@@ -1938,6 +2070,136 @@ class TestLTADetailView:
         )
         assert context["total_in_scope_in_season_services"] == 3
         assert context["services_require_attention_percentage"] == 0
+
+    @override_flag("dqs_require_attention", active=True)
+    def test_local_authority_detail_view_dqs_non_compliant(
+        self, request_factory: RequestFactory
+    ):
+        """Test LTA details view stat with all complaint data in_scope_in_season count
+        There are zero which required attention
+
+        Args:
+            request_factory (RequestFactory): Request Factory
+        """
+        org = OrganisationFactory()
+        month = timezone.now().date() + datetime.timedelta(weeks=4)
+        two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+        total_services = 4
+        licence_number = "PD5000124"
+        all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        all_line_names = [f"line:{n}" for n in range(total_services)]
+        bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+        dataset1 = DatasetFactory(organisation=org)
+        dataset2 = DatasetFactory(organisation=org)
+
+        # Setup three TXCFileAttributes that will be 'Up to Date'
+        txcfileattribute1 = TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[0],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
+        )
+        TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[1],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+            line_names=[all_line_names[1]],
+        )
+        TXCFileAttributesFactory(
+            revision=dataset2.live_revision,
+            service_code=all_service_codes[2],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+            line_names=[all_line_names[2]],
+        )
+
+        # Create Out of Season Seasonal Service
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=month,
+            end=two_months,
+            registration_code=int(all_service_codes[3][-1:]),
+        )
+        SeasonalServiceFactory(
+            licence=bods_licence,
+            start=timezone.now().date(),
+            end=month,
+            registration_code=int(all_service_codes[2][-1:]),
+        )
+
+        # create transmodel servicepattern
+        service_pattern = ServicePatternFactory(
+            revision=dataset1.live_revision, line_name=txcfileattribute1.line_names[0]
+        )
+
+        # create transmodel service
+        service = ServiceFactory(
+            revision=dataset1.live_revision,
+            name=all_line_names[0],
+            service_code=all_service_codes[0],
+            service_patterns=[service_pattern],
+        )
+
+        # create transmodel servicepatternstop
+        service_pattern_stop = ServicePatternStopFactory(
+            service_pattern=service_pattern
+        )
+
+        # create DQS observation result
+        check1 = ChecksFactory(queue_name="Queue1", importance="Critical")
+        check2 = ChecksFactory(queue_name="Queue1")
+
+        taskresult = TaskResultsFactory(
+            transmodel_txcfileattributes=txcfileattribute1,
+            checks=check1,
+        )
+        observation_result = ObservationResultsFactory(
+            service_pattern_stop=service_pattern_stop, taskresults=taskresult
+        )
+
+        otc_lic = LicenceModelFactory(number=licence_number)
+        services = []
+        for index, code in enumerate(all_service_codes):
+            services.append(
+                ServiceModelFactory(
+                    licence=otc_lic,
+                    registration_number=code.replace(":", "/"),
+                    effective_date=datetime.date(year=2020, month=1, day=1),
+                    service_number=all_line_names[index],
+                )
+            )
+
+        ui_lta = UILtaFactory(
+            name="Dorset County Council",
+        )
+        local_authority = LocalAuthorityFactory(
+            id="1",
+            name="Dorset Council",
+            ui_lta=ui_lta,
+            registration_numbers=services,
+        )
+        AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
+
+        request = request_factory.get(
+            f"/local-authority/?auth_ids={local_authority.id}"
+        )
+        request.user = UserFactory()
+
+        response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
+        assert response.status_code == 200
+        context = response.context_data
+        assert (
+            context["view"].template_name
+            == "browse/local_authority/local_authority_detail.html"
+        )
+        assert context["total_in_scope_in_season_services"] == 3
+        assert context["services_require_attention_percentage"] == 33
+        assert context["total_services_requiring_attention"] == 1
 
     def test_weca_local_authority_detail_view_timetable_stats_not_compliant(
         self, request_factory: RequestFactory
