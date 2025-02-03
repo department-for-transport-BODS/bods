@@ -170,6 +170,24 @@ class DQSWarningDetailBaseView(MultiTableMixin, TemplateView):
     def data(self):
         raise NotImplementedError("Warning detail views must have data attribute")
 
+    def dispatch(self, request, *args, **kwargs):
+        session_data = request.session
+        self.show_suppressed = False
+        org_id = self.kwargs.get("pk1")
+
+        if session_data and session_data.get("_auth_user_id") and org_id:
+            auth_user_id = session_data.get("_auth_user_id")
+            users = User.objects.filter(id=auth_user_id)
+            if len(users):
+                user = users[0]
+                org_id = int(org_id)
+                organisation_ids = set(user.organisations.values_list("id", flat=True))
+                if org_id in organisation_ids:
+                    self.show_suppressed = True
+
+        # Call the parent class's dispatch method
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Map variables defined largely as empty strings, with values overridden
@@ -242,8 +260,7 @@ class FeedbackDetailBaseView(DQSWarningDetailBaseView):
         if not len(qs):
             return qs
         revision_id = qs[0].revision_id
-        show_suppressed_button = True
-        self.show_suppressed = True
+        show_suppressed_button = self.show_suppressed
         qs = ConsumerFeedback.objects.get_feedback_details(
             revision_id,
             service,
