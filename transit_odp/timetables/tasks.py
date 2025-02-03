@@ -539,23 +539,10 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
     adapter.info("Starting DQS checks initiation task.")
     try:
         task.update_progress(95)
-        # report = Report.initialise_dqs_task(revision)
-        adapter.info(
-            f"Report is initialised for with status PIPELINE_PENDING for {revision}"
-        )
-        # checks = Checks.get_all_checks()
-        # txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
-        #     revision.id
-        # )
-        # combinations = itertools.product(txc_file_attributes_objects, checks)
-        # TaskResults.initialize_task_results(report, combinations)
-        adapter.info(
-            f"TaskResults is initialised for with status PENDING for {revision}"
-        )
         if is_using_step_function_for_dqs:
-            # adapter.info(
-            #     f"Using state machine to run checks on {len(txc_file_attributes_objects)} files"
-            # )
+            adapter.info(
+                f"Using state machine to run checks Txc files"
+            )
             step_function_client = StepFunctionsClientWrapper()
             input_payload = {"revision_id": revision.id}
             execution_arn = step_function_client.start_step_function(
@@ -566,17 +553,30 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
             adapter.info(
                 f"Began DQS State Machine Execution for {revision.id}: {execution_arn}"
             )
-        # else:
-        #     pending_checks = TaskResults.objects.get_pending_objects(
-        #         txc_file_attributes_objects
-        #     )
-        #     adapter.info(
-        #         f"DQS-SQS:The number of pending check items is: {len(pending_checks)}"
-        #     )
-        #     queues_payload = create_queue_payload(pending_checks)
-        #     sqs_queue_client = SQSClientWrapper()
-        #     sqs_queue_client.send_message_to_queue(queues_payload)
-        #     adapter.info("DQS-SQS:SQS queue messages sent successfully.")
+        else:
+            report = Report.initialise_dqs_task(revision)
+            adapter.info(
+                f"Report is initialised for with status PIPELINE_PENDING for {revision}"
+            )
+            checks = Checks.get_all_checks()
+            txc_file_attributes_objects = TXCFileAttributes.objects.for_revision(
+                revision.id
+            )
+            combinations = itertools.product(txc_file_attributes_objects, checks)
+            TaskResults.initialize_task_results(report, combinations)
+            adapter.info(
+                f"TaskResults is initialised for with status PENDING for {revision}"
+            )
+            pending_checks = TaskResults.objects.get_pending_objects(
+                txc_file_attributes_objects
+            )
+            adapter.info(
+                f"DQS-SQS:The number of pending check items is: {len(pending_checks)}"
+            )
+            queues_payload = create_queue_payload(pending_checks)
+            sqs_queue_client = SQSClientWrapper()
+            sqs_queue_client.send_message_to_queue(queues_payload)
+            adapter.info("DQS-SQS:SQS queue messages sent successfully.")
 
     except (DatabaseError, IntegrityError) as db_exc:
         task.handle_general_pipeline_exception(
