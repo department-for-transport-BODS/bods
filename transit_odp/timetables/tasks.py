@@ -540,9 +540,7 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
     try:
         task.update_progress(95)
         if is_using_step_function_for_dqs:
-            adapter.info(
-                f"Using state machine to run checks Txc files"
-            )
+            adapter.info(f"Using state machine to run checks Txc files")
             step_function_client = StepFunctionsClientWrapper()
             input_payload = {"revision_id": revision.id}
             execution_arn = step_function_client.start_step_function(
