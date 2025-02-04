@@ -449,7 +449,11 @@ class TransXChangeExtractor:
                 print(e)
                 logger.warning(f"Route link is missing for {route_section_id}")
         tracks = pd.DataFrame(sections_tracks)
+        # Add file_id to tracks
         tracks["file_id"] = self.file_id
+        # Get the order of links in file
+        tracks["rl_order"] = tracks.index
+        tracks["rl_order"] = tracks["rl_order"].apply(lambda x: x + 1)
         return tracks, vj_tracks_map
 
     def get_geometry_location_and_type(self):
@@ -660,7 +664,6 @@ class TransXChangeZipExtractor:
                 logger.info(
                     f"skipping: {filename} as file has failed the validation checks"
                 )
-
         return ExtractedData(
             services=concat_and_dedupe((extract.services for extract in extracts)),
             stop_points=concat_and_dedupe(
@@ -684,10 +687,10 @@ class TransXChangeZipExtractor:
             flexible_vehicle_journeys=concat_and_dedupe(
                 (extract.flexible_vehicle_journeys for extract in extracts)
             ),
-            journey_pattern_tracks=concat_and_dedupe(
-                extract.journey_pattern_tracks for extract in extracts
+            journey_pattern_tracks=pd.concat(
+                (extract.journey_pattern_tracks for extract in extracts)
             ),
-            route_map=concat_and_dedupe(extract.route_map for extract in extracts),
+            route_map=pd.concat((extract.route_map for extract in extracts)),
             jp_to_jps=concat_and_dedupe((extract.jp_to_jps for extract in extracts)),
             jp_sections=concat_and_dedupe(
                 (extract.jp_sections for extract in extracts)
