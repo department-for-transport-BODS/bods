@@ -7,7 +7,7 @@
 {% endblock %}
 {% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
-  {% url 'avl:feed-detail' pk1=pk1 pk=pk as backlink %}
+  {% url 'avl:feed-detail' pk1=pk1 pk=pk host host.name as backlink %}
   {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block title_text %}

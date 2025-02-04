@@ -14,7 +14,7 @@
                 {% for column in table.columns %}
                   <th scope="col" {{ column.attrs.th.as_html |default_if_none:"" }}>
                     {% if column.orderable %}
-                      <a class="column-header-link" href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next "page"=1 %}">{{ column.header }}
+                      <a class="column-header-link" href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next 'page'=1 host hosts.data %}">{{ column.header }}
                       </a>
                       <span class="order-up fas fa-caret-up"></span>
                       <span class="order-down fas fa-caret-down"></span>
