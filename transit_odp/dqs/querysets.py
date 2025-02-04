@@ -12,6 +12,10 @@ from django.db.models.functions import (
     LPad,
     Cast,
 )
+from transit_odp.browse.constants import (
+    REPORT_BASE_PAGE_COLUMNS,
+    REPORT_DETAILS_PAGE_COLUMNS,
+)
 
 
 class TaskResultsQueryset(models.QuerySet):
@@ -59,22 +63,6 @@ class ObservationResultsQueryset(models.QuerySet):
         """
         Filter for observation results for the report and revision of the specific Checks
         """
-
-        columns = [
-            "observation",
-            "service_code",
-            "line_name",
-            "message",
-            "dqs_details",
-            "revision_id",
-            "is_published",
-            "is_details_link",
-            "is_suppressed",
-            "organisation_id",
-            "report_id",
-            "show_suppressed",
-            "show_suppressed_button",
-        ]
 
         if col_name == "noc":
             col_value = F(
@@ -147,8 +135,9 @@ class ObservationResultsQueryset(models.QuerySet):
                 show_suppressed_button=Value(
                     show_suppressed_button, output_field=BooleanField()
                 ),
+                is_feedback=Value(False, output_field=BooleanField()),
             )
-            .values(*columns)
+            .values(*REPORT_BASE_PAGE_COLUMNS)
             .distinct()
         )
 
@@ -162,17 +151,6 @@ class ObservationResultsQueryset(models.QuerySet):
         service: str,
         line: str,
     ):
-        columns = [
-            "journey_start_time",
-            "direction",
-            "stop_name",
-            "journey_code",
-            "stop_type",
-            "details",
-            "serviced_organisation",
-            "serviced_organisation_code",
-            "last_working_day",
-        ]
 
         qs = (
             self.filter(
@@ -183,6 +161,7 @@ class ObservationResultsQueryset(models.QuerySet):
                 taskresults__transmodel_txcfileattributes__service_txcfileattributes__name=line,
             )
             .annotate(
+                observation=F("taskresults__checks__observation"),
                 journey_start_time=Concat(
                     LPad(
                         Cast(
@@ -238,8 +217,14 @@ class ObservationResultsQueryset(models.QuerySet):
                     function="TO_CHAR",  # TO_CHAR is for PostgreSQL
                     output_field=CharField(),
                 ),
+                is_feedback=Value(False, output_field=BooleanField()),
+                message=Value(""),
+                show_suppressed=Value(False, output_field=BooleanField()),
+                show_suppressed_button=Value(False, output_field=BooleanField()),
+                feedback=Value("", output_field=TextField()),
+                row_id=Value(0),
             )
-            .values(*columns)
+            .values(*REPORT_DETAILS_PAGE_COLUMNS)
             .distinct()
         )
 
