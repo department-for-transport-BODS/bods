@@ -7,7 +7,7 @@
 {% endblock %}
 {% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
-  {% url 'avl:feed-detail' pk1=pk1 pk=pk host host.name as backlink %}
+  {% url 'avl:feed-detail' pk1=pk1 pk=pk as backlink %}
   {% include "snippets/backlink.html" with url=backlink %}
 {% endblock %}
 {% block title_text %}
@@ -16,11 +16,7 @@
 {% block body_section %}{% endblock %}
 {% block done_button %}
   <div class="button-holder">
-<<<<<<< HEAD
-    <a role="button" class="govuk-button" href="{% url 'avl:revision-update-publish' pk1=pk1 pk=pk %}">
-=======
     <a role="button" class="govuk-button" href="{% url 'avl:revision-update-publish' pk1=pk1 pk=pk host hosts.publish %}">
->>>>>>> ab21998d (Added host hosts.publish)
       {% trans "View draft" %}
     </a>
     <a role="button" class="govuk-button govuk-button--secondary" href="{% url 'avl:feed-detail' pk1=pk1 pk=pk host hosts.publish %}">
