@@ -1,5 +1,5 @@
 import logging
-from datetime import timedelta
+from datetime import timedelta, date, datetime
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -445,7 +445,7 @@ def is_stale(service: OTCService, file_attribute: TXCFileAttributes) -> bool:
     return any(evaluate_staleness(service, file_attribute))
 
 
-def evaluate_fares_staleness(fares_data) -> tuple:
+def evaluate_fares_staleness(operating_period_end_date: date, last_updated: datetime) -> tuple:
     """
     Checks timeliness status for fares data.
 
@@ -461,8 +461,6 @@ def evaluate_fares_staleness(fares_data) -> tuple:
     """
     today = now().date()
     forty_two_days_from_today = today + timedelta(days=42)
-    operating_period_end_date = fares_data.valid_to
-    last_updated = fares_data.last_updated_date.date()
     twelve_months_from_last_updated = last_updated + timedelta(days=365)
 
     staleness_42_day_look_ahead = (
@@ -483,17 +481,18 @@ def evaluate_fares_staleness(fares_data) -> tuple:
     )
 
 
-def is_fares_stale(fares_data) -> bool:
+def is_fares_stale(operating_period_end_date: date, last_updated: datetime) -> bool:
     """
     Determines if a fares service has any stale values that are True.
 
     Args:
-        fares : Fares data.
+        operating_period_end_date (date): Valid to value
+        last_updated (datetime): Last update date
 
     Returns:
         bool: True or False if there is a stale value.
     """
-    return any(evaluate_fares_staleness(fares_data))
+    return any(evaluate_fares_staleness(operating_period_end_date, last_updated))
 
 
 def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
