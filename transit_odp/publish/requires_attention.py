@@ -1,5 +1,5 @@
 import logging
-from datetime import timedelta, date, datetime
+from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -445,7 +445,9 @@ def is_stale(service: OTCService, file_attribute: TXCFileAttributes) -> bool:
     return any(evaluate_staleness(service, file_attribute))
 
 
-def evaluate_fares_staleness(operating_period_end_date: date, last_updated: datetime) -> tuple:
+def evaluate_fares_staleness(
+    operating_period_end_date: date, last_updated: datetime
+) -> tuple:
     """
     Checks timeliness status for fares data.
 
