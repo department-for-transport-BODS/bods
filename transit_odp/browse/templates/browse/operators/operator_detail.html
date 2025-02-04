@@ -144,7 +144,7 @@
       <ul class="govuk-list govuk-!-margin-top-5">
         {% if is_avl_require_attention_active %}
           <li>
-            <a class="govuk-link" href="{% url 'compliance-report' pk1=object.id host hosts.publish %}">
+            <a class="govuk-link" href="{% url 'compliance-report' pk1=object.id host hosts.data %}">
               {% filter force_escape %}
                 {% trans "Download detailed export" %}
               {% endfilter %}
@@ -152,7 +152,7 @@
           </li>
         {% else %}
           <li>
-            <a class="govuk-link" href="{% url 'service-codes' pk1=object.id host hosts.publish %}">
+            <a class="govuk-link" href="{% url 'service-codes' pk1=object.id host hosts.data %}">
               {% filter force_escape %}
                 {% trans "Download detailed export" %}
               {% endfilter %}
@@ -278,7 +278,7 @@
         </li>
         {% if is_avl_require_attention_active %}
           <li class="govuk-!-margin-bottom-3">
-            <a class="govuk-link" href="{% url 'compliance-report' pk1=object.id host hosts.publish %}">
+            <a class="govuk-link" href="{% url 'compliance-report' pk1=object.id host hosts.data %}">
               {% filter force_escape %}
                 {% trans "Download detailed export" %}
               {% endfilter %}
