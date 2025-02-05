@@ -11,11 +11,17 @@ from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.dqs.constants import Level
+from transit_odp.dqs.models import ObservationResults
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.models.data import TXCFileAttributes
+from transit_odp.organisation.models.organisations import ConsumerFeedback
 from transit_odp.otc.models import Service as OTCService
-from transit_odp.transmodel.models import Service as TransmodelService
+from transit_odp.transmodel.models import (
+    Service as TransmodelService,
+    ServicePatternStop,
+)
 from django.db.models import Q
 
 
@@ -450,6 +456,13 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
+    is_dqs_require_attention = flag_is_active(
+        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+    )
+    if is_dqs_require_attention:
+        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
 
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
@@ -473,6 +486,13 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
+    is_dqs_require_attention = flag_is_active(
+        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+    )
+    if is_dqs_require_attention:
+        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
 
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
     abods_registry = AbodsRegistery()
@@ -549,7 +569,13 @@ def get_requires_attention_data_lta_line_level_length(lta_list: List) -> int:
     lta_services_requiring_attention = 0
     otc_map = get_line_level_otc_map_lta(lta_list)
     txcfa_map = get_line_level_txc_map_lta(lta_list)
-
+    is_dqs_require_attention = flag_is_active(
+        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+    )
+    if is_dqs_require_attention:
+        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
     for (service_number, registration_number), service in otc_map.items():
         file_attribute = txcfa_map.get((service_number, registration_number))
         if file_attribute is None:
@@ -604,28 +630,74 @@ def query_dq_critical_observation(query) -> List[tuple]:
     Returns:
         dict[tuple, str]: return a list of services"""
 
-    dqs_query_check = Q(
-        service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__isnull=False,
-        service_patterns__service_pattern_stops__dqs_observationresult_service_pattern_stop__taskresults__checks__importance=Level.critical.value,
+    service_pattern_ids_df = pd.DataFrame.from_records(
+        TransmodelService.objects.filter(query).values(
+            "id", "service_code", "service_patterns__line_name", "service_patterns__id"
+        )
     )
+    service_pattern_ids_df.rename(
+        columns={
+            "id": "service_id",
+            "service_patterns__line_name": "line_name",
+            "service_patterns__id": "service_pattern_id",
+        },
+        inplace=True,
+    )
+
+    service_pattern_stops_df = pd.DataFrame.from_records(
+        ServicePatternStop.objects.filter(
+            service_pattern_id__in=list(service_pattern_ids_df["service_pattern_id"])
+        ).values("id", "service_pattern_id")
+    )
+    service_pattern_stops_df.rename(
+        columns={"id": "service_pattern_stop_id"}, inplace=True
+    )
+
+    dqs_observation_df = pd.DataFrame.from_records(
+        ObservationResults.objects.filter(
+            service_pattern_stop_id__in=list(
+                service_pattern_stops_df["service_pattern_stop_id"]
+            ),
+            taskresults__checks__importance=Level.critical.value,
+        ).values("service_pattern_stop_id")
+    )
+
+    service_pattern_stops_df = service_pattern_stops_df.merge(
+        dqs_observation_df, on=["service_pattern_stop_id"], how="inner"
+    )
+    dqs_require_attention_df = service_pattern_ids_df.merge(
+        service_pattern_stops_df, on=["service_pattern_id"], how="left", indicator=True
+    )
+    dqs_require_attention_df.rename(columns={"_merge": "dqs_critical"}, inplace=True)
 
     is_specific_feedback = flag_is_active("", "is_specific_feedback")
+    is_specific_feedback = True
     if is_specific_feedback:
-        dqs_query_check |= Q(
-            feedback_service__isnull=False,
-            feedback_service__is_suppressed=False,
+        consumer_feedback_df = pd.DataFrame.from_records(
+            ConsumerFeedback.objects.filter(
+                service_id__in=list(service_pattern_ids_df["service_id"])
+            ).values("service_id")
         )
-
-    transmodel_services = (
-        TransmodelService.objects.filter(
-            query,
-            (dqs_query_check),
+        if consumer_feedback_df.empty:
+            consumer_feedback_df = pd.DataFrame(columns=["service_id"])
+        dqs_require_attention_df = dqs_require_attention_df.merge(
+            consumer_feedback_df, on=["service_id"], how="left", indicator=True
         )
-        .values_list("service_code", "service_patterns__line_name")
-        .distinct()
-    )
+        dqs_require_attention_df.rename(
+            columns={"_merge": "has_feedback"}, inplace=True
+        )
+        dqs_require_attention_df = dqs_require_attention_df[
+            (dqs_require_attention_df["dqs_critical"] == "both")
+            | (dqs_require_attention_df["has_feedback"] == "both")
+        ]
+    else:
+        dqs_require_attention_df = dqs_require_attention_df[
+            dqs_require_attention_df["dqs_critical"] == "both"
+        ]
 
-    return list(transmodel_services)
+    dqs_require_attention_df = dqs_require_attention_df[["service_code", "line_name"]]
+
+    return list(dqs_require_attention_df.itertuples(index=False, name=None))
 
 
 def get_dq_critical_observation_services_map_from_dataframe(

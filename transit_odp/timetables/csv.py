@@ -12,6 +12,7 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
 from transit_odp.common.collections import Column
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.organisation.constants import (
     ENGLISH_TRAVELINE_REGIONS,
     TravelineRegions,
@@ -1075,7 +1076,9 @@ def add_avl_published_status(row: Series, synced_in_last_month) -> str:
     return "No"
 
 
-def add_error_in_avl_to_timetable_matching(row: Series) -> str:
+def add_error_in_avl_to_timetable_matching(
+    row: Series, uncounted_activity_df: pd.DataFrame
+) -> str:
     """
     Returns value for 'Error in AVL to Timetable Matching' column.
 
@@ -1087,7 +1090,6 @@ def add_error_in_avl_to_timetable_matching(row: Series) -> str:
     """
     line_name = str(row["service_number"])
     operator_ref = row["national_operator_code"]
-    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
 
     if not uncounted_activity_df.loc[
         (uncounted_activity_df["OperatorRef"] == operator_ref)
@@ -1253,6 +1255,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     today = datetime.date.today()
     abods_registry = AbodsRegistery()
     synced_in_last_month = abods_registry.records()
+    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
 
     txc_df = pd.DataFrame.from_records(
         TXCFileAttributes.objects.get_active_txc_files_line_level().values(
@@ -1267,7 +1270,9 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
 
     otc_df["service_number"] = otc_df["service_number"].str.split("|")
     otc_df = otc_df.explode("service_number")
-    dq_require_attention_active = flag_is_active("", "dq_require_attention")
+    dq_require_attention_active = flag_is_active(
+        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+    )
     if dq_require_attention_active:
         dq_critical_observations_map = (
             get_dq_critical_observation_services_map_from_dataframe(txc_df)
@@ -1312,7 +1317,8 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         lambda x: add_avl_published_status(x, synced_in_last_month), axis=1
     )
     merged["error_in_avl_to_timetable_matching"] = merged.apply(
-        lambda x: add_error_in_avl_to_timetable_matching(x), axis=1
+        lambda x: add_error_in_avl_to_timetable_matching(x, uncounted_activity_df),
+        axis=1,
     )
     merged["avl_requires_attention"] = merged.apply(
         lambda x: add_avl_requires_attention(x), axis=1
