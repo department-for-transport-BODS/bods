@@ -1,4 +1,6 @@
 import logging
+
+from waffle import flag_is_active
 from transit_odp.avl.constants import AVL_GRANULARITY_WEEKLY
 from transit_odp.avl.models import PostPublishingCheckReport
 from django.db.models import Subquery
@@ -25,6 +27,11 @@ def get_vehicle_activity_operatorref_linename() -> pd.DataFrame:
     Returns:
         pd.DataFrame: Dataframe either from cache or from zip
     """
+    is_avl_require_attention_active = flag_is_active(
+        "", "is_avl_require_attention_active"
+    )
+    if not is_avl_require_attention_active:
+        return pd.DataFrame(columns=["OperatorRef", "LineRef"])
     value_in_cache = cache.get(CACHE_KEY, None)
     logger.info("Vehicle activites fetching from cache")
     if value_in_cache is None:
