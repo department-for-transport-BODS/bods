@@ -27,4 +27,7 @@ class ListView(BasePublishListView):
             )
             + "?prev=fares-feed-list"
         )
+
+        context["services_requiring_attention"] = 1
+        context["applicable_services"] = 1
         return context

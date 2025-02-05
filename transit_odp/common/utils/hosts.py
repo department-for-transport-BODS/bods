@@ -6,6 +6,7 @@ from django_hosts import reverse_host
 class LazySite(LazyObject):
     def __init__(self, request, *args, **kwargs):
         super(LazySite, self).__init__()
+        print(f"request: {request.host}")
         self.__dict__.update(
             {"_host": {"name": request.host.name, "args": args, "kwargs": kwargs}}
         )

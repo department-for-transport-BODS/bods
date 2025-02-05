@@ -34,6 +34,8 @@ class IncorrectNOCListView(WarningListBaseView, DQSWarningListBaseView):
 
     def get_queryset(self):
 
+        raise
+
         if not self.is_dqs_new_report:
             qs = super().get_queryset()
             return qs.add_message()
