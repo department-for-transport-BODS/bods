@@ -1,3 +1,4 @@
+import logging
 from collections import OrderedDict
 from typing import List, Tuple, Type
 
@@ -6,7 +7,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from django.db.models.query_utils import Q
 from django.forms import Form
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -19,6 +20,7 @@ from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.common.forms import ConfirmationForm
+from transit_odp.common.utils.aws_common import StepFunctionsClientWrapper
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
@@ -32,8 +34,11 @@ from transit_odp.publish.forms import (
     FeedUploadForm,
     RevisionPublishForm,
 )
+from transit_odp.timetables.utils import create_tt_state_machine_payload
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.views.mixins import OrgUserViewMixin
+
+logger = logging.getLogger(__name__)
 
 ExpiredStatus = FeedStatus.expired.value
 
@@ -497,8 +502,36 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
             Q(dataset=dataset) & Q(is_published=False)
         ).update_or_create(dataset=dataset, is_published=False, defaults=all_data)[0]
 
-        # trigger ETL job to run
-        revision.start_etl()
+        is_serverless_publishing_active = flag_is_active(
+            "", "is_serverless_publishing_active"
+        )
+
+        if not is_serverless_publishing_active:
+            # trigger ETL job to run
+            revision.start_etl()
+
+        else:
+            # trigger state machine
+            input_payload = create_tt_state_machine_payload(revision)
+            try:
+                step_fucntions_client = StepFunctionsClientWrapper()
+                step_function_arn = (
+                    settings.TIMETABLES_STATE_MACHINE_ARN
+                )  # ARN of timetable pipeline Step Function
+
+                if not step_function_arn:
+                    logger.error(
+                        "Timetable pipeline: AWS Step Function ARN is missing or invalid"
+                    )
+                    raise
+
+                # Invoke the Step Function
+                step_fucntions_client.start_step_function(
+                    input_payload, step_function_arn
+                )
+
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=500)
 
         return HttpResponseRedirect(
             reverse(

@@ -30,6 +30,7 @@ from transit_odp.browse.filters import TimetableSearchFilter
 from transit_odp.browse.forms import ConsumerFeedbackForm
 from transit_odp.browse.tables import DatasetPaginatorTable
 from transit_odp.browse.timetable_visualiser import TimetableVisualiser
+from transit_odp.browse.user_feedback import UserFeedback
 from transit_odp.browse.views.base_views import (
     BaseSearchView,
     BaseTemplateView,
@@ -131,7 +132,7 @@ class DatasetDetailView(DetailView):
             kwargs["is_new_data_quality_service_active"] = False
 
         kwargs["summary"] = summary
-
+        kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
         user = self.request.user
 
         kwargs["pk"] = dataset.id
@@ -536,6 +537,7 @@ class LineMetadataDetailView(DetailView):
         kwargs["service_type"] = self.get_service_type(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
+        kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
         kwargs["current_valid_files"] = self.get_current_files(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
@@ -906,7 +908,6 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
 
     def get_download_file(self, id_=None):
         if self.is_new_gtfs_api_active:
-            print("I am getting here")
             id_ = self.kwargs.get("id", None)
             gtfs_file = _get_gtfs_file(id_)
         else:
@@ -1114,12 +1115,63 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
         )
         return super().post(request, *args, **kwargs)
 
+    def get_feedback_details(self) -> dict:
+        """
+        Get the details from the request query params and DB
+        """
+
+        live_revision = self.dataset.live_revision
+        revision_id = live_revision.id
+
+        service_name = self.request.GET.get("service", None)
+        line_name = self.request.GET.get("line", None)
+        journey_code = self.request.GET.get("journey_code", None)
+        stop = self.request.GET.get("stop", None)
+        direction = self.request.GET.get("direction", None)
+        atco_code = self.request.GET.get("atco_code", None)
+
+        user_feedback = UserFeedback(
+            revision_id,
+            service_name,
+            line_name,
+            stop,
+            direction,
+            atco_code,
+            journey_code,
+        )
+        # If service name is not found in query string of url
+        if not service_name:
+            return user_feedback.default()
+        else:
+            if journey_code or stop:
+                # If vehicle journey code is available
+                if journey_code:
+                    qs = user_feedback.get_qs_journey_code()
+                # Check whether the stop info is there
+                if stop:
+                    qs = user_feedback.get_qs_stop()
+            else:
+                qs = user_feedback.get_qs_service()
+
+            if qs:
+                return user_feedback.data(qs)
+            else:
+                return user_feedback.default()
+
     def get_initial(self):
-        return {
+        initial_data = {
             "dataset_id": self.dataset.id,
             "organisation_id": self.dataset.organisation.id,
             "consumer_id": self.request.user.id,
         }
+        data: dict = self.get_feedback_details()
+
+        initial_data["service_id"] = data["service_id"]
+        initial_data["vehicle_journey_id"] = data["vehicle_journey_id"]
+        initial_data["revision_id"] = data["revision_id"]
+        initial_data["service_pattern_stop_id"] = data["service_pattern_stop_id"]
+
+        return initial_data
 
     @transaction.atomic
     def form_valid(self, form):
@@ -1159,12 +1211,30 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["back_url"] = reverse(
-            "feed-detail",
+        back_url = reverse(
+            "feed-line-detail",
             args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
         context["dataset"] = self.dataset
+
+        data: dict = self.get_feedback_details()
+        context["revision_id"] = data["revision_id"]
+        # If service code and line are found in DB
+        if data["service_id"]:
+            context["service"] = data["service_name"]
+            context["line_name"] = data["line_name"]
+            back_url += f"?line={data['line_name']}&service={data['service_name']}"
+        # If vehicle journey details are found in DB
+        if data["vehicle_journey_id"]:
+            context["journey_start_time"] = data["start_time"]
+            context["direction"] = data["direction"]
+        # If stop details are found in DB
+        if data["service_pattern_stop_id"]:
+            context["stop_name"] = data["stop_name"]
+            context["atco_code"] = data["atco_code"]
+        context["back_url"] = back_url
+
         return context
 
 
@@ -1174,6 +1244,6 @@ class UserFeedbackSuccessView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         object_id = self.kwargs["pk"]
-        url = reverse("feed-detail", args=[object_id], host=config.hosts.DATA_HOST)
+        url = reverse("feed-line-detail", args=[object_id], host=config.hosts.DATA_HOST)
         context["back_link"] = url
         return context

@@ -4,7 +4,7 @@ from django.test import TestCase
 from transit_odp.organisation.factories import TXCFileAttributesFactory
 from transit_odp.dqs.factories import ChecksFactory, TaskResultsFactory
 from transit_odp.dqs.models import TaskResults
-from transit_odp.dqs.constants import STATUSES
+from transit_odp.dqs.constants import TaskResultsStatus
 
 
 @pytest.mark.django_db
@@ -17,7 +17,7 @@ def setup_data(db):
     check2 = ChecksFactory(queue_name="Queue2")
 
     taskresult1 = TaskResultsFactory(
-        status=STATUSES["PENDING"],
+        status=TaskResultsStatus["PENDING"],
         transmodel_txcfileattributes=txcfileattribute1,
         checks=check1,
     )
@@ -27,7 +27,7 @@ def setup_data(db):
         checks=check1,
     )
     taskresult3 = TaskResultsFactory(
-        status=STATUSES["PENDING"],
+        status=TaskResultsStatus["PENDING"],
         transmodel_txcfileattributes=txcfileattribute2,
         checks=check2,
     )

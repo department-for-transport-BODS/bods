@@ -43,14 +43,21 @@ function extractOrgRevisionAndReportID() {
 
 /**
  * Get the API URL
+ * @param is_detail - Specify whether the request is from details or summarised page
  * @returns the API URL of the suppress observation
  */
-function getAPIUrl() {
+function getAPIUrl(is_detail = false) {
   // Remove trailing slash if it exists
-  const url = window.location.href.replace(/#.*$/, "").replace(/\/$/, "");
+  const url = window.location.href
+    .split("?")[0]
+    .replace(/#.*$/, "")
+    .replace(/\/$/, "");
   // Split the URL by slashes, remove the last segment, and join it back
   const segments = url.split("/");
   segments.pop(); // Remove the last segment
+  if (is_detail) {
+    segments.pop(); // Remove the last segment
+  }
   return segments.join("/") + "/" + "suppress-observation/"; // Re-add the trailing slash
 }
 
@@ -70,24 +77,24 @@ function setStatus(is_suppressed, rowIndex) {
 }
 
 /**
- * Suppress the observation for a specific service code and line name
- * @param {int} organisation_id - Organisation id
- * @param {int} revision_id - Revision id for the dataset
- * @param {int} report_id - Report id for the uploaded revision
+ * Suppress the observation/feedback for a specific service code and line name
  * @param {string} service_code - Service code of the service
  * @param {string} line_name - Line name of the service
  * @param {string} observation - Observation check
  * @param {string} rowIndex - Index of the row, starting from 1
+ * @param {boolean} is_feedback - Flag to detect whether the feedback or the observation result is to suppress
+ * @param {boolean} is_detail - Specifies whether the request is for detail or summarised page
+ * @param {int} row_id - Identiifier of the row
  *
  */
 function suppressObservation(
-  organisation_id,
-  revision_id,
-  report_id,
   service_code,
   line_name,
   observation,
-  rowIndex
+  rowIndex,
+  is_feedback = false,
+  is_detail = false,
+  row_id = null
 ) {
   const checkboxSuppress = document.getElementById(
     `checkbox-suppress-${rowIndex}`
@@ -101,10 +108,12 @@ function suppressObservation(
     line_name: line_name,
     check: observation,
     is_suppressed: is_suppressed,
+    is_feedback: is_feedback,
+    row_id: row_id,
   });
 
   httpClient
-    .post(`${getAPIUrl()}`, requestBody)
+    .post(`${getAPIUrl(is_detail)}`, requestBody)
     .then((response) => response.json())
     .then((data) => {
       setStatus(is_suppressed, rowIndex);
@@ -114,9 +123,12 @@ function suppressObservation(
 }
 
 /**
- * Suppress the observations for a check across all service code and line name.
+ * Suppress the observations for a check/feedback across all service code and line name.
+ * @param {boolean} is_feedback - Flag to detect whether the feedback or the observation result is to suppress
+ * @param {boolean} is_detail - Specifies whether the request is for detail or summarised page
+ *
  */
-function suppressAllObservations() {
+function suppressAllObservations(is_feedback, is_detail) {
   const httpClient = new HttpClient();
   const suppressButton = document.getElementById("button-suppress-observation");
   const buttonText = suppressButton.textContent.toLowerCase();
@@ -133,10 +145,11 @@ function suppressAllObservations() {
   const requestBody = JSON.stringify({
     check: observation,
     is_suppressed: is_suppressed,
+    is_feedback: is_feedback,
   });
 
   httpClient
-    .post(`${getAPIUrl()}`, requestBody)
+    .post(`${getAPIUrl(is_detail)}`, requestBody)
     .then((response) => response.json())
     .then((data) => {
       const suppressCheckboxes =

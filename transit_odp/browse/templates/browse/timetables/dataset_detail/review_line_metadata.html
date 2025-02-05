@@ -104,7 +104,7 @@
         {% else %}
           {% for direction, timetable_details in timetable.items %}
             {% if not timetable_details.df.empty %}
-              {% include "publish/dataset_detail/timetable_journey_stop.html" with direction=direction timetable_details=timetable_details %}
+              {% include "publish/dataset_detail/timetable_journey_stop.html" with direction=direction timetable_details=timetable_details is_feedback=is_specific_feedback %}
             {% endif %}
           {% endfor %}
         {% endif %}
@@ -113,7 +113,7 @@
   {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {% include "browse/base/feedback.html" with feedback_url_name="feed-feedback" %}
+      {% include "browse/base/feedback.html" with feedback_url_name="feed-feedback" is_specific_feedback=is_specific_feedback %}
     </div>
   </div>
 {% endblock %}
