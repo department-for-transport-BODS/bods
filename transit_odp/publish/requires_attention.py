@@ -457,24 +457,21 @@ def evaluate_fares_staleness(
             AND
             Operating period end date < today + 42 days
         Staleness Status - Stale - One year old:
-            If Staleness status is not 42 day look ahead
-            AND
-            last_modified + 365 days <= today
+            If last_modified + 365 days <= today
     """
     today = now().date()
     forty_two_days_from_today = today + timedelta(days=42)
-    twelve_months_from_last_updated = last_updated + timedelta(days=365)
+    last_updated_date = last_updated.date()
+    twelve_months_from_last_updated = last_updated_date + timedelta(days=365)
 
     staleness_42_day_look_ahead = (
-        (not operating_period_end_date < forty_two_days_from_today)
+        True
         if operating_period_end_date
+        and (operating_period_end_date < forty_two_days_from_today)
         else False
     )
     staleness_12_months_old = (
-        True
-        if not staleness_42_day_look_ahead
-        and (twelve_months_from_last_updated <= today)
-        else False
+        True if (twelve_months_from_last_updated <= today) else False
     )
 
     return (
