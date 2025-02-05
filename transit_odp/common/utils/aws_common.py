@@ -1,9 +1,11 @@
 import json
 import logging
 import re
+import time
 from datetime import datetime
 
 import boto3
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 from django.conf import settings
 from storages.backends.s3boto3 import S3Boto3Storage
 
@@ -130,49 +132,64 @@ class StepFunctionsClientWrapper:
         Initialize and return an Step Functions client.
         """
         try:
-            self.step_function_arn = (
-                settings.AWS_STEP_FUNCTION_ARN
-            )  # ARN of your Step Function
-
-            self.client = boto3.client(
-                "stepfunctions",
-                region_name=settings.AWS_REGION,
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            )
+            if settings.AWS_ENVIRONMENT == "LOCAL":
+                self.step_function_client = boto3.client(
+                    "stepfunctions",
+                    region_name=settings.AWS_REGION_NAME,
+                    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                )
+            else:
+                self.step_function_client = boto3.client(
+                    "stepfunctions",
+                )
+        except NoCredentialsError as e:
+            logger.error("AWS Step Functions: Missing AWS credentials")
+            raise
+        except PartialCredentialsError as e:
+            logger.error("AWS Step Functions: Incomplete AWS credentials")
+            raise
         except Exception as e:
-            logger.info(
-                f"AWS Step Functions:General exception when initialising Step Functions client wrapper: {e}"
-            )
+            logger.error(f"AWS Step Functions: Error initializing client: {e}")
             raise
 
     # Initialize and call AWS Step Functions
-    def start_step_function(self, input_payload: str):
+    def start_step_function(
+        self, input_payload: str, step_function_arn: str, name: str = ""
+    ):
         try:
-            input_payload_dict = json.loads(input_payload)
-            self.revision_id = input_payload_dict["detail"]["datasetRevisionId"]
-            clean_execution_name = self.clean_state_machine_name()
-
+            if not name:
+                name = self.clean_state_machine_name(input_payload)
             # Invoke the Step Function
-            response = self.client.start_execution(
-                stateMachineArn=self.step_function_arn,
-                name=clean_execution_name,
+            response = self.step_function_client.start_execution(
+                stateMachineArn=step_function_arn,
+                name=name,
                 input=input_payload,
             )
             self.execution_arn = response["executionArn"]
         except Exception as e:
-            logger.info(
-                f"AWS Step Functions:General exception when starting Step Functions: {e}"
+            logger.exception(
+                f"AWS Step Functions: General exception when starting Step Functions: {e}"
             )
             raise
 
-    def clean_state_machine_name(self) -> str:
+    def clean_state_machine_name(self, input_payload: str) -> str:
         """
         Statemachine Names much only contain: 0-9, A-Z, a-z, - and _
         If not, Cloudwatch Logging is disabled
         """
-        now = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-        execution_name = f"{self.revision_id}_{now}"
+        try:
+            input_payload_dict = json.loads(input_payload)
+            if not isinstance(input_payload_dict, dict):  # Ensure it's a dictionary
+                raise ValueError("Invalid JSON payload: Expected a dictionary")
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON input: {e}")
+            raise ValueError("Invalid JSON payload")
+
+        revision_id = input_payload_dict.get("datasetRevisionId", "unknown")
+        now = datetime.now().strftime("%Y%m%d_%H%M%S")
+        execution_name = f"{revision_id}_{now}"
+
         cleaned = re.sub(r"[^a-zA-Z0-9\-_]", "", execution_name)
 
         if cleaned != execution_name:
@@ -180,11 +197,19 @@ class StepFunctionsClientWrapper:
                 f"Name contained invalid characters: '{execution_name}' -> '{cleaned}'"
             )
 
+        # AWS Step Function execution name max length is 80 characters
+        MAX_NAME_LENGTH = 80
+        if len(cleaned) > MAX_NAME_LENGTH:
+            cleaned = cleaned[:MAX_NAME_LENGTH]
+            logger.warning(f"Execution name truncated to: {cleaned}")
+
         return cleaned
 
-    def wait_for_completion(poll_interval=5):
+    def wait_for_completion(self, poll_interval=5):
         while True:
-            response = self.client.describe_execution(executionArn=self.execution_arn)
+            response = self.step_function_client.describe_execution(
+                executionArn=self.execution_arn
+            )
             status = response["status"]
             if status in ["SUCCEEDED", "FAILED", "TIMED_OUT", "ABORTED"]:
                 return status, response

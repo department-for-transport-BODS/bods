@@ -185,12 +185,18 @@ jobs:
         security_groups: ${{ secrets.SECURITY_GROUPS }}
         environment: ${{ env.ENVIRONMENT_NAME }}
 
+    - name: Move secret to json payload
+      id: create-json
+      uses: jsdaniell/create-json@v1.2.3
+      with:
+        name: "credentials.json"
+        json: ${{ secrets.PG_MUTATION_DEV }}
+  
     - name: Invoke Lambda Function
       shell: bash
       run: |
-        aws lambda invoke \
-        --function-name bodds_pg_mutate_lambda_${{ env.ENVIRONMENT_NAME }} \
-        response.json
+        aws lambda invoke --function-name bodds_pg_mutate_lambda_dev --payload file://credentials.json out --log-type Tail \
+        --query 'LogResult' --output text --cli-binary-format raw-in-base64-out | base64 --decode
 
     - name: Update Confluence Page
       uses: robsteel24/update-confluence@v1

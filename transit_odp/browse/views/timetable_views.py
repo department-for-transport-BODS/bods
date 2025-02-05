@@ -132,7 +132,7 @@ class DatasetDetailView(DetailView):
             kwargs["is_new_data_quality_service_active"] = False
 
         kwargs["summary"] = summary
-
+        kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
         user = self.request.user
 
         kwargs["pk"] = dataset.id
@@ -537,6 +537,7 @@ class LineMetadataDetailView(DetailView):
         kwargs["service_type"] = self.get_service_type(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
+        kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
         kwargs["current_valid_files"] = self.get_current_files(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
@@ -1243,6 +1244,6 @@ class UserFeedbackSuccessView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         object_id = self.kwargs["pk"]
-        url = reverse("feed-detail", args=[object_id], host=config.hosts.DATA_HOST)
+        url = reverse("feed-line-detail", args=[object_id], host=config.hosts.DATA_HOST)
         context["back_link"] = url
         return context
