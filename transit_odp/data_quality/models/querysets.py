@@ -271,7 +271,11 @@ class ServiceLinkMissingStopQuerySet(models.QuerySet):
         ).values_list("service__name")
         # Get a list of valid line names in the dataset
         txc_files = TXCFileAttributes.objects.filter(revision__report=report_id)
-        txc_line_names = list(np.concatenate([t.line_names for t in txc_files]).flat)
+        txc_line_names = []
+        if txc_files:
+            txc_line_names = list(
+                np.concatenate([t.line_names for t in txc_files]).flat
+            )
         # Slightly clumsily, extract the line number from the line name string in the
         # DQS data, by splitting the string on the first colon. For example,
         # line name "26:Seaford - Eastbourne Town Ctr" becomes line number "26"
