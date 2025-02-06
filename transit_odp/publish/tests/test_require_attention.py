@@ -2,6 +2,18 @@ import random
 import datetime
 import pytest
 from transit_odp.dqs.constants import Level, TaskResultsStatus
+from datetime import date, datetime
+
+import pytest
+from freezegun import freeze_time
+from waffle.testutils import override_flag
+
+from transit_odp.dqs.constants import Level, TaskResultsStatus
+from transit_odp.dqs.factories import (
+    ChecksFactory,
+    ObservationResultsFactory,
+    TaskResultsFactory,
+)
 from transit_odp.organisation.factories import (
     ConsumerFeedbackFactory,
     FaresDatasetRevisionFactory,
@@ -13,15 +25,12 @@ from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.fares.factories import (
     DataCatalogueMetaDataFactory,
 )
-from transit_odp.dqs.factories import (
-    ChecksFactory,
-    TaskResultsFactory,
-    ObservationResultsFactory,
-)
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.publish.requires_attention import (
+    evaluate_fares_staleness,
     get_dq_critical_observation_services_map,
     get_fares_dataset_map,
+    is_fares_stale,
 )
 from transit_odp.transmodel.factories import (
     ServiceFactory,
@@ -377,8 +386,8 @@ def test_get_fares_dataset_map():
         line_name=[":::L1", ":::L2", ":::L3"],
         line_id=[":::L1", ":::L2", ":::L3"],
         national_operator_code=national_operator_code,
-        valid_from=datetime.datetime(2024, 12, 12),
-        valid_to=datetime.datetime(2025, 1, 12),
+        valid_from=datetime(2024, 12, 12),
+        valid_to=datetime(2025, 1, 12),
     )
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata,
@@ -386,8 +395,8 @@ def test_get_fares_dataset_map():
         line_name=[":::L1", ":::L2", ":::L3"],
         line_id=[":::L1", ":::L2", ":::L3"],
         national_operator_code=national_operator_code,
-        valid_from=datetime.datetime(2025, 1, 12),
-        valid_to=datetime.datetime(2099, 2, 12),
+        valid_from=datetime(2025, 1, 12),
+        valid_to=datetime(2099, 2, 12),
     )
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata,
@@ -436,3 +445,84 @@ def test_get_fares_dataset_map():
         ]["valid_to"]
         == "2099-02-12"
     ).all()
+
+
+@freeze_time("04/02/2025")
+@pytest.mark.parametrize(
+    "operating_period_end_date, last_updated, expected_result",
+    [
+        (
+            date(2025, 1, 19),
+            datetime(2023, 1, 2, 16, 17, 45),
+            (True, True),
+        ),
+        (
+            date(2025, 1, 19),
+            datetime(2025, 1, 2, 16, 17, 45),
+            (True, False),
+        ),
+        (
+            date(2025, 6, 20),
+            datetime(2023, 1, 2, 16, 17, 45),
+            (False, True),
+        ),
+        (
+            date(2025, 6, 20),
+            datetime(2025, 1, 2, 16, 17, 45),
+            (False, False),
+        ),
+        (
+            None,
+            datetime(2025, 1, 2, 16, 17, 45),
+            (False, False),
+        ),
+    ],
+)
+def test_evaluate_fares_staleness(
+    operating_period_end_date, last_updated, expected_result
+):
+    """
+    Test for evaluate_fares_staleness function.
+    """
+    staleness_function_result = evaluate_fares_staleness(
+        operating_period_end_date, last_updated
+    )
+
+    assert staleness_function_result == expected_result
+
+
+@freeze_time("04/02/2025")
+@pytest.mark.parametrize(
+    "operating_period_end_date, last_updated, expected_result",
+    [
+        (
+            date(2025, 1, 19),
+            datetime(2023, 1, 2, 16, 17, 45),
+            True,
+        ),
+        (
+            date(2025, 1, 19),
+            datetime(2025, 1, 2, 16, 17, 45),
+            True,
+        ),
+        (
+            date(2025, 6, 20),
+            datetime(2023, 1, 2, 16, 17, 45),
+            True,
+        ),
+        (
+            date(2025, 6, 20),
+            datetime(2025, 1, 2, 16, 17, 45),
+            False,
+        ),
+    ],
+)
+def test_is_fares_stale(operating_period_end_date, last_updated, expected_result):
+    """
+    Test for is_fares_stale function.
+    """
+    is_fares_stale_function_result = is_fares_stale(
+        operating_period_end_date, last_updated
+    )
+
+    assert is_fares_stale_function_result == expected_result

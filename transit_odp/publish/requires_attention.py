@@ -1,9 +1,9 @@
 import logging
-import pandas as pd
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional
 
-from django.db.models import Subquery
+import pandas as pd
+from django.db.models import Q, Subquery
 from django.utils.timezone import now
 from waffle import flag_is_active
 
@@ -18,8 +18,6 @@ from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.transmodel.models import Service as TransmodelService
-from django.db.models import Q
-
 
 logger = logging.getLogger(__name__)
 
@@ -436,7 +434,66 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
 
 
 def is_stale(service: OTCService, file_attribute: TXCFileAttributes) -> bool:
+    """
+    Determines if a timetables service has any stale values that are True.
+
+    Args:
+        service (OTCService): OTC Service
+        file_attribute (TXCFileAttributes): File attributes from TXC files
+
+    Returns:
+        bool: True or False if there is a stale value present.
+    """
     return any(evaluate_staleness(service, file_attribute))
+
+
+def evaluate_fares_staleness(
+    operating_period_end_date: date, last_updated: datetime
+) -> tuple:
+    """
+    Checks timeliness status for fares data.
+
+    Fares Staleness logic:
+        Staleness Status - Stale - 42 day look ahead is incomplete:
+            If Operating period end date is present
+            AND
+            Operating period end date < today + 42 days
+        Staleness Status - Stale - One year old:
+            If last_modified + 365 days <= today
+    """
+    today = now().date()
+    forty_two_days_from_today = today + timedelta(days=42)
+    last_updated_date = last_updated.date()
+    twelve_months_from_last_updated = last_updated_date + timedelta(days=365)
+
+    staleness_42_day_look_ahead = (
+        True
+        if operating_period_end_date
+        and (operating_period_end_date < forty_two_days_from_today)
+        else False
+    )
+    staleness_12_months_old = (
+        True if (twelve_months_from_last_updated <= today) else False
+    )
+
+    return (
+        staleness_42_day_look_ahead,
+        staleness_12_months_old,
+    )
+
+
+def is_fares_stale(operating_period_end_date: date, last_updated: datetime) -> bool:
+    """
+    Determines if a fares service has any stale values that are True.
+
+    Args:
+        operating_period_end_date (date): Valid to value
+        last_updated (datetime): Last update date
+
+    Returns:
+        bool: True or False if there is a stale value.
+    """
+    return any(evaluate_fares_staleness(operating_period_end_date, last_updated))
 
 
 def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
