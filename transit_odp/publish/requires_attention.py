@@ -638,65 +638,45 @@ def query_dq_critical_observation(query) -> List[tuple]:
     2. Check for customer feedback present and not suppressed
     Transmodel service -> Organisation feedback
 
+    Due to database restriction we can not use above given joins, we have to use
+    Dataframe approch in order to acheive the desired values. Following steps will
+    be followed
+
+    1. Get dataframe to get service_patter_ids for the given query of registration number, line name, revision id
+    2. Get dataframe by querying servicepatternstops table from the service_pattern_ids extracted in step 1
+    3. Merge the dataframe built on step 1 and step 2 with left join (To prevent any service.id loss)
+    4. Get the observations with ciritical type and merge the selected stop points with the Step 3 dataframe
+    5. Now to get consumer feedback use the service_ids extracted on Step 1 df and search for feedbacks which are not suppressed
+    6. Merge the dataframe of consumer feedbacks with main dataframe
+    7. Return the registration number and line name for which any value (Observation with ciritical or Consumer feedback) is present
+
     Returns:
         dict[tuple, str]: return a list of services"""
 
-    service_pattern_ids_df = pd.DataFrame.from_records(
-        TransmodelService.objects.filter(query).values(
-            "id", "service_code", "service_patterns__line_name", "service_patterns__id"
-        )
-    )
-    service_pattern_ids_df.rename(
-        columns={
-            "id": "service_id",
-            "service_patterns__line_name": "line_name",
-            "service_patterns__id": "service_pattern_id",
-        },
-        inplace=True,
+    service_pattern_ids_df = get_service_patterns_df(query)
+    service_pattern_stops_df = get_service_pattern_stops_df(service_pattern_ids_df)
+
+    service_pattern_ids_df = service_pattern_ids_df.merge(
+        service_pattern_stops_df, on=["service_pattern_id"], how="left"
     )
 
-    service_pattern_stops_df = pd.DataFrame.from_records(
-        ServicePatternStop.objects.filter(
-            service_pattern_id__in=list(service_pattern_ids_df["service_pattern_id"])
-        ).values("id", "service_pattern_id")
-    )
-    service_pattern_stops_df.rename(
-        columns={"id": "service_pattern_stop_id"}, inplace=True
-    )
+    dqs_observation_df = get_dqs_observations_df(service_pattern_stops_df)
 
-    dqs_observation_df = pd.DataFrame.from_records(
-        ObservationResults.objects.filter(
-            service_pattern_stop_id__in=list(
-                service_pattern_stops_df["service_pattern_stop_id"]
-            ),
-            taskresults__checks__importance=Level.critical.value,
-        ).values("service_pattern_stop_id")
-    )
-
-    service_pattern_stops_df = service_pattern_stops_df.merge(
-        dqs_observation_df, on=["service_pattern_stop_id"], how="inner"
-    )
     dqs_require_attention_df = service_pattern_ids_df.merge(
-        service_pattern_stops_df, on=["service_pattern_id"], how="left", indicator=True
+        dqs_observation_df, on=["service_pattern_stop_id"], how="left", indicator=True
     )
     dqs_require_attention_df.rename(columns={"_merge": "dqs_critical"}, inplace=True)
 
     is_specific_feedback = flag_is_active("", "is_specific_feedback")
-    is_specific_feedback = True
     if is_specific_feedback:
-        consumer_feedback_df = pd.DataFrame.from_records(
-            ConsumerFeedback.objects.filter(
-                service_id__in=list(service_pattern_ids_df["service_id"])
-            ).values("service_id")
-        )
-        if consumer_feedback_df.empty:
-            consumer_feedback_df = pd.DataFrame(columns=["service_id"])
+        consumer_feedback_df = get_consumer_feedback_df(service_pattern_ids_df)
         dqs_require_attention_df = dqs_require_attention_df.merge(
             consumer_feedback_df, on=["service_id"], how="left", indicator=True
         )
         dqs_require_attention_df.rename(
             columns={"_merge": "has_feedback"}, inplace=True
         )
+
         dqs_require_attention_df = dqs_require_attention_df[
             (dqs_require_attention_df["dqs_critical"] == "both")
             | (dqs_require_attention_df["has_feedback"] == "both")
@@ -729,3 +709,97 @@ def get_dq_critical_observation_services_map_from_dataframe(
             revision_id=row["revision_id"],
         )
     return query_dq_critical_observation(query)
+
+
+def get_service_patterns_df(query) -> pd.DataFrame:
+    """Get list fo service pattern records for service pattern ids
+
+    Args:
+        query (_type_): Servie pattner filter (OR query)
+
+    Returns:
+        pd.DataFrame: Dataframe with list of transmodel service with service pattern id
+    """
+    service_pattern_ids_df = pd.DataFrame.from_records(
+        TransmodelService.objects.filter(query).values(
+            "id", "service_code", "service_patterns__line_name", "service_patterns__id"
+        )
+    )
+    service_pattern_ids_df.rename(
+        columns={
+            "id": "service_id",
+            "service_patterns__line_name": "line_name",
+            "service_patterns__id": "service_pattern_id",
+        },
+        inplace=True,
+    )
+    return service_pattern_ids_df
+
+
+def get_service_pattern_stops_df(service_pattern_ids_df: pd.DataFrame) -> pd.DataFrame:
+    """Get Service pattern stop ids for given service pattern ids
+
+    Args:
+        service_pattern_ids_df (pd.DataFrame): Dataframe with service pattern ids
+
+    Returns:
+        pd.DataFrame: Dataframe with service pattern stop ids
+    """
+    service_pattern_stops_df = pd.DataFrame.from_records(
+        ServicePatternStop.objects.filter(
+            service_pattern_id__in=list(service_pattern_ids_df["service_pattern_id"])
+        ).values("id", "service_pattern_id")
+    )
+    if service_pattern_stops_df.empty:
+        service_pattern_stops_df = pd.DataFrame(columns=["id", "service_pattern_id"])
+
+    service_pattern_stops_df.rename(
+        columns={"id": "service_pattern_stop_id"}, inplace=True
+    )
+    return service_pattern_stops_df
+
+
+def get_dqs_observations_df(service_pattern_stops_df: pd.DataFrame) -> pd.DataFrame:
+    """Get Critical DQS Observations for the given service pattern stops
+
+    Args:
+        service_pattern_stops_df (pd.DataFrame): service pattern stop ids
+
+    Returns:
+        pd.DataFrame: Dataframe with service pattern stops details
+    """
+    dqs_observation_df = pd.DataFrame(columns=["service_pattern_stop_id"])
+    if not service_pattern_stops_df.empty:
+        dqs_observation_df = pd.DataFrame.from_records(
+            ObservationResults.objects.filter(
+                service_pattern_stop_id__in=list(
+                    service_pattern_stops_df["service_pattern_stop_id"]
+                ),
+                taskresults__checks__importance=Level.critical.value,
+            ).values("service_pattern_stop_id")
+        )
+
+        if dqs_observation_df.empty:
+            dqs_observation_df = pd.DataFrame(columns=["service_pattern_stop_id"])
+
+    return dqs_observation_df
+
+
+def get_consumer_feedback_df(service_pattern_ids_df: pd.DataFrame) -> pd.DataFrame:
+    """Get consumer feedback records for the given service pattern ids
+
+    Args:
+        service_pattern_ids_df (pd.DataFrame): _description_
+
+    Returns:
+        pd.DataFrame: Dataframe with consumer feedback records
+    """
+    consumer_feedback_df = pd.DataFrame.from_records(
+        ConsumerFeedback.objects.filter(
+            service_id__in=list(service_pattern_ids_df["service_id"]),
+            is_suppressed=False,
+        ).values("service_id")
+    )
+    if consumer_feedback_df.empty:
+        consumer_feedback_df = pd.DataFrame(columns=["service_id"])
+    return consumer_feedback_df
