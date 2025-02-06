@@ -654,6 +654,9 @@ def query_dq_critical_observation(query) -> List[tuple]:
         dict[tuple, str]: return a list of services"""
 
     service_pattern_ids_df = get_service_patterns_df(query)
+    if service_pattern_ids_df.empty:
+        return []
+
     service_pattern_stops_df = get_service_pattern_stops_df(service_pattern_ids_df)
 
     service_pattern_ids_df = service_pattern_ids_df.merge(
@@ -725,6 +728,16 @@ def get_service_patterns_df(query) -> pd.DataFrame:
             "id", "service_code", "service_patterns__line_name", "service_patterns__id"
         )
     )
+    if service_pattern_ids_df.empty:
+        service_pattern_ids_df = pd.DataFrame(
+            columns=[
+                "id",
+                "service_code",
+                "service_patterns__line_name",
+                "service_patterns__id",
+            ]
+        )
+
     service_pattern_ids_df.rename(
         columns={
             "id": "service_id",
