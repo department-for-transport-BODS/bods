@@ -12,7 +12,9 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
 from transit_odp.dqs.constants import Level
+from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
 from transit_odp.naptan.models import AdminArea
+from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.transmodel.models import Service as TransmodelService
@@ -728,3 +730,83 @@ def get_dq_critical_observation_services_map_from_dataframe(
             revision_id=row["revision_id"],
         )
     return query_dq_critical_observation(query)
+
+
+def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFrame:
+    """Find fares data compatible to NOC and Line name
+
+    Args:
+        txc_map (Dict[tuple, TXCFileAttributes]): List of txc file attributes
+
+    Returns:
+        pd.DataFrame: DataFrame containing the fares files details
+    """
+    nocs_list = []
+    noc_linename_dict = []
+    for service_key in txc_map:
+        nocs_list.append(txc_map[service_key].national_operator_code)
+        noc_linename_dict.append(
+            {
+                "national_operator_code": txc_map[service_key].national_operator_code,
+                "line_name": txc_map[service_key].line_name_unnested,
+            }
+        )
+
+    noc_df = pd.DataFrame.from_dict(noc_linename_dict)
+    noc_df.drop_duplicates(inplace=True)
+
+    nocs_list = list(set(nocs_list))
+
+    fares_df = pd.DataFrame.from_records(
+        DataCatalogueMetaData.objects.filter(national_operator_code__overlap=nocs_list)
+        .add_revision_and_dataset()
+        .get_live_revision_data()
+        .exclude(fares_metadata_id__revision__status=INACTIVE)
+        .add_published_date()
+        .add_compliance_status()
+        .values(
+            "xml_file_name",
+            "valid_from",
+            "valid_to",
+            "line_id",
+            "id",
+            "national_operator_code",
+            "fares_metadata_id",
+            "last_updated_date",
+            "is_fares_compliant",
+        )
+    )
+
+    fares_df = fares_df.explode("line_id")
+    fares_df = fares_df.explode("national_operator_code")
+    fares_df["line_name"] = fares_df["line_id"].apply(
+        lambda x: x.split(":")[3]
+        if isinstance(x, str) and len(x.split(":")) > 3
+        else None
+    )
+
+    fares_df_merged = pd.DataFrame.merge(
+        fares_df,
+        noc_df,
+        on=["line_name", "national_operator_code"],
+        how="inner",
+        indicator=False,
+    )
+
+    fares_df_merged["valid_to"] = pd.to_datetime(
+        fares_df_merged["valid_to"], errors="coerce"
+    )
+    fares_df_merged["valid_from"] = pd.to_datetime(
+        fares_df_merged["valid_from"], errors="coerce"
+    )
+
+    fares_df_merged = (
+        fares_df_merged.sort_values(
+            by=["valid_to", "valid_from", "xml_file_name"],
+            ascending=[False, False, False],
+        )
+        .drop_duplicates(subset=["line_name", "national_operator_code"])
+        .reset_index()
+    )
+
+    return fares_df_merged
