@@ -344,10 +344,10 @@ class Transform(ETLUtility):
         ].reset_index()
 
         if not provisional_flexible_stops.empty:
-            provisional_flexible_stops["flexible_location"] = (
-                provisional_flexible_stops["geometry"].apply(
-                    lambda row: [row] if not isinstance(row, list) else row
-                )
+            provisional_flexible_stops[
+                "flexible_location"
+            ] = provisional_flexible_stops["geometry"].apply(
+                lambda row: [row] if not isinstance(row, list) else row
             )
 
         filtered_stop_points = flexible_stop_points[
