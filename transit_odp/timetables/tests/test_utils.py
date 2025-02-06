@@ -261,12 +261,14 @@ class TestCreateTTStateMachinePayload:
         mock_revision.url_link = "https://example.com"
         mock_revision.upload_file = None
 
-        payload_json = create_tt_state_machine_payload(mock_revision)
+        payload_json = create_tt_state_machine_payload(mock_revision, True)
         payload = json.loads(payload_json)
+        assert payload is not None
         assert payload["datasetRevisionId"] == 123
         assert payload["datasetType"] == "timetables"
         assert payload["url"] == "https://example.com"
         assert payload["inputDataSource"] == "URL_DOWNLOAD"
+        assert payload["publishDatasetRevision"]
         assert "s3" not in payload  # Ensure 's3' is excluded when None
 
     def test_create_payload_file_upload(self):
@@ -277,12 +279,14 @@ class TestCreateTTStateMachinePayload:
         mock_file.name = "test_file"
         mock_revision.upload_file = mock_file
 
-        payload_json = create_tt_state_machine_payload(mock_revision)
+        payload_json = create_tt_state_machine_payload(mock_revision, False)
         payload = json.loads(payload_json)
+        assert payload is not None
         assert payload["datasetRevisionId"] == 123
         assert payload["datasetType"] == "timetables"
         assert payload["inputDataSource"] == "S3_FILE"
         assert payload["s3"]["object"] == "test_file"
+        assert not payload["publishDatasetRevision"]
         assert "url" not in payload  # Ensure 'url' is excluded when None
 
     def test_create_payload_missing_inputs(self, caplog):
