@@ -1249,13 +1249,6 @@ class UserFeedbackSuccessView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         object_id = self.kwargs["pk"]
-        line = self.request.GET.get("line")
-        service_code = self.request.GET.get("service")
-
-        if flag_is_active("", "is_specific_feedback") and line and service_code:
-            reverse_url = "feed-line-detail"
-        else:
-            reverse_url = "feed-detail"
-        url = reverse(reverse_url, args=[object_id], host=config.hosts.DATA_HOST)
+        url = reverse("feed-line-detail", args=[object_id], host=config.hosts.DATA_HOST)
         context["back_link"] = url
         return context

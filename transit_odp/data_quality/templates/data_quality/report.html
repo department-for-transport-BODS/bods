@@ -16,7 +16,7 @@
             <span class="govuk-caption-xl">Data quality report</span>
           {% endif %}
         </div>
-        {% if is_dqs_new_report %}        
+        {% if is_dqs_new_report %}
           <div class="content-center">
             {% if is_specific_feedback %}
               {% if warning_data.Critical.count == 0 and warning_data.Feedback.count == 0 %}
