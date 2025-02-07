@@ -93,7 +93,7 @@
           {% trans "This will include subscription, download, search results from browsing, and API hits." %}
         {% endfilter %}
       </p>
-      <a class="govuk-link govuk-!-font-size-19" href={% url 'consumer-interactions' pk1=pk1 host hosts.publish %}>
+      <a class="govuk-link govuk-!-font-size-19" href="{% url 'consumer-interactions' pk1=pk1 host hosts.publish %}">
         {% filter force_escape %}
           {% trans "Download report" %}
         {% endfilter %}
@@ -108,7 +108,7 @@
           {% trans "This will provide you details of the data with issues that have been reported on and also the number of issues reported on each of them." %}
         {% endfilter %}
       </p>
-      <a class="govuk-link govuk-!-font-size-19" href={% url 'consumer-feedback' pk1=pk1 host hosts.publish %}>
+      <a class="govuk-link govuk-!-font-size-19" href="{% url 'consumer-feedback' pk1=pk1 host hosts.publish %}">
         {% filter force_escape %}
           {% trans "Download report" %}
         {% endfilter %}

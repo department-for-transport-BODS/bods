@@ -1000,11 +1000,3 @@ def transform_geometry_tracks(df):
             )
         )
     return df
-
-
-def add_tracks_sequence(df):
-    if df.empty:
-        return df
-    df["rl_order"] = df.index
-    df["rl_order"] = df["rl_order"].apply(lambda x: x + 1)
-    return df

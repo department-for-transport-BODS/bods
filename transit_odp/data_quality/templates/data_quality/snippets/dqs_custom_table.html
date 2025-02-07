@@ -106,7 +106,7 @@
             <tfoot {{ table.attrs.tfoot.as_html }}>
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
-                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">{{ column.footer }}</td>
+                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:'' }}">{{ column.footer }}</td>
                 {% endfor %}
               </tr>
             </tfoot>
@@ -125,6 +125,6 @@
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       BODSFrontend.setButtonStatus();
-    });       
+    });
   </script>
 {% endblock %}

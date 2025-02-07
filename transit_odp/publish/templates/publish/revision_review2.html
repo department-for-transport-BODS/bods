@@ -84,7 +84,7 @@
                 <a role="button"
                    class="govuk-button"
                    id="id-publish-review-publish-data"
-                   href=" {% if is_update %}{% url 'update-modify' pk=object.dataset_id host hosts.publish %} {% else %}{% url 'upload-modify' pk=object.dataset_id host hosts.publish %} {% endif %}">
+                   href="{% if is_update %}{% url 'update-modify' pk=object.dataset_id host hosts.publish %} {% else %}{% url 'upload-modify' pk=object.dataset_id host hosts.publish %} {% endif %}">
                   {{ _("Publish correct data set") }}
                 </a>
               </div>
@@ -149,7 +149,7 @@
                       {% block inner.txc_version.download %}
                         {% url "feed-download" pk=object.dataset_id host host.name as download_link %}
                         <a class="govuk-link"
-                           href=" {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
+                           href="{% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
                           {% trans "Download .xml" %}
                           <br />
                           {% trans "(TransXChange format)" %}
@@ -169,7 +169,7 @@
                     {{ url_link }}
                     {% url 'feed-download' pk=object.dataset_id host host.name as download_link %}
                     <a class="govuk-link"
-                       href=" {% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
+                       href="{% if object.url_link %}{{ object.url_link }}{% else %}{{ download_link }}?is_review=true{% endif %}">
                       {% trans "Publisher URL" %}
                     </a>
                   </span>
