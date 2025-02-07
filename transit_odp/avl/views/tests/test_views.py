@@ -24,10 +24,12 @@ from transit_odp.otc.factories import (
 )
 from transit_odp.users.constants import OrgStaffType
 from transit_odp.users.factories import UserFactory
+from waffle.testutils import override_flag
 
 pytestmark = pytest.mark.django_db
 
 
+@override_flag("is_avl_require_attention_active", active=True)
 def test_avl_require_attention_stats(publish_client):
     host = PUBLISH_HOST
     org1 = OrganisationFactory(id=1)
@@ -145,6 +147,7 @@ def test_avl_require_attention_search_no_results(publish_client):
     assert len(response.context["table"].data) == 0
 
 
+@override_flag("is_avl_require_attention_active", active=True)
 def test_avl_require_attention_search_results(publish_client):
     host = PUBLISH_HOST
     org1 = OrganisationFactory(id=1)
