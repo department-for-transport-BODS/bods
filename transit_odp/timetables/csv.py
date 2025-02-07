@@ -1313,9 +1313,6 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
             right_on=["national_operator_code", "line_name"],
             how="outer",
         )
-        txc_df["fares_published_status"] = txc_df["fares_filename"].apply(
-            lambda x: "Yes" if pd.notna(x) and x.strip() != "" else "No"
-        )
 
     merged = pd.merge(
         otc_df,
@@ -1361,6 +1358,9 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     merged = merged[merged["otc_status"] == OTC_STATUS_REGISTERED]
 
     if is_fares_require_attention_active:
+        merged["fares_published_status"] = txc_df["fares_filename"].apply(
+            lambda x: "Yes" if pd.notna(x) and x.strip() != "" else "No"
+        )
         merged["fares_requires_attention"] = np.where(
             (merged["fares_published_status"] == "Yes")
             & (merged["fares_timeliness_status"] == "Yes")
