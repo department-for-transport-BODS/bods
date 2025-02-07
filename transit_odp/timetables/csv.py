@@ -33,6 +33,8 @@ from transit_odp.otc.constants import (
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
     get_dq_critical_observation_services_map_from_dataframe,
+    get_fares_dataset_map,
+    is_fares_stale,
 )
 
 TXC_COLUMNS = (
@@ -1254,11 +1256,9 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     abods_registry = AbodsRegistery()
     synced_in_last_month = abods_registry.records()
 
-    txc_df = pd.DataFrame.from_records(
-        TXCFileAttributes.objects.get_active_txc_files_line_level().values(
-            *TXC_LINE_LEVEL_COLUMNS
-        )
-    )
+    txc_service_map = {}
+    txc_attributes = TXCFileAttributes.objects.get_active_txc_files_line_level()
+    txc_df = pd.DataFrame.from_records(txc_attributes.values(*TXC_LINE_LEVEL_COLUMNS))
     otc_df = pd.DataFrame.from_records(
         OTCService.objects.add_timetable_data_annotations().values(*OTC_COLUMNS)
     )
@@ -1281,6 +1281,41 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         ("variation_number", "Int64"),
         ("otc_operator_id", "Int64"),
     )
+
+    is_fares_require_attention_active = flag_is_active(
+        "", "fares_require_attention_active"
+    )
+    if is_fares_require_attention_active:
+        for txc_attribute in txc_attributes:
+            txc_service_map[txc_attribute.service_code] = txc_attribute
+        fares_df = get_fares_dataset_map(txc_map=txc_service_map)
+        fares_df["valid_to"] = fares_df["valid_to"].dt.date
+        fares_df["fares_timeliness_status"] = fares_df.apply(
+            lambda x: is_fares_stale(x.valid_to, x.last_updated_date), axis=1
+        )
+        fares_df["fares_effective_stale_date_from_last_modified"] = fares_df[
+            "last_updated_date"
+        ] + pd.Timedelta(days=365)
+        fares_df.rename(
+            columns={
+                "is_fares_compliant": "fares_compliance_status",
+                "xml_file_name": "fares_filename",
+                "last_updated_date": "fares_last_modified_date",
+                "valid_to": "fares_operating_period_end_date",
+                "dataset_id": "fares_dataset_id",
+            },
+            inplace=True,
+        )
+        txc_df = pd.merge(
+            txc_df,
+            fares_df,
+            left_on=["national_operator_code", "line_name_unnested"],
+            right_on=["national_operator_code", "line_name"],
+            how="outer",
+        )
+        txc_df["fares_published_status"] = txc_df["fares_filename"].apply(
+            lambda x: "Yes" if pd.notna(x) and x.strip() != "" else "No"
+        )
 
     merged = pd.merge(
         otc_df,
@@ -1307,7 +1342,9 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         merged["critical_dq_issues"] = UNDER_MAINTENANCE
     merged = add_timetables_requires_attention_column(merged)
     merged = add_traveline_regions(merged)
-    merged = add_under_maintenance_columns(merged)
+    if not is_fares_require_attention_active:
+        merged = add_under_maintenance_columns(merged)
+
     merged["avl_published_status"] = merged.apply(
         lambda x: add_avl_published_status(x, synced_in_last_month), axis=1
     )
@@ -1322,6 +1359,15 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     )
 
     merged = merged[merged["otc_status"] == OTC_STATUS_REGISTERED]
+
+    if is_fares_require_attention_active:
+        merged["fares_requires_attention"] = np.where(
+            (merged["fares_published_status"] == "Yes")
+            & (merged["fares_timeliness_status"] == "Yes")
+            & (merged["fares_compliance_status"] == "Yes"),
+            "Yes",
+            "No",
+        )
 
     rename_map = {
         old_name: column_tuple.field_name

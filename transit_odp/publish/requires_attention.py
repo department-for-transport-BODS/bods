@@ -468,7 +468,7 @@ def evaluate_fares_staleness(
 
     staleness_42_day_look_ahead = (
         True
-        if operating_period_end_date
+        if not pd.isna(operating_period_end_date)
         and (operating_period_end_date < forty_two_days_from_today)
         else False
     )
@@ -774,6 +774,7 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
             "fares_metadata_id",
             "last_updated_date",
             "is_fares_compliant",
+            "dataset_id",
         )
     )
 
