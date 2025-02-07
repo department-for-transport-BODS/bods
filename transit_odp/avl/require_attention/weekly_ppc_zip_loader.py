@@ -62,20 +62,37 @@ def read_all_linenames_from_weekly_files() -> pd.DataFrame:
             with record.file.open("rb") as zip_file_obj:
                 zip_data = BytesIO(zip_file_obj.read())
                 with ZipFile(zip_data, "r") as z:
-                    with z.open(ALL_SIRIVM_FILENAME) as af:
-                        all_activity_df = pd.read_csv(
-                            af,
-                            dtype={
-                                "VehicleRef": "object",
-                                "DatedVehicleJourneyRef": "int64",
-                                "LineRef": "object",
-                            },
+                    try:
+                        with z.open(ALL_SIRIVM_FILENAME) as af:
+                            all_activity_df = pd.read_csv(
+                                af,
+                                dtype={
+                                    "VehicleRef": "object",
+                                    "DatedVehicleJourneyRef": "object",
+                                    "LineRef": "object",
+                                },
+                            )
+                    except Exception as e:
+                        logger.error(f"Exception: File {ALL_SIRIVM_FILENAME} not found")
+                        logger.error(str(e))
+                        all_activity_df = pd.DataFrame(
+                            columns=[
+                                "DatedVehicleJourneyRef",
+                                "VehicleRef",
+                                "DestinationRef",
+                            ]
                         )
 
-                    with z.open(UNCOUNTED_VEHICLE_ACTIVITY_FILENAME) as uf:
-                        df = pd.read_csv(uf, dtype={"LineRef": "object"})
-                        df = df[["OperatorRef", "LineRef"]]
-                        errors_df = pd.concat([df, errors_df])
+                    try:
+                        with z.open(UNCOUNTED_VEHICLE_ACTIVITY_FILENAME) as uf:
+                            df = pd.read_csv(uf, dtype={"LineRef": "object"})
+                            df = df[["OperatorRef", "LineRef"]]
+                            errors_df = pd.concat([df, errors_df])
+                    except Exception as e:
+                        logger.error(
+                            f"Exception: File {UNCOUNTED_VEHICLE_ACTIVITY_FILENAME} not found"
+                        )
+                        logger.error(str(e))
 
                     errors_df = pd.concat(
                         [
@@ -141,7 +158,7 @@ def get_originref_df(zipfile: ZipFile, all_activity_df: pd.DataFrame) -> pd.Data
                 uf,
                 dtype={
                     "VehicleRef in SIRI": "object",
-                    "DatedVehicleJourneyRef in SIRI": "int64",
+                    "DatedVehicleJourneyRef in SIRI": "object",
                 },
             )
             origin_ref_df = origin_ref_df[
@@ -200,7 +217,7 @@ def get_directionref_df(
                 uf,
                 dtype={
                     "VehicleRef in SIRI": "object",
-                    "DatedVehicleJourneyRef in SIRI": "int64",
+                    "DatedVehicleJourneyRef in SIRI": "object",
                 },
             )
             origin_ref_df = origin_ref_df[
@@ -259,7 +276,7 @@ def get_destinationref_df(
                 uf,
                 dtype={
                     "VehicleRef in SIRI": "object",
-                    "DatedVehicleJourneyRef in SIRI": "int64",
+                    "DatedVehicleJourneyRef in SIRI": "object",
                 },
             )
             origin_ref_df = origin_ref_df[

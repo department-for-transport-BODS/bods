@@ -484,6 +484,11 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
 
     Returns list of objects of each service requiring attention for an organisation.
     """
+    is_avl_require_attention_active = flag_is_active(
+        "", "is_avl_require_attention_active"
+    )
+    if not is_avl_require_attention_active:
+        return []
     object_list = []
     dqs_critical_issues_service_line_map = []
     otc_map = get_line_level_in_scope_otc_map(org_id)
@@ -502,7 +507,6 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     synced_in_last_month = abods_registry.records()
 
     for service_key, service in otc_map.items():
-        logging.info(f"AVL-REQUIRE-ATTENTION: {service_key}")
         file_attribute = txcfa_map.get(service_key)
         if file_attribute is not None:
             operator_ref = file_attribute.national_operator_code
