@@ -63,7 +63,6 @@ def read_all_linenames_from_weekly_files() -> pd.DataFrame:
                 zip_data = BytesIO(zip_file_obj.read())
                 with ZipFile(zip_data, "r") as z:
                     try:
-                        logger.info(z.filelist)
                         with z.open(ALL_SIRIVM_FILENAME) as af:
                             all_activity_df = pd.read_csv(
                                 af,
