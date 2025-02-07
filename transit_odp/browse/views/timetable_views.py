@@ -1212,7 +1212,7 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         back_url = reverse(
-            "feed-line-detail",
+            "feed-detail",
             args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
@@ -1224,6 +1224,11 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
         if data["service_id"]:
             context["service"] = data["service_name"]
             context["line_name"] = data["line_name"]
+            back_url = reverse(
+                "feed-line-detail",
+                args=[self.dataset.id],
+                host=config.hosts.DATA_HOST,
+            )
             back_url += f"?line={data['line_name']}&service={data['service_name']}"
         # If vehicle journey details are found in DB
         if data["vehicle_journey_id"]:
@@ -1244,6 +1249,13 @@ class UserFeedbackSuccessView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         object_id = self.kwargs["pk"]
-        url = reverse("feed-line-detail", args=[object_id], host=config.hosts.DATA_HOST)
+        line = self.request.GET.get("line")
+        service_code = self.request.GET.get("service")
+
+        if flag_is_active("", "is_specific_feedback") and line and service_code:
+            reverse_url = "feed-line-detail"
+        else:
+            reverse_url = "feed-detail"
+        url = reverse(reverse_url, args=[object_id], host=config.hosts.DATA_HOST)
         context["back_link"] = url
         return context
