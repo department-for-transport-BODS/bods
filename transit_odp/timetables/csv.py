@@ -1368,6 +1368,13 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
             "Yes",
             "No",
         )
+        merged["overall_requires_attention"] = np.where(
+            (merged["fares_published_status"] == "Yes")
+            & (merged["requires_attention"] == "Yes")
+            & (merged["avl_requires_attention"] == "Yes"),
+            "Yes",
+            "No",
+        )
 
     rename_map = {
         old_name: column_tuple.field_name
