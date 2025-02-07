@@ -29,6 +29,7 @@ from transit_odp.otc.factories import (
     UILtaFactory,
 )
 from transit_odp.users.factories import OrgStaffFactory
+from waffle.testutils import override_flag
 
 pytestmark = pytest.mark.django_db
 
@@ -417,6 +418,7 @@ class TestAVLListView:
         row = table.rows[0]
         assert row.get_cell("percent_matching") == expected_score
 
+    @override_flag("is_avl_require_attention_active", active=True)
     def test_services_requiring_attention(self, client_factory, sample_data):
         datasets, user, organisation = sample_data
         total_services = 7

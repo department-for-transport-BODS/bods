@@ -97,6 +97,7 @@ class ReportOverviewView(DetailView):
                 "bus_services_affected": summary.bus_services_affected,
                 "is_new_data_quality_service_active": is_new_data_quality_service_active,
                 "is_dqs_new_report": is_dqs_new_report,
+                "is_specific_feedback": flag_is_active("", "is_specific_feedback"),
             }
         )
         return context
