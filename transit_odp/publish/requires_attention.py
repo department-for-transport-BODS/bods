@@ -708,6 +708,9 @@ def get_dq_critical_observation_services_map_from_dataframe(
     Returns:
         dict[tuple, str]: return a list of services
     """
+    if txc_map.empty:
+        return []
+
     query = Q()
     for _, row in txc_map.iterrows():
         query |= Q(
