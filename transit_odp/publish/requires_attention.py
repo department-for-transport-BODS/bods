@@ -661,10 +661,6 @@ def query_dq_critical_observation(query) -> List[tuple]:
     if service_pattern_ids_df.empty:
         return []
 
-    logger.info(service_pattern_ids_df.shape)
-    logger.info(service_pattern_ids_df)
-    logger.info(service_pattern_ids_df["service_pattern_id"])
-
     service_pattern_stops_df = get_service_pattern_stops_df(service_pattern_ids_df)
 
     service_pattern_ids_df = service_pattern_ids_df.merge(
@@ -712,6 +708,9 @@ def get_dq_critical_observation_services_map_from_dataframe(
     Returns:
         dict[tuple, str]: return a list of services
     """
+    if txc_map.empty:
+        return []
+    
     query = Q()
     for _, row in txc_map.iterrows():
         query |= Q(
