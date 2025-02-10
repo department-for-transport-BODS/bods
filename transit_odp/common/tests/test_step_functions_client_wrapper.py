@@ -55,35 +55,34 @@ def test_init_partial_credentials(mock_boto_client):
 
 
 @patch("boto3.client")
-def test_start_step_function(mock_boto_client, stepfunctions_wrapper):
-    # Mock the return value of boto3.client
+def test_start_step_function(mock_boto_client):
+    # Mock boto3 Step Functions client
     mock_client = MagicMock()
     mock_boto_client.return_value = mock_client
 
-    # Mock the response of start_execution
-    mock_client.start_execution.return_value = {"executionArn": "test-arn"}
+    mock_client.start_execution.return_value = {"executionArn": "test-execution-arn"}
 
-    # Call the method
-    stepfunctions_wrapper.start_step_function("{}", "test-arn")
+    stepfunctions_wrapper = StepFunctionsClientWrapper()
 
-    # Assertions
+    stepfunctions_wrapper.start_step_function("{}", "test-arn", "test-name")
+
     mock_client.start_execution.assert_called_once_with(
         stateMachineArn="test-arn",
-        name=pytest.any(str),
+        name="test-name",
         input="{}",
     )
-    assert stepfunctions_wrapper.execution_arn == "test-arn"
+    assert stepfunctions_wrapper.execution_arn == "test-execution-arn"
 
 
 @pytest.mark.parametrize(
     "input_payload, expected_name",
     [
         (
-            '{"s3": {"object": "coach-data/zip/2024-01-03-CoachData.zip"},"inputDataSource": "S3_FILE","datasetRevisionId": 123, "datasetType": "timetables"}',
+            '{"s3": {"object": "coach-data/zip/2024-01-03-CoachData.zip"},"inputDataSource": "S3_FILE","datasetRevisionId": 123, "datasetType": "timetables","publishDatasetRevision":false}',
             r"123_\d{8}_\d{6}",
         ),
         (
-            '{"url": "https://s3.eu-west-1.amazonaws.com/file_123.zip","inputDataSource": "URL_DOWNLOAD", "datasetType": "timetables"}',
+            '{"url": "https://s3.eu-west-1.amazonaws.com/file_123.zip","inputDataSource": "URL_DOWNLOAD", "datasetType": "timetables","publishDatasetRevision":true}',
             r"unknown_\d{8}_\d{6}",
         ),
         ('{"datasetRevisionId": "rev@!#"}', r"rev_\d{8}_\d{6}"),
