@@ -810,3 +810,46 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
     )
 
     return fares_df_merged
+
+
+class FaresRequiresAttention:
+    """
+    Class to get the details of fares requiring attention
+    """
+
+    org_id: int
+
+    def __init__(self, org_id):
+        self._org_id = org_id
+
+    def get_fares_requires_attention_line_level_data(self) -> List[Dict[str, str]]:
+        """
+        Compares an organisation's OTC Services dictionaries list with Fares Catalogue
+        dictionaries list to determine which OTC Services require attention ie. not live
+        in BODS at all, or live but meeting new Staleness conditions.
+
+        Returns list of objects of each service requiring attention for an organisation.
+        """
+        object_list = []
+        print(f"self._org_id: {self._org_id}")
+
+        # dqs_critical_issues_service_line_map = []
+        otc_map = get_line_level_in_scope_otc_map(self._org_id)
+        service_codes = [service_code for (service_code, line_name) in otc_map]
+        print(f"otc_map: {otc_map}")
+        txcfa_map = get_line_level_txc_map_service_base(service_codes)
+        print(f"txcfa_map: {txcfa_map}")
+        # is_dqs_require_attention = flag_is_active("", "dqs_require_attention")
+
+        for service_key, service in otc_map.items():
+            print(service.end_date)
+            # operating_period_end_date: date, last_updated
+            file_attribute = txcfa_map.get(service_key)
+            last_modified = file_attribute.modification_datetime.date()
+            operating_period_end_date = file_attribute.operating_period_end_date
+            print(file_attribute)
+            if file_attribute is None:
+                _update_data(object_list, service)
+            # elif is_fares_stale(service, file_attribute):
+            #     _update_data(object_list, service)
+        return object_list
