@@ -1264,7 +1264,6 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     )
     if txc_df.empty or otc_df.empty:
         raise EmptyDataFrame()
-
     otc_df["service_number"] = otc_df["service_number"].str.split("|")
     otc_df = otc_df.explode("service_number")
     dq_require_attention_active = flag_is_active("", "dq_require_attention")
@@ -1362,16 +1361,16 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
             lambda x: "Yes" if pd.notna(x) and x.strip() != "" else "No"
         )
         merged["fares_requires_attention"] = np.where(
-            (merged["fares_published_status"] == "Yes")
-            & (merged["fares_timeliness_status"] == "Yes")
-            & (merged["fares_compliance_status"] == "Yes"),
+            (merged["fares_published_status"] == "No")
+            | (merged["fares_timeliness_status"] == "No")
+            | (merged["fares_compliance_status"] == "No"),
             "Yes",
             "No",
         )
         merged["overall_requires_attention"] = np.where(
-            (merged["fares_published_status"] == "Yes")
-            & (merged["requires_attention"] == "Yes")
-            & (merged["avl_requires_attention"] == "Yes"),
+            (merged["fares_requires_attention"] == "Yes")
+            | (merged["requires_attention"] == "Yes")
+            | (merged["avl_requires_attention"] == "Yes"),
             "Yes",
             "No",
         )
