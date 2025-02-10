@@ -660,10 +660,10 @@ def query_dq_critical_observation(query) -> List[tuple]:
     service_pattern_ids_df = get_service_patterns_df(query)
     if service_pattern_ids_df.empty:
         return []
-    
+
     logger.info(service_pattern_ids_df.shape)
     logger.info(service_pattern_ids_df)
-    logger.info(service_pattern_ids_df['service_pattern_id'])
+    logger.info(service_pattern_ids_df["service_pattern_id"])
 
     service_pattern_stops_df = get_service_pattern_stops_df(service_pattern_ids_df)
 
