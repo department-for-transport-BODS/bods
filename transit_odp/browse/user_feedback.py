@@ -51,6 +51,7 @@ class UserFeedback:
             "service_id": None,
             "vehicle_journey_id": None,
             "service_pattern_stop_id": None,
+            "service_pattern_id": None,
         }
 
     def data(self, qs) -> dict[str, Any]:
@@ -74,6 +75,7 @@ class UserFeedback:
             "service_pattern_stop_id": (
                 qs.service_pattern_stop_id if self._stop else None
             ),
+            "service_pattern_id": qs.service_pattern_id if qs.id else None,
         }
 
     def get_qs_service(self):
@@ -99,6 +101,7 @@ class UserFeedback:
                     "service_patterns__service_pattern_stops__txc_common_name",
                     output_field=CharField(),
                 ),
+                service_pattern_id=F("service_patterns__id"),
             )
             .first()
         )
@@ -126,6 +129,7 @@ class UserFeedback:
                 "service_patterns__service_pattern_stops__txc_common_name",
                 output_field=CharField(),
             ),
+            service_pattern_id=F("service_patterns__id"),
         )
 
         qs = qs.filter(common_name=self._stop).first()
@@ -155,6 +159,7 @@ class UserFeedback:
                 vehicle_journey_id=F(
                     "service_patterns__service_pattern_vehicle_journey__id"
                 ),
+                service_pattern_id=F("service_patterns__id"),
             )
             .first()
         )
