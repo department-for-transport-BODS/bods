@@ -1,7 +1,7 @@
-import logging
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
+import pandas as pd
 from waffle import flag_is_active
 
 from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
@@ -26,10 +26,13 @@ from transit_odp.otc.constants import (
 )
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
+    evaluate_fares_staleness,
     evaluate_staleness,
     get_all_line_level_otc_map,
     get_dq_critical_observation_services_map,
+    get_fares_dataset_map,
     get_line_level_txc_map_service_base,
+    is_fares_stale,
     is_stale,
 )
 
@@ -37,6 +40,11 @@ STALENESS_STATUS = [
     "42 day look ahead is incomplete",
     "Service hasn't been updated within a year",
     "OTC variation not published",
+]
+
+FARES_STALENESS_STATUS = [
+    "42 day look ahead is incomplete",
+    "One year old",
 ]
 
 
@@ -450,19 +458,19 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         ),
         CSVColumn(
             header="Fares requires attention",
-            accessor=lambda otc_service: UNDER_MAINTENANCE,
+            accessor=lambda otc_service: otc_service.get("fares_requires_attention"),
         ),
         CSVColumn(
             header="Fares Published Status",
-            accessor=lambda otc_service: UNDER_MAINTENANCE,
+            accessor=lambda otc_service: otc_service.get("fares_published_status"),
         ),
         CSVColumn(
             header="Fares Timeliness Status",
-            accessor=lambda otc_service: UNDER_MAINTENANCE,
+            accessor=lambda otc_service: otc_service.get("fares_timeliness_status"),
         ),
         CSVColumn(
             header="Fares Compliance Status",
-            accessor=lambda otc_service: UNDER_MAINTENANCE,
+            accessor=lambda otc_service: otc_service.get("fares_compliance_status"),
         ),
         CSVColumn(
             header="Timetables Data set ID",
@@ -492,23 +500,25 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         ),
         CSVColumn(
             header="Fares Data set ID",
-            accessor=lambda otc_service: UNDER_MAINTENANCE,
+            accessor=lambda otc_service: otc_service.get("fares_dataset_id"),
         ),
         CSVColumn(
             header="NETEX:Filename",
-            accessor=lambda otc_service: UNDER_MAINTENANCE,
+            accessor=lambda otc_service: otc_service.get("fares_filename"),
         ),
         CSVColumn(
             header="NETEX:Last Modified Date",
-            accessor=lambda otc_service: UNDER_MAINTENANCE,
+            accessor=lambda otc_service: otc_service.get("fares_last_modified_date"),
         ),
         CSVColumn(
             header="Date when fares data is over 1 year old",
-            accessor=lambda otc_service: UNDER_MAINTENANCE,
+            accessor=lambda otc_service: otc_service.get("fares_data_over_one_year"),
         ),
         CSVColumn(
             header="NETEX:Operating Period End Date",
-            accessor=lambda otc_service: UNDER_MAINTENANCE,
+            accessor=lambda otc_service: otc_service.get(
+                "fares_operating_period_end_date"
+            ),
         ),
         CSVColumn(
             header="Date Registration variation needs to be published",
@@ -591,6 +601,14 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         avl_published_status: str,
         error_in_avl_to_timetable_matching: str,
         avl_requires_attention: str,
+        fares_published_status: str,
+        fares_timeliness_status: str,
+        fares_compliance_status: str,
+        fares_requires_attention: str,
+        fares_dataset_id: int,
+        fares_filename: str,
+        fares_last_modified_date: str,
+        fares_operating_period_end_date: str,
         overall_requires_attention: str,
         dq_require_attention: str,
     ) -> None:
@@ -636,6 +654,16 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 "avl_published_status": avl_published_status,
                 "error_in_avl_to_timetable_matching": error_in_avl_to_timetable_matching,
                 "avl_requires_attention": avl_requires_attention,
+                "fares_published_status": fares_published_status,
+                "fares_timeliness_status": fares_timeliness_status,
+                "fares_compliance_status": fares_compliance_status,
+                "fares_requires_attention": fares_requires_attention,
+                "fares_dataset_id": fares_dataset_id,
+                "fares_filename": fares_filename,
+                "fares_last_modified_date": fares_last_modified_date,
+                "fares_data_over_one_year": fares_last_modified_date
+                and fares_last_modified_date + timedelta(days=365),
+                "fares_operating_period_end_date": fares_operating_period_end_date,
                 "overall_requires_attention": overall_requires_attention,
                 "dq_require_attention": dq_require_attention,
             }
@@ -648,6 +676,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         self,
         timetable_requires_attention: Optional[str],
         avl_requires_attention: Optional[str],
+        fares_requires_attention: Optional[str],
         exempted: Optional[bool],
         seasonal_service: Optional[SeasonalService],
     ) -> str:
@@ -655,9 +684,11 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         Returns value for 'Requires attention' column based on the following logic:
             If 'Scope Status' = Out of Scope OR 'Seasonal Status' = Out of Season,
             then 'Requires attention' = No.
-            If 'Timetables requires attention' = No AND 'AVL requires attention' = No,
+            If 'Timetables requires attention' = No AND 'AVL requires attention' = No
+            AND 'Fares requires attention' = No,
             then 'Requires attention' = No.
-            If 'Timetables requires attention' = Yes OR 'AVL requires attention' = Yes,
+            If 'Timetables requires attention' = Yes OR 'AVL requires attention' = Yes
+            OR 'Fares requires attention' = Yes,
             then 'Requires attention' = Yes.
 
         Args:
@@ -668,7 +699,11 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         """
         if exempted or (seasonal_service and not seasonal_service.seasonal_status):
             return "No"
-        if (timetable_requires_attention == "No") and (avl_requires_attention == "No"):
+        if (
+            (timetable_requires_attention == "No")
+            and (avl_requires_attention == "No")
+            and (fares_requires_attention == "No")
+        ):
             return "No"
         return "Yes"
 
@@ -747,8 +782,8 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
     ) -> str:
         """
         Returns value for 'AVL requires attention' column based on the following logic:
-            If both 'AVL Published Status' equal to Yes or 'Error in AVL to Timetable Matching' equal to No,
-            then 'AVL requires attention' = No.
+            If both 'AVL Published Status' equal to Yes or 'Error in AVL to Timetable Matching'
+            equal to No, then 'AVL requires attention' = No.
             Else
             the 'AVL requires attention' = Yes.
 
@@ -761,6 +796,86 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         """
         if (avl_published_status == "Yes") and (
             error_in_avl_to_timetable_matching == "No"
+        ):
+            return "No"
+        return "Yes"
+
+    def get_fares_published_status(self, row: pd.Series) -> str:
+        """
+        Returns value for 'Fares Published Status' column.
+
+        Args:
+            row (pd.Series): Row from fares dataframe
+
+        Returns:
+            str: Published or Unpublished for 'Fares Published Status' column
+        """
+        if row is not None and row["xml_file_name"]:
+            return "Published"
+        return "Unpublished"
+
+    def get_fares_timeliness_status(self, row: pd.Series) -> str:
+        """
+        Returns value for 'Fares Timeliness Status' column.
+
+        Args:
+            row (pd.Series): Row from fares dataframe
+
+        Returns:
+            str: Status for 'Fares Timeliness Status' column
+        """
+        fares_staleness_status = "Not Stale"
+        if row is not None and is_fares_stale(
+            row["valid_to"], row["last_updated_date"]
+        ):
+            fares_rad = evaluate_fares_staleness(
+                row["valid_to"], row["last_updated_date"]
+            )
+            fares_staleness_status = FARES_STALENESS_STATUS[fares_rad.index(True)]
+
+        return fares_staleness_status
+
+    def get_fares_compliance_status(self, row: pd.Series) -> str:
+        """
+        Returns value for 'Fares Compliance Status' column.
+
+        Args:
+            row (pd.Series): Row from fares dataframe
+
+        Returns:
+            str: Compliant or Non compliant for 'Fares Compliance Status' column
+        """
+        if row is not None and row["is_fares_compliant"]:
+            return "Compliant"
+        return "Non compliant"
+
+    def get_fares_requires_attention(
+        self,
+        fares_published_status: str,
+        fares_timeliness_status: str,
+        fares_compliance_status: str,
+    ) -> str:
+        """
+        Returns value for 'Fares requires attention' column based on the following logic:
+            If 'Fares Published Status' equal to Published
+            AND 'Fares Timeliness Status' equal to Not Stale
+            AND 'Fares Compliance Status' equal to Compliant
+            then 'Fares requires attention' = No.
+            Else
+            the 'Fares requires attention' = Yes.
+
+        Args:
+            fares_published_status (str): Value of 'Fares Published Status'
+            fares_timeliness_status (str): Value of 'Fares Timeliness Status'
+            fares_compliance_status (str): Value of 'Fares Compliance Status'
+
+        Returns:
+            str: Yes or No for 'Fares requires attention' column
+        """
+        if (
+            (fares_published_status == "Published")
+            and (fares_timeliness_status == "Not Stale")
+            and (fares_compliance_status == "Compliant")
         ):
             return "No"
         return "Yes"
@@ -782,6 +897,11 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             dq_critical_observations_map = get_dq_critical_observation_services_map(
                 txcfa_map
             )
+
+        is_fares_require_attention_active = flag_is_active(
+            "", "is_fares_require_attention_active"
+        )
+        fares_dataset_df = get_fares_dataset_map(txcfa_map)
 
         seasonal_service_map = get_seasonal_service_map(organisation_id)
         service_code_exemption_map = get_service_code_exemption_map(organisation_id)
@@ -860,7 +980,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     line_name,
                     synced_in_last_month,
                 )
-                erorr_in_avl_to_timetable_matching = (
+                error_in_avl_to_timetable_matching = (
                     self.get_error_in_avl_to_timetable_matching(
                         file_attribute.national_operator_code,
                         line_name,
@@ -870,18 +990,47 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 avl_published_status = self.get_avl_published_status(
                     "", line_name, synced_in_last_month
                 )
-                erorr_in_avl_to_timetable_matching = (
+                error_in_avl_to_timetable_matching = (
                     self.get_error_in_avl_to_timetable_matching("", line_name)
                 )
 
+            if file_attribute is not None and not fares_dataset_df.empty:
+                national_operator_code = file_attribute.national_operator_code
+                row = fares_dataset_df.loc[
+                    fares_dataset_df["national_operator_code"]
+                    == national_operator_code & fares_dataset_df["line_id"]
+                    == line_name
+                ].iloc[0]
+
+                fares_dataset_id = row["dataset_id"]
+                fares_filename = row["file_name"]
+                fares_last_modified_date = row["last_updated_data"]
+                fares_operating_period_end_date = row["valid_to"]
+                fares_published_status = self.get_fares_published_status(row)
+                fares_timeliness_status = self.get_fares_timeliness_status(row)
+                fares_compliance_status = self.get_fares_compliance_status(row)
+            else:
+                fares_dataset_id = None
+                fares_filename = None
+                fares_last_modified_date = None
+                fares_operating_period_end_date = None
+                fares_published_status = self.get_fares_published_status(None)
+                fares_timeliness_status = self.get_fares_timeliness_status(None)
+                fares_compliance_status = self.get_fares_compliance_status(None)
+
+            fares_requires_attention = self.get_fares_requires_attention(
+                fares_published_status, fares_timeliness_status, fares_compliance_status
+            )
+
             avl_requires_attention = self.get_avl_requires_attention(
                 avl_published_status,
-                erorr_in_avl_to_timetable_matching,
+                error_in_avl_to_timetable_matching,
             )
 
             overall_requires_attention = self.get_overall_requires_attention(
                 require_attention,
                 avl_requires_attention,
+                fares_requires_attention,
                 exempted,
                 seasonal_service,
             )
@@ -900,8 +1049,16 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 ui_lta_name,
                 line_name,
                 avl_published_status,
-                erorr_in_avl_to_timetable_matching,
+                error_in_avl_to_timetable_matching,
                 avl_requires_attention,
+                fares_published_status,
+                fares_timeliness_status,
+                fares_compliance_status,
+                fares_requires_attention,
+                fares_dataset_id,
+                fares_filename,
+                fares_last_modified_date,
+                fares_operating_period_end_date,
                 overall_requires_attention,
                 dq_require_attention,
             )
