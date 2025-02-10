@@ -1,9 +1,9 @@
 import logging
-import pandas as pd
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional
 
-from django.db.models import Subquery
+import pandas as pd
+from django.db.models import Q, Subquery
 from django.utils.timezone import now
 from waffle import flag_is_active
 
@@ -12,12 +12,12 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
 from transit_odp.dqs.constants import Level
+from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
 from transit_odp.naptan.models import AdminArea
+from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.transmodel.models import Service as TransmodelService
-from django.db.models import Q
-
 
 logger = logging.getLogger(__name__)
 
@@ -434,7 +434,66 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
 
 
 def is_stale(service: OTCService, file_attribute: TXCFileAttributes) -> bool:
+    """
+    Determines if a timetables service has any stale values that are True.
+
+    Args:
+        service (OTCService): OTC Service
+        file_attribute (TXCFileAttributes): File attributes from TXC files
+
+    Returns:
+        bool: True or False if there is a stale value present.
+    """
     return any(evaluate_staleness(service, file_attribute))
+
+
+def evaluate_fares_staleness(
+    operating_period_end_date: date, last_updated: datetime
+) -> tuple:
+    """
+    Checks timeliness status for fares data.
+
+    Fares Staleness logic:
+        Staleness Status - Stale - 42 day look ahead is incomplete:
+            If Operating period end date is present
+            AND
+            Operating period end date < today + 42 days
+        Staleness Status - Stale - One year old:
+            If last_modified + 365 days <= today
+    """
+    today = now().date()
+    forty_two_days_from_today = today + timedelta(days=42)
+    last_updated_date = last_updated.date()
+    twelve_months_from_last_updated = last_updated_date + timedelta(days=365)
+
+    staleness_42_day_look_ahead = (
+        True
+        if operating_period_end_date
+        and (operating_period_end_date < forty_two_days_from_today)
+        else False
+    )
+    staleness_12_months_old = (
+        True if (twelve_months_from_last_updated <= today) else False
+    )
+
+    return (
+        staleness_42_day_look_ahead,
+        staleness_12_months_old,
+    )
+
+
+def is_fares_stale(operating_period_end_date: date, last_updated: datetime) -> bool:
+    """
+    Determines if a fares service has any stale values that are True.
+
+    Args:
+        operating_period_end_date (date): Valid to value
+        last_updated (datetime): Last update date
+
+    Returns:
+        bool: True or False if there is a stale value.
+    """
+    return any(evaluate_fares_staleness(operating_period_end_date, last_updated))
 
 
 def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
@@ -671,3 +730,83 @@ def get_dq_critical_observation_services_map_from_dataframe(
             revision_id=row["revision_id"],
         )
     return query_dq_critical_observation(query)
+
+
+def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFrame:
+    """Find fares data compatible to NOC and Line name
+
+    Args:
+        txc_map (Dict[tuple, TXCFileAttributes]): List of txc file attributes
+
+    Returns:
+        pd.DataFrame: DataFrame containing the fares files details
+    """
+    nocs_list = []
+    noc_linename_dict = []
+    for service_key in txc_map:
+        nocs_list.append(txc_map[service_key].national_operator_code)
+        noc_linename_dict.append(
+            {
+                "national_operator_code": txc_map[service_key].national_operator_code,
+                "line_name": txc_map[service_key].line_name_unnested,
+            }
+        )
+
+    noc_df = pd.DataFrame.from_dict(noc_linename_dict)
+    noc_df.drop_duplicates(inplace=True)
+
+    nocs_list = list(set(nocs_list))
+
+    fares_df = pd.DataFrame.from_records(
+        DataCatalogueMetaData.objects.filter(national_operator_code__overlap=nocs_list)
+        .add_revision_and_dataset()
+        .get_live_revision_data()
+        .exclude(fares_metadata_id__revision__status=INACTIVE)
+        .add_published_date()
+        .add_compliance_status()
+        .values(
+            "xml_file_name",
+            "valid_from",
+            "valid_to",
+            "line_id",
+            "id",
+            "national_operator_code",
+            "fares_metadata_id",
+            "last_updated_date",
+            "is_fares_compliant",
+        )
+    )
+
+    fares_df = fares_df.explode("line_id")
+    fares_df = fares_df.explode("national_operator_code")
+    fares_df["line_name"] = fares_df["line_id"].apply(
+        lambda x: x.split(":")[3]
+        if isinstance(x, str) and len(x.split(":")) > 3
+        else None
+    )
+
+    fares_df_merged = pd.DataFrame.merge(
+        fares_df,
+        noc_df,
+        on=["line_name", "national_operator_code"],
+        how="inner",
+        indicator=False,
+    )
+
+    fares_df_merged["valid_to"] = pd.to_datetime(
+        fares_df_merged["valid_to"], errors="coerce"
+    )
+    fares_df_merged["valid_from"] = pd.to_datetime(
+        fares_df_merged["valid_from"], errors="coerce"
+    )
+
+    fares_df_merged = (
+        fares_df_merged.sort_values(
+            by=["valid_to", "valid_from", "xml_file_name"],
+            ascending=[False, False, False],
+        )
+        .drop_duplicates(subset=["line_name", "national_operator_code"])
+        .reset_index()
+    )
+
+    return fares_df_merged
