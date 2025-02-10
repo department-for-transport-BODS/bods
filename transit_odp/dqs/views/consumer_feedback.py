@@ -42,6 +42,7 @@ class ConsumerFeedbackDetailView(FeedbackDetailBaseView):
                 "subtitle": f"Service {line} has at least one feedback message to address.",
                 "subtitle_description": "How many feedbacks have been raised by consumers?",
                 "total_journey_description": "Consumer feedback observations",
+                "total_journey_description_short": "detected",
                 "list_text": "consumer feedback",
             }
         )
