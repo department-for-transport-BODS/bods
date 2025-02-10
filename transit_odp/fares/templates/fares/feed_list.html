@@ -8,7 +8,7 @@
     </div>
     <p class="review-stat__description">{% trans "Total service codes that require attention" %}</p>
     <i class="fas fa-play govuk-!-margin-right-1"></i>
-    <a class="review-stat__link" href={% url 'requires-attention' pk1=pk1 host hosts.publish %}>
+    <a class="review-stat__link" href="{% url 'fares:requires-attention' pk1=pk1 host hosts.publish %}">
       {% trans "More details" %}
     </a>
   </div>  

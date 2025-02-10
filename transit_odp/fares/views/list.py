@@ -5,7 +5,11 @@ from transit_odp.fares.tables import FaresDataFeedTable
 from transit_odp.organisation.constants import FaresType
 from transit_odp.organisation.models import Dataset
 from transit_odp.publish.views.base import BasePublishListView
-
+from transit_odp.publish.requires_attention import (
+    get_requires_attention_line_level_data,
+    FaresRequiresAttention,
+)
+from transit_odp.browse.common import get_in_scope_in_season_services_line_level
 
 class ListView(BasePublishListView):
     template_name = "fares/feed_list.html"
@@ -21,13 +25,20 @@ class ListView(BasePublishListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        org_id = context["pk1"]
         context["data_activity_url"] = (
             reverse(
                 "data-activity", kwargs={"pk1": self.organisation.id}, host=PUBLISH_HOST
             )
             + "?prev=fares-feed-list"
         )
+        fares_sra = FaresRequiresAttention(org_id)
+        fares_sra.get_fares_requires_attention_line_level_data()
 
-        context["services_requiring_attention"] = 1
-        context["applicable_services"] = 1
+        context["services_requiring_attention"] = len(
+            get_requires_attention_line_level_data(org_id)
+        )
+        context["applicable_services"] = len(
+            get_in_scope_in_season_services_line_level(org_id)
+        )
         return context
