@@ -1,13 +1,14 @@
 import logging
+import pickle
+from io import BytesIO
+from zipfile import ZipFile
+
+import pandas as pd
+from django.core.cache import cache
+from django.db.models import Subquery
+
 from transit_odp.avl.constants import AVL_GRANULARITY_WEEKLY
 from transit_odp.avl.models import PostPublishingCheckReport
-from django.db.models import Subquery
-from zipfile import ZipFile
-import pandas as pd
-from io import BytesIO
-from django.core.cache import cache
-import pickle
-
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,6 @@ def get_vehicle_activity_operatorref_linename() -> pd.DataFrame:
         pd.DataFrame: Dataframe either from cache or from zip
     """
     value_in_cache = cache.get(CACHE_KEY, None)
-    logger.info("Vehicle activites fetching from cache")
     if value_in_cache is None:
         logger.info("Vehicle activites not present in cache, setting new value")
         set_value_in_cache()
