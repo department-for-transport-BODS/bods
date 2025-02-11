@@ -856,7 +856,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     dq_require_attention,
                 )
             else:
-                require_attention = "No"
+                require_attention = dq_require_attention
 
             if file_attribute is not None:
                 avl_published_status = self.get_avl_published_status(
