@@ -619,6 +619,7 @@ def get_dq_critical_observation_services_map(
                 "service_code": obj.service_code,
                 "line_name_unnested": obj.line_name_unnested,
                 "revision_id": obj.revision_id,
+                "id": obj.id,
             }
             for _, obj in txc_map.items()
         ]
@@ -677,6 +678,7 @@ def query_dq_critical_observation(query) -> List[tuple]:
     is_specific_feedback = flag_is_active("", "is_specific_feedback")
     if is_specific_feedback:
         consumer_feedback_df = get_consumer_feedback_df(service_pattern_ids_df)
+
         dqs_require_attention_df = dqs_require_attention_df.merge(
             consumer_feedback_df, on=["service_id"], how="left", indicator=True
         )
@@ -717,6 +719,7 @@ def get_dq_critical_observation_services_map_from_dataframe(
             service_code=row["service_code"],
             service_patterns__line_name=row["line_name_unnested"],
             revision_id=row["revision_id"],
+            txcfileattributes_id=row["id"],
         )
     return query_dq_critical_observation(query)
 
@@ -817,8 +820,9 @@ def get_consumer_feedback_df(service_pattern_ids_df: pd.DataFrame) -> pd.DataFra
     consumer_feedback_df = pd.DataFrame.from_records(
         ConsumerFeedback.objects.filter(
             service_id__in=list(service_pattern_ids_df["service_id"]),
-            is_suppressed=False,
-        ).values("service_id")
+        )
+        .exclude(is_suppressed=True)
+        .values("service_id")
     )
     if consumer_feedback_df.empty:
         consumer_feedback_df = pd.DataFrame(columns=["service_id"])

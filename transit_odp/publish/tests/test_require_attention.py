@@ -72,6 +72,7 @@ def test_dq_require_attention_with_only_critical_observation_results():
             service_code=txcfileattribute.service_code,
             name=txcfileattribute.line_names[0],
             service_patterns=[service_pattern],
+            txcfileattributes=txcfileattribute,
         )
 
         service_pattern_stop = ServicePatternStopFactory(
@@ -143,6 +144,7 @@ def test_dq_require_attention_with_only_critical_observation_results_with_feedba
             service_code=txcfileattribute.service_code,
             name=txcfileattribute.line_names[0],
             service_patterns=[service_pattern],
+            txcfileattributes=txcfileattribute,
         )
 
         service_pattern_stop = ServicePatternStopFactory(
@@ -259,6 +261,7 @@ def test_dq_require_attention_with_only_feedback():
                 service_code=txcfileattribute.service_code,
                 name=txcfileattribute.line_names[0],
                 service_patterns=[service_pattern],
+                txcfileattributes=txcfileattribute,
             )
         )
 
@@ -354,6 +357,7 @@ def test_dq_require_attention_with_feedback_and_dqsobservation():
             service_code=txcfileattribute.service_code,
             name=txcfileattribute.line_names[0],
             service_patterns=[service_pattern],
+            txcfileattributes=txcfileattribute,
         )
 
         if check_obj.importance == Level.critical.value:

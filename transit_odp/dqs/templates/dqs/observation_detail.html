@@ -17,7 +17,11 @@
         <span class="govuk-heading-xl govuk-!-margin-0">{{ num_of_journeys }}</span>
         <span class="govuk-body-s">{{ total_journey_description }}
           <br />
-          affected
+          {% if total_journey_description_short %}
+            {{ total_journey_description_short }}
+          {% else %}
+            affected
+          {% endif %}
           {% if start_date %}from {{ start_date|date:"d/m/Y" }}{% endif %}
         </span>
       </div>
