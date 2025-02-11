@@ -12,12 +12,13 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
 from transit_odp.dqs.constants import Level
-from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
+from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.transmodel.models import Service as TransmodelService
+from transit_odp.publish.constants import FARES_STALENESS_STATUS
 
 logger = logging.getLogger(__name__)
 
@@ -480,6 +481,77 @@ def evaluate_fares_staleness(
         staleness_42_day_look_ahead,
         staleness_12_months_old,
     )
+
+
+def get_fares_published_status(row: pd.Series) -> str:
+    """
+    Returns value for 'Fares Published Status' column.
+    Args:
+        row (pd.Series): Row from fares dataframe
+    Returns:
+        str: Published or Unpublished for 'Fares Published Status' column
+    """
+    if row is not None and row["xml_file_name"]:
+        return "Published"
+    return "Unpublished"
+
+
+def get_fares_timeliness_status(row: pd.Series) -> str:
+    """
+    Returns value for 'Fares Timeliness Status' column.
+    Args:
+        row (pd.Series): Row from fares dataframe
+    Returns:
+        str: Status for 'Fares Timeliness Status' column
+    """
+    fares_staleness_status = "Not Stale"
+    if row is not None and is_fares_stale(row["valid_to"], row["last_updated_date"]):
+        fares_rad = evaluate_fares_staleness(row["valid_to"], row["last_updated_date"])
+        fares_staleness_status = FARES_STALENESS_STATUS[fares_rad.index(True)]
+
+    return fares_staleness_status
+
+
+def get_fares_compliance_status(row: pd.Series) -> str:
+    """
+    Returns value for 'Fares Compliance Status' column.
+    Args:
+        row (pd.Series): Row from fares dataframe
+    Returns:
+        str: Compliant or Non compliant for 'Fares Compliance Status' column
+    """
+    if row is not None and row["is_fares_compliant"]:
+        return "Compliant"
+    return "Non compliant"
+
+
+def get_fares_requires_attention(
+    fares_published_status: str,
+    fares_timeliness_status: str,
+    fares_compliance_status: str,
+) -> str:
+    """
+    Returns value for 'Fares requires attention' column based on the following logic:
+        If 'Fares Published Status' equal to Published
+        AND 'Fares Timeliness Status' equal to Not Stale
+        AND 'Fares Compliance Status' equal to Compliant
+        then 'Fares requires attention' = No.
+        Else
+        the 'Fares requires attention' = Yes.
+    Args:
+        fares_published_status (str): Value of 'Fares Published Status'
+        fares_timeliness_status (str): Value of 'Fares Timeliness Status'
+        fares_compliance_status (str): Value of 'Fares Compliance Status'
+    Returns:
+        str: Yes or No for 'Fares requires attention' column
+    """
+    if (
+        (fares_published_status == "Published")
+        and (fares_timeliness_status == "Not Stale")
+        and (fares_compliance_status == "Compliant")
+    ):
+        return "No"
+    return "Yes"
 
 
 def is_fares_stale(operating_period_end_date: date, last_updated: datetime) -> bool:

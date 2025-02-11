@@ -34,7 +34,9 @@ from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
     get_dq_critical_observation_services_map_from_dataframe,
     get_fares_dataset_map,
-    is_fares_stale,
+    get_fares_timeliness_status,
+    get_fares_requires_attention,
+    get_fares_compliance_status,
 )
 
 TXC_COLUMNS = (
@@ -1282,7 +1284,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     )
 
     is_fares_require_attention_active = flag_is_active(
-        "", "fares_require_attention_active"
+        "", "is_fares_require_attention_active"
     )
     if is_fares_require_attention_active:
         for txc_attribute in txc_attributes:
@@ -1290,7 +1292,10 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         fares_df = get_fares_dataset_map(txc_map=txc_service_map)
         fares_df["valid_to"] = fares_df["valid_to"].dt.date
         fares_df["fares_timeliness_status"] = fares_df.apply(
-            lambda x: is_fares_stale(x.valid_to, x.last_updated_date), axis=1
+            lambda row: get_fares_timeliness_status(row), axis=1
+        )
+        fares_df["is_fares_compliant"] = fares_df.apply(
+            lambda row: get_fares_compliance_status(row), axis=1
         )
         fares_df["fares_effective_stale_date_from_last_modified"] = fares_df[
             "last_updated_date"
@@ -1358,14 +1363,15 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
 
     if is_fares_require_attention_active:
         merged["fares_published_status"] = txc_df["fares_filename"].apply(
-            lambda x: "Yes" if pd.notna(x) and x.strip() != "" else "No"
+            lambda x: "Published" if pd.notna(x) and x.strip() != "" else "Unpublished"
         )
-        merged["fares_requires_attention"] = np.where(
-            (merged["fares_published_status"] == "No")
-            | (merged["fares_timeliness_status"] == "No")
-            | (merged["fares_compliance_status"] == "No"),
-            "Yes",
-            "No",
+        merged["fares_requires_attention"] = merged.apply(
+            lambda row: get_fares_requires_attention(
+                row.fares_published_status,
+                row.fares_timeliness_status,
+                row.fares_compliance_status,
+            ),
+            axis=1,
         )
         merged["overall_requires_attention"] = np.where(
             (merged["fares_requires_attention"] == "Yes")
