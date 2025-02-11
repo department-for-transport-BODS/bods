@@ -53,7 +53,7 @@ TXC_COLUMNS = (
     "destination",
 )
 
-TXC_LINE_LEVEL_COLUMNS = TXC_COLUMNS + ("line_name_unnested", "revision_id")
+TXC_LINE_LEVEL_COLUMNS = TXC_COLUMNS + ("line_name_unnested", "revision_id", "id")
 
 OTC_COLUMNS = (
     "service_code",

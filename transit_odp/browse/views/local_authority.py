@@ -746,6 +746,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         """
         ui_lta = lta_list[0].ui_lta
         otc_map = get_line_level_otc_map_lta(lta_list)
+
         txcfa_map = get_line_level_txc_map_lta(lta_list)
         uncounted_activity_df = get_vehicle_activity_operatorref_linename()
 
