@@ -1582,6 +1582,7 @@ class TestOperatorDetailView:
             name=all_line_names[0],
             service_code=all_service_codes[0],
             service_patterns=[service_pattern],
+            txcfileattributes=txcfileattribute1,
         )
 
         # create transmodel servicepatternstop
@@ -2143,6 +2144,7 @@ class TestLTADetailView:
             name=all_line_names[0],
             service_code=all_service_codes[0],
             service_patterns=[service_pattern],
+            txcfileattributes=txcfileattribute1,
         )
 
         # create transmodel servicepatternstop
