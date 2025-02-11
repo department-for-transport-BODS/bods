@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
-import pandas as pd
 from waffle import flag_is_active
 
 from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
@@ -26,13 +25,15 @@ from transit_odp.otc.constants import (
 )
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
-    evaluate_fares_staleness,
     evaluate_staleness,
     get_all_line_level_otc_map,
     get_dq_critical_observation_services_map,
+    get_fares_compliance_status,
     get_fares_dataset_map,
+    get_fares_published_status,
+    get_fares_requires_attention,
+    get_fares_timeliness_status,
     get_line_level_txc_map_service_base,
-    is_fares_stale,
     is_stale,
 )
 
@@ -42,18 +43,27 @@ STALENESS_STATUS = [
     "OTC variation not published",
 ]
 
-FARES_STALENESS_STATUS = [
-    "42 day look ahead is incomplete",
-    "One year old",
-]
-
 
 def get_42_day_look_ahead_date() -> str:
-    # Calculate today's date and the date 42 days from now
+    """
+    Calculate today + the date 42 days from now.
+
+    Returns:
+        str: 42 day look ahead date
+    """
     return (datetime.now() + timedelta(days=42)).strftime("%Y-%m-%d")
 
 
 def get_seasonal_service_status(otc_service: dict) -> str:
+    """
+    Returns a value for seasonal status for a service.
+
+    Args:
+        otc_service (dict): OTC Service dictionary
+
+    Returns:
+        str: Seasonal Status value
+    """
     seasonal_service_status = otc_service.get("seasonal_status")
     return "In Season" if seasonal_service_status else "Out of Season"
 
@@ -61,6 +71,15 @@ def get_seasonal_service_status(otc_service: dict) -> str:
 def get_service_code_exemption_map(
     organisation_id: int,
 ) -> Dict[str, ServiceCodeExemption]:
+    """
+    Returns dictionary of service code that are exempt.
+
+    Args:
+        organisation_id (int): Organisation ID
+
+    Returns:
+        Dict [str, ServiceCodeExemption]: Exempt service map
+    """
     return {
         service.registration_number.replace("/", ":"): service
         for service in ServiceCodeExemption.objects.add_registration_number().filter(
@@ -72,6 +91,12 @@ def get_service_code_exemption_map(
 def get_all_otc_map(organisation_id: int) -> Dict[str, OTCService]:
     """
     Get a dictionary which includes all OTC Services for an organisation.
+
+    Args:
+        organisation_id (int): Organisation ID
+
+    Returns:
+        Dict [str, OTCService]: All OTC services
     """
     return {
         service.registration_number.replace("/", ":"): service
@@ -85,6 +110,12 @@ def get_seasonal_service_map(organisation_id: int) -> Dict[str, SeasonalService]
     """
     Get a dictionary which includes all the Seasonal Services
     for an organisation.
+
+    Args:
+        organisation_id (int): Organisation ID
+
+    Returns:
+        Dict [str, SeasonalService]: All seasonal services
     """
     return {
         service.registration_number.replace("/", ":"): service
@@ -97,6 +128,10 @@ def get_seasonal_service_map(organisation_id: int) -> Dict[str, SeasonalService]
 
 
 class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
+    """
+    Line-level CSV operator report.
+    """
+
     columns = [
         CSVColumn(
             header="Registration:Registration Number",
@@ -284,9 +319,6 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
             }
         )
 
-    def modify_dataset_line_name(self, line_names: list) -> str:
-        return " ".join(line_name for line_name in line_names)
-
     def _get_require_attention(
         self,
         exempted: Optional[bool],
@@ -378,6 +410,10 @@ class ServiceCodesCSV(CSVBuilder, LTACSVHelper):
 
 
 class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
+    """
+    Compliance CSV operator report.
+    """
+
     columns = [
         CSVColumn(
             header="Registration:Registration Number",
@@ -669,9 +705,6 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             }
         )
 
-    def modify_dataset_line_name(self, line_names: list) -> str:
-        return " ".join(line_name for line_name in line_names)
-
     def get_overall_requires_attention(
         self,
         timetable_requires_attention: Optional[str],
@@ -796,86 +829,6 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         """
         if (avl_published_status == "Yes") and (
             error_in_avl_to_timetable_matching == "No"
-        ):
-            return "No"
-        return "Yes"
-
-    def get_fares_published_status(self, row: pd.Series) -> str:
-        """
-        Returns value for 'Fares Published Status' column.
-
-        Args:
-            row (pd.Series): Row from fares dataframe
-
-        Returns:
-            str: Published or Unpublished for 'Fares Published Status' column
-        """
-        if row is not None and row["xml_file_name"]:
-            return "Published"
-        return "Unpublished"
-
-    def get_fares_timeliness_status(self, row: pd.Series) -> str:
-        """
-        Returns value for 'Fares Timeliness Status' column.
-
-        Args:
-            row (pd.Series): Row from fares dataframe
-
-        Returns:
-            str: Status for 'Fares Timeliness Status' column
-        """
-        fares_staleness_status = "Not Stale"
-        if row is not None and is_fares_stale(
-            row["valid_to"], row["last_updated_date"]
-        ):
-            fares_rad = evaluate_fares_staleness(
-                row["valid_to"], row["last_updated_date"]
-            )
-            fares_staleness_status = FARES_STALENESS_STATUS[fares_rad.index(True)]
-
-        return fares_staleness_status
-
-    def get_fares_compliance_status(self, row: pd.Series) -> str:
-        """
-        Returns value for 'Fares Compliance Status' column.
-
-        Args:
-            row (pd.Series): Row from fares dataframe
-
-        Returns:
-            str: Compliant or Non compliant for 'Fares Compliance Status' column
-        """
-        if row is not None and row["is_fares_compliant"]:
-            return "Compliant"
-        return "Non compliant"
-
-    def get_fares_requires_attention(
-        self,
-        fares_published_status: str,
-        fares_timeliness_status: str,
-        fares_compliance_status: str,
-    ) -> str:
-        """
-        Returns value for 'Fares requires attention' column based on the following logic:
-            If 'Fares Published Status' equal to Published
-            AND 'Fares Timeliness Status' equal to Not Stale
-            AND 'Fares Compliance Status' equal to Compliant
-            then 'Fares requires attention' = No.
-            Else
-            the 'Fares requires attention' = Yes.
-
-        Args:
-            fares_published_status (str): Value of 'Fares Published Status'
-            fares_timeliness_status (str): Value of 'Fares Timeliness Status'
-            fares_compliance_status (str): Value of 'Fares Compliance Status'
-
-        Returns:
-            str: Yes or No for 'Fares requires attention' column
-        """
-        if (
-            (fares_published_status == "Published")
-            and (fares_timeliness_status == "Not Stale")
-            and (fares_compliance_status == "Compliant")
         ):
             return "No"
         return "Yes"
@@ -1006,19 +959,19 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 fares_filename = row["file_name"]
                 fares_last_modified_date = row["last_updated_data"]
                 fares_operating_period_end_date = row["valid_to"]
-                fares_published_status = self.get_fares_published_status(row)
-                fares_timeliness_status = self.get_fares_timeliness_status(row)
-                fares_compliance_status = self.get_fares_compliance_status(row)
+                fares_published_status = get_fares_published_status(row)
+                fares_timeliness_status = get_fares_timeliness_status(row)
+                fares_compliance_status = get_fares_compliance_status(row)
             else:
                 fares_dataset_id = None
                 fares_filename = None
                 fares_last_modified_date = None
                 fares_operating_period_end_date = None
-                fares_published_status = self.get_fares_published_status(None)
-                fares_timeliness_status = self.get_fares_timeliness_status(None)
-                fares_compliance_status = self.get_fares_compliance_status(None)
+                fares_published_status = get_fares_published_status(None)
+                fares_timeliness_status = get_fares_timeliness_status(None)
+                fares_compliance_status = get_fares_compliance_status(None)
 
-            fares_requires_attention = self.get_fares_requires_attention(
+            fares_requires_attention = get_fares_requires_attention(
                 fares_published_status, fares_timeliness_status, fares_compliance_status
             )
 
