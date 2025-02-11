@@ -6,3 +6,7 @@ DUPLICATE_COMMENT_ERROR_MESSAGE = (
 
 INTERACTIONS_DEFINITION = "consumermetricsoperatorbreakdown.txt"
 LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE = "Licence number not supplied"
+FARES_STALENESS_STATUS = [
+    "42 day look ahead is incomplete",
+    "One year old",
+]
