@@ -145,10 +145,14 @@ class FeedbackListBaseView(DQSWarningListBaseView):
             self.show_suppressed,
             show_suppressed_button,
         )
+
         qs_filtered = []
         line_service_codes = []
         for obj in qs:
-            line_service_code = obj["service_code"] + "-" + obj["line_name"]
+            print(f"Queryset: {qs}")
+            service_code = obj.get("service_code", "")
+            line_name = obj.get("line_name", "")
+            line_service_code = service_code + "-" + line_name
             if line_service_code not in line_service_codes:
                 qs_filtered.append(obj)
                 line_service_codes.append(line_service_code)
