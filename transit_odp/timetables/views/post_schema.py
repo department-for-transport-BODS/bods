@@ -85,8 +85,8 @@ class PostSchemaCSV(CSVBuilder):
         additional_data = row_data.get("Additional Information", {})
 
         if additional_data:
-            published_dataset = additional_data.get("PUBLISHED_DATASET")
-            service_codes = additional_data.get("SERVICE_CODES", [])
+            published_dataset = additional_data.get("published_dataset")
+            service_codes = additional_data.get("service_codes", [])
 
             row_data.update(
                 {
