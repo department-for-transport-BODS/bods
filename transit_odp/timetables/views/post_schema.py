@@ -15,12 +15,16 @@ from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.data_quality.models.report import PostSchemaViolation
 from transit_odp.organisation.models import Dataset
 
-logger = logging.getLogger(__name__)
+from .constants import (
+    ADDITIONAL_SERVICES_PII,
+    ERROR_TYPE_PII,
+    ERROR_TYPE_SERVICE_CHECK,
+    LINK_PII,
+    NEXT_STEPS_PII,
+    NEXT_STEPS_SERVICE_CHECK,
+)
 
-ERROR_TYPE = "Your TransXchange contains personal identifiable information"
-NEXT_STEPS = "Please download the new transXchange tool here"
-LINK = "https://www.gov.uk/guidance/publish-bus-open-data#publishing-your-bus-data"
-ADDITIONAL_SERVICES = "The Help Desk can be contacted by telephone or email as follows.\n\nTelephone: +44 (0) 800 028 0930\nEmail: bodshelpdesk@kpmg.co.uk"
+logger = logging.getLogger(__name__)
 
 
 class PostSchemaErrorType(Enum):
@@ -70,10 +74,10 @@ class PostSchemaCSV(CSVBuilder):
         """
         row_data.update(
             {
-                "Error Type": ERROR_TYPE,
-                "Next Steps": NEXT_STEPS,
-                "Link to Next Steps Column": LINK,
-                "Additional Information": ADDITIONAL_SERVICES,
+                "Error Type": ERROR_TYPE_PII,
+                "Next Steps": NEXT_STEPS_PII,
+                "Link to Next Steps Column": LINK_PII,
+                "Additional Information": ADDITIONAL_SERVICES_PII,
             }
         )
         return row_data
@@ -90,8 +94,8 @@ class PostSchemaCSV(CSVBuilder):
 
             row_data.update(
                 {
-                    "Error Type": "Attempted to publish for a service that is already in an active dataset",
-                    "Next Steps": "Click the supplied link to update your dataset",
+                    "Error Type": ERROR_TYPE_SERVICE_CHECK,
+                    "Next Steps": NEXT_STEPS_SERVICE_CHECK,
                     "Link to Next Steps Column": self.get_dataset_link(
                         published_dataset
                     ),
