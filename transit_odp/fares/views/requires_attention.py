@@ -5,14 +5,9 @@ from django_tables2 import SingleTableView
 from waffle import flag_is_active
 
 from transit_odp.browse.common import get_in_scope_in_season_services_line_level
-from transit_odp.organisation.csv.service_codes import (
-    ComplianceReportCSV,
-    ServiceCodesCSV,
-)
-from transit_odp.organisation.models import Organisation
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
-    get_requires_attention_line_level_data,
+    FaresRequiresAttention,
 )
 from transit_odp.timetables.tables import RequiresAttentionTable
 from transit_odp.users.views.mixins import OrgUserViewMixin
@@ -67,35 +62,5 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
 
     def get_queryset(self):
         org_id = self.kwargs["pk1"]
-        return get_requires_attention_line_level_data(org_id)
-
-
-class ServiceCodeView(View):
-    def get(self, *args, **kwargs):
-        self.org = Organisation.objects.get(id=kwargs["pk1"])
-        return self.render_to_response()
-
-    def render_to_response(self):
-        csv_filename = (
-            f"{now():%d%m%y}_timetables_datastatus_by_service_code_"
-            f"{self.org.name}.csv"
-        )
-        csv_export = ServiceCodesCSV(self.org.id)
-        file_ = csv_export.to_string()
-        response = HttpResponse(file_, content_type="text/csv")
-        response["Content-Disposition"] = f"attachment; filename={csv_filename}"
-        return response
-
-
-class ComplianceReportView(View):
-    def get(self, *args, **kwargs):
-        self.org = Organisation.objects.get(id=kwargs["pk1"])
-        return self.render_to_response()
-
-    def render_to_response(self):
-        csv_filename = f"{self.org.name} compliance report.csv"
-        csv_export = ComplianceReportCSV(self.org.id)
-        file_ = csv_export.to_string()
-        response = HttpResponse(file_, content_type="text/csv")
-        response["Content-Disposition"] = f"attachment; filename={csv_filename}"
-        return response
+        fares_sra = FaresRequiresAttention(org_id)
+        return fares_sra.get_fares_requires_attention_line_level_data()

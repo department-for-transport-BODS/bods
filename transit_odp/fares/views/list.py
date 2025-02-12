@@ -6,7 +6,6 @@ from transit_odp.organisation.constants import FaresType
 from transit_odp.organisation.models import Dataset
 from transit_odp.publish.views.base import BasePublishListView
 from transit_odp.publish.requires_attention import (
-    get_requires_attention_line_level_data,
     FaresRequiresAttention,
 )
 from transit_odp.browse.common import get_in_scope_in_season_services_line_level
@@ -32,13 +31,13 @@ class ListView(BasePublishListView):
             )
             + "?prev=fares-feed-list"
         )
-        fares_sra = FaresRequiresAttention(org_id)
-        fares_sra.get_fares_requires_attention_line_level_data()
-
-        context["services_requiring_attention"] = len(
-            get_requires_attention_line_level_data(org_id)
-        )
         context["applicable_services"] = len(
             get_in_scope_in_season_services_line_level(org_id)
         )
+        # SRA
+        fares_sra = FaresRequiresAttention(org_id)
+        context["services_requiring_attention"] = len(
+            fares_sra.get_fares_requires_attention_line_level_data()
+        )
+
         return context
