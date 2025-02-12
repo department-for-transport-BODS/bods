@@ -2,8 +2,8 @@ import csv
 import io
 import logging
 import os
-import re
 from abc import abstractmethod
+from enum import Enum
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from django.http.response import FileResponse
@@ -23,6 +23,11 @@ LINK = "https://www.gov.uk/guidance/publish-bus-open-data#publishing-your-bus-da
 ADDITIONAL_SERVICES = "The Help Desk can be contacted by telephone or email as follows.\n\nTelephone: +44 (0) 800 028 0930\nEmail: bodshelpdesk@kpmg.co.uk"
 
 
+class PostSchemaErrorType(Enum):
+    PII_ERROR = "PII ERROR"
+    SERVICE_EXISTS = "SERVICE EXISTS"
+
+
 class PostSchemaCSV(CSVBuilder):
     """A CSVBuilder class for creating Post Schema CSV strings"""
 
@@ -35,7 +40,7 @@ class PostSchemaCSV(CSVBuilder):
         CSVColumn(header="Error Type", accessor="error_type"),
         CSVColumn(header="Next Steps", accessor="next_steps"),
         CSVColumn(header="Link to Next Steps Column", accessor="link"),
-        CSVColumn(header="Additional Information", accessor="additional_information"),
+        CSVColumn(header="Additional Information", accessor="additional_details"),
         CSVColumn(header="Details", accessor="details"),
     ]
 
@@ -47,67 +52,97 @@ class PostSchemaCSV(CSVBuilder):
         Construct a link to the dataset update page
         """
         host = PUBLISH_HOST
-        dataset = Dataset.objects.filter(id=dataset_id).values("organisation_id")
-        org_id = dataset[0]["organisation_id"]
-
-        dataset_url = reverse(
-            "feed-update", kwargs={"pk1": org_id, "pk": dataset_id}, host=host
+        dataset = (
+            Dataset.objects.filter(id=dataset_id).values("organisation_id").first()
         )
-        return dataset_url
 
-    def annotate_pii_qs(self, row):
+        if dataset:
+            org_id = dataset["organisation_id"]
+            return reverse(
+                "feed-update", kwargs={"pk1": org_id, "pk": dataset_id}, host=host
+            )
+
+        return ""  # Return an empty string if dataset is not found
+
+    def annotate_pii_qs(self, row_data):
         """
-        Create row when error type is PII
+        Annotate row when error type is PII
         """
-        row[1:5] = [ERROR_TYPE, NEXT_STEPS, LINK, ADDITIONAL_SERVICES]
-        return row
+        row_data.update(
+            {
+                "Error Type": ERROR_TYPE,
+                "Next Steps": NEXT_STEPS,
+                "Link to Next Steps Column": LINK,
+                "Additional Information": ADDITIONAL_SERVICES,
+            }
+        )
+        return row_data
 
-    def annotate_check_service_qs(self, row):
+    def annotate_check_service_qs(self, row_data):
         """
-        Create row when a service exists in published dataset
+        Annotate row when a service exists in a published dataset
         """
-        data = row[-1]
-        published_dataset = self.extract_value(data, r"PUBLISHED_DATASET:(\d+)")
-        dataset_link = self.get_dataset_link(published_dataset)
+        additional_data = row_data.get("Additional Information", {})
 
-        service_codes = self.extract_service_codes(data)
+        if additional_data:
+            published_dataset = additional_data.get("PUBLISHED_DATASET")
+            service_codes = additional_data.get("SERVICE_CODES", [])
 
-        row[1:5] = [
-            "Attempted to publish for a service that is already in an active dataset",
-            "Click the supplied link to update your dataset",
-            dataset_link,
-            service_codes,
-        ]
-        return row
+            row_data.update(
+                {
+                    "Error Type": "Attempted to publish for a service that is already in an active dataset",
+                    "Next Steps": "Click the supplied link to update your dataset",
+                    "Link to Next Steps Column": self.get_dataset_link(
+                        published_dataset
+                    ),
+                    "Additional Information": ", ".join(
+                        service_codes
+                    ),  # Join service codes into a string
+                }
+            )
+        return row_data
 
-    @staticmethod
-    def extract_value(data, pattern):
-        match = re.search(pattern, data)
-        return match.group(1) if match else None
+    def _create_row(self, obj):
+        """
+        Convert Django model instance to a dictionary
+        """
+        row_data = {
+            column.header: getattr(obj, column.accessor, None)
+            for column in self.columns
+        }
 
-    @staticmethod
-    def extract_service_codes(data):
-        match = re.search(r"SERVICE_CODES:\['(.*?)'\]", data)
-        if match:
-            return ", ".join(match.group(1).replace("'", "").split(", "))
-        return ""
+        # Convert datetime fields to ISO format
+        for key, value in row_data.items():
+            if hasattr(value, "isoformat"):
+                row_data[key] = value.isoformat()
+
+        return row_data
 
     def to_string(self):
+        """
+        Generate CSV as a string
+        """
         prefix = f"CSVExporter - to_string - {self.__class__.__name__} - "
         headers = [column.header for column in self.columns]
         rows = [self._create_row(q) for q in self.queryset]
 
-        for i, row in enumerate(rows):
-            rows[i] = (
-                self.annotate_pii_qs(row)
-                if row[-1] == "PII ERROR"
-                else self.annotate_check_service_qs(row)
-            )
-            del row[-1]
+        for row_data in rows:
+            details_value = row_data.get("Details", "")
+
+            if details_value == PostSchemaErrorType.PII_ERROR.value:
+                row_data = self.annotate_pii_qs(row_data)
+            elif details_value == PostSchemaErrorType.SERVICE_EXISTS.value:
+                row_data = self.annotate_check_service_qs(row_data)
+
+            row_data.pop(
+                "Details", None
+            )  # Remove 'Details' row value from the final output
+        del headers[-1]  # Remove 'Details' column from the final output
 
         csvfile = io.StringIO()
-        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-        writer.writerow(headers)
+        writer = csv.DictWriter(csvfile, fieldnames=headers, quoting=csv.QUOTE_ALL)
+
+        writer.writeheader()
         writer.writerows(rows)
 
         csvfile.seek(0, os.SEEK_END)
