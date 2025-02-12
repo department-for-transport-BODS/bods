@@ -56,6 +56,18 @@ URL_MAPPING = {
     Checks.DuplicateJourneys.value: "duplicate-journeys",
 }
 
+DF_COLUMNS_TO_KEEP = [
+    "importance",
+    "category",
+    "observation",
+    "journey_start_time",
+    "direction",
+    "stop_name",
+    "is_suppressed",
+    "service_code",
+    "line_name",
+]
+
 
 # TODO: DQSMIGRATION: REMOVE
 class Summary(BaseModel):
@@ -210,6 +222,29 @@ class Summary(BaseModel):
         return df
 
     @classmethod
+    def populate_feedback(cls, revision_id: int, warning_data: dict) -> None:
+        """
+        Populate the feedback for the revision_id
+        """
+
+        if flag_is_active("", "is_specific_feedback"):
+            warning_data[Level.feedback.value] = {}
+
+            if revision_id:
+                df_feedback = cls.get_dataframe_feedback(revision_id)
+                warning_data[Level.feedback.value]["count"] = df_feedback[
+                    "feedback_observations"
+                ].sum()
+                warning_data[Level.feedback.value]["intro"] = ""
+                warning_data[Level.feedback.value]["df"] = {"Feedback": df_feedback}
+            else:
+                warning_data[Level.feedback.value] = {"count": 0, "intro": ""}
+
+        else:
+            if Level.feedback.value in warning_data:
+                warning_data.pop(Level.feedback.value)
+
+    @classmethod
     def get_report(cls, report_id, revision_id):
         """Generate a summary of the data quality report
         Functionality:
@@ -233,29 +268,16 @@ class Summary(BaseModel):
             or revision_id is None
             or not flag_is_active("", "is_new_data_quality_service_active")
         ):
-            return cls(data=cls.initialize_warning_data(), count=0)
+            return cls(data=cls.initialize_warning_data(revision_id), count=0)
         warning_data = {}
         try:
             df = cls.get_dataframe_report(report_id, revision_id)
             if df.empty:
-                return cls(data=cls.initialize_warning_data(), count=0)
+                return cls(data=cls.initialize_warning_data(revision_id), count=0)
             bus_services_affected = cls.qet_service_code_line_name_unique_combinations(
                 df
             )
-            df = df[
-                [
-                    "importance",
-                    "category",
-                    "observation",
-                    "journey_start_time",
-                    "direction",
-                    "stop_name",
-                    "is_suppressed",
-                    "service_code",
-                    "line_name",
-                ]
-            ]
-
+            df = df[DF_COLUMNS_TO_KEEP]
             df["unique_row"] = df.apply(
                 lambda row: f"{row['journey_start_time']}_{row['service_code']}_{row['line_name']}",
                 axis=1,
@@ -277,12 +299,13 @@ class Summary(BaseModel):
                 )
                 .reset_index()
             )
-            # Add column on the df for the url from the url mapping, if the obeervation is not in mapping use None
+            # Add url column on the df from the mapping
             df["url"] = df["observation"].map(URL_MAPPING)
             # change nan to no-url in url column only
             df["url"] = df["url"].fillna("no-url")
             for level in Level:
-                if level.value == Level.feedback:
+                if level == Level.feedback:
+                    cls.populate_feedback(revision_id, warning_data)
                     continue
                 warning_data[level.value] = {}
                 warning_data[level.value]["count"] = (
@@ -296,14 +319,9 @@ class Summary(BaseModel):
                 importance_df = df[df["importance"] == level.value]
                 # TODO: change df to something like data, or better name in the dict
                 warning_data[level.value]["df"] = {}
-                if level.value == "Critical":
-                    intro = CRITICAL_INTRO
-                elif level.value == "Advisory":
-                    intro = ADVISORY_INTRO
-                else:
-                    intro = ""
-
-                warning_data[level.value]["intro"] = intro
+                warning_data[level.value]["intro"] = (
+                    CRITICAL_INTRO if level.value == "Critical" else ADVISORY_INTRO
+                )
                 for category in importance_df["category"].unique():
                     warning_data[level.value]["df"].update(
                         {
@@ -314,15 +332,6 @@ class Summary(BaseModel):
                         }
                     )
 
-            if flag_is_active("", "is_specific_feedback"):
-                df_feedback = cls.get_dataframe_feedback(revision_id)
-                warning_data["Feedback"]["count"] = df_feedback[
-                    "feedback_observations"
-                ].sum()
-                warning_data["Feedback"]["df"]["Feedback"] = df_feedback
-            else:
-                warning_data.pop(Level.feedback.value)
-
             return cls(
                 data=warning_data,
                 count=count,
@@ -331,17 +340,25 @@ class Summary(BaseModel):
         except Exception as e:
             print(e)
             # reset warning_data
-            return cls(data=cls.initialize_warning_data(), count=0)
+            return cls(data=cls.initialize_warning_data(revision_id), count=0)
 
     @classmethod
-    def initialize_warning_data(cls):
+    def initialize_warning_data(cls, revision_id: int = None) -> Dict[str, object]:
+        """Return the initialisation of the data to be populated"""
+
         warning_data = {}
         for level in Level:
-            warning_data[level.value] = {}
-            warning_data[level.value]["intro"] = (
-                CRITICAL_INTRO if level.value == "Critical" else ADVISORY_INTRO
-            )
-            warning_data[level.value]["count"] = 0
+            if level == Level.feedback:
+                cls.populate_feedback(revision_id, warning_data)
+                continue
+
+            warning_data[level.value] = {
+                "count": 0,
+                "intro": (
+                    CRITICAL_INTRO if level.value == Level.critical else ADVISORY_INTRO
+                ),
+            }
+
         return warning_data
 
     @classmethod

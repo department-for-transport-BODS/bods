@@ -1428,7 +1428,7 @@ class ConsumerFeedbackQuerySet(models.QuerySet):
             .annotate(
                 observation=Value("Consumer Feedback", output_field=TextField()),
                 service_code=F("service__service_code"),
-                line_name=F("service__service_patterns__line_name"),
+                line_name=F("service_pattern__line_name"),
                 message=Concat(
                     F("service__service_code"),
                     F("service__service_code"),
@@ -1465,7 +1465,7 @@ class ConsumerFeedbackQuerySet(models.QuerySet):
             self.filter(
                 revision_id=revision_id,
                 service__service_code=service,
-                service__service_patterns__line_name=line,
+                service_pattern__line_name=line,
             )
             .annotate(
                 observation=Value("Consumer Feedback", output_field=TextField()),
