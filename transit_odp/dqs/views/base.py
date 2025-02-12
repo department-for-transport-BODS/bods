@@ -148,7 +148,9 @@ class FeedbackListBaseView(DQSWarningListBaseView):
         qs_filtered = []
         line_service_codes = []
         for obj in qs:
-            line_service_code = obj["service_code"] + "-" + obj["line_name"]
+            service_code = obj.get("service_code", "")
+            line_name = obj.get("line_name", "")
+            line_service_code = service_code + "-" + line_name
             if line_service_code not in line_service_codes:
                 qs_filtered.append(obj)
                 line_service_codes.append(line_service_code)
