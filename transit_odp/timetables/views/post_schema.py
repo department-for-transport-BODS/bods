@@ -1,14 +1,21 @@
+import csv
 import io
+import logging
+import os
+import re
 from abc import abstractmethod
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from django.db.models import CharField, Value
 from django.http.response import FileResponse
 from django.views.generic.detail import DetailView
+from django_hosts import reverse
 
+from config.hosts import PUBLISH_HOST
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.data_quality.models.report import PostSchemaViolation
 from transit_odp.organisation.models import Dataset
+
+logger = logging.getLogger(__name__)
 
 ERROR_TYPE = "Your TransXchange contains personal identifiable information"
 NEXT_STEPS = "Please download the new transXchange tool here"
@@ -21,6 +28,7 @@ class PostSchemaCSV(CSVBuilder):
 
     def __init__(self, revision):
         self.revision = revision
+        self.queryset = self.get_queryset()
 
     columns = [
         CSVColumn(header="Filename", accessor="filename"),
@@ -28,18 +36,88 @@ class PostSchemaCSV(CSVBuilder):
         CSVColumn(header="Next Steps", accessor="next_steps"),
         CSVColumn(header="Link to Next Steps Column", accessor="link"),
         CSVColumn(header="Additional Information", accessor="additional_information"),
+        CSVColumn(header="Details", accessor="details"),
     ]
 
     def get_queryset(self):
-        qs = PostSchemaViolation.objects.filter(revision_id=self.revision.id)
-        qs = qs.annotate(
-            error_type=Value(ERROR_TYPE, output_field=CharField()),
-            next_steps=Value(NEXT_STEPS, output_field=CharField()),
-            link=Value(LINK, output_field=CharField()),
-            additional_information=Value(ADDITIONAL_SERVICES, output_field=CharField()),
-        )
+        return PostSchemaViolation.objects.filter(revision_id=self.revision.id)
 
-        return qs
+    def get_dataset_link(self, dataset_id) -> str:
+        """
+        Construct a link to the dataset update page
+        """
+        host = PUBLISH_HOST
+        dataset = Dataset.objects.filter(id=dataset_id).values("organisation_id")
+        org_id = dataset[0]["organisation_id"]
+
+        dataset_url = reverse(
+            "feed-update", kwargs={"pk1": org_id, "pk": dataset_id}, host=host
+        )
+        return dataset_url
+
+    def annotate_pii_qs(self, row):
+        """
+        Create row when error type is PII
+        """
+        row[1:5] = [ERROR_TYPE, NEXT_STEPS, LINK, ADDITIONAL_SERVICES]
+        return row
+
+    def annotate_check_service_qs(self, row):
+        """
+        Create row when a service exists in published dataset
+        """
+        data = row[-1]
+        published_dataset = self.extract_value(data, r"PUBLISHED_DATASET:(\d+)")
+        dataset_link = self.get_dataset_link(published_dataset)
+
+        service_codes = self.extract_service_codes(data)
+
+        row[1:5] = [
+            "Attempted to publish for a service that is already in an active dataset",
+            "Click the supplied link to update your dataset",
+            dataset_link,
+            service_codes,
+        ]
+        return row
+
+    @staticmethod
+    def extract_value(data, pattern):
+        match = re.search(pattern, data)
+        return match.group(1) if match else None
+
+    @staticmethod
+    def extract_service_codes(data):
+        match = re.search(r"SERVICE_CODES:\['(.*?)'\]", data)
+        if match:
+            return ", ".join(match.group(1).replace("'", "").split(", "))
+        return ""
+
+    def to_string(self):
+        prefix = f"CSVExporter - to_string - {self.__class__.__name__} - "
+        headers = [column.header for column in self.columns]
+        rows = [self._create_row(q) for q in self.queryset]
+
+        for i, row in enumerate(rows):
+            rows[i] = (
+                self.annotate_pii_qs(row)
+                if row[-1] == "PII ERROR"
+                else self.annotate_check_service_qs(row)
+            )
+            del row[-1]
+
+        csvfile = io.StringIO()
+        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+        writer.writerow(headers)
+        writer.writerows(rows)
+
+        csvfile.seek(0, os.SEEK_END)
+        logger.info(prefix + f"Final file size: {csvfile.tell()} bytes.")
+        csvfile.seek(0)
+
+        output = csvfile.getvalue()
+        csvfile.close()
+        logger.info(prefix + "File successfully closed")
+        return output
 
 
 class BasePostSchemaCSVView(DetailView):
