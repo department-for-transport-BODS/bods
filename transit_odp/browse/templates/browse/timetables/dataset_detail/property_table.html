@@ -23,7 +23,7 @@
       </th>
       <td class="govuk-table__cell">
         {% if new_dqs_report %}
-          {% include "snippets/data_quality_row.html" with warning_data=summary %}
+          {% include "snippets/data_quality_row.html" with warning_data=summary is_specific_feedback=is_specific_feedback %}
           <br />
           <a class="govuk-link"
              target="_blank"
