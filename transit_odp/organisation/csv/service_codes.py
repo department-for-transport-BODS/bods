@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Dict, Optional
-import pandas as pd
 
+import pandas as pd
 from waffle import flag_is_active
 
 from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
@@ -891,7 +891,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             )
 
         is_fares_require_attention_active = flag_is_active(
-            "", "is_fares_require_attention_active"
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
         if is_fares_require_attention_active:
             fares_dataset_df = get_fares_dataset_map(txcfa_map)
