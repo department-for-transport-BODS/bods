@@ -924,6 +924,8 @@ class FaresRequiresAttention:
                     if is_fares_stale(valid_to, last_modified_date):
                         _update_data(object_list, service)
         return object_list
+
+
 def get_service_patterns_df(query) -> pd.DataFrame:
     """Get list fo service pattern records for service pattern ids
 
