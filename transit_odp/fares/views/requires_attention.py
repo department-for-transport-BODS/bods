@@ -16,6 +16,7 @@ from transit_odp.organisation.csv.service_codes import (
     ServiceCodesCSV,
 )
 
+
 class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
     template_name = "publish/requires_attention.html"
     model = OTCService
@@ -71,7 +72,6 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
 
 
 class ServiceCodeView(View):
-
     def get(self, *args, **kwargs):
         self.org = Organisation.objects.get(id=kwargs["pk1"])
         return self.render_to_response()

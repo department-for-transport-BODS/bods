@@ -10,6 +10,7 @@ from transit_odp.publish.requires_attention import (
 )
 from transit_odp.browse.common import get_in_scope_in_season_services_line_level
 
+
 class ListView(BasePublishListView):
     template_name = "fares/feed_list.html"
 
