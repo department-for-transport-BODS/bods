@@ -145,7 +145,6 @@ class FeedbackListBaseView(DQSWarningListBaseView):
             self.show_suppressed,
             show_suppressed_button,
         )
-
         qs_filtered = []
         line_service_codes = []
         for obj in qs:

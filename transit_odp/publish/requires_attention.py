@@ -280,13 +280,11 @@ def get_line_level_txc_map_service_base(
         .distinct("service_code", "line_name_unnested")
     )
 
-    print(f"txc_file_attributes: {txc_file_attributes}")
-
     for txc_file in txc_file_attributes:
         key = (txc_file.service_code, txc_file.line_name_unnested)
         if key not in line_level_txc_map:
             line_level_txc_map[key] = txc_file
-    print(f"line_level_txc_map: {line_level_txc_map}")
+
     return line_level_txc_map
 
 
@@ -812,15 +810,13 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
 
     noc_df = pd.DataFrame.from_dict(noc_linename_dict)
     noc_df.drop_duplicates(inplace=True)
-
     nocs_list = list(set(nocs_list))
-    # print(f"nocs_list: {nocs_list}")
 
     fares_df = pd.DataFrame.from_records(
         DataCatalogueMetaData.objects.filter(national_operator_code__overlap=nocs_list)
         .add_revision_and_dataset()
-        # .get_live_revision_data()
-        # .exclude(fares_metadata_id__revision__status=INACTIVE)
+        .get_live_revision_data()
+        .exclude(fares_metadata_id__revision__status=INACTIVE)
         .add_published_date()
         .add_compliance_status()
         .values(
@@ -835,21 +831,17 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
             "is_fares_compliant",
         )
     )
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.max_rows", None)
 
-    # print(f"noc_df: {noc_df}")
     if fares_df.empty:
         return pd.DataFrame()
 
     fares_df = fares_df.explode("line_id")
     fares_df = fares_df.explode("national_operator_code")
     fares_df["line_name"] = fares_df["line_id"].apply(
-        lambda x: x.split(":")[3]
-        if isinstance(x, str) and len(x.split(":")) > 3
-        else None
+        lambda x: (
+            x.split(":")[3] if isinstance(x, str) and len(x.split(":")) > 3 else None
+        )
     )
-    # print(f"fare_df1: {fares_df}")
 
     fares_df_merged = pd.DataFrame.merge(
         fares_df,
@@ -858,7 +850,6 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
         how="inner",
         indicator=False,
     )
-    print(f"fares_df_merged: {fares_df_merged}")
 
     fares_df_merged["valid_to"] = pd.to_datetime(
         fares_df_merged["valid_to"], errors="coerce"
