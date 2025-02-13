@@ -902,12 +902,15 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
         )
     )
 
+    if fares_df.empty:
+        return pd.DataFrame()
+
     fares_df = fares_df.explode("line_id")
     fares_df = fares_df.explode("national_operator_code")
     fares_df["line_name"] = fares_df["line_id"].apply(
-        lambda x: x.split(":")[3]
-        if isinstance(x, str) and len(x.split(":")) > 3
-        else None
+        lambda x: (
+            x.split(":")[3] if isinstance(x, str) and len(x.split(":")) > 3 else None
+        )
     )
 
     fares_df_merged = pd.DataFrame.merge(

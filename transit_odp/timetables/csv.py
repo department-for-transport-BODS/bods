@@ -34,10 +34,10 @@ from transit_odp.otc.constants import (
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
     get_dq_critical_observation_services_map_from_dataframe,
-    get_fares_dataset_map,
-    get_fares_timeliness_status,
-    get_fares_requires_attention,
     get_fares_compliance_status,
+    get_fares_dataset_map,
+    get_fares_requires_attention,
+    get_fares_timeliness_status,
 )
 
 TXC_COLUMNS = (

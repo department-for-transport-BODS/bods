@@ -1,13 +1,14 @@
 import logging
+import pickle
+from io import BytesIO
+from zipfile import ZipFile
+
+import pandas as pd
+from django.core.cache import cache
+from django.db.models import Subquery
+
 from transit_odp.avl.constants import AVL_GRANULARITY_WEEKLY
 from transit_odp.avl.models import PostPublishingCheckReport
-from django.db.models import Subquery
-from zipfile import ZipFile
-import pandas as pd
-from io import BytesIO
-from django.core.cache import cache
-import pickle
-
 
 logger = logging.getLogger(__name__)
 
