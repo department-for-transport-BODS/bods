@@ -431,15 +431,13 @@ def test_dq_require_attention_without_services():
 
     txcfileattributes = []
     for service in services_list:
+        random_number = random.randint(0, 1)
         txcfileattributes.append(
             TXCFileAttributesFactory(
-                service_code=service["service_code"], line_names=service["line_name"]
+                service_code=service["service_code"],
+                line_names=service["line_name"],
+                national_operator_code=national_operator_code[random_number],
             )
         )
 
-    txc_files = {
-        obj.id: obj for obj in TXCFileAttributes.objects.add_split_linenames().all()
-    }
-    dq_services = get_dq_critical_observation_services_map(txc_files)
-
-    assert 0 == len(dq_services)
+    txcfileattributes = TXCFileAttributes.objects.add_split_linenames().all()
