@@ -417,6 +417,192 @@ def test_dq_require_attention_with_feedback_and_dqsobservation():
     assert len(services_with_dq_require_attention) == len(dq_services)
 
 
+def test_get_fares_dataset_map():
+    """
+    function to test functionality of get_fares_dataset_map()
+    """
+    national_operator_code = ["BLAC", "LNUD"]
+    organisation = OrganisationFactory(
+        licence_required=True, nocs=national_operator_code
+    )
+
+    services_list = [
+        {
+            "licence": f"PD000000{i}",
+            "service_code": f"PD000000{i}:{i}",
+            "line_name": [f"L{i}"],
+        }
+        for i in range(0, 11)
+    ]
+
+    txcfileattributes = []
+    for service in services_list:
+        random_number = random.randint(0, 1)
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                service_code=service["service_code"],
+                line_names=service["line_name"],
+                national_operator_code=national_operator_code[random_number],
+            )
+        )
+
+    txcfileattributes = TXCFileAttributes.objects.add_split_linenames().all()
+    txcfileattributes_map = {}
+    for txcfileattribute in txcfileattributes:
+        txcfileattributes_map[txcfileattribute.service_code] = txcfileattribute
+
+    fares_revision = FaresDatasetRevisionFactory(dataset__organisation=organisation)
+    faresmetadata = FaresMetadataFactory(
+        revision=fares_revision, num_of_fare_products=2
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata,
+        fares_metadata__revision__is_published=True,
+        line_name=[":::L1", ":::L2", ":::L3"],
+        line_id=[":::L1", ":::L2", ":::L3"],
+        national_operator_code=national_operator_code,
+        valid_from=datetime(2024, 12, 12),
+        valid_to=datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata,
+        fares_metadata__revision__is_published=True,
+        line_name=[":::L1", ":::L2", ":::L3"],
+        line_id=[":::L1", ":::L2", ":::L3"],
+        national_operator_code=national_operator_code,
+        valid_from=datetime(2025, 1, 12),
+        valid_to=datetime(2099, 2, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata,
+        fares_metadata__revision__is_published=True,
+        line_name=[":::L1", ":::L2", ":::L3"],
+        line_id=[":::L1", ":::L2", ":::L3"],
+        national_operator_code=["SR", "BR"],
+    )
+    FaresValidationResultFactory(revision=fares_revision, count=5)
+
+    result = get_fares_dataset_map(txc_map=txcfileattributes_map)
+    assert (
+        result[
+            (result["national_operator_code"] == "LNUD") & (result["line_name"] == "L1")
+        ]["valid_from"]
+        == "2025-01-12"
+    ).all()
+    assert (
+        result[
+            (result["national_operator_code"] == "BLAC") & (result["line_name"] == "L2")
+        ]["valid_from"]
+        == "2025-01-12"
+    ).all()
+    assert (
+        result[
+            (result["national_operator_code"] == "LNUD") & (result["line_name"] == "L3")
+        ]["valid_from"]
+        == "2025-01-12"
+    ).all()
+
+    assert (
+        result[
+            (result["national_operator_code"] == "LNUD") & (result["line_name"] == "L1")
+        ]["valid_to"]
+        == "2099-02-12"
+    ).all()
+    assert (
+        result[
+            (result["national_operator_code"] == "BLAC") & (result["line_name"] == "L2")
+        ]["valid_to"]
+        == "2099-02-12"
+    ).all()
+    assert (
+        result[
+            (result["national_operator_code"] == "LNUD") & (result["line_name"] == "L3")
+        ]["valid_to"]
+        == "2099-02-12"
+    ).all()
+
+
+@freeze_time("04/02/2025")
+@pytest.mark.parametrize(
+    "operating_period_end_date, last_updated, expected_result",
+    [
+        (
+            date(2025, 1, 19),
+            datetime(2023, 1, 2, 16, 17, 45),
+            (True, True),
+        ),
+        (
+            date(2025, 1, 19),
+            datetime(2025, 1, 2, 16, 17, 45),
+            (True, False),
+        ),
+        (
+            date(2025, 6, 20),
+            datetime(2023, 1, 2, 16, 17, 45),
+            (False, True),
+        ),
+        (
+            date(2025, 6, 20),
+            datetime(2025, 1, 2, 16, 17, 45),
+            (False, False),
+        ),
+        (
+            None,
+            datetime(2025, 1, 2, 16, 17, 45),
+            (False, False),
+        ),
+    ],
+)
+def test_evaluate_fares_staleness(
+    operating_period_end_date, last_updated, expected_result
+):
+    """
+    Test for evaluate_fares_staleness function.
+    """
+    staleness_function_result = evaluate_fares_staleness(
+        operating_period_end_date, last_updated
+    )
+
+    assert staleness_function_result == expected_result
+
+
+@freeze_time("04/02/2025")
+@pytest.mark.parametrize(
+    "operating_period_end_date, last_updated, expected_result",
+    [
+        (
+            date(2025, 1, 19),
+            datetime(2023, 1, 2, 16, 17, 45),
+            True,
+        ),
+        (
+            date(2025, 1, 19),
+            datetime(2025, 1, 2, 16, 17, 45),
+            True,
+        ),
+        (
+            date(2025, 6, 20),
+            datetime(2023, 1, 2, 16, 17, 45),
+            True,
+        ),
+        (
+            date(2025, 6, 20),
+            datetime(2025, 1, 2, 16, 17, 45),
+            False,
+        ),
+    ],
+)
+def test_is_fares_stale(operating_period_end_date, last_updated, expected_result):
+    """
+    Test for is_fares_stale function.
+    """
+    is_fares_stale_function_result = is_fares_stale(
+        operating_period_end_date, last_updated
+    )
+
+    assert is_fares_stale_function_result == expected_result
+
+
 @override_flag("dqs_require_attention", active=True)
 @override_flag("is_specific_feedback", active=True)
 def test_dq_require_attention_without_services():
