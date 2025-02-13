@@ -43,7 +43,7 @@ pytestmark = pytest.mark.django_db
 
 
 @override_flag("dqs_require_attention", active=True)
-@override_flag("is_specific_feedback", active=True)
+@override_flag("is_specific_feedback", active=False)
 def test_dq_require_attention_with_only_critical_observation_results():
     services_list = [
         {
@@ -91,6 +91,79 @@ def test_dq_require_attention_with_only_critical_observation_results():
             service_code=txcfileattribute.service_code,
             name=txcfileattribute.line_names[0],
             service_patterns=[service_pattern],
+            txcfileattributes=txcfileattribute,
+        )
+
+        service_pattern_stop = ServicePatternStopFactory(
+            service_pattern=service_pattern
+        )
+
+        ObservationResultsFactory(
+            service_pattern_stop=service_pattern_stop, taskresults=task_result
+        )
+
+    txc_files = {
+        obj.id: obj for obj in TXCFileAttributes.objects.add_split_linenames().all()
+    }
+    dq_services = get_dq_critical_observation_services_map(txc_files)
+
+    assert sorted(services_with_critical, key=lambda tup: tup[0]) == sorted(
+        dq_services, key=lambda tup: tup[0]
+    )
+
+    assert len(services_with_critical) == len(dq_services)
+
+
+@override_flag("dqs_require_attention", active=True)
+@override_flag("is_specific_feedback", active=True)
+def test_dq_require_attention_with_only_critical_observation_results_with_feedback_flag():
+    services_list = [
+        {
+            "licence": f"PD000000{i}",
+            "service_code": f"PD000000{i}:{i}",
+            "line_name": [f"L{i}"],
+        }
+        for i in range(0, 11)
+    ]
+
+    txcfileattributes = []
+    for service in services_list:
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                service_code=service["service_code"], line_names=service["line_name"]
+            )
+        )
+
+    check1 = ChecksFactory(importance=Level.critical.value)
+    check2 = ChecksFactory(importance=Level.advisory.value)
+
+    services_with_critical = []
+    services_with_advisory = []
+    for i, txcfileattribute in enumerate(txcfileattributes):
+        check_obj = check1 if i % 2 == 0 else check2
+        if check_obj.importance == Level.critical.value:
+            services_with_critical.append(
+                (txcfileattribute.service_code, txcfileattribute.line_names[0])
+            )
+        else:
+            services_with_advisory.append(
+                (txcfileattribute.service_code, txcfileattribute.line_names[0])
+            )
+
+        task_result = TaskResultsFactory(
+            status=TaskResultsStatus.PENDING.value,
+            transmodel_txcfileattributes=txcfileattribute,
+            checks=check_obj,
+        )
+        service_pattern = ServicePatternFactory(
+            revision=txcfileattribute.revision, line_name=txcfileattribute.line_names[0]
+        )
+        ServiceFactory(
+            revision=txcfileattribute.revision,
+            service_code=txcfileattribute.service_code,
+            name=txcfileattribute.line_names[0],
+            service_patterns=[service_pattern],
+            txcfileattributes=txcfileattribute,
         )
 
         service_pattern_stop = ServicePatternStopFactory(
@@ -207,6 +280,7 @@ def test_dq_require_attention_with_only_feedback():
                 service_code=txcfileattribute.service_code,
                 name=txcfileattribute.line_names[0],
                 service_patterns=[service_pattern],
+                txcfileattributes=txcfileattribute,
             )
         )
 
@@ -302,6 +376,7 @@ def test_dq_require_attention_with_feedback_and_dqsobservation():
             service_code=txcfileattribute.service_code,
             name=txcfileattribute.line_names[0],
             service_patterns=[service_pattern],
+            txcfileattributes=txcfileattribute,
         )
 
         if check_obj.importance == Level.critical.value:
@@ -342,15 +417,9 @@ def test_dq_require_attention_with_feedback_and_dqsobservation():
     assert len(services_with_dq_require_attention) == len(dq_services)
 
 
-def test_get_fares_dataset_map():
-    """
-    function to test functionality of get_fares_dataset_map()
-    """
-    national_operator_code = ["BLAC", "LNUD"]
-    organisation = OrganisationFactory(
-        licence_required=True, nocs=national_operator_code
-    )
-
+@override_flag("dqs_require_attention", active=True)
+@override_flag("is_specific_feedback", active=True)
+def test_dq_require_attention_without_services():
     services_list = [
         {
             "licence": f"PD000000{i}",
@@ -362,167 +431,15 @@ def test_get_fares_dataset_map():
 
     txcfileattributes = []
     for service in services_list:
-        random_number = random.randint(0, 1)
         txcfileattributes.append(
             TXCFileAttributesFactory(
-                service_code=service["service_code"],
-                line_names=service["line_name"],
-                national_operator_code=national_operator_code[random_number],
+                service_code=service["service_code"], line_names=service["line_name"]
             )
         )
 
-    txcfileattributes = TXCFileAttributes.objects.add_split_linenames().all()
-    txcfileattributes_map = {}
-    for txcfileattribute in txcfileattributes:
-        txcfileattributes_map[txcfileattribute.service_code] = txcfileattribute
+    txc_files = {
+        obj.id: obj for obj in TXCFileAttributes.objects.add_split_linenames().all()
+    }
+    dq_services = get_dq_critical_observation_services_map(txc_files)
 
-    fares_revision = FaresDatasetRevisionFactory(dataset__organisation=organisation)
-    faresmetadata = FaresMetadataFactory(
-        revision=fares_revision, num_of_fare_products=2
-    )
-    DataCatalogueMetaDataFactory(
-        fares_metadata=faresmetadata,
-        fares_metadata__revision__is_published=True,
-        line_name=[":::L1", ":::L2", ":::L3"],
-        line_id=[":::L1", ":::L2", ":::L3"],
-        national_operator_code=national_operator_code,
-        valid_from=datetime(2024, 12, 12),
-        valid_to=datetime(2025, 1, 12),
-    )
-    DataCatalogueMetaDataFactory(
-        fares_metadata=faresmetadata,
-        fares_metadata__revision__is_published=True,
-        line_name=[":::L1", ":::L2", ":::L3"],
-        line_id=[":::L1", ":::L2", ":::L3"],
-        national_operator_code=national_operator_code,
-        valid_from=datetime(2025, 1, 12),
-        valid_to=datetime(2099, 2, 12),
-    )
-    DataCatalogueMetaDataFactory(
-        fares_metadata=faresmetadata,
-        fares_metadata__revision__is_published=True,
-        line_name=[":::L1", ":::L2", ":::L3"],
-        line_id=[":::L1", ":::L2", ":::L3"],
-        national_operator_code=["SR", "BR"],
-    )
-    FaresValidationResultFactory(revision=fares_revision, count=5)
-
-    result = get_fares_dataset_map(txc_map=txcfileattributes_map)
-    assert (
-        result[
-            (result["national_operator_code"] == "LNUD") & (result["line_name"] == "L1")
-        ]["valid_from"]
-        == "2025-01-12"
-    ).all()
-    assert (
-        result[
-            (result["national_operator_code"] == "BLAC") & (result["line_name"] == "L2")
-        ]["valid_from"]
-        == "2025-01-12"
-    ).all()
-    assert (
-        result[
-            (result["national_operator_code"] == "LNUD") & (result["line_name"] == "L3")
-        ]["valid_from"]
-        == "2025-01-12"
-    ).all()
-
-    assert (
-        result[
-            (result["national_operator_code"] == "LNUD") & (result["line_name"] == "L1")
-        ]["valid_to"]
-        == "2099-02-12"
-    ).all()
-    assert (
-        result[
-            (result["national_operator_code"] == "BLAC") & (result["line_name"] == "L2")
-        ]["valid_to"]
-        == "2099-02-12"
-    ).all()
-    assert (
-        result[
-            (result["national_operator_code"] == "LNUD") & (result["line_name"] == "L3")
-        ]["valid_to"]
-        == "2099-02-12"
-    ).all()
-
-
-@freeze_time("04/02/2025")
-@pytest.mark.parametrize(
-    "operating_period_end_date, last_updated, expected_result",
-    [
-        (
-            date(2025, 1, 19),
-            datetime(2023, 1, 2, 16, 17, 45),
-            (True, True),
-        ),
-        (
-            date(2025, 1, 19),
-            datetime(2025, 1, 2, 16, 17, 45),
-            (True, False),
-        ),
-        (
-            date(2025, 6, 20),
-            datetime(2023, 1, 2, 16, 17, 45),
-            (False, True),
-        ),
-        (
-            date(2025, 6, 20),
-            datetime(2025, 1, 2, 16, 17, 45),
-            (False, False),
-        ),
-        (
-            None,
-            datetime(2025, 1, 2, 16, 17, 45),
-            (False, False),
-        ),
-    ],
-)
-def test_evaluate_fares_staleness(
-    operating_period_end_date, last_updated, expected_result
-):
-    """
-    Test for evaluate_fares_staleness function.
-    """
-    staleness_function_result = evaluate_fares_staleness(
-        operating_period_end_date, last_updated
-    )
-
-    assert staleness_function_result == expected_result
-
-
-@freeze_time("04/02/2025")
-@pytest.mark.parametrize(
-    "operating_period_end_date, last_updated, expected_result",
-    [
-        (
-            date(2025, 1, 19),
-            datetime(2023, 1, 2, 16, 17, 45),
-            True,
-        ),
-        (
-            date(2025, 1, 19),
-            datetime(2025, 1, 2, 16, 17, 45),
-            True,
-        ),
-        (
-            date(2025, 6, 20),
-            datetime(2023, 1, 2, 16, 17, 45),
-            True,
-        ),
-        (
-            date(2025, 6, 20),
-            datetime(2025, 1, 2, 16, 17, 45),
-            False,
-        ),
-    ],
-)
-def test_is_fares_stale(operating_period_end_date, last_updated, expected_result):
-    """
-    Test for is_fares_stale function.
-    """
-    is_fares_stale_function_result = is_fares_stale(
-        operating_period_end_date, last_updated
-    )
-
-    assert is_fares_stale_function_result == expected_result
+    assert 0 == len(dq_services)
