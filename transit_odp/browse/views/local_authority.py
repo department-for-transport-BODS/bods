@@ -27,6 +27,7 @@ from transit_odp.browse.lta_column_headers import (
     header_accessor_data_line_level,
 )
 from transit_odp.browse.views.base_views import BaseListView
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
 from transit_odp.organisation.models import TXCFileAttributes
@@ -589,7 +590,12 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
             return "Yes"
         return "No"
 
-    def get_error_in_avl_to_timetable_matching(self, operator_ref, line_name) -> str:
+    def get_error_in_avl_to_timetable_matching(
+        self,
+        operator_ref: Optional[str],
+        line_name: str,
+        uncounted_activity_df: pd.DataFrame,
+    ) -> str:
         """
         Returns value for 'Error in AVL to Timetable Matching' column.
 
@@ -600,7 +606,6 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         Returns:
             str: Yes or No for 'Error in AVL to Timetable Matching' column
         """
-        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
 
         if not uncounted_activity_df.loc[
             (uncounted_activity_df["OperatorRef"] == operator_ref)
@@ -741,8 +746,14 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         """
         ui_lta = lta_list[0].ui_lta
         otc_map = get_line_level_otc_map_lta(lta_list)
+
         txcfa_map = get_line_level_txc_map_lta(lta_list)
-        dq_require_attention_active = flag_is_active("", "dq_require_attention")
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+
+        dq_require_attention_active = flag_is_active(
+            "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+        )
+
         if dq_require_attention_active:
             dq_critical_observation_map = get_dq_critical_observation_services_map(
                 txcfa_map
@@ -815,7 +826,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     dq_require_attention,
                 )
             else:
-                require_attention = "No"
+                require_attention = dq_require_attention
 
             if file_attribute is not None:
                 avl_published_status = self.get_avl_published_status(
@@ -827,6 +838,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     self.get_error_in_avl_to_timetable_matching(
                         file_attribute.national_operator_code,
                         service_number,
+                        uncounted_activity_df,
                     )
                 )
             else:
@@ -834,7 +846,9 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     "", service_number, synced_in_last_month
                 )
                 error_in_avl_to_timetable_matching = (
-                    self.get_error_in_avl_to_timetable_matching("", service_number)
+                    self.get_error_in_avl_to_timetable_matching(
+                        "", service_number, uncounted_activity_df
+                    )
                 )
 
             avl_requires_attention = self.get_avl_requires_attention(

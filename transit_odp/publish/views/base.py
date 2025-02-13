@@ -512,7 +512,7 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
 
         else:
             # trigger state machine
-            input_payload = create_tt_state_machine_payload(revision)
+            input_payload = create_tt_state_machine_payload(revision, False)
             try:
                 step_fucntions_client = StepFunctionsClientWrapper()
                 step_function_arn = (
