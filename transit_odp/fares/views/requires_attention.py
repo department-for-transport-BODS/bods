@@ -11,7 +11,10 @@ from transit_odp.publish.requires_attention import (
 )
 from transit_odp.timetables.tables import RequiresAttentionTable
 from transit_odp.users.views.mixins import OrgUserViewMixin
-
+from transit_odp.organisation.models import Organisation
+from transit_odp.organisation.csv.service_codes import (
+    ServiceCodesCSV,
+)
 
 class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
     template_name = "publish/requires_attention.html"
@@ -46,6 +49,7 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
             context["services_require_attention_percentage"] = 0
 
         context["q"] = self.request.GET.get("q", "").strip()
+        context["hide_download_links"] = True
         return context
 
     def get_table_data(self):
@@ -64,3 +68,20 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
         org_id = self.kwargs["pk1"]
         fares_sra = FaresRequiresAttention(org_id)
         return fares_sra.get_fares_requires_attention_line_level_data()
+
+
+class ServiceCodeView(View):
+
+    def get(self, *args, **kwargs):
+        self.org = Organisation.objects.get(id=kwargs["pk1"])
+        return self.render_to_response()
+
+    def render_to_response(self):
+        csv_filename = (
+            f"{now():%d%m%y}_fares_datastatus_by_service_code_" f"{self.org.name}.csv"
+        )
+        csv_export = ServiceCodesCSV(self.org.id)
+        file_ = csv_export.to_string()
+        response = HttpResponse(file_, content_type="text/csv")
+        response["Content-Disposition"] = f"attachment; filename={csv_filename}"
+        return response

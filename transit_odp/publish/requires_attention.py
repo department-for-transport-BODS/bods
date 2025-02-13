@@ -901,6 +901,8 @@ class FaresRequiresAttention:
             # If no file attribute (TxcFileAttribute), service requires attention
             if file_attribute is None:
                 _update_data(object_list, service)
+            elif fares_df.empty:
+                _update_data(object_list, service)
             else:
                 noc = file_attribute.national_operator_code
                 line_name = file_attribute.line_name_unnested
