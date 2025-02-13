@@ -69,19 +69,3 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
         fares_sra = FaresRequiresAttention(org_id)
         return fares_sra.get_fares_requires_attention_line_level_data()
 
-
-class ServiceCodeView(View):
-
-    def get(self, *args, **kwargs):
-        self.org = Organisation.objects.get(id=kwargs["pk1"])
-        return self.render_to_response()
-
-    def render_to_response(self):
-        csv_filename = (
-            f"{now():%d%m%y}_fares_datastatus_by_service_code_" f"{self.org.name}.csv"
-        )
-        csv_export = ServiceCodesCSV(self.org.id)
-        file_ = csv_export.to_string()
-        response = HttpResponse(file_, content_type="text/csv")
-        response["Content-Disposition"] = f"attachment; filename={csv_filename}"
-        return response
