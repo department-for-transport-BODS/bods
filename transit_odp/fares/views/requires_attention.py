@@ -16,6 +16,7 @@ from transit_odp.organisation.csv.service_codes import (
     ServiceCodesCSV,
 )
 
+
 class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
     template_name = "publish/requires_attention.html"
     model = OTCService
