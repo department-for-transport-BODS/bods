@@ -138,16 +138,16 @@ class PostSchemaCSV(CSVBuilder):
             elif details_value == PostSchemaErrorType.SERVICE_EXISTS.value:
                 row_data = self.annotate_check_service_qs(row_data)
 
-            row_data.pop(
-                "Details", None
-            )  # Remove 'Details' row value from the final output
+        cleaned_rows = [
+            {k: v for k, v in item.items() if k != "Details"} for item in rows
+        ]  # Remove 'Details' rows from the final output
         del headers[-1]  # Remove 'Details' column from the final output
 
         csvfile = io.StringIO()
         writer = csv.DictWriter(csvfile, fieldnames=headers, quoting=csv.QUOTE_ALL)
 
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(cleaned_rows)
 
         csvfile.seek(0, os.SEEK_END)
         logger.info(prefix + f"Final file size: {csvfile.tell()} bytes.")
