@@ -1,5 +1,5 @@
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -456,7 +456,7 @@ def is_stale(service: OTCService, file_attribute: TXCFileAttributes) -> bool:
 
 
 def evaluate_fares_staleness(
-    operating_period_end_date: date, last_updated: datetime
+    operating_period_end_date: date, last_updated_date: date
 ) -> tuple:
     """
     Checks timeliness status for fares data.
@@ -468,10 +468,16 @@ def evaluate_fares_staleness(
             Operating period end date < today + 42 days
         Staleness Status - Stale - One year old:
             If last_modified + 365 days <= today
+
+    Args:
+        operating_period_end_date (date): Valid to date
+        last_updated (date): Last updated date
+
+    Returns:
+        tuple: Boolean value for each staleness status
     """
     today = now().date()
     forty_two_days_from_today = today + timedelta(days=42)
-    last_updated_date = last_updated.date()
     twelve_months_from_last_updated = last_updated_date + timedelta(days=365)
 
     staleness_42_day_look_ahead = (
@@ -490,45 +496,77 @@ def evaluate_fares_staleness(
     )
 
 
-def get_fares_published_status(row: pd.Series) -> str:
+def is_fares_stale(operating_period_end_date: date, last_updated: date) -> bool:
     """
-    Returns value for 'Fares Published Status' column.
+    Determines if a fares service has any stale values that are True.
+
     Args:
-        row (pd.Series): Row from fares dataframe
+        operating_period_end_date (date): Valid to value
+        last_updated (date): Last update date
+
+    Returns:
+        bool: True or False if there is a stale value.
+    """
+    return any(evaluate_fares_staleness(operating_period_end_date, last_updated))
+
+
+def get_fares_published_status(fares_dataset_id: int) -> str:
+    """
+    Returns value for 'Fares Published Status' column based on
+    the presence of a dataset ID for a published fares dataset.
+
+    Args:
+        fares_dataset_id (int): Fares Dataset ID
+
     Returns:
         str: Published or Unpublished for 'Fares Published Status' column
     """
-    if row is not None and row["xml_file_name"]:
+    if not pd.isna(fares_dataset_id):
         return "Published"
     return "Unpublished"
 
 
-def get_fares_timeliness_status(row: pd.Series) -> str:
+def get_fares_timeliness_status(valid_to: date, last_updated_date: date) -> str:
     """
-    Returns value for 'Fares Timeliness Status' column.
+    Returns value for 'Fares Timeliness Status' column based on the following logic:
+        12 months old:
+            If 'Last updated' + 1 year <= today's date
+            then timeliness status = 'One year old'
+        42 day look ahead:
+            If NETEX:Operating Period End Date (valid to) < today + 42 days
+            then timeliness status = '42 day look ahead is incomplete'
+        Else Not Stale
+
     Args:
-        row (pd.Series): Row from fares dataframe
+        operating_period_end_date (date): Valid to value
+        last_updated (date): Last update date
+
     Returns:
-        str: Status for 'Fares Timeliness Status' column
+        str: Status value for 'Fares Timeliness Status' column
     """
     fares_staleness_status = "Not Stale"
-    if row is not None and is_fares_stale(row["valid_to"], row["last_updated_date"]):
-        fares_rad = evaluate_fares_staleness(row["valid_to"], row["last_updated_date"])
-        fares_staleness_status = FARES_STALENESS_STATUS[fares_rad.index(True)]
+    if (not pd.isna(last_updated_date)) and (not pd.isna(valid_to)):
+        if is_fares_stale(valid_to, last_updated_date):
+            fares_rad = evaluate_fares_staleness(valid_to, last_updated_date)
+            fares_staleness_status = FARES_STALENESS_STATUS[fares_rad.index(True)]
 
     return fares_staleness_status
 
 
-def get_fares_compliance_status(row: pd.Series) -> str:
+def get_fares_compliance_status(is_fares_compliant: bool) -> str:
     """
-    Returns value for 'Fares Compliance Status' column.
+    Returns value for 'Fares Compliance Status' column based on the
+    compliance of the fares data published to BODS.
+
     Args:
-        row (pd.Series): Row from fares dataframe
+        is_fares_compliant (bool): BODS compliance
+
     Returns:
         str: Compliant or Non compliant for 'Fares Compliance Status' column
     """
-    if row is not None and row["is_fares_compliant"]:
-        return "Compliant"
+    if not pd.isna(is_fares_compliant):
+        if is_fares_compliant:
+            return "Compliant"
     return "Non compliant"
 
 
@@ -545,10 +583,12 @@ def get_fares_requires_attention(
         then 'Fares requires attention' = No.
         Else
         the 'Fares requires attention' = Yes.
+
     Args:
         fares_published_status (str): Value of 'Fares Published Status'
         fares_timeliness_status (str): Value of 'Fares Timeliness Status'
         fares_compliance_status (str): Value of 'Fares Compliance Status'
+
     Returns:
         str: Yes or No for 'Fares requires attention' column
     """
@@ -559,20 +599,6 @@ def get_fares_requires_attention(
     ):
         return "No"
     return "Yes"
-
-
-def is_fares_stale(operating_period_end_date: date, last_updated: datetime) -> bool:
-    """
-    Determines if a fares service has any stale values that are True.
-
-    Args:
-        operating_period_end_date (date): Valid to value
-        last_updated (datetime): Last update date
-
-    Returns:
-        bool: True or False if there is a stale value.
-    """
-    return any(evaluate_fares_staleness(operating_period_end_date, last_updated))
 
 
 def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
