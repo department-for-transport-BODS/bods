@@ -225,6 +225,7 @@ class PostSchemaViolation(models.Model):
         max_length=1024,
         choices=PostSchemaErrorType.choices,
         help_text=_("Details of the observation."),
+        default=PostSchemaErrorType.PII_ERROR,
     )
     additional_details = JSONField(null=True)
     created = CreationDateTimeField(_("DateTime observation was created."))
