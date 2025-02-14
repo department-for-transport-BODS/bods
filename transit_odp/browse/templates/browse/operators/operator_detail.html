@@ -357,6 +357,18 @@
           </div>
         </div>
       </div>
+    {% if is_fares_require_attention_active %}
+      <div class="govuk-grid-column-one-half">
+        <div class="feed-stat">
+          <span class="feed-stat__value">{{ fares_total_services_requiring_attention_percentage }}</span>
+          <span class="feed-stat__label">
+            {% filter force_escape %}
+              {% trans "Services requiring attention" %}
+            {% endfilter %}
+          </span>
+        </div>
+        {% endif %}
+      </div>
       <ul class="govuk-list govuk-!-margin-top-5">
         <li class="govuk-!-margin-bottom-3">
           <a class="govuk-link" href="{% url 'search-fares' host hosts.data %}?organisation={{ object.id }}&status=live">

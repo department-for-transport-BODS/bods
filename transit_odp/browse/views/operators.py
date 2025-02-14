@@ -98,9 +98,9 @@ class OperatorDetailView(BaseDetailView):
 
         context["is_fares_require_attention_active"] = is_fares_require_attention_active
         if is_fares_require_attention_active:
-            fares_reqiures_attenstion = FaresRequiresAttention(organisation.id)
+            fares_reqiures_attention = FaresRequiresAttention(organisation.id)
             context["fares_total_services_requiring_attention"] = len(
-                fares_reqiures_attenstion.get_fares_requires_attention_line_level_data()
+                fares_reqiures_attention.get_fares_requires_attention_line_level_data()
             )
 
         context["total_in_scope_in_season_services"] = len(
