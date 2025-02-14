@@ -984,7 +984,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 avl_published_status = self.get_avl_published_status(
                     "", line_name, synced_in_last_month
                 )
-                erorr_in_avl_to_timetable_matching = (
+                error_in_avl_to_timetable_matching = (
                     self.get_error_in_avl_to_timetable_matching(
                         "", line_name, uncounted_activity_df
                     )
@@ -992,7 +992,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
 
             avl_requires_attention = self.get_avl_requires_attention(
                 avl_published_status,
-                erorr_in_avl_to_timetable_matching,
+                error_in_avl_to_timetable_matching,
             )
 
             if is_fares_require_attention_active:

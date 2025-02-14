@@ -36,9 +36,7 @@ from transit_odp.otc.constants import API_TYPE_EP, API_TYPE_WECA, UNDER_MAINTENA
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.otc.models import UILta
-from transit_odp.publish.constants import FARES_STALENESS_STATUS
 from transit_odp.publish.requires_attention import (
-    evaluate_fares_staleness,
     evaluate_staleness,
     get_dq_critical_observation_services_map,
     get_fares_compliance_status,
@@ -454,6 +452,11 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         fares_published_status: str,
         fares_compliance_status: str,
         fares_timeliness_status: str,
+        fares_dataset_id: str,
+        fares_filename: str,
+        fares_last_modified: str,
+        fares_one_year_date: str,
+        fares_operating_period_end: str,
     ) -> None:
         self._object_list.append(
             {
@@ -518,6 +521,11 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 "fares_published_status": fares_published_status,
                 "fares_compliance_status": fares_compliance_status,
                 "fares_timeliness_status": fares_timeliness_status,
+                "fares_dataset_id": fares_dataset_id,
+                "fares_filename": fares_filename,
+                "fares_last_modified": fares_last_modified,
+                "fares_one_year_date": fares_one_year_date,
+                "fares_operating_period_end": fares_operating_period_end,
             }
         )
 
@@ -768,7 +776,6 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
 
         txcfa_map = get_line_level_txc_map_lta(lta_list)
         uncounted_activity_df = get_vehicle_activity_operatorref_linename()
-
         dq_require_attention_active = flag_is_active(
             "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
         )
@@ -792,6 +799,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         service_number_registration_number_map = sorted(
             service_number_registration_number_map
         )
+
         abods_registry = AbodsRegistery()
         synced_in_last_month = abods_registry.records()
 
@@ -855,9 +863,14 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 require_attention = dq_require_attention
 
             fares_published_status = "Unpublished"
-            fares_compliance_status = "Non Compliant"
+            fares_compliance_status = "Non compliant"
             fares_requires_attention = "No"
             fares_timeliness_status = "Not Stale"
+            fares_dataset_id = (
+                fares_filename
+            ) = (
+                fares_last_modified
+            ) = fares_one_year_date = fares_operating_period_end = ""
 
             if file_attribute is not None:
                 avl_published_status = self.get_avl_published_status(
@@ -880,16 +893,30 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                         )
                         & (fares_require_attention_df["line_name"] == service_number)
                     ]
-
                     if not fares_file_details.empty:
                         fares_published_status = "Published"
-                        fares_timeliness_status = get_fares_timeliness_status(
-                            fares_file_details.iloc[0]
+                        row = fares_file_details.iloc[0]
+                        row["valid_to"] = (
+                            row["valid_to"].date()
+                            if pd.notna(row["valid_to"])
+                            else row["valid_to"]
                         )
-                        fares_compliance_status = get_fares_compliance_status(
-                            fares_file_details.iloc[0]
+                        row["valid_from"] = (
+                            row["valid_from"].date()
+                            if pd.notna(row["valid_from"])
+                            else row["valid_from"]
                         )
-
+                        fares_timeliness_status = get_fares_timeliness_status(row)
+                        fares_compliance_status = get_fares_compliance_status(row)
+                        fares_filename = row["xml_file_name"]
+                        fares_last_modified = row["last_updated_date"].date()
+                        fares_one_year_date = (
+                            row["valid_to"] + timedelta(days=365)
+                            if row["valid_to"]
+                            else None
+                        )
+                        fares_operating_period_end = row["valid_to"]
+                        fares_dataset_id = str(row["dataset_id"])
             else:
                 avl_published_status = self.get_avl_published_status(
                     "", service_number, synced_in_last_month
@@ -928,7 +955,15 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     fares_published_status
                 ) = (
                     fares_compliance_status
-                ) = fares_timeliness_status = UNDER_MAINTENANCE
+                ) = (
+                    fares_timeliness_status
+                ) = (
+                    fares_dataset_id
+                ) = (
+                    fares_filename
+                ) = (
+                    fares_last_modified
+                ) = fares_one_year_date = fares_operating_period_end = UNDER_MAINTENANCE
 
             self._update_data(
                 service,
@@ -949,6 +984,11 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 fares_published_status,
                 fares_compliance_status,
                 fares_timeliness_status,
+                fares_dataset_id,
+                fares_filename,
+                fares_last_modified,
+                fares_one_year_date,
+                fares_operating_period_end,
             )
 
     def get_queryset(self):

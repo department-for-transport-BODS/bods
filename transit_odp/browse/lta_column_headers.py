@@ -263,19 +263,19 @@ header_accessor_data_compliance_report = [
         "TXC:Operating Period End Date",
         lambda otc_service: otc_service.get("operating_period_end_date"),
     ),
-    ("Fares Data set ID", lambda otc_service: UNDER_MAINTENANCE),
-    ("NETEX:Filename", lambda otc_service: UNDER_MAINTENANCE),
+    ("Fares Data set ID", lambda otc_service: otc_service.get("fares_dataset_id")),
+    ("NETEX:Filename", lambda otc_service: otc_service.get("fares_filename")),
     (
         "NETEX:Last Modified Date",
-        lambda otc_service: UNDER_MAINTENANCE,
+        lambda otc_service: otc_service.get("fares_last_modified"),
     ),
     (
         "Date when fares data is over 1 year old",
-        lambda otc_service: UNDER_MAINTENANCE,
+        lambda otc_service: otc_service.get("fares_one_year_date"),
     ),
     (
         "NETEX:Operating Period End Date",
-        lambda otc_service: UNDER_MAINTENANCE,
+        lambda otc_service: otc_service.get("fares_operating_period_end"),
     ),
     (
         "Date Registration variation needs to be published",

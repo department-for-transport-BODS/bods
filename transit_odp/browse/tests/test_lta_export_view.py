@@ -1,3 +1,4 @@
+import random
 from typing import Dict
 
 import faker
@@ -7,8 +8,17 @@ from freezegun import freeze_time
 
 from transit_odp.browse.lta_column_headers import header_accessor_data_compliance_report
 from transit_odp.browse.views.local_authority import LTAComplianceReportCSV
+from transit_odp.common.constants import FeatureFlags
+from transit_odp.fares.factories import (
+    DataCatalogueMetaDataFactory,
+    FaresMetadataFactory,
+)
+from transit_odp.fares_validator.factories import FaresValidationResultFactory
 from transit_odp.naptan.factories import AdminAreaFactory
-from transit_odp.organisation.factories import DatasetFactory
+from transit_odp.organisation.factories import (
+    DatasetFactory,
+    FaresDatasetRevisionFactory,
+)
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
 from transit_odp.organisation.factories import (
     OrganisationFactory,
@@ -16,6 +26,7 @@ from transit_odp.organisation.factories import (
     ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
+from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.constants import FLEXIBLE_REG, SCHOOL_OR_WORKS
 from transit_odp.otc.factories import (
     LicenceModelFactory,
@@ -24,6 +35,8 @@ from transit_odp.otc.factories import (
     ServiceModelFactory,
     UILtaFactory,
 )
+from waffle.testutils import override_flag
+
 
 pytestmark = pytest.mark.django_db
 FAKER = faker.Faker()
@@ -1285,3 +1298,218 @@ def test_timeliness_status_otc_variation():
     actual_values = [row.strip('"') for row in csv_output["row0"]]
 
     assert "OTC variation not published" in actual_values
+
+
+@override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+@override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=True)
+@override_flag("is_avl_require_attention_active", active=True)
+@freeze_time("2025-02-12")
+def test_lta_export_fares_published():
+    """
+    function to test fares lta export
+    """
+    services_list = [
+        {
+            "licence": f"PD00000{i}",
+            "service_code": f"PD00000{i}:{i}",
+            "line_name": f"L{i}",
+        }
+        for i in range(0, 11)
+    ]
+
+    national_operator_code = ["BLAC", "LACP"]
+    licences = [service["licence"] for service in services_list]
+    org_factory = OrganisationFactory(
+        licence_required=True,
+        nocs=national_operator_code,
+        licences=licences,
+        name="Stage Coaches",
+        short_name="Stage Coaches",
+    )
+    txcfileattributes = []
+    org_licences = []
+    services_factories = []
+    for service in services_list:
+        random_number = random.randint(0, 1)
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                service_code=service["service_code"],
+                line_names=[service["line_name"]],
+                national_operator_code=national_operator_code[random_number],
+                revision__dataset__organisation=org_factory,
+            )
+        )
+        otc_lic = LicenceModelFactory(number=service["licence"])
+        org_licences.append(otc_lic)
+        services_factories.append(
+            ServiceModelFactory(
+                licence=otc_lic,
+                registration_number=service["service_code"],
+                service_number=service["line_name"],
+                effective_date=datetime.datetime(2023, 3, 24),
+            )
+        )
+
+    fares_revision_one = FaresDatasetRevisionFactory()
+    faresmetadata_one = FaresMetadataFactory(
+        revision=fares_revision_one, num_of_fare_products=2
+    )
+    FaresValidationResultFactory(revision=fares_revision_one, count=0)
+
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_one,
+        fares_metadata__revision__is_published=True,
+        line_name=[":::L1"],
+        line_id=[":::L1"],
+        national_operator_code=national_operator_code,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_one,
+        fares_metadata__revision__is_published=True,
+        line_name=[":::L2"],
+        line_id=[":::L2"],
+        national_operator_code=national_operator_code,
+        valid_from=datetime.datetime(2025, 1, 12),
+        valid_to=datetime.datetime(2099, 1, 12),
+    )
+
+    fares_revision_three = FaresDatasetRevisionFactory()
+    faresmetadata_three = FaresMetadataFactory(
+        revision=fares_revision_three, num_of_fare_products=2
+    )
+    FaresValidationResultFactory(revision=fares_revision_three, count=5)
+
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_three,
+        fares_metadata__revision__is_published=True,
+        line_name=[":::L3", ":::L4"],
+        line_id=[":::L3", ":::L4"],
+        national_operator_code=national_operator_code,
+        valid_from=datetime.datetime(2025, 1, 12),
+        valid_to=datetime.datetime(2099, 1, 12),
+    )
+
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_three,
+        fares_metadata__revision__is_published=True,
+        line_name=[":::L5", ":::L6"],
+        line_id=[":::L5", ":::L6"],
+        national_operator_code=national_operator_code,
+        valid_from=datetime.datetime(2025, 1, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_three,
+        fares_metadata__revision__is_published=True,
+        line_name=[":::L7", ":::L8"],
+        line_id=[":::L7", ":::L8"],
+        national_operator_code=["SR", "BR"],
+    )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
+
+    local_authority = LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services_factories, ui_lta=ui_lta
+    )
+
+    lta_codes_csv = LTAComplianceReportCSV([local_authority])
+    csv_string = lta_codes_csv.to_string()
+    csv_output = get_csv_output(csv_string, CSV_LINE_LEVEL_NUMBER_COLUMNS)
+
+    assert csv_output["row0"][0] == '"PD000000:0"'
+    assert csv_output["row0"][6] == '"Yes"'  # Requires Attention
+    assert csv_output["row0"][14] == '"Yes"'  # Fares requires attention
+    assert csv_output["row0"][15] == '"Unpublished"'  # Fares Published Status
+    assert csv_output["row0"][16] == '"Not Stale"'  # Fares Timeliness Status
+    assert csv_output["row0"][17] == '"Non compliant"'  # Fares Compliance Status
+    assert csv_output["row0"][24] == '""'  # Fares Data set ID
+    assert csv_output["row0"][25] == '""'  # NETEX:Filename
+    assert csv_output["row0"][26] == '""'  # NETEX:Last Modified Date
+    assert csv_output["row0"][27] == '""'  # Date when fares data is over 1 year old
+    assert csv_output["row0"][28] == '""'  # NETEX:Operating Period End Date
+
+    assert csv_output["row1"][0] == '"PD000001:1"'
+    assert csv_output["row1"][6] == '"Yes"'
+    assert csv_output["row1"][14] == '"Yes"'
+    assert csv_output["row1"][15] == '"Published"'
+    assert csv_output["row1"][16] == '"42 day look ahead is incomplete"'
+    assert csv_output["row1"][17] == '"Compliant"'
+    assert csv_output["row1"][26] == '"2025-02-12"'
+    assert csv_output["row1"][27] == '"2026-01-12"'
+    assert csv_output["row1"][28] == '"2025-01-12"'
+
+    assert csv_output["row2"][0] == '"PD0000010:10"'
+    assert csv_output["row2"][6] == '"Yes"'
+    assert csv_output["row2"][14] == '"Yes"'
+    assert csv_output["row2"][15] == '"Unpublished"'
+    assert csv_output["row2"][16] == '"Not Stale"'
+    assert csv_output["row2"][17] == '"Non compliant"'
+    assert csv_output["row2"][26] == '""'
+    assert csv_output["row2"][27] == '""'
+    assert csv_output["row2"][28] == '""'
+
+    assert csv_output["row3"][0] == '"PD000002:2"'
+    assert csv_output["row3"][6] == '"Yes"'
+    assert csv_output["row3"][14] == '"No"'
+    assert csv_output["row3"][15] == '"Published"'
+    assert csv_output["row3"][16] == '"Not Stale"'
+    assert csv_output["row3"][17] == '"Compliant"'
+    assert csv_output["row3"][26] == '"2025-02-12"'
+    assert csv_output["row3"][27] == '"2100-01-12"'
+    assert csv_output["row3"][28] == '"2099-01-12"'
+
+    assert csv_output["row4"][0] == '"PD000003:3"'
+    assert csv_output["row4"][6] == '"Yes"'
+    assert csv_output["row4"][14] == '"Yes"'
+    assert csv_output["row4"][15] == '"Published"'
+    assert csv_output["row4"][16] == '"Not Stale"'
+    assert csv_output["row4"][17] == '"Non compliant"'
+    assert csv_output["row4"][26] == '"2025-02-12"'
+    assert csv_output["row4"][27] == '"2100-01-12"'
+    assert csv_output["row4"][28] == '"2099-01-12"'
+
+    assert csv_output["row5"][0] == '"PD000004:4"'
+    assert csv_output["row5"][6] == '"Yes"'
+    assert csv_output["row5"][14] == '"Yes"'
+    assert csv_output["row5"][15] == '"Published"'
+    assert csv_output["row5"][16] == '"Not Stale"'
+    assert csv_output["row5"][17] == '"Non compliant"'
+    assert csv_output["row5"][26] == '"2025-02-12"'
+    assert csv_output["row5"][27] == '"2100-01-12"'
+    assert csv_output["row5"][28] == '"2099-01-12"'
+
+    assert csv_output["row6"][0] == '"PD000005:5"'
+    assert csv_output["row6"][6] == '"Yes"'
+    assert csv_output["row6"][14] == '"Yes"'
+    assert csv_output["row6"][15] == '"Published"'
+    assert csv_output["row6"][16] == '"42 day look ahead is incomplete"'
+    assert csv_output["row6"][17] == '"Non compliant"'
+    assert csv_output["row6"][26] == '"2025-02-12"'
+    assert csv_output["row6"][27] == '"2026-01-12"'
+    assert csv_output["row6"][28] == '"2025-01-12"'
+
+    assert csv_output["row7"][0] == '"PD000006:6"'
+    assert csv_output["row7"][6] == '"Yes"'
+    assert csv_output["row7"][14] == '"Yes"'
+    assert csv_output["row7"][15] == '"Published"'
+    assert csv_output["row7"][16] == '"42 day look ahead is incomplete"'
+    assert csv_output["row7"][17] == '"Non compliant"'
+    assert csv_output["row7"][26] == '"2025-02-12"'
+    assert csv_output["row7"][27] == '"2026-01-12"'
+    assert csv_output["row7"][28] == '"2025-01-12"'
+
+    assert csv_output["row8"][0] == '"PD000007:7"'
+    assert csv_output["row8"][6] == '"Yes"'
+    assert csv_output["row8"][14] == '"Yes"'
+    assert csv_output["row8"][15] == '"Unpublished"'
+    assert csv_output["row8"][16] == '"Not Stale"'
+    assert csv_output["row8"][17] == '"Non compliant"'
+    assert csv_output["row8"][26] == '""'
+    assert csv_output["row8"][27] == '""'
+    assert csv_output["row8"][28] == '""'
