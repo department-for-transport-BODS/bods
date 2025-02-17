@@ -8,10 +8,9 @@ from config.hosts import DATA_HOST, PUBLISH_HOST
 from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.avl.proxies import AVLDataset
-from transit_odp.browse.common import (
-    get_in_scope_in_season_services_line_level,
-)
+from transit_odp.browse.common import get_in_scope_in_season_services_line_level
 from transit_odp.browse.views.base_views import BaseListView
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.views import BaseDetailView
 from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.constants import EXPIRED, INACTIVE, AVLType, FaresType
@@ -23,6 +22,10 @@ from transit_odp.publish.requires_attention import (
 
 
 class OperatorsView(BaseListView):
+    """
+    View to list all active organisations.
+    """
+
     template_name = "browse/operators.html"
     model = Organisation
     paginate_by = 10
@@ -56,6 +59,11 @@ class OperatorsView(BaseListView):
 
 
 class OperatorDetailView(BaseDetailView):
+    """
+    View to display Services Requiring Attention metrics relating to
+    overall, timetables, location and fares complaince.
+    """
+
     template_name = "browse/operators/operator_detail.html"
     model = Organisation
 
@@ -79,44 +87,104 @@ class OperatorDetailView(BaseDetailView):
         is_avl_require_attention_active = flag_is_active(
             "", "is_avl_require_attention_active"
         )
+        is_fares_require_attention_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
+        is_complete_service_pages_active = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        )
         context = super().get_context_data(**kwargs)
         organisation = self.object
 
-        context["total_services_requiring_attention"] = len(
-            get_requires_attention_line_level_data(organisation.id)
-        )
-
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
-        if is_avl_require_attention_active:
-            context["avl_total_services_requiring_attention"] = len(
-                get_avl_requires_attention_line_level_data(organisation.id)
-            )
+        context["is_complete_service_pages_active"] = is_complete_service_pages_active
 
         context["total_in_scope_in_season_services"] = len(
             get_in_scope_in_season_services_line_level(organisation.id)
         )
-        try:
-            context["services_require_attention_percentage"] = round(
-                100
-                * (
-                    context["total_services_requiring_attention"]
-                    / context["total_in_scope_in_season_services"]
-                )
-            )
-        except ZeroDivisionError:
-            context["services_require_attention_percentage"] = 0
 
-        if is_avl_require_attention_active:
+        if is_complete_service_pages_active:
+            context["timetable_services_requiring_attention_count"] = len(
+                get_requires_attention_line_level_data(organisation.id)
+            )
+
+            if is_avl_require_attention_active:
+                context["avl_services_requiring_attention_count"] = len(
+                    get_avl_requires_attention_line_level_data(organisation.id)
+                )
+
+            if is_fares_require_attention_active:
+                context["fares_services_requiring_attention_count"] = 0
+
+            context["overall_services_requiring_attention_count"] = (
+                context["timetable_services_requiring_attention_count"]
+                + context["avl_services_requiring_attention_count"]
+                + context["fares_services_requiring_attention_count"]
+            )
+        else:
+            context["total_services_requiring_attention"] = len(
+                get_requires_attention_line_level_data(organisation.id)
+            )
+
             try:
-                context["avl_services_require_attention_percentage"] = round(
+                context["services_require_attention_percentage"] = round(
                     100
                     * (
-                        context["avl_total_services_requiring_attention"]
+                        context["total_services_requiring_attention"]
                         / context["total_in_scope_in_season_services"]
                     )
                 )
             except ZeroDivisionError:
-                context["avl_services_require_attention_percentage"] = 0
+                context["services_require_attention_percentage"] = 0
+
+            if is_avl_require_attention_active:
+                context["avl_total_services_requiring_attention"] = len(
+                    get_avl_requires_attention_line_level_data(organisation.id)
+                )
+
+                try:
+                    context["avl_services_require_attention_percentage"] = round(
+                        100
+                        * (
+                            context["avl_total_services_requiring_attention"]
+                            / context["total_in_scope_in_season_services"]
+                        )
+                    )
+                except ZeroDivisionError:
+                    context["avl_services_require_attention_percentage"] = 0
+
+            fares_datasets = (
+                Dataset.objects.filter(
+                    organisation=organisation,
+                    dataset_type=FaresType,
+                )
+                .select_related("organisation")
+                .select_related("live_revision")
+            )
+            context["fares_stats"] = fares_datasets.agg_global_feed_stats(
+                dataset_type=FaresType, organisation_id=organisation.id
+            )
+            if is_fares_validator_active:
+                try:
+                    results = (
+                        FaresValidationResult.objects.filter(
+                            organisation_id=organisation.id,
+                            revision_id=F("revision__dataset__live_revision_id"),
+                            revision__dataset__dataset_type=FaresType,
+                        )
+                        .annotate(status=F("revision__status"))
+                        .exclude(status__in=[EXPIRED, INACTIVE])
+                        .values("count")
+                    )
+                except FaresValidationResult.DoesNotExist:
+                    results = []
+                fares_non_compliant_count = len(
+                    [count for count in results if count.get("count") > 0]
+                )
+                context["fares_non_compliant"] = fares_non_compliant_count
+            else:
+                # Compliance is n/a for Fares datasets
+                context["fares_non_compliant"] = 0
 
         avl_datasets = (
             AVLDataset.objects.filter(
@@ -132,44 +200,11 @@ class OperatorDetailView(BaseDetailView):
         ]
         context.update(
             {
-                "overall_ppc_score": floor(overall_ppc_score)
-                if overall_ppc_score
-                else overall_ppc_score,
+                "overall_ppc_score": (
+                    floor(overall_ppc_score) if overall_ppc_score else overall_ppc_score
+                ),
             }
         )
-
-        fares_datasets = (
-            Dataset.objects.filter(
-                organisation=organisation,
-                dataset_type=FaresType,
-            )
-            .select_related("organisation")
-            .select_related("live_revision")
-        )
-        context["fares_stats"] = fares_datasets.agg_global_feed_stats(
-            dataset_type=FaresType, organisation_id=organisation.id
-        )
-        if is_fares_validator_active:
-            try:
-                results = (
-                    FaresValidationResult.objects.filter(
-                        organisation_id=organisation.id,
-                        revision_id=F("revision__dataset__live_revision_id"),
-                        revision__dataset__dataset_type=FaresType,
-                    )
-                    .annotate(status=F("revision__status"))
-                    .exclude(status__in=[EXPIRED, INACTIVE])
-                    .values("count")
-                )
-            except FaresValidationResult.DoesNotExist:
-                results = []
-            fares_non_compliant_count = len(
-                [count for count in results if count.get("count") > 0]
-            )
-            context["fares_non_compliant"] = fares_non_compliant_count
-        else:
-            # Compliance is n/a for Fares datasets
-            context["fares_non_compliant"] = 0
 
         if self.request.user.is_authenticated:
             context["timetable_feed_url"] = (
