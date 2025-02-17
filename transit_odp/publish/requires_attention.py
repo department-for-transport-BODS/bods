@@ -558,6 +558,30 @@ def get_requires_attention_data_lta(lta_list: List) -> int:
     return lta_services_requiring_attention
 
 
+def get_timetable_records_require_attention_lta_line_level_length(lta_list: List) -> int:
+    object_list = []
+    timetables_lta_services_requiring_attention = 0
+    otc_map = get_line_level_otc_map_lta(lta_list)
+    txcfa_map = get_line_level_txc_map_lta(lta_list)
+    for (service_number, registration_number), service in otc_map.items():
+        file_attribute = txcfa_map.get((service_number, registration_number))
+        if file_attribute is None:
+            _update_data(object_list, service, line_number=service_number)
+        elif is_stale(service, file_attribute):
+            _update_data(object_list, service, line_number=service_number)
+    timetables_lta_services_requiring_attention = len(object_list)
+    print(f"timetables_lta_services_requiring_attention: {timetables_lta_services_requiring_attention}")
+    return timetables_lta_services_requiring_attention
+
+
+def get_avl_records_require_attention_lta_line_level_length(lta_list: List) -> int:
+    return 0
+
+
+def get_fares_records_require_attention_lta_line_level_length(lta_list: List) -> int:
+    return 0
+
+
 def get_requires_attention_data_lta_line_level_length(lta_list: List) -> int:
     """
     Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
