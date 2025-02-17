@@ -9,15 +9,13 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.fields import CreationDateTimeField
 
-from transit_odp.timetables.constants import PII_ERROR
 from transit_odp.data_quality.dataclasses import Report
 from transit_odp.data_quality.models.managers import DataQualityReportManager
 from transit_odp.data_quality.pti.models import Violation
 from transit_odp.data_quality.pti.report import PTIReport
 from transit_odp.organisation.models import DatasetRevision
-from transit_odp.timetables.transxchange import (
-    BaseSchemaViolation,
-)
+from transit_odp.timetables.constants import PII_ERROR
+from transit_odp.timetables.transxchange import BaseSchemaViolation
 
 
 class DataQualityReport(models.Model):
@@ -208,6 +206,11 @@ class SchemaViolation(models.Model):
         )
 
 
+class PostSchemaErrorType(models.TextChoices):
+    PII_ERROR = ("PII ERROR", "PII Error")
+    SERVICE_EXISTS = ("SERVICE EXISTS", "Service Exists")
+
+
 class PostSchemaViolation(models.Model):
     revision = models.ForeignKey(
         DatasetRevision,
@@ -219,8 +222,12 @@ class PostSchemaViolation(models.Model):
         max_length=256, help_text=_("The name of the file the observation occurs in.")
     )
     details = models.CharField(
-        max_length=1024, help_text=_("Details of the observation.")
+        max_length=1024,
+        choices=PostSchemaErrorType.choices,
+        help_text=_("Details of the observation."),
+        default=PostSchemaErrorType.PII_ERROR,
     )
+    additional_details = JSONField(null=True)
     created = CreationDateTimeField(_("DateTime observation was created."))
 
     def __str__(self):

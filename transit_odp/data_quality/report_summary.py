@@ -66,6 +66,7 @@ DF_COLUMNS_TO_KEEP = [
     "is_suppressed",
     "service_code",
     "line_name",
+    "vehicle_journey_id",
 ]
 
 
@@ -279,7 +280,7 @@ class Summary(BaseModel):
             )
             df = df[DF_COLUMNS_TO_KEEP]
             df["unique_row"] = df.apply(
-                lambda row: f"{row['journey_start_time']}_{row['service_code']}_{row['line_name']}",
+                lambda row: f"{row['vehicle_journey_id']}_{row['service_code']}_{row['line_name']}",
                 axis=1,
             )
 

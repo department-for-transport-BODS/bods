@@ -71,3 +71,13 @@ ERROR_CODE_LOOKUP = {
         "description": "The anti virus checks failed to validate the file(s). Please try again later."
     },
 }
+
+ERROR_TYPE_PII = "Your TransXchange contains personal identifiable information"
+NEXT_STEPS_PII = "Please download the new transXchange tool here"
+LINK_PII = "https://www.gov.uk/guidance/publish-bus-open-data#publishing-your-bus-data"
+ADDITIONAL_SERVICES_PII = "The Help Desk can be contacted by telephone or email as follows.\n\nTelephone: +44 (0) 800 028 0930\nEmail: bodshelpdesk@kpmg.co.uk"
+
+ERROR_TYPE_SERVICE_CHECK = (
+    "Attempted to publish for a service that is already in an active dataset"
+)
+NEXT_STEPS_SERVICE_CHECK = "Click the supplied link to update your dataset"
