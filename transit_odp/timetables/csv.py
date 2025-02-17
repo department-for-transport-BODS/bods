@@ -39,6 +39,7 @@ from transit_odp.publish.requires_attention import (
     get_fares_requires_attention,
     get_fares_timeliness_status,
 )
+from transit_odp.common.constants import FeatureFlags
 
 TXC_COLUMNS = (
     "organisation_name",
