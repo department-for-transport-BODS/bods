@@ -36,6 +36,7 @@ from transit_odp.browse.views.timetable_views import (
     DatasetChangeLogView,
     DatasetDetailView,
 )
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.downloaders import GTFSFile
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.loggers import DatafeedPipelineLoggerContext, PipelineAdapter
@@ -1179,9 +1180,9 @@ class TestOperatorDetailView:
     """
 
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    @override_flag("is_avl_require_attention_active", active=True)
-    @override_flag("is_fares_require_attention_active", active=True)
-    @override_flag("is_complete_service_pages_active", active=True)
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
     def test_operator_detail_view_stats_not_compliant(
         self, mock_avl_requires_attention, request_factory: RequestFactory
     ):
@@ -1476,9 +1477,9 @@ class TestOperatorDetailView:
         assert context["overall_services_requiring_attention_count"] == 10
 
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    @override_flag("is_avl_require_attention_active", active=True)
-    @override_flag("is_fares_require_attention_active", active=True)
-    @override_flag("is_complete_service_pages_active", active=True)
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
     def test_operator_detail_view_stats_compliant(
         self, mock_avl_requires_attention, request_factory: RequestFactory
     ):
@@ -1663,9 +1664,9 @@ class TestOperatorDetailView:
         assert context["overall_services_requiring_attention_count"] == 0
 
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    @override_flag("is_avl_require_attention_active", active=True)
-    @override_flag("is_fares_require_attention_active", active=True)
-    @override_flag("is_complete_service_pages_active", active=True)
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
     def test_operator_detail_weca_view_timetable_stats_not_compliant(
         self, mock_avl_line_level_require_attention, request_factory: RequestFactory
     ):
@@ -1798,10 +1799,10 @@ class TestOperatorDetailView:
         # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
         assert context["timetable_services_requiring_attention_count"] == 6
 
-    @override_flag("dqs_require_attention", active=True)
-    @override_flag("is_avl_require_attention_active", active=True)
-    @override_flag("is_fares_require_attention_active", active=True)
-    @override_flag("is_complete_service_pages_active", active=True)
+    @override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
     def test_operator_detail_view_dqs_stats_compliant(
         self, request_factory: RequestFactory
     ):
@@ -1928,9 +1929,9 @@ class TestOperatorDetailView:
         )  # DQS critical issues
 
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    @override_flag("is_avl_require_attention_active", active=True)
-    @override_flag("is_fares_require_attention_active", active=True)
-    @override_flag("is_complete_service_pages_active", active=True)
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
     def test_operator_detail_weca_view_timetable_stats_compliant(
         self, avl_line_level_require_attention, request_factory: RequestFactory
     ):
@@ -2032,9 +2033,9 @@ class TestOperatorDetailView:
         assert context["timetable_services_requiring_attention_count"] == 0
 
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    @override_flag("is_avl_require_attention_active", active=True)
-    @override_flag("is_fares_require_attention_active", active=True)
-    @override_flag("is_complete_service_pages_active", active=True)
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
     def test_operator_detail_view_avl_stats_overall_ppc_score(
         self, mock_avl_line_level_require_attention, request_factory: RequestFactory
     ):
@@ -2072,9 +2073,9 @@ class TestOperatorDetailView:
         assert context["overall_ppc_score"] is None
 
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    @override_flag("is_avl_require_attention_active", active=True)
-    @override_flag("is_fares_require_attention_active", active=True)
-    @override_flag("is_complete_service_pages_active", active=True)
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
     def test_operator_detail_view_api_urls(
         self, mock_line_level_require_attention, request_factory: RequestFactory
     ):
@@ -2362,7 +2363,7 @@ class TestLTADetailView:
         assert context["total_in_scope_in_season_services"] == 3
         assert context["services_require_attention_percentage"] == 0
 
-    @override_flag("dqs_require_attention", active=True)
+    @override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=True)
     def test_local_authority_detail_view_dqs_non_compliant(
         self, request_factory: RequestFactory
     ):
