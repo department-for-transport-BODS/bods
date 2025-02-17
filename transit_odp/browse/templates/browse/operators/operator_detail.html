@@ -382,6 +382,15 @@
                 {% endfilter %}
               </a>
             </li>
+            {% if is_fares_require_attention_active %}
+            <li class="govuk-!-margin-bottom-3">
+              <a class="govuk-link" href={% url 'compliance-report' pk1=object.id host hosts.publish %}>
+                {% filter force_escape %}
+                  {% trans "Download detailed export" %}
+                {% endfilter %}
+              </a>
+            </li>
+          {% endif %}
           </ul>
         </div>
       </div>
