@@ -33,6 +33,7 @@ from transit_odp.otc.factories import (
     ServiceModelFactory,
     UILtaFactory,
 )
+from transit_odp.common.constants import FeatureFlags
 
 pytestmark = pytest.mark.django_db
 CSV_NUMBER_COLUMNS = 43
@@ -522,7 +523,7 @@ def test_csv_output_columns_order():
 
 
 @freeze_time("2023-02-24")
-@override_flag("is_fares_require_attention_active", active=True)
+@override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
 def test_csv_output():
     licence_number = "PD0000099"
     num_otc_services = 10
@@ -1446,7 +1447,7 @@ def test_csv_output():
 
 
 @freeze_time("2023-02-28")
-@override_flag("is_fares_require_attention_active", active=True)
+@override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
 def test_weca_seasonal_status_csv_output():
     """Test Operator report for weca season services
     Match the CSV row outputs
@@ -1791,7 +1792,7 @@ def test_weca_seasonal_status_csv_output():
 
 
 @freeze_time("2023-02-28")
-@override_flag("is_fares_require_attention_active", active=True)
+@override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
 def test_seasonal_status_csv_output():
     licence_number = "PD0001111"
     num_otc_services = 10

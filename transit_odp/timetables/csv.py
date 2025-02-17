@@ -39,6 +39,7 @@ from transit_odp.publish.requires_attention import (
     get_fares_requires_attention,
     get_fares_timeliness_status,
 )
+from transit_odp.common.constants import FeatureFlags
 
 TXC_COLUMNS = (
     "organisation_name",
@@ -1289,7 +1290,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     )
 
     is_fares_require_attention_active = flag_is_active(
-        "", "is_fares_require_attention_active"
+        "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
     )
     if is_fares_require_attention_active:
         for txc_attribute in txc_attributes:
