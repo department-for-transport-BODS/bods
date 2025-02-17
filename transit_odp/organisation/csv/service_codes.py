@@ -891,7 +891,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             )
 
         is_fares_require_attention_active = flag_is_active(
-            "", "is_fares_require_attention_active"
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
         if is_fares_require_attention_active:
             fares_dataset_df = get_fares_dataset_map(txcfa_map)
