@@ -131,9 +131,11 @@
           <div class="govuk-grid-column-one-half">
             <div class="feed-stat">
               <span class="feed-stat__label">
-                {% filter force_escape %}
-                  {% trans "Services requiring attention" %}
-                {% endfilter %}
+                {% for licence_name in licence_names %}
+                  <li class="govuk-!-margin-bottom-1">
+                    <a class="govuk-link" href="#">{{ licence_name }}</a>
+                  </li>
+                {% endfor %}
               </span>
             </div>
           </div>

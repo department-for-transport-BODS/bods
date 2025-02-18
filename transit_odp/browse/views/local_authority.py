@@ -45,7 +45,7 @@ from transit_odp.publish.requires_attention import (
     is_stale,
     get_timetable_records_require_attention_lta_line_level_length,
     get_avl_records_require_attention_lta_line_level_length,
-    get_fares_records_require_attention_lta_line_level_length
+    get_fares_records_require_attention_lta_line_level_length,
 )
 
 STALENESS_STATUS = [
@@ -308,7 +308,7 @@ class LocalAuthorityDetailView(BaseDetailView):
             "", "is_complete_service_pages_active"
         )
         context = super().get_context_data(**kwargs)
-        context['is_complete_service_pages_active'] = is_complete_service_pages_active
+        context["is_complete_service_pages_active"] = is_complete_service_pages_active
         combined_authority_ids = self.request.GET.get("auth_ids")
         lta_objs = []
         context["auth_ids"] = combined_authority_ids
@@ -329,10 +329,24 @@ class LocalAuthorityDetailView(BaseDetailView):
         context[
             "total_services_requiring_attention"
         ] = get_requires_attention_data_lta_line_level_length(lta_objs)
-        context["total_timetable_records_requiring_attention"] = get_timetable_records_require_attention_lta_line_level_length(lta_objs)
+        context[
+            "total_timetable_records_requiring_attention"
+        ] = get_timetable_records_require_attention_lta_line_level_length(lta_objs)
         if is_complete_service_pages_active:
-            context["total_location_records_requiring_attention"] = get_avl_records_require_attention_lta_line_level_length(lta_objs)
-            context["total_fares_records_requiring_attention"] = get_fares_records_require_attention_lta_line_level_length(lta_objs)
+            context[
+                "total_location_records_requiring_attention"
+            ] = get_avl_records_require_attention_lta_line_level_length(lta_objs)
+            context[
+                "total_fares_records_requiring_attention"
+            ] = get_fares_records_require_attention_lta_line_level_length(lta_objs)
+            distinct_licence_names = set(
+                [
+                    service.licence.number
+                    for lta in lta_objs
+                    for service in lta.registration_numbers.all()
+                ]
+            )
+            context["licence_names"] = distinct_licence_names
         try:
             context["services_require_attention_percentage"] = round(
                 100
@@ -341,7 +355,7 @@ class LocalAuthorityDetailView(BaseDetailView):
                     / context["total_in_scope_in_season_services"]
                 )
             )
-            
+
         except ZeroDivisionError:
             context["services_require_attention_percentage"] = 0
 
