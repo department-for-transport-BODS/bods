@@ -13,8 +13,9 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
 )
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.dqs.constants import Level
-from transit_odp.fares.models import DataCatalogueMetaData
+from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
 from transit_odp.dqs.models import ObservationResults
+
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
