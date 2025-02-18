@@ -229,10 +229,22 @@ header_accessor_data_compliance_report = [
         "Error in AVL to Timetable Matching",
         lambda otc_service: otc_service.get("error_in_avl_to_timetable_matching"),
     ),
-    ("Fares requires attention", lambda otc_service: UNDER_MAINTENANCE),
-    ("Fares Published Status", lambda otc_service: UNDER_MAINTENANCE),
-    ("Fares Timeliness Status", lambda otc_service: UNDER_MAINTENANCE),
-    ("Fares Compliance Status", lambda otc_service: UNDER_MAINTENANCE),
+    (
+        "Fares requires attention",
+        lambda otc_service: otc_service.get("fares_requires_attention"),
+    ),
+    (
+        "Fares Published Status",
+        lambda otc_service: otc_service.get("fares_published_status"),
+    ),
+    (
+        "Fares Timeliness Status",
+        lambda otc_service: otc_service.get("fares_timeliness_status"),
+    ),
+    (
+        "Fares Compliance Status",
+        lambda otc_service: otc_service.get("fares_compliance_status"),
+    ),
     ("Timetables Data set ID", lambda otc_service: otc_service.get("dataset_id")),
     ("TXC:Filename", lambda otc_service: otc_service.get("xml_filename")),
     (
@@ -251,19 +263,19 @@ header_accessor_data_compliance_report = [
         "TXC:Operating Period End Date",
         lambda otc_service: otc_service.get("operating_period_end_date"),
     ),
-    ("Fares Data set ID", lambda otc_service: UNDER_MAINTENANCE),
-    ("NETEX:Filename", lambda otc_service: UNDER_MAINTENANCE),
+    ("Fares Data set ID", lambda otc_service: otc_service.get("fares_dataset_id")),
+    ("NETEX:Filename", lambda otc_service: otc_service.get("fares_filename")),
     (
         "NETEX:Last Modified Date",
-        lambda otc_service: UNDER_MAINTENANCE,
+        lambda otc_service: otc_service.get("fares_last_modified"),
     ),
     (
         "Date when fares data is over 1 year old",
-        lambda otc_service: UNDER_MAINTENANCE,
+        lambda otc_service: otc_service.get("fares_one_year_date"),
     ),
     (
         "NETEX:Operating Period End Date",
-        lambda otc_service: UNDER_MAINTENANCE,
+        lambda otc_service: otc_service.get("fares_operating_period_end"),
     ),
     (
         "Date Registration variation needs to be published",

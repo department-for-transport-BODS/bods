@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Dict, Optional
-import pandas as pd
 
+import pandas as pd
 from waffle import flag_is_active
 
 from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
@@ -647,6 +647,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
         fares_filename: str,
         fares_last_modified_date: str,
         fares_operating_period_end_date: str,
+        fares_data_over_one_year: str,
         overall_requires_attention: str,
         dq_require_attention: str,
     ) -> None:
@@ -699,8 +700,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 "fares_dataset_id": fares_dataset_id,
                 "fares_filename": fares_filename,
                 "fares_last_modified_date": fares_last_modified_date,
-                "fares_data_over_one_year": fares_last_modified_date
-                and fares_last_modified_date + timedelta(days=365),
+                "fares_data_over_one_year": fares_data_over_one_year,
                 "fares_operating_period_end_date": fares_operating_period_end_date,
                 "overall_requires_attention": overall_requires_attention,
                 "dq_require_attention": dq_require_attention,
@@ -891,7 +891,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             )
 
         is_fares_require_attention_active = flag_is_active(
-            "", "is_fares_require_attention_active"
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
         if is_fares_require_attention_active:
             fares_dataset_df = get_fares_dataset_map(txcfa_map)
@@ -984,7 +984,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 avl_published_status = self.get_avl_published_status(
                     "", line_name, synced_in_last_month
                 )
-                erorr_in_avl_to_timetable_matching = (
+                error_in_avl_to_timetable_matching = (
                     self.get_error_in_avl_to_timetable_matching(
                         "", line_name, uncounted_activity_df
                     )
@@ -992,33 +992,57 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
 
             avl_requires_attention = self.get_avl_requires_attention(
                 avl_published_status,
-                erorr_in_avl_to_timetable_matching,
+                error_in_avl_to_timetable_matching,
             )
 
             if is_fares_require_attention_active:
+                fares_dataset_id = None
+                fares_filename = None
+                fares_last_modified_date = None
+                fares_operating_period_end_date = None
+                fares_data_over_one_year = None
+                is_fares_compliant = None
+
                 if file_attribute is not None and not fares_dataset_df.empty:
                     national_operator_code = file_attribute.national_operator_code
+                    fares_noc = fares_dataset_df["national_operator_code"]
+                    fares_line_name = fares_dataset_df["line_name"]
                     row = fares_dataset_df.loc[
-                        fares_dataset_df["national_operator_code"]
-                        == national_operator_code & fares_dataset_df["line_id"]
-                        == line_name
-                    ].iloc[0]
+                        (fares_noc == national_operator_code)
+                        & (fares_line_name == line_name)
+                    ]
 
-                    fares_dataset_id = row["dataset_id"]
-                    fares_filename = row["file_name"]
-                    fares_last_modified_date = row["last_updated_data"]
-                    fares_operating_period_end_date = row["valid_to"]
-                    fares_published_status = get_fares_published_status(row)
-                    fares_timeliness_status = get_fares_timeliness_status(row)
-                    fares_compliance_status = get_fares_compliance_status(row)
+                    if not row.empty:
+                        row = row.iloc[0]
+                        fares_dataset_id = row["dataset_id"]
+                        fares_filename = row["xml_file_name"]
+                        fares_last_modified_date = row["last_updated_date"].date()
+                        fares_operating_period_end_date = row["valid_to"].date()
+                        fares_data_over_one_year = fares_last_modified_date + timedelta(
+                            days=365
+                        )
+                        is_fares_compliant = row["is_fares_compliant"]
+                        fares_published_status = get_fares_published_status(
+                            fares_dataset_id
+                        )
+                        fares_timeliness_status = get_fares_timeliness_status(
+                            fares_operating_period_end_date,
+                            fares_last_modified_date,
+                        )
+                        fares_compliance_status = get_fares_compliance_status(
+                            is_fares_compliant
+                        )
                 else:
-                    fares_dataset_id = None
-                    fares_filename = None
-                    fares_last_modified_date = None
-                    fares_operating_period_end_date = None
-                    fares_published_status = get_fares_published_status(None)
-                    fares_timeliness_status = get_fares_timeliness_status(None)
-                    fares_compliance_status = get_fares_compliance_status(None)
+                    fares_published_status = get_fares_published_status(
+                        fares_dataset_id
+                    )
+                    fares_timeliness_status = get_fares_timeliness_status(
+                        fares_operating_period_end_date,
+                        fares_last_modified_date,
+                    )
+                    fares_compliance_status = get_fares_compliance_status(
+                        is_fares_compliant
+                    )
 
                 fares_requires_attention = get_fares_requires_attention(
                     fares_published_status,
@@ -1038,6 +1062,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 fares_filename = UNDER_MAINTENANCE
                 fares_last_modified_date = UNDER_MAINTENANCE
                 fares_operating_period_end_date = UNDER_MAINTENANCE
+                fares_data_over_one_year = UNDER_MAINTENANCE
                 fares_published_status = UNDER_MAINTENANCE
                 fares_timeliness_status = UNDER_MAINTENANCE
                 fares_compliance_status = UNDER_MAINTENANCE
@@ -1075,6 +1100,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 fares_filename,
                 fares_last_modified_date,
                 fares_operating_period_end_date,
+                fares_data_over_one_year,
                 overall_requires_attention,
                 dq_require_attention,
             )

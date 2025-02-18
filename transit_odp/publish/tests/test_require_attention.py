@@ -1,7 +1,4 @@
 import random
-import datetime
-import pytest
-from transit_odp.dqs.constants import Level, TaskResultsStatus
 from datetime import date, datetime
 
 import pytest
@@ -14,22 +11,26 @@ from transit_odp.dqs.factories import (
     ObservationResultsFactory,
     TaskResultsFactory,
 )
+from transit_odp.fares.factories import (
+    DataCatalogueMetaDataFactory,
+    FaresMetadataFactory,
+)
+from transit_odp.fares_validator.factories import FaresValidationResultFactory
 from transit_odp.organisation.factories import (
     ConsumerFeedbackFactory,
     FaresDatasetRevisionFactory,
-    TXCFileAttributesFactory,
     OrganisationFactory,
-)
-from transit_odp.fares_validator.factories import FaresValidationResultFactory
-from transit_odp.fares.factories import FaresMetadataFactory
-from transit_odp.fares.factories import (
-    DataCatalogueMetaDataFactory,
+    TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.publish.requires_attention import (
     evaluate_fares_staleness,
     get_dq_critical_observation_services_map,
+    get_fares_compliance_status,
     get_fares_dataset_map,
+    get_fares_published_status,
+    get_fares_requires_attention,
+    get_fares_timeliness_status,
     is_fares_stale,
 )
 from transit_odp.transmodel.factories import (
@@ -37,7 +38,6 @@ from transit_odp.transmodel.factories import (
     ServicePatternFactory,
     ServicePatternStopFactory,
 )
-from waffle.testutils import override_flag
 
 pytestmark = pytest.mark.django_db
 
@@ -528,27 +528,27 @@ def test_get_fares_dataset_map():
     [
         (
             date(2025, 1, 19),
-            datetime(2023, 1, 2, 16, 17, 45),
+            date(2023, 1, 2),
             (True, True),
         ),
         (
             date(2025, 1, 19),
-            datetime(2025, 1, 2, 16, 17, 45),
+            date(2025, 1, 2),
             (True, False),
         ),
         (
             date(2025, 6, 20),
-            datetime(2023, 1, 2, 16, 17, 45),
+            date(2023, 1, 2),
             (False, True),
         ),
         (
             date(2025, 6, 20),
-            datetime(2025, 1, 2, 16, 17, 45),
+            date(2025, 1, 25),
             (False, False),
         ),
         (
             None,
-            datetime(2025, 1, 2, 16, 17, 45),
+            date(2025, 1, 2),
             (False, False),
         ),
     ],
@@ -572,22 +572,22 @@ def test_evaluate_fares_staleness(
     [
         (
             date(2025, 1, 19),
-            datetime(2023, 1, 2, 16, 17, 45),
+            date(2023, 1, 2),
             True,
         ),
         (
             date(2025, 1, 19),
-            datetime(2025, 1, 2, 16, 17, 45),
+            date(2025, 1, 2),
             True,
         ),
         (
             date(2025, 6, 20),
-            datetime(2023, 1, 2, 16, 17, 45),
+            date(2023, 1, 2),
             True,
         ),
         (
             date(2025, 6, 20),
-            datetime(2025, 1, 2, 16, 17, 45),
+            date(2025, 1, 2),
             False,
         ),
     ],
@@ -601,6 +601,153 @@ def test_is_fares_stale(operating_period_end_date, last_updated, expected_result
     )
 
     assert is_fares_stale_function_result == expected_result
+
+
+@pytest.mark.parametrize(
+    "fares_dataset_id, expected_result",
+    [
+        (
+            12,
+            "Published",
+        ),
+        (
+            None,
+            "Unpublished",
+        ),
+    ],
+)
+def test_get_fares_published_status(fares_dataset_id, expected_result):
+    """
+    Test for get_fares_published_status function.
+    """
+    fares_published_status = get_fares_published_status(fares_dataset_id)
+
+    assert fares_published_status == expected_result
+
+
+@pytest.mark.parametrize(
+    "is_fares_compliant, expected_result",
+    [
+        (
+            True,
+            "Compliant",
+        ),
+        (
+            False,
+            "Non compliant",
+        ),
+    ],
+)
+def test_get_fares_compliance_status(is_fares_compliant, expected_result):
+    """
+    Test for get_fares_compliance_status function.
+    """
+    fares_compliance_status_status = get_fares_compliance_status(is_fares_compliant)
+
+    assert fares_compliance_status_status == expected_result
+
+
+@freeze_time("04/02/2025")
+@pytest.mark.parametrize(
+    "valid_to, last_updated_date, expected_result",
+    [
+        (
+            date(2025, 1, 19),
+            date(2023, 1, 2),
+            "42 day look ahead is incomplete",
+        ),
+        (
+            date(2025, 1, 19),
+            date(2025, 1, 2),
+            "42 day look ahead is incomplete",
+        ),
+        (
+            date(2025, 6, 20),
+            date(2023, 1, 2),
+            "One year old",
+        ),
+        (
+            date(2025, 6, 20),
+            date(2025, 1, 2),
+            "Not Stale",
+        ),
+        (
+            None,
+            None,
+            "Not Stale",
+        ),
+    ],
+)
+def test_get_fares_timeliness_status(valid_to, last_updated_date, expected_result):
+    """
+    Test for get_fares_timeliness_status function.
+    """
+    fares_timeliness_status = get_fares_timeliness_status(valid_to, last_updated_date)
+
+    assert fares_timeliness_status == expected_result
+
+
+@pytest.mark.parametrize(
+    "fares_published_status, fares_timeliness_status, fares_compliance_status, expected_result",
+    [
+        (
+            "Published",
+            "Not Stale",
+            "Compliant",
+            "No",
+        ),
+        (
+            "Published",
+            "42 day look ahead is incomplete",
+            "Compliant",
+            "Yes",
+        ),
+        (
+            "Published",
+            "One year old",
+            "Compliant",
+            "Yes",
+        ),
+        (
+            "Unpublished",
+            "42 day look ahead is incomplete",
+            "Compliant",
+            "Yes",
+        ),
+        (
+            "Unpublished",
+            "One year old",
+            "Compliant",
+            "Yes",
+        ),
+        (
+            "Published",
+            "One year old",
+            "Non compliant",
+            "Yes",
+        ),
+        (
+            "Published",
+            "Not Stale",
+            "Non compliant",
+            "Yes",
+        ),
+    ],
+)
+def test_get_fares_requires_attention(
+    fares_published_status,
+    fares_timeliness_status,
+    fares_compliance_status,
+    expected_result,
+):
+    """
+    Test for get_fares_requires_attention function.
+    """
+    fares_requires_attention = get_fares_requires_attention(
+        fares_published_status, fares_timeliness_status, fares_compliance_status
+    )
+
+    assert fares_requires_attention == expected_result
 
 
 @override_flag("dqs_require_attention", active=True)
