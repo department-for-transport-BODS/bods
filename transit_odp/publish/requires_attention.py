@@ -13,8 +13,9 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
 )
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.dqs.constants import Level
-from transit_odp.fares.models import DataCatalogueMetaData
+from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
 from transit_odp.dqs.models import ObservationResults
+
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
@@ -283,6 +284,7 @@ def get_line_level_txc_map_service_base(
         key = (txc_file.service_code, txc_file.line_name_unnested)
         if key not in line_level_txc_map:
             line_level_txc_map[key] = txc_file
+
     return line_level_txc_map
 
 
@@ -893,18 +895,18 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
     """
     nocs_list = []
     noc_linename_dict = []
-    for service_key in txc_map:
-        nocs_list.append(txc_map[service_key].national_operator_code)
+    for _, file_attribute in txc_map.items():
+
+        nocs_list.append(file_attribute.national_operator_code)
         noc_linename_dict.append(
             {
-                "national_operator_code": txc_map[service_key].national_operator_code,
-                "line_name": txc_map[service_key].line_name_unnested,
+                "national_operator_code": file_attribute.national_operator_code,
+                "line_name": file_attribute.line_name_unnested,
             }
         )
 
     noc_df = pd.DataFrame.from_dict(noc_linename_dict)
     noc_df.drop_duplicates(inplace=True)
-
     nocs_list = list(set(nocs_list))
 
     fares_df = pd.DataFrame.from_records(
@@ -964,6 +966,62 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
     )
 
     return fares_df_merged
+
+
+class FaresRequiresAttention:
+    """
+    Class to get the details of fares requiring attention
+    """
+
+    org_id: int
+
+    def __init__(self, org_id):
+        self._org_id = org_id
+
+    def get_fares_requires_attention_line_level_data(self) -> List[Dict[str, str]]:
+        """
+        Compares an organisation's OTC Services dictionaries list with Fares Catalogue
+        dictionaries list to determine which OTC Services require attention ie. not live
+        in BODS at all, or live but meeting new Staleness conditions.
+
+        Returns list of objects of each service requiring attention for an organisation.
+        """
+        object_list = []
+
+        otc_map = get_line_level_in_scope_otc_map(self._org_id)
+        service_codes = [service_code for (service_code, _) in otc_map]
+        txcfa_map = get_line_level_txc_map_service_base(service_codes)
+        fares_df = get_fares_dataset_map(txcfa_map)
+
+        for service_key, service in otc_map.items():
+
+            file_attribute = txcfa_map.get(service_key)
+            # If no file attribute (TxcFileAttribute), service requires attention
+            if file_attribute is None:
+                _update_data(object_list, service)
+            elif fares_df.empty:
+                _update_data(object_list, service)
+            else:
+                noc = file_attribute.national_operator_code
+                line_name = file_attribute.line_name_unnested
+                df = fares_df[
+                    (fares_df.national_operator_code == noc)
+                    & (fares_df.line_name == line_name)
+                ]
+
+                if not df.empty:
+                    row = df.iloc[0].to_dict()
+                    valid_to = row.get("valid_to", None)
+                    last_modified_date = row.get("last_updated_date", "")
+                    valid_to = date.today() if pd.isnull(valid_to) else valid_to
+                    last_modified_date = (
+                        datetime.now()
+                        if pd.isnull(last_modified_date)
+                        else last_modified_date
+                    )
+                    if is_fares_stale(valid_to, last_modified_date):
+                        _update_data(object_list, service)
+        return object_list
 
 
 def get_service_patterns_df(query) -> pd.DataFrame:

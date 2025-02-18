@@ -15,6 +15,11 @@ app_name = "fares"
 urlpatterns = [
     path("", views.ListView.as_view(), name="feed-list"),
     path(
+        "attention/",
+        view=views.RequiresAttentionView.as_view(),
+        name="requires-attention",
+    ),
+    path(
         "new/",
         views.FaresUploadWizard.as_view(),
         name="new-feed",
