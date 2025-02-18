@@ -69,4 +69,3 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
         org_id = self.kwargs["pk1"]
         fares_sra = FaresRequiresAttention(org_id)
         return fares_sra.get_fares_requires_attention_line_level_data()
-
