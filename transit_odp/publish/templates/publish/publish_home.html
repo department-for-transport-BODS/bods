@@ -86,7 +86,7 @@
         {% endfilter %}
       </p>
       <h2 class="govuk-heading-s">
-        <a class="govuk-link-bold" href="{% url 'users:home' %}">
+        <a class="govuk-link-bold" href="{% url 'users:home' host hosts.publish %}">
           {% filter force_escape %}
             {% trans "Manage your account" %}
           {% endfilter %}
