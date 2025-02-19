@@ -608,11 +608,45 @@ def get_avl_records_require_attention_lta_line_level_length(lta_list: List) -> i
                 _update_data(object_list, service)
         else:
             _update_data(object_list, service)
-    return object_list
+    return len(object_list)
 
 
 def get_fares_records_require_attention_lta_line_level_length(lta_list: List) -> int:
-    return 0
+    object_list = []
+    otc_map = get_line_level_otc_map_lta(lta_list)
+    txcfa_map = get_line_level_txc_map_lta(lta_list)
+    service_codes = [service_code for (service_code, line_name) in otc_map]
+    txcfa_map = get_line_level_txc_map_service_base(service_codes)
+    fares_df = get_fares_dataset_map(txcfa_map)
+
+    for service_key, service in otc_map.items():
+
+        file_attribute = txcfa_map.get(service_key)
+        # If no file attribute (TxcFileAttribute), service requires attention
+        if file_attribute is None:
+            _update_data(object_list, service)
+        elif fares_df.empty:
+            _update_data(object_list, service)
+        else:
+            noc = file_attribute.national_operator_code
+            line_name = file_attribute.line_name_unnested
+            df = fares_df[
+                (fares_df.national_operator_code == noc)
+                & (fares_df.line_name == line_name)
+            ]
+            if not df.empty:
+                row = df.iloc[0].to_dict()
+                valid_to = row.get("valid_to", None)
+                last_modified_date = row.get("last_updated_date", "")
+                valid_to = date.today() if pd.isnull(valid_to) else valid_to
+                last_modified_date = (
+                    datetime.now()
+                    if pd.isnull(last_modified_date)
+                    else last_modified_date
+                )
+                if is_fares_stale(valid_to, last_modified_date):
+                    _update_data(object_list, service)
+    return len(object_list)
 
 
 def get_requires_attention_data_lta_line_level_length(lta_list: List) -> int:
