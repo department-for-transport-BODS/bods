@@ -24,7 +24,7 @@ pytestmark = pytest.mark.django_db
 
 
 @override_flag("dqs_require_attention", active=True)
-@override_flag("is_specific_feedback", active=True)
+@override_flag("is_specific_feedback", active=False)
 def test_dq_require_attention_with_only_critical_observation_results():
     services_list = [
         {
@@ -72,6 +72,79 @@ def test_dq_require_attention_with_only_critical_observation_results():
             service_code=txcfileattribute.service_code,
             name=txcfileattribute.line_names[0],
             service_patterns=[service_pattern],
+            txcfileattributes=txcfileattribute,
+        )
+
+        service_pattern_stop = ServicePatternStopFactory(
+            service_pattern=service_pattern
+        )
+
+        ObservationResultsFactory(
+            service_pattern_stop=service_pattern_stop, taskresults=task_result
+        )
+
+    txc_files = {
+        obj.id: obj for obj in TXCFileAttributes.objects.add_split_linenames().all()
+    }
+    dq_services = get_dq_critical_observation_services_map(txc_files)
+
+    assert sorted(services_with_critical, key=lambda tup: tup[0]) == sorted(
+        dq_services, key=lambda tup: tup[0]
+    )
+
+    assert len(services_with_critical) == len(dq_services)
+
+
+@override_flag("dqs_require_attention", active=True)
+@override_flag("is_specific_feedback", active=True)
+def test_dq_require_attention_with_only_critical_observation_results_with_feedback_flag():
+    services_list = [
+        {
+            "licence": f"PD000000{i}",
+            "service_code": f"PD000000{i}:{i}",
+            "line_name": [f"L{i}"],
+        }
+        for i in range(0, 11)
+    ]
+
+    txcfileattributes = []
+    for service in services_list:
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                service_code=service["service_code"], line_names=service["line_name"]
+            )
+        )
+
+    check1 = ChecksFactory(importance=Level.critical.value)
+    check2 = ChecksFactory(importance=Level.advisory.value)
+
+    services_with_critical = []
+    services_with_advisory = []
+    for i, txcfileattribute in enumerate(txcfileattributes):
+        check_obj = check1 if i % 2 == 0 else check2
+        if check_obj.importance == Level.critical.value:
+            services_with_critical.append(
+                (txcfileattribute.service_code, txcfileattribute.line_names[0])
+            )
+        else:
+            services_with_advisory.append(
+                (txcfileattribute.service_code, txcfileattribute.line_names[0])
+            )
+
+        task_result = TaskResultsFactory(
+            status=TaskResultsStatus.PENDING.value,
+            transmodel_txcfileattributes=txcfileattribute,
+            checks=check_obj,
+        )
+        service_pattern = ServicePatternFactory(
+            revision=txcfileattribute.revision, line_name=txcfileattribute.line_names[0]
+        )
+        ServiceFactory(
+            revision=txcfileattribute.revision,
+            service_code=txcfileattribute.service_code,
+            name=txcfileattribute.line_names[0],
+            service_patterns=[service_pattern],
+            txcfileattributes=txcfileattribute,
         )
 
         service_pattern_stop = ServicePatternStopFactory(
@@ -188,6 +261,7 @@ def test_dq_require_attention_with_only_feedback():
                 service_code=txcfileattribute.service_code,
                 name=txcfileattribute.line_names[0],
                 service_patterns=[service_pattern],
+                txcfileattributes=txcfileattribute,
             )
         )
 
@@ -283,6 +357,7 @@ def test_dq_require_attention_with_feedback_and_dqsobservation():
             service_code=txcfileattribute.service_code,
             name=txcfileattribute.line_names[0],
             service_patterns=[service_pattern],
+            txcfileattributes=txcfileattribute,
         )
 
         if check_obj.importance == Level.critical.value:
@@ -321,3 +396,31 @@ def test_dq_require_attention_with_feedback_and_dqsobservation():
     ) == sorted(dq_services, key=lambda tup: tup[0])
 
     assert len(services_with_dq_require_attention) == len(dq_services)
+
+
+@override_flag("dqs_require_attention", active=True)
+@override_flag("is_specific_feedback", active=True)
+def test_dq_require_attention_without_services():
+    services_list = [
+        {
+            "licence": f"PD000000{i}",
+            "service_code": f"PD000000{i}:{i}",
+            "line_name": [f"L{i}"],
+        }
+        for i in range(0, 11)
+    ]
+
+    txcfileattributes = []
+    for service in services_list:
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                service_code=service["service_code"], line_names=service["line_name"]
+            )
+        )
+
+    txc_files = {
+        obj.id: obj for obj in TXCFileAttributes.objects.add_split_linenames().all()
+    }
+    dq_services = get_dq_critical_observation_services_map(txc_files)
+
+    assert 0 == len(dq_services)

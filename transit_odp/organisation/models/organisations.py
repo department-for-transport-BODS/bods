@@ -18,7 +18,12 @@ from transit_odp.organisation.managers import (
     OrganisationManager,
 )
 from transit_odp.organisation.models import Dataset, DatasetRevision
-from transit_odp.transmodel.models import Service, VehicleJourney, ServicePatternStop
+from transit_odp.transmodel.models import (
+    Service,
+    VehicleJourney,
+    ServicePatternStop,
+    ServicePattern,
+)
 from transit_odp.users.models import User
 from transit_odp.naptan.models import AdminArea
 
@@ -171,6 +176,12 @@ class ConsumerFeedback(models.Model):
         help_text="Contains whether the observation result is suppressed",
         null=True,
         blank=True,
+    )
+    service_pattern = models.ForeignKey(
+        ServicePattern,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="feedback_service_pattern",
     )
 
     objects = ConsumerFeedbackManager()

@@ -1170,6 +1170,7 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
         initial_data["vehicle_journey_id"] = data["vehicle_journey_id"]
         initial_data["revision_id"] = data["revision_id"]
         initial_data["service_pattern_stop_id"] = data["service_pattern_stop_id"]
+        initial_data["service_pattern_id"] = data["service_pattern_id"]
 
         return initial_data
 
@@ -1203,16 +1204,22 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
         return response
 
     def get_success_url(self):
-        return reverse(
+        service_name = self.request.GET.get("service", None)
+        line_name = self.request.GET.get("line", None)
+
+        success_url = reverse(
             "feed-feedback-success",
             args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
+        if service_name and line_name:
+            success_url += f"?line={line_name}&service={service_name}"
+        return success_url
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         back_url = reverse(
-            "feed-line-detail",
+            "feed-detail",
             args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
@@ -1224,6 +1231,11 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
         if data["service_id"]:
             context["service"] = data["service_name"]
             context["line_name"] = data["line_name"]
+            back_url = reverse(
+                "feed-line-detail",
+                args=[self.dataset.id],
+                host=config.hosts.DATA_HOST,
+            )
             back_url += f"?line={data['line_name']}&service={data['service_name']}"
         # If vehicle journey details are found in DB
         if data["vehicle_journey_id"]:
@@ -1245,5 +1257,11 @@ class UserFeedbackSuccessView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         object_id = self.kwargs["pk"]
         url = reverse("feed-line-detail", args=[object_id], host=config.hosts.DATA_HOST)
+
+        service_name = self.request.GET.get("service", None)
+        line_name = self.request.GET.get("line", None)
+
+        if service_name and line_name:
+            url += f"?line={line_name}&service={service_name}"
         context["back_link"] = url
         return context

@@ -74,7 +74,7 @@ def test_get_destinationref_df_with_records():
 
     df_input = pd.read_csv(
         io.StringIO(ALL_SIRIVM_ANNALYSED),
-        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "int64"},
+        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "object"},
     )
 
     expected_df = pd.DataFrame(
@@ -93,7 +93,7 @@ def test_get_destinationref_df_with_blankfile():
 
     df_input = pd.read_csv(
         io.StringIO(ALL_SIRIVM_ANNALYSED),
-        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "int64"},
+        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "object"},
     )
 
     expected_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
@@ -120,7 +120,7 @@ def test_get_originref_df_blank_file():
 
     df_input = pd.read_csv(
         io.StringIO(ALL_SIRIVM_ANNALYSED),
-        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "int64"},
+        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "object"},
     )
 
     expected_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
@@ -136,7 +136,7 @@ def test_get_originref_df_with_records():
 
     df_input = pd.read_csv(
         io.StringIO(ALL_SIRIVM_ANNALYSED),
-        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "int64"},
+        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "object"},
     )
 
     expected_df = pd.DataFrame(
@@ -165,7 +165,7 @@ def test_get_directionref_df_blank_file():
 
     df_input = pd.read_csv(
         io.StringIO(ALL_SIRIVM_ANNALYSED),
-        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "int64"},
+        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "object"},
     )
 
     expected_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
@@ -181,7 +181,7 @@ def test_get_directionref_df_with_records():
 
     df_input = pd.read_csv(
         io.StringIO(ALL_SIRIVM_ANNALYSED),
-        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "int64"},
+        dtype={"VehicleRef": "object", "DatedVehicleJourneyRef": "object"},
     )
 
     expected_df = pd.DataFrame({"OperatorRef": ["ACYM"], "LineRef": ["5"]})

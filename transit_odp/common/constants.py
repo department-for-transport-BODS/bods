@@ -14,3 +14,7 @@ class CSVFileName(Enum):
     RERUN_ETL_TIMETABLES = "rerun_timetables_etl.csv"
     RERUN_DQS_TIMETABLES = "rerun_timetables_dqs.csv"
     RERUN_FARES_VALIDATION = "rerun_fares_validator.csv"
+
+
+class FeatureFlags(Enum):
+    DQS_REQUIRE_ATTENTION = "dqs_require_attention"
