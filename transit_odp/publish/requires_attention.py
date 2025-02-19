@@ -561,6 +561,13 @@ def get_requires_attention_data_lta(lta_list: List) -> int:
 def get_timetable_records_require_attention_lta_line_level_length(
     lta_list: List,
 ) -> int:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list to determine which OTC Services require attention ie. service has
+    been published for a service or has a matching issue.
+
+    Returns list of objects of each service requiring attention for an organisation.
+    """
     object_list = []
     timetables_lta_services_requiring_attention = 0
     otc_map = get_line_level_otc_map_lta(lta_list)
@@ -579,6 +586,13 @@ def get_timetable_records_require_attention_lta_line_level_length(
 
 
 def get_avl_records_require_attention_lta_line_level_length(lta_list: List) -> int:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list to determine which OTC Services require attention ie. service has
+    been published for a service or has a matching issue.
+
+    Returns list of objects of each service requiring attention for an organisation.
+    """
     object_list = []
     otc_map = get_line_level_otc_map_lta(lta_list)
     txcfa_map = get_line_level_txc_map_lta(lta_list)
@@ -612,6 +626,22 @@ def get_avl_records_require_attention_lta_line_level_length(lta_list: List) -> i
 
 
 def get_fares_records_require_attention_lta_line_level_length(lta_list: List) -> int:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list and Fares list to determine which OTC Services require attention, i.e., those
+    not Published in Fares at all  but meeting new staleness conditions.
+
+    This function identifies services that require attention based on their status in
+    BODS. It compares the OTC services with the TXCFileAttributes and Fares and updates a list
+    of services requiring attention if they are not live or are considered stale.
+    The length of this list is returned as the result.
+
+    Args:
+        lta_list (list): A list of Local Authority objects to filter the services.
+
+    Returns:
+        int: The count of services requiring attention.
+    """
     object_list = []
     otc_map = get_line_level_otc_map_lta(lta_list)
     txcfa_map = get_line_level_txc_map_lta(lta_list)
