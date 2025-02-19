@@ -18,6 +18,6 @@ class CSVFileName(Enum):
 
 class FeatureFlags(Enum):
     DQS_REQUIRE_ATTENTION = "dqs_require_attention"
-    FARES_REQUIRE_ATTENTION = "is_fares_require_attention_active"
+    FARES_REQUIRE_ATTENTION = "is_fares_require_attention"
     COMPLETE_SERVICE_PAGES = "is_complete_service_pages_active"
     AVL_REQUIRES_ATTENTION = "is_avl_require_attention_active"

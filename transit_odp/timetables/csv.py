@@ -34,7 +34,12 @@ from transit_odp.otc.constants import (
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
     get_dq_critical_observation_services_map_from_dataframe,
+    get_fares_compliance_status,
+    get_fares_dataset_map,
+    get_fares_requires_attention,
+    get_fares_timeliness_status,
 )
+from transit_odp.common.constants import FeatureFlags
 
 TXC_COLUMNS = (
     "organisation_name",
@@ -1257,17 +1262,14 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     synced_in_last_month = abods_registry.records()
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
 
-    txc_df = pd.DataFrame.from_records(
-        TXCFileAttributes.objects.get_active_txc_files_line_level().values(
-            *TXC_LINE_LEVEL_COLUMNS
-        )
-    )
+    txc_service_map = {}
+    txc_attributes = TXCFileAttributes.objects.get_active_txc_files_line_level()
+    txc_df = pd.DataFrame.from_records(txc_attributes.values(*TXC_LINE_LEVEL_COLUMNS))
     otc_df = pd.DataFrame.from_records(
         OTCService.objects.add_timetable_data_annotations().values(*OTC_COLUMNS)
     )
     if txc_df.empty or otc_df.empty:
         raise EmptyDataFrame()
-
     otc_df["service_number"] = otc_df["service_number"].str.split("|")
     otc_df = otc_df.explode("service_number")
     dq_require_attention_active = flag_is_active(
@@ -1286,6 +1288,41 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         ("variation_number", "Int64"),
         ("otc_operator_id", "Int64"),
     )
+
+    is_fares_require_attention_active = flag_is_active(
+        "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+    )
+    if is_fares_require_attention_active:
+        for txc_attribute in txc_attributes:
+            txc_service_map[txc_attribute.service_code] = txc_attribute
+        fares_df = get_fares_dataset_map(txc_map=txc_service_map)
+        fares_df["valid_to"] = fares_df["valid_to"].dt.date
+        fares_df["fares_timeliness_status"] = fares_df.apply(
+            lambda row: get_fares_timeliness_status(row), axis=1
+        )
+        fares_df["is_fares_compliant"] = fares_df.apply(
+            lambda row: get_fares_compliance_status(row), axis=1
+        )
+        fares_df["fares_effective_stale_date_from_last_modified"] = fares_df[
+            "last_updated_date"
+        ] + pd.Timedelta(days=365)
+        fares_df.rename(
+            columns={
+                "is_fares_compliant": "fares_compliance_status",
+                "xml_file_name": "fares_filename",
+                "last_updated_date": "fares_last_modified_date",
+                "valid_to": "fares_operating_period_end_date",
+                "dataset_id": "fares_dataset_id",
+            },
+            inplace=True,
+        )
+        txc_df = pd.merge(
+            txc_df,
+            fares_df,
+            left_on=["national_operator_code", "line_name_unnested"],
+            right_on=["national_operator_code", "line_name"],
+            how="outer",
+        )
 
     merged = pd.merge(
         otc_df,
@@ -1312,7 +1349,9 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         merged["critical_dq_issues"] = UNDER_MAINTENANCE
     merged = add_timetables_requires_attention_column(merged)
     merged = add_traveline_regions(merged)
-    merged = add_under_maintenance_columns(merged)
+    if not is_fares_require_attention_active:
+        merged = add_under_maintenance_columns(merged)
+
     merged["avl_published_status"] = merged.apply(
         lambda x: add_avl_published_status(x, synced_in_last_month), axis=1
     )
@@ -1328,6 +1367,26 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     )
 
     merged = merged[merged["otc_status"] == OTC_STATUS_REGISTERED]
+
+    if is_fares_require_attention_active:
+        merged["fares_published_status"] = txc_df["fares_filename"].apply(
+            lambda x: "Published" if pd.notna(x) and x.strip() != "" else "Unpublished"
+        )
+        merged["fares_requires_attention"] = merged.apply(
+            lambda row: get_fares_requires_attention(
+                row.fares_published_status,
+                row.fares_timeliness_status,
+                row.fares_compliance_status,
+            ),
+            axis=1,
+        )
+        merged["overall_requires_attention"] = np.where(
+            (merged["fares_requires_attention"] == "Yes")
+            | (merged["requires_attention"] == "Yes")
+            | (merged["avl_requires_attention"] == "Yes"),
+            "Yes",
+            "No",
+        )
 
     rename_map = {
         old_name: column_tuple.field_name

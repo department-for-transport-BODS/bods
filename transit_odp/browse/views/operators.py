@@ -16,6 +16,7 @@ from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.constants import EXPIRED, INACTIVE, AVLType, FaresType
 from transit_odp.organisation.models import Dataset, Organisation
 from transit_odp.publish.requires_attention import (
+    FaresRequiresAttention,
     get_avl_requires_attention_line_level_data,
     get_requires_attention_line_level_data,
 )
@@ -98,6 +99,13 @@ class OperatorDetailView(BaseDetailView):
 
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
         context["is_complete_service_pages_active"] = is_complete_service_pages_active
+
+        context["is_fares_require_attention_active"] = is_fares_require_attention_active
+        if is_fares_require_attention_active:
+            fares_reqiures_attention = FaresRequiresAttention(organisation.id)
+            context["fares_total_services_requiring_attention"] = len(
+                fares_reqiures_attention.get_fares_requires_attention_line_level_data()
+            )
 
         context["total_in_scope_in_season_services"] = len(
             get_in_scope_in_season_services_line_level(organisation.id)
@@ -185,6 +193,18 @@ class OperatorDetailView(BaseDetailView):
             else:
                 # Compliance is n/a for Fares datasets
                 context["fares_non_compliant"] = 0
+
+        if is_fares_require_attention_active:
+            try:
+                context["fares_total_services_requiring_attention_percentage"] = round(
+                    100
+                    * (
+                        context["fares_total_services_requiring_attention"]
+                        / context["total_in_scope_in_season_services"]
+                    )
+                )
+            except ZeroDivisionError:
+                context["fares_total_services_requiring_attention_percentage"] = 0
 
         avl_datasets = (
             AVLDataset.objects.filter(
