@@ -11,10 +11,6 @@ from transit_odp.publish.requires_attention import (
 )
 from transit_odp.timetables.tables import RequiresAttentionTable
 from transit_odp.users.views.mixins import OrgUserViewMixin
-from transit_odp.organisation.models import Organisation
-from transit_odp.organisation.csv.service_codes import (
-    ServiceCodesCSV,
-)
 
 
 class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
