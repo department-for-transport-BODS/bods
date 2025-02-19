@@ -558,7 +558,9 @@ def get_requires_attention_data_lta(lta_list: List) -> int:
     return lta_services_requiring_attention
 
 
-def get_timetable_records_require_attention_lta_line_level_length(lta_list: List) -> int:
+def get_timetable_records_require_attention_lta_line_level_length(
+    lta_list: List,
+) -> int:
     object_list = []
     timetables_lta_services_requiring_attention = 0
     otc_map = get_line_level_otc_map_lta(lta_list)
@@ -570,12 +572,43 @@ def get_timetable_records_require_attention_lta_line_level_length(lta_list: List
         elif is_stale(service, file_attribute):
             _update_data(object_list, service, line_number=service_number)
     timetables_lta_services_requiring_attention = len(object_list)
-    print(f"timetables_lta_services_requiring_attention: {timetables_lta_services_requiring_attention}")
+    print(
+        f"timetables_lta_services_requiring_attention: {timetables_lta_services_requiring_attention}"
+    )
     return timetables_lta_services_requiring_attention
 
 
 def get_avl_records_require_attention_lta_line_level_length(lta_list: List) -> int:
-    return 0
+    object_list = []
+    otc_map = get_line_level_otc_map_lta(lta_list)
+    txcfa_map = get_line_level_txc_map_lta(lta_list)
+    service_codes = [service_code for (service_code, line_name) in otc_map]
+    txcfa_map = get_line_level_txc_map_service_base(service_codes)
+    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+    abods_registry = AbodsRegistery()
+    synced_in_last_month = abods_registry.records()
+
+    for service_key, service in otc_map.items():
+        file_attribute = txcfa_map.get(service_key)
+        if file_attribute is not None:
+            operator_ref = file_attribute.national_operator_code
+            line_name = service_key[1]
+
+            if (
+                not uncounted_activity_df.loc[
+                    (uncounted_activity_df["OperatorRef"] == operator_ref)
+                    & (
+                        uncounted_activity_df["LineRef"].isin(
+                            [line_name, line_name.replace(" ", "_")]
+                        )
+                    )
+                ].empty
+                or f"{line_name}__{operator_ref}" not in synced_in_last_month
+            ):
+                _update_data(object_list, service)
+        else:
+            _update_data(object_list, service)
+    return object_list
 
 
 def get_fares_records_require_attention_lta_line_level_length(lta_list: List) -> int:
