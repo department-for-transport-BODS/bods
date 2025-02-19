@@ -21,6 +21,7 @@ from transit_odp.publish.requires_attention import (
     get_avl_requires_attention_line_level_data,
     get_requires_attention_line_level_data,
 )
+from transit_odp.common.constants import FeatureFlags
 
 
 class OperatorsView(BaseListView):
@@ -81,7 +82,7 @@ class OperatorDetailView(BaseDetailView):
             "", "is_avl_require_attention_active"
         )
         is_fares_require_attention_active = flag_is_active(
-            "", "is_fares_require_attention_active"
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
         context = super().get_context_data(**kwargs)
         organisation = self.object
