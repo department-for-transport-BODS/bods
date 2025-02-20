@@ -34,7 +34,7 @@
           {% trans "The service codes summarised here are registered with the OTC and are in scope of BODS, but are not yet published in a complete and accurate way." %}
         {% endfilter %}
       </p>
-      <p class="govuk-body">
+      <p class="govuk-body govuk-!-margin-bottom-5">
         {% filter force_escape %}
           {% trans "Please work with your technology suppliers to provide accurate data so that consumers and your passengers can benefit." %}
         {% endfilter %}
@@ -222,7 +222,7 @@
             {% endfilter %}
           </a>
         </li>
-        <li>
+        <li class="govuk-!-margin-bottom-3">
           <a class="govuk-link" href="{% url 'avl-search' host hosts.data %}?organisation={{ object.id }}&status=live">
             {% filter force_escape %}
               {% trans "Browse Location data" %}
