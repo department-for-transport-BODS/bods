@@ -86,7 +86,7 @@ class OperatorDetailView(BaseDetailView):
     def get_context_data(self, **kwargs):
         is_fares_validator_active = flag_is_active("", "is_fares_validator_active")
         is_avl_require_attention_active = flag_is_active(
-            "", "is_avl_require_attention_active"
+            "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
         )
         is_fares_require_attention_active = flag_is_active(
             "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
@@ -99,13 +99,7 @@ class OperatorDetailView(BaseDetailView):
 
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
         context["is_complete_service_pages_active"] = is_complete_service_pages_active
-
         context["is_fares_require_attention_active"] = is_fares_require_attention_active
-        if is_fares_require_attention_active:
-            fares_reqiures_attention = FaresRequiresAttention(organisation.id)
-            context["fares_total_services_requiring_attention"] = len(
-                fares_reqiures_attention.get_fares_requires_attention_line_level_data()
-            )
 
         context["total_in_scope_in_season_services"] = len(
             get_in_scope_in_season_services_line_level(organisation.id)
@@ -122,7 +116,10 @@ class OperatorDetailView(BaseDetailView):
                 )
 
             if is_fares_require_attention_active:
-                context["fares_services_requiring_attention_count"] = 0
+                fares_reqiures_attention = FaresRequiresAttention(organisation.id)
+                context["fares_services_requiring_attention_count"] = len(
+                    fares_reqiures_attention.get_fares_requires_attention_line_level_data()
+                )
 
             context["overall_services_requiring_attention_count"] = (
                 context["timetable_services_requiring_attention_count"]
@@ -193,18 +190,6 @@ class OperatorDetailView(BaseDetailView):
             else:
                 # Compliance is n/a for Fares datasets
                 context["fares_non_compliant"] = 0
-
-        if is_fares_require_attention_active:
-            try:
-                context["fares_total_services_requiring_attention_percentage"] = round(
-                    100
-                    * (
-                        context["fares_total_services_requiring_attention"]
-                        / context["total_in_scope_in_season_services"]
-                    )
-                )
-            except ZeroDivisionError:
-                context["fares_total_services_requiring_attention_percentage"] = 0
 
         avl_datasets = (
             AVLDataset.objects.filter(
