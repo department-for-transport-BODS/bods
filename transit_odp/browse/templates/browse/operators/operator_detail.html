@@ -307,12 +307,12 @@
           </div>
         </div>
       {% endif %}
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
-    <h3 class="govuk-heading-m govuk-!-margin-top-7">
-      {% filter force_escape %}
-        {% trans "Fares data" %}
-      {% endfilter %}
-    </h3>
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
+      <h3 class="govuk-heading-m govuk-!-margin-top-7">
+        {% filter force_escape %}
+          {% trans "Fares data" %}
+        {% endfilter %}
+      </h3>
       {% if not is_fares_require_attention_active %}
         <div id="feed-stat-list" class="govuk-grid-row">
           <div class="govuk-grid-column-one-quarter">
@@ -346,9 +346,9 @@
             </div>
             <div class="govuk-!-margin-top-2">
               <a class="govuk-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
                 <i class="fas fa-play govuk-!-margin-right-1"></i>
                 {% filter force_escape %}
                   {% trans "What does this mean?" %}
@@ -362,7 +362,7 @@
         <div id="attention-section" class="govuk-grid-row">
           <div class="govuk-grid-column-one-half">
             <div class="feed-stat">
-              <span class="feed-stat__value">{{ fares_total_services_requiring_attention_percentage }}</span>
+              <span class="feed-stat__value">{{ fares_total_services_requiring_attention_percentage }}%</span>
               <span class="feed-stat__label">
                 {% filter force_escape %}
                   {% trans "Services requiring attention" %}
@@ -383,14 +383,14 @@
               </a>
             </li>
             {% if is_fares_require_attention_active %}
-            <li class="govuk-!-margin-bottom-3">
-              <a class="govuk-link" href={% url 'compliance-report' pk1=object.id host hosts.publish %}>
-                {% filter force_escape %}
-                  {% trans "Download detailed export" %}
-                {% endfilter %}
-              </a>
-            </li>
-          {% endif %}
+              <li class="govuk-!-margin-bottom-3">
+                <a class="govuk-link" href={% url 'compliance-report' pk1=object.id host hosts.publish %}>
+                  {% filter force_escape %}
+                    {% trans "Download detailed export" %}
+                  {% endfilter %}
+                </a>
+              </li>
+            {% endif %}
           </ul>
         </div>
       </div>
