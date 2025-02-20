@@ -328,9 +328,6 @@ class LocalAuthorityDetailView(BaseDetailView):
             "total_services_requiring_attention"
         ] = get_requires_attention_data_lta_line_level_length(lta_objs)
 
-        pd_df = _get_timetable_compliance_report_dataframe()
-        pd_df.to_csv("pd_df.csv")
-
         try:
             context["services_require_attention_percentage"] = round(
                 100
