@@ -2,7 +2,7 @@ from django_tables2 import SingleTableView
 from waffle import flag_is_active
 
 from transit_odp.browse.common import get_in_scope_in_season_services_line_level
-from transit_odp.fares.views.tables import FaresRequiresAttentionTable
+from transit_odp.fares.tables import FaresRequiresAttentionTable
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import FaresRequiresAttention
 from transit_odp.users.views.mixins import OrgUserViewMixin
