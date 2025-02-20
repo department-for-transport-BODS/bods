@@ -1441,7 +1441,7 @@ def test_lta_export_fares_published():
     assert csv_output["row1"][16] == '"42 day look ahead is incomplete"'
     assert csv_output["row1"][17] == '"Compliant"'
     assert csv_output["row1"][26] == '"2025-02-12"'
-    assert csv_output["row1"][27] == '"2026-01-12"'
+    assert csv_output["row1"][27] == '"2026-02-12"'
     assert csv_output["row1"][28] == '"2025-01-12"'
 
     assert csv_output["row2"][0] == '"PD0000010:10"'
@@ -1461,7 +1461,7 @@ def test_lta_export_fares_published():
     assert csv_output["row3"][16] == '"Not Stale"'
     assert csv_output["row3"][17] == '"Compliant"'
     assert csv_output["row3"][26] == '"2025-02-12"'
-    assert csv_output["row3"][27] == '"2100-01-12"'
+    assert csv_output["row3"][27] == '"2026-02-12"'
     assert csv_output["row3"][28] == '"2099-01-12"'
 
     assert csv_output["row4"][0] == '"PD000003:3"'
@@ -1471,7 +1471,7 @@ def test_lta_export_fares_published():
     assert csv_output["row4"][16] == '"Not Stale"'
     assert csv_output["row4"][17] == '"Non compliant"'
     assert csv_output["row4"][26] == '"2025-02-12"'
-    assert csv_output["row4"][27] == '"2100-01-12"'
+    assert csv_output["row4"][27] == '"2026-02-12"'
     assert csv_output["row4"][28] == '"2099-01-12"'
 
     assert csv_output["row5"][0] == '"PD000004:4"'
@@ -1481,7 +1481,7 @@ def test_lta_export_fares_published():
     assert csv_output["row5"][16] == '"Not Stale"'
     assert csv_output["row5"][17] == '"Non compliant"'
     assert csv_output["row5"][26] == '"2025-02-12"'
-    assert csv_output["row5"][27] == '"2100-01-12"'
+    assert csv_output["row5"][27] == '"2026-02-12"'
     assert csv_output["row5"][28] == '"2099-01-12"'
 
     assert csv_output["row6"][0] == '"PD000005:5"'
@@ -1491,7 +1491,7 @@ def test_lta_export_fares_published():
     assert csv_output["row6"][16] == '"42 day look ahead is incomplete"'
     assert csv_output["row6"][17] == '"Non compliant"'
     assert csv_output["row6"][26] == '"2025-02-12"'
-    assert csv_output["row6"][27] == '"2026-01-12"'
+    assert csv_output["row6"][27] == '"2026-02-12"'
     assert csv_output["row6"][28] == '"2025-01-12"'
 
     assert csv_output["row7"][0] == '"PD000006:6"'
@@ -1501,7 +1501,7 @@ def test_lta_export_fares_published():
     assert csv_output["row7"][16] == '"42 day look ahead is incomplete"'
     assert csv_output["row7"][17] == '"Non compliant"'
     assert csv_output["row7"][26] == '"2025-02-12"'
-    assert csv_output["row7"][27] == '"2026-01-12"'
+    assert csv_output["row7"][27] == '"2026-02-12"'
     assert csv_output["row7"][28] == '"2025-01-12"'
 
     assert csv_output["row8"][0] == '"PD000007:7"'
