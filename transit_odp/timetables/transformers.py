@@ -39,7 +39,6 @@ from transit_odp.pipelines.pipelines.dataset_etl.utils.transform import (
     create_flexible_routes,
     merge_flexible_jd_with_jp,
     transform_geometry_tracks,
-    add_tracks_sequence,
 )
 from transit_odp.naptan.models import StopPoint, FlexibleZone
 from transit_odp.timetables.utils import get_line_description_based_on_direction
@@ -91,14 +90,14 @@ class TransXChangeTransformer:
 
         if not journey_pattern_tracks.empty:
             journey_pattern_tracks = transform_geometry_tracks(journey_pattern_tracks)
-            journey_pattern_tracks = add_tracks_sequence(journey_pattern_tracks)
+            journey_pattern_tracks.reset_index(inplace=True)
 
         if not route_map.empty:
-
             # Add 'rs_order' column to tracks_map indicating the order of each stop reference
             route_map["rs_order"] = route_map["rs_ref"].apply(
                 lambda x: list(range(0, len(x)))
             )
+            route_map.reset_index(inplace=True)
 
         # Create missing route information
         route_links = pd.DataFrame()
