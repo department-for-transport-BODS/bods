@@ -48,6 +48,7 @@ from transit_odp.publish.requires_attention import (
     get_txc_map_lta,
     is_stale,
 )
+from transit_odp.timetables.csv import _get_timetable_compliance_report_dataframe
 
 STALENESS_STATUS = [
     "42 day look ahead is incomplete",
@@ -326,6 +327,9 @@ class LocalAuthorityDetailView(BaseDetailView):
         context[
             "total_services_requiring_attention"
         ] = get_requires_attention_data_lta_line_level_length(lta_objs)
+
+        pd_df = _get_timetable_compliance_report_dataframe()
+        pd_df.to_csv("pd_df.csv")
 
         try:
             context["services_require_attention_percentage"] = round(
@@ -899,22 +903,28 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                         row["valid_to"] = (
                             row["valid_to"].date()
                             if pd.notna(row["valid_to"])
-                            else row["valid_to"]
+                            else None
                         )
                         row["valid_from"] = (
                             row["valid_from"].date()
                             if pd.notna(row["valid_from"])
-                            else row["valid_from"]
+                            else None
                         )
-                        fares_timeliness_status = get_fares_timeliness_status(row)
-                        fares_compliance_status = get_fares_compliance_status(row)
+                        fares_timeliness_status = get_fares_timeliness_status(
+                            row["valid_to"], row["last_updated_date"].date()
+                        )
+                        fares_compliance_status = get_fares_compliance_status(
+                            row["is_fares_compliant"]
+                        )
+
                         fares_filename = row["xml_file_name"]
                         fares_last_modified = row["last_updated_date"].date()
                         fares_one_year_date = (
-                            row["valid_to"] + timedelta(days=365)
-                            if row["valid_to"]
+                            fares_last_modified + timedelta(days=365)
+                            if fares_last_modified
                             else None
                         )
+
                         fares_operating_period_end = row["valid_to"]
                         fares_dataset_id = str(row["dataset_id"])
             else:
