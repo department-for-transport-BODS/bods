@@ -375,7 +375,7 @@
       <div id="browse-section" class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
           <ul class="govuk-list govuk-!-margin-top-5">
-            <li class="govuk-!-margin-bottom-3">
+            <li>
               <a class="govuk-link" href="{% url 'search-fares' host hosts.data %}?organisation={{ object.id }}&status=live">
                 {% filter force_escape %}
                   {% trans "Browse Fares data" %}
