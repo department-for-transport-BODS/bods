@@ -353,7 +353,7 @@
           </a>
         </li>
         <li class="govuk-!-margin-bottom-5">
-          <a class="govuk-link" href={{ data_activity_url }}>
+          <a class="govuk-link" href="{{ data_activity_url }}">
             {% filter force_escape %}
               {% trans "Consumer activity" %}
             {% endfilter %}
@@ -462,7 +462,7 @@
       <ul class="govuk-list govuk-!-margin-top-5">
         {% if is_avl_require_attention_active %}
           <li>
-            <a class="govuk-link" href={% url 'compliance-report' pk1=object.id host hosts.publish %}>
+            <a class="govuk-link" href="{% url 'compliance-report' pk1=object.id host hosts.publish %}">
               {% filter force_escape %}
                 {% trans "Download detailed export" %}
               {% endfilter %}
@@ -470,7 +470,7 @@
           </li>
         {% else %}
           <li>
-            <a class="govuk-link" href={% url 'service-codes' pk1=object.id host hosts.publish %}>
+            <a class="govuk-link" href="{% url 'service-codes' pk1=object.id host hosts.publish %}">
               {% filter force_escape %}
                 {% trans "Download detailed export" %}
               {% endfilter %}
@@ -596,7 +596,7 @@
         </li>
         {% if is_avl_require_attention_active %}
           <li class="govuk-!-margin-bottom-3">
-            <a class="govuk-link" href={% url 'compliance-report' pk1=object.id host hosts.publish %}>
+            <a class="govuk-link" href="{% url 'compliance-report' pk1=object.id host hosts.publish %}">
               {% filter force_escape %}
                 {% trans "Download detailed export" %}
               {% endfilter %}
@@ -680,7 +680,7 @@
         <div id="attention-section" class="govuk-grid-row">
           <div class="govuk-grid-column-one-half">
             <div class="feed-stat">
-              <span class="feed-stat__value">{{ fares_total_services_requiring_attention_percentage }}</span>
+              <span class="feed-stat__value">{{ fares_total_services_requiring_attention_percentage }}%</span>
               <span class="feed-stat__label">
                 {% filter force_escape %}
                   {% trans "Services requiring attention" %}
@@ -693,7 +693,7 @@
       <div id="browse-section" class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
           <ul class="govuk-list govuk-!-margin-top-5">
-            <li class="govuk-!-margin-bottom-3">
+            <li>
               <a class="govuk-link" href="{% url 'search-fares' host hosts.data %}?organisation={{ object.id }}&status=live">
                 {% filter force_escape %}
                   {% trans "Browse Fares data" %}

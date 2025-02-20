@@ -120,7 +120,7 @@ class Invitation(UserRoleMixin, InvitationBase):
         )
         invite_kwargs = {
             "contact_email": self.email,
-            "organisation_name": self.organisation.name,
+            "organisation_name": self.organisation and self.organisation.name or "",
             "invite_url": invite_url,
         }
 

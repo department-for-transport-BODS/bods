@@ -288,15 +288,18 @@ class TransXChangeDataLoader:
         """
         tracks_vjs = merge_vj_tracks_df(tracks, vehicle_journeys, tracks_map)
         if tracks_vjs.empty:
+            logger.warning("No tracks_vjs to load")
             return
         vj_tracks_objs = list(df_to_journeys_tracks(tracks_vjs))
-        created = TracksVehicleJourney.objects.bulk_create(
-            vj_tracks_objs, batch_size=BATCH_SIZE
-        )
-        tracks_vjs["id"] = pd.Series(
-            (obj.id for obj in created), index=tracks_vjs.index
-        )
-        return tracks_vjs
+        try:
+            created = TracksVehicleJourney.objects.bulk_create(
+                vj_tracks_objs, batch_size=BATCH_SIZE
+            )
+            tracks_vjs["id"] = pd.Series(
+                (obj.id for obj in created), index=tracks_vjs.index
+            )
+        except Exception as e:
+            logger.error(f"Error updating tracks_vjs: {e}")
 
     def load_flexible_service_operation_periods(self, vehicle_journeys):
         flexible_service_operation_periods = self.transformed.flexible_operation_periods
