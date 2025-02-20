@@ -490,6 +490,17 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
             contact=self.request.user, organisation=self.organisation
         )
 
+    def delete_existing_revision_data(self, revision):
+        """
+        Delete any existing violations for the given revision id.
+        This allows validation to occur multiple times for the same DatasetRevision
+        Includes: SchemaViolation, PostSchemaViolation, PTIObservation and TXCFileAttributes objects
+        """
+        revision.schema_violations.all().delete()
+        revision.post_schema_violations.all().delete()
+        revision.txc_file_attributes.all().delete()
+        revision.pti_observations.all().delete()
+
     @transaction.atomic
     def done(self, form_list, **kwargs):
         all_data = self.get_all_cleaned_data()
@@ -501,6 +512,9 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
         revision = DatasetRevision.objects.filter(
             Q(dataset=dataset) & Q(is_published=False)
         ).update_or_create(dataset=dataset, is_published=False, defaults=all_data)[0]
+
+        # 'Update data' flow allows validation to occur multiple times
+        self.delete_existing_revision_data(revision)
 
         is_serverless_publishing_active = flag_is_active(
             "", "is_serverless_publishing_active"
