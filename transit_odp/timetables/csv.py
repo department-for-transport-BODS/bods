@@ -1298,10 +1298,13 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         fares_df = get_fares_dataset_map(txc_map=txc_service_map)
         fares_df["valid_to"] = fares_df["valid_to"].dt.date
         fares_df["fares_timeliness_status"] = fares_df.apply(
-            lambda row: get_fares_timeliness_status(row), axis=1
+            lambda row: get_fares_timeliness_status(
+                row["valid_to"], row["last_updated_date"].date()
+            ),
+            axis=1,
         )
         fares_df["is_fares_compliant"] = fares_df.apply(
-            lambda row: get_fares_compliance_status(row), axis=1
+            lambda row: get_fares_compliance_status(row["is_fares_compliant"]), axis=1
         )
         fares_df["fares_effective_stale_date_from_last_modified"] = fares_df[
             "last_updated_date"
