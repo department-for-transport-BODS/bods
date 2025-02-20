@@ -169,7 +169,7 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
         """
         Delete any existing violations for the given revision id.
         This allows validation to occur multiple times for the same DatasetRevision
-        Includes: ETLTaskResults, SchemaViolation, PostSchemaViolation, PTIObservation and TXCFileAttributes objects
+        Includes: SchemaViolation, PostSchemaViolation, PTIObservation and TXCFileAttributes objects
         """
         revision.schema_violations.all().delete()
         revision.post_schema_violations.all().delete()
