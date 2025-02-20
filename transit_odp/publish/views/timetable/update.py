@@ -187,9 +187,6 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             setattr(revision, key, value)
         revision.save()
 
-        # 'Update data' flow allows validation to occur multiple times
-        self.delete_existing_revision_data(revision)
-
         is_serverless_publishing_active = flag_is_active(
             "", "is_serverless_publishing_active"
         )
@@ -199,6 +196,9 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             revision.start_etl()
 
         else:
+
+            # 'Update data' flow allows validation to occur multiple times
+            self.delete_existing_revision_data(revision)
             # trigger state machine
             input_payload = create_tt_state_machine_payload(revision, False)
             try:
