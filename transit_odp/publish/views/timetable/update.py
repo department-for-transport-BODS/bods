@@ -165,6 +165,17 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
         """Returns the Feed instance to bind to the step's form"""
         return self.object
 
+    def delete_existing_revision_data(self, revision):
+        """
+        Delete any existing violations for the given revision id.
+        This allows validation to occur multiple times for the same DatasetRevision
+        Includes: SchemaViolation, PostSchemaViolation, PTIObservation and TXCFileAttributes objects
+        """
+        revision.schema_violations.all().delete()
+        revision.post_schema_violations.all().delete()
+        revision.txc_file_attributes.all().delete()
+        revision.pti_observations.all().delete()
+
     @transaction.atomic
     def done(self, form_list, **kwargs):
         all_data = self.get_all_cleaned_data()
@@ -185,6 +196,9 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             revision.start_etl()
 
         else:
+
+            # 'Update data' flow allows validation to occur multiple times
+            self.delete_existing_revision_data(revision)
             # trigger state machine
             input_payload = create_tt_state_machine_payload(revision, False)
             try:
