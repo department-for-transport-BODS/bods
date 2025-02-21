@@ -164,6 +164,7 @@ class DatasetRevisionFactory(DjangoModelFactory):
     published_by = None
 
     first_service_start = datetime.datetime(2019, 5, 7, tzinfo=pytz.utc)
+    url_link = factory.Faker("url")
     upload_file = factory.django.FileField(filename="transXchange.xml")
 
     @classmethod
