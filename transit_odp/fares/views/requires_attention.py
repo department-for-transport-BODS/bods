@@ -46,7 +46,6 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
             context["services_require_attention_percentage"] = 0
 
         context["q"] = self.request.GET.get("q", "").strip()
-        context["hide_download_links"] = True
         return context
 
     def get_table_data(self):
