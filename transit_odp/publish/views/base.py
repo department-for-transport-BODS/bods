@@ -522,7 +522,9 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
             revision.start_etl()
 
         else:
-            revision.to_indexing()
+            if not revision.status == FeedStatus.pending.value:
+                revision.to_pending()
+                revision.save()
             # 'Update data' flow allows validation to occur multiple times
             self.delete_existing_revision_data(revision)
             # trigger state machine
