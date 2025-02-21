@@ -1,5 +1,6 @@
 import logging
 from typing import List, Tuple, Type
+from uuid import uuid4
 
 from django.conf import settings
 from django.db import transaction
@@ -205,7 +206,7 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
                 task = DatasetETLTaskResult.objects.create(
                     revision=revision,
                     status=DatasetETLTaskResult.STARTED,
-                    task_id=self.request.id,
+                    task_id=str(uuid4()),
                 )
             # 'Update data' flow allows validation to occur multiple times
             self.delete_existing_revision_data(revision)

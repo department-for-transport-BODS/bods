@@ -127,7 +127,7 @@ class SQSClientWrapper:
 class StepFunctionsClientWrapper:
     """Initialize Step Functions client, execute Step Functions and check for status"""
 
-    def __init__(self) -> object:
+    def __init__(self) -> None:
         """
         Initialize and return an Step Functions client.
         """
