@@ -1,9 +1,9 @@
 import logging
-import pandas as pd
-from datetime import timedelta
+from datetime import date, timedelta
 from typing import Dict, List, Optional
 
-from django.db.models import Subquery
+import pandas as pd
+from django.db.models import Q, Subquery
 from django.utils.timezone import now
 from waffle import flag_is_active
 
@@ -13,8 +13,11 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
 )
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.dqs.constants import Level
+from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
 from transit_odp.dqs.models import ObservationResults
+
 from transit_odp.naptan.models import AdminArea
+from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.organisation.models.organisations import ConsumerFeedback
 from transit_odp.otc.models import Service as OTCService
@@ -23,7 +26,7 @@ from transit_odp.transmodel.models import (
     ServicePatternStop,
 )
 from django.db.models import Q
-
+from transit_odp.publish.constants import FARES_STALENESS_STATUS
 
 logger = logging.getLogger(__name__)
 
@@ -281,6 +284,7 @@ def get_line_level_txc_map_service_base(
         key = (txc_file.service_code, txc_file.line_name_unnested)
         if key not in line_level_txc_map:
             line_level_txc_map[key] = txc_file
+
     return line_level_txc_map
 
 
@@ -440,7 +444,163 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
 
 
 def is_stale(service: OTCService, file_attribute: TXCFileAttributes) -> bool:
+    """
+    Determines if a timetables service has any stale values that are True.
+
+    Args:
+        service (OTCService): OTC Service
+        file_attribute (TXCFileAttributes): File attributes from TXC files
+
+    Returns:
+        bool: True or False if there is a stale value present.
+    """
     return any(evaluate_staleness(service, file_attribute))
+
+
+def evaluate_fares_staleness(
+    operating_period_end_date: date, last_updated_date: date
+) -> tuple:
+    """
+    Checks timeliness status for fares data.
+
+    Fares Staleness logic:
+        Staleness Status - Stale - 42 day look ahead is incomplete:
+            If Operating period end date is present
+            AND
+            Operating period end date < today + 42 days
+        Staleness Status - Stale - One year old:
+            If last_modified + 365 days <= today
+
+    Args:
+        operating_period_end_date (date): Valid to date
+        last_updated (date): Last updated date
+
+    Returns:
+        tuple: Boolean value for each staleness status
+    """
+    today = now().date()
+    forty_two_days_from_today = today + timedelta(days=42)
+    twelve_months_from_last_updated = last_updated_date + timedelta(days=365)
+
+    staleness_42_day_look_ahead = (
+        True
+        if not pd.isna(operating_period_end_date)
+        and (operating_period_end_date < forty_two_days_from_today)
+        else False
+    )
+    staleness_12_months_old = (
+        True if (twelve_months_from_last_updated <= today) else False
+    )
+
+    return (
+        staleness_42_day_look_ahead,
+        staleness_12_months_old,
+    )
+
+
+def is_fares_stale(operating_period_end_date: date, last_updated: date) -> bool:
+    """
+    Determines if a fares service has any stale values that are True.
+
+    Args:
+        operating_period_end_date (date): Valid to value
+        last_updated (date): Last update date
+
+    Returns:
+        bool: True or False if there is a stale value.
+    """
+    return any(evaluate_fares_staleness(operating_period_end_date, last_updated))
+
+
+def get_fares_published_status(fares_dataset_id: int) -> str:
+    """
+    Returns value for 'Fares Published Status' column based on
+    the presence of a dataset ID for a published fares dataset.
+
+    Args:
+        fares_dataset_id (int): Fares Dataset ID
+
+    Returns:
+        str: Published or Unpublished for 'Fares Published Status' column
+    """
+    if not pd.isna(fares_dataset_id):
+        return "Published"
+    return "Unpublished"
+
+
+def get_fares_timeliness_status(valid_to: date, last_updated_date: date) -> str:
+    """
+    Returns value for 'Fares Timeliness Status' column based on the following logic:
+        12 months old:
+            If 'Last updated' + 1 year <= today's date
+            then timeliness status = 'One year old'
+        42 day look ahead:
+            If NETEX:Operating Period End Date (valid to) < today + 42 days
+            then timeliness status = '42 day look ahead is incomplete'
+        Else Not Stale
+
+    Args:
+        operating_period_end_date (date): Valid to value
+        last_updated (date): Last update date
+
+    Returns:
+        str: Status value for 'Fares Timeliness Status' column
+    """
+    fares_staleness_status = "Not Stale"
+    if (not pd.isna(last_updated_date)) and (not pd.isna(valid_to)):
+        if is_fares_stale(valid_to, last_updated_date):
+            fares_rad = evaluate_fares_staleness(valid_to, last_updated_date)
+            fares_staleness_status = FARES_STALENESS_STATUS[fares_rad.index(True)]
+
+    return fares_staleness_status
+
+
+def get_fares_compliance_status(is_fares_compliant: bool) -> str:
+    """
+    Returns value for 'Fares Compliance Status' column based on the
+    compliance of the fares data published to BODS.
+
+    Args:
+        is_fares_compliant (bool): BODS compliance
+
+    Returns:
+        str: Compliant or Non compliant for 'Fares Compliance Status' column
+    """
+    if not pd.isna(is_fares_compliant):
+        if is_fares_compliant:
+            return "Compliant"
+    return "Non compliant"
+
+
+def get_fares_requires_attention(
+    fares_published_status: str,
+    fares_timeliness_status: str,
+    fares_compliance_status: str,
+) -> str:
+    """
+    Returns value for 'Fares requires attention' column based on the following logic:
+        If 'Fares Published Status' equal to Published
+        AND 'Fares Timeliness Status' equal to Not Stale
+        AND 'Fares Compliance Status' equal to Compliant
+        then 'Fares requires attention' = No.
+        Else
+        the 'Fares requires attention' = Yes.
+
+    Args:
+        fares_published_status (str): Value of 'Fares Published Status'
+        fares_timeliness_status (str): Value of 'Fares Timeliness Status'
+        fares_compliance_status (str): Value of 'Fares Compliance Status'
+
+    Returns:
+        str: Yes or No for 'Fares requires attention' column
+    """
+    if (
+        (fares_published_status == "Published")
+        and (fares_timeliness_status == "Not Stale")
+        and (fares_compliance_status == "Compliant")
+    ):
+        return "No"
+    return "Yes"
 
 
 def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
@@ -722,6 +882,146 @@ def get_dq_critical_observation_services_map_from_dataframe(
             txcfileattributes_id=row["id"],
         )
     return query_dq_critical_observation(query)
+
+
+def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFrame:
+    """Find fares data compatible to NOC and Line name
+
+    Args:
+        txc_map (Dict[tuple, TXCFileAttributes]): List of txc file attributes
+
+    Returns:
+        pd.DataFrame: DataFrame containing the fares files details
+    """
+    nocs_list = []
+    noc_linename_dict = []
+    for _, file_attribute in txc_map.items():
+
+        nocs_list.append(file_attribute.national_operator_code)
+        noc_linename_dict.append(
+            {
+                "national_operator_code": file_attribute.national_operator_code,
+                "line_name": file_attribute.line_name_unnested,
+            }
+        )
+
+    noc_df = pd.DataFrame.from_dict(noc_linename_dict)
+    noc_df.drop_duplicates(inplace=True)
+    nocs_list = list(set(nocs_list))
+
+    fares_df = pd.DataFrame.from_records(
+        DataCatalogueMetaData.objects.filter(national_operator_code__overlap=nocs_list)
+        .add_revision_and_dataset()
+        .get_live_revision_data()
+        .exclude(fares_metadata_id__revision__status=INACTIVE)
+        .add_published_date()
+        .add_compliance_status()
+        .values(
+            "xml_file_name",
+            "valid_from",
+            "valid_to",
+            "line_id",
+            "id",
+            "national_operator_code",
+            "fares_metadata_id",
+            "last_updated_date",
+            "is_fares_compliant",
+            "dataset_id",
+        )
+    )
+
+    if fares_df.empty:
+        return pd.DataFrame()
+
+    fares_df = fares_df.explode("line_id")
+    fares_df = fares_df.explode("national_operator_code")
+    fares_df["line_name"] = fares_df["line_id"].apply(
+        lambda x: (
+            x.split(":")[3] if isinstance(x, str) and len(x.split(":")) > 3 else None
+        )
+    )
+
+    fares_df_merged = pd.DataFrame.merge(
+        fares_df,
+        noc_df,
+        on=["line_name", "national_operator_code"],
+        how="inner",
+        indicator=False,
+    )
+
+    fares_df_merged["valid_to"] = pd.to_datetime(
+        fares_df_merged["valid_to"], errors="coerce"
+    )
+    fares_df_merged["valid_from"] = pd.to_datetime(
+        fares_df_merged["valid_from"], errors="coerce"
+    )
+
+    fares_df_merged = (
+        fares_df_merged.sort_values(
+            by=["valid_to", "valid_from", "xml_file_name"],
+            ascending=[False, False, False],
+        )
+        .drop_duplicates(subset=["line_name", "national_operator_code"])
+        .reset_index()
+    )
+
+    return fares_df_merged
+
+
+class FaresRequiresAttention:
+    """
+    Class to get the details of fares requiring attention
+    """
+
+    org_id: int
+
+    def __init__(self, org_id):
+        self._org_id = org_id
+
+    def get_fares_requires_attention_line_level_data(self) -> List[Dict[str, str]]:
+        """
+        Compares an organisation's OTC Services dictionaries list with Fares Catalogue
+        dictionaries list to determine which OTC Services require attention ie. not live
+        in BODS at all, or live but meeting new Staleness conditions.
+
+        Returns list of objects of each service requiring attention for an organisation.
+        """
+        object_list = []
+
+        otc_map = get_line_level_in_scope_otc_map(self._org_id)
+        service_codes = [service_code for (service_code, _) in otc_map]
+        txcfa_map = get_line_level_txc_map_service_base(service_codes)
+        fares_df = get_fares_dataset_map(txcfa_map)
+
+        for service_key, service in otc_map.items():
+
+            file_attribute = txcfa_map.get(service_key)
+            # If no file attribute (TxcFileAttribute), service requires attention
+            if file_attribute is None:
+                _update_data(object_list, service)
+            elif fares_df.empty:
+                _update_data(object_list, service)
+            else:
+                noc = file_attribute.national_operator_code
+                line_name = file_attribute.line_name_unnested
+                df = fares_df[
+                    (fares_df.national_operator_code == noc)
+                    & (fares_df.line_name == line_name)
+                ]
+
+                if not df.empty:
+                    row = df.iloc[0].to_dict()
+                    valid_to = row.get("valid_to", None)
+                    last_modified_date = row.get("last_updated_date", "")
+                    valid_to = date.today() if pd.isnull(valid_to) else valid_to
+                    last_modified_date = (
+                        datetime.now()
+                        if pd.isnull(last_modified_date)
+                        else last_modified_date
+                    )
+                    if is_fares_stale(valid_to, last_modified_date):
+                        _update_data(object_list, service)
+        return object_list
 
 
 def get_service_patterns_df(query) -> pd.DataFrame:
