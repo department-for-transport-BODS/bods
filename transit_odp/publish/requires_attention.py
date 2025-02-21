@@ -350,22 +350,14 @@ def _update_data(
     """
     Append data to object_list of services requiring attention.
     """
-    if not line_number:
-        object_list.append(
-            {
-                "licence_number": service.otc_licence_number,
-                "service_code": service.registration_number,
-                "line_number": service.service_number,
-            }
-        )
-    else:
-        object_list.append(
-            {
-                "licence_number": service.otc_licence_number,
-                "service_code": service.registration_number,
-                "line_number": line_number,
-            }
-        )
+
+    object_list.append(
+        {
+            "licence_number": service.otc_licence_number,
+            "service_code": service.registration_number,
+            "line_number": line_number if line_number else service.service_number,
+        }
+    )
 
 
 def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -> tuple:
@@ -476,6 +468,30 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     return object_list
 
 
+def is_avl_requires_attention(
+    noc: str,
+    line_name: str,
+    synced_in_last_month: bool,
+    uncounted_activity_df: pd.DataFrame,
+):
+    """Return True if the avl service requires the attention, otherwise False"""
+
+    if not noc or (
+        not uncounted_activity_df.loc[
+            (uncounted_activity_df["OperatorRef"] == noc)
+            & (
+                uncounted_activity_df["LineRef"].isin(
+                    [line_name, line_name.replace(" ", "_")]
+                )
+            )
+        ].empty
+        or f"{line_name}__{noc}" not in synced_in_last_month
+    ):
+        return True
+
+    return False
+
+
 def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     """
     Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
@@ -489,48 +505,26 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     )
     if not is_avl_require_attention_active:
         return []
-    object_list = []
-    dqs_critical_issues_service_line_map = []
+
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
-    is_dqs_require_attention = flag_is_active(
-        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
-    )
-    if is_dqs_require_attention:
-        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
-            txcfa_map
-        )
 
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
     abods_registry = AbodsRegistery()
     synced_in_last_month = abods_registry.records()
 
+    object_list = []
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
-        if file_attribute is not None:
-            operator_ref = file_attribute.national_operator_code
-            line_name = service_key[1]
+        noc = file_attribute.national_operator_code if file_attribute else None
+        line_name = service_key[1]
 
-            if (
-                not uncounted_activity_df.loc[
-                    (uncounted_activity_df["OperatorRef"] == operator_ref)
-                    & (
-                        uncounted_activity_df["LineRef"].isin(
-                            [line_name, line_name.replace(" ", "_")]
-                        )
-                    )
-                ].empty
-                or f"{line_name}__{operator_ref}" not in synced_in_last_month
-            ):
-                _update_data(object_list, service)
-        elif (
-            is_dqs_require_attention
-            and (service_key, service) in dqs_critical_issues_service_line_map
+        if is_avl_requires_attention(
+            noc, line_name, synced_in_last_month, uncounted_activity_df
         ):
             _update_data(object_list, service)
-        else:
-            _update_data(object_list, service)
+
     logging.info(f"AVL-REQUIRE-ATTENTION: total objects {len(object_list)}")
     return object_list
 

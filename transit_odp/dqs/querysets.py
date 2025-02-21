@@ -228,4 +228,6 @@ class ObservationResultsQueryset(models.QuerySet):
             .distinct()
         )
 
+        print(qs.query)
+
         return qs

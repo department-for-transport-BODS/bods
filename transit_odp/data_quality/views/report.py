@@ -81,6 +81,7 @@ class ReportOverviewView(DetailView):
         if self.model == Report:
             report_id = report.id if report else None
             summary = Summary.get_report(report_id, revision_id)
+            print(summary)
             is_dqs_new_report = True
         else:
             report_id = report.summary.report_id

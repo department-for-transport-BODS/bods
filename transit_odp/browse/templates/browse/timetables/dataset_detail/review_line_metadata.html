@@ -37,30 +37,14 @@
       <table class="govuk-table dataset-property-table">
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{% trans "Type of service" %}</th>
+            <th scope="row" class="govuk-table__header govuk-!-width-one-half">{% trans "AVL" %}</th>
             <td class="govuk-table__cell dont-break-out" colspan="2">{{ service_type }}</td>
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{% trans "Registration Number" %}</th>
             <td class="govuk-table__cell dont-break-out" colspan="2">{{ service_code }}</td>
           </tr>
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{% trans "Current valid file(s)" %}</th>
-            <td class="govuk-table__cell dont-break-out" colspan="2">
-              {% if current_valid_files %}
-                {% for file_details in current_valid_files %}
-                  <div class="stacked">
-                    {{ file_details.start_date|default:'No Start Date' }} - {{ file_details.end_date|default:'No End Date' }}
-                    <br />
-                    {{ file_details.filename }}
-                  </div>
-                  {% if not forloop.last %}<br />{% endif %}
-                {% endfor %}
-              {% else %}
-                {% trans "N/A" %}
-              {% endif %}
-            </td>
-          </tr>
+          {% include 'publish/snippets/dataset_detail_files.html' with header_text='Current valid file(s)' files=current_valid_files %}
           {% if service_type == "Flexible" or service_type == "Flexible/Standard" %}
             <tr class="govuk-table__row">
               <th scope="row" class="govuk-table__header">{% trans "Booking arrangements" %}</th>
@@ -91,6 +75,93 @@
           {% endif %}
         </tbody>
       </table>
+    </div>
+  </div>
+
+
+
+
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <table class="govuk-table dataset-property-table">
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header govuk-!-width-one-half"><h2 class="govuk-heading-m">{% trans "AVL" %}</h2></th>
+            <td class="govuk-table__cell dont-break-out " colspan="2">
+              <span class="govuk-tag {% if is_avl_complaint%}govuk-tag--green{%else%}govuk-tag--red{%endif%} govuk-!-font-size-16 govuk-!-text-align-centre">
+                {% if is_avl_complaint%}
+                  Complaint
+                  {%else%}
+                  Non-Complaint
+                {% endif %}
+                </span>
+            </td>
+          </tr>        
+        </tbody>
+      </table>
+      
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <table class="govuk-table dataset-property-table">
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header govuk-!-width-one-half"><h2 class="govuk-heading-m">{% trans "Fares" %}</h2></th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">
+              <span class="govuk-tag {% if is_fares_complaint%}govuk-tag--green{%else%}govuk-tag--red{%endif%} govuk-!-font-size-16 govuk-!-text-align-centre">
+              {% if is_fares_complaint%}
+                Complaint
+                {%else%}
+                Non-Complaint
+              {% endif %}
+              </span>
+              <a href="#">Dataset id: {{ fares_dataset_id }}</a>
+            </td>
+          </tr>
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header govuk-!-width-one-half">{% trans "Tariff basis" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ fares_tariff_basis }}</td>
+          </tr>          
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{% trans "Products" %}</th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">
+              {{ fares_products|join:', ' }}
+            </td>
+          </tr>
+          {% include 'publish/snippets/dataset_detail_files.html' with header_text='Current valid file(s)' files=fares_valid_files %}
+          {% include 'publish/snippets/dataset_detail_files.html' with header_text='Future dated file(s)' files=fares_future_dated_files %}
+          {% include 'publish/snippets/dataset_detail_files.html' with header_text='Expired file(s)' files=fares_expired_files %}
+        </tbody>
+      </table>
+      
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <table class="govuk-table dataset-property-table">
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header govuk-!-width-one-half"><h2 class="govuk-heading-m">{% trans "Timetable" %}</h2></th>
+            <td class="govuk-table__cell dont-break-out" colspan="2">
+              <span class="govuk-tag {% if is_timetables_complaint%}govuk-tag--green{%else%}govuk-tag--red{%endif%} govuk-!-font-size-16 govuk-!-text-align-centre">
+              {% if is_timetables_complaint%}
+                Complaint
+                {%else%}
+                Non-Complaint
+              {% endif %}
+              </span>
+              <a href="#">Dataset id: {{ timetables_dataset_id }}</a>
+            </td>
+          </tr>          
+          {% include 'publish/snippets/dataset_detail_files.html' with header_text='Current valid file(s)' files=timetables_valid_files %}
+          {% include 'publish/snippets/dataset_detail_files.html' with header_text='Future dated file(s)' files=timetables_future_dated_files %}
+          {% include 'publish/snippets/dataset_detail_files.html' with header_text='Expired file(s)' files=timetables_expired_files %}
+        </tbody>
+      </table>
+      
     </div>
   </div>
   {% if is_timetable_visualiser_active %}
