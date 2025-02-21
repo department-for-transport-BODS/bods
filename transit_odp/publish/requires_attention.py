@@ -1,5 +1,5 @@
 import logging
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -902,14 +902,14 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
     noc_df = pd.DataFrame.from_dict(noc_linename_dict)
     noc_df.drop_duplicates(inplace=True)
     nocs_list = list(set(nocs_list))
-
-    fares_df = pd.DataFrame.from_records(
+    qs = (
         DataCatalogueMetaData.objects.filter(national_operator_code__overlap=nocs_list)
         .add_revision_and_dataset()
         .get_live_revision_data()
         .exclude(fares_metadata_id__revision__status=INACTIVE)
         .add_published_date()
         .add_compliance_status()
+        .add_operator_id()
         .values(
             "xml_file_name",
             "valid_from",
@@ -921,8 +921,12 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
             "last_updated_date",
             "is_fares_compliant",
             "dataset_id",
+            "tariff_basis",
+            "product_name",
+            "operator_id",
         )
     )
+    fares_df = pd.DataFrame.from_records(qs)
 
     if fares_df.empty:
         return pd.DataFrame()
@@ -972,6 +976,38 @@ class FaresRequiresAttention:
     def __init__(self, org_id):
         self._org_id = org_id
 
+    def is_fares_requires_attention(
+        self, txc_file: TXCFileAttributes, fares_df: pd.DataFrame
+    ):
+        """
+        Return True if the fares requires attention, otherwise False
+        """
+
+        if txc_file is None:
+            return True
+
+        if fares_df.empty:
+            return True
+
+        noc = txc_file.national_operator_code
+        line_name = txc_file.line_name_unnested
+        df = fares_df[
+            (fares_df.national_operator_code == noc) & (fares_df.line_name == line_name)
+        ]
+
+        if not df.empty:
+            row = df.iloc[0].to_dict()
+            valid_to = row.get("valid_to", None)
+            last_modified_date = row.get("last_updated_date", "")
+            valid_to = date.today() if pd.isnull(valid_to) else valid_to
+            last_modified_date = (
+                date.today() if pd.isnull(last_modified_date) else last_modified_date
+            )
+            if is_fares_stale(valid_to, last_modified_date):
+                return True
+
+        return False
+
     def get_fares_requires_attention_line_level_data(self) -> List[Dict[str, str]]:
         """
         Compares an organisation's OTC Services dictionaries list with Fares Catalogue
@@ -989,32 +1025,10 @@ class FaresRequiresAttention:
 
         for service_key, service in otc_map.items():
 
-            file_attribute = txcfa_map.get(service_key)
-            # If no file attribute (TxcFileAttribute), service requires attention
-            if file_attribute is None:
+            txc_file = txcfa_map.get(service_key)
+            if self.is_fares_requires_attention(txc_file, fares_df):
                 _update_data(object_list, service)
-            elif fares_df.empty:
-                _update_data(object_list, service)
-            else:
-                noc = file_attribute.national_operator_code
-                line_name = file_attribute.line_name_unnested
-                df = fares_df[
-                    (fares_df.national_operator_code == noc)
-                    & (fares_df.line_name == line_name)
-                ]
 
-                if not df.empty:
-                    row = df.iloc[0].to_dict()
-                    valid_to = row.get("valid_to", None)
-                    last_modified_date = row.get("last_updated_date", "")
-                    valid_to = date.today() if pd.isnull(valid_to) else valid_to
-                    last_modified_date = (
-                        datetime.now()
-                        if pd.isnull(last_modified_date)
-                        else last_modified_date
-                    )
-                    if is_fares_stale(valid_to, last_modified_date):
-                        _update_data(object_list, service)
         return object_list
 
 

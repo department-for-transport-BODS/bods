@@ -66,10 +66,11 @@ from transit_odp.timetables.tables import TimetableChangelogTable
 from transit_odp.transmodel.models import BookingArrangements, Service
 from transit_odp.users.constants import SiteAdminType
 from transit_odp.publish.requires_attention import (
-    get_avl_requires_attention_line_level_data,
+    get_fares_dataset_map,
     is_avl_requires_attention,
     get_dq_critical_observation_services_map,
     get_line_level_txc_map_service_base,
+    FaresRequiresAttention,
 )
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
@@ -553,44 +554,75 @@ class LineMetadataDetailView(DetailView):
 
         return {"is_avl_complaint": is_avl_complaint}
 
-    def get_fares_data(self, txc_file_attributes: List[TXCFileAttributes], line: str):
+    def get_fares_data(
+        self,
+        txc_file_attributes: List[TXCFileAttributes],
+    ):
         """
         Get the fares data for the dataset
         """
 
-        for file in txc_file_attributes:
-            noc = file.national_operator_code
+        txc_map = dict(enumerate(txc_file_attributes))
+        fares_df = get_fares_dataset_map(txc_map)
+
+        fra = FaresRequiresAttention(None)
+        is_fares_complaint = True
+        for txc_file in txc_file_attributes:
+            if is_fares_complaint:
+                is_fares_complaint = not fra.is_fares_requires_attention(
+                    txc_file, fares_df
+                )
+            else:
+                break
+
+        tariff_basis, product_name = [], []
+        today = datetime.today().date()
+        current_valid_files, future_files,expired_files  = [], [], []
+        dataset_id, org_id = None, None
+
+
+        for row in fares_df.to_dict(orient="records"):
+            tariff_basis.extend(row["tariff_basis"])
+            product_name.extend(row["product_name"])
+            dataset_id = row["dataset_id"]
+            org_id = row["operator_id"]
+
+            start_date = row["valid_from"].date()
+            end_date = row["valid_to"] if not pd.isnull(row["valid_to"]) else today
+            file_name = row["xml_file_name"]
+
+            end_date_str = (
+                None if pd.isnull(row["valid_to"]) else row["valid_to"].date()
+            )
+
+            if not start_date:
+                logger.info(f"No start date found for {file_name}")
+                continue
+
+            if end_date >= today >= start_date:
+                current_valid_files.append(
+                    self.get_file_object(start_date, end_date_str, file_name)
+                )
+
+            if start_date > today:
+                future_files.append(
+                    self.get_file_object(start_date, end_date_str, file_name)
+                )
+
+            if today > end_date:
+                expired_files.append(
+                    self.get_file_object(start_date, end_date_str, file_name)
+                )
 
         return {
-            "is_fares_complaint": True,
-            "fares_dataset_id": "123",
-            "fares_tariff_basis": "pointToPoint",
-            "fares_products": ["Adult: Single", "Young Single"],
-            "fares_valid_files": [
-                {
-                    "start_date": "Jan 20, 2025",
-                    "to": "July 30, 2025",
-                    "filename": "GONW_100_Outbound_ChildNoIGOSin_bda0c90a-0310-434a-ac72-226d7e839414_638113839908942027.xml.xml",
-                },
-                {
-                    "start_date": "Jun 20, 2025",
-                    "to": "July 30, 2025",
-                    "filename": "GONW_100_Outbound_ChildNoIGOSin_bda0c90a-0310-434a-ac72-226d7e839414_638113839908942027.xmlGONW_100_Outbound_ChildNoIGOSin_bda0c90a-0310-434a-ac72-226d7e839414_638113839908942027.xml.xml",
-                },
-            ],
-            "fares_future_dated_files": [
-                {
-                    "start_date": "Jan 20, 2025",
-                    "to": "July 30, 2025",
-                    "filename": "abcd.xml",
-                },
-                {
-                    "start_date": "Jun 20, 2025",
-                    "to": "July 30, 2025",
-                    "filename": "abcd.xml",
-                },
-            ],
-            "fares_expired_files": [],
+            "is_fares_complaint": is_fares_complaint,
+            "fares_dataset_id": dataset_id,
+            "fares_tariff_basis": tariff_basis,
+            "fares_products": product_name,
+            "fares_valid_files": current_valid_files,
+            "fares_future_dated_files": future_files,
+            "fares_expired_files": expired_files,
+            "fares_org_id": org_id,
         }
 
     def get_file_object(self, start_date, end_date, file_name):
@@ -661,9 +693,6 @@ class LineMetadataDetailView(DetailView):
             if is_dqs_require_attention
             else []
         )
-
-        print(dqs_critical_issues_service_line_map)
-        print(len(dqs_critical_issues_service_line_map) == 0)
 
         return {
             "is_timetables_complaint": len(dqs_critical_issues_service_line_map) == 0,
@@ -792,9 +821,11 @@ class LineMetadataDetailView(DetailView):
                 self.get_timetable_visualiser_data(live_revision.id, line, service_code)
             )
         # noc: str, line
-        txc_file_attributes = TXCFileAttributes.objects.for_revision(
-            live_revision.id
-        ).add_service_code(service_code)
+        txc_file_attributes = (
+            TXCFileAttributes.objects.for_revision(live_revision.id)
+            .add_service_code(service_code)
+            .add_split_linenames()
+        )
 
         kwargs.update(
             self.get_avl_data(
@@ -802,7 +833,7 @@ class LineMetadataDetailView(DetailView):
                 line,
             )
         )
-        kwargs.update(self.get_fares_data(txc_file_attributes, line))
+        kwargs.update(self.get_fares_data(txc_file_attributes))
         kwargs.update(
             self.get_timetables_data(txc_file_attributes, service_code, dataset.id)
         )

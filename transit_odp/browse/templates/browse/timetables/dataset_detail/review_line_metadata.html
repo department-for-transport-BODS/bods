@@ -117,12 +117,14 @@
                 Non-Complaint
               {% endif %}
               </span>
-              <a href="#">Dataset id: {{ fares_dataset_id }}</a>
+              {% if fares_dataset_id %}
+              <a href="{% url 'fares:feed-detail' pk=fares_dataset_id pk1=fares_org_id host hosts.publish %}" target="_blank">Dataset id: {{ fares_dataset_id }}</a>
+              {% endif %}
             </td>
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header govuk-!-width-one-half">{% trans "Tariff basis" %}</th>
-            <td class="govuk-table__cell dont-break-out" colspan="2">{{ fares_tariff_basis }}</td>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ fares_tariff_basis | join:', ' }}</td>
           </tr>          
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{% trans "Products" %}</th>
@@ -153,7 +155,7 @@
                 Non-Complaint
               {% endif %}
               </span>
-              <a href="#">Dataset id: {{ timetables_dataset_id }}</a>
+              <a href="{% url 'feed-detail' pk=object.id  host host.name %}" target="_blank">Dataset id: {{ timetables_dataset_id }}</a>
             </td>
           </tr>          
           {% include 'publish/snippets/dataset_detail_files.html' with header_text='Current valid file(s)' files=timetables_valid_files %}
