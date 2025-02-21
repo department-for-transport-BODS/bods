@@ -14,6 +14,7 @@ from waffle import flag_is_active
 import config.hosts
 from transit_odp.common.utils.aws_common import StepFunctionsClientWrapper
 from transit_odp.common.views import BaseDetailView, BaseTemplateView
+from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.publish.forms import (
     FeedCommentForm,
@@ -169,9 +170,8 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
         """
         Delete any existing violations for the given revision id.
         This allows validation to occur multiple times for the same DatasetRevision
-        Includes: ETLTaskResults, SchemaViolation, PostSchemaViolation, PTIObservation and TXCFileAttributes objects
+        Includes: SchemaViolation, PostSchemaViolation, PTIObservation and TXCFileAttributes objects
         """
-        revision.etl_results.all().delete()
         revision.schema_violations.all().delete()
         revision.post_schema_violations.all().delete()
         revision.txc_file_attributes.all().delete()
@@ -197,7 +197,9 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             revision.start_etl()
 
         else:
-
+            if not revision.status == FeedStatus.pending.value:
+                revision.to_pending()
+                revision.save()
             # 'Update data' flow allows validation to occur multiple times
             self.delete_existing_revision_data(revision)
             # trigger state machine
