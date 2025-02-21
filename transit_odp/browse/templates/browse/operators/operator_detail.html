@@ -313,59 +313,87 @@
           {% trans "Fares data" %}
         {% endfilter %}
       </h3>
-      <div id="feed-stat-list" class="govuk-grid-row">
-        <div class="govuk-grid-column-one-quarter">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ fares_stats.total_dataset_count }}</span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}
-                {% trans "Data sets" %}
-              {% endfilter %}
-            </span>
+      {% if not is_fares_require_attention_active %}
+        <div id="feed-stat-list" class="govuk-grid-row">
+          <div class="govuk-grid-column-one-quarter">
+            <div class="feed-stat">
+              <span class="feed-stat__value">{{ fares_stats.total_dataset_count }}</span>
+              <span class="feed-stat__label">
+                {% filter force_escape %}
+                  {% trans "Data sets" %}
+                {% endfilter %}
+              </span>
+            </div>
+          </div>
+          <div class="govuk-grid-column-one-quarter">
+            <div class="feed-stat">
+              <span class="feed-stat__value">{{ fares_stats.total_fare_products }}</span>
+              <span class="feed-stat__label">
+                {% filter force_escape %}
+                  {% trans "Total number of fares products" %}
+                {% endfilter %}
+              </span>
+            </div>
+          </div>
+          <div class="govuk-grid-column-one-half">
+            <div class="feed-stat">
+              <span class="feed-stat__value">{{ fares_non_compliant }}</span>
+              <span class="feed-stat__label">
+                {% filter force_escape %}
+                  {% trans "Non-compliant" %}
+                {% endfilter %}
+              </span>
+            </div>
+            <div class="govuk-!-margin-top-2">
+              <a class="govuk-link"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
+                <i class="fas fa-play govuk-!-margin-right-1"></i>
+                {% filter force_escape %}
+                  {% trans "What does this mean?" %}
+                {% endfilter %}
+              </a>
+            </div>
           </div>
         </div>
-        <div class="govuk-grid-column-one-quarter">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ fares_stats.total_fare_products }}</span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}
-                {% trans "Total number of fares products" %}
-              {% endfilter %}
-            </span>
+      {% endif %}
+      {% if is_fares_require_attention_active %}
+        <div id="attention-section" class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            <div class="feed-stat">
+              <span class="feed-stat__value">{{ fares_total_services_requiring_attention_percentage }}%</span>
+              <span class="feed-stat__label">
+                {% filter force_escape %}
+                  {% trans "Services requiring attention" %}
+                {% endfilter %}
+              </span>
+            </div>
           </div>
         </div>
+      {% endif %}
+      <div id="browse-section" class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ fares_non_compliant }}</span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}
-                {% trans "Non-compliant" %}
-              {% endfilter %}
-            </span>
-          </div>
-          <div class="govuk-!-margin-top-2">
-            <a class="govuk-link"
-               target="_blank"
-               rel="noopener noreferrer"
-               href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
-              <i class="fas fa-play govuk-!-margin-right-1">
-              </i>
-              {% filter force_escape %}
-                {% trans "What does this mean?" %}
-              {% endfilter %}
-            </a>
-          </div>
+          <ul class="govuk-list govuk-!-margin-top-5">
+            <li>
+              <a class="govuk-link" href="{% url 'search-fares' host hosts.data %}?organisation={{ object.id }}&status=live">
+                {% filter force_escape %}
+                  {% trans "Browse Fares data" %}
+                {% endfilter %}
+              </a>
+            </li>
+            {% if is_fares_require_attention_active %}
+              <li class="govuk-!-margin-bottom-3">
+                <a class="govuk-link" href={% url 'compliance-report' pk1=object.id host hosts.publish %}>
+                  {% filter force_escape %}
+                    {% trans "Download detailed export" %}
+                  {% endfilter %}
+                </a>
+              </li>
+            {% endif %}
+          </ul>
         </div>
       </div>
-      <ul class="govuk-list govuk-!-margin-top-5">
-        <li class="govuk-!-margin-bottom-3">
-          <a class="govuk-link" href="{% url 'search-fares' host hosts.data %}?organisation={{ object.id }}&status=live">
-            {% filter force_escape %}
-              {% trans "Browse Fares data" %}
-            {% endfilter %}
-          </a>
-        </li>
-      </ul>
       {% if user.is_authenticated %}
         <p class="govuk-body-m govuk-!-padding-top-3">
           {% filter force_escape %}

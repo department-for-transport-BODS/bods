@@ -1,14 +1,26 @@
 {% extends "publish/publish_list_base.html" %}
 {% load i18n %}
 {% block review_banner %}
-  <div class="review-stat">
-    <div>
-      <span class="review-stat__top">{{ organisation.stats.weekly_downloads|add:organisation.stats.weekly_api_hits|add:organisation.total_subscriptions }}</span>
+  {% if is_fares_require_attention_active %}
+    <div class="review-stat">
+      <div>
+        <span class="review-stat__top">{{ services_requiring_attention }}</span>
+        <span class="review-stat__bottom">/{{ applicable_services }}</span>
+      </div>
+      <p class="review-stat__description">{% trans "Total service codes that require attention" %}</p>
+      <i class="fas fa-play govuk-!-margin-right-1"></i>
+      <a class="review-stat__link" href="{% url 'fares:requires-attention' pk1=pk1 host hosts.publish %}">
+        {% trans "More details" %}
+      </a>
     </div>
-    <p class="review-stat__description">{% trans "Total consumer interactions with your data" %}</p>
-    <i class="fas fa-play govuk-!-margin-right-1"></i>
-    <a class="review-stat__link" href="{{ data_activity_url }}">
-      {% trans "More details" %}
-    </a>
-  </div>
+  {% else %}
+    <div class="review-stat">
+      <div>
+        <span class="review-stat__top">{{ organisation.stats.weekly_downloads|add:organisation.stats.weekly_api_hits|add:organisation.total_subscriptions }}</span>
+      </div>
+      <p class="review-stat__description">{% trans "Total consumer interactions with your data" %}</p>
+      <i class="fas fa-play govuk-!-margin-right-1"></i>
+      <a class="review-stat__link" href="{{ data_activity_url }}">{% trans "More details" %}</a>
+    </div>
+  {% endif %}
 {% endblock %}
