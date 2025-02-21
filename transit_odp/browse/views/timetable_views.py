@@ -577,9 +577,8 @@ class LineMetadataDetailView(DetailView):
 
         tariff_basis, product_name = [], []
         today = datetime.today().date()
-        current_valid_files, future_files,expired_files  = [], [], []
+        current_valid_files, future_files, expired_files = [], [], []
         dataset_id, org_id = None, None
-
 
         for row in fares_df.to_dict(orient="records"):
             tariff_basis.extend(row["tariff_basis"])

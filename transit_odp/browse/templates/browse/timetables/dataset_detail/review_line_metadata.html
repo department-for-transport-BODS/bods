@@ -77,11 +77,6 @@
       </table>
     </div>
   </div>
-
-
-
-
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <table class="govuk-table dataset-property-table">
@@ -89,10 +84,10 @@
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header govuk-!-width-one-half"><h2 class="govuk-heading-m">{% trans "AVL" %}</h2></th>
             <td class="govuk-table__cell dont-break-out " colspan="2">
-              <span class="govuk-tag {% if is_avl_complaint%}govuk-tag--green{%else%}govuk-tag--red{%endif%} govuk-!-font-size-16 govuk-!-text-align-centre">
-                {% if is_avl_complaint%}
+              <span class="govuk-tag {% if is_avl_complaint %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+                {% if is_avl_complaint %}
                   Complaint
-                  {%else%}
+                  {% else %}
                   Non-Complaint
                 {% endif %}
                 </span>
@@ -100,7 +95,6 @@
           </tr>        
         </tbody>
       </table>
-      
     </div>
   </div>
   <div class="govuk-grid-row">
@@ -110,10 +104,10 @@
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header govuk-!-width-one-half"><h2 class="govuk-heading-m">{% trans "Fares" %}</h2></th>
             <td class="govuk-table__cell dont-break-out" colspan="2">
-              <span class="govuk-tag {% if is_fares_complaint%}govuk-tag--green{%else%}govuk-tag--red{%endif%} govuk-!-font-size-16 govuk-!-text-align-centre">
-              {% if is_fares_complaint%}
+              <span class="govuk-tag {% if is_fares_complaint %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+              {% if is_fares_complaint %}
                 Complaint
-                {%else%}
+                {% else %}
                 Non-Complaint
               {% endif %}
               </span>
@@ -137,7 +131,6 @@
           {% include 'publish/snippets/dataset_detail_files.html' with header_text='Expired file(s)' files=fares_expired_files %}
         </tbody>
       </table>
-      
     </div>
   </div>
 
@@ -148,14 +141,14 @@
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header govuk-!-width-one-half"><h2 class="govuk-heading-m">{% trans "Timetable" %}</h2></th>
             <td class="govuk-table__cell dont-break-out" colspan="2">
-              <span class="govuk-tag {% if is_timetables_complaint%}govuk-tag--green{%else%}govuk-tag--red{%endif%} govuk-!-font-size-16 govuk-!-text-align-centre">
-              {% if is_timetables_complaint%}
+              <span class="govuk-tag {% if is_timetables_complaint %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+              {% if is_timetables_complaint %}
                 Complaint
-                {%else%}
+                {% else %}
                 Non-Complaint
               {% endif %}
               </span>
-              <a href="{% url 'feed-detail' pk=object.id  host host.name %}" target="_blank">Dataset id: {{ timetables_dataset_id }}</a>
+              <a href="{% url 'feed-detail' pk=object.id host host.name %}" target="_blank">Dataset id: {{ timetables_dataset_id }}</a>
             </td>
           </tr>          
           {% include 'publish/snippets/dataset_detail_files.html' with header_text='Current valid file(s)' files=timetables_valid_files %}
