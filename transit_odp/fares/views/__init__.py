@@ -18,6 +18,8 @@ from .update import (
     RevisionUpdateSuccessView,
 )
 
+from .requires_attention import RequiresAttentionView
+
 __all__ = [
     "ListView",
     "FaresUploadWizard",
@@ -36,4 +38,5 @@ __all__ = [
     "FaresFeedArchiveSuccessView",
     "FaresFeedArchiveView",
     "DownloadFaresFileView",
+    "RequiresAttentionView",
 ]

@@ -18,3 +18,4 @@ class CSVFileName(Enum):
 
 class FeatureFlags(Enum):
     DQS_REQUIRE_ATTENTION = "dqs_require_attention"
+    FARES_REQUIRE_ATTENTION = "is_fares_require_attention_active"
