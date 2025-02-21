@@ -958,17 +958,9 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 dq_require_attention = UNDER_MAINTENANCE
 
             if not fares_require_attention_active:
-                fares_requires_attention = (
-                    fares_published_status
-                ) = (
+                fares_requires_attention = fares_published_status = (
                     fares_compliance_status
-                ) = (
-                    fares_timeliness_status
-                ) = (
-                    fares_dataset_id
-                ) = (
-                    fares_filename
-                ) = (
+                ) = fares_timeliness_status = fares_dataset_id = fares_filename = (
                     fares_last_modified
                 ) = fares_one_year_date = fares_operating_period_end = UNDER_MAINTENANCE
 
