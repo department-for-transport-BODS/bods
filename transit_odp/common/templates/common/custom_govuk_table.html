@@ -9,14 +9,14 @@
         {% endif %}
         {% block table.thead %}
           {% if table.show_header %}
-            <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:"" }}">
+            <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:'' }}">
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
                   <th aria-sort="{% if 'asc ' in column.attrs.th.class %}ascending{% elif 'desc ' in column.attrs.th.class %}descending{% else %}none{% endif %}" role="columnheader" scope="col" {{ column.attrs.th.as_html |default_if_none:"" }}>
                     {% if column.orderable %}
                       <a class="column-header-link"
                          role="button"
-                         href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next "page"=1 %}">
+                         href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next 'page'=1 %}">
                         {{ column.header }}
                         <span class="hide-using-position">Sort your data by {{ column.header }}</span>
                       </a>

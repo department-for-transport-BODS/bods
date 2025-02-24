@@ -1,5 +1,6 @@
 import logging
 from typing import List, Tuple, Type
+from uuid import uuid4
 
 from django.conf import settings
 from django.db import transaction
@@ -14,7 +15,9 @@ from waffle import flag_is_active
 import config.hosts
 from transit_odp.common.utils.aws_common import StepFunctionsClientWrapper
 from transit_odp.common.views import BaseDetailView, BaseTemplateView
+from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision
+from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.forms import (
     FeedCommentForm,
     FeedPublishCancelForm,
@@ -165,6 +168,17 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
         """Returns the Feed instance to bind to the step's form"""
         return self.object
 
+    def delete_existing_revision_data(self, revision):
+        """
+        Delete any existing violations for the given revision id.
+        This allows validation to occur multiple times for the same DatasetRevision
+        Includes: SchemaViolation, PostSchemaViolation, PTIObservation and TXCFileAttributes objects
+        """
+        revision.schema_violations.all().delete()
+        revision.post_schema_violations.all().delete()
+        revision.txc_file_attributes.all().delete()
+        revision.pti_observations.all().delete()
+
     @transaction.atomic
     def done(self, form_list, **kwargs):
         all_data = self.get_all_cleaned_data()
@@ -185,8 +199,19 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             revision.start_etl()
 
         else:
+            with transaction.atomic():
+                if not revision.status == FeedStatus.pending.value:
+                    revision.to_pending()
+                    revision.save()
+                task = DatasetETLTaskResult.objects.create(
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=str(uuid4()),
+                )
+            # 'Update data' flow allows validation to occur multiple times
+            self.delete_existing_revision_data(revision)
             # trigger state machine
-            input_payload = create_tt_state_machine_payload(revision, False)
+            input_payload = create_tt_state_machine_payload(revision, task.id, False)
             try:
                 step_fucntions_client = StepFunctionsClientWrapper()
                 step_function_arn = (

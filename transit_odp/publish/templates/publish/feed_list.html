@@ -18,7 +18,7 @@
     </div>
     <p class="review-stat__description">{% trans "Feedback messages received recently" %}</p>
     <i class="fas fa-play govuk-!-margin-right-1"></i>
-    <a class="review-stat__link" href={{ data_activity_url }}>
+    <a class="review-stat__link" href="{{ data_activity_url }}">
       {% trans "More details" %}
     </a>
   </div>
@@ -28,6 +28,6 @@
     </div>
     <p class="review-stat__description">{% trans "Seasonal services" %}</p>
     <i class="fas fa-play govuk-!-margin-right-1"></i>
-    <a class="review-stat__link" href={% url 'seasonal-service' pk1=pk1 host hosts.publish %}>{% trans "Manage" %}</a>
+    <a class="review-stat__link" href="{% url 'seasonal-service' pk1=pk1 host hosts.publish %}">{% trans "Manage" %}</a>
   </div>
 {% endblock %}

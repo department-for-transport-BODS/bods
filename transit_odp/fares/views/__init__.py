@@ -5,6 +5,7 @@ from .delete import RevisionDeleteFaresView, RevisionDeleteSuccessView
 from .detail import FaresFeedDetailView
 from .download import DownloadFaresFileView
 from .list import ListView
+from .requires_attention import FaresRequiresAttentionView
 from .review import (
     FaresDatasetUploadModify,
     ReviewView,
@@ -36,4 +37,5 @@ __all__ = [
     "FaresFeedArchiveSuccessView",
     "FaresFeedArchiveView",
     "DownloadFaresFileView",
+    "FaresRequiresAttentionView",
 ]
