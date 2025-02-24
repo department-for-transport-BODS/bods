@@ -305,7 +305,7 @@ class LocalAuthorityDetailView(BaseDetailView):
             "", "is_avl_require_attention_active"
         )
         is_complete_service_pages_active = flag_is_active(
-            "", "is_complete_service_pages_active"
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
         )
         context = super().get_context_data(**kwargs)
         context["is_complete_service_pages_active"] = is_complete_service_pages_active

@@ -1,6 +1,6 @@
 import logging
 import pandas as pd
-from datetime import timedelta
+from datetime import date, timedelta, datetime
 from typing import Dict, List, Optional
 
 from django.db.models import Subquery
@@ -13,8 +13,10 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
 )
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.dqs.constants import Level
+from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.dqs.models import ObservationResults
 from transit_odp.naptan.models import AdminArea
+from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.organisation.models.organisations import ConsumerFeedback
 from transit_odp.otc.models import Service as OTCService
@@ -569,19 +571,28 @@ def get_timetable_records_require_attention_lta_line_level_length(
     Returns list of objects of each service requiring attention for an organisation.
     """
     object_list = []
+    dqs_critical_issues_service_line_map = []
     timetables_lta_services_requiring_attention = 0
     otc_map = get_line_level_otc_map_lta(lta_list)
     txcfa_map = get_line_level_txc_map_lta(lta_list)
+    is_dqs_require_attention = flag_is_active(
+        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+    )
+    if is_dqs_require_attention:
+        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
     for (service_number, registration_number), service in otc_map.items():
         file_attribute = txcfa_map.get((service_number, registration_number))
         if file_attribute is None:
             _update_data(object_list, service, line_number=service_number)
-        elif is_stale(service, file_attribute):
+        elif is_stale(service, file_attribute) or (
+            is_dqs_require_attention
+            and (registration_number, service_number)
+            in dqs_critical_issues_service_line_map
+        ):
             _update_data(object_list, service, line_number=service_number)
     timetables_lta_services_requiring_attention = len(object_list)
-    print(
-        f"timetables_lta_services_requiring_attention: {timetables_lta_services_requiring_attention}"
-    )
     return timetables_lta_services_requiring_attention
 
 
@@ -596,8 +607,6 @@ def get_avl_records_require_attention_lta_line_level_length(lta_list: List) -> i
     object_list = []
     otc_map = get_line_level_otc_map_lta(lta_list)
     txcfa_map = get_line_level_txc_map_lta(lta_list)
-    service_codes = [service_code for (service_code, line_name) in otc_map]
-    txcfa_map = get_line_level_txc_map_service_base(service_codes)
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
     abods_registry = AbodsRegistery()
     synced_in_last_month = abods_registry.records()
@@ -606,8 +615,7 @@ def get_avl_records_require_attention_lta_line_level_length(lta_list: List) -> i
         file_attribute = txcfa_map.get(service_key)
         if file_attribute is not None:
             operator_ref = file_attribute.national_operator_code
-            line_name = service_key[1]
-
+            line_name = service_key[0]
             if (
                 not uncounted_activity_df.loc[
                     (uncounted_activity_df["OperatorRef"] == operator_ref)
@@ -645,7 +653,7 @@ def get_fares_records_require_attention_lta_line_level_length(lta_list: List) ->
     object_list = []
     otc_map = get_line_level_otc_map_lta(lta_list)
     txcfa_map = get_line_level_txc_map_lta(lta_list)
-    service_codes = [service_code for (service_code, line_name) in otc_map]
+    service_codes = [service_code for (service_code, _) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
     fares_df = get_fares_dataset_map(txcfa_map)
 
