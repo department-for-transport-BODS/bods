@@ -665,10 +665,11 @@ class StepFunctionsTTPayload(BaseModel):
     inputDataSource: str  # Always a string
     s3: Optional[S3Payload] = None  # Nested object
     publishDatasetRevision: bool
+    datasetETLTaskResultId: int
 
 
 def create_tt_state_machine_payload(
-    revision: DatasetRevision, do_publish: bool = False
+    revision: DatasetRevision, task_id: int, do_publish: bool = False
 ) -> StepFunctionsTTPayload:
     """Creates payload for AWS Step Function execution."""
 
@@ -688,6 +689,7 @@ def create_tt_state_machine_payload(
             datasetRevisionId=datasetRevisionId,
             datasetType=DATASET_TYPE_TIMETABLES,
             publishDatasetRevision=do_publish,
+            datasetETLTaskResultId=task_id,
         )
 
     elif revision.upload_file:
@@ -697,6 +699,7 @@ def create_tt_state_machine_payload(
             datasetRevisionId=datasetRevisionId,
             datasetType=DATASET_TYPE_TIMETABLES,
             publishDatasetRevision=do_publish,
+            datasetETLTaskResultId=task_id,
         )
 
     return payload.model_dump_json(exclude_none=True)

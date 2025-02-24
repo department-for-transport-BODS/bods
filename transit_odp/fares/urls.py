@@ -16,7 +16,7 @@ urlpatterns = [
     path("", views.ListView.as_view(), name="feed-list"),
     path(
         "attention/",
-        view=views.RequiresAttentionView.as_view(),
+        view=views.FaresRequiresAttentionView.as_view(),
         name="requires-attention",
     ),
     path(
