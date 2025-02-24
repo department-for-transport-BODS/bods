@@ -1,6 +1,7 @@
 import logging
 from collections import OrderedDict
 from typing import List, Tuple, Type
+from uuid import uuid4
 
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -27,6 +28,7 @@ from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.notifications import get_notifications
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
+from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.forms import (
     FaresRevisionPublishFormViolations,
     FeedDescriptionForm,
@@ -522,11 +524,19 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
             revision.start_etl()
 
         else:
-            revision.to_indexing()
+            with transaction.atomic():
+                if not revision.status == FeedStatus.pending.value:
+                    revision.to_pending()
+                    revision.save()
+                task = DatasetETLTaskResult.objects.create(
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=str(uuid4()),
+                )
             # 'Update data' flow allows validation to occur multiple times
             self.delete_existing_revision_data(revision)
             # trigger state machine
-            input_payload = create_tt_state_machine_payload(revision, False)
+            input_payload = create_tt_state_machine_payload(revision, task.id, False)
             try:
                 step_fucntions_client = StepFunctionsClientWrapper()
                 step_function_arn = (

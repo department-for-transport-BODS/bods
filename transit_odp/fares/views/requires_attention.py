@@ -1,22 +1,17 @@
-from django.http import HttpResponse
-from django.utils.timezone import now
-from django.views import View
 from django_tables2 import SingleTableView
 from waffle import flag_is_active
 
 from transit_odp.browse.common import get_in_scope_in_season_services_line_level
+from transit_odp.fares.tables import FaresRequiresAttentionTable
 from transit_odp.otc.models import Service as OTCService
-from transit_odp.publish.requires_attention import (
-    FaresRequiresAttention,
-)
-from transit_odp.timetables.tables import RequiresAttentionTable
+from transit_odp.publish.requires_attention import FaresRequiresAttention
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 
-class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
-    template_name = "publish/requires_attention.html"
+class FaresRequiresAttentionView(OrgUserViewMixin, SingleTableView):
+    template_name = "fares/requires_attention.html"
     model = OTCService
-    table_class = RequiresAttentionTable
+    table_class = FaresRequiresAttentionTable
     paginate_by = 10
 
     def get_context_data(self, **kwargs):
@@ -29,7 +24,7 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
         data_owner = self.organisation.name if self.request.user.is_agent_user else "My"
 
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
-        context["ancestor"] = f"Review {data_owner} Timetables Data"
+        context["ancestor"] = f"Review {data_owner} Fares Data"
         context["services_requiring_attention"] = len(self.object_list)
         context["total_in_scope_in_season_services"] = len(
             get_in_scope_in_season_services_line_level(org_id)
