@@ -479,5 +479,22 @@ urlpatterns = [
             ]
         ),
     ),
+    path(
+        "feedback/",
+        include(
+            [
+                path(
+                    "",
+                    view=DQSviews.ConsumerFeedbackListView.as_view(),
+                    name="consumer-feedback-list",
+                ),
+                path(
+                    "detail/",
+                    view=DQSviews.ConsumerFeedbackDetailView.as_view(),
+                    name="consumer-feedback-detail",
+                ),
+            ]
+        ),
+    ),
     path("django_axe/", include("django_axe.urls")),
 ]

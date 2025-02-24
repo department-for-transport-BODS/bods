@@ -40,6 +40,9 @@ from transit_odp.avl.notifications import (
 from transit_odp.avl.post_publishing_checks.daily.checker import PostPublishingChecker
 from transit_odp.avl.post_publishing_checks.weekly import WeeklyReport
 from transit_odp.avl.proxies import AVLDataset
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    reset_vehicle_activity_in_cache,
+)
 from transit_odp.avl.validation import get_validation_client
 from transit_odp.common.loggers import PipelineAdapter, get_datafeed_adapter
 from transit_odp.organisation.constants import AVLType, FeedStatus
@@ -314,17 +317,35 @@ def perform_feed_validation(adapter: PipelineAdapter, feed_id: int):
         ]
 
         if new_status != old_status:
-            adapter.info("Status has changed send status changed email.")
-            send_avl_compliance_status_changed(datafeed=feed, old_status=old_status)
+            if old_status == UNDERGOING and new_status == COMPLIANT:
+                adapter.info(
+                    f"SIRI-VM Compliance status change from {UNDERGOING} to {COMPLIANT} email has been turned off."
+                )
+            if old_status == UNDERGOING and new_status == MORE_DATA_NEEDED:
+                adapter.info(
+                    f"SIRI-VM Compliance status change from {UNDERGOING} to {MORE_DATA_NEEDED} email has been turned off."
+                )
+            if old_status == MORE_DATA_NEEDED and new_status == COMPLIANT:
+                adapter.info(
+                    f"SIRI-VM Compliance status change from {MORE_DATA_NEEDED} to {COMPLIANT} email has been turned off."
+                )
+            else:
+                adapter.info("Status has changed send status changed email.")
+                send_avl_compliance_status_changed(datafeed=feed, old_status=old_status)
 
         if was_compliant and report.critical_score < LOWER_THRESHOLD:
             adapter.info(f"Critical score below lower threshold of {LOWER_THRESHOLD}.")
             adapter.info("Sending major issue email.")
             send_avl_flagged_with_major_issue(dataset=feed)
         elif was_compliant and no_longer_compliant:
-            adapter.info(f"Feed has a compliance status of {new_status}.")
-            adapter.info("Sending compliance issue email.")
-            send_avl_flagged_with_compliance_issue(dataset=feed, status=new_status)
+            if new_status == MORE_DATA_NEEDED:
+                adapter.info(
+                    f"SIRI-VM validation status of {MORE_DATA_NEEDED} email has been turned off."
+                )
+            else:
+                adapter.info(f"Feed has a compliance status of {new_status}.")
+                adapter.info("Sending compliance issue email.")
+                send_avl_flagged_with_compliance_issue(dataset=feed, status=new_status)
 
 
 def cache_avl_compliance_status(adapter: PipelineAdapter, feed_id: int):
@@ -377,3 +398,18 @@ def task_weekly_assimilate_post_publishing_check_reports(
 
     report = WeeklyReport(start_date)
     report.generate()
+
+    is_avl_require_attention_active = flag_is_active(
+        "", "is_avl_require_attention_active"
+    )
+    if is_avl_require_attention_active:
+        logger.info("Reseting the cache for weekly PPC")
+        reset_vehicle_activity_in_cache()
+        logger.info("Cache reset successfully")
+
+
+@shared_task()
+def task_reset_avl_weekly_cache():
+    logger.info("Reseting the cache for weekly PPC")
+    reset_vehicle_activity_in_cache()
+    logger.info("Cache reset successfully")

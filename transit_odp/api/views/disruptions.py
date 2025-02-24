@@ -7,11 +7,26 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status, views
 from rest_framework.response import Response
 from requests import RequestException
+from django.http import HttpResponse
+from waffle import flag_is_active
 
 from transit_odp.api.renders import XMLRender
 from transit_odp.api.utils.response_utils import create_xml_error_response
 
 logger = logging.getLogger(__name__)
+
+
+class DisruptionsOverview(LoginRequiredMixin, TemplateView):
+    """View for Disruptions SIRI API Overview."""
+
+    template_name = "api/disruptions_api_overview.html"
+
+    def get(self, request, *args, **kwargs):
+        """Check whether cancellations feature flag is active before rendering page."""
+        is_cancellations_live = flag_is_active("", "is_cancellations_live")
+        if is_cancellations_live is False:
+            return HttpResponse(status=404)
+        return super().get(request, *args, **kwargs)
 
 
 class DisruptionsOpenApiView(LoginRequiredMixin, TemplateView):
@@ -21,13 +36,13 @@ class DisruptionsOpenApiView(LoginRequiredMixin, TemplateView):
 
 
 class DisruptionsApiView(views.APIView):
-    """APIView for returning SIRI SX XML from the consumer API."""
+    """APIView for returning SIRI-SX XML from the consumer API."""
 
     permission_classes = (IsAuthenticated,)
     renderer_classes = (XMLRender,)
 
     def get(self, format=None):
-        """Get SIRI SX response from consumer API."""
+        """Get SIRI-SX response from consumer API."""
         url = f"{settings.DISRUPTIONS_API_BASE_URL}/siri-sx"
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content, status_code = _get_consumer_api_response(url, headers)

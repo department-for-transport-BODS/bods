@@ -332,37 +332,52 @@ def merge_vj_tracks_df(
     Returns:
         pd.DataFrame: The merged DataFrame with track and vehicle journey information.
     """
+    # Initial processing
+    internal_vjs = vehicle_journeys.copy()
+    tracks.reset_index(inplace=True)
+    tracks_map.reset_index(inplace=True)
+
     # Explode the 'jp_ref' and 'rs_ref' columns along with their corresponding 'rs_order'
     tracks_map_extended = tracks_map.explode("jp_ref").explode(["rs_ref", "rs_order"])
 
-    tracks_columns_to_keep = ["rl_ref", "rs_ref", "rl_order", "id"]
+    tracks_columns_to_keep = ["rl_ref", "rs_ref", "rl_order", "id", "file_id"]
     tracks = tracks[tracks_columns_to_keep]
     tracks.rename(columns={"id": "tracks_id"}, inplace=True)
 
     # Merge tracks DataFrame with the extended tracks_map DataFrame on 'rs_ref'
-    merged_tracks_map = pd.merge(tracks, tracks_map_extended, on="rs_ref", how="right")
+    merged_tracks_map = pd.merge(
+        tracks, tracks_map_extended, on=["rs_ref", "file_id"], how="inner"
+    )
 
     # Create 'sequence' column by combining 'rs_order' and 'rl_order'
-    merged_tracks_map["sequence"] = merged_tracks_map.groupby("jp_ref").cumcount()
+    merged_tracks_map["sequence"] = merged_tracks_map.groupby(
+        ["jp_ref", "file_id"]
+    ).cumcount()
     # Drop 'rl_order' and 'rs_order' columns as they are no longer needed
     merged_tracks_map.drop(["rl_order", "rs_order"], inplace=True, axis=1)
     # Extract jp_ref from journey_pattern_ref
-    vehicle_journeys["jp_ref"] = vehicle_journeys["journey_pattern_ref"].apply(
+    internal_vjs["jp_ref"] = internal_vjs["journey_pattern_ref"].apply(
         lambda x: x.split("-")[1]
     )
-    internal_vjs_columns_to_keep = ["jp_ref", "id"]
-    internal_vjs = vehicle_journeys[internal_vjs_columns_to_keep]
+    internal_vjs_columns_to_keep = ["jp_ref", "id", "file_id"]
+    internal_vjs = internal_vjs[internal_vjs_columns_to_keep]
     internal_vjs.rename(columns={"id": "vj_id"}, inplace=True)
 
     # Merge the merged_tracks_map DataFrame with the internal_vjs DataFrame on 'jp_ref'
     merged_vjs_tracks_map = pd.merge(
-        merged_tracks_map, internal_vjs, on="jp_ref", how="left"
+        merged_tracks_map, internal_vjs, on=["jp_ref", "file_id"], how="inner"
     )
 
     if merged_vjs_tracks_map.empty:
         return pd.DataFrame()
-
-    return merged_vjs_tracks_map
+    # Drop nan from all columns
+    df_cleaned = merged_vjs_tracks_map.dropna(axis=1, how="all")
+    # Check for NaN values
+    if df_cleaned.size != merged_tracks_map.size:
+        logger.warning(
+            f"Merge_vj_tracks_df: NaN values found in the tracks extracted data"
+        )
+    return df_cleaned
 
 
 def df_to_journeys_tracks(df: pd.DataFrame) -> Iterator[TracksVehicleJourney]:

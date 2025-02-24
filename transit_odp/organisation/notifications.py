@@ -21,6 +21,10 @@ def send_feed_monitor_fail_first_try_notification(dataset: Dataset):
     )
 
 
+def send_feed_monitor_fail_half_way_try_notification(dataset: Dataset):
+    send_feed_monitor_fail_first_try_notification(dataset)
+
+
 def send_feed_monitor_fail_final_try_notification(dataset: Dataset):
     notifier.send_data_endpoint_unreachable_expiring_notification(
         dataset_id=dataset.id,

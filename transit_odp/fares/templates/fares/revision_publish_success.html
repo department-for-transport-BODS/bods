@@ -42,7 +42,7 @@
       {% blocktrans %}
                     You can view the data set on
                 {% endblocktrans %}
-      <a class="govuk-link" href={% url 'fares:feed-list' pk1=pk1 host hosts.publish %}>
+      <a class="govuk-link" href="{% url 'fares:feed-list' pk1=pk1 host hosts.publish %}">
         {% trans "your fares data sets" %}
       </a>
       {% blocktrans %}

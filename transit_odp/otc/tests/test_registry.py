@@ -90,7 +90,7 @@ def test_registry_returns_expired_variation_if_veration_number_zero(
         assert variation.registration_status == RegistrationStatusEnum.EXPIRED.value
 
 
-@freeze_time("25/12/2022")
+@freeze_time("25/12/2023")
 @patch("django.conf.settings.OTC_API_KEY", "dummy_otc_api_key")
 @patch("transit_odp.otc.client.OTCAuthenticator.token", "dummy_token")
 @patch(f"{CLIENT}.get_variations_by_registration_code_desc")

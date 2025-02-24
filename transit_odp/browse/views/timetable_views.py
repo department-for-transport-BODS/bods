@@ -24,11 +24,13 @@ from requests import RequestException
 from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.browse.cfn import generate_signed_url
 from transit_odp.browse.constants import LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
 from transit_odp.browse.filters import TimetableSearchFilter
 from transit_odp.browse.forms import ConsumerFeedbackForm
 from transit_odp.browse.tables import DatasetPaginatorTable
 from transit_odp.browse.timetable_visualiser import TimetableVisualiser
+from transit_odp.browse.user_feedback import UserFeedback
 from transit_odp.browse.views.base_views import (
     BaseSearchView,
     BaseTemplateView,
@@ -130,7 +132,7 @@ class DatasetDetailView(DetailView):
             kwargs["is_new_data_quality_service_active"] = False
 
         kwargs["summary"] = summary
-
+        kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
         user = self.request.user
 
         kwargs["pk"] = dataset.id
@@ -184,7 +186,6 @@ class LineMetadataDetailView(DetailView):
             .add_live_data()
             .add_nocs()
             .select_related("live_revision")
-            .add_is_live_pti_compliant()
         )
 
     def get_service_type(self, revision_id, service_code, line_name) -> str:
@@ -536,6 +537,7 @@ class LineMetadataDetailView(DetailView):
         kwargs["service_type"] = self.get_service_type(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
+        kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
         kwargs["current_valid_files"] = self.get_current_files(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
@@ -776,7 +778,6 @@ class SearchView(BaseSearchView):
             .add_organisation_name()
             .add_live_data()
             .add_admin_area_names()
-            .add_is_live_pti_compliant()
             .order_by(*self.get_ordering())
         )
 
@@ -867,7 +868,8 @@ class DownloadTimetablesView(LoginRequiredMixin, BaseTemplateView):
 
 
 class DownloadRegionalGTFSFileView(BaseDownloadFileView):
-    """View for retrieving a GTFS region file from the GTFS API and returning it as a StreamingHttpResponse"""
+    """View for retrieving a GTFS region file from the GTFS API and
+    returning it as a StreamingHttpResponse"""
 
     def get(self, request, *args, **kwargs):
         self.is_new_gtfs_api_active = flag_is_active("", "is_new_gtfs_api_active")
@@ -876,7 +878,8 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             ResourceRequestCounter.from_request(request)
             db_endtime = datetime.now()
             logger.info(
-                f"Database call for GTFS ResourceRequestCounter took {(db_endtime - db_starttime).total_seconds()} seconds"
+                f"""Database call for GTFS ResourceRequestCounter took
+                {(db_endtime - db_starttime).total_seconds()} seconds"""
             )
         return self.render_to_response()
 
@@ -905,7 +908,6 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
 
     def get_download_file(self, id_=None):
         if self.is_new_gtfs_api_active:
-            print("I am getting here")
             id_ = self.kwargs.get("id", None)
             gtfs_file = _get_gtfs_file(id_)
         else:
@@ -914,7 +916,8 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             gtfs_file = downloader.download_file_by_id(id_)
             s3_endtime = datetime.now()
             logger.info(
-                f"S3 bucket download for GTFS took {(s3_endtime - s3_start).total_seconds()} seconds"
+                f"""S3 bucket download for GTFS took
+                {(s3_endtime - s3_start).total_seconds()} seconds"""
             )
 
         return gtfs_file
@@ -931,7 +934,8 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
             ).earliest()  # as objects are already ordered by '-created' in model Meta
             db_endtime = datetime.now()
             logger.info(
-                f"Database call for bulk archive took {(db_endtime - db_starttime).total_seconds()} seconds"
+                f"""Database call for bulk archive took
+                {(db_endtime - db_starttime).total_seconds()} seconds"""
             )
             return bulk_data_archive
         except BulkDataArchive.DoesNotExist:
@@ -941,13 +945,33 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
             )
 
     def get_download_file(self):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return generate_signed_url(self.object.data.name)
         s3_start = datetime.now()
         data = self.object.data
         s3_endtime = datetime.now()
         logger.info(
-            f"S3 bucket download for bulk archive took {(s3_endtime - s3_start).total_seconds()} seconds"
+            f"""S3 bucket download for bulk archive took
+            {(s3_endtime - s3_start).total_seconds()} seconds"""
         )
         return data
+
+    def render_to_response(self, **response_kwargs):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            download_file = self.get_download_file()
+            return redirect(download_file)
+        super().render_to_response(**response_kwargs)
+
+
+class CFNDownloadBulkDataArchiveView(DownloadBulkDataArchiveView):
+    def get_download_file(self):
+        return generate_signed_url(self.object.data.name)
+
+    def render_to_response(self, **response_kwargs):
+        download_file = self.get_download_file()
+        return redirect(download_file)
 
 
 class DownloadBulkDataArchiveRegionsView(DownloadView):
@@ -965,7 +989,8 @@ class DownloadBulkDataArchiveRegionsView(DownloadView):
             ).earliest()  # as objects are already ordered by '-created' in model Meta
             db_endtime = datetime.now()
             logger.info(
-                f"Database call for region-wise bulk archive took {(db_endtime - db_starttime).total_seconds()} seconds"
+                f"""Database call for region-wise bulk archive
+                took {(db_endtime - db_starttime).total_seconds()} seconds"""
             )
             return region_bulk_data_archive
         except BulkDataArchive.DoesNotExist:
@@ -979,7 +1004,8 @@ class DownloadBulkDataArchiveRegionsView(DownloadView):
         data = self.object.data
         s3_endtime = datetime.now()
         logger.info(
-            f"S3 bucket download for region-wise bulk archive took {(s3_endtime - s3_start).total_seconds()} seconds"
+            f"""S3 bucket download for region-wise bulk archive took
+            {(s3_endtime - s3_start).total_seconds()} seconds"""
         )
         return data
 
@@ -1089,12 +1115,64 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
         )
         return super().post(request, *args, **kwargs)
 
+    def get_feedback_details(self) -> dict:
+        """
+        Get the details from the request query params and DB
+        """
+
+        live_revision = self.dataset.live_revision
+        revision_id = live_revision.id
+
+        service_name = self.request.GET.get("service", None)
+        line_name = self.request.GET.get("line", None)
+        journey_code = self.request.GET.get("journey_code", None)
+        stop = self.request.GET.get("stop", None)
+        direction = self.request.GET.get("direction", None)
+        atco_code = self.request.GET.get("atco_code", None)
+
+        user_feedback = UserFeedback(
+            revision_id,
+            service_name,
+            line_name,
+            stop,
+            direction,
+            atco_code,
+            journey_code,
+        )
+        # If service name is not found in query string of url
+        if not service_name:
+            return user_feedback.default()
+        else:
+            if journey_code or stop:
+                # If vehicle journey code is available
+                if journey_code:
+                    qs = user_feedback.get_qs_journey_code()
+                # Check whether the stop info is there
+                if stop:
+                    qs = user_feedback.get_qs_stop()
+            else:
+                qs = user_feedback.get_qs_service()
+
+            if qs:
+                return user_feedback.data(qs)
+            else:
+                return user_feedback.default()
+
     def get_initial(self):
-        return {
+        initial_data = {
             "dataset_id": self.dataset.id,
             "organisation_id": self.dataset.organisation.id,
             "consumer_id": self.request.user.id,
         }
+        data: dict = self.get_feedback_details()
+
+        initial_data["service_id"] = data["service_id"]
+        initial_data["vehicle_journey_id"] = data["vehicle_journey_id"]
+        initial_data["revision_id"] = data["revision_id"]
+        initial_data["service_pattern_stop_id"] = data["service_pattern_stop_id"]
+        initial_data["service_pattern_id"] = data["service_pattern_id"]
+
+        return initial_data
 
     @transaction.atomic
     def form_valid(self, form):
@@ -1126,20 +1204,49 @@ class UserFeedbackView(LoginRequiredMixin, CreateView):
         return response
 
     def get_success_url(self):
-        return reverse(
+        service_name = self.request.GET.get("service", None)
+        line_name = self.request.GET.get("line", None)
+
+        success_url = reverse(
             "feed-feedback-success",
             args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
+        if service_name and line_name:
+            success_url += f"?line={line_name}&service={service_name}"
+        return success_url
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["back_url"] = reverse(
+        back_url = reverse(
             "feed-detail",
             args=[self.dataset.id],
             host=config.hosts.DATA_HOST,
         )
         context["dataset"] = self.dataset
+
+        data: dict = self.get_feedback_details()
+        context["revision_id"] = data["revision_id"]
+        # If service code and line are found in DB
+        if data["service_id"]:
+            context["service"] = data["service_name"]
+            context["line_name"] = data["line_name"]
+            back_url = reverse(
+                "feed-line-detail",
+                args=[self.dataset.id],
+                host=config.hosts.DATA_HOST,
+            )
+            back_url += f"?line={data['line_name']}&service={data['service_name']}"
+        # If vehicle journey details are found in DB
+        if data["vehicle_journey_id"]:
+            context["journey_start_time"] = data["start_time"]
+            context["direction"] = data["direction"]
+        # If stop details are found in DB
+        if data["service_pattern_stop_id"]:
+            context["stop_name"] = data["stop_name"]
+            context["atco_code"] = data["atco_code"]
+        context["back_url"] = back_url
+
         return context
 
 
@@ -1149,6 +1256,12 @@ class UserFeedbackSuccessView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         object_id = self.kwargs["pk"]
-        url = reverse("feed-detail", args=[object_id], host=config.hosts.DATA_HOST)
+        url = reverse("feed-line-detail", args=[object_id], host=config.hosts.DATA_HOST)
+
+        service_name = self.request.GET.get("service", None)
+        line_name = self.request.GET.get("line", None)
+
+        if service_name and line_name:
+            url += f"?line={line_name}&service={service_name}"
         context["back_link"] = url
         return context

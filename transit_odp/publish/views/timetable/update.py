@@ -1,24 +1,33 @@
+import logging
 from typing import List, Tuple, Type
+from uuid import uuid4
 
 from django.conf import settings
 from django.db import transaction
 from django.forms import Form
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 from django.views.generic.detail import SingleObjectMixin
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.common.utils.aws_common import StepFunctionsClientWrapper
 from transit_odp.common.views import BaseDetailView, BaseTemplateView
+from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision
+from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.forms import (
     FeedCommentForm,
     FeedPublishCancelForm,
     FeedUploadForm,
 )
 from transit_odp.publish.views.base import FeedWizardBaseView
+from transit_odp.timetables.utils import create_tt_state_machine_payload
 from transit_odp.users.views.mixins import OrgUserViewMixin
+
+logger = logging.getLogger(__name__)
 
 
 class RevisionUpdateSuccessView(OrgUserViewMixin, BaseDetailView):
@@ -159,6 +168,17 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
         """Returns the Feed instance to bind to the step's form"""
         return self.object
 
+    def delete_existing_revision_data(self, revision):
+        """
+        Delete any existing violations for the given revision id.
+        This allows validation to occur multiple times for the same DatasetRevision
+        Includes: SchemaViolation, PostSchemaViolation, PTIObservation and TXCFileAttributes objects
+        """
+        revision.schema_violations.all().delete()
+        revision.post_schema_violations.all().delete()
+        revision.txc_file_attributes.all().delete()
+        revision.pti_observations.all().delete()
+
     @transaction.atomic
     def done(self, form_list, **kwargs):
         all_data = self.get_all_cleaned_data()
@@ -170,8 +190,46 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             setattr(revision, key, value)
         revision.save()
 
-        # trigger ETL job to run
-        revision.start_etl()
+        is_serverless_publishing_active = flag_is_active(
+            "", "is_serverless_publishing_active"
+        )
+
+        if not is_serverless_publishing_active:
+            # trigger ETL job to run
+            revision.start_etl()
+
+        else:
+            with transaction.atomic():
+                if not revision.status == FeedStatus.pending.value:
+                    revision.to_pending()
+                    revision.save()
+                task = DatasetETLTaskResult.objects.create(
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=str(uuid4()),
+                )
+            # 'Update data' flow allows validation to occur multiple times
+            self.delete_existing_revision_data(revision)
+            # trigger state machine
+            input_payload = create_tt_state_machine_payload(revision, task.id, False)
+            try:
+                step_fucntions_client = StepFunctionsClientWrapper()
+                step_function_arn = (
+                    settings.TIMETABLES_STATE_MACHINE_ARN
+                )  # ARN of timetable pipeline Step Function
+
+                if not step_function_arn:
+                    logger.error(
+                        "Timetable pipeline: AWS Step Function ARN is missing or invalid"
+                    )
+                    raise
+                # Invoke the Step Function
+                step_fucntions_client.start_step_function(
+                    input_payload, step_function_arn
+                )
+
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=500)
 
         return HttpResponseRedirect(
             reverse(

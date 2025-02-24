@@ -8,7 +8,10 @@ from transit_odp.api.views import (
     AVLDetailApiView,
     AVLGTFSRTApiView,
     AVLOpenApiView,
+    DisruptionsOverview,
     DisruptionsOpenApiView,
+    CancellationsOverview,
+    CancellationsOpenApiView,
     FaresDatasetViewset,
     FaresOpenApiView,
     TimetablesApiView,
@@ -26,6 +29,7 @@ from transit_odp.api.views.avl import (
     AVLSubscriptionsSubscribeSuccessView,
 )
 from transit_odp.api.views.disruptions import DisruptionsApiView
+from transit_odp.api.views.cancellations import CancellationsApiView
 
 app_name = "api"
 
@@ -85,9 +89,24 @@ urlpatterns = [
     ),
     path("fares-openapi/", FaresOpenApiView.as_view(), name="faresopenapi"),
     path(
+        "disruptions-api-overview/",
+        DisruptionsOverview.as_view(),
+        name="disruptionsapioverview",
+    ),
+    path(
         "disruptions-openapi/",
         DisruptionsOpenApiView.as_view(),
         name="disruptionsopenapi",
+    ),
+    path(
+        "cancellations-api-overview/",
+        CancellationsOverview.as_view(),
+        name="cancellationsapioverview",
+    ),
+    path(
+        "cancellations-openapi/",
+        CancellationsOpenApiView.as_view(),
+        name="cancellationsopenapi",
     ),
     path("app/", include("transit_odp.api.app.urls")),
     path("v1/", include(router_v1.urls)),
@@ -113,6 +132,11 @@ urlpatterns = [
         name="avlconsumersubscriptionapi",
     ),
     path("v1/siri-sx/", DisruptionsApiView.as_view(), name="disruptionsapi"),
+    path(
+        "v1/siri-sx/cancellations/",
+        CancellationsApiView.as_view(),
+        name="cancellationsapi",
+    ),
     path(
         "v1/datafeed/<int:pk>/", AVLDetailApiView.as_view(), name="avldetaildatafeedapi"
     ),

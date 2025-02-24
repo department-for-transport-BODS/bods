@@ -19,10 +19,10 @@
           <thead class="govuk-table__head govuk-!-font-weight-regular">
             <tr class="govuk-table__row">
               <th scope="col"
-                  class="govuk-table__header govuk-!-font-weight-bold {% if level_title == "Advisory" %} govuk-!-width-one-quarter {% else %} govuk-!-width-one-half {% endif %}">
+                  class="govuk-table__header govuk-!-font-weight-bold {% if level_title == "Advisory" or level_title == "Feedback" %} govuk-!-width-one-quarter {% else %} govuk-!-width-one-half {% endif %}">
                 {% trans "Number of observation" %}{{ df.number_of_services_affected.sum | subtract:df.number_of_suppressed_observation.sum |pluralize:"s" }}
               </th>
-              {% if level_title == "Advisory" %}
+              {% if level_title == "Advisory" or level_title == "Feedback" %}
                 <th scope="col" class="govuk-table__header govuk-!-font-weight-bold govuk-!-width-one-third">
                   {% trans "Number of suppressed observation" %}{{ df.number_of_suppressed_observation.sum|pluralize:"s" }}
                 </th>
@@ -36,7 +36,7 @@
                 <th scope="row" class="govuk-table__header govuk-!-font-weight-regular ">
                   {{ row.number_of_services_affected | subtract:row.number_of_suppressed_observation }}
                 </th>
-                {% if level_title == "Advisory" %}
+                {% if level_title == "Advisory" or level_title == "Feedback" %}
                   <td scope="row" class="govuk-table__header govuk-!-font-weight-regular">{{ row.number_of_suppressed_observation }}</td>
                 {% endif %}
                 <td class="govuk-table__cell">
@@ -73,7 +73,7 @@
                   <td class="govuk-table__cell govuk-table__cell">{{ item.count }}</td>
                   <td class="govuk-table__cell govuk-table__cell">
                     <a class="govuk-link"
-                       href="{% url item.warning.list_url_name pk=view.kwargs.pk pk1=view.kwargs.pk1 report_id=view.kwargs.report_id %}">
+                       href="{% url item.warning.list_url_name pk=view.kwargs.pk pk1=view.kwargs.pk1 report_id=view.kwargs.report_id host hosts.publish %}">
                       {{ item.warning.title }}
                     </a>
                   </td>

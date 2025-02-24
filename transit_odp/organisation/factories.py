@@ -151,7 +151,7 @@ class DatasetRevisionFactory(DjangoModelFactory):
 
     # live_revision is automatically by a post-save signal
     dataset = factory.SubFactory(DatasetFactory, live_revision=None)
-    name = factory.Sequence(lambda n: faker.Faker().sentence() + f" {n}")
+    name = factory.Sequence(lambda n: faker.Faker().unique.sentence() + f" {n}")
     description = factory.Faker("paragraph")
     short_description = factory.Faker("pystr", min_chars=1, max_chars=30)
     comment = factory.Faker("paragraph")
@@ -164,6 +164,7 @@ class DatasetRevisionFactory(DjangoModelFactory):
     published_by = None
 
     first_service_start = datetime.datetime(2019, 5, 7, tzinfo=pytz.utc)
+    url_link = factory.Faker("url")
     upload_file = factory.django.FileField(filename="transXchange.xml")
 
     @classmethod

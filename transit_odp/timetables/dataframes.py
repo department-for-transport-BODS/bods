@@ -359,8 +359,12 @@ def journey_patterns_to_dataframe(services, drop_route_ref=True):
         journey_patterns["journey_pattern_id"] = journey_patterns[
             "service_code"
         ].str.cat(journey_patterns["journey_pattern_id"], sep="-")
+
     if drop_route_ref:
-        journey_patterns = journey_patterns.drop(["route_ref", "pattern_id"], axis=1)
+        columns_to_drop = ["route_ref", "pattern_id"]
+        journey_patterns = journey_patterns.drop(
+            [col for col in columns_to_drop if col in journey_patterns.columns], axis=1
+        )
 
     return journey_patterns
 
@@ -414,6 +418,7 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
         for section in sections:
             id_ = section["id"]
             links = section.get_elements(["JourneyPatternTimingLink"])
+            prev_to_wait_time = pd.NaT
             for order, link in enumerate(links):
                 from_stop = link.get_element(["From"])
                 to_stop = link.get_element(["To"])
@@ -440,15 +445,37 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
                     run_time = pd.to_timedelta(
                         parsed_run_time.total_seconds(), unit="s"
                     )
-                element_wait_time = link.get_element_or_none(["To", "WaitTime"])
+                from_element_wait_time = link.get_element_or_none(["From", "WaitTime"])
+                to_element_wait_time = link.get_element_or_none(["To", "WaitTime"])
                 wait_time = pd.NaT
-                if element_wait_time:
-                    parsed_from_wait_time = isodate.parse_duration(
-                        element_wait_time.text
+                from_wait_time = None
+                to_wait_time = None
+                if (
+                    pd.isna(prev_to_wait_time) or order == 0
+                ) and from_element_wait_time:
+                    # from_wait_time = from_element_wait_time.get_element_or_none(["WaitTime"])
+                    if from_element_wait_time:
+                        parsed_from_wait_time = isodate.parse_duration(
+                            from_element_wait_time.text
+                        )
+                        wait_time = pd.to_timedelta(
+                            parsed_from_wait_time.total_seconds(), unit="s"
+                        )
+                    else:
+                        wait_time = prev_to_wait_time
+
+                elif not pd.isna(prev_to_wait_time):
+                    wait_time = prev_to_wait_time
+
+                if to_element_wait_time:  # and (index + 1 != len_timing_links):
+                    parsed_to_wait_time = isodate.parse_duration(
+                        to_element_wait_time.text
                     )
-                    wait_time = pd.to_timedelta(
-                        parsed_from_wait_time.total_seconds(), unit="s"
+                    prev_to_wait_time = pd.to_timedelta(
+                        parsed_to_wait_time.total_seconds(), unit="s"
                     )
+                else:
+                    prev_to_wait_time = pd.NaT
 
                 route_link_ref = link.get_element_or_none(["RouteLinkRef"])
                 if route_link_ref:
@@ -469,7 +496,6 @@ def journey_pattern_sections_to_dataframe(sections, stop_activities):
 
                 from_activity_id = get_stop_activity_id(stop_activities, from_activity)
                 to_activity_id = get_stop_activity_id(stop_activities, to_activity)
-
                 all_links.append(
                     {
                         "jp_section_id": id_,
@@ -544,7 +570,7 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
             if block_number_element:
                 block_number = block_number_element.text
 
-            to_wait_time_exists = False
+            prev_to_wait_time = pd.NaT
             if vj_timing_links:
                 len_timing_links = len(vj_timing_links)
                 for index, links in enumerate(vj_timing_links):
@@ -566,8 +592,9 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                     wait_time = pd.NaT
                     from_wait_time = None
                     to_wait_time = None
-
-                    if from_wait_time_element and not to_wait_time_exists:
+                    if (
+                        pd.isna(prev_to_wait_time) or index == 0
+                    ) and from_wait_time_element:
                         from_wait_time = from_wait_time_element.get_element_or_none(
                             ["WaitTime"]
                         )
@@ -578,27 +605,27 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                             wait_time = pd.to_timedelta(
                                 parsed_from_wait_time.total_seconds(), unit="s"
                             )
+                        else:
+                            wait_time = prev_to_wait_time
 
-                    if to_wait_time_element and (index + 1 != len_timing_links):
+                    elif not pd.isna(prev_to_wait_time):
+                        wait_time = prev_to_wait_time
+
+                    if to_wait_time_element:  # and (index + 1 != len_timing_links):
                         to_wait_time = to_wait_time_element.get_element_or_none(
                             ["WaitTime"]
                         )
                         if to_wait_time:
-                            to_wait_time_exists = True
                             parsed_to_wait_time = isodate.parse_duration(
                                 to_wait_time.text
                             )
-                            if pd.isna(wait_time):
-                                wait_time = pd.to_timedelta(
-                                    parsed_to_wait_time.total_seconds(), unit="s"
-                                )
-                            else:
-                                wait_time = wait_time + pd.to_timedelta(
-                                    parsed_to_wait_time.total_seconds(), unit="s"
-                                )
-
+                            prev_to_wait_time = pd.to_timedelta(
+                                parsed_to_wait_time.total_seconds(), unit="s"
+                            )
+                        else:
+                            prev_to_wait_time = pd.NaT
                     else:
-                        to_wait_time_exists = False
+                        prev_to_wait_time = pd.NaT
 
                     all_vehicle_journeys.append(
                         {
@@ -639,7 +666,6 @@ def standard_vehicle_journeys_to_dataframe(standard_vehicle_journeys):
                         "vj_departure_time": vj_departure_time,
                     }
                 )
-
     return pd.DataFrame(all_vehicle_journeys)
 
 

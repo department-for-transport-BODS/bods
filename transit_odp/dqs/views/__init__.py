@@ -38,6 +38,7 @@ from .serviced_organisation_out_of_date import (
 )
 
 from .suppress_observation import SuppressObservationView
+from .consumer_feedback import ConsumerFeedbackListView, ConsumerFeedbackDetailView
 
 __all__ = [
     "DQSWarningDetailBaseView",
@@ -61,4 +62,6 @@ __all__ = [
     "SuppressObservationView",
     "ServicedOrganisationOutOfDateListView",
     "ServicedOrganisationOutOfDateDetailView",
+    "ConsumerFeedbackListView",
+    "ConsumerFeedbackDetailView",
 ]

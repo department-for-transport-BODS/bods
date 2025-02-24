@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("organisation", "0065_alter_servicecodeexemption_registration_code"),
+        ("organisation", "0066_datasetrevision_modified_file_hash_and_more"),
     ]
 
     operations = [

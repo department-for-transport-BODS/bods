@@ -11,6 +11,7 @@ from django_filters.constants import EMPTY_VALUES
 from django_filters.views import FilterView
 from django_hosts import reverse
 from django_tables2 import SingleTableView
+from waffle import flag_is_active
 
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.feedback.forms import GlobalFeedbackForm
@@ -55,6 +56,11 @@ class DownloadsView(BaseTemplateView):
 
 class ApiSelectView(LoginRequiredMixin, BaseTemplateView):
     template_name = "browse/api_select.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_cancellations_live"] = flag_is_active("", "is_cancellations_live")
+        return context
 
 
 class BaseSearchView(BaseFilterView):

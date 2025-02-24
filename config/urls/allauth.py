@@ -1,10 +1,12 @@
 from django.urls import include, path, re_path
+
 from transit_odp.users.views.account import (
     EmailView,
     PasswordChangeDoneView,
     PasswordChangeView,
 )
 from transit_odp.users.views.auth import (
+    AccountExistsView,
     ConfirmEmailView,
     EmailVerificationSentView,
     LoginView,
@@ -25,6 +27,7 @@ urlpatterns = [
     # Override specific AllAuth views
     path("login/", view=LoginView.as_view(), name="account_login"),
     path("signup/", view=SignupView.as_view(), name="account_signup"),
+    path("account-exists/", view=AccountExistsView.as_view(), name="account_exists"),
     path(
         "password/change/",
         view=PasswordChangeView.as_view(),

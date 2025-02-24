@@ -416,7 +416,7 @@ class TransXChangeDocument:
         """
         xpath = ["Routes", "Route"]
 
-        return self._root.get_elements(xpath)
+        return self._root.get_elements_or_none(xpath)
 
     def get_route_sections(self):
         """
@@ -425,16 +425,62 @@ class TransXChangeDocument:
         xpath = ["RouteSections", "RouteSection"]
         return self._root.get_elements(xpath)
 
-    def get_tracks_geolocation(self, node):
-        # Check if geolocation is inside Translation
-        locations = node.get_elements_or_none(["Location", "Translation"])
-        if locations:
-            return locations
-        if not locations:
-            # Check if geolocation is inside Location
-            print("Get locations from Location only")
-            locations = node.get_elements_or_none(["Location"])
-            return locations
+    def check_long_lat_in_translation_location(self):
+        xpath = [
+            "RouteSections",
+            "RouteSection",
+            "RouteLink",
+            "Track",
+            "Mapping",
+            "Location",
+            "Translation",
+            "Longitude",
+        ]
+        if self._root.get_elements_or_none(xpath):
+            return True
+
+    def check_long_lat_in_location(self):
+        xpath = [
+            "RouteSections",
+            "RouteSection",
+            "RouteLink",
+            "Track",
+            "Mapping",
+            "Location",
+            "Longitude",
+        ]
+        elements = self._root.get_elements_or_none(xpath)
+        if elements:
+            return True
+
+    def check_easting_northing_in_location_translation(self):
+        xpath = [
+            "RouteSections",
+            "RouteSection",
+            "RouteLink",
+            "Track",
+            "Mapping",
+            "Location",
+            "Translation",
+            "Easting",
+        ]
+        elements = self._root.get_elements_or_none(xpath)
+        if elements:
+            return True
+
+    def check_easting_northing_in_location(self):
+        xpath = [
+            "RouteSections",
+            "RouteSection",
+            "RouteLink",
+            "Track",
+            "Mapping",
+            "Location",
+            "Easting",
+        ]
+        elements = self._root.get_elements_or_none(xpath)
+        if elements:
+            return True
 
 
 class TransXChangeZip(ZippedValidator):

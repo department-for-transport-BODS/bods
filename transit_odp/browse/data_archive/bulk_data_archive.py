@@ -35,7 +35,7 @@ def get_datasets_by_region(region_code: str):
         Dataset.objects.get_active_org()
         .filter(live_revision__admin_areas__traveline_region_id=region_code)
         .filter(dataset_type=TimetableType)
-        .get_only_active_datasets_bulk_archive()
+        .get_active()
         .distinct("id")
     )
 
