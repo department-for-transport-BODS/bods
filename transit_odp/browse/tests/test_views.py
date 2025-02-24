@@ -4,8 +4,9 @@ import io
 import zipfile
 from logging import getLogger
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
+import pandas as pd
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
@@ -16,6 +17,7 @@ from freezegun import freeze_time
 from waffle import flag_is_active
 from waffle.testutils import override_flag
 
+import transit_odp.publish.requires_attention as publish_attention
 from config.hosts import DATA_HOST
 from transit_odp.avl.factories import AVLValidationReportFactory
 from transit_odp.avl.proxies import AVLDataset
@@ -1179,12 +1181,13 @@ class TestOperatorDetailView:
     Tests for OperatorDetailView.
     """
 
-    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+    @patch.object(publish_attention, "AbodsRegistery")
+    @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
     def test_operator_detail_view_stats_not_compliant(
-        self, mock_avl_requires_attention, request_factory: RequestFactory
+        self, mock_vehivle_activity, mock_abodsregistry, request_factory: RequestFactory
     ):
         """
         Test for operator profile non compliant stats relating to:
@@ -1202,8 +1205,12 @@ class TestOperatorDetailView:
         today = timezone.now().date()
         month = timezone.now().date() + datetime.timedelta(weeks=4)
         two_months = timezone.now().date() + datetime.timedelta(weeks=8)
-
-        mock_avl_requires_attention.return_value = []
+        mock_registry_instance = MagicMock()
+        mock_abodsregistry.return_value = mock_registry_instance
+        mock_registry_instance.records.return_value = ["line1__SDCU", "line2__SDCU"]
+        mock_vehivle_activity.return_value = pd.DataFrame(
+            {"OperatorRef": ["SDCU"], "LineRef": ["line2"]}
+        )
 
         total_services = 9
         licence_number = "PD5000229"
@@ -1472,16 +1479,18 @@ class TestOperatorDetailView:
         assert context["view"].template_name == "browse/operators/operator_detail.html"
         assert context["total_in_scope_in_season_services"] == 8
         assert context["timetable_services_requiring_attention_count"] == 6
-        assert context["avl_services_requiring_attention_count"] == 0
+        assert context["avl_services_requiring_attention_count"] == 8
         assert context["fares_services_requiring_attention_count"] == 8
-        assert context["overall_services_requiring_attention_count"] == 14
+        assert context["overall_services_requiring_attention_count"] == 22
 
-    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+    @patch.object(publish_attention, "AbodsRegistery")
+    @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
+    @freeze_time("2023-02-24")
     def test_operator_detail_view_stats_compliant(
-        self, mock_avl_requires_attention, request_factory: RequestFactory
+        self, mock_vehivle_activity, mock_abodsregistry, request_factory: RequestFactory
     ):
         """
         Test for operator profile compliant stats relating to:
@@ -1498,12 +1507,21 @@ class TestOperatorDetailView:
         org = OrganisationFactory(nocs=national_operator_code)
         month = timezone.now().date() + datetime.timedelta(weeks=4)
         two_months = timezone.now().date() + datetime.timedelta(weeks=8)
-        mock_avl_requires_attention.return_value = []
+        mock_registry_instance = MagicMock()
+        mock_abodsregistry.return_value = mock_registry_instance
+        mock_registry_instance.records.return_value = [
+            "line0__BLAC",
+            "line1__BLAC",
+            "line2__BLAC",
+        ]
+        mock_vehivle_activity.return_value = pd.DataFrame(
+            {"OperatorRef": ["SDCU"], "LineRef": ["line0"]}
+        )
 
         total_services = 4
         licence_number = "PD5000123"
         all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
-        all_line_names = [f"line:{n}" for n in range(total_services)]
+        all_line_names = [f"line{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
         dataset2 = DatasetFactory(organisation=org)
@@ -1550,8 +1568,8 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata,
             fares_metadata__revision__is_published=True,
-            line_name=[f"::{all_line_names[0]}"],
-            line_id=[f"::{all_line_names[0]}"],
+            line_name=[f":::{all_line_names[0]}"],
+            line_id=[f":::{all_line_names[0]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
             national_operator_code=[national_operator_code],
@@ -1579,8 +1597,8 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata_2,
             fares_metadata__revision__is_published=True,
-            line_name=[f"::{all_line_names[1]}"],
-            line_id=[f"::{all_line_names[1]}"],
+            line_name=[f":::{all_line_names[1]}"],
+            line_id=[f":::{all_line_names[1]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
             national_operator_code=[national_operator_code],
@@ -1608,8 +1626,8 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata_3,
             fares_metadata__revision__is_published=True,
-            line_name=[f"::{all_line_names[2]}"],
-            line_id=[f"::{all_line_names[2]}"],
+            line_name=[f":::{all_line_names[2]}"],
+            line_id=[f":::{all_line_names[2]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
             national_operator_code=[national_operator_code],
