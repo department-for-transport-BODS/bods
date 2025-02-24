@@ -1398,8 +1398,9 @@ class TXCFileAttributesQuerySet(models.QuerySet):
 
     def for_revision(self, revision_id: int) -> list:
         """Returns TXCFileAttributes objects for a revision."""
-        qs = self.filter(service_txcfileattributes__revision_id=revision_id).distinct()
-        return qs
+        return self.filter(
+            service_txcfileattributes__revision_id=revision_id
+        ).distinct()
 
     def add_service_code(self, service_code: str) -> list:
         """Returns TXCFileAttributes objects for the given service code."""
@@ -1546,6 +1547,7 @@ class ConsumerFeedbackQuerySet(models.QuerySet):
             .values(*REPORT_DETAILS_PAGE_COLUMNS)
             .distinct()
         )
+
         return qs
 
     def add_feedback_type(self):

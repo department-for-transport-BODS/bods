@@ -819,7 +819,7 @@ class LineMetadataDetailView(DetailView):
             kwargs.update(
                 self.get_timetable_visualiser_data(live_revision.id, line, service_code)
             )
-        # noc: str, line
+
         txc_file_attributes = (
             TXCFileAttributes.objects.for_revision(live_revision.id)
             .add_service_code(service_code)
