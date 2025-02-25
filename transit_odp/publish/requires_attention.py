@@ -483,6 +483,13 @@ def evaluate_fares_staleness(
     forty_two_days_from_today = today + timedelta(days=42)
     twelve_months_from_last_updated = last_updated_date + timedelta(days=365)
 
+    if isinstance(operating_period_end_date, pd.Timestamp):
+        operating_period_end_date = operating_period_end_date.date()
+    if isinstance(last_updated_date, pd.Timestamp):
+        last_updated_date = last_updated_date.date()
+    if isinstance(twelve_months_from_last_updated, pd.Timestamp):
+        twelve_months_from_last_updated = twelve_months_from_last_updated.date()
+
     staleness_42_day_look_ahead = (
         True
         if not pd.isna(operating_period_end_date)
@@ -812,8 +819,6 @@ def get_fares_records_require_attention_lta_line_level_length(lta_list: List) ->
     object_list = []
     otc_map = get_line_level_otc_map_lta(lta_list)
     txcfa_map = get_line_level_txc_map_lta(lta_list)
-    service_codes = [service_code for (service_code, _) in otc_map]
-    txcfa_map = get_line_level_txc_map_service_base(service_codes)
     fares_df = get_fares_dataset_map(txcfa_map)
 
     for service_key, service in otc_map.items():
@@ -1032,7 +1037,6 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
                 "line_name": file_attribute.line_name_unnested,
             }
         )
-
     noc_df = pd.DataFrame.from_dict(noc_linename_dict)
     noc_df.drop_duplicates(inplace=True)
     nocs_list = list(set(nocs_list))
@@ -1057,7 +1061,6 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
             "dataset_id",
         )
     )
-
     if fares_df.empty:
         return pd.DataFrame()
 
