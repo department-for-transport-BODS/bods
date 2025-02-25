@@ -1,3 +1,4 @@
+import config.hosts
 from math import floor
 
 from django.db.models import Avg, F
@@ -10,14 +11,21 @@ from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.common import (
     get_in_scope_in_season_services_line_level,
+    otc_map_txc_map_from_licence,
 )
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.views import BaseDetailView
 from transit_odp.fares_validator.models import FaresValidationResult
 from transit_odp.organisation.constants import EXPIRED, INACTIVE, AVLType, FaresType
-from transit_odp.organisation.models import Dataset, Organisation
+from transit_odp.organisation.models import (
+    Dataset,
+    Organisation,
+    Licence as OrganisationLicence,
+)
+from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
     get_avl_requires_attention_line_level_data,
+    get_line_level_txc_map_service_base,
     get_requires_attention_line_level_data,
 )
 
@@ -193,3 +201,45 @@ class OperatorDetailView(BaseDetailView):
             + "?prev=operator-detail"
         )
         return context
+
+
+class LicenceDetailView(BaseDetailView):
+    template_name = "browse/operators/licence_details.html"
+    model = OrganisationLicence
+    slug_url_kwarg = "number"
+    slug_field = "number"
+
+    def get_queryset(self):
+        licence_number = self.kwargs.get("number")
+        return super().get_queryset().filter(number=licence_number)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        licence_number = self.kwargs.get("number", "-")
+        context["licence_number"] = licence_number
+        organisation_licence = self.get_object()
+        context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
+        otc_map_df, txc_map = otc_map_txc_map_from_licence(licence_number)
+        context["organisation"] = organisation_licence.organisation
+        
+        return context
+
+    def is_fares_compliant(self):
+        pass
+
+    def is_timetable_compliant(self):
+        pass
+
+    def is_avl_compliant(self):
+        pass
+
+    def get_service_compliant_status(
+        self, registration_number: str, line_name: str
+    ) -> bool:
+        if (
+            self.is_fares_compliant(registration_number, line_name)
+            and self.is_timetable_compliant(registration_number, line_name)
+            and self.is_avl_compliant(registration_number, line_name)
+        ):
+            return True
+        return False
