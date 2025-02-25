@@ -2343,7 +2343,7 @@ class TestLTADetailView:
     @freeze_time("2024-11-24T16:40:40.000Z")
     def test_complete_service_pages_lta_detail_view(
         self,
-        mock_vehivle_activity,
+        mock_vehicle_activity,
         mock_abodsregistry,
         request_factory: RequestFactory,
     ):
@@ -2356,7 +2356,7 @@ class TestLTADetailView:
         mock_registry_instance = MagicMock()
         mock_abodsregistry.return_value = mock_registry_instance
         mock_registry_instance.records.return_value = ["line1__SDCU", "line2__SDCU"]
-        mock_vehivle_activity.return_value = pd.DataFrame(
+        mock_vehicle_activity.return_value = pd.DataFrame(
             {"OperatorRef": ["SDCU"], "LineRef": ["line2"]}
         )
         org = OrganisationFactory()
