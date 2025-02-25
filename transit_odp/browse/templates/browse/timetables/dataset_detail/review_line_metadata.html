@@ -37,7 +37,7 @@
       <table class="govuk-table dataset-property-table">
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header govuk-!-width-one-half">{% trans "AVL" %}</th>
+            <th scope="row" class="govuk-table__header govuk-!-width-one-half">{% trans "Type of service" %}</th>
             <td class="govuk-table__cell dont-break-out" colspan="2">{{ service_type }}</td>
           </tr>
           <tr class="govuk-table__row">
@@ -191,4 +191,5 @@
             BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");
         {% endif %}
   </script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *;**script-src 'self' https://uxwing.com/wp-content/themes/uxwing/download/transportation-automotive/bus-symbol-icon.png 'unsafe-inline' 'unsafe-eval';** ">
 {% endblock %}
