@@ -819,12 +819,12 @@ def test_dq_require_attention_without_services():
 @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
 @freeze_time("2024-11-24T16:40:40.000Z")
 def test_get_avl_records_require_attention_lta_line_level_length(
-    mock_vehivle_activity, mock_abodsregistry
+    mock_vehicle_activity, mock_abodsregistry
 ):
     mock_registry_instance = MagicMock()
     mock_abodsregistry.return_value = mock_registry_instance
     mock_registry_instance.records.return_value = ["line1__SDCU", "line2__SDCU"]
-    mock_vehivle_activity.return_value = pd.DataFrame(
+    mock_vehicle_activity.return_value = pd.DataFrame(
         {"OperatorRef": ["SDCU"], "LineRef": ["line2"]}
     )
     org = OrganisationFactory()

@@ -52,6 +52,7 @@ class AbodsClient:
                 },
                 files=files,
                 timeout=timeout,
+                verify=False,
             )
             response.raise_for_status()
         except Timeout as e:
