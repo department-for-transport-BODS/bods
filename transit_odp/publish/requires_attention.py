@@ -28,6 +28,7 @@ from transit_odp.transmodel.models import (
 )
 from django.db.models import Q
 from transit_odp.publish.constants import FARES_STALENESS_STATUS
+from transit_odp.organisation.models.organisations import Licence
 
 logger = logging.getLogger(__name__)
 
@@ -1258,3 +1259,11 @@ def get_consumer_feedback_df(service_pattern_ids_df: pd.DataFrame) -> pd.DataFra
     if consumer_feedback_df.empty:
         consumer_feedback_df = pd.DataFrame(columns=["service_id"])
     return consumer_feedback_df
+
+
+def get_licence_organisation_map(licence_list: list) -> dict:
+    licence_organisation_name_map = dict()
+    licence_qs = Licence.objects.filter(number__in=licence_list)
+    for record in licence_qs:
+        licence_organisation_name_map[record.number] = record.organisation.name
+    return licence_organisation_name_map

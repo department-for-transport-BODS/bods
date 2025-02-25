@@ -79,7 +79,7 @@
           <li>
             <a class="govuk-link" href="{% url 'local-authority-compliance-report' host hosts.data %}?auth_ids={{ auth_ids }}">
               {% filter force_escape %}
-                {% trans "Download Compliance export" %}
+                {% trans "Download Compliance report" %}
               {% endfilter %}
             </a>
           </li>
@@ -121,22 +121,23 @@
           {% endfilter %}
         </p>
         <div id="feed-stat-list" class="govuk-grid-row">
-          <div class="govuk-grid-column-one-half">
+          <div class="govuk-grid-column-one-third">
             <div class="feed-stat">
               <span class="feed-stat__label">
                 {% trans "Licence number" %}
               </span>
             </div>
           </div>
-          <div class="govuk-grid-column-one-half">
+          <div class="govuk-grid-column-two-thirds">
             <div class="feed-stat">
-              <span class="feed-stat__label">
-                {% for licence_name in licence_names %}
-                  <li class="govuk-!-margin-bottom-1">
-                    <a class="govuk-link" href="#">{{ licence_name }}</a>
+              <ul class="govuk-list">
+                {% for licence_number, organisation_name in licence_organisation_map.items %}
+                  <li>
+                      <span class="text-wrap">{{ organisation_name }}</span>
+                      <a class="govuk-link" href="#">{{ licence_number }}</a>
                   </li>
                 {% endfor %}
-              </span>
+              </ul>
             </div>
           </div>
         </div>

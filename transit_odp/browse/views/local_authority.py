@@ -50,8 +50,8 @@ from transit_odp.publish.requires_attention import (
     get_timetable_records_require_attention_lta_line_level_length,
     get_avl_records_require_attention_lta_line_level_length,
     get_fares_records_require_attention_lta_line_level_length,
+    get_licence_organisation_map,
 )
-from transit_odp.timetables.csv import _get_timetable_compliance_report_dataframe
 
 STALENESS_STATUS = [
     "42 day look ahead is incomplete",
@@ -351,7 +351,10 @@ class LocalAuthorityDetailView(BaseDetailView):
                     for service in lta.registration_numbers.all()
                 ]
             )
-            context["licence_names"] = distinct_licence_names
+            licence_organisation_map = get_licence_organisation_map(
+                distinct_licence_names
+            )
+            context["licence_organisation_map"] = licence_organisation_map
         try:
             context["services_require_attention_percentage"] = round(
                 100
@@ -365,7 +368,6 @@ class LocalAuthorityDetailView(BaseDetailView):
             context["services_require_attention_percentage"] = 0
 
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
-
         return context
 
 
