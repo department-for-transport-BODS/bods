@@ -9,8 +9,8 @@
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
-  {% breadcrumb_url ancestor 'feed-list' pk1=org_id host hosts.publish %}
-  {% breadcrumb_url 'Service Codes Requiring Attention' 'requires-attention' pk1=org_id host hosts.publish %}
+  {% breadcrumb_url ancestor 'fares:feed-list' pk1=org_id host hosts.publish %}
+  {% breadcrumb_url 'Service Codes Requiring Attention' 'fares:requires-attention' pk1=org_id host hosts.publish %}
 {% endblock %}
 {% block full_width_content %}
   <div class="app-masthead">
@@ -102,24 +102,16 @@
           <div class="govuk-grid-column-full custom_govuk_table_border">{% render_table table %}</div>
         </div>
       {% endif %}
-    </div>   
-   
+    </div>
     <div class="govuk-grid-row govuk-!-margin-top-5">
       <p class="govuk-body-s">{% trans "Use the link below to download and view the entire list of service codes" %}</p>
       <p class="govuk-body-s">
-        {% if is_avl_require_attention_active %}
-          <a class="govuk-link" href="{% url 'compliance-report' pk1=org_id host hosts.publish %}">
-            {% filter force_escape %}
-              {% trans "Download detailed export" %}
-            {% endfilter %}
-          </a>
-        {% else %}
-          <a class="govuk-link" href="{% url 'service-codes' pk1=org_id host hosts.publish %}">
+        <a class="govuk-link" href="{% url 'compliance-report' pk1=org_id host hosts.publish %}">
+          {% filter force_escape %}
             {% trans "Download detailed export" %}
-          </a>
-        {% endif %}
+          {% endfilter %}
+        </a>
       </p>
     </div>
-
   </div>
 {% endblock %}

@@ -137,7 +137,7 @@ class AgentOrganisationsTable(GovUkTable):
         if requires_attention > 0:
             return format_html(
                 "{count} "
-                '<a class="govuk-link govuk-!-margin-left-1" href={href}>'
+                '<a class="govuk-link govuk-!-margin-left-1" href="{href}">'
                 "View"
                 "</a>",
                 count=record["requires_attention"],

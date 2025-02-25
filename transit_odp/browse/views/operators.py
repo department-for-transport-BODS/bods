@@ -24,10 +24,12 @@ from transit_odp.organisation.models import (
 )
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
+    FaresRequiresAttention,
     get_avl_requires_attention_line_level_data,
     get_line_level_txc_map_service_base,
     get_requires_attention_line_level_data,
 )
+from transit_odp.common.constants import FeatureFlags
 
 
 class OperatorsView(BaseListView):
@@ -87,6 +89,9 @@ class OperatorDetailView(BaseDetailView):
         is_avl_require_attention_active = flag_is_active(
             "", "is_avl_require_attention_active"
         )
+        is_fares_require_attention_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
         context = super().get_context_data(**kwargs)
         organisation = self.object
 
@@ -98,6 +103,13 @@ class OperatorDetailView(BaseDetailView):
         if is_avl_require_attention_active:
             context["avl_total_services_requiring_attention"] = len(
                 get_avl_requires_attention_line_level_data(organisation.id)
+            )
+
+        context["is_fares_require_attention_active"] = is_fares_require_attention_active
+        if is_fares_require_attention_active:
+            fares_reqiures_attention = FaresRequiresAttention(organisation.id)
+            context["fares_total_services_requiring_attention"] = len(
+                fares_reqiures_attention.get_fares_requires_attention_line_level_data()
             )
 
         context["total_in_scope_in_season_services"] = len(
@@ -125,6 +137,18 @@ class OperatorDetailView(BaseDetailView):
                 )
             except ZeroDivisionError:
                 context["avl_services_require_attention_percentage"] = 0
+
+        if is_fares_require_attention_active:
+            try:
+                context["fares_total_services_requiring_attention_percentage"] = round(
+                    100
+                    * (
+                        context["fares_total_services_requiring_attention"]
+                        / context["total_in_scope_in_season_services"]
+                    )
+                )
+            except ZeroDivisionError:
+                context["fares_total_services_requiring_attention_percentage"] = 0
 
         avl_datasets = (
             AVLDataset.objects.filter(

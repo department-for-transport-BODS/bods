@@ -3,6 +3,7 @@
 
 import hashlib
 import logging
+from uuid import uuid4
 
 import requests
 from django.conf import settings
@@ -24,6 +25,7 @@ from transit_odp.organisation.notifications import (
     send_feed_monitor_fail_first_try_notification,
     send_feed_monitor_fail_half_way_try_notification,
 )
+from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.timetables.utils import create_tt_state_machine_payload
 
 ERROR = "error"
@@ -196,8 +198,15 @@ def update_dataset(dataset: Dataset, publish_task):
                     adapter.info("Start data set ETL pipeline.")
                     publish_task.apply_async(args=args, kwargs=kwargs)
                 else:
+                    task = DatasetETLTaskResult.objects.create(
+                        revision=new_revision,
+                        status=DatasetETLTaskResult.STARTED,
+                        task_id=str(uuid4()),
+                    )
                     # trigger state machine
-                    input_payload = create_tt_state_machine_payload(new_revision, True)
+                    input_payload = create_tt_state_machine_payload(
+                        new_revision, task.id, True
+                    )
                     try:
                         step_fucntions_client = StepFunctionsClientWrapper()
                         step_function_arn = (

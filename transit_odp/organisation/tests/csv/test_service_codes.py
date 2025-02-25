@@ -4,10 +4,20 @@ from typing import Dict
 import pytest
 from django.db.models.expressions import datetime
 from freezegun import freeze_time
+from waffle.testutils import override_flag
 
+from transit_odp.fares.factories import (
+    DataCatalogueMetaDataFactory,
+    FaresMetadataFactory,
+)
+from transit_odp.fares_validator.factories import FaresValidationResultFactory
 from transit_odp.naptan.factories import AdminAreaFactory
+from transit_odp.organisation.constants import FaresType
 from transit_odp.organisation.csv.service_codes import ComplianceReportCSV
-from transit_odp.organisation.factories import DatasetFactory
+from transit_odp.organisation.factories import (
+    DatasetFactory,
+    FaresDatasetRevisionFactory,
+)
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
 from transit_odp.organisation.factories import (
     OrganisationFactory,
@@ -23,6 +33,7 @@ from transit_odp.otc.factories import (
     ServiceModelFactory,
     UILtaFactory,
 )
+from transit_odp.common.constants import FeatureFlags
 
 pytestmark = pytest.mark.django_db
 CSV_NUMBER_COLUMNS = 43
@@ -512,13 +523,15 @@ def test_csv_output_columns_order():
 
 
 @freeze_time("2023-02-24")
+@override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
 def test_csv_output():
     licence_number = "PD0000099"
     num_otc_services = 10
     service_codes = [f"{licence_number}:{n}" for n in range(num_otc_services)]
     service_numbers = [f"Line{n}" for n in range(num_otc_services)]
+    national_operator_codes = ["BLAC", "LNUD"]
     operator_factory = OperatorModelFactory(operator_name="operator")
-    org1 = OrganisationFactory(name="test_org_1")
+    org1 = OrganisationFactory(name="test_org_1", nocs=national_operator_codes)
     bods_licence = BODSLicenceFactory(organisation=org1, number=licence_number)
     otc_lic = LicenceModelFactory(number=licence_number)
     services = []
@@ -610,6 +623,7 @@ def test_csv_output():
         operating_period_end_date=datetime.datetime(2023, 2, 24),
         modification_datetime=datetime.datetime(2022, 1, 24),
         line_names=[service_numbers[3]],
+        national_operator_code=national_operator_codes[0],
     )
 
     # staleness_otc = True => "Stale - OTC Variation"
@@ -634,6 +648,33 @@ def test_csv_output():
         start=datetime.datetime(2022, 2, 24),
         end=datetime.datetime(2024, 2, 24),
     )
+    fares_dataset4 = DatasetFactory(organisation=org1, dataset_type=FaresType)
+    fares_revision4 = FaresDatasetRevisionFactory(
+        dataset__organisation=org1,
+        dataset__live_revision=fares_dataset4.id,
+    )
+    faresmetadata4 = FaresMetadataFactory(
+        revision=fares_revision4,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    faresdatacatalogue4 = DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata4,
+        fares_metadata__revision__is_published=True,
+        line_name=[f":::{service_numbers[3]}"],
+        line_id=[f":::{service_numbers[3]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_codes[0]],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision4,
+        organisation=org1,
+        count=0,
+    )
+    last_updated_date_4 = fares_revision4.published_at.date()
+    fares_data_over_one_year_4 = last_updated_date_4 + timedelta(days=365)
+    valid_to_4 = faresmetadata4.valid_to.date()
 
     dataset5 = DatasetFactory(organisation=org1)
     # Require Attention: Yes
@@ -646,6 +687,7 @@ def test_csv_output():
         operating_period_end_date=datetime.datetime(2023, 3, 24),
         modification_datetime=datetime.datetime(2023, 1, 24),
         line_names=[service_numbers[4]],
+        national_operator_code=national_operator_codes[0],
     )
     # staleness_42_day_look_ahead = True => "Stale - 42 day look ahead"
     service_5 = ServiceModelFactory(
@@ -670,6 +712,33 @@ def test_csv_output():
         start=datetime.datetime(2022, 2, 24),
         end=datetime.datetime(2024, 2, 24),
     )
+    fares_dataset5 = DatasetFactory(organisation=org1, dataset_type=FaresType)
+    fares_revision5 = FaresDatasetRevisionFactory(
+        dataset__organisation=org1,
+        dataset__live_revision=fares_dataset5.id,
+    )
+    faresmetadata5 = FaresMetadataFactory(
+        revision=fares_revision5,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    faresdatacatalogue5 = DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata5,
+        fares_metadata__revision__is_published=True,
+        line_name=[f":::{service_numbers[4]}"],
+        line_id=[f":::{service_numbers[4]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_codes[0]],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision5,
+        organisation=org1,
+        count=5,
+    )
+    last_updated_date_5 = fares_revision5.published_at.date()
+    fares_data_over_one_year_5 = last_updated_date_5 + timedelta(days=365)
+    valid_to_5 = faresmetadata5.valid_to.date()
 
     dataset6 = DatasetFactory(organisation=org1)
     # operating_period_end_date is not None
@@ -681,6 +750,7 @@ def test_csv_output():
         operating_period_end_date=datetime.datetime(2023, 6, 24),
         modification_datetime=datetime.datetime(2022, 1, 24),
         line_names=[service_numbers[5]],
+        national_operator_code=national_operator_codes[0],
     )
     service_6 = ServiceModelFactory(
         licence=otc_lic,
@@ -704,6 +774,33 @@ def test_csv_output():
         start=datetime.datetime(2022, 2, 24),
         end=datetime.datetime(2024, 2, 24),
     )
+    fares_dataset6 = DatasetFactory(organisation=org1, dataset_type=FaresType)
+    fares_revision6 = FaresDatasetRevisionFactory(
+        dataset__organisation=org1,
+        dataset__live_revision=fares_dataset6.id,
+    )
+    faresmetadata6 = FaresMetadataFactory(
+        revision=fares_revision6,
+        valid_from=datetime.datetime(2022, 12, 12),
+        valid_to=datetime.datetime(2023, 1, 2),
+    )
+    faresdatacatalogue6 = DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata6,
+        fares_metadata__revision__is_published=True,
+        line_name=[f":::{service_numbers[5]}"],
+        line_id=[f":::{service_numbers[5]}"],
+        valid_from=datetime.datetime(2022, 12, 12),
+        valid_to=datetime.datetime(2023, 1, 2),
+        national_operator_code=[national_operator_codes[0]],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision6,
+        organisation=org1,
+        count=5,
+    )
+    last_updated_date_6 = fares_revision6.published_at.date()
+    fares_data_over_one_year_6 = last_updated_date_6 + timedelta(days=365)
+    valid_to_6 = faresmetadata6.valid_to.date()
 
     dataset7 = DatasetFactory(organisation=org1)
     # operating_period_end_date is None
@@ -715,6 +812,7 @@ def test_csv_output():
         operating_period_end_date=None,
         modification_datetime=datetime.datetime(2022, 1, 24),
         line_names=[service_numbers[6]],
+        national_operator_code=national_operator_codes[0],
     )
     # staleness_12_months_old = True => "Stale - 12 months old"
     service_7 = ServiceModelFactory(
@@ -739,6 +837,34 @@ def test_csv_output():
         start=datetime.datetime(2022, 2, 24),
         end=datetime.datetime(2024, 2, 24),
     )
+    fares_dataset7 = DatasetFactory(organisation=org1, dataset_type=FaresType)
+    fares_revision7 = FaresDatasetRevisionFactory(
+        dataset__organisation=org1,
+        dataset__live_revision=fares_dataset7.id,
+        published_at=datetime.datetime(2022, 1, 1),
+    )
+    faresmetadata7 = FaresMetadataFactory(
+        revision=fares_revision7,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    faresdatacatalogue7 = DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata7,
+        fares_metadata__revision__is_published=True,
+        line_name=[f":::{service_numbers[6]}"],
+        line_id=[f":::{service_numbers[6]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_codes[0]],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision7,
+        organisation=org1,
+        count=5,
+    )
+    last_updated_date_7 = fares_revision7.published_at.date()
+    fares_data_over_one_year_7 = last_updated_date_7 + timedelta(days=365)
+    valid_to_7 = faresmetadata7.valid_to.date()
 
     dataset8 = DatasetFactory(organisation=org1)
     # Require Attention: No
@@ -751,6 +877,7 @@ def test_csv_output():
         operating_period_end_date=None,
         modification_datetime=datetime.datetime(2022, 1, 24),
         line_names=[service_numbers[7]],
+        national_operator_code=national_operator_codes[0],
     )
     # staleness_12_months_old = True => "Stale - 12 months old"
     service_8 = ServiceModelFactory(
@@ -780,6 +907,34 @@ def test_csv_output():
         licence=bods_licence,
         registration_code=service_codes[7][-1:],
     )
+    fares_dataset8 = DatasetFactory(organisation=org1, dataset_type=FaresType)
+    fares_revision8 = FaresDatasetRevisionFactory(
+        dataset__organisation=org1,
+        dataset__live_revision=fares_dataset8.id,
+        published_at=datetime.datetime(2022, 1, 1),
+    )
+    faresmetadata8 = FaresMetadataFactory(
+        revision=fares_revision8,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    faresdatacatalogue8 = DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata8,
+        fares_metadata__revision__is_published=True,
+        line_name=[f":::{service_numbers[7]}"],
+        line_id=[f":::{service_numbers[7]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_codes[0]],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision8,
+        organisation=org1,
+        count=0,
+    )
+    last_updated_date_8 = fares_revision8.published_at.date()
+    fares_data_over_one_year_8 = last_updated_date_8 + timedelta(days=365)
+    valid_to_8 = faresmetadata8.valid_to.date()
 
     dataset9 = DatasetFactory(organisation=org1)
     # operating_period_end_date is None
@@ -791,6 +946,7 @@ def test_csv_output():
         operating_period_end_date=None,
         modification_datetime=datetime.datetime(2023, 2, 24),
         line_names=[service_numbers[8]],
+        national_operator_code=national_operator_codes[0],
     )
     # staleness_otc = False, staleness_42_day_look_ahead = False,
     # staleness_12_months_old = False => Up to Date
@@ -816,6 +972,34 @@ def test_csv_output():
         end=datetime.datetime(2024, 2, 24),
     )
     date_seasonal_service_published_9 = seasonal_service_9.start - timedelta(days=42)
+    fares_dataset9 = DatasetFactory(organisation=org1, dataset_type=FaresType)
+    fares_revision9 = FaresDatasetRevisionFactory(
+        dataset__organisation=org1,
+        dataset__live_revision=fares_dataset9.id,
+    )
+    faresmetadata9 = FaresMetadataFactory(
+        revision=fares_revision9,
+        valid_from=datetime.datetime(2022, 12, 12),
+        valid_to=datetime.datetime(2023, 1, 2),
+    )
+    faresdatacatalogue9 = DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata9,
+        fares_metadata__revision__is_published=True,
+        line_name=[f":::{service_numbers[8]}"],
+        line_id=[f":::{service_numbers[8]}"],
+        valid_from=datetime.datetime(2022, 12, 12),
+        valid_to=datetime.datetime(2023, 1, 2),
+        national_operator_code=[national_operator_codes[0]],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision9,
+        organisation=org1,
+        count=0,
+    )
+    last_updated_date_9 = fares_revision9.published_at.date()
+    fares_data_over_one_year_9 = last_updated_date_9 + timedelta(days=365)
+    valid_to_9 = faresmetadata9.valid_to.date()
+
     # Testing something that IS in BODS but not in OTC
     licence_number = "PD0000055"
 
@@ -864,25 +1048,21 @@ def test_csv_output():
     assert csv_output["row0"][11] == '"Yes"'  # AVL requires attention
     assert csv_output["row0"][12] == '"No"'  # AVL Published Status
     assert csv_output["row0"][13] == '"No"'  # Error in AVL to Timetable Matching
-    assert csv_output["row0"][14] == '"Under maintenance"'  # Fares requires attention
-    assert csv_output["row0"][15] == '"Under maintenance"'  # Fares Published Status
-    assert csv_output["row0"][16] == '"Under maintenance"'  # Fares Timeliness Status
-    assert csv_output["row0"][17] == '"Under maintenance"'  # Fares Compliance Status
+    assert csv_output["row0"][14] == '"Yes"'  # Fares requires attention
+    assert csv_output["row0"][15] == '"Unpublished"'  # Fares Published Status
+    assert csv_output["row0"][16] == '"Not Stale"'  # Fares Timeliness Status
+    assert csv_output["row0"][17] == '"Non compliant"'  # Fares Compliance Status
     assert csv_output["row0"][18] == '""'  # Timetables Data set ID
     assert csv_output["row0"][19] == '""'  # TXC:Filename
     assert csv_output["row0"][20] == '""'  # TXC:NOC
     assert csv_output["row0"][21] == '""'  # TXC:Last Modified Date
     assert csv_output["row0"][22] == '""'  # Date when timetable data is over 1 year old
     assert csv_output["row0"][23] == '""'  # TXC:Operating Period End Date
-    assert csv_output["row0"][24] == '"Under maintenance"'  # Fares Data set ID
-    assert csv_output["row0"][25] == '"Under maintenance"'  # NETEX:Filename
-    assert csv_output["row0"][26] == '"Under maintenance"'  # NETEX:Last Modified Date
-    assert (
-        csv_output["row0"][27] == '"Under maintenance"'
-    )  # Date when fares data is over 1 year old
-    assert (
-        csv_output["row0"][28] == '"Under maintenance"'
-    )  # NETEX:Operating Period End Date
+    assert csv_output["row0"][24] == '""'  # Fares Data set ID
+    assert csv_output["row0"][25] == '""'  # NETEX:Filename
+    assert csv_output["row0"][26] == '""'  # NETEX:Last Modified Date
+    assert csv_output["row0"][27] == '""'  # Date when fares data is over 1 year old
+    assert csv_output["row0"][28] == '""'  # NETEX:Operating Period End Date
     assert (
         csv_output["row0"][29] == '"2023-05-12"'
     )  # Date Registration variation needs to be published
@@ -924,21 +1104,21 @@ def test_csv_output():
     assert csv_output["row1"][11] == '"Yes"'
     assert csv_output["row1"][12] == '"No"'
     assert csv_output["row1"][13] == '"No"'
-    assert csv_output["row1"][14] == '"Under maintenance"'
-    assert csv_output["row1"][15] == '"Under maintenance"'
-    assert csv_output["row1"][16] == '"Under maintenance"'
-    assert csv_output["row1"][17] == '"Under maintenance"'
+    assert csv_output["row1"][14] == '"Yes"'
+    assert csv_output["row1"][15] == '"Unpublished"'
+    assert csv_output["row1"][16] == '"Not Stale"'
+    assert csv_output["row1"][17] == '"Non compliant"'
     assert csv_output["row1"][18] == '""'
     assert csv_output["row1"][19] == '""'
     assert csv_output["row1"][20] == '""'
     assert csv_output["row1"][21] == '""'
     assert csv_output["row1"][22] == '""'
     assert csv_output["row1"][23] == '""'
-    assert csv_output["row1"][24] == '"Under maintenance"'
-    assert csv_output["row1"][25] == '"Under maintenance"'
-    assert csv_output["row1"][26] == '"Under maintenance"'
-    assert csv_output["row1"][27] == '"Under maintenance"'
-    assert csv_output["row1"][28] == '"Under maintenance"'
+    assert csv_output["row1"][24] == '""'
+    assert csv_output["row1"][25] == '""'
+    assert csv_output["row1"][26] == '""'
+    assert csv_output["row1"][27] == '""'
+    assert csv_output["row1"][28] == '""'
     assert csv_output["row1"][29] == '"2023-05-12"'
     assert csv_output["row1"][30] == '"2023-04-07"'
     assert csv_output["row1"][31] == '"2022-01-13"'
@@ -968,21 +1148,21 @@ def test_csv_output():
     assert csv_output["row2"][11] == '"Yes"'
     assert csv_output["row2"][12] == '"No"'
     assert csv_output["row2"][13] == '"No"'
-    assert csv_output["row2"][14] == '"Under maintenance"'
-    assert csv_output["row2"][15] == '"Under maintenance"'
-    assert csv_output["row2"][16] == '"Under maintenance"'
-    assert csv_output["row2"][17] == '"Under maintenance"'
+    assert csv_output["row2"][14] == '"Yes"'
+    assert csv_output["row2"][15] == '"Unpublished"'
+    assert csv_output["row2"][16] == '"Not Stale"'
+    assert csv_output["row2"][17] == '"Non compliant"'
     assert csv_output["row2"][18] == '""'
     assert csv_output["row2"][19] == '""'
     assert csv_output["row2"][20] == '""'
     assert csv_output["row2"][21] == '""'
     assert csv_output["row2"][22] == '""'
     assert csv_output["row2"][23] == '""'
-    assert csv_output["row2"][24] == '"Under maintenance"'
-    assert csv_output["row2"][25] == '"Under maintenance"'
-    assert csv_output["row2"][26] == '"Under maintenance"'
-    assert csv_output["row2"][27] == '"Under maintenance"'
-    assert csv_output["row2"][28] == '"Under maintenance"'
+    assert csv_output["row2"][24] == '""'
+    assert csv_output["row2"][25] == '""'
+    assert csv_output["row2"][26] == '""'
+    assert csv_output["row2"][27] == '""'
+    assert csv_output["row2"][28] == '""'
     assert csv_output["row2"][29] == '"2023-05-12"'
     assert csv_output["row2"][30] == '"2023-04-07"'
     assert csv_output["row2"][31] == '""'
@@ -1012,21 +1192,21 @@ def test_csv_output():
     assert csv_output["row3"][11] == '"Yes"'
     assert csv_output["row3"][12] == '"No"'
     assert csv_output["row3"][13] == '"No"'
-    assert csv_output["row3"][14] == '"Under maintenance"'
-    assert csv_output["row3"][15] == '"Under maintenance"'
-    assert csv_output["row3"][16] == '"Under maintenance"'
-    assert csv_output["row3"][17] == '"Under maintenance"'
+    assert csv_output["row3"][14] == '"No"'
+    assert csv_output["row3"][15] == '"Published"'
+    assert csv_output["row3"][16] == '"Not Stale"'
+    assert csv_output["row3"][17] == '"Compliant"'
     assert csv_output["row3"][18] == f'"{txc_file_4.revision.dataset_id}"'
     assert csv_output["row3"][19] == '"test3.xml"'
-    assert csv_output["row3"][20] == f'"{txc_file_4.national_operator_code}"'
+    assert csv_output["row3"][20] == '"BLAC"'
     assert csv_output["row3"][21] == '"2022-01-24"'
     assert csv_output["row3"][22] == '"2023-01-24"'
     assert csv_output["row3"][23] == '"2023-02-24"'
-    assert csv_output["row3"][24] == '"Under maintenance"'
-    assert csv_output["row3"][25] == '"Under maintenance"'
-    assert csv_output["row3"][26] == '"Under maintenance"'
-    assert csv_output["row3"][27] == '"Under maintenance"'
-    assert csv_output["row3"][28] == '"Under maintenance"'
+    assert csv_output["row3"][24] == f'"{fares_revision4.dataset.id}"'
+    assert csv_output["row3"][25] == f'"{faresdatacatalogue4.xml_file_name}"'
+    assert csv_output["row3"][26] == f'"{last_updated_date_4}"'
+    assert csv_output["row3"][27] == f'"{fares_data_over_one_year_4}"'
+    assert csv_output["row3"][28] == f'"{valid_to_4}"'
     assert csv_output["row3"][29] == '"2023-02-10"'
     assert csv_output["row3"][30] == '"2023-04-07"'
     assert csv_output["row3"][31] == '"2022-01-13"'
@@ -1056,21 +1236,21 @@ def test_csv_output():
     assert csv_output["row4"][11] == '"Yes"'
     assert csv_output["row4"][12] == '"No"'
     assert csv_output["row4"][13] == '"No"'
-    assert csv_output["row4"][14] == '"Under maintenance"'
-    assert csv_output["row4"][15] == '"Under maintenance"'
-    assert csv_output["row4"][16] == '"Under maintenance"'
-    assert csv_output["row4"][17] == '"Under maintenance"'
+    assert csv_output["row4"][14] == '"Yes"'
+    assert csv_output["row4"][15] == '"Published"'
+    assert csv_output["row4"][16] == '"Not Stale"'
+    assert csv_output["row4"][17] == '"Non compliant"'
     assert csv_output["row4"][18] == f'"{txc_file_5.revision.dataset_id}"'
     assert csv_output["row4"][19] == '"test4.xml"'
     assert csv_output["row4"][20] == f'"{txc_file_5.national_operator_code}"'
     assert csv_output["row4"][21] == '"2023-01-24"'
     assert csv_output["row4"][22] == '"2024-01-24"'
     assert csv_output["row4"][23] == '"2023-03-24"'
-    assert csv_output["row4"][24] == '"Under maintenance"'
-    assert csv_output["row4"][25] == '"Under maintenance"'
-    assert csv_output["row4"][26] == '"Under maintenance"'
-    assert csv_output["row4"][27] == '"Under maintenance"'
-    assert csv_output["row4"][28] == '"Under maintenance"'
+    assert csv_output["row4"][24] == f'"{fares_revision5.dataset.id}"'
+    assert csv_output["row4"][25] == f'"{faresdatacatalogue5.xml_file_name}"'
+    assert csv_output["row4"][26] == f'"{last_updated_date_5}"'
+    assert csv_output["row4"][27] == f'"{fares_data_over_one_year_5}"'
+    assert csv_output["row4"][28] == f'"{valid_to_5}"'
     assert csv_output["row4"][29] == '"2022-05-12"'
     assert csv_output["row4"][30] == '"2023-04-07"'
     assert csv_output["row4"][31] == '"2022-01-13"'
@@ -1100,21 +1280,21 @@ def test_csv_output():
     assert csv_output["row5"][11] == '"Yes"'
     assert csv_output["row5"][12] == '"No"'
     assert csv_output["row5"][13] == '"No"'
-    assert csv_output["row5"][14] == '"Under maintenance"'
-    assert csv_output["row5"][15] == '"Under maintenance"'
-    assert csv_output["row5"][16] == '"Under maintenance"'
-    assert csv_output["row5"][17] == '"Under maintenance"'
+    assert csv_output["row5"][14] == '"Yes"'
+    assert csv_output["row5"][15] == '"Published"'
+    assert csv_output["row5"][16] == '"42 day look ahead is incomplete"'
+    assert csv_output["row5"][17] == '"Non compliant"'
     assert csv_output["row5"][18] == f'"{txc_file_6.revision.dataset_id}"'
     assert csv_output["row5"][19] == '"test5.xml"'
     assert csv_output["row5"][20] == f'"{txc_file_6.national_operator_code}"'
     assert csv_output["row5"][21] == '"2022-01-24"'
     assert csv_output["row5"][22] == '"2023-01-24"'
     assert csv_output["row5"][23] == '"2023-06-24"'
-    assert csv_output["row5"][24] == '"Under maintenance"'
-    assert csv_output["row5"][25] == '"Under maintenance"'
-    assert csv_output["row5"][26] == '"Under maintenance"'
-    assert csv_output["row5"][27] == '"Under maintenance"'
-    assert csv_output["row5"][28] == '"Under maintenance"'
+    assert csv_output["row5"][24] == f'"{fares_revision6.dataset.id}"'
+    assert csv_output["row5"][25] == f'"{faresdatacatalogue6.xml_file_name}"'
+    assert csv_output["row5"][26] == f'"{last_updated_date_6}"'
+    assert csv_output["row5"][27] == f'"{fares_data_over_one_year_6}"'
+    assert csv_output["row5"][28] == f'"{valid_to_6}"'
     assert csv_output["row5"][29] == '"2023-12-13"'
     assert csv_output["row5"][30] == '"2023-04-07"'
     assert csv_output["row5"][31] == '"2022-01-13"'
@@ -1144,21 +1324,21 @@ def test_csv_output():
     assert csv_output["row6"][11] == '"Yes"'
     assert csv_output["row6"][12] == '"No"'
     assert csv_output["row6"][13] == '"No"'
-    assert csv_output["row6"][14] == '"Under maintenance"'
-    assert csv_output["row6"][15] == '"Under maintenance"'
-    assert csv_output["row6"][16] == '"Under maintenance"'
-    assert csv_output["row6"][17] == '"Under maintenance"'
+    assert csv_output["row6"][14] == '"Yes"'
+    assert csv_output["row6"][15] == '"Published"'
+    assert csv_output["row6"][16] == '"One year old"'
+    assert csv_output["row6"][17] == '"Non compliant"'
     assert csv_output["row6"][18] == f'"{txc_file_7.revision.dataset_id}"'
     assert csv_output["row6"][19] == '"test6.xml"'
     assert csv_output["row6"][20] == f'"{txc_file_7.national_operator_code}"'
     assert csv_output["row6"][21] == '"2022-01-24"'
     assert csv_output["row6"][22] == '"2023-01-24"'
     assert csv_output["row6"][23] == '""'
-    assert csv_output["row6"][24] == '"Under maintenance"'
-    assert csv_output["row6"][25] == '"Under maintenance"'
-    assert csv_output["row6"][26] == '"Under maintenance"'
-    assert csv_output["row6"][27] == '"Under maintenance"'
-    assert csv_output["row6"][28] == '"Under maintenance"'
+    assert csv_output["row6"][24] == f'"{fares_revision7.dataset.id}"'
+    assert csv_output["row6"][25] == f'"{faresdatacatalogue7.xml_file_name}"'
+    assert csv_output["row6"][26] == f'"{last_updated_date_7}"'
+    assert csv_output["row6"][27] == f'"{fares_data_over_one_year_7}"'
+    assert csv_output["row6"][28] == f'"{valid_to_7}"'
     assert csv_output["row6"][29] == '"2020-12-13"'
     assert csv_output["row6"][30] == '"2023-04-07"'
     assert csv_output["row6"][31] == '"2022-01-13"'
@@ -1188,21 +1368,21 @@ def test_csv_output():
     assert csv_output["row7"][11] == '"Yes"'
     assert csv_output["row7"][12] == '"No"'
     assert csv_output["row7"][13] == '"No"'
-    assert csv_output["row7"][14] == '"Under maintenance"'
-    assert csv_output["row7"][15] == '"Under maintenance"'
-    assert csv_output["row7"][16] == '"Under maintenance"'
-    assert csv_output["row7"][17] == '"Under maintenance"'
+    assert csv_output["row7"][14] == '"Yes"'
+    assert csv_output["row7"][15] == '"Published"'
+    assert csv_output["row7"][16] == '"One year old"'
+    assert csv_output["row7"][17] == '"Compliant"'
     assert csv_output["row7"][18] == f'"{txc_file_8.revision.dataset_id}"'
     assert csv_output["row7"][19] == '"test7.xml"'
     assert csv_output["row7"][20] == f'"{txc_file_8.national_operator_code}"'
     assert csv_output["row7"][21] == '"2022-01-24"'
     assert csv_output["row7"][22] == '"2023-01-24"'
     assert csv_output["row7"][23] == '""'
-    assert csv_output["row7"][24] == '"Under maintenance"'
-    assert csv_output["row7"][25] == '"Under maintenance"'
-    assert csv_output["row7"][26] == '"Under maintenance"'
-    assert csv_output["row7"][27] == '"Under maintenance"'
-    assert csv_output["row7"][28] == '"Under maintenance"'
+    assert csv_output["row7"][24] == f'"{fares_revision8.dataset.id}"'
+    assert csv_output["row7"][25] == f'"{faresdatacatalogue8.xml_file_name}"'
+    assert csv_output["row7"][26] == f'"{last_updated_date_8}"'
+    assert csv_output["row7"][27] == f'"{fares_data_over_one_year_8}"'
+    assert csv_output["row7"][28] == f'"{valid_to_8}"'
     assert csv_output["row7"][29] == '"2020-12-13"'
     assert csv_output["row7"][30] == '"2023-04-07"'
     assert csv_output["row7"][31] == '"2022-01-13"'
@@ -1232,21 +1412,21 @@ def test_csv_output():
     assert csv_output["row8"][11] == '"Yes"'
     assert csv_output["row8"][12] == '"No"'
     assert csv_output["row8"][13] == '"No"'
-    assert csv_output["row8"][14] == '"Under maintenance"'
-    assert csv_output["row8"][15] == '"Under maintenance"'
-    assert csv_output["row8"][16] == '"Under maintenance"'
-    assert csv_output["row8"][17] == '"Under maintenance"'
+    assert csv_output["row8"][14] == '"Yes"'
+    assert csv_output["row8"][15] == '"Published"'
+    assert csv_output["row8"][16] == '"42 day look ahead is incomplete"'
+    assert csv_output["row8"][17] == '"Compliant"'
     assert csv_output["row8"][18] == f'"{txc_file_9.revision.dataset_id}"'
     assert csv_output["row8"][19] == '"test8.xml"'
     assert csv_output["row8"][20] == f'"{txc_file_9.national_operator_code}"'
     assert csv_output["row8"][21] == '"2023-02-24"'
     assert csv_output["row8"][22] == '"2024-02-24"'
     assert csv_output["row8"][23] == '""'
-    assert csv_output["row8"][24] == '"Under maintenance"'
-    assert csv_output["row8"][25] == '"Under maintenance"'
-    assert csv_output["row8"][26] == '"Under maintenance"'
-    assert csv_output["row8"][27] == '"Under maintenance"'
-    assert csv_output["row8"][28] == '"Under maintenance"'
+    assert csv_output["row8"][24] == f'"{fares_revision9.dataset.id}"'
+    assert csv_output["row8"][25] == f'"{faresdatacatalogue9.xml_file_name}"'
+    assert csv_output["row8"][26] == f'"{last_updated_date_9}"'
+    assert csv_output["row8"][27] == f'"{fares_data_over_one_year_9}"'
+    assert csv_output["row8"][28] == f'"{valid_to_9}"'
     assert csv_output["row8"][29] == '"2020-12-13"'
     assert csv_output["row8"][30] == '"2023-04-07"'
     assert csv_output["row8"][31] == '"2022-01-13"'
@@ -1267,6 +1447,7 @@ def test_csv_output():
 
 
 @freeze_time("2023-02-28")
+@override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
 def test_weca_seasonal_status_csv_output():
     """Test Operator report for weca season services
     Match the CSV row outputs
@@ -1447,21 +1628,21 @@ def test_weca_seasonal_status_csv_output():
     assert csv_output["row0"][11] == '"Yes"'
     assert csv_output["row0"][12] == '"No"'
     assert csv_output["row0"][13] == '"No"'
-    assert csv_output["row0"][14] == '"Under maintenance"'
-    assert csv_output["row0"][15] == '"Under maintenance"'
-    assert csv_output["row0"][16] == '"Under maintenance"'
-    assert csv_output["row0"][17] == '"Under maintenance"'
+    assert csv_output["row0"][14] == '"Yes"'
+    assert csv_output["row0"][15] == '"Unpublished"'
+    assert csv_output["row0"][16] == '"Not Stale"'
+    assert csv_output["row0"][17] == '"Non compliant"'
     assert csv_output["row0"][18] == f'"{dataset0.id}"'
     assert csv_output["row0"][19] == '"test0.xml"'
     assert csv_output["row0"][20] == f'"{txc_file_0.national_operator_code}"'
     assert csv_output["row0"][21] == '"2022-01-28"'
     assert csv_output["row0"][22] == '"2023-01-28"'
     assert csv_output["row0"][23] == '"2023-06-28"'
-    assert csv_output["row0"][24] == '"Under maintenance"'
-    assert csv_output["row0"][25] == '"Under maintenance"'
-    assert csv_output["row0"][26] == '"Under maintenance"'
-    assert csv_output["row0"][27] == '"Under maintenance"'
-    assert csv_output["row0"][28] == '"Under maintenance"'
+    assert csv_output["row0"][24] == '""'
+    assert csv_output["row0"][25] == '""'
+    assert csv_output["row0"][26] == '""'
+    assert csv_output["row0"][27] == '""'
+    assert csv_output["row0"][28] == '""'
     assert csv_output["row0"][29] == '"2023-12-17"'
     assert csv_output["row0"][30] == '"2023-04-11"'
     assert csv_output["row0"][31] == '"2022-01-17"'
@@ -1491,21 +1672,21 @@ def test_weca_seasonal_status_csv_output():
     assert csv_output["row1"][11] == '"Yes"'
     assert csv_output["row1"][12] == '"No"'
     assert csv_output["row1"][13] == '"No"'
-    assert csv_output["row1"][14] == '"Under maintenance"'
-    assert csv_output["row1"][15] == '"Under maintenance"'
-    assert csv_output["row1"][16] == '"Under maintenance"'
-    assert csv_output["row1"][17] == '"Under maintenance"'
+    assert csv_output["row1"][14] == '"Yes"'
+    assert csv_output["row1"][15] == '"Unpublished"'
+    assert csv_output["row1"][16] == '"Not Stale"'
+    assert csv_output["row1"][17] == '"Non compliant"'
     assert csv_output["row1"][18] == f'"{dataset1.id}"'
     assert csv_output["row1"][19] == '"test1.xml"'
     assert csv_output["row1"][20] == f'"{txc_file_1.national_operator_code}"'
     assert csv_output["row1"][21] == '"2022-01-24"'
     assert csv_output["row1"][22] == '"2023-01-24"'
     assert csv_output["row1"][23] == '"2023-06-24"'
-    assert csv_output["row1"][24] == '"Under maintenance"'
-    assert csv_output["row1"][25] == '"Under maintenance"'
-    assert csv_output["row1"][26] == '"Under maintenance"'
-    assert csv_output["row1"][27] == '"Under maintenance"'
-    assert csv_output["row1"][28] == '"Under maintenance"'
+    assert csv_output["row1"][24] == '""'
+    assert csv_output["row1"][25] == '""'
+    assert csv_output["row1"][26] == '""'
+    assert csv_output["row1"][27] == '""'
+    assert csv_output["row1"][28] == '""'
     assert csv_output["row1"][29] == '"2023-12-13"'
     assert csv_output["row1"][30] == '"2023-04-11"'
     assert csv_output["row1"][31] == '"2026-01-17"'
@@ -1535,21 +1716,21 @@ def test_weca_seasonal_status_csv_output():
     assert csv_output["row2"][11] == '"Yes"'
     assert csv_output["row2"][12] == '"No"'
     assert csv_output["row2"][13] == '"No"'
-    assert csv_output["row2"][14] == '"Under maintenance"'
-    assert csv_output["row2"][15] == '"Under maintenance"'
-    assert csv_output["row2"][16] == '"Under maintenance"'
-    assert csv_output["row2"][17] == '"Under maintenance"'
+    assert csv_output["row2"][14] == '"Yes"'
+    assert csv_output["row2"][15] == '"Unpublished"'
+    assert csv_output["row2"][16] == '"Not Stale"'
+    assert csv_output["row2"][17] == '"Non compliant"'
     assert csv_output["row2"][18] == f'"{dataset2.id}"'
     assert csv_output["row2"][19] == '"test2.xml"'
     assert csv_output["row2"][20] == f'"{txc_file_2.national_operator_code}"'
     assert csv_output["row2"][21] == '"2022-01-24"'
     assert csv_output["row2"][22] == '"2023-01-24"'
     assert csv_output["row2"][23] == '"2023-06-24"'
-    assert csv_output["row2"][24] == '"Under maintenance"'
-    assert csv_output["row2"][25] == '"Under maintenance"'
-    assert csv_output["row2"][26] == '"Under maintenance"'
-    assert csv_output["row2"][27] == '"Under maintenance"'
-    assert csv_output["row2"][28] == '"Under maintenance"'
+    assert csv_output["row2"][24] == '""'
+    assert csv_output["row2"][25] == '""'
+    assert csv_output["row2"][26] == '""'
+    assert csv_output["row2"][27] == '""'
+    assert csv_output["row2"][28] == '""'
     assert csv_output["row2"][29] == '"2023-12-13"'
     assert csv_output["row2"][30] == '"2023-04-11"'
     assert csv_output["row2"][31] == '""'
@@ -1579,21 +1760,21 @@ def test_weca_seasonal_status_csv_output():
     assert csv_output["row3"][11] == '"Yes"'
     assert csv_output["row3"][12] == '"No"'
     assert csv_output["row3"][13] == '"No"'
-    assert csv_output["row3"][14] == '"Under maintenance"'
-    assert csv_output["row3"][15] == '"Under maintenance"'
-    assert csv_output["row3"][16] == '"Under maintenance"'
-    assert csv_output["row3"][17] == '"Under maintenance"'
+    assert csv_output["row3"][14] == '"Yes"'
+    assert csv_output["row3"][15] == '"Unpublished"'
+    assert csv_output["row3"][16] == '"Not Stale"'
+    assert csv_output["row3"][17] == '"Non compliant"'
     assert csv_output["row3"][18] == f'"{dataset3.id}"'
     assert csv_output["row3"][19] == '"test3.xml"'
     assert csv_output["row3"][20] == f'"{txc_file_3.national_operator_code}"'
     assert csv_output["row3"][21] == '"2022-01-28"'
     assert csv_output["row3"][22] == '"2023-01-28"'
     assert csv_output["row3"][23] == '""'
-    assert csv_output["row3"][24] == '"Under maintenance"'
-    assert csv_output["row3"][25] == '"Under maintenance"'
-    assert csv_output["row3"][26] == '"Under maintenance"'
-    assert csv_output["row3"][27] == '"Under maintenance"'
-    assert csv_output["row3"][28] == '"Under maintenance"'
+    assert csv_output["row3"][24] == '""'
+    assert csv_output["row3"][25] == '""'
+    assert csv_output["row3"][26] == '""'
+    assert csv_output["row3"][27] == '""'
+    assert csv_output["row3"][28] == '""'
     assert csv_output["row3"][29] == '"2020-12-17"'
     assert csv_output["row3"][30] == '"2023-04-11"'
     assert csv_output["row3"][31] == '"2022-01-17"'
@@ -1611,6 +1792,7 @@ def test_weca_seasonal_status_csv_output():
 
 
 @freeze_time("2023-02-28")
+@override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
 def test_seasonal_status_csv_output():
     licence_number = "PD0001111"
     num_otc_services = 10
@@ -1774,21 +1956,21 @@ def test_seasonal_status_csv_output():
     assert csv_output["row0"][11] == '"Yes"'
     assert csv_output["row0"][12] == '"No"'
     assert csv_output["row0"][13] == '"No"'
-    assert csv_output["row0"][14] == '"Under maintenance"'
-    assert csv_output["row0"][15] == '"Under maintenance"'
-    assert csv_output["row0"][16] == '"Under maintenance"'
-    assert csv_output["row0"][17] == '"Under maintenance"'
+    assert csv_output["row0"][14] == '"Yes"'
+    assert csv_output["row0"][15] == '"Unpublished"'
+    assert csv_output["row0"][16] == '"Not Stale"'
+    assert csv_output["row0"][17] == '"Non compliant"'
     assert csv_output["row0"][18] == f'"{dataset0.id}"'
     assert csv_output["row0"][19] == '"test0.xml"'
     assert csv_output["row0"][20] == f'"{txc_file_0.national_operator_code}"'
     assert csv_output["row0"][21] == '"2022-01-28"'
     assert csv_output["row0"][22] == '"2023-01-28"'
     assert csv_output["row0"][23] == '"2023-06-28"'
-    assert csv_output["row0"][24] == '"Under maintenance"'
-    assert csv_output["row0"][25] == '"Under maintenance"'
-    assert csv_output["row0"][26] == '"Under maintenance"'
-    assert csv_output["row0"][27] == '"Under maintenance"'
-    assert csv_output["row0"][28] == '"Under maintenance"'
+    assert csv_output["row0"][24] == '""'
+    assert csv_output["row0"][25] == '""'
+    assert csv_output["row0"][26] == '""'
+    assert csv_output["row0"][27] == '""'
+    assert csv_output["row0"][28] == '""'
     assert csv_output["row0"][29] == '"2023-12-17"'
     assert csv_output["row0"][30] == '"2023-04-11"'
     assert csv_output["row0"][31] == '"2022-01-17"'
@@ -1818,21 +2000,21 @@ def test_seasonal_status_csv_output():
     assert csv_output["row1"][11] == '"Yes"'
     assert csv_output["row1"][12] == '"No"'
     assert csv_output["row1"][13] == '"No"'
-    assert csv_output["row1"][14] == '"Under maintenance"'
-    assert csv_output["row1"][15] == '"Under maintenance"'
-    assert csv_output["row1"][16] == '"Under maintenance"'
-    assert csv_output["row1"][17] == '"Under maintenance"'
+    assert csv_output["row1"][14] == '"Yes"'
+    assert csv_output["row1"][15] == '"Unpublished"'
+    assert csv_output["row1"][16] == '"Not Stale"'
+    assert csv_output["row1"][17] == '"Non compliant"'
     assert csv_output["row1"][18] == f'"{dataset1.id}"'
     assert csv_output["row1"][19] == '"test1.xml"'
     assert csv_output["row1"][20] == f'"{txc_file_1.national_operator_code}"'
     assert csv_output["row1"][21] == '"2022-01-24"'
     assert csv_output["row1"][22] == '"2023-01-24"'
     assert csv_output["row1"][23] == '"2023-06-24"'
-    assert csv_output["row1"][24] == '"Under maintenance"'
-    assert csv_output["row1"][25] == '"Under maintenance"'
-    assert csv_output["row1"][26] == '"Under maintenance"'
-    assert csv_output["row1"][27] == '"Under maintenance"'
-    assert csv_output["row1"][28] == '"Under maintenance"'
+    assert csv_output["row1"][24] == '""'
+    assert csv_output["row1"][25] == '""'
+    assert csv_output["row1"][26] == '""'
+    assert csv_output["row1"][27] == '""'
+    assert csv_output["row1"][28] == '""'
     assert csv_output["row1"][29] == '"2023-12-13"'
     assert csv_output["row1"][30] == '"2023-04-11"'
     assert csv_output["row1"][31] == '"2026-01-17"'
@@ -1862,21 +2044,21 @@ def test_seasonal_status_csv_output():
     assert csv_output["row2"][11] == '"Yes"'
     assert csv_output["row2"][12] == '"No"'
     assert csv_output["row2"][13] == '"No"'
-    assert csv_output["row2"][14] == '"Under maintenance"'
-    assert csv_output["row2"][15] == '"Under maintenance"'
-    assert csv_output["row2"][16] == '"Under maintenance"'
-    assert csv_output["row2"][17] == '"Under maintenance"'
+    assert csv_output["row2"][14] == '"Yes"'
+    assert csv_output["row2"][15] == '"Unpublished"'
+    assert csv_output["row2"][16] == '"Not Stale"'
+    assert csv_output["row2"][17] == '"Non compliant"'
     assert csv_output["row2"][18] == f'"{dataset2.id}"'
     assert csv_output["row2"][19] == '"test2.xml"'
     assert csv_output["row2"][20] == f'"{txc_file_2.national_operator_code}"'
     assert csv_output["row2"][21] == '"2022-01-24"'
     assert csv_output["row2"][22] == '"2023-01-24"'
     assert csv_output["row2"][23] == '"2023-06-24"'
-    assert csv_output["row2"][24] == '"Under maintenance"'
-    assert csv_output["row2"][25] == '"Under maintenance"'
-    assert csv_output["row2"][26] == '"Under maintenance"'
-    assert csv_output["row2"][27] == '"Under maintenance"'
-    assert csv_output["row2"][28] == '"Under maintenance"'
+    assert csv_output["row2"][24] == '""'
+    assert csv_output["row2"][25] == '""'
+    assert csv_output["row2"][26] == '""'
+    assert csv_output["row2"][27] == '""'
+    assert csv_output["row2"][28] == '""'
     assert csv_output["row2"][29] == '"2023-12-13"'
     assert csv_output["row2"][30] == '"2023-04-11"'
     assert csv_output["row2"][31] == '""'
@@ -1906,21 +2088,21 @@ def test_seasonal_status_csv_output():
     assert csv_output["row3"][11] == '"Yes"'
     assert csv_output["row3"][12] == '"No"'
     assert csv_output["row3"][13] == '"No"'
-    assert csv_output["row3"][14] == '"Under maintenance"'
-    assert csv_output["row3"][15] == '"Under maintenance"'
-    assert csv_output["row3"][16] == '"Under maintenance"'
-    assert csv_output["row3"][17] == '"Under maintenance"'
+    assert csv_output["row3"][14] == '"Yes"'
+    assert csv_output["row3"][15] == '"Unpublished"'
+    assert csv_output["row3"][16] == '"Not Stale"'
+    assert csv_output["row3"][17] == '"Non compliant"'
     assert csv_output["row3"][18] == f'"{dataset3.id}"'
     assert csv_output["row3"][19] == '"test3.xml"'
     assert csv_output["row3"][20] == f'"{txc_file_3.national_operator_code}"'
     assert csv_output["row3"][21] == '"2022-01-28"'
     assert csv_output["row3"][22] == '"2023-01-28"'
     assert csv_output["row3"][23] == '""'
-    assert csv_output["row3"][24] == '"Under maintenance"'
-    assert csv_output["row3"][25] == '"Under maintenance"'
-    assert csv_output["row3"][26] == '"Under maintenance"'
-    assert csv_output["row3"][27] == '"Under maintenance"'
-    assert csv_output["row3"][28] == '"Under maintenance"'
+    assert csv_output["row3"][24] == '""'
+    assert csv_output["row3"][25] == '""'
+    assert csv_output["row3"][26] == '""'
+    assert csv_output["row3"][27] == '""'
+    assert csv_output["row3"][28] == '""'
     assert csv_output["row3"][29] == '"2020-12-17"'
     assert csv_output["row3"][30] == '"2023-04-11"'
     assert csv_output["row3"][31] == '"2022-01-17"'
