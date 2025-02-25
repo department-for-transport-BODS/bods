@@ -4,8 +4,8 @@ import io
 import zipfile
 from logging import getLogger
 from unittest import TestCase
-from unittest.mock import Mock, patch
-
+from unittest.mock import Mock, patch, MagicMock
+import pandas as pd
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
@@ -78,6 +78,7 @@ from transit_odp.users.factories import (
     AgentUserInviteFactory,
     UserFactory,
 )
+import transit_odp.publish.requires_attention as publish_attention
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.utils import create_verified_org_user
 from waffle.testutils import override_flag
@@ -92,7 +93,11 @@ from transit_odp.dqs.factories import (
     ChecksFactory,
     TaskResultsFactory,
 )
-
+from transit_odp.browse.views.timetable_views import LineMetadataDetailView
+from transit_odp.avl.tests.test_abods_registry import (
+    REQUEST,
+    mocked_requests_post_valid_response,
+)
 
 pytestmark = pytest.mark.django_db
 AVL_LINE_LEVEL_REQUIRE_ATTENTION = (
@@ -1947,6 +1952,50 @@ class TestLTAView:
         for lta in response.context_data["object_list"]:
             if lta.ui_lta_name_trimmed == "Bournemouth, Christchurch and Poole Council":
                 assert len(lta.auth_ids) == 2
+
+
+class TestLineMetadataDetailView:
+
+    @patch(
+        "django.conf.settings.ABODS_AVL_LINE_LEVEL_DETAILS_URL", "http://dummy_url.com"
+    )
+    @patch("django.conf.settings.ABODS_AVL_AUTH_TOKEN", "dummy_token")
+    @override_flag("dqs_require_attention", active=True)
+    @override_flag("dqs_require_attention", active=True)
+    @override_flag("is_complete_service_pages_active", active=True)
+    @override_flag("is_avl_require_attention_active", active=True)
+    @patch(REQUEST, side_effect=mocked_requests_post_valid_response)
+    @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
+    def test_avl_data(self, mock_vehicle_activity, request_factory):
+        """Test AVL data"""
+
+        mock_vehicle_activity.return_value = pd.DataFrame(
+            {"OperatorRef": ["SDCU"], "LineRef": ["line2"]}
+        )
+        org = OrganisationFactory()
+        total_services = 4
+        licence_number = "PD5000124"
+        all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        all_line_names = [f"line:{n}" for n in range(total_services)]
+        print(f"all_line_names: {all_line_names}")
+        dataset1 = DatasetFactory(organisation=org)
+
+        # Setup three TXCFileAttributes that will be 'Up to Date'
+        txcfileattribute1 = TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[0],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
+        )
+
+        response = LineMetadataDetailView.get_avl_data(
+            None, [txcfileattribute1], all_line_names[0]
+        )
+
+        assert isinstance(response, dict)
+        assert "is_avl_complaint" in response
 
 
 class TestLTADetailView:

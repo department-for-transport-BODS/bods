@@ -586,31 +586,25 @@ class LineMetadataDetailView(DetailView):
             dataset_id = row["dataset_id"]
             org_id = row["operator_id"]
 
-            start_date = row["valid_from"].date()
+            start_date = (
+                row["valid_from"].date() if not pd.isnull(row["valid_from"]) else today
+            )
             end_date = row["valid_to"] if not pd.isnull(row["valid_to"]) else today
             file_name = row["xml_file_name"]
 
-            end_date_str = (
-                None if pd.isnull(row["valid_to"]) else row["valid_to"].date()
-            )
-
-            if not start_date:
-                logger.info(f"No start date found for {file_name}")
-                continue
-
             if end_date >= today >= start_date:
                 current_valid_files.append(
-                    self.get_file_object(start_date, end_date_str, file_name)
+                    self.get_file_object(row["valid_from"], row["valid_to"], file_name)
                 )
 
             if start_date > today:
                 future_files.append(
-                    self.get_file_object(start_date, end_date_str, file_name)
+                    self.get_file_object(row["valid_from"], row["valid_to"], file_name)
                 )
 
             if today > end_date:
                 expired_files.append(
-                    self.get_file_object(start_date, end_date_str, file_name)
+                    self.get_file_object(row["valid_from"], row["valid_to"], file_name)
                 )
 
         return {
@@ -629,8 +623,8 @@ class LineMetadataDetailView(DetailView):
         Return the object for the file details
         """
         return {
-            "start_date": start_date,
-            "end_date": end_date,
+            "start_date": None if pd.isnull(start_date) else start_date,
+            "end_date": None if pd.isnull(end_date) else end_date,
             "filename": file_name,
         }
 
@@ -649,7 +643,11 @@ class LineMetadataDetailView(DetailView):
         expired_files = []
 
         for file in file_attributes:
-            start_date = file.operating_period_start_date
+            start_date = (
+                file.operating_period_start_date
+                if file.operating_period_start_date
+                else today
+            )
             end_date = (
                 file.operating_period_end_date
                 if file.operating_period_end_date
@@ -657,28 +655,30 @@ class LineMetadataDetailView(DetailView):
             )
             file_name = file.filename
 
-            if not start_date:
-                logger.info(f"No start date found for {file.filename}")
-                continue
-
             if end_date >= today >= start_date:
                 current_valid_files.append(
                     self.get_file_object(
-                        start_date, file.operating_period_end_date, file_name
+                        file.operating_period_start_date,
+                        file.operating_period_end_date,
+                        file_name,
                     )
                 )
 
             if start_date > today:
                 future_files.append(
                     self.get_file_object(
-                        start_date, file.operating_period_end_date, file_name
+                        file.operating_period_start_date,
+                        file.operating_period_end_date,
+                        file_name,
                     )
                 )
 
             if today > end_date:
                 expired_files.append(
                     self.get_file_object(
-                        start_date, file.operating_period_end_date, file_name
+                        file.operating_period_start_date,
+                        file.operating_period_end_date,
+                        file_name,
                     )
                 )
 
@@ -826,16 +826,17 @@ class LineMetadataDetailView(DetailView):
             .add_split_linenames()
         )
 
-        kwargs.update(
-            self.get_avl_data(
-                txc_file_attributes,
-                line,
+        if FeatureFlags.COMPLETE_SERVICE_PAGES:
+            kwargs.update(
+                self.get_avl_data(
+                    txc_file_attributes,
+                    line,
+                )
             )
-        )
-        kwargs.update(self.get_fares_data(txc_file_attributes))
-        kwargs.update(
-            self.get_timetables_data(txc_file_attributes, service_code, dataset.id)
-        )
+            kwargs.update(self.get_fares_data(txc_file_attributes))
+            kwargs.update(
+                self.get_timetables_data(txc_file_attributes, service_code, dataset.id)
+            )
 
         return kwargs
 

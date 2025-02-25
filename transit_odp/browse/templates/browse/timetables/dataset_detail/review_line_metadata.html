@@ -77,6 +77,8 @@
       </table>
     </div>
   </div>
+  
+  {% flag is_complete_service_pages_active %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <table class="govuk-table dataset-property-table">
@@ -133,7 +135,6 @@
       </table>
     </div>
   </div>
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <table class="govuk-table dataset-property-table">
@@ -159,6 +160,8 @@
       
     </div>
   </div>
+  {% endflag %}
+
   {% if is_timetable_visualiser_active %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
