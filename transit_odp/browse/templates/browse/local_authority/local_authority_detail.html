@@ -57,7 +57,7 @@
         {% if not is_complete_service_pages_active %}
           <div class="govuk-grid-column-one-half">
             <div class="feed-stat">
-              <span class="feed-stat__value">{{ total_services_requiring_attention }}%</span>
+              <span class="feed-stat__value">{{ services_require_attention_percentage }}%</span>
               <span class="feed-stat__label">
                 {% trans "Services that<br />require attention" %}
               </span>
@@ -66,7 +66,7 @@
         {% else %}
           <div class="govuk-grid-column-one-half">
             <div class="feed-stat">
-              <span class="feed-stat__value">{{ services_require_attention_percentage }}</span>
+              <span class="feed-stat__value">{{ total_services_requiring_attention }}</span>
               <span class="feed-stat__label">
                 {% trans "Overall services requiring attention" %}
               </span>

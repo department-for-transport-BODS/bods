@@ -334,10 +334,10 @@ class LocalAuthorityDetailView(BaseDetailView):
         context[
             "total_services_requiring_attention"
         ] = get_requires_attention_data_lta_line_level_length(lta_objs)
-        context[
-            "total_timetable_records_requiring_attention"
-        ] = get_timetable_records_require_attention_lta_line_level_length(lta_objs)
         if is_complete_service_pages_active:
+            context[
+                "total_timetable_records_requiring_attention"
+            ] = get_timetable_records_require_attention_lta_line_level_length(lta_objs)
             context[
                 "total_location_records_requiring_attention"
             ] = get_avl_records_require_attention_lta_line_level_length(lta_objs)
