@@ -504,6 +504,7 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
         revision.txc_file_attributes.all().delete()
         revision.pti_observations.all().delete()
         revision.service_patterns.all().delete()
+        revision.dqs_report.all().delete()
 
     @transaction.atomic
     def done(self, form_list, **kwargs):
