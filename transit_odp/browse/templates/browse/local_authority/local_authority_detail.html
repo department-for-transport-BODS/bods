@@ -134,7 +134,7 @@
                 {% for licence_number, organisation_name in licence_organisation_map.items %}
                   <li class="govuk-grid-row">
                       <span class="govuk-grid-column-two-thirds text-wrap">{{ organisation_name }}</span>
-                      <a class="govuk-grid-column-one-third govuk-link" href="#">{{ licence_number }}</a>
+                      <a class="govuk-grid-column-one-third govuk-link" href="{% url 'operator-licence-detail' number=licence_number host hosts.data %}">{{ licence_number }}</a>
                   </li>
                 {% endfor %}
               </ul>
