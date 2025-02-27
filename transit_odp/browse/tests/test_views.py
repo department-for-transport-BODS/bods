@@ -5,8 +5,10 @@ import zipfile
 from logging import getLogger
 from unittest import TestCase
 from unittest.mock import Mock, patch, MagicMock
+
 import pandas as pd
 import pytest
+import pandas as pd
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory
@@ -93,6 +95,11 @@ from transit_odp.dqs.factories import (
     ChecksFactory,
     TaskResultsFactory,
 )
+import transit_odp.publish.requires_attention as publish_attention
+from transit_odp.otc.models import Service as OTCService
+from transit_odp.otc.models import LocalAuthority
+from transit_odp.dqs.constants import Level, TaskResultsStatus
+
 from transit_odp.browse.views.timetable_views import LineMetadataDetailView
 from transit_odp.avl.tests.test_abods_registry import (
     REQUEST,
@@ -2377,6 +2384,189 @@ class TestLTADetailView:
         )
         assert context["total_in_scope_in_season_services"] == 3
         assert context["services_require_attention_percentage"] == 0
+
+    @override_flag("dqs_require_attention", active=True)
+    @override_flag("is_complete_service_pages_active", active=True)
+    @override_flag("is_avl_require_attention_active", active=True)
+    @patch.object(publish_attention, "AbodsRegistery")
+    @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
+    @freeze_time("2024-11-24T16:40:40.000Z")
+    def test_complete_service_pages_lta_detail_view(
+        self,
+        mock_vehicle_activity,
+        mock_abodsregistry,
+        request_factory: RequestFactory,
+    ):
+        """Test LTA WECA details view stat with complaint data in_scope_in_season
+        count there are zero which required attention
+
+        Args:
+            request_factory (RequestFactory): Request Factory
+        """
+        mock_registry_instance = MagicMock()
+        mock_abodsregistry.return_value = mock_registry_instance
+        mock_registry_instance.records.return_value = ["line1__SDCU", "line2__SDCU"]
+        mock_vehicle_activity.return_value = pd.DataFrame(
+            {"OperatorRef": ["SDCU"], "LineRef": ["line2"]}
+        )
+        org = OrganisationFactory()
+        total_services = 9
+        licence_number = "PD5000229"
+        service = []
+        service_code_prefix = "1101000"
+        atco_code = "110"
+        all_service_codes = [
+            f"{licence_number}:{service_code_prefix}{n}" for n in range(total_services)
+        ]
+        bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+        dataset1 = DatasetFactory(organisation=org)
+        txcfileattributes = []
+
+        otc_lic = LicenceModelFactory(number=licence_number)
+        for code in all_service_codes:
+            service.append(
+                ServiceModelFactory(
+                    licence=otc_lic,
+                    registration_number=code.replace(":", "/"),
+                    effective_date=datetime.date(year=2020, month=1, day=1),
+                    atco_code=atco_code,
+                    service_number="line1",
+                )
+            )
+
+        ui_lta = UILtaFactory(name="Dorset County Council")
+
+        local_authority = LocalAuthorityFactory(
+            id="1",
+            name="Dorset Council",
+            ui_lta=ui_lta,
+            registration_numbers=service[0:6],
+        )
+
+        AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta, atco_code=atco_code)
+
+        # Setup two TXCFileAttributes that will be 'Not Stale'
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=dataset1.live_revision.id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[0],
+                operating_period_end_date=datetime.date.today()
+                + datetime.timedelta(days=50),
+                modification_datetime=timezone.now(),
+                national_operator_code="SDCU",
+            )
+        )
+
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=dataset1.live_revision.id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[1],
+                operating_period_end_date=datetime.date.today()
+                + datetime.timedelta(days=75),
+                modification_datetime=timezone.now() - datetime.timedelta(days=50),
+                national_operator_code="SDCU",
+            )
+        )
+
+        # Setup a draft TXCFileAttributes
+        dataset2 = DraftDatasetFactory(organisation=org)
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=dataset2.revisions.last().id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[2],
+            )
+        )
+
+        live_revision = dataset2.revisions.last()
+        # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=live_revision.id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[3],
+                operating_period_end_date=None,
+                modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+                national_operator_code="SDCU",
+            )
+        )
+
+        # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=live_revision.id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[4],
+                operating_period_end_date=datetime.date.today()
+                - datetime.timedelta(weeks=105),
+                modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+            )
+        )
+
+        # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=live_revision.id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[5],
+                operating_period_end_date=datetime.date.today()
+                + datetime.timedelta(days=50),
+            )
+        )
+        check1 = ChecksFactory(importance=Level.critical.value)
+        check2 = ChecksFactory(importance=Level.critical.value)
+
+        services_with_critical = []
+        services_with_advisory = []
+        for i, txcfileattribute in enumerate(txcfileattributes):
+            check_obj = check1 if i % 2 == 0 else check2
+            if check_obj.importance == Level.critical.value:
+                services_with_critical.append(
+                    (txcfileattribute.service_code, txcfileattribute.line_names[0])
+                )
+            else:
+                services_with_advisory.append(
+                    (txcfileattribute.service_code, txcfileattribute.line_names[0])
+                )
+
+            task_result = TaskResultsFactory(
+                status=TaskResultsStatus.PENDING.value,
+                transmodel_txcfileattributes=txcfileattribute,
+                checks=check_obj,
+            )
+            service_pattern = ServicePatternFactory(
+                revision=txcfileattribute.revision,
+                line_name=txcfileattribute.line_names[0],
+            )
+            ServiceFactory(
+                revision=txcfileattribute.revision,
+                service_code=txcfileattribute.service_code,
+                name=txcfileattribute.line_names[0],
+                service_patterns=[service_pattern],
+                txcfileattributes=txcfileattribute,
+            )
+
+            service_pattern_stop = ServicePatternStopFactory(
+                service_pattern=service_pattern
+            )
+
+            ObservationResultsFactory(
+                service_pattern_stop=service_pattern_stop, taskresults=task_result
+            )
+
+        request = request_factory.get(
+            f"/local-authority/?auth_ids={local_authority.id}"
+        )
+        request.user = UserFactory()
+
+        response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
+        assert response.status_code == 200
+        context = response.context_data
+        assert context["total_timetable_records_requiring_attention"] == 9
+        assert context["total_location_records_requiring_attention"] == 7
+        assert context["total_fares_records_requiring_attention"] == 9
 
 
 class TestGlobalFeedbackView:

@@ -22,16 +22,19 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">{{ object.ui_lta_name }}</h1>
-      <h2 class="govuk-heading-m govuk-!-margin-top-3">
-        {% filter force_escape %}
-          {% trans "Timetables data" %}
-        {% endfilter %}
-        {% if services_require_attention_percentage == 0 %}
-          <span class="govuk-tag bods-4a5288c641-0 govuk-tag--green">{% trans "Compliant" %}</span>
-        {% else %}
-          <span class="govuk-tag--red govuk-tag bods-4a5288c641-0">{% trans "Not Compliant" %}</span>
-        {% endif %}
-      </h2>
+      {% if not is_complete_service_pages_active %}
+        <h2 class="govuk-heading-m govuk-!-margin-top-3">
+          {% filter force_escape %}
+            {% trans "Timetables data" %}
+          {% endfilter %}
+          {% if services_require_attention_percentage == 0 %}
+            <span class="govuk-tag govuk-tag--green">{% trans "Compliant" %}</span>
+          {% else %}
+            <span class="govuk-tag--red govuk-tag">{% trans "Not Compliant" %}</span>
+          {% endif %}
+        </h2>
+      {% endif %}
+      
       <p class="govuk-body">
         {% filter force_escape %}
           {% trans "The service codes summarised here are registered with the OTC and are in scope of BODS, but are not yet published in a complete and accurate way." %}
@@ -51,21 +54,32 @@
             </span>
           </div>
         </div>
-        <div class="govuk-grid-column-one-half">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ services_require_attention_percentage }}%</span>
-            <span class="feed-stat__label">
-              {% trans "Services that<br />require attention" %}
-            </span>
+        {% if not is_complete_service_pages_active %}
+          <div class="govuk-grid-column-one-half">
+            <div class="feed-stat">
+              <span class="feed-stat__value">{{ services_require_attention_percentage }}%</span>
+              <span class="feed-stat__label">
+                {% trans "Services that<br />require attention" %}
+              </span>
+            </div>
           </div>
-        </div>
+        {% else %}
+          <div class="govuk-grid-column-one-half">
+            <div class="feed-stat">
+              <span class="feed-stat__value">{{ total_services_requiring_attention }}</span>
+              <span class="feed-stat__label">
+                {% trans "Overall services requiring attention" %}
+              </span>
+            </div>
+          </div>
+        {% endif %}
       </div>
       {% if is_avl_require_attention_active %}
         <ul class="govuk-list govuk-!-margin-top-5">
           <li>
             <a class="govuk-link" href="{% url 'local-authority-compliance-report' host hosts.data %}?auth_ids={{ auth_ids }}">
               {% filter force_escape %}
-                {% trans "Download detailed export" %}
+                {% trans "Download Compliance report" %}
               {% endfilter %}
             </a>
           </li>
@@ -89,6 +103,98 @@
             </a>
           </li>
         </ul>
+      {% endif %}
+      {% if is_complete_service_pages_active %}
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+        <h3 class="govuk-heading-m govuk-!-margin-top-7">
+          {% filter force_escape %}
+            {% trans "Review data accuracy" %}
+          {% endfilter %}
+        </h3>
+        <p class="govuk-body">
+          {% filter force_escape %}
+            {% blocktrans %}
+              The complete services page here provide a combined view of real time Location
+              data, timetables and fares data. Please review the data for each service and 
+              supply feedback if any issues exist.
+            {% endblocktrans %}
+          {% endfilter %}
+        </p>
+        <div id="feed-stat-list" class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third">
+            <div class="feed-stat">
+              <span class="feed-stat__label">
+                {% trans "Licence number" %}
+              </span>
+            </div>
+          </div>
+          <div class="govuk-grid-column-two-thirds">
+            <div class="feed-stat">
+              <ul class="govuk-list">
+                {% for licence_number, organisation_name in licence_organisation_map.items %}
+                  <li class="govuk-grid-row">
+                      <span class="govuk-grid-column-two-thirds text-wrap">{{ organisation_name }}</span>
+                      <a class="govuk-grid-column-one-third govuk-link" href="#">{{ licence_number }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+        <h3 class="govuk-heading-m govuk-!-margin-top-7">
+          {% filter force_escape %}
+            {% trans "Timetables data" %}
+          {% endfilter %}
+        </h3>
+        <div id="feed-stat-list" class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            <div class="feed-stat">
+              <span class="feed-stat__value">
+                {{ total_timetable_records_requiring_attention }}
+              </span>
+              <span class="feed-stat__label">
+                {% trans "Services requiring attention" %}
+              </span>
+            </div>
+          </div>
+        </div>
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+        <h3 class="govuk-heading-m govuk-!-margin-top-7">
+          {% filter force_escape %}
+            {% trans "Location data" %}
+          {% endfilter %}
+        </h3>
+        <div id="feed-stat-list" class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            <div class="feed-stat">
+              <span class="feed-stat__value">
+                {{ total_location_records_requiring_attention }}
+              </span>
+              <span class="feed-stat__label">
+                {% trans "Services requiring attention" %}
+              </span>
+            </div>
+          </div>
+        </div>
+          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+            <h3 class="govuk-heading-m govuk-!-margin-top-7">
+              {% filter force_escape %}
+                {% trans "Fares data" %}
+              {% endfilter %}
+            </h3>
+            <div id="feed-stat-list" class="govuk-grid-row">
+              <div class="govuk-grid-column-one-half">
+                <div class="feed-stat">
+                  <span class="feed-stat__value">
+                    {{ total_fares_records_requiring_attention }}
+                  </span>
+                  <span class="feed-stat__label">
+                    {% trans "Services requiring attention" %}
+                  </span>
+                </div>
+              </div>
+        </div>
       {% endif %}
     </div>
     <div class="govuk-grid-column-one-third">
