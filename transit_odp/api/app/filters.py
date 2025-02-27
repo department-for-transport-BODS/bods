@@ -1,4 +1,6 @@
 from django_filters import rest_framework as filters
+from django.db.models.query import QuerySet
+
 import pandas as pd
 
 from transit_odp.publish.requires_attention import get_line_level_txc_map_service_base
@@ -22,7 +24,25 @@ class ServicePatternFilterSet(filters.FilterSet):
         service_codes_list = value.split(",")
         return queryset.filter(services__service_code__in=service_codes_list)
 
-    def filter_by_licence_number(self, queryset, name, value):
+    def filter_by_licence_number(
+        self, queryset: QuerySet, _: str, value: str
+    ) -> QuerySet:
+        """
+        Filter service patterns by the services present in the licence number
+        If the Txc file present for a service we will search for specific revision id
+        and txcattribute file id
+        but it not query set was returning all rows so we will search for
+        service code and line name to get blank resposne
+
+
+        Args:
+            queryset (QuerySet): Service Pattern Queryset
+            _ (str): name of the field
+            value (str): Licence number value
+
+        Returns:
+            QuerySet: Queryset with services filter applied for licence
+        """
         otc_services_df = pd.DataFrame.from_records(
             OTCService.objects.filter(licence__number=value).values(
                 "registration_number", "service_number"

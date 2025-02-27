@@ -326,6 +326,11 @@ class LicenceDetailView(BaseDetailView):
         return context
 
     def is_fares_compliant(self) -> bool:
+        """Check if a given service is fairs compliant or not
+
+        Returns:
+            bool: True if compliant else False
+        """
         if not self.service_txc_file:
             return False
 
@@ -359,7 +364,13 @@ class LicenceDetailView(BaseDetailView):
             return False
         return True
 
-    def is_timetable_compliant(self):
+    def is_timetable_compliant(self) -> bool:
+        """Check if a service is timetable require attention
+        or not
+
+        Returns:
+            bool: True is compliant False if not
+        """
         if not self.service_txc_file:
             return False
 
@@ -369,7 +380,12 @@ class LicenceDetailView(BaseDetailView):
             return False
         return True
 
-    def is_dqs_compliant(self):
+    def is_dqs_compliant(self) -> bool:
+        """Check if service has any dqs require attention
+
+        Returns:
+            bool: True if compliant False if not
+        """
         return (
             True
             if (
@@ -380,7 +396,12 @@ class LicenceDetailView(BaseDetailView):
             else False
         )
 
-    def is_avl_compliant(self):
+    def is_avl_compliant(self) -> bool:
+        """Check if avl is compliant for a service
+
+        Returns:
+            bool: True if compliant else False
+        """
         if not self.service_txc_file:
             return False
 
@@ -399,7 +420,14 @@ class LicenceDetailView(BaseDetailView):
             return False
         return True
 
-    def is_service_in_scope(self):
+    def is_service_in_scope(self) -> bool:
+        """check is service is in scope or not system will
+        check 3 points to decide in scope Service Exception,
+        Seasonal Service Status and Traveling region
+
+        Returns:
+            bool: True if in scope else False
+        """
         seasonal_service = self.seasonal_service_map.get(
             self.service.get("registration_number")
         )
@@ -425,6 +453,16 @@ class LicenceDetailView(BaseDetailView):
     def get_service_compliant_status(
         self, registration_number: str, line_name: str
     ) -> bool:
+        """Check if service is compliant or not, it will check 3 params
+        Fares Compliant, Timetable Compliant, AVL compliant
+
+        Args:
+            registration_number (str): Registration number
+            line_name (str): Line name
+
+        Returns:
+            bool: True if compliant False if not
+        """
         if (
             self.is_fares_compliant(registration_number, line_name)
             and self.is_timetable_compliant(registration_number, line_name)
@@ -452,6 +490,14 @@ class LicenceDetailView(BaseDetailView):
     def get_service_code_exemption_map(
         self, licence_number: str
     ) -> Dict[str, ServiceCodeExemption]:
+        """Get the status of service excemption
+
+        Args:
+            licence_number (str): licence number to check for excemption
+
+        Returns:
+            Dict[str, ServiceCodeExemption]: dict for excemption object
+        """
         return {
             service.registration_number.replace("/", ":"): service
             for service in ServiceCodeExemption.objects.add_registration_number().filter(
