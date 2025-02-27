@@ -283,6 +283,9 @@ class LicenceDetailView(BaseDetailView):
         context["licence_services"] = self.otc_map
 
         for service in self.otc_map:
+            service["registration_number"] = service["registration_number"].replace(
+                "/", ":"
+            )
             self.service = service
             service_txc_file = self.txc_map.get(
                 (service.get("registration_number"), service.get("service_number")),
@@ -291,9 +294,11 @@ class LicenceDetailView(BaseDetailView):
             if service_txc_file:
                 self.service_txc_file = service_txc_file
                 self.operator_ref = self.service_txc_file.national_operator_code
+                service["dataset_id"] = service_txc_file.revision.dataset_id
             else:
                 self.service_txc_file = None
                 self.operator_ref = None
+                service["dataset_id"] = None
             is_in_scope = self.is_service_in_scope()
             service["is_in_scope"] = is_in_scope
 

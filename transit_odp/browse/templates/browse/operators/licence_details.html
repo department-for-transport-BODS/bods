@@ -46,9 +46,9 @@
         <h2 class="govuk-heading-l">Review Service Numbers</h2>
         <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
             {% for service in licence_services %}
-                <p class="govuk-body govuk-!-padding-bottom-2 border-bottom-custom">
+                <p class="govuk-body govuk-!-padding-bottom-2 border-bottom-custom">                    
                     <a class="govuk-link" href="{% url 'feed-line-detail' pk=pk host hosts.data %}?line={{ service.service_number }}&service={{ service.registration_number }}">{{ service.service_number}} - {{ service.registration_number }}</a>
-                    <span class="govuk-tag {% if service.is_compliant and service.is_in_scope %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+                    <span class="govuk-tag govuk-!-margin-left-2 {% if service.is_compliant and service.is_in_scope %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
                         {% if service.is_compliant %}
                             {% if service.is_in_scope %}
                                 Complaint
