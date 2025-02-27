@@ -1955,7 +1955,6 @@ class TestLTAView:
 
 
 class TestLineMetadataDetailView:
-
     @patch(
         "django.conf.settings.ABODS_AVL_LINE_LEVEL_DETAILS_URL", "http://dummy_url.com"
     )
