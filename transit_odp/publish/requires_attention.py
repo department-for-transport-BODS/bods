@@ -356,22 +356,14 @@ def _update_data(
     """
     Append data to object_list of services requiring attention.
     """
-    if not line_number:
-        object_list.append(
-            {
-                "licence_number": service.otc_licence_number,
-                "service_code": service.registration_number,
-                "line_number": service.service_number,
-            }
-        )
-    else:
-        object_list.append(
-            {
-                "licence_number": service.otc_licence_number,
-                "service_code": service.registration_number,
-                "line_number": line_number,
-            }
-        )
+
+    object_list.append(
+        {
+            "licence_number": service.otc_licence_number,
+            "service_code": service.registration_number,
+            "line_number": line_number if line_number else service.service_number,
+        }
+    )
 
 
 def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -> tuple:
@@ -645,6 +637,30 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     return object_list
 
 
+def is_avl_requires_attention(
+    noc: str,
+    line_name: str,
+    synced_in_last_month: bool,
+    uncounted_activity_df: pd.DataFrame,
+):
+    """Return True if the avl service requires the attention, otherwise False"""
+
+    if not noc or (
+        not uncounted_activity_df.loc[
+            (uncounted_activity_df["OperatorRef"] == noc)
+            & (
+                uncounted_activity_df["LineRef"].isin(
+                    [line_name, line_name.replace(" ", "_")]
+                )
+            )
+        ].empty
+        or f"{line_name}__{noc}" not in synced_in_last_month
+    ):
+        return True
+
+    return False
+
+
 def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     """
     Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
@@ -658,48 +674,26 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     )
     if not is_avl_require_attention_active:
         return []
-    object_list = []
-    dqs_critical_issues_service_line_map = []
+
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
-    is_dqs_require_attention = flag_is_active(
-        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
-    )
-    if is_dqs_require_attention:
-        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
-            txcfa_map
-        )
 
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
     abods_registry = AbodsRegistery()
     synced_in_last_month = abods_registry.records()
 
+    object_list = []
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
-        if file_attribute is not None:
-            operator_ref = file_attribute.national_operator_code
-            line_name = service_key[1]
+        noc = file_attribute.national_operator_code if file_attribute else None
+        line_name = service_key[1]
 
-            if (
-                not uncounted_activity_df.loc[
-                    (uncounted_activity_df["OperatorRef"] == operator_ref)
-                    & (
-                        uncounted_activity_df["LineRef"].isin(
-                            [line_name, line_name.replace(" ", "_")]
-                        )
-                    )
-                ].empty
-                or f"{line_name}__{operator_ref}" not in synced_in_last_month
-            ):
-                _update_data(object_list, service)
-        elif (
-            is_dqs_require_attention
-            and (service_key, service) in dqs_critical_issues_service_line_map
+        if is_avl_requires_attention(
+            noc, line_name, synced_in_last_month, uncounted_activity_df
         ):
             _update_data(object_list, service)
-        else:
-            _update_data(object_list, service)
+
     logging.info(f"AVL-REQUIRE-ATTENTION: total objects {len(object_list)}")
     return object_list
 
@@ -1041,14 +1035,14 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
     noc_df = pd.DataFrame.from_dict(noc_linename_dict)
     noc_df.drop_duplicates(inplace=True)
     nocs_list = list(set(nocs_list))
-
-    fares_df = pd.DataFrame.from_records(
+    qs = (
         DataCatalogueMetaData.objects.filter(national_operator_code__overlap=nocs_list)
         .add_revision_and_dataset()
         .get_live_revision_data()
         .exclude(fares_metadata_id__revision__status=INACTIVE)
         .add_published_date()
         .add_compliance_status()
+        .add_operator_id()
         .values(
             "xml_file_name",
             "valid_from",
@@ -1060,8 +1054,13 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
             "last_updated_date",
             "is_fares_compliant",
             "dataset_id",
+            "tariff_basis",
+            "product_name",
+            "operator_id",
         )
     )
+    fares_df = pd.DataFrame.from_records(qs)
+
     if fares_df.empty:
         return pd.DataFrame()
 
@@ -1110,6 +1109,38 @@ class FaresRequiresAttention:
     def __init__(self, org_id):
         self._org_id = org_id
 
+    def is_fares_requires_attention(
+        self, txc_file: TXCFileAttributes, fares_df: pd.DataFrame
+    ):
+        """
+        Return True if the fares requires attention, otherwise False
+        """
+
+        if txc_file is None:
+            return True
+
+        if fares_df.empty:
+            return True
+
+        noc = txc_file.national_operator_code
+        line_name = txc_file.line_name_unnested
+        df = fares_df[
+            (fares_df.national_operator_code == noc) & (fares_df.line_name == line_name)
+        ]
+
+        if not df.empty:
+            row = df.iloc[0].to_dict()
+            valid_to = row.get("valid_to", None)
+            last_modified_date = row.get("last_updated_date", "")
+            valid_to = date.today() if pd.isnull(valid_to) else valid_to
+            last_modified_date = (
+                date.today() if pd.isnull(last_modified_date) else last_modified_date
+            )
+            if is_fares_stale(valid_to, last_modified_date):
+                return True
+
+        return False
+
     def get_fares_requires_attention_line_level_data(self) -> List[Dict[str, str]]:
         """
         Compares an organisation's OTC Services dictionaries list with Fares Catalogue
@@ -1127,32 +1158,10 @@ class FaresRequiresAttention:
 
         for service_key, service in otc_map.items():
 
-            file_attribute = txcfa_map.get(service_key)
-            # If no file attribute (TxcFileAttribute), service requires attention
-            if file_attribute is None:
+            txc_file = txcfa_map.get(service_key)
+            if self.is_fares_requires_attention(txc_file, fares_df):
                 _update_data(object_list, service)
-            elif fares_df.empty:
-                _update_data(object_list, service)
-            else:
-                noc = file_attribute.national_operator_code
-                line_name = file_attribute.line_name_unnested
-                df = fares_df[
-                    (fares_df.national_operator_code == noc)
-                    & (fares_df.line_name == line_name)
-                ]
 
-                if not df.empty:
-                    row = df.iloc[0].to_dict()
-                    valid_to = row.get("valid_to", None)
-                    last_modified_date = row.get("last_updated_date", "")
-                    valid_to = date.today() if pd.isnull(valid_to) else valid_to
-                    last_modified_date = (
-                        datetime.now()
-                        if pd.isnull(last_modified_date)
-                        else last_modified_date
-                    )
-                    if is_fares_stale(valid_to, last_modified_date):
-                        _update_data(object_list, service)
         return object_list
 
 

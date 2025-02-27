@@ -18,22 +18,22 @@ VALID_RESPONSE = {
         "avlLineLevelStatus": [
             {
                 "lineName": 43,
-                "lastRecordedAtTime": "2024-11-04T16:40:40.000Z",
+                "lastRecordedAtTime": "2025-02-04T16:40:40.000Z",
                 "operatorNoc": "SDCU",
             },
             {
                 "lineName": 42,
-                "lastRecordedAtTime": "2024-11-04T16:40:40.000Z",
+                "lastRecordedAtTime": "2025-02-07T16:40:40.000Z",
                 "operatorNoc": "SDCU",
             },
             {
                 "lineName": 41,
-                "lastRecordedAtTime": "2024-11-04T16:40:40.000Z",
+                "lastRecordedAtTime": "2025-02-08T16:40:40.000Z",
                 "operatorNoc": "SDCU",
             },
             {
                 "lineName": 41,
-                "lastRecordedAtTime": "2024-11-04T16:40:40.000Z",
+                "lastRecordedAtTime": "2024-02-09T16:40:40.000Z",
                 "operatorNoc": "SDCU",
             },
         ]
