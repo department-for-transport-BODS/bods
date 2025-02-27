@@ -302,17 +302,26 @@ class LicenceDetailView(BaseDetailView):
             is_in_scope = self.is_service_in_scope()
             service["is_in_scope"] = is_in_scope
 
+            is_label_green = False
+            label_str = ""
+
             if not is_in_scope:
                 is_compliant = True
+                label_str = "Out of Scope"
             elif (
                 not self.is_fares_compliant()
                 or not self.is_timetable_compliant()
                 or not self.is_avl_compliant()
             ):
                 is_compliant = False
+                label_str = "Not Compliant"
             else:
                 is_compliant = True
+                is_label_green = True
+                label_str = "Compliant"
             service["is_compliant"] = is_compliant
+            service["is_label_green"] = is_label_green
+            service["label_str"] = label_str
 
         return context
 
