@@ -130,6 +130,9 @@ class OperatorDetailView(BaseDetailView):
         context["total_in_scope_in_season_services"] = len(
             get_in_scope_in_season_services_line_level(organisation.id)
         )
+        context["overall_services_requiring_attention_count"] = len(
+            get_requires_attention_line_level_data(organisation.id)
+        )
 
         if is_complete_service_pages_active:
             context["timetable_services_requiring_attention_count"] = len(
@@ -146,17 +149,7 @@ class OperatorDetailView(BaseDetailView):
                 context["fares_services_requiring_attention_count"] = len(
                     fares_reqiures_attention.get_fares_requires_attention_line_level_data()
                 )
-
-            context["overall_services_requiring_attention_count"] = (
-                context["timetable_services_requiring_attention_count"]
-                + context["avl_services_requiring_attention_count"]
-                + context["fares_services_requiring_attention_count"]
-            )
         else:
-            context["total_services_requiring_attention"] = len(
-                get_requires_attention_line_level_data(organisation.id)
-            )
-
             try:
                 context["services_require_attention_percentage"] = round(
                     100
