@@ -41,7 +41,7 @@
       </p>
       <div id="feed-stat-list" class="govuk-grid-row govuk-!-margin-bottom-1">
         <div class="govuk-grid-column-one-half">
-          {% if overall_services_requiring_attention_count == 0 %}
+          {% if total_services_requiring_attention == 0 %}
             <span class="govuk-tag--green govuk-tag">{% trans "Compliant" %}</span>
           {% else %}
             <span class="govuk-tag--red govuk-tag">{% trans "Not Compliant" %}</span>
@@ -59,7 +59,7 @@
         </div>
         <div class="govuk-grid-column-one-half">
           <div class="feed-stat">
-            <span class="feed-stat__value">{{ overall_services_requiring_attention_count }}</span>
+            <span class="feed-stat__value">{{ total_services_requiring_attention }}</span>
             <span class="feed-stat__label">
               {% filter force_escape %}
                 {% trans "Overall services requiring attention" %}

@@ -130,7 +130,7 @@ class OperatorDetailView(BaseDetailView):
         context["total_in_scope_in_season_services"] = len(
             get_in_scope_in_season_services_line_level(organisation.id)
         )
-        context["overall_services_requiring_attention_count"] = len(
+        context["total_services_requiring_attention"] = len(
             get_requires_attention_line_level_data(organisation.id)
         )
 
