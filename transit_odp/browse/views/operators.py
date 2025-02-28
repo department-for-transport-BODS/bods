@@ -1,23 +1,49 @@
 from math import floor
+from typing import Dict
 
+import pandas as pd
 from django.db.models import Avg, F
 from django_hosts.resolvers import reverse
 from waffle import flag_is_active
 
+import config.hosts
 from config.hosts import DATA_HOST, PUBLISH_HOST
 from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.avl.proxies import AVLDataset
-from transit_odp.browse.common import get_in_scope_in_season_services_line_level
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
+from transit_odp.browse.common import (
+    get_in_scope_in_season_services_line_level,
+    otc_map_txc_map_from_licence,
+)
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.views import BaseDetailView
 from transit_odp.fares_validator.models import FaresValidationResult
-from transit_odp.organisation.constants import EXPIRED, INACTIVE, AVLType, FaresType
-from transit_odp.organisation.models import Dataset, Organisation
+from transit_odp.organisation.constants import (
+    ENGLISH_TRAVELINE_REGIONS,
+    EXPIRED,
+    INACTIVE,
+    AVLType,
+    FaresType,
+)
+from transit_odp.organisation.csv.service_codes import STALENESS_STATUS
+from transit_odp.organisation.models import Dataset
+from transit_odp.organisation.models import Licence as OrganisationLicence
+from transit_odp.organisation.models import Organisation
+from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
 from transit_odp.publish.requires_attention import (
     FaresRequiresAttention,
+    evaluate_staleness,
     get_avl_requires_attention_line_level_data,
+    get_dq_critical_observation_services_map,
+    get_fares_compliance_status,
+    get_fares_dataset_map,
+    get_fares_requires_attention,
+    get_fares_timeliness_status,
     get_requires_attention_line_level_data,
 )
 
@@ -233,3 +259,264 @@ class OperatorDetailView(BaseDetailView):
             + "?prev=operator-detail"
         )
         return context
+
+
+class LicenceDetailView(BaseDetailView):
+    template_name = "browse/operators/licence_details.html"
+    model = OrganisationLicence
+    slug_url_kwarg = "number"
+    slug_field = "number"
+
+    def get_queryset(self):
+        licence_number = self.kwargs.get("number")
+        return super().get_queryset().filter(number=licence_number)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        licence_number = self.kwargs.get("number", "-")
+        context["licence_number"] = licence_number
+        organisation_licence = self.get_object()
+        context["pk"] = organisation_licence.id
+        context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
+
+        self.otc_map, self.txc_map = otc_map_txc_map_from_licence(licence_number)
+        self.uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        self.dq_critical_observation_map = get_dq_critical_observation_services_map(
+            self.txc_map
+        )
+        self.fares_require_attention_df = get_fares_dataset_map(self.txc_map)
+
+        self.service_code_exemption_map = self.get_service_code_exemption_map(
+            licence_number
+        )
+        self.seasonal_service_map = self.get_seasonal_service_map(licence_number)
+
+        abods_registry = AbodsRegistery()
+        self.synced_in_last_month = abods_registry.records()
+
+        self.fares_map = get_fares_dataset_map(self.txc_map)
+        context["organisation"] = organisation_licence.organisation
+        context["licence_services"] = self.otc_map
+
+        for service in self.otc_map:
+            service["registration_number"] = service["registration_number"].replace(
+                "/", ":"
+            )
+            self.service = service
+            service_txc_file = self.txc_map.get(
+                (service.get("registration_number"), service.get("service_number")),
+                None,
+            )
+            if service_txc_file:
+                self.service_txc_file = service_txc_file
+                self.operator_ref = self.service_txc_file.national_operator_code
+                service["dataset_id"] = service_txc_file.revision.dataset_id
+            else:
+                self.service_txc_file = None
+                self.operator_ref = None
+                service["dataset_id"] = None
+            is_in_scope = self.is_service_in_scope()
+            service["is_in_scope"] = is_in_scope
+
+            is_label_green = False
+            label_str = ""
+
+            if not is_in_scope:
+                is_compliant = True
+                label_str = "Out of Scope"
+            elif (
+                not self.is_fares_compliant()
+                or not self.is_timetable_compliant()
+                or not self.is_avl_compliant()
+            ):
+                is_compliant = False
+                label_str = "Not Compliant"
+            else:
+                is_compliant = True
+                is_label_green = True
+                label_str = "Compliant"
+            service["is_compliant"] = is_compliant
+            service["is_label_green"] = is_label_green
+            service["label_str"] = label_str
+
+        return context
+
+    def is_fares_compliant(self) -> bool:
+        """Check if a given service is fairs compliant or not
+
+        Returns:
+            bool: True if compliant else False
+        """
+        if not self.service_txc_file:
+            return False
+
+        fares_file_details = self.fares_require_attention_df[
+            (
+                self.fares_require_attention_df["national_operator_code"]
+                == self.operator_ref
+            )
+            & (self.fares_require_attention_df["line_name"] == self.service_number)
+        ]
+
+        if fares_file_details.empty:
+            return False
+
+        row = fares_file_details.iloc[0]
+        row["valid_to"] = row["valid_to"].date() if pd.notna(row["valid_to"]) else None
+        row["valid_from"] = (
+            row["valid_from"].date() if pd.notna(row["valid_from"]) else None
+        )
+        fares_timeliness_status = get_fares_timeliness_status(
+            row["valid_to"], row["last_updated_date"].date()
+        )
+        fares_compliance_status = get_fares_compliance_status(row["is_fares_compliant"])
+
+        if (
+            get_fares_requires_attention(
+                "Published", fares_timeliness_status, fares_compliance_status
+            )
+            == "Yes"
+        ):
+            return False
+        return True
+
+    def is_timetable_compliant(self) -> bool:
+        """Check if a service is timetable require attention
+        or not
+
+        Returns:
+            bool: True is compliant False if not
+        """
+        if not self.service_txc_file:
+            return False
+
+        rad = evaluate_staleness(self.service, self.service_txc_file)
+        staleness_status = STALENESS_STATUS[rad.index(True)]
+        if not self.is_dqs_compliant() or staleness_status != "Up to date":
+            return False
+        return True
+
+    def is_dqs_compliant(self) -> bool:
+        """Check if service has any dqs require attention
+
+        Returns:
+            bool: True if compliant False if not
+        """
+        return (
+            True
+            if (
+                self.service.get("registration_number"),
+                self.service.get("service_number"),
+            )
+            in self.dq_critical_observation_map
+            else False
+        )
+
+    def is_avl_compliant(self) -> bool:
+        """Check if avl is compliant for a service
+
+        Returns:
+            bool: True if compliant else False
+        """
+        if not self.service_txc_file:
+            return False
+
+        line_name = self.service.get("service_number")
+        if (
+            not self.uncounted_activity_df.loc[
+                (self.uncounted_activity_df["OperatorRef"] == self.operator_ref)
+                & (
+                    self.uncounted_activity_df["LineRef"].isin(
+                        [line_name, line_name.replace(" ", "_")]
+                    )
+                )
+            ].empty
+            or f"{line_name}__{self.operator_ref}" not in self.synced_in_last_month
+        ):
+            return False
+        return True
+
+    def is_service_in_scope(self) -> bool:
+        """check is service is in scope or not system will
+        check 3 points to decide in scope Service Exception,
+        Seasonal Service Status and Traveling region
+
+        Returns:
+            bool: True if in scope else False
+        """
+        seasonal_service = self.seasonal_service_map.get(
+            self.service.get("registration_number")
+        )
+        exemption = self.service_code_exemption_map.get(
+            self.service.get("registration_number")
+        )
+        traveline_regions = self.service.get("traveline_region")
+        if traveline_regions:
+            traveline_regions = traveline_regions.split("|")
+        else:
+            traveline_regions = []
+        is_english_region = list(
+            set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions)
+        )
+
+        if not (
+            not (exemption and exemption.registration_code) and is_english_region
+        ) or (seasonal_service and not seasonal_service.seasonal_status):
+            return False
+
+        return True
+
+    def get_service_compliant_status(
+        self, registration_number: str, line_name: str
+    ) -> bool:
+        """Check if service is compliant or not, it will check 3 params
+        Fares Compliant, Timetable Compliant, AVL compliant
+
+        Args:
+            registration_number (str): Registration number
+            line_name (str): Line name
+
+        Returns:
+            bool: True if compliant False if not
+        """
+        if (
+            self.is_fares_compliant(registration_number, line_name)
+            and self.is_timetable_compliant(registration_number, line_name)
+            and self.is_avl_compliant(registration_number, line_name)
+        ):
+            return True
+        return False
+
+    def get_seasonal_service_map(
+        self, licence_number: str
+    ) -> Dict[str, SeasonalService]:
+        """
+        Get a dictionary which includes all the Seasonal Services
+        for an organisation.
+        """
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in SeasonalService.objects.filter(
+                licence__organisation__licences__number__in=licence_number
+            )
+            .add_registration_number()
+            .add_seasonal_status()
+        }
+
+    def get_service_code_exemption_map(
+        self, licence_number: str
+    ) -> Dict[str, ServiceCodeExemption]:
+        """Get the status of service excemption
+
+        Args:
+            licence_number (str): licence number to check for excemption
+
+        Returns:
+            Dict[str, ServiceCodeExemption]: dict for excemption object
+        """
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in ServiceCodeExemption.objects.add_registration_number().filter(
+                licence__organisation__licences__number__in=licence_number
+            )
+        }

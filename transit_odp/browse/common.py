@@ -6,6 +6,7 @@ from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import TravelineRegions
 from transit_odp.otc.models import Service, UILta
 from transit_odp.otc.models import Service as OTCService, LocalAuthority
+from transit_odp.publish.requires_attention import get_line_level_txc_map_service_base
 
 
 def get_all_naptan_atco_df() -> pd.DataFrame:
@@ -309,3 +310,28 @@ def get_in_scope_in_season_services_line_level(org_id: int) -> pd.DataFrame:
     )
     services_df = services_df.explode("service_number")
     return services_df
+
+
+def otc_map_txc_map_from_licence(licence_number: str) -> tuple:
+    otc_services = (
+        OTCService.objects.filter(licence__number=licence_number)
+        .values("registration_number", "service_number")
+        .add_traveline_region_weca()
+        .add_traveline_region_otc()
+        .add_traveline_region_details()
+    )
+    otc_services_df = pd.DataFrame.from_records(otc_services)
+
+    otc_services_df["registration_number"] = otc_services_df[
+        "registration_number"
+    ].apply(lambda x: x.replace("/", ":"))
+    otc_services_df["service_number"] = otc_services_df["service_number"].apply(
+        lambda x: str(x).split("|")
+    )
+    otc_services_df = otc_services_df.explode("service_number")
+
+    txc_map = get_line_level_txc_map_service_base(
+        list(otc_services_df["registration_number"])
+    )
+
+    return otc_services, txc_map

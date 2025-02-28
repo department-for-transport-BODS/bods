@@ -65,6 +65,20 @@ from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
 from transit_odp.transmodel.models import BookingArrangements, Service
 from transit_odp.users.constants import SiteAdminType
+from transit_odp.publish.requires_attention import (
+    get_fares_dataset_map,
+    is_avl_requires_attention,
+    get_dq_critical_observation_services_map,
+    get_line_level_txc_map_service_base,
+    FaresRequiresAttention,
+)
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
+from typing import List
+from transit_odp.common.constants import FeatureFlags
+
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -517,6 +531,255 @@ class LineMetadataDetailView(DetailView):
             "total_row_count": total_row_count,
         }
 
+    def get_avl_data(
+        self, txc_file_attributes: List[TXCFileAttributes], line_name: str
+    ):
+        """
+        Get the AVL data for the Dataset
+        """
+
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        abods_registry = AbodsRegistery()
+        synced_in_last_month = abods_registry.records()
+
+        is_avl_complaint = True
+        for file in txc_file_attributes:
+            noc = file.national_operator_code
+            if is_avl_complaint:
+                is_avl_complaint = not is_avl_requires_attention(
+                    noc, line_name, synced_in_last_month, uncounted_activity_df
+                )
+            else:
+                break
+
+        return {"is_avl_complaint": is_avl_complaint}
+
+    def get_fares_data(
+        self,
+        txc_file_attributes: List[TXCFileAttributes],
+    ):
+        """
+        Get the fares data for the dataset
+        """
+
+        txc_map = dict(enumerate(txc_file_attributes))
+        fares_df = get_fares_dataset_map(txc_map)
+
+        fra = FaresRequiresAttention(None)
+        is_fares_complaint = True
+        for txc_file in txc_file_attributes:
+            if is_fares_complaint:
+                is_fares_complaint = not fra.is_fares_requires_attention(
+                    txc_file, fares_df
+                )
+            else:
+                break
+
+        tariff_basis, product_name = [], []
+        today = datetime.today().date()
+        current_valid_files, future_files, expired_files = [], [], []
+        dataset_id, org_id = None, None
+
+        for row in fares_df.to_dict(orient="records"):
+            tariff_basis.extend(row["tariff_basis"])
+            product_name.extend(row["product_name"])
+            dataset_id = row["dataset_id"]
+            org_id = row["operator_id"]
+
+            start_date = (
+                row["valid_from"].date() if not pd.isnull(row["valid_from"]) else today
+            )
+            end_date = row["valid_to"] if not pd.isnull(row["valid_to"]) else today
+            file_name = row["xml_file_name"]
+
+            if end_date >= today >= start_date:
+                current_valid_files.append(
+                    self.get_file_object(row["valid_from"], row["valid_to"], file_name)
+                )
+
+            if start_date > today:
+                future_files.append(
+                    self.get_file_object(row["valid_from"], row["valid_to"], file_name)
+                )
+
+            if today > end_date:
+                expired_files.append(
+                    self.get_file_object(row["valid_from"], row["valid_to"], file_name)
+                )
+
+        return {
+            "is_fares_complaint": is_fares_complaint,
+            "fares_dataset_id": dataset_id,
+            "fares_tariff_basis": tariff_basis,
+            "fares_products": product_name,
+            "fares_valid_files": current_valid_files,
+            "fares_future_dated_files": future_files,
+            "fares_expired_files": expired_files,
+            "fares_org_id": org_id,
+        }
+
+    def get_file_object(self, start_date, end_date, file_name):
+        """
+        Return the object for the file details
+        """
+        return {
+            "start_date": None if pd.isnull(start_date) else start_date,
+            "end_date": None if pd.isnull(end_date) else end_date,
+            "filename": file_name,
+        }
+
+    def get_timetables_data(
+        self,
+        file_attributes: list[TXCFileAttributes],
+        service_code: str,
+        dataset_id: int,
+    ):
+        """
+        Get the timetables data for the dataset
+        """
+        today = datetime.today().date()
+        current_valid_files = []
+        future_files = []
+        expired_files = []
+
+        for file in file_attributes:
+            start_date = (
+                file.operating_period_start_date
+                if file.operating_period_start_date
+                else today
+            )
+            end_date = (
+                file.operating_period_end_date
+                if file.operating_period_end_date
+                else today
+            )
+            file_name = file.filename
+
+            if end_date >= today >= start_date:
+                current_valid_files.append(
+                    self.get_file_object(
+                        file.operating_period_start_date,
+                        file.operating_period_end_date,
+                        file_name,
+                    )
+                )
+
+            if start_date > today:
+                future_files.append(
+                    self.get_file_object(
+                        file.operating_period_start_date,
+                        file.operating_period_end_date,
+                        file_name,
+                    )
+                )
+
+            if today > end_date:
+                expired_files.append(
+                    self.get_file_object(
+                        file.operating_period_start_date,
+                        file.operating_period_end_date,
+                        file_name,
+                    )
+                )
+
+        is_dqs_require_attention = flag_is_active(
+            "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+        )
+
+        txcfa_map = get_line_level_txc_map_service_base([service_code])
+        dqs_critical_issues_service_line_map = (
+            get_dq_critical_observation_services_map(txcfa_map)
+            if is_dqs_require_attention
+            else []
+        )
+
+        return {
+            "is_timetables_complaint": len(dqs_critical_issues_service_line_map) == 0,
+            "timetables_dataset_id": dataset_id,
+            "timetables_valid_files": current_valid_files,
+            "timetables_future_dated_files": future_files,
+            "timetables_expired_files": expired_files,
+        }
+
+    def get_timetable_visualiser_data(
+        self, revision_id: int, line_name: str, service_code: str
+    ):
+        """
+        Get the data for the timetable visualiser
+        """
+
+        date = self.request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
+        # Regular expression pattern to match dates in yyyy-mm-dd format
+        date_pattern = r"^\d{4}-\d{2}-\d{2}$"
+        is_valid_date = re.match(date_pattern, date) is not None
+        if not is_valid_date:
+            date = datetime.now().strftime("%Y-%m-%d")
+
+        target_date = datetime.strptime(date, "%Y-%m-%d").date()
+        timetable_inbound_outbound = TimetableVisualiser(
+            revision_id,
+            service_code,
+            line_name,
+            target_date,
+            True,
+        ).get_timetable_visualiser()
+
+        is_timetable_info_available = False
+        timetable = {}
+        for direction in ["outbound", "inbound"]:
+            direction_details = timetable_inbound_outbound[direction]
+            journey = direction_details["description"]
+            journey = direction.capitalize() + " - " + journey if journey else ""
+            bound_details = self.get_direction_timetable(
+                direction_details["df_timetable"], direction
+            )
+            if (
+                not is_timetable_info_available
+                and not bound_details["df_timetable"].empty
+            ):
+                is_timetable_info_available = True
+            timetable[direction] = {
+                "df": bound_details["df_timetable"],
+                "total_page": bound_details["total_page"],
+                "total_row_count": bound_details["total_row_count"],
+                "curr_page": bound_details["curr_page"],
+                "show_all": bound_details["show_all"],
+                "journey_name": journey,
+                "stops": direction_details["stops"],
+                "observations": direction_details.get("observations", {}),
+                "page_param": direction + "Page",
+                "show_all_param": "showAll" + direction.capitalize(),
+            }
+        return {
+            "curr_date": date,
+            "timetable": timetable,
+            "is_timetable_info_available": is_timetable_info_available,
+        }
+
+    def get_service_type_data(
+        self, revision_id: int, line: str, service_code: str, current_valid_files: list
+    ):
+        """
+        Get the data associated with service type
+        """
+
+        service_type = self.get_service_type(revision_id, service_code, line)
+        data = {}
+        data["service_type"] = service_type
+
+        if service_type == "Flexible" or service_type == "Flexible/Standard":
+            booking_arrangements_info = self.get_valid_files(
+                revision_id,
+                current_valid_files,
+                service_code,
+                line,
+            )
+            if booking_arrangements_info:
+                data["booking_arrangements"] = booking_arrangements_info[0][0]
+                data["booking_methods"] = booking_arrangements_info[0][1:]
+
+        return data
+
     def get_context_data(self, **kwargs):
         """
         Get the context data for the view.
@@ -534,44 +797,17 @@ class LineMetadataDetailView(DetailView):
 
         kwargs["line_name"] = line
         kwargs["service_code"] = service_code
-        kwargs["service_type"] = self.get_service_type(
-            live_revision.id, kwargs["service_code"], kwargs["line_name"]
-        )
+
         kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
         kwargs["current_valid_files"] = self.get_current_files(
             live_revision.id, kwargs["service_code"], kwargs["line_name"]
         )
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-
-        if (
-            kwargs["service_type"] == "Flexible"
-            or kwargs["service_type"] == "Flexible/Standard"
-        ):
-            booking_arrangements_info = self.get_valid_files(
-                live_revision.id,
-                kwargs["current_valid_files"],
-                kwargs["service_code"],
-                kwargs["line_name"],
+        kwargs.update(
+            self.get_service_type_data(
+                live_revision.id, line, service_code, kwargs["current_valid_files"]
             )
-            if booking_arrangements_info:
-                kwargs["booking_arrangements"] = booking_arrangements_info[0][0]
-                kwargs["booking_methods"] = booking_arrangements_info[0][1:]
-
-        date = self.request.GET.get("date", datetime.now().strftime("%Y-%m-%d"))
-        # Regular expression pattern to match dates in yyyy-mm-dd format
-        date_pattern = r"^\d{4}-\d{2}-\d{2}$"
-        is_valid_date = re.match(date_pattern, date) is not None
-        if not is_valid_date:
-            date = datetime.now().strftime("%Y-%m-%d")
-
-        target_date = datetime.strptime(date, "%Y-%m-%d").date()
-        timetable_inbound_outbound = TimetableVisualiser(
-            live_revision.id,
-            kwargs["service_code"],
-            kwargs["line_name"],
-            target_date,
-            True,
-        ).get_timetable_visualiser()
+        )
 
         # Get the flag is_timetable_visualiser_active state
         is_timetable_visualiser_active = flag_is_active(
@@ -580,36 +816,27 @@ class LineMetadataDetailView(DetailView):
         kwargs["is_timetable_visualiser_active"] = is_timetable_visualiser_active
         # If flag is enabled, show the timetable visualiser
         if is_timetable_visualiser_active:
-            # Set the context for the timetable visualiser and the line details
-            kwargs["curr_date"] = date
-            is_timetable_info_available = False
-            timetable = {}
-            for direction in ["outbound", "inbound"]:
-                direction_details = timetable_inbound_outbound[direction]
-                journey = direction_details["description"]
-                journey = direction.capitalize() + " - " + journey if journey else ""
-                bound_details = self.get_direction_timetable(
-                    direction_details["df_timetable"], direction
+            kwargs.update(
+                self.get_timetable_visualiser_data(live_revision.id, line, service_code)
+            )
+
+        txc_file_attributes = (
+            TXCFileAttributes.objects.for_revision(live_revision.id)
+            .add_service_code(service_code)
+            .add_split_linenames()
+        )
+
+        if FeatureFlags.COMPLETE_SERVICE_PAGES:
+            kwargs.update(
+                self.get_avl_data(
+                    txc_file_attributes,
+                    line,
                 )
-                if (
-                    not is_timetable_info_available
-                    and not bound_details["df_timetable"].empty
-                ):
-                    is_timetable_info_available = True
-                timetable[direction] = {
-                    "df": bound_details["df_timetable"],
-                    "total_page": bound_details["total_page"],
-                    "total_row_count": bound_details["total_row_count"],
-                    "curr_page": bound_details["curr_page"],
-                    "show_all": bound_details["show_all"],
-                    "journey_name": journey,
-                    "stops": direction_details["stops"],
-                    "observations": direction_details.get("observations", {}),
-                    "page_param": direction + "Page",
-                    "show_all_param": "showAll" + direction.capitalize(),
-                }
-            kwargs["timetable"] = timetable
-            kwargs["is_timetable_info_available"] = is_timetable_info_available
+            )
+            kwargs.update(self.get_fares_data(txc_file_attributes))
+            kwargs.update(
+                self.get_timetables_data(txc_file_attributes, service_code, dataset.id)
+            )
 
         return kwargs
 
