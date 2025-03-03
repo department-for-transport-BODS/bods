@@ -13,39 +13,108 @@
   {% breadcrumb_url "Agent Dashboard" "agent-dashboard" host hosts.publish %}
 {% endblock %}
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-xl">{% trans "Agent Dashboard" %}</h1>
-      {% if table.rows.data %}
-        <p class="govuk-body-l">
-          {% blocktrans %}
-                        You can choose an operator to view or publish data by clicking the operator name below
-                    {% endblocktrans %}
+  {% if is_complete_service_pages_active %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-three-quarters">
+        <h1 class="govuk-heading-xl">{% trans "Agent Dashboard" %}</h1>
+        <p class="govuk-body-m">
+          {% filter force_escape %}
+            {% blocktrans %}
+              You can choose an operator to view or publish data by clicking the operator name below.
+            {% endblocktrans %}
+          {% endfilter %}
         </p>
-        {% render_table table %}
-      {% else %}
-        <p class="govuk-body-l">
-          {% blocktrans %}
-                        You don’t have any operators yet to act as an agent on behalf of.
-                        Please go to My Account section to set-up an operator
-                    {% endblocktrans %}
-        </p>
-        <a href="{% url 'users:home' host hosts.publish %}"
-           role="button"
-           draggable="false"
-           class="govuk-button govuk-button--start">
-          {% trans "Go to My Account" %}
-          <svg class="govuk-button__start-icon"
-               xmlns="http://www.w3.org/2000/svg"
-               width="17.5"
-               height="19"
-               viewBox="0 0 33 40"
-               role="presentation"
-               focusable="false">
-            <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
-          </svg>
-        </a>
-      {% endif %}
+        <form>
+          {% include "browse/snippets/search_banner_agent_dashboard.html" %}
+          {{ org_names | json_script:"org-data" }}
+        </form>
+        {% if table.rows.data %}
+          {% render_table table %}
+        {% elif q %}
+          <h2 class="govuk-heading-m">
+            {% filter force_escape %}
+              {% trans "Sorry, no results found for your search" %}
+            {% endfilter %}
+          </h2>
+          <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
+          <p class="govuk-body">
+            <b>
+              {% trans "Having trouble finding what you want?" %}
+            </b>
+          </p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>Check your spelling and try again</li>
+            <li>Use another search term</li>
+          </ul>
+        {% else %}
+          <p class="govuk-body-l">
+            {% blocktrans %}
+              You don't have any operators yet to act as an agent on behalf of.
+              Please go to My Account section to set-up an operator
+            {% endblocktrans %}
+          </p>
+          <a href="{% url 'users:home' host hosts.publish %}"
+             role="button"
+             draggable="false"
+             class="govuk-button govuk-button--start">
+            {% trans "Go to My Account" %}
+            <svg class="govuk-button__start-icon"
+                 xmlns="http://www.w3.org/2000/svg"
+                 width="17.5"
+                 height="19"
+                 viewBox="0 0 33 40"
+                 role="presentation"
+                 focusable="false">
+              <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
+            </svg>
+          </a>
+        {% endif %}
+      </div>
     </div>
-  </div>
+  {% else %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-three-quarters">
+        <h1 class="govuk-heading-xl">{% trans "Agent Dashboard" %}</h1>
+        {% if table.rows.data %}
+          <p class="govuk-body-l">
+            {% blocktrans %}
+                          You can choose an operator to view or publish data by clicking the operator name below
+                      {% endblocktrans %}
+          </p>
+          {% render_table table %}
+        {% else %}
+          <p class="govuk-body-l">
+            {% blocktrans %}
+                          You don’t have any operators yet to act as an agent on behalf of.
+                          Please go to My Account section to set-up an operator
+                      {% endblocktrans %}
+          </p>
+          <a href="{% url 'users:home' host hosts.publish %}"
+             role="button"
+             draggable="false"
+             class="govuk-button govuk-button--start">
+            {% trans "Go to My Account" %}
+            <svg class="govuk-button__start-icon"
+                 xmlns="http://www.w3.org/2000/svg"
+                 width="17.5"
+                 height="19"
+                 viewBox="0 0 33 40"
+                 role="presentation"
+                 focusable="false">
+              <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
+            </svg>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}
+{% if is_complete_service_pages_active %}
+  {% block scripts %}
+    {{ block.super }}
+    <script nonce="{{request.csp_nonce}}">
+      const org_names = JSON.parse(document.getElementById("org-data").textContent);
+      new BODSFrontend.AutoCompleteSearch("search", org_names["names"]);
+    </script>
+  {% endblock %}
+{% endif %}
