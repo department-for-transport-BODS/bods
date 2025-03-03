@@ -1,5 +1,5 @@
 import logging
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -566,10 +566,9 @@ def get_fares_compliance_status(is_fares_compliant: bool) -> str:
     Returns:
         str: Compliant or Non compliant for 'Fares Compliance Status' column
     """
-    if not pd.isna(is_fares_compliant):
-        if is_fares_compliant:
-            return "Compliant"
-    return "Non compliant"
+    if not pd.isna(is_fares_compliant) and is_fares_compliant:
+        return "Yes"
+    return "No"
 
 
 def get_fares_requires_attention(
