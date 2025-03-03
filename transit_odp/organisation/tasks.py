@@ -36,12 +36,14 @@ def task_precalculate_operator_sra():
             f"Flag {FeatureFlags.OPERATOR_PREFETCH_SRA.value} is not active, skipping the execution."
         )
         return
-    organisation_qs = Organisation.objects.all()
+    organisation_qs = Organisation.objects.filter(id=44).all()
     logger.info(f"Total operators found {organisation_qs.count()}")
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
     abods_registry = AbodsRegistery()
     synced_in_last_month = abods_registry.records()
-    logger.info("Starting the organisation loop")
+    logger.info(
+        f"Step: Starting orgnaisation level processing. With Synced in last month {len(synced_in_last_month)} Uncounded vehicle activity df {uncounted_activity_df.shape}"
+    )
     for operator in organisation_qs:
         organisation_calcualte_sra(
             operator, uncounted_activity_df, synced_in_last_month
@@ -66,14 +68,23 @@ def organisation_calcualte_sra(
         avl_sra = get_avl_requires_attention_line_level_data(
             organisation.id, uncounted_activity_df, synced_in_last_month
         )
-        fares_reqiures_attention = FaresRequiresAttention(organisation.id)
-        fares_sra = (
-            fares_reqiures_attention.get_fares_requires_attention_line_level_data()
-        )
+
+        fra = FaresRequiresAttention(organisation.id)
+        fares_sra = fra.get_fares_requires_attention_line_level_data()
         in_scope_services = get_in_scope_in_season_services_line_level(organisation.id)
 
         all_sra = timetable_sra + avl_sra + fares_sra
-        overall_sra = [dict(t) for t in {tuple(sorted(d.items())) for d in all_sra}]
+        overall_sra = set()
+        for d in all_sra:
+            key = (
+                d.get("licence_number")
+                + "__"
+                + d.get("service_code")
+                + "__"
+                + d.get("line_number")
+            )
+            overall_sra.add(key)
+
         organisation.total_inscope = len(in_scope_services)
         organisation.timetable_sra = len(timetable_sra)
         organisation.avl_sra = len(avl_sra)
