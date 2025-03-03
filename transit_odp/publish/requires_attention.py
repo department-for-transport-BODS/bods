@@ -564,12 +564,11 @@ def get_fares_compliance_status(is_fares_compliant: bool) -> str:
         is_fares_compliant (bool): BODS compliance
 
     Returns:
-        str: Compliant or Non compliant for 'Fares Compliance Status' column
+        str: Yes or No for 'Fares Compliance Status' column
     """
-    if not pd.isna(is_fares_compliant):
-        if is_fares_compliant:
-            return "Compliant"
-    return "Non compliant"
+    if not pd.isna(is_fares_compliant) and is_fares_compliant:
+        return "Yes"
+    return "No"
 
 
 def get_fares_requires_attention(
@@ -581,7 +580,7 @@ def get_fares_requires_attention(
     Returns value for 'Fares requires attention' column based on the following logic:
         If 'Fares Published Status' equal to Published
         AND 'Fares Timeliness Status' equal to Not Stale
-        AND 'Fares Compliance Status' equal to Compliant
+        AND 'Fares Compliance Status' equal to Yes
         then 'Fares requires attention' = No.
         Else
         the 'Fares requires attention' = Yes.
@@ -597,7 +596,7 @@ def get_fares_requires_attention(
     if (
         (fares_published_status == "Published")
         and (fares_timeliness_status == "Not Stale")
-        and (fares_compliance_status == "Compliant")
+        and (fares_compliance_status == "Yes")
     ):
         return "No"
     return "Yes"
