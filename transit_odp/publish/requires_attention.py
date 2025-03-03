@@ -636,7 +636,11 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     return object_list
 
 
-def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
+def get_avl_requires_attention_line_level_data(
+    org_id: int,
+    uncounted_activity_df: pd.DataFrame = None,
+    synced_in_last_month: List = None,
+) -> List[Dict[str, str]]:
     """
     Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
     dictionaries list to determine which OTC Services require attention ie. service has
@@ -662,9 +666,10 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
             txcfa_map
         )
 
-    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
-    abods_registry = AbodsRegistery()
-    synced_in_last_month = abods_registry.records()
+    if uncounted_activity_df is None or synced_in_last_month is None:
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        abods_registry = AbodsRegistery()
+        synced_in_last_month = abods_registry.records()
 
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
@@ -835,25 +840,9 @@ def query_dq_critical_observation(query) -> List[tuple]:
     )
     dqs_require_attention_df.rename(columns={"_merge": "dqs_critical"}, inplace=True)
 
-    is_specific_feedback = flag_is_active("", "is_specific_feedback")
-    if is_specific_feedback:
-        consumer_feedback_df = get_consumer_feedback_df(service_pattern_ids_df)
-
-        dqs_require_attention_df = dqs_require_attention_df.merge(
-            consumer_feedback_df, on=["service_id"], how="left", indicator=True
-        )
-        dqs_require_attention_df.rename(
-            columns={"_merge": "has_feedback"}, inplace=True
-        )
-
-        dqs_require_attention_df = dqs_require_attention_df[
-            (dqs_require_attention_df["dqs_critical"] == "both")
-            | (dqs_require_attention_df["has_feedback"] == "both")
-        ]
-    else:
-        dqs_require_attention_df = dqs_require_attention_df[
-            dqs_require_attention_df["dqs_critical"] == "both"
-        ]
+    dqs_require_attention_df = dqs_require_attention_df[
+        dqs_require_attention_df["dqs_critical"] == "both"
+    ]
 
     dqs_require_attention_df = dqs_require_attention_df[["service_code", "line_name"]]
 

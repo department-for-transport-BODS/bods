@@ -292,8 +292,7 @@ def test_dq_require_attention_with_only_feedback():
     }
     dq_services = get_dq_critical_observation_services_map(txc_files)
 
-    assert 1 == len(dq_services)
-    assert services_objects[0].service_code == dq_services[0][0]
+    assert 0 == len(dq_services)
 
 
 @override_flag("dqs_require_attention", active=True)
@@ -402,9 +401,7 @@ def test_dq_require_attention_with_feedback_and_dqsobservation():
     }
     dq_services = get_dq_critical_observation_services_map(txc_files)
 
-    services_with_dq_require_attention = services_with_critical + [
-        services_with_advisory[0]
-    ]
+    services_with_dq_require_attention = services_with_critical
 
     assert sorted(
         [
