@@ -627,11 +627,11 @@ def test_get_fares_published_status(fares_dataset_id, expected_result):
     [
         (
             True,
-            "Compliant",
+            "Yes",
         ),
         (
             False,
-            "Non compliant",
+            "No",
         ),
     ],
 )
@@ -691,7 +691,7 @@ def test_get_fares_timeliness_status(valid_to, last_updated_date, expected_resul
             "Published",
             "Not Stale",
             "Compliant",
-            "No",
+            "Yes",
         ),
         (
             "Published",
