@@ -799,6 +799,12 @@ def add_traveline_regions(df: pd.DataFrame) -> pd.DataFrame:
     return df.apply(traveline_regions, args=[traveline_regions_dict], axis=1)
 
 
+def add_fares_status_columns(df: pd.DataFrame) -> pd.DataFrame:
+    exists_in_fares = np.invert(pd.isna(df["fares_dataset_id"]))
+    df["fares_published_status"] = np.where(exists_in_fares, "Published", "Unpublished")
+    return df
+
+
 def add_status_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Status columns of published, otc and scopes will be modified
 
@@ -1372,8 +1378,11 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     merged = merged[merged["otc_status"] == OTC_STATUS_REGISTERED]
 
     if is_fares_require_attention_active:
-        merged["fares_published_status"] = txc_df["fares_filename"].apply(
-            lambda x: "Published" if pd.notna(x) and x.strip() != "" else "Unpublished"
+        merged = add_fares_status_columns(merged)
+        merged["fares_compliance_status"] = merged["fares_compliance_status"].apply(
+            lambda x: "Non Compliant"
+            if pd.isna(x) or str(x).strip() == ""
+            else "Compliant"
         )
         merged["fares_requires_attention"] = merged.apply(
             lambda row: get_fares_requires_attention(
