@@ -1,5 +1,5 @@
 from math import floor
-
+from logging import getLogger
 from django.db.models import Avg, F
 from django_hosts.resolvers import reverse
 from waffle import flag_is_active
@@ -22,6 +22,8 @@ from transit_odp.publish.requires_attention import (
     get_requires_attention_line_level_data,
 )
 from transit_odp.common.constants import FeatureFlags
+
+logger = getLogger(__name__)
 
 
 class OperatorsView(BaseListView):
@@ -84,29 +86,39 @@ class OperatorDetailView(BaseDetailView):
         is_fares_require_attention_active = flag_is_active(
             "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
+        is_operator_prefetch_sra_active = flag_is_active(
+            "", FeatureFlags.OPERATOR_PREFETCH_SRA.value
+        )
         context = super().get_context_data(**kwargs)
-        organisation = self.object
-
-        context["total_services_requiring_attention"] = len(
-            get_requires_attention_line_level_data(organisation.id)
-        )
-
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
-        if is_avl_require_attention_active:
-            context["avl_total_services_requiring_attention"] = len(
-                get_avl_requires_attention_line_level_data(organisation.id)
-            )
-
         context["is_fares_require_attention_active"] = is_fares_require_attention_active
-        if is_fares_require_attention_active:
-            fares_reqiures_attention = FaresRequiresAttention(organisation.id)
-            context["fares_total_services_requiring_attention"] = len(
-                fares_reqiures_attention.get_fares_requires_attention_line_level_data()
-            )
+        organisation: Organisation = self.object
 
-        context["total_in_scope_in_season_services"] = len(
-            get_in_scope_in_season_services_line_level(organisation.id)
-        )
+        if is_operator_prefetch_sra_active:
+            logger.debug("Operator Prefetch SRA active, Displaying from DB")
+            context["total_services_requiring_attention"] = organisation.timetable_sra
+            context["avl_total_services_requiring_attention"] = organisation.avl_sra
+            context["fares_total_services_requiring_attention"] = organisation.fares_sra
+            context["total_in_scope_in_season_services"] = organisation.total_inscope
+        else:
+            logger.debug("Operator Prefetch SRA inactive, calculating SRA")
+            context["total_services_requiring_attention"] = len(
+                get_requires_attention_line_level_data(organisation.id)
+            )
+            if is_avl_require_attention_active:
+                context["avl_total_services_requiring_attention"] = len(
+                    get_avl_requires_attention_line_level_data(organisation.id)
+                )
+
+            if is_fares_require_attention_active:
+                fares_reqiures_attention = FaresRequiresAttention(organisation.id)
+                context["fares_total_services_requiring_attention"] = len(
+                    fares_reqiures_attention.get_fares_requires_attention_line_level_data()
+                )
+
+            context["total_in_scope_in_season_services"] = len(
+                get_in_scope_in_season_services_line_level(organisation.id)
+            )
         try:
             context["services_require_attention_percentage"] = round(
                 100
