@@ -36,7 +36,7 @@ def task_precalculate_operator_sra():
             f"Flag {FeatureFlags.OPERATOR_PREFETCH_SRA.value} is not active, skipping the execution."
         )
         return
-    organisation_qs = Organisation.objects.filter(id=44).all()
+    organisation_qs = Organisation.objects.all()
     logger.info(f"Total operators found {organisation_qs.count()}")
     uncounted_activity_df = get_vehicle_activity_operatorref_linename()
     abods_registry = AbodsRegistery()
