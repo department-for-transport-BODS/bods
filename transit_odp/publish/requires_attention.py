@@ -636,7 +636,11 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     return object_list
 
 
-def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
+def get_avl_requires_attention_line_level_data(
+    org_id: int,
+    uncounted_activity_df: pd.DataFrame = None,
+    synced_in_last_month: List = None,
+) -> List[Dict[str, str]]:
     """
     Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
     dictionaries list to determine which OTC Services require attention ie. service has
@@ -662,9 +666,10 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
             txcfa_map
         )
 
-    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
-    abods_registry = AbodsRegistery()
-    synced_in_last_month = abods_registry.records()
+    if uncounted_activity_df is None or synced_in_last_month is None:
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        abods_registry = AbodsRegistery()
+        synced_in_last_month = abods_registry.records()
 
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)

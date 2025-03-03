@@ -55,6 +55,11 @@ class Organisation(TimeStampedModel):
     admin_areas = models.ManyToManyField(
         AdminArea, related_name="organisation_atco", blank=True
     )
+    total_inscope = models.IntegerField(default=0, blank=True, null=True)
+    overall_sra = models.IntegerField(default=0, blank=True, null=True)
+    timetable_sra = models.IntegerField(default=0, blank=True, null=True)
+    avl_sra = models.IntegerField(default=0, blank=True, null=True)
+    fares_sra = models.IntegerField(default=0, blank=True, null=True)
 
     objects = OrganisationManager()
 
