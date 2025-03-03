@@ -34,7 +34,6 @@
           {% endif %}
         </h2>
       {% endif %}
-      
       <p class="govuk-body">
         {% filter force_escape %}
           {% trans "The service codes summarised here are registered with the OTC and are in scope of BODS, but are not yet published in a complete and accurate way." %}
@@ -67,9 +66,7 @@
           <div class="govuk-grid-column-one-half">
             <div class="feed-stat">
               <span class="feed-stat__value">{{ total_services_requiring_attention }}</span>
-              <span class="feed-stat__label">
-                {% trans "Overall services requiring attention" %}
-              </span>
+              <span class="feed-stat__label">{% trans "Overall services requiring attention" %}</span>
             </div>
           </div>
         {% endif %}
@@ -115,7 +112,7 @@
           {% filter force_escape %}
             {% blocktrans %}
               The complete services page here provide a combined view of real time Location
-              data, timetables and fares data. Please review the data for each service and 
+              data, timetables and fares data. Please review the data for each service and
               supply feedback if any issues exist.
             {% endblocktrans %}
           {% endfilter %}
@@ -123,9 +120,7 @@
         <div id="feed-stat-list" class="govuk-grid-row">
           <div class="govuk-grid-column-one-third">
             <div class="feed-stat">
-              <span class="feed-stat__label">
-                {% trans "Licence number" %}
-              </span>
+              <span class="feed-stat__label">{% trans "Licence number" %}</span>
             </div>
           </div>
           <div class="govuk-grid-column-two-thirds">
@@ -133,8 +128,9 @@
               <ul class="govuk-list">
                 {% for licence_number, organisation_name in licence_organisation_map.items %}
                   <li class="govuk-grid-row">
-                      <span class="govuk-grid-column-two-thirds text-wrap">{{ organisation_name }}</span>
-                      <a class="govuk-grid-column-one-third govuk-link" href="{% url 'operator-licence-detail' number=licence_number host hosts.data %}">{{ licence_number }}</a>
+                    <span class="govuk-grid-column-two-thirds text-wrap">{{ organisation_name }}</span>
+                    <a class="govuk-grid-column-one-third govuk-link"
+                       href="{% url 'operator-licence-detail' number=licence_number host hosts.data %}">{{ licence_number }}</a>
                   </li>
                 {% endfor %}
               </ul>
@@ -150,12 +146,8 @@
         <div id="feed-stat-list" class="govuk-grid-row">
           <div class="govuk-grid-column-one-half">
             <div class="feed-stat">
-              <span class="feed-stat__value">
-                {{ total_timetable_records_requiring_attention }}
-              </span>
-              <span class="feed-stat__label">
-                {% trans "Services requiring attention" %}
-              </span>
+              <span class="feed-stat__value">{{ total_timetable_records_requiring_attention }}</span>
+              <span class="feed-stat__label">{% trans "Services requiring attention" %}</span>
             </div>
           </div>
         </div>
@@ -168,32 +160,24 @@
         <div id="feed-stat-list" class="govuk-grid-row">
           <div class="govuk-grid-column-one-half">
             <div class="feed-stat">
-              <span class="feed-stat__value">
-                {{ total_location_records_requiring_attention }}
-              </span>
-              <span class="feed-stat__label">
-                {% trans "Services requiring attention" %}
-              </span>
+              <span class="feed-stat__value">{{ total_location_records_requiring_attention }}</span>
+              <span class="feed-stat__label">{% trans "Services requiring attention" %}</span>
             </div>
           </div>
         </div>
-          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
-            <h3 class="govuk-heading-m govuk-!-margin-top-7">
-              {% filter force_escape %}
-                {% trans "Fares data" %}
-              {% endfilter %}
-            </h3>
-            <div id="feed-stat-list" class="govuk-grid-row">
-              <div class="govuk-grid-column-one-half">
-                <div class="feed-stat">
-                  <span class="feed-stat__value">
-                    {{ total_fares_records_requiring_attention }}
-                  </span>
-                  <span class="feed-stat__label">
-                    {% trans "Services requiring attention" %}
-                  </span>
-                </div>
-              </div>
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+        <h3 class="govuk-heading-m govuk-!-margin-top-7">
+          {% filter force_escape %}
+            {% trans "Fares data" %}
+          {% endfilter %}
+        </h3>
+        <div id="feed-stat-list" class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            <div class="feed-stat">
+              <span class="feed-stat__value">{{ total_fares_records_requiring_attention }}</span>
+              <span class="feed-stat__label">{% trans "Services requiring attention" %}</span>
+            </div>
+          </div>
         </div>
       {% endif %}
     </div>

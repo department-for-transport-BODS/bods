@@ -1,6 +1,5 @@
 import logging
-import pandas as pd
-from datetime import date, timedelta, datetime
+from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -14,21 +13,16 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
 )
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.dqs.constants import Level
-from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.dqs.models import ObservationResults
-
+from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
-from transit_odp.organisation.models.organisations import ConsumerFeedback
+from transit_odp.organisation.models.organisations import ConsumerFeedback, Licence
 from transit_odp.otc.models import Service as OTCService
-from transit_odp.transmodel.models import (
-    Service as TransmodelService,
-    ServicePatternStop,
-)
-from django.db.models import Q
 from transit_odp.publish.constants import FARES_STALENESS_STATUS
-from transit_odp.organisation.models.organisations import Licence
+from transit_odp.transmodel.models import Service as TransmodelService
+from transit_odp.transmodel.models import ServicePatternStop
 
 logger = logging.getLogger(__name__)
 
@@ -935,13 +929,19 @@ def query_dq_critical_observation(query) -> List[tuple]:
     Dataframe approch in order to acheive the desired values. Following steps will
     be followed
 
-    1. Get dataframe to get service_patter_ids for the given query of registration number, line name, revision id
-    2. Get dataframe by querying servicepatternstops table from the service_pattern_ids extracted in step 1
-    3. Merge the dataframe built on step 1 and step 2 with left join (To prevent any service.id loss)
-    4. Get the observations with ciritical type and merge the selected stop points with the Step 3 dataframe
-    5. Now to get consumer feedback use the service_ids extracted on Step 1 df and search for feedbacks which are not suppressed
+    1. Get dataframe to get service_patter_ids for the given query of registration number,
+        line name, revision id
+    2. Get dataframe by querying servicepatternstops table from the service_pattern_ids extracted
+        in step 1
+    3. Merge the dataframe built on step 1 and step 2 with left join
+        (To prevent any service.id loss)
+    4. Get the observations with ciritical type and merge the selected stop points with the
+        Step 3 dataframe
+    5. Now to get consumer feedback use the service_ids extracted on Step 1 df and search for
+        feedbacks which are not suppressed
     6. Merge the dataframe of consumer feedbacks with main dataframe
-    7. Return the registration number and line name for which any value (Observation with ciritical or Consumer feedback) is present
+    7. Return the registration number and line name for which any value (Observation with ciritical
+        or Consumer feedback) is present
 
     Returns:
         dict[tuple, str]: return a list of services"""
@@ -1024,7 +1024,6 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
     nocs_list = []
     noc_linename_dict = []
     for _, file_attribute in txc_map.items():
-
         nocs_list.append(file_attribute.national_operator_code)
         noc_linename_dict.append(
             {
