@@ -564,7 +564,7 @@ def get_fares_compliance_status(is_fares_compliant: bool) -> str:
         is_fares_compliant (bool): BODS compliance
 
     Returns:
-        str: Compliant or Non compliant for 'Fares Compliance Status' column
+        str: Yes or No for 'Fares Compliance Status' column
     """
     if not pd.isna(is_fares_compliant) and is_fares_compliant:
         return "Yes"
