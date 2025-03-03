@@ -1380,9 +1380,9 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     if is_fares_require_attention_active:
         merged = add_fares_status_columns(merged)
         merged["fares_compliance_status"] = merged["fares_compliance_status"].apply(
-            lambda x: "Non Compliant"
-            if pd.isna(x) or str(x).strip() == ""
-            else "Compliant"
+            lambda x: "No"
+            if pd.isna(x) or str(x).strip() == "" or x.lower() == "no"
+            else "Yes"
         )
         merged["fares_requires_attention"] = merged.apply(
             lambda row: get_fares_requires_attention(
