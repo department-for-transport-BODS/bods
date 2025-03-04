@@ -39,7 +39,6 @@ from transit_odp.publish.requires_attention import (
     get_fares_requires_attention,
     get_fares_timeliness_status,
 )
-from transit_odp.common.constants import FeatureFlags
 
 TXC_COLUMNS = (
     "organisation_name",
@@ -1144,9 +1143,11 @@ def add_overall_requires_attention(row: Series) -> str:
 
     If 'Scope Status' = Out of Scope OR 'Seasonal Status' = Out of Season,
     then 'Requires attention' = No.
-    If 'Timetables requires attention' = No AND 'AVL requires attention' = No,
+    If 'Timetables requires attention' = No AND 'AVL requires attention' = No
+    AND 'Fares requires attention' = No,
     then 'Requires attention' = No.
-    If 'Timetables requires attention' = Yes OR 'AVL requires attention' = Yes,
+    If 'Timetables requires attention' = Yes OR 'AVL requires attention' = Yes
+    AND 'Fares requires attention' = Yes,
     then 'Requires attention' = Yes.
 
     Args:
@@ -1155,15 +1156,28 @@ def add_overall_requires_attention(row: Series) -> str:
     Returns:
         str: Value for the column
     """
+    is_fares_require_attention_active = flag_is_active(
+        "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+    )
     exempted = row["scope_status"]
     seasonal_service = row["seasonal_status"]
     timetable_requires_attention = row["requires_attention"]
     avl_requires_attention = row["avl_requires_attention"]
+    if is_fares_require_attention_active:
+        fares_requires_attention = row["fares_requires_attention"]
 
     if (exempted == "Out of Scope") or (seasonal_service == "Out of Season"):
         return "No"
-    if (timetable_requires_attention == "No") and (avl_requires_attention == "No"):
-        return "No"
+    if is_fares_require_attention_active:
+        if (
+            (timetable_requires_attention == "No")
+            and (avl_requires_attention == "No")
+            and (fares_requires_attention == "No")
+        ):
+            return "No"
+    else:
+        if (timetable_requires_attention == "No") and (avl_requires_attention == "No"):
+            return "No"
     return "Yes"
 
 
@@ -1303,12 +1317,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
             txc_service_map[txc_attribute.service_code] = txc_attribute
         fares_df = get_fares_dataset_map(txc_map=txc_service_map)
         fares_df["valid_to"] = fares_df["valid_to"].dt.date
-        fares_df["fares_timeliness_status"] = fares_df.apply(
-            lambda row: get_fares_timeliness_status(
-                row["valid_to"], row["last_updated_date"].date()
-            ),
-            axis=1,
-        )
+        fares_df["last_updated_date"] = fares_df["last_updated_date"].dt.date
         fares_df["is_fares_compliant"] = fares_df.apply(
             lambda row: get_fares_compliance_status(row["is_fares_compliant"]), axis=1
         )
@@ -1371,18 +1380,23 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     merged["avl_requires_attention"] = merged.apply(
         lambda x: add_avl_requires_attention(x), axis=1
     )
-    merged["overall_requires_attention"] = merged.apply(
-        lambda x: add_overall_requires_attention(x), axis=1
-    )
 
     merged = merged[merged["otc_status"] == OTC_STATUS_REGISTERED]
 
     if is_fares_require_attention_active:
         merged = add_fares_status_columns(merged)
+        fares_df["fares_timeliness_status"] = fares_df.apply(
+            lambda row: get_fares_timeliness_status(
+                row["valid_to"], row["last_updated_date"]
+            ),
+            axis=1,
+        )
         merged["fares_compliance_status"] = merged["fares_compliance_status"].apply(
-            lambda x: "No"
-            if pd.isna(x) or str(x).strip() == "" or x.lower() == "no"
-            else "Yes"
+            lambda x: (
+                "No"
+                if pd.isna(x) or str(x).strip() == "" or x.lower() == "no"
+                else "Yes"
+            )
         )
         merged["fares_requires_attention"] = merged.apply(
             lambda row: get_fares_requires_attention(
@@ -1392,13 +1406,10 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
             ),
             axis=1,
         )
-        merged["overall_requires_attention"] = np.where(
-            (merged["fares_requires_attention"] == "Yes")
-            | (merged["requires_attention"] == "Yes")
-            | (merged["avl_requires_attention"] == "Yes"),
-            "Yes",
-            "No",
-        )
+
+    merged["overall_requires_attention"] = merged.apply(
+        lambda x: add_overall_requires_attention(x), axis=1
+    )
 
     rename_map = {
         old_name: column_tuple.field_name
