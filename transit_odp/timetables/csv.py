@@ -1385,9 +1385,10 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
 
     if is_fares_require_attention_active:
         merged = add_fares_status_columns(merged)
-        fares_df["fares_timeliness_status"] = fares_df.apply(
+        merged["fares_timeliness_status"] = merged.apply(
             lambda row: get_fares_timeliness_status(
-                row["valid_to"], row["last_updated_date"]
+                row["fares_operating_period_end_date"],
+                row["fares_last_modified_date"],
             ),
             axis=1,
         )
