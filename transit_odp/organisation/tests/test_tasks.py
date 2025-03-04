@@ -36,11 +36,13 @@ from transit_odp.transmodel.factories import (
 from transit_odp.users.factories import UserFactory
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
 from waffle.testutils import override_flag
+from transit_odp.common.constants import FeatureFlags
 
 pytestmark = pytest.mark.django_db
 
 
 class TestOperatorPeriodicTask:
+    @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=True)
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     def test_operator_timetable_stats_not_compliant(
         self, mock_avl_requires_attention, request_factory: RequestFactory
@@ -157,6 +159,7 @@ class TestOperatorPeriodicTask:
         # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
         assert org_updated.timetable_sra == 6
 
+    @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=True)
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     def test_operator_weca_timetable_stats_not_compliant(
         self, mock_avl_line_level_require_attention, request_factory: RequestFactory
@@ -288,6 +291,7 @@ class TestOperatorPeriodicTask:
         # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
         assert org_updated.timetable_sra == 6
 
+    @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=True)
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     def test_operator_detail_timetable_stats_compliant(
         self, mock_avl_line_level, request_factory: RequestFactory
@@ -374,7 +378,8 @@ class TestOperatorPeriodicTask:
         # 3 services up to date, including one in season. 0/3 requiring attention = 0%
         assert org_updated.timetable_sra == 0
 
-    @override_flag("dqs_require_attention", active=True)
+    @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=True)
+    @override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=True)
     def test_operator_detail_dqs_stats_compliant(self, request_factory: RequestFactory):
         org = OrganisationFactory()
         month = timezone.now().date() + datetime.timedelta(weeks=4)
@@ -484,10 +489,13 @@ class TestOperatorPeriodicTask:
 
         task_precalculate_operator_sra()
         org_updated = Organisation.objects.filter(id=org.id).first()
+        print(org_updated.total_inscope)
+        print(org_updated.timetable_sra)
         # One out of season seasonal service reduces in scope services to 3
         assert org_updated.total_inscope == 3
         assert org_updated.timetable_sra == 1  # DQS critical issues
 
+    @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=True)
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     def test_operator_detail_weca_timetable_stats_compliant(
         self, avl_line_level_require_attention, request_factory: RequestFactory
