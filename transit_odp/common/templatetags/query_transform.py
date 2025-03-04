@@ -64,7 +64,7 @@ def remove_query_params(context):
     Returns the URL for the current page,
     after removing the query params.
 
-    E.g: given the url is https://localhost/view?page=1&details=2 
+    E.g: given the url is https://localhost/view?page=1&details=2
     {% remove_query_params %} outputs https://localhost/view
 
     """
