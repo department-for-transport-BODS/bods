@@ -1003,7 +1003,7 @@ class FaresRequiresAttention:
                     last_modified_date = row.get("last_updated_date", "")
                     valid_to = date.today() if pd.isnull(valid_to) else valid_to.date()
                     last_modified_date = (
-                        datetime.now()
+                        date.today()
                         if pd.isnull(last_modified_date)
                         else last_modified_date.date()
                     )
