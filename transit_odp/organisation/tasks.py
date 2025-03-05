@@ -30,6 +30,9 @@ def task_precalculate_operator_sra():
     is_operator_prefetch_sra_active = flag_is_active(
         "", FeatureFlags.OPERATOR_PREFETCH_SRA.value
     )
+    is_avl_require_attention_active = flag_is_active(
+        "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
+    )
 
     if not is_operator_prefetch_sra_active:
         logger.info(
@@ -38,9 +41,15 @@ def task_precalculate_operator_sra():
         return
     organisation_qs = Organisation.objects.all()
     logger.info(f"Total operators found {organisation_qs.count()}")
-    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
-    abods_registry = AbodsRegistery()
-    synced_in_last_month = abods_registry.records()
+
+    if is_avl_require_attention_active:
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        abods_registry = AbodsRegistery()
+        synced_in_last_month = abods_registry.records()
+    else:
+        uncounted_activity_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
+        synced_in_last_month = []
+
     logger.info(
         f"Step: Starting orgnaisation level processing. With Synced in last month {len(synced_in_last_month)} Uncounded vehicle activity df {uncounted_activity_df.shape}"
     )
@@ -65,13 +74,25 @@ def organisation_calcualte_sra(
     """
     try:
         timetable_sra = get_requires_attention_line_level_data(organisation.id)
-        avl_sra = get_avl_requires_attention_line_level_data(
-            organisation.id, uncounted_activity_df, synced_in_last_month
+        in_scope_services = get_in_scope_in_season_services_line_level(organisation.id)
+
+        avl_sra = fares_sra = []
+
+        is_avl_require_attention_active = flag_is_active(
+            "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
+        )
+        is_fares_require_attention_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
 
-        fra = FaresRequiresAttention(organisation.id)
-        fares_sra = fra.get_fares_requires_attention_line_level_data()
-        in_scope_services = get_in_scope_in_season_services_line_level(organisation.id)
+        if is_avl_require_attention_active:
+            avl_sra = get_avl_requires_attention_line_level_data(
+                organisation.id, uncounted_activity_df, synced_in_last_month
+            )
+
+        if is_fares_require_attention_active:
+            fra = FaresRequiresAttention(organisation.id)
+            fares_sra = fra.get_fares_requires_attention_line_level_data()
 
         all_sra = timetable_sra + avl_sra + fares_sra
         overall_sra = set()
