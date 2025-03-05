@@ -340,6 +340,8 @@ class TransXChangeExtractor:
             pd.DataFrame: A dataframe containing the route map, linking routes to their respective journey patterns.
         """
         # Get services and journey patterns
+        tracks = pd.DataFrame()
+        vj_tracks_map = pd.DataFrame()
         extract_tracks_data = flag_is_active("", "extract_tracks_data")
         if not extract_tracks_data:
             return pd.DataFrame(), pd.DataFrame()
@@ -357,7 +359,8 @@ class TransXChangeExtractor:
         northing_easting_geometry = geo_type == "Easting/Northing"
         long_lat_geometry = geo_type == "Longitude/Latitude"
         if geo_type is None:
-            logger.error("Geometry type is not found")
+            logger.debug("Geometry type is not found")
+            return pd.DataFrame(), pd.DataFrame()
 
         for route in routes:
             route_section_refs = route.get_elements_or_none(["RouteSectionRef"])

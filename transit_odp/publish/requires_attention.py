@@ -1,5 +1,5 @@
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta, datetime
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -559,12 +559,11 @@ def get_fares_compliance_status(is_fares_compliant: bool) -> str:
         is_fares_compliant (bool): BODS compliance
 
     Returns:
-        str: Compliant or Non compliant for 'Fares Compliance Status' column
+        str: Yes or No for 'Fares Compliance Status' column
     """
-    if not pd.isna(is_fares_compliant):
-        if is_fares_compliant:
-            return "Compliant"
-    return "Non compliant"
+    if not pd.isna(is_fares_compliant) and is_fares_compliant:
+        return "Yes"
+    return "No"
 
 
 def get_fares_requires_attention(
@@ -576,7 +575,7 @@ def get_fares_requires_attention(
     Returns value for 'Fares requires attention' column based on the following logic:
         If 'Fares Published Status' equal to Published
         AND 'Fares Timeliness Status' equal to Not Stale
-        AND 'Fares Compliance Status' equal to Compliant
+        AND 'Fares Compliance Status' equal to Yes
         then 'Fares requires attention' = No.
         Else
         the 'Fares requires attention' = Yes.
@@ -592,7 +591,7 @@ def get_fares_requires_attention(
     if (
         (fares_published_status == "Published")
         and (fares_timeliness_status == "Not Stale")
-        and (fares_compliance_status == "Compliant")
+        and (fares_compliance_status == "Yes")
     ):
         return "No"
     return "Yes"
@@ -655,7 +654,11 @@ def is_avl_requires_attention(
     return False
 
 
-def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
+def get_avl_requires_attention_line_level_data(
+    org_id: int,
+    uncounted_activity_df: pd.DataFrame = None,
+    synced_in_last_month: List = None,
+) -> List[Dict[str, str]]:
     """
     Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
     dictionaries list to determine which OTC Services require attention ie. service has
@@ -673,9 +676,10 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
 
-    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
-    abods_registry = AbodsRegistery()
-    synced_in_last_month = abods_registry.records()
+    if uncounted_activity_df is None or synced_in_last_month is None:
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        abods_registry = AbodsRegistery()
+        synced_in_last_month = abods_registry.records()
 
     object_list = []
     for service_key, service in otc_map.items():
@@ -963,25 +967,9 @@ def query_dq_critical_observation(query) -> List[tuple]:
     )
     dqs_require_attention_df.rename(columns={"_merge": "dqs_critical"}, inplace=True)
 
-    is_specific_feedback = flag_is_active("", "is_specific_feedback")
-    if is_specific_feedback:
-        consumer_feedback_df = get_consumer_feedback_df(service_pattern_ids_df)
-
-        dqs_require_attention_df = dqs_require_attention_df.merge(
-            consumer_feedback_df, on=["service_id"], how="left", indicator=True
-        )
-        dqs_require_attention_df.rename(
-            columns={"_merge": "has_feedback"}, inplace=True
-        )
-
-        dqs_require_attention_df = dqs_require_attention_df[
-            (dqs_require_attention_df["dqs_critical"] == "both")
-            | (dqs_require_attention_df["has_feedback"] == "both")
-        ]
-    else:
-        dqs_require_attention_df = dqs_require_attention_df[
-            dqs_require_attention_df["dqs_critical"] == "both"
-        ]
+    dqs_require_attention_df = dqs_require_attention_df[
+        dqs_require_attention_df["dqs_critical"] == "both"
+    ]
 
     dqs_require_attention_df = dqs_require_attention_df[["service_code", "line_name"]]
 
