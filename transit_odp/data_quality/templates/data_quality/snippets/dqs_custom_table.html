@@ -1,6 +1,7 @@
 {% load django_tables2 %}
 {% load i18n %}
 {% load parse_dictionary %}
+{% load query_transform %}
 {% block table-wrapper %}
   <div>
     {% block table %}
@@ -46,7 +47,7 @@
                   </td>
                   <td class="govuk-table__cell govuk-!-padding-bottom-0  {{ column.attrs.td.class |default_if_none:"" }}">
                     {% if row.cells.is_details_link %}
-                      <a href="{{ request.build_absolute_uri }}detail?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
+                      <a href="{% remove_query_params %}detail?line={{ row.cells.line_name }}&service={{ row.cells.service_code }}">
                         {{ row.cells.dqs_details }}
                       </a>
                     {% else %}
