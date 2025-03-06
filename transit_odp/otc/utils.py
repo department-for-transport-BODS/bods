@@ -1,3 +1,4 @@
+import pandas as pd
 import csv
 import logging
 from io import StringIO
@@ -7,11 +8,19 @@ import botocore
 from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
+from waffle import flag_is_active
 
+from transit_odp.browse.common import get_in_scope_in_season_lta_service_numbers
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.utils.s3_bucket_connection import get_s3_bodds_bucket_storage
 from transit_odp.organisation.constants import SCOTLAND_TRAVELINE_REGIONS
 from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority
 from transit_odp.otc.models import Service, UILta
+from transit_odp.publish.requires_attention import (
+    get_avl_records_require_attention_lta_line_level_objects,
+    get_fares_records_require_attention_lta_line_level_objects,
+    get_requires_attention_data_lta_line_level_objects,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -161,3 +170,81 @@ def get_service_in_scotland_from_db(service_ref: str) -> bool:
     service_name_in_cache = f"{service_ref.replace(':', '-')}-scottish-region"
     cache.set(service_name_in_cache, is_scottish, timeout=7200)
     return is_scottish
+
+
+def uilta_calcualte_sra(
+    uilta: UILta, uncounted_activity_df: pd.DataFrame, synced_in_last_month: List
+):
+    """SRA calculation for single UI LTA
+
+    Args:
+        organisation (Organisation): Organisation object
+        uncounted_activity_df (pd.DataFrame): vehicle activity value
+        synced_in_last_month (List): Abods lines list
+    """
+    try:
+        is_avl_require_attention_active = flag_is_active(
+            "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
+        )
+
+        is_fares_require_attention_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
+
+        lta_objs = uilta.localauthority_ui_lta_records.all()
+
+        logger.debug(
+            "UILTA Calculate SRA: Total {} Local Authority Objects Found".format(
+                len(lta_objs)
+            )
+        )
+
+        if lta_objs.count() <= 0:
+            logger.debug(
+                "Skipping SRA for UILTA {} with Zero Local Authorities".format(
+                    uilta.name
+                )
+            )
+            return
+
+        avl_sra = fares_sra = []
+        in_scope_services = get_in_scope_in_season_lta_service_numbers(lta_objs)
+        timetable_sra = get_requires_attention_data_lta_line_level_objects(lta_objs)
+
+        if is_avl_require_attention_active:
+            avl_sra = get_avl_records_require_attention_lta_line_level_objects(
+                lta_objs, uncounted_activity_df, synced_in_last_month
+            )
+
+        if is_fares_require_attention_active:
+            fares_sra = get_fares_records_require_attention_lta_line_level_objects(
+                lta_objs
+            )
+
+        overall_sra = get_overall_sra_unique_services(timetable_sra, avl_sra, fares_sra)
+        uilta.total_inscope = len(in_scope_services)
+        uilta.timetable_sra = len(timetable_sra)
+        uilta.avl_sra = len(avl_sra)
+        uilta.fares_sra = len(fares_sra)
+        uilta.overall_sra = len(overall_sra)
+        uilta.save()
+    except Exception as e:
+        logger.error(f"Error occured while syncing sra for uilta {uilta.name}")
+        logger.exception(e)
+
+
+def get_overall_sra_unique_services(
+    timetable_sra: list, avl_sra: list, fares_sra: list
+) -> List:
+    all_sra = timetable_sra + avl_sra + fares_sra
+    overall_sra = set()
+    for d in all_sra:
+        key = (
+            d.get("licence_number")
+            + "__"
+            + d.get("service_code")
+            + "__"
+            + d.get("line_number")
+        )
+        overall_sra.add(key)
+    return overall_sra
