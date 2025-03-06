@@ -1,6 +1,5 @@
 from math import floor
 from typing import Dict
-
 import pandas as pd
 from logging import getLogger
 from django.db.models import Avg, F
