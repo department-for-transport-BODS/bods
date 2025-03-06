@@ -1,7 +1,7 @@
 from math import floor
 from typing import Dict
-
 import pandas as pd
+from logging import getLogger
 from django.db.models import Avg, F
 from django_hosts.resolvers import reverse
 from waffle import flag_is_active
@@ -46,6 +46,8 @@ from transit_odp.publish.requires_attention import (
     get_fares_timeliness_status,
     get_requires_attention_line_level_data,
 )
+
+logger = getLogger(__name__)
 
 
 class OperatorsView(BaseListView):
@@ -120,6 +122,9 @@ class OperatorDetailView(BaseDetailView):
         is_complete_service_pages_active = flag_is_active(
             "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
         )
+        is_operator_prefetch_sra_active = flag_is_active(
+            "", FeatureFlags.OPERATOR_PREFETCH_SRA.value
+        )
         context = super().get_context_data(**kwargs)
         organisation = self.object
 
@@ -127,28 +132,44 @@ class OperatorDetailView(BaseDetailView):
         context["is_complete_service_pages_active"] = is_complete_service_pages_active
         context["is_fares_require_attention_active"] = is_fares_require_attention_active
 
-        context["total_in_scope_in_season_services"] = len(
-            get_in_scope_in_season_services_line_level(organisation.id)
-        )
-        context["total_services_requiring_attention"] = len(
-            get_requires_attention_line_level_data(organisation.id)
-        )
-
-        if is_complete_service_pages_active:
-            context["timetable_services_requiring_attention_count"] = len(
+        total_fares_sra = total_avl_sra = 0
+        if is_operator_prefetch_sra_active:
+            logger.debug("Operator Prefetch SRA active, Displaying from DB")
+            total_timetable_sra = organisation.timetable_sra
+            total_avl_sra = organisation.avl_sra
+            total_fares_sra = organisation.fares_sra
+            total_in_scope = organisation.total_inscope
+        else:
+            logger.debug("Operator Prefetch SRA inactive, calculating SRA")
+            total_in_scope = len(
+                get_in_scope_in_season_services_line_level(organisation.id)
+            )
+            total_timetable_sra = len(
                 get_requires_attention_line_level_data(organisation.id)
             )
-
             if is_avl_require_attention_active:
-                context["avl_services_requiring_attention_count"] = len(
+                total_avl_sra = len(
                     get_avl_requires_attention_line_level_data(organisation.id)
                 )
 
             if is_fares_require_attention_active:
                 fares_reqiures_attention = FaresRequiresAttention(organisation.id)
-                context["fares_services_requiring_attention_count"] = len(
+                total_fares_sra = len(
                     fares_reqiures_attention.get_fares_requires_attention_line_level_data()
                 )
+
+        context["total_in_scope_in_season_services"] = total_in_scope
+        context["total_services_requiring_attention"] = total_timetable_sra
+
+        if is_complete_service_pages_active:
+            context[
+                "timetable_services_requiring_attention_count"
+            ] = total_timetable_sra
+
+            if is_avl_require_attention_active:
+                context["avl_services_requiring_attention_count"] = total_avl_sra
+            if is_fares_require_attention_active:
+                context["fares_services_requiring_attention_count"] = total_fares_sra
         else:
             try:
                 context["services_require_attention_percentage"] = round(
@@ -162,9 +183,7 @@ class OperatorDetailView(BaseDetailView):
                 context["services_require_attention_percentage"] = 0
 
             if is_avl_require_attention_active:
-                context["avl_total_services_requiring_attention"] = len(
-                    get_avl_requires_attention_line_level_data(organisation.id)
-                )
+                context["avl_total_services_requiring_attention"] = total_avl_sra
 
                 try:
                     context["avl_services_require_attention_percentage"] = round(
@@ -176,6 +195,21 @@ class OperatorDetailView(BaseDetailView):
                     )
                 except ZeroDivisionError:
                     context["avl_services_require_attention_percentage"] = 0
+
+            if is_fares_require_attention_active:
+                context["fares_total_services_requiring_attention"] = total_fares_sra
+                try:
+                    context[
+                        "fares_total_services_requiring_attention_percentage"
+                    ] = round(
+                        100
+                        * (
+                            context["fares_total_services_requiring_attention"]
+                            / context["total_in_scope_in_season_services"]
+                        )
+                    )
+                except ZeroDivisionError:
+                    context["fares_total_services_requiring_attention_percentage"] = 0
 
             fares_datasets = (
                 Dataset.objects.filter(

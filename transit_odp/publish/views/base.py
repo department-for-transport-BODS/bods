@@ -496,12 +496,15 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
         """
         Delete any existing violations for the given revision id.
         This allows validation to occur multiple times for the same DatasetRevision
-        Includes: SchemaViolation, PostSchemaViolation, PTIObservation and TXCFileAttributes objects
+        Includes: SchemaViolation, PostSchemaViolation, PTIObservation, TXCFileAttributes and ServicePattern objects
+        Cascade deletes so that other related objects ex-Service, dqstasks,etc. are also deleted
         """
         revision.schema_violations.all().delete()
         revision.post_schema_violations.all().delete()
         revision.txc_file_attributes.all().delete()
         revision.pti_observations.all().delete()
+        revision.service_patterns.all().delete()
+        revision.dqs_report.all().delete()
 
     @transaction.atomic
     def done(self, form_list, **kwargs):

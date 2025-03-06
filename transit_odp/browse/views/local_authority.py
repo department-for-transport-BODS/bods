@@ -891,7 +891,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 require_attention = dq_require_attention
 
             fares_published_status = "Unpublished"
-            fares_compliance_status = "Non compliant"
+            fares_compliance_status = "No"
             fares_requires_attention = "No"
             fares_timeliness_status = "Not Stale"
             fares_dataset_id = (
