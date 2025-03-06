@@ -621,12 +621,12 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
         if file_attribute is None:
-            _update_data(object_list, service)
+            _update_data(object_list, service, service_key[1])
         elif is_stale(service, file_attribute) or (
             is_dqs_require_attention
             and service_key in dqs_critical_issues_service_line_map
         ):
-            _update_data(object_list, service)
+            _update_data(object_list, service, service_key[1])
     return object_list
 
 
@@ -671,7 +671,6 @@ def get_avl_requires_attention_line_level_data(
     )
     if not is_avl_require_attention_active:
         return []
-
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
@@ -690,7 +689,7 @@ def get_avl_requires_attention_line_level_data(
         if is_avl_requires_attention(
             noc, line_name, synced_in_last_month, uncounted_activity_df
         ):
-            _update_data(object_list, service)
+            _update_data(object_list, service, line_name)
 
     logging.info(f"AVL-REQUIRE-ATTENTION: total objects {len(object_list)}")
     return object_list
@@ -1198,10 +1197,9 @@ class FaresRequiresAttention:
         fares_df = get_fares_dataset_map(txcfa_map)
 
         for service_key, service in otc_map.items():
-
             txc_file = txcfa_map.get(service_key)
             if self.is_fares_requires_attention(txc_file, fares_df):
-                _update_data(object_list, service)
+                _update_data(object_list, service, service_key[1])
 
         return object_list
 
