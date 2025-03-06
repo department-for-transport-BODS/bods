@@ -626,12 +626,12 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
         if file_attribute is None:
-            _update_data(object_list, service)
+            _update_data(object_list, service, service_key[1])
         elif is_stale(service, file_attribute) or (
             is_dqs_require_attention
             and service_key in dqs_critical_issues_service_line_map
         ):
-            _update_data(object_list, service)
+            _update_data(object_list, service, service_key[1])
     return object_list
 
 
@@ -653,17 +653,9 @@ def get_avl_requires_attention_line_level_data(
     if not is_avl_require_attention_active:
         return []
     object_list = []
-    dqs_critical_issues_service_line_map = []
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
-    is_dqs_require_attention = flag_is_active(
-        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
-    )
-    if is_dqs_require_attention:
-        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
-            txcfa_map
-        )
 
     if uncounted_activity_df is None or synced_in_last_month is None:
         uncounted_activity_df = get_vehicle_activity_operatorref_linename()
@@ -672,10 +664,9 @@ def get_avl_requires_attention_line_level_data(
 
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
+        line_name = service_key[1]
         if file_attribute is not None:
             operator_ref = file_attribute.national_operator_code
-            line_name = service_key[1]
-
             if (
                 not uncounted_activity_df.loc[
                     (uncounted_activity_df["OperatorRef"] == operator_ref)
@@ -687,14 +678,9 @@ def get_avl_requires_attention_line_level_data(
                 ].empty
                 or f"{line_name}__{operator_ref}" not in synced_in_last_month
             ):
-                _update_data(object_list, service)
-        elif (
-            is_dqs_require_attention
-            and (service_key, service) in dqs_critical_issues_service_line_map
-        ):
-            _update_data(object_list, service)
+                _update_data(object_list, service, line_name)
         else:
-            _update_data(object_list, service)
+            _update_data(object_list, service, line_name)
     logging.info(f"AVL-REQUIRE-ATTENTION: total objects {len(object_list)}")
     return object_list
 
@@ -986,9 +972,9 @@ class FaresRequiresAttention:
             file_attribute = txcfa_map.get(service_key)
             # If no file attribute (TxcFileAttribute), service requires attention
             if file_attribute is None:
-                _update_data(object_list, service)
+                _update_data(object_list, service, service_key[1])
             elif fares_df.empty:
-                _update_data(object_list, service)
+                _update_data(object_list, service, service_key[1])
             else:
                 noc = file_attribute.national_operator_code
                 line_name = file_attribute.line_name_unnested
@@ -1008,7 +994,7 @@ class FaresRequiresAttention:
                         else last_modified_date.date()
                     )
                     if is_fares_stale(valid_to, last_modified_date):
-                        _update_data(object_list, service)
+                        _update_data(object_list, service, line_name)
         return object_list
 
 
