@@ -1,8 +1,10 @@
 import csv
+import datetime
 import io
 import math
+import re
 import zipfile
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from pathlib import Path
 
 import factory
@@ -12,14 +14,22 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import QueryDict
 from django.test import TestCase
 from django.urls import set_urlconf
+from django.utils import timezone
 from django.utils.timezone import now
 from django_hosts import reverse, reverse_host
 from django_hosts.resolvers import get_host
 from freezegun import freeze_time
+from waffle.testutils import override_flag
 
 from config.hosts import DATA_HOST, PUBLISH_HOST
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.utils import reverse_path
 from transit_odp.data_quality.factories.transmodel import DataQualityReportFactory
+from transit_odp.fares.factories import (
+    DataCatalogueMetaDataFactory,
+    FaresMetadataFactory,
+)
+from transit_odp.fares_validator.factories import FaresValidationResultFactory
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.organisation.constants import INACTIVE, DatasetType, FeedStatus
 from transit_odp.organisation.csv.consumer_interactions import CSV_HEADERS
@@ -2436,3 +2446,868 @@ def test_require_attention_compliant(publish_client):
     assert response.status_code == 200
     assert response.context["total_in_scope_in_season_services"] == 3
     assert response.context["services_require_attention_percentage"] == 0
+
+
+# pytest transit_odp/publish/tests/test_views.py::test_agent_dashboard_sra_stats
+@override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+def test_agent_dashboard_sra_stats(client_factory):
+    """
+    Test for Agent Dashboard non compliant stats relating to:
+        - Timetables data requiring attention
+        - Location data requiring attention
+        - Fares data requiring attention
+    """
+    host = PUBLISH_HOST
+    client = client_factory(host=host)
+
+    national_operator_code = "BLAC"
+    org = OrganisationFactory(nocs=national_operator_code)
+    today = timezone.now().date()
+    month = timezone.now().date() + datetime.timedelta(weeks=4)
+    two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+
+    total_services = 9
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    all_line_names = [f"Line:{n}" for n in range(total_services)]
+    bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org)
+    fares_dataset = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset.id,
+    )
+    fares_dataset_2 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_2 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_2.id,
+    )
+    fares_dataset_3 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_3 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_3.id,
+    )
+    fares_dataset_4 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_4 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_4.id,
+    )
+    fares_dataset_5 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_5 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_5.id,
+    )
+    fares_dataset_6 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_6 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_6.id,
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=50),
+        modification_datetime=timezone.now(),
+        line_names=[all_line_names[0]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata = FaresMetadataFactory(
+        revision=fares_revision,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[0]}"],
+        line_id=[f"::{all_line_names[0]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision,
+        organisation=org,
+        count=5,
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=75),
+        modification_datetime=timezone.now() - datetime.timedelta(days=50),
+        line_names=[all_line_names[1]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_1 = FaresMetadataFactory(
+        revision=fares_revision_2,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_1,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[1]}"],
+        line_id=[f"::{all_line_names[1]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_2,
+        organisation=org,
+        count=0,
+    )
+
+    # Setup a draft TXCFileAttributes
+    dataset2 = DraftDatasetFactory(organisation=org)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(),
+        service_code=all_service_codes[2],
+        line_names=[all_line_names[2]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_2 = FaresMetadataFactory(
+        revision=fares_revision_3,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_2,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[2]}"],
+        line_id=[f"::{all_line_names[2]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_3,
+        organisation=org,
+        count=2,
+    )
+
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+    # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=None,
+        modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+        line_names=[all_line_names[3]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_3 = FaresMetadataFactory(
+        revision=fares_revision_4,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_3,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[3]}"],
+        line_id=[f"::{all_line_names[3]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_4,
+        organisation=org,
+        count=1,
+    )
+
+    # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[4],
+        operating_period_end_date=datetime.date.today() - datetime.timedelta(weeks=105),
+        modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+        line_names=[all_line_names[4]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_4 = FaresMetadataFactory(
+        revision=fares_revision_5,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_4,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[4]}"],
+        line_id=[f"::{all_line_names[4]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_5,
+        organisation=org,
+        count=0,
+    )
+
+    # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[5],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=50),
+        line_names=[all_line_names[5]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_5 = FaresMetadataFactory(
+        revision=fares_revision_6,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_5,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[5]}"],
+        line_id=[f"::{all_line_names[5]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_6,
+        organisation=org,
+        count=9,
+    )
+
+    # Create Seasonal Services - one in season, one out of season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=today,
+        end=month,
+        registration_code=int(all_service_codes[6][-1:]),
+    )
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=month,
+        end=two_months,
+        registration_code=int(all_service_codes[7][-1:]),
+    )
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
+    for index, code in enumerate(all_service_codes, start=0):
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                effective_date=datetime.date(year=2020, month=1, day=1),
+                service_number=all_line_names[index],
+            )
+        )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
+
+    user = UserFactory(account_type=AccountType.agent_user.value, organisations=(org,))
+    client.force_login(user=user)
+    url = reverse("agent-dashboard", host=PUBLISH_HOST)
+    response = client.get(url, follow=True)
+    context = response.context_data
+    table = context["table"]
+    row = table.rows[0]
+    organisation_name_html = row.get_cell("organisation")
+    timetables_requires_attention_html = row.get_cell("requires_attention")
+    avl_requires_attention = row.get_cell("avl_requires_attention")
+    fares_requires_attention_html = row.get_cell("fares_requires_attention")
+
+    organisation_name = re.sub(r"<.*?>", "", organisation_name_html).strip()
+    timetables_requires_attention = int(
+        re.sub(r"<.*?>", "", timetables_requires_attention_html).strip()[0]
+    )
+    fares_requires_attention = int(
+        re.sub(r"<.*?>", "", fares_requires_attention_html).strip()[0]
+    )
+
+    assert response.status_code == 200
+    assert context["view"].template_name == "publish/agent_dashboard.html"
+    assert str(table.columns[0]) == "Organisation"
+    assert str(table.columns[1]) == "Timetable services requiring attention"
+    assert str(table.columns[2]) == "Location services requiring attention"
+    assert str(table.columns[3]) == "Fares services requiring attention"
+    assert organisation_name == org.name
+    assert timetables_requires_attention == 6
+    assert avl_requires_attention == 0
+    assert fares_requires_attention == 8
+
+
+@override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+def test_agent_dashboard_search_results(client_factory):
+    """
+    Test for Agent Dashboard non compliant stats relating to:
+        - Timetables data requiring attention
+        - Location data requiring attention
+        - Fares data requiring attention
+    """
+    host = PUBLISH_HOST
+    client = client_factory(host=host)
+
+    national_operator_code = "BLAC"
+    org = OrganisationFactory(nocs=national_operator_code)
+    today = timezone.now().date()
+    month = timezone.now().date() + datetime.timedelta(weeks=4)
+    two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+
+    total_services = 9
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    all_line_names = [f"Line:{n}" for n in range(total_services)]
+    bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org)
+    fares_dataset = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset.id,
+    )
+    fares_dataset_2 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_2 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_2.id,
+    )
+    fares_dataset_3 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_3 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_3.id,
+    )
+    fares_dataset_4 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_4 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_4.id,
+    )
+    fares_dataset_5 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_5 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_5.id,
+    )
+    fares_dataset_6 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_6 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_6.id,
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=50),
+        modification_datetime=timezone.now(),
+        line_names=[all_line_names[0]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata = FaresMetadataFactory(
+        revision=fares_revision,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[0]}"],
+        line_id=[f"::{all_line_names[0]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision,
+        organisation=org,
+        count=5,
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=75),
+        modification_datetime=timezone.now() - datetime.timedelta(days=50),
+        line_names=[all_line_names[1]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_1 = FaresMetadataFactory(
+        revision=fares_revision_2,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_1,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[1]}"],
+        line_id=[f"::{all_line_names[1]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_2,
+        organisation=org,
+        count=0,
+    )
+
+    # Setup a draft TXCFileAttributes
+    dataset2 = DraftDatasetFactory(organisation=org)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(),
+        service_code=all_service_codes[2],
+        line_names=[all_line_names[2]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_2 = FaresMetadataFactory(
+        revision=fares_revision_3,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_2,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[2]}"],
+        line_id=[f"::{all_line_names[2]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_3,
+        organisation=org,
+        count=2,
+    )
+
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+    # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=None,
+        modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+        line_names=[all_line_names[3]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_3 = FaresMetadataFactory(
+        revision=fares_revision_4,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_3,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[3]}"],
+        line_id=[f"::{all_line_names[3]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_4,
+        organisation=org,
+        count=1,
+    )
+
+    # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[4],
+        operating_period_end_date=datetime.date.today() - datetime.timedelta(weeks=105),
+        modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+        line_names=[all_line_names[4]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_4 = FaresMetadataFactory(
+        revision=fares_revision_5,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_4,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[4]}"],
+        line_id=[f"::{all_line_names[4]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_5,
+        organisation=org,
+        count=0,
+    )
+
+    # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[5],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=50),
+        line_names=[all_line_names[5]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_5 = FaresMetadataFactory(
+        revision=fares_revision_6,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_5,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[5]}"],
+        line_id=[f"::{all_line_names[5]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_6,
+        organisation=org,
+        count=9,
+    )
+
+    # Create Seasonal Services - one in season, one out of season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=today,
+        end=month,
+        registration_code=int(all_service_codes[6][-1:]),
+    )
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=month,
+        end=two_months,
+        registration_code=int(all_service_codes[7][-1:]),
+    )
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
+    for index, code in enumerate(all_service_codes, start=0):
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                effective_date=datetime.date(year=2020, month=1, day=1),
+                service_number=all_line_names[index],
+            )
+        )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
+
+    user = UserFactory(account_type=AccountType.agent_user.value, organisations=(org,))
+    client.force_login(user=user)
+    url = reverse("agent-dashboard", host=PUBLISH_HOST)
+    response = client.get(url, data={"q": org.name}, follow=True)
+    context = response.context_data
+    table = context["table"]
+
+    assert response.status_code == 200
+    assert len(table.data) == 1
+
+
+@override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+def test_agent_dashboard_no_search_results(client_factory):
+    """
+    Test for Agent Dashboard non compliant stats relating to:
+        - Timetables data requiring attention
+        - Location data requiring attention
+        - Fares data requiring attention
+    """
+    host = PUBLISH_HOST
+    client = client_factory(host=host)
+
+    national_operator_code = "BLAC"
+    org = OrganisationFactory(nocs=national_operator_code)
+    today = timezone.now().date()
+    month = timezone.now().date() + datetime.timedelta(weeks=4)
+    two_months = timezone.now().date() + datetime.timedelta(weeks=8)
+
+    total_services = 9
+    licence_number = "PD5000229"
+    all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+    all_line_names = [f"Line:{n}" for n in range(total_services)]
+    bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+    dataset1 = DatasetFactory(organisation=org)
+    fares_dataset = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset.id,
+    )
+    fares_dataset_2 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_2 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_2.id,
+    )
+    fares_dataset_3 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_3 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_3.id,
+    )
+    fares_dataset_4 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_4 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_4.id,
+    )
+    fares_dataset_5 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_5 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_5.id,
+    )
+    fares_dataset_6 = DatasetFactory(
+        organisation=org, dataset_type=DatasetType.FARES.value
+    )
+    fares_revision_6 = FaresDatasetRevisionFactory(
+        dataset__organisation=org,
+        dataset__live_revision=fares_dataset_6.id,
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[0],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=50),
+        modification_datetime=timezone.now(),
+        line_names=[all_line_names[0]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata = FaresMetadataFactory(
+        revision=fares_revision,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[0]}"],
+        line_id=[f"::{all_line_names[0]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision,
+        organisation=org,
+        count=5,
+    )
+
+    TXCFileAttributesFactory(
+        revision=dataset1.live_revision,
+        service_code=all_service_codes[1],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=75),
+        modification_datetime=timezone.now() - datetime.timedelta(days=50),
+        line_names=[all_line_names[1]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_1 = FaresMetadataFactory(
+        revision=fares_revision_2,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_1,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[1]}"],
+        line_id=[f"::{all_line_names[1]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_2,
+        organisation=org,
+        count=0,
+    )
+
+    # Setup a draft TXCFileAttributes
+    dataset2 = DraftDatasetFactory(organisation=org)
+    TXCFileAttributesFactory(
+        revision=dataset2.revisions.last(),
+        service_code=all_service_codes[2],
+        line_names=[all_line_names[2]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_2 = FaresMetadataFactory(
+        revision=fares_revision_3,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_2,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[2]}"],
+        line_id=[f"::{all_line_names[2]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_3,
+        organisation=org,
+        count=2,
+    )
+
+    live_revision = DatasetRevisionFactory(dataset=dataset2)
+
+    # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[3],
+        operating_period_end_date=None,
+        modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+        line_names=[all_line_names[3]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_3 = FaresMetadataFactory(
+        revision=fares_revision_4,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_3,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[3]}"],
+        line_id=[f"::{all_line_names[3]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_4,
+        organisation=org,
+        count=1,
+    )
+
+    # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[4],
+        operating_period_end_date=datetime.date.today() - datetime.timedelta(weeks=105),
+        modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+        line_names=[all_line_names[4]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_4 = FaresMetadataFactory(
+        revision=fares_revision_5,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_4,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[4]}"],
+        line_id=[f"::{all_line_names[4]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_5,
+        organisation=org,
+        count=0,
+    )
+
+    # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
+    TXCFileAttributesFactory(
+        revision=live_revision,
+        service_code=all_service_codes[5],
+        operating_period_end_date=datetime.date.today() + datetime.timedelta(days=50),
+        line_names=[all_line_names[5]],
+        national_operator_code=[national_operator_code],
+    )
+    faresmetadata_5 = FaresMetadataFactory(
+        revision=fares_revision_6,
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+    )
+    DataCatalogueMetaDataFactory(
+        fares_metadata=faresmetadata_5,
+        fares_metadata__revision__is_published=True,
+        line_name=[f"::{all_line_names[5]}"],
+        line_id=[f"::{all_line_names[5]}"],
+        valid_from=datetime.datetime(2024, 12, 12),
+        valid_to=datetime.datetime(2025, 1, 12),
+        national_operator_code=[national_operator_code],
+    )
+    FaresValidationResultFactory(
+        revision=fares_revision_6,
+        organisation=org,
+        count=9,
+    )
+
+    # Create Seasonal Services - one in season, one out of season
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=today,
+        end=month,
+        registration_code=int(all_service_codes[6][-1:]),
+    )
+    SeasonalServiceFactory(
+        licence=bods_licence,
+        start=month,
+        end=two_months,
+        registration_code=int(all_service_codes[7][-1:]),
+    )
+
+    otc_lic1 = LicenceModelFactory(number=licence_number)
+    services = []
+    for index, code in enumerate(all_service_codes, start=0):
+        services.append(
+            ServiceModelFactory(
+                licence=otc_lic1,
+                registration_number=code.replace(":", "/"),
+                effective_date=datetime.date(year=2020, month=1, day=1),
+                service_number=all_line_names[index],
+            )
+        )
+
+    ui_lta = UILtaFactory(name="UI_LTA")
+    LocalAuthorityFactory(
+        id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
+    )
+    AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
+
+    user = UserFactory(account_type=AccountType.agent_user.value, organisations=(org,))
+    client.force_login(user=user)
+    url = reverse("agent-dashboard", host=PUBLISH_HOST)
+    response = client.get(url, data={"q": "test123"}, follow=True)
+    context = response.context_data
+    table = context["table"]
+
+    assert response.status_code == 200
+    assert len(table.data) == 0
