@@ -2448,7 +2448,6 @@ def test_require_attention_compliant(publish_client):
     assert response.context["services_require_attention_percentage"] == 0
 
 
-# pytest transit_odp/publish/tests/test_views.py::test_agent_dashboard_sra_stats
 @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
 def test_agent_dashboard_sra_stats(client_factory):
     """
