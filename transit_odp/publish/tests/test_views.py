@@ -2451,7 +2451,9 @@ def test_require_attention_compliant(publish_client):
 @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
 def test_agent_dashboard_sra_stats(client_factory):
     """
-    Test for Agent Dashboard non compliant stats relating to:
+    Test for Agent Dashboard displaying services requiring attention
+    stats relating to:
+
         - Timetables data requiring attention
         - Location data requiring attention
         - Fares data requiring attention
@@ -2753,10 +2755,7 @@ def test_agent_dashboard_sra_stats(client_factory):
 @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
 def test_agent_dashboard_search_results(client_factory):
     """
-    Test for Agent Dashboard non compliant stats relating to:
-        - Timetables data requiring attention
-        - Location data requiring attention
-        - Fares data requiring attention
+    Test for successful search for an organisation in Agent Dashboard page.
     """
     host = PUBLISH_HOST
     client = client_factory(host=host)
@@ -3034,10 +3033,7 @@ def test_agent_dashboard_search_results(client_factory):
 @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
 def test_agent_dashboard_no_search_results(client_factory):
     """
-    Test for Agent Dashboard non compliant stats relating to:
-        - Timetables data requiring attention
-        - Location data requiring attention
-        - Fares data requiring attention
+    Test for unsuccessful search for an organisation in Agent Dashboard page.
     """
     host = PUBLISH_HOST
     client = client_factory(host=host)
