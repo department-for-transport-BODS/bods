@@ -20,12 +20,17 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">{{ organisation.name }} - {{ licence_number }}</h1>
+      <h1 class="govuk-heading-l app-!-mb-4 dont-break-out">{{ organisation.name }} - {{ licence_number }}</h1>
       <p class="govuk-body app-!-mb-sm-0">
         {% blocktrans %}
           Overview of the available bus open data
         {% endblocktrans %}
       </p>
+    </div>
+  </div>
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
       <div id="map" class="disruptions-width"></div>
       <table class="govuk-table consumer-property-table">
         <tbody class="govuk-table__body">
@@ -56,6 +61,24 @@
           {% endfor %}
         </div>
       </div>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-m">{% trans "What you need to know" %}</h2>
+      <ul class="govuk-list app-list--nav govuk-!-font-size-19">
+        <li>
+          <a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}">
+            {% trans "View developer documentation" %}
+          </a>
+        </li>
+        <li>
+          <a class="govuk-link"
+             href="https://www.gov.uk/government/consultations/bus-services-act-2017-bus-open-data"
+             target="_blank">{% trans "Find out more about bus open data" %}</a>
+        </li>
+        <li>
+          <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact us for technical issues" %}</a>
+        </li>
+      </ul>
     </div>
   </div>
 {% endblock %}
