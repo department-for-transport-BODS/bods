@@ -48,7 +48,7 @@
           {% for service in licence_services %}
             <p class="govuk-body govuk-!-padding-bottom-2 border-bottom-custom">
               <a class="govuk-link"
-                 href="{% url 'feed-line-detail' pk=pk host hosts.data %}?line={{ service.service_number }}&service={{ service.registration_number }}">{{ service.service_number }} - {{ service.registration_number }}</a>
+                 href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?line={{ service.service_number }}&service={{ service.registration_number }}">{{ service.service_number }} - {{ service.registration_number }}</a>
               <span class="govuk-tag govuk-!-margin-left-2 {% if service.is_label_green %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
                 {{ service.label_str }}
               </span>

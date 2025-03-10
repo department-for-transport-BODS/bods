@@ -25,6 +25,7 @@ from transit_odp.browse.views.local_authority import (
 )
 from transit_odp.browse.views.operators import (
     LicenceDetailView,
+    LicenceLineMetadataDetailView,
     OperatorDetailView,
     OperatorsView,
 )
@@ -59,8 +60,20 @@ urlpatterns = [
                 path("", view=OperatorsView.as_view(), name="operators"),
                 path(
                     "licence/<slug:number>/",
-                    view=LicenceDetailView.as_view(),
-                    name="operator-licence-detail",
+                    include(
+                        [
+                            path(
+                                "",
+                                view=LicenceDetailView.as_view(),
+                                name="operator-licence-detail",
+                            ),
+                            path(
+                                "line/details/",
+                                view=LicenceLineMetadataDetailView.as_view(),
+                                name="licence-line-detail",
+                            ),
+                        ]
+                    ),
                 ),
                 path(
                     "<int:pk>/",
