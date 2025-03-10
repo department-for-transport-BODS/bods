@@ -847,7 +847,10 @@ class LineMetadataDetailView(DetailView):
 
         kwargs = super().get_context_data(**kwargs)
         dataset = self.object
-        live_revision = dataset.live_revision
+        if dataset:
+            live_revision = dataset.live_revision
+        else:
+            live_revision = None
         kwargs["pk"] = dataset.id if dataset else None
         kwargs["service_inscope"] = self.service_inscope
 
