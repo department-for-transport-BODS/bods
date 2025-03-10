@@ -1488,7 +1488,6 @@ class TestOperatorDetailView:
         assert context["avl_services_requiring_attention_count"] == 8
         assert context["fares_services_requiring_attention_count"] == 8
 
-
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
