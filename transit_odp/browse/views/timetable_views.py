@@ -3,7 +3,7 @@ import math
 import re
 from collections import namedtuple
 from datetime import datetime, timedelta
-from typing import Dict
+from typing import Dict, List
 
 import pandas as pd
 import requests
@@ -24,6 +24,10 @@ from requests import RequestException
 from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
 from transit_odp.browse.cfn import generate_signed_url
 from transit_odp.browse.constants import LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
 from transit_odp.browse.filters import TimetableSearchFilter
@@ -36,6 +40,7 @@ from transit_odp.browse.views.base_views import (
     BaseTemplateView,
     ChangeLogView,
 )
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.downloaders import GTFSFileDownloader
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.services import get_gtfs_bucket_service
@@ -48,11 +53,13 @@ from transit_odp.data_quality.report_summary import Summary
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.notifications import get_notifications
 from transit_odp.organisation.constants import (
+    ENGLISH_TRAVELINE_REGIONS,
     DatasetType,
     FeedStatus,
     TimetableType,
     TravelineRegions,
 )
+from transit_odp.organisation.csv.service_codes import STALENESS_STATUS
 from transit_odp.organisation.models import (
     ConsumerFeedback,
     Dataset,
@@ -60,25 +67,21 @@ from transit_odp.organisation.models import (
     DatasetSubscription,
     TXCFileAttributes,
 )
+from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
+from transit_odp.otc.models import Service as OTCService
 from transit_odp.pipelines.models import BulkDataArchive, ChangeDataArchive
+from transit_odp.publish.requires_attention import (
+    FaresRequiresAttention,
+    evaluate_staleness,
+    get_dq_critical_observation_services_map,
+    get_fares_dataset_map,
+    get_line_level_txc_map_service_base,
+    is_avl_requires_attention,
+)
 from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
 from transit_odp.transmodel.models import BookingArrangements, Service
 from transit_odp.users.constants import SiteAdminType
-from transit_odp.publish.requires_attention import (
-    get_fares_dataset_map,
-    is_avl_requires_attention,
-    get_dq_critical_observation_services_map,
-    get_line_level_txc_map_service_base,
-    FaresRequiresAttention,
-)
-from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
-    get_vehicle_activity_operatorref_linename,
-)
-from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
-from typing import List
-from transit_odp.common.constants import FeatureFlags
-
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -240,6 +243,25 @@ class LineMetadataDetailView(DetailView):
             return "Flexible"
         return "Flexible/Standard"
 
+    def get_timetable_files_for_line(
+        self, revision_id, service_code, line_name
+    ) -> List[TXCFileAttributes]:
+        highest_revision_number = TXCFileAttributes.objects.filter(
+            revision=revision_id,
+            service_code=service_code,
+            line_names__contains=[line_name],
+        ).aggregate(highest_revision_number=Max("revision_number"))[
+            "highest_revision_number"
+        ]
+
+        file_name_qs = TXCFileAttributes.objects.filter(
+            revision=revision_id,
+            service_code=service_code,
+            line_names__contains=[line_name],
+            revision_number=highest_revision_number,
+        )
+        return file_name_qs
+
     def get_current_files(self, revision_id, service_code, line_name) -> list:
         """
         Get the list of current valid files for a given revision, service code, and line name.
@@ -261,19 +283,8 @@ class LineMetadataDetailView(DetailView):
         valid_file_names = []
         today = datetime.now().date()
 
-        highest_revision_number = TXCFileAttributes.objects.filter(
-            revision=revision_id,
-            service_code=service_code,
-            line_names__contains=[line_name],
-        ).aggregate(highest_revision_number=Max("revision_number"))[
-            "highest_revision_number"
-        ]
-
-        file_name_qs = TXCFileAttributes.objects.filter(
-            revision=revision_id,
-            service_code=service_code,
-            line_names__contains=[line_name],
-            revision_number=highest_revision_number,
+        file_name_qs = self.get_timetable_files_for_line(
+            revision_id, service_code, line_name
         ).values_list(
             "filename",
             "operating_period_start_date",
@@ -693,13 +704,42 @@ class LineMetadataDetailView(DetailView):
             else []
         )
 
+        txc_file = txcfa_map.get((service_code, self.line))
+        is_timetable_compliant = False
+        if self.service and txc_file:
+            rad = evaluate_staleness(self.service, txc_file)
+            staleness_status = STALENESS_STATUS[rad.index(True)]
+
+            if (
+                len(dqs_critical_issues_service_line_map) == 0
+                and staleness_status == "Up to date"
+            ):
+                is_timetable_compliant = True
+
         return {
-            "is_timetables_complaint": len(dqs_critical_issues_service_line_map) == 0,
+            "is_timetables_complaint": is_timetable_compliant,
             "timetables_dataset_id": dataset_id,
             "timetables_valid_files": current_valid_files,
             "timetables_future_dated_files": future_files,
             "timetables_expired_files": expired_files,
         }
+
+    def get_otc_service(self):
+        otc_map = {
+            (
+                f"{service.registration_number.replace('/', ':')}",
+                f"{split_service_number}",
+            ): service
+            for service in OTCService.objects.add_otc_stale_date()
+            .add_otc_association_date()
+            .add_traveline_region_weca()
+            .add_traveline_region_otc()
+            .add_traveline_region_details()
+            .filter(registration_number=self.service_code.replace(":", "/"))
+            for split_service_number in service.service_number.split("|")
+        }
+
+        return otc_map.get((self.service_code, self.line))
 
     def get_timetable_visualiser_data(
         self, revision_id: int, line_name: str, service_code: str
@@ -789,56 +829,148 @@ class LineMetadataDetailView(DetailView):
         """
         line = self.request.GET.get("line")
         service_code = self.request.GET.get("service")
-        kwargs = super().get_context_data(**kwargs)
 
+        self.line = line
+        self.service_code = service_code
+        self.service = self.get_otc_service()
+        licence_number = None
+        self.service_code_exemption_map = {}
+        self.seasonal_service_map = {}
+        self.service_inscope = True
+        if self.service:
+            licence_number = self.service.licence.number
+            self.service_code_exemption_map = self.get_service_code_exemption_map(
+                licence_number
+            )
+            self.seasonal_service_map = self.get_seasonal_service_map(licence_number)
+            self.service_inscope = self.is_service_in_scope()
+
+        kwargs = super().get_context_data(**kwargs)
         dataset = self.object
         live_revision = dataset.live_revision
-        kwargs["pk"] = dataset.id
+        kwargs["pk"] = dataset.id if dataset else None
+        kwargs["service_inscope"] = self.service_inscope
 
         kwargs["line_name"] = line
         kwargs["service_code"] = service_code
 
         kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
-        kwargs["current_valid_files"] = self.get_current_files(
-            live_revision.id, kwargs["service_code"], kwargs["line_name"]
-        )
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-        kwargs.update(
-            self.get_service_type_data(
-                live_revision.id, line, service_code, kwargs["current_valid_files"]
-            )
-        )
-
         # Get the flag is_timetable_visualiser_active state
         is_timetable_visualiser_active = flag_is_active(
             "", "is_timetable_visualiser_active"
         )
         kwargs["is_timetable_visualiser_active"] = is_timetable_visualiser_active
-        # If flag is enabled, show the timetable visualiser
-        if is_timetable_visualiser_active:
-            kwargs.update(
-                self.get_timetable_visualiser_data(live_revision.id, line, service_code)
-            )
-
-        txc_file_attributes = (
-            TXCFileAttributes.objects.for_revision(live_revision.id)
-            .add_service_code(service_code)
-            .add_split_linenames()
+        kwargs["is_complete_service_pages_active"] = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
         )
 
-        if FeatureFlags.COMPLETE_SERVICE_PAGES:
-            kwargs.update(
-                self.get_avl_data(
-                    txc_file_attributes,
-                    line,
-                )
-            )
-            kwargs.update(self.get_fares_data(txc_file_attributes))
-            kwargs.update(
-                self.get_timetables_data(txc_file_attributes, service_code, dataset.id)
+        kwargs["current_valid_files"] = []
+        kwargs["service_type"] = "N/A"
+        if live_revision:
+            kwargs["current_valid_files"] = self.get_current_files(
+                live_revision.id, kwargs["service_code"], kwargs["line_name"]
             )
 
+            kwargs.update(
+                self.get_service_type_data(
+                    live_revision.id, line, service_code, kwargs["current_valid_files"]
+                )
+            )
+
+            # If flag is enabled, show the timetable visualiser
+            if is_timetable_visualiser_active:
+                kwargs.update(
+                    self.get_timetable_visualiser_data(
+                        live_revision.id, line, service_code
+                    )
+                )
+
+            txc_file_attributes = (
+                self.get_timetable_files_for_line(live_revision.id, service_code, line)
+                .add_service_code(service_code)
+                .add_split_linenames()
+            )
+
+            if FeatureFlags.COMPLETE_SERVICE_PAGES:
+                kwargs.update(
+                    self.get_avl_data(
+                        txc_file_attributes,
+                        line,
+                    )
+                )
+                kwargs.update(self.get_fares_data(txc_file_attributes))
+                kwargs.update(
+                    self.get_timetables_data(
+                        txc_file_attributes, service_code, dataset.id
+                    )
+                )
+
         return kwargs
+
+    def is_service_in_scope(self) -> bool:
+        """check is service is in scope or not system will
+        check 3 points to decide in scope Service Exception,
+        Seasonal Service Status and Traveling region
+
+        Returns:
+            bool: True if in scope else False
+        """
+        seasonal_service = self.seasonal_service_map.get(
+            self.service.registration_number
+        )
+        exemption = self.service_code_exemption_map.get(
+            self.service.registration_number
+        )
+        traveline_regions = self.service.traveline_region
+        if traveline_regions:
+            traveline_regions = traveline_regions.split("|")
+        else:
+            traveline_regions = []
+        is_english_region = list(
+            set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions)
+        )
+
+        if not (
+            not (exemption and exemption.registration_code) and is_english_region
+        ) or (seasonal_service and not seasonal_service.seasonal_status):
+            return False
+
+        return True
+
+    def get_seasonal_service_map(
+        self, licence_number: str
+    ) -> Dict[str, SeasonalService]:
+        """
+        Get a dictionary which includes all the Seasonal Services
+        for an organisation.
+        """
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in SeasonalService.objects.filter(
+                licence__organisation__licences__number__in=licence_number
+            )
+            .add_registration_number()
+            .add_seasonal_status()
+        }
+
+    def get_service_code_exemption_map(
+        self, licence_number: str
+    ) -> Dict[str, ServiceCodeExemption]:
+        """Get the status of service excemption
+
+        Args:
+            licence_number (str): licence number to check for excemption
+
+        Returns:
+            Dict[str, ServiceCodeExemption]: dict for excemption object
+        """
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in ServiceCodeExemption.objects.add_registration_number().filter(
+                licence__organisation__licences__number__in=licence_number
+            )
+        }
 
 
 class DatasetSubscriptionBaseView(LoginRequiredMixin):

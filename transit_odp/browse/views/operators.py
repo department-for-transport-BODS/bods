@@ -1,7 +1,8 @@
+from logging import getLogger
 from math import floor
 from typing import Dict
+
 import pandas as pd
-from logging import getLogger
 from django.db.models import Avg, F
 from django_hosts.resolvers import reverse
 from waffle import flag_is_active
@@ -20,6 +21,7 @@ from transit_odp.browse.common import (
     otc_map_txc_map_from_licence,
 )
 from transit_odp.browse.views.base_views import BaseListView
+from transit_odp.browse.views.timetable_views import LineMetadataDetailView
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.views import BaseDetailView
 from transit_odp.fares_validator.models import FaresValidationResult
@@ -29,12 +31,17 @@ from transit_odp.organisation.constants import (
     INACTIVE,
     AVLType,
     FaresType,
+    TimetableType,
 )
 from transit_odp.organisation.csv.service_codes import STALENESS_STATUS
 from transit_odp.organisation.models import Dataset
 from transit_odp.organisation.models import Licence as OrganisationLicence
 from transit_odp.organisation.models import Organisation
-from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
+from transit_odp.organisation.models.data import (
+    SeasonalService,
+    ServiceCodeExemption,
+    TXCFileAttributes,
+)
 from transit_odp.publish.requires_attention import (
     FaresRequiresAttention,
     evaluate_staleness,
@@ -547,3 +554,66 @@ class LicenceDetailView(BaseDetailView):
                 licence__organisation__licences__number__in=licence_number
             )
         }
+
+
+class LicenceLineMetadataDetailView(LineMetadataDetailView):
+    slug_url_kwarg = "number"
+    slug_field = "number"
+
+    def get_object(self):
+        try:
+            txcfileattribute = self.get_txcfileattribute()
+            if txcfileattribute:
+                object = (
+                    super()
+                    .get_queryset()
+                    .filter(id=txcfileattribute.revision.dataset_id)
+                    .get_active_org()
+                    .get_dataset_type(dataset_type=TimetableType)
+                    .get_published()
+                    .get_viewable_statuses()
+                    .add_admin_area_names()
+                    .add_live_data()
+                    .add_nocs()
+                    .select_related("live_revision")
+                ).first()
+                return object
+        except Dataset.DoesNotExist:
+            line = self.request.GET.get("line")
+            service_code = self.request.GET.get("service")
+            logger.debug(
+                f"Licence line details object not found for line {line} and service code {service_code}."
+            )
+            pass
+        return Dataset()
+
+    def get_txcfileattribute(self):
+        line = self.request.GET.get("line")
+        service_code = self.request.GET.get("service")
+        return (
+            TXCFileAttributes.objects.filter(
+                service_code=service_code, line_names__contains=[line]
+            )
+            .get_active_live_revisions()
+            .order_by(
+                "service_code",
+                "-revision__published_at",
+                "-revision_number",
+                "-modification_datetime",
+                "-operating_period_start_date",
+                "-filename",
+            )
+            .distinct("service_code")
+            .first()
+        )
+
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        licence_number = self.kwargs.get("number", "-")
+        kwargs["licence_number"] = licence_number
+        kwargs["licence_page"] = True
+        organisation_licence = OrganisationLicence.objects.filter(
+            number=licence_number
+        ).first()
+        kwargs["organisation"] = organisation_licence.organisation
+        return kwargs
