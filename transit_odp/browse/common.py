@@ -320,6 +320,7 @@ def otc_map_txc_map_from_licence(licence_number: str) -> tuple:
         .add_traveline_region_otc()
         .add_traveline_region_details()
     )
+
     otc_services_df = pd.DataFrame.from_records(otc_services)
 
     otc_services_df["registration_number"] = otc_services_df[
@@ -334,4 +335,4 @@ def otc_map_txc_map_from_licence(licence_number: str) -> tuple:
         list(otc_services_df["registration_number"])
     )
 
-    return otc_services, txc_map
+    return otc_services_df.to_dict("records"), txc_map

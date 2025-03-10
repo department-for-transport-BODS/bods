@@ -1,13 +1,20 @@
 from logging import getLogger
+import pandas as pd
 
 from celery import shared_task
+from waffle import flag_is_active
 
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.naptan.models import AdminArea
 from transit_odp.otc.ep.loaders import Loader as EPLoader
 from transit_odp.otc.ep.registry import Registry as EPRegistry
 from transit_odp.otc.loaders import Loader
 from transit_odp.otc.loaderslta import LoaderLTA
-from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority
+from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority, UILta
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.registry import Registry
 from transit_odp.otc.weca.loaders import Loader as WecaLoader
@@ -17,6 +24,7 @@ from .utils import (
     check_missing_csv_lta_names,
     get_ui_lta,
     read_local_authority_comparison_file_from_s3_bucket,
+    uilta_calcualte_sra,
 )
 
 logger = getLogger(__name__)
@@ -119,3 +127,36 @@ def task_populate_ui_lta_data():
                 admin_area_obj.save()
 
     logger.info("Successfullly completed populating UI LTA data.")
+
+
+@shared_task()
+def task_precalculate_ui_lta_sra():
+    logger.info("Executing the job for ui lta service require attention")
+    is_uilta_prefetch_sra_active = flag_is_active(
+        "", FeatureFlags.UILTA_PREFETCH_SRA.value
+    )
+
+    is_avl_require_attention_active = flag_is_active(
+        "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
+    )
+
+    if not is_uilta_prefetch_sra_active:
+        logger.info(
+            f"Flag {FeatureFlags.UILTA_PREFETCH_SRA.value} is not active, skipping the execution."
+        )
+        return
+
+    uilta_qs = UILta.objects.all()
+    logger.info(f"Total UI LTA's found {uilta_qs.count()}")
+    uncounted_activity_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
+    synced_in_last_month = []
+    if is_avl_require_attention_active:
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        abods_registry = AbodsRegistery()
+        synced_in_last_month = abods_registry.records()
+    logger.info(
+        f"Step: Starting UI LTA level processing. With Synced in last month {len(synced_in_last_month)} Uncounded vehicle activity df {uncounted_activity_df.shape}"
+    )
+    for uilta in uilta_qs:
+        uilta_calcualte_sra(uilta, uncounted_activity_df, synced_in_last_month)
+    logger.info("Finished updating UI LTA service require attention")

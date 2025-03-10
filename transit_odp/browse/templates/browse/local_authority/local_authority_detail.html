@@ -151,34 +151,37 @@
             </div>
           </div>
         </div>
-        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
-        <h3 class="govuk-heading-m govuk-!-margin-top-7">
-          {% filter force_escape %}
-            {% trans "Location data" %}
-          {% endfilter %}
-        </h3>
-        <div id="feed-stat-list" class="govuk-grid-row">
-          <div class="govuk-grid-column-one-half">
-            <div class="feed-stat">
-              <span class="feed-stat__value">{{ total_location_records_requiring_attention }}</span>
-              <span class="feed-stat__label">{% trans "Services requiring attention" %}</span>
+        {% if is_avl_require_attention_active %}
+          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+          <h3 class="govuk-heading-m govuk-!-margin-top-7">
+            {% filter force_escape %}
+              {% trans "Location data" %}
+            {% endfilter %}
+          </h3>
+          <div id="feed-stat-list" class="govuk-grid-row">
+            <div class="govuk-grid-column-one-half">
+              <div class="feed-stat">
+                <span class="feed-stat__value">{{ total_location_records_requiring_attention }}</span>
+                <span class="feed-stat__label">{% trans "Services requiring attention" %}</span>
+              </div>
             </div>
           </div>
-        </div>
-        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
-        <h3 class="govuk-heading-m govuk-!-margin-top-7">
-          {% filter force_escape %}
-            {% trans "Fares data" %}
-          {% endfilter %}
-        </h3>
-        <div id="feed-stat-list" class="govuk-grid-row">
-          <div class="govuk-grid-column-one-half">
-            <div class="feed-stat">
-              <span class="feed-stat__value">{{ total_fares_records_requiring_attention }}</span>
-              <span class="feed-stat__label">{% trans "Services requiring attention" %}</span>
+        {% endif %}
+        {% if is_fares_require_attention_active %}
+          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+          <h3 class="govuk-heading-m govuk-!-margin-top-7">
+            {% filter force_escape %}
+              {% trans "Fares data" %}
+            {% endfilter %}
+          </h3>
+          <div id="feed-stat-list" class="govuk-grid-row">
+            <div class="govuk-grid-column-one-half">
+              <div class="feed-stat">
+                <span class="feed-stat__value">{{ total_fares_records_requiring_attention }}</span>
+                <span class="feed-stat__label">{% trans "Services requiring attention" %}</span>
+              </div>
             </div>
           </div>
-        </div>
         <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
       {% endif %}
     </div>
