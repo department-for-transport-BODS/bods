@@ -76,7 +76,7 @@
           <li>
             <a class="govuk-link" href="{% url 'local-authority-compliance-report' host hosts.data %}?auth_ids={{ auth_ids }}">
               {% filter force_escape %}
-                {% trans "Download Compliance report" %}
+                {% trans "Download compliance report" %}
               {% endfilter %}
             </a>
           </li>
@@ -182,7 +182,7 @@
               </div>
             </div>
           </div>
-        {% endif %}
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
       {% endif %}
     </div>
     <div class="govuk-grid-column-one-third">
