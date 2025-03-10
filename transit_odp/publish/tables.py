@@ -121,15 +121,15 @@ class AgentOrganisationsTable(GovUkTable):
     """
 
     class Meta(GovUkTable.Meta):
-        if flag_is_active("", FeatureFlags.COMPLETE_SERVICE_PAGES.value):
-            attrs = {
-                "th": {
-                    "class": "govuk-table__header govuk-!-width-one-quarter govuk-!-padding-bottom-3"
-                },
-                "class": "agent_dashboard",
-            }
-        else:
-            attrs = {"th": {"class": "govuk-table__header"}, "class": "agent_dashboard"}
+        # if flag_is_active("", FeatureFlags.COMPLETE_SERVICE_PAGES.value):
+        #     attrs = {
+        #         "th": {
+        #             "class": "govuk-table__header govuk-!-width-one-quarter govuk-!-padding-bottom-3"
+        #         },
+        #         "class": "agent_dashboard",
+        #     }
+        # else:
+        attrs = {"th": {"class": "govuk-table__header"}, "class": "agent_dashboard"}
 
     organisation = tables.Column(
         linkify=lambda value, record: record["next"],
@@ -140,9 +140,9 @@ class AgentOrganisationsTable(GovUkTable):
         verbose_name="Organisation",
     )
     requires_attention = RequiresAttentionColumn(empty_values=())
-    if flag_is_active("", FeatureFlags.COMPLETE_SERVICE_PAGES.value):
-        avl_requires_attention = AVLRequiresAttentionColumn(empty_values=())
-        fares_requires_attention = FaresRequiresAttentionColumn(empty_values=())
+    # if flag_is_active("", FeatureFlags.COMPLETE_SERVICE_PAGES.value):
+    avl_requires_attention = AVLRequiresAttentionColumn(empty_values=())
+    fares_requires_attention = FaresRequiresAttentionColumn(empty_values=())
 
     def render_organisation(self, value, record):
         # status refers to the name of the css class found here:
