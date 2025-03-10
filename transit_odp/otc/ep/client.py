@@ -42,7 +42,9 @@ class DataModel(BaseModel):
     atco_code: Optional[str] = Field(alias="registrationNumber")
     short_notice: bool = Field(alias="isShortNotice")
     received_date: date = Field(alias="receivedDate")
-    end_date: date = Field(alias="endDate")
+    end_date: Optional[date] = Field(
+        alias="endDate",
+    )
 
     @validator("atco_code", pre=True)
     def extract_atco_code(cls, value):
