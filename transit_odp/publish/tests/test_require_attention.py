@@ -919,7 +919,7 @@ def test_get_avl_records_require_attention_lta_line_level_length(
 
     result = get_avl_records_require_attention_lta_line_level_length(lta_objs)
     assert result == 7
-    assert len(otc_service) == 7
+    assert len(otc_service) == 9
 
 
 @override_flag("dqs_require_attention", active=True)
