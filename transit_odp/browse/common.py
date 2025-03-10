@@ -315,13 +315,20 @@ def get_in_scope_in_season_services_line_level(org_id: int) -> pd.DataFrame:
 def otc_map_txc_map_from_licence(licence_number: str) -> tuple:
     otc_services = (
         OTCService.objects.filter(licence__number=licence_number)
-        .values("registration_number", "service_number")
+        .values("registration_number", "service_number", "effective_date")
         .add_traveline_region_weca()
         .add_traveline_region_otc()
         .add_traveline_region_details()
+        .add_otc_association_date()
+        .add_otc_stale_date()
     )
 
     otc_services_df = pd.DataFrame.from_records(otc_services)
+
+    if otc_services_df.empty:
+        otc_services_df = pd.DataFrame(
+            columns=["registration_number", "service_number"]
+        )
 
     otc_services_df["registration_number"] = otc_services_df[
         "registration_number"
