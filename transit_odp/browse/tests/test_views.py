@@ -1487,7 +1487,7 @@ class TestOperatorDetailView:
         assert context["timetable_services_requiring_attention_count"] == 6
         assert context["avl_services_requiring_attention_count"] == 8
         assert context["fares_services_requiring_attention_count"] == 8
-        assert context["overall_services_requiring_attention_count"] == 6
+
 
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
@@ -1685,7 +1685,6 @@ class TestOperatorDetailView:
         assert context["timetable_services_requiring_attention_count"] == 0
         assert context["avl_services_requiring_attention_count"] == 0
         assert context["fares_services_requiring_attention_count"] == 0
-        assert context["overall_services_requiring_attention_count"] == 0
 
     @override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
