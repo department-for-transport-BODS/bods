@@ -1487,7 +1487,7 @@ class TestOperatorDetailView:
         assert context["timetable_services_requiring_attention_count"] == 6
         assert context["avl_services_requiring_attention_count"] == 8
         assert context["fares_services_requiring_attention_count"] == 8
-        assert context["overall_services_requiring_attention_count"] == 6
+        assert context["total_services_requiring_attention"] == 6
 
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
@@ -1685,7 +1685,7 @@ class TestOperatorDetailView:
         assert context["timetable_services_requiring_attention_count"] == 0
         assert context["avl_services_requiring_attention_count"] == 0
         assert context["fares_services_requiring_attention_count"] == 0
-        assert context["overall_services_requiring_attention_count"] == 0
+        assert context["total_services_requiring_attention"] == 0
 
     @override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
@@ -2423,7 +2423,7 @@ class TestLTADetailView:
         )
         assert context["total_in_scope_in_season_services"] == 3
         assert context["services_require_attention_percentage"] == 33
-        assert context["total_services_requiring_attention"] == 1
+        assert context["total_timetable_records_requiring_attention"] == 1
 
     def test_weca_local_authority_detail_view_timetable_stats_not_compliant(
         self, request_factory: RequestFactory
@@ -2555,6 +2555,7 @@ class TestLTADetailView:
     @override_flag("dqs_require_attention", active=True)
     @override_flag("is_complete_service_pages_active", active=True)
     @override_flag("is_avl_require_attention_active", active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
     @patch.object(publish_attention, "AbodsRegistery")
     @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
     @freeze_time("2024-11-24T16:40:40.000Z")
