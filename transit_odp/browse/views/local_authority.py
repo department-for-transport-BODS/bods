@@ -259,8 +259,8 @@ class LocalAuthorityView(BaseListView):
                 total_inscope = len(
                     get_in_scope_in_season_lta_service_numbers(lta_list)
                 )
-                timetable_sra = len(
-                    get_requires_attention_data_lta_line_level_length(lta_list)
+                timetable_sra = get_requires_attention_data_lta_line_level_length(
+                    lta_list
                 )
 
             context["total_in_scope_in_season_services"] = total_inscope
