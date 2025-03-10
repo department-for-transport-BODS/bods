@@ -21,20 +21,31 @@ const getLineStringBounds = (coordinates) => {
   }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
 };
 
-const getMapDataUrl = (apiRoot, revisionId, lineName, serviceCodes) => {
-  var servicePatternUrl =
-    apiRoot + "service_pattern/?revision=" + revisionId.toString();
+const getMapDataUrl = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber) => {
+  var servicePatternUrl = apiRoot + "service_pattern/"
+  var delimetor = "?"
+
+  if (revisionId) {
+    servicePatternUrl += delimetor + "revision=" + revisionId.toString();
+    delimetor = "&"
+  }
+    
   if (lineName) {
-    servicePatternUrl += "&line_name=" + lineName.toString();
+    servicePatternUrl += delimetor + "line_name=" + lineName.toString();
+    delimetor = "&"
   }
   if (serviceCodes) {
-    servicePatternUrl += "&service_codes=" + serviceCodes.toString();
+    servicePatternUrl += delimetor + "service_codes=" + serviceCodes.toString();
+    delimetor = "&"
+  }
+  if (licenceNumber) {
+    servicePatternUrl += delimetor + "licence_number=" + licenceNumber.toString()
   }
   return servicePatternUrl;
 };
 
-const initMap = (apiRoot, revisionId, lineName, serviceCodes) => {
-  var servicePatternUrl = getMapDataUrl(apiRoot, revisionId, lineName, serviceCodes);
+const initMap = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber) => {
+  var servicePatternUrl = getMapDataUrl(apiRoot, revisionId, lineName, serviceCodes, licenceNumber);
 
   // Initialise Map
   mapboxgl.accessToken = mapboxKey;

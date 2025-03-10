@@ -12,6 +12,7 @@ from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.browse.timetable_visualiser import TimetableVisualiser
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
 from transit_odp.data_quality.report_summary import Summary
@@ -415,6 +416,9 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
         # Get the flag is_timetable_visualiser_active state
         is_timetable_visualiser_active = flag_is_active(
             "", "is_timetable_visualiser_active"
+        )
+        context["is_complete_service_pages_active"] = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
         )
         context["is_timetable_visualiser_active"] = is_timetable_visualiser_active
         # If flag is enabled, show the timetable visualiser

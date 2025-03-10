@@ -198,4 +198,8 @@ class CeleryAppConfig(AppConfig):
                 "task": ORGANISATION_TASKS + "task_precalculate_operator_sra",
                 "schedule": crontab(minute=0, hour="*"),
             },
+            "task_precalculate_ui_lta_sra": {
+                "task": OTC_TASKS + "task_precalculate_ui_lta_sra",
+                "schedule": crontab(minute=0, hour="*"),
+            },
         }

@@ -1,6 +1,11 @@
 {% load static %}
 {% load i18n %}
+{% load waffle_tags %}
+{% flag is_complete_service_pages_active %}
+&nbsp;
+{% else %}
 <h2 class="govuk-heading-m">Timetable</h2>
+{% endflag %}
 <h2 class="govuk-heading-m">Filter by</h2>
 <div class="govuk-form-group govuk-!-width-one-quarter govuk-!-padding-0">
   <label class="govuk-label" for="timetable_date">Date</label>

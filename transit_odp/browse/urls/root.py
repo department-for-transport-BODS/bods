@@ -23,7 +23,12 @@ from transit_odp.browse.views.local_authority import (
     LocalAuthorityLineLevelExportView,
     LocalAuthorityView,
 )
-from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
+from transit_odp.browse.views.operators import (
+    LicenceDetailView,
+    LicenceLineMetadataDetailView,
+    OperatorDetailView,
+    OperatorsView,
+)
 from transit_odp.common.views import CoachDownloadView, ComingSoonView, VersionView
 from transit_odp.users.urls import AGENT_PATHS
 from transit_odp.users.views.account import (
@@ -53,6 +58,23 @@ urlpatterns = [
         include(
             [
                 path("", view=OperatorsView.as_view(), name="operators"),
+                path(
+                    "licence/<slug:number>/",
+                    include(
+                        [
+                            path(
+                                "",
+                                view=LicenceDetailView.as_view(),
+                                name="operator-licence-detail",
+                            ),
+                            path(
+                                "line/details/",
+                                view=LicenceLineMetadataDetailView.as_view(),
+                                name="licence-line-detail",
+                            ),
+                        ]
+                    ),
+                ),
                 path(
                     "<int:pk>/",
                     include(

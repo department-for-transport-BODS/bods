@@ -4,8 +4,9 @@ import io
 import zipfile
 from logging import getLogger
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
+import pandas as pd
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
@@ -16,10 +17,15 @@ from freezegun import freeze_time
 from waffle import flag_is_active
 from waffle.testutils import override_flag
 
+import transit_odp.publish.requires_attention as publish_attention
 from config.hosts import DATA_HOST
 from transit_odp.avl.factories import AVLValidationReportFactory
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.avl.tasks import cache_avl_compliance_status
+from transit_odp.avl.tests.test_abods_registry import (
+    REQUEST,
+    mocked_requests_post_valid_response,
+)
 from transit_odp.browse.tasks import task_create_data_catalogue_archive
 from transit_odp.browse.tests.comments_test import (
     DATA_LONG_MAXLENGTH_WITH_CARRIAGE_RETURN,
@@ -35,12 +41,24 @@ from transit_odp.browse.views.operators import OperatorDetailView, OperatorsView
 from transit_odp.browse.views.timetable_views import (
     DatasetChangeLogView,
     DatasetDetailView,
+    LineMetadataDetailView,
 )
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.downloaders import GTFSFile
 from transit_odp.common.forms import ConfirmationForm
 from transit_odp.common.loggers import DatafeedPipelineLoggerContext, PipelineAdapter
 from transit_odp.data_quality.factories import DataQualityReportFactory
-from transit_odp.fares.factories import FaresMetadataFactory
+from transit_odp.dqs.constants import Level, TaskResultsStatus
+from transit_odp.dqs.factories import (
+    ChecksFactory,
+    ObservationResultsFactory,
+    TaskResultsFactory,
+)
+from transit_odp.fares.factories import (
+    DataCatalogueMetaDataFactory,
+    FaresMetadataFactory,
+)
+from transit_odp.fares_validator.factories import FaresValidationResultFactory
 from transit_odp.feedback.models import Feedback
 from transit_odp.naptan.factories import AdminAreaFactory
 from transit_odp.organisation.constants import DatasetType, FeedStatus
@@ -49,6 +67,7 @@ from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     DatasetSubscriptionFactory,
     DraftDatasetFactory,
+    FaresDatasetRevisionFactory,
 )
 from transit_odp.organisation.factories import LicenceFactory as BODSLicenceFactory
 from transit_odp.organisation.factories import (
@@ -73,6 +92,11 @@ from transit_odp.pipelines.factories import (
     DatasetETLTaskResultFactory,
 )
 from transit_odp.site_admin.models import ResourceRequestCounter
+from transit_odp.transmodel.factories import (
+    ServiceFactory,
+    ServicePatternFactory,
+    ServicePatternStopFactory,
+)
 from transit_odp.users.factories import (
     AgentUserFactory,
     AgentUserInviteFactory,
@@ -80,19 +104,6 @@ from transit_odp.users.factories import (
 )
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.utils import create_verified_org_user
-from waffle.testutils import override_flag
-from unittest import TestCase
-from transit_odp.transmodel.factories import (
-    ServiceFactory,
-    ServicePatternStopFactory,
-    ServicePatternFactory,
-)
-from transit_odp.dqs.factories import (
-    ObservationResultsFactory,
-    ChecksFactory,
-    TaskResultsFactory,
-)
-
 
 pytestmark = pytest.mark.django_db
 AVL_LINE_LEVEL_REQUIRE_ATTENTION = (
@@ -1172,16 +1183,40 @@ class TestOperatorsView:
 
 
 class TestOperatorDetailView:
-    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    def test_operator_detail_view_timetable_stats_not_compliant(
-        self, mock_avl_requires_attention, request_factory: RequestFactory
+    """
+    Tests for OperatorDetailView.
+    """
+
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+    @patch.object(publish_attention, "AbodsRegistery")
+    @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
+    def test_operator_detail_view_stats_not_compliant(
+        self, mock_vehivle_activity, mock_abodsregistry, request_factory: RequestFactory
     ):
-        org = OrganisationFactory()
+        """
+        Test for operator profile non compliant stats relating to:
+            - Total in scope/in season registered services
+            - Overall services requiring attention
+            - Timetables data requiring attention
+            - Location data requiring attention
+            - Fares data requiring attention
+
+        Args:
+            request_factory (RequestFactory): Request Factory
+        """
+        national_operator_code = "BLAC"
+        org = OrganisationFactory(nocs=national_operator_code)
         today = timezone.now().date()
         month = timezone.now().date() + datetime.timedelta(weeks=4)
         two_months = timezone.now().date() + datetime.timedelta(weeks=8)
-
-        mock_avl_requires_attention.return_value = []
+        mock_registry_instance = MagicMock()
+        mock_abodsregistry.return_value = mock_registry_instance
+        mock_registry_instance.records.return_value = ["line1__SDCU", "line2__SDCU"]
+        mock_vehivle_activity.return_value = pd.DataFrame(
+            {"OperatorRef": ["SDCU"], "LineRef": ["line2"]}
+        )
 
         total_services = 9
         licence_number = "PD5000229"
@@ -1189,6 +1224,48 @@ class TestOperatorDetailView:
         all_line_names = [f"Line:{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
+        fares_dataset = DatasetFactory(
+            organisation=org, dataset_type=DatasetType.FARES.value
+        )
+        fares_revision = FaresDatasetRevisionFactory(
+            dataset__organisation=org,
+            dataset__live_revision=fares_dataset.id,
+        )
+        fares_dataset_2 = DatasetFactory(
+            organisation=org, dataset_type=DatasetType.FARES.value
+        )
+        fares_revision_2 = FaresDatasetRevisionFactory(
+            dataset__organisation=org,
+            dataset__live_revision=fares_dataset_2.id,
+        )
+        fares_dataset_3 = DatasetFactory(
+            organisation=org, dataset_type=DatasetType.FARES.value
+        )
+        fares_revision_3 = FaresDatasetRevisionFactory(
+            dataset__organisation=org,
+            dataset__live_revision=fares_dataset_3.id,
+        )
+        fares_dataset_4 = DatasetFactory(
+            organisation=org, dataset_type=DatasetType.FARES.value
+        )
+        fares_revision_4 = FaresDatasetRevisionFactory(
+            dataset__organisation=org,
+            dataset__live_revision=fares_dataset_4.id,
+        )
+        fares_dataset_5 = DatasetFactory(
+            organisation=org, dataset_type=DatasetType.FARES.value
+        )
+        fares_revision_5 = FaresDatasetRevisionFactory(
+            dataset__organisation=org,
+            dataset__live_revision=fares_dataset_5.id,
+        )
+        fares_dataset_6 = DatasetFactory(
+            organisation=org, dataset_type=DatasetType.FARES.value
+        )
+        fares_revision_6 = FaresDatasetRevisionFactory(
+            dataset__organisation=org,
+            dataset__live_revision=fares_dataset_6.id,
+        )
 
         # Setup two TXCFileAttributes that will be 'Up to Date'
         TXCFileAttributesFactory(
@@ -1198,6 +1275,26 @@ class TestOperatorDetailView:
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
             line_names=[all_line_names[0]],
+            national_operator_code=[national_operator_code],
+        )
+        faresmetadata = FaresMetadataFactory(
+            revision=fares_revision,
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+        )
+        DataCatalogueMetaDataFactory(
+            fares_metadata=faresmetadata,
+            fares_metadata__revision__is_published=True,
+            line_name=[f"::{all_line_names[0]}"],
+            line_id=[f"::{all_line_names[0]}"],
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+            national_operator_code=[national_operator_code],
+        )
+        FaresValidationResultFactory(
+            revision=fares_revision,
+            organisation=org,
+            count=5,
         )
 
         TXCFileAttributesFactory(
@@ -1207,13 +1304,54 @@ class TestOperatorDetailView:
             + datetime.timedelta(days=75),
             modification_datetime=timezone.now() - datetime.timedelta(days=50),
             line_names=[all_line_names[1]],
+            national_operator_code=[national_operator_code],
         )
+        faresmetadata_1 = FaresMetadataFactory(
+            revision=fares_revision_2,
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+        )
+        DataCatalogueMetaDataFactory(
+            fares_metadata=faresmetadata_1,
+            fares_metadata__revision__is_published=True,
+            line_name=[f"::{all_line_names[1]}"],
+            line_id=[f"::{all_line_names[1]}"],
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+            national_operator_code=[national_operator_code],
+        )
+        FaresValidationResultFactory(
+            revision=fares_revision_2,
+            organisation=org,
+            count=0,
+        )
+
         # Setup a draft TXCFileAttributes
         dataset2 = DraftDatasetFactory(organisation=org)
         TXCFileAttributesFactory(
             revision=dataset2.revisions.last(),
             service_code=all_service_codes[2],
             line_names=[all_line_names[2]],
+            national_operator_code=[national_operator_code],
+        )
+        faresmetadata_2 = FaresMetadataFactory(
+            revision=fares_revision_3,
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+        )
+        DataCatalogueMetaDataFactory(
+            fares_metadata=faresmetadata_2,
+            fares_metadata__revision__is_published=True,
+            line_name=[f"::{all_line_names[2]}"],
+            line_id=[f"::{all_line_names[2]}"],
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+            national_operator_code=[national_operator_code],
+        )
+        FaresValidationResultFactory(
+            revision=fares_revision_3,
+            organisation=org,
+            count=2,
         )
 
         live_revision = DatasetRevisionFactory(dataset=dataset2)
@@ -1225,6 +1363,26 @@ class TestOperatorDetailView:
             operating_period_end_date=None,
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
             line_names=[all_line_names[3]],
+            national_operator_code=[national_operator_code],
+        )
+        faresmetadata_3 = FaresMetadataFactory(
+            revision=fares_revision_4,
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+        )
+        DataCatalogueMetaDataFactory(
+            fares_metadata=faresmetadata_3,
+            fares_metadata__revision__is_published=True,
+            line_name=[f"::{all_line_names[3]}"],
+            line_id=[f"::{all_line_names[3]}"],
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+            national_operator_code=[national_operator_code],
+        )
+        FaresValidationResultFactory(
+            revision=fares_revision_4,
+            organisation=org,
+            count=1,
         )
 
         # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
@@ -1235,6 +1393,26 @@ class TestOperatorDetailView:
             - datetime.timedelta(weeks=105),
             modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
             line_names=[all_line_names[4]],
+            national_operator_code=[national_operator_code],
+        )
+        faresmetadata_4 = FaresMetadataFactory(
+            revision=fares_revision_5,
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+        )
+        DataCatalogueMetaDataFactory(
+            fares_metadata=faresmetadata_4,
+            fares_metadata__revision__is_published=True,
+            line_name=[f"::{all_line_names[4]}"],
+            line_id=[f"::{all_line_names[4]}"],
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+            national_operator_code=[national_operator_code],
+        )
+        FaresValidationResultFactory(
+            revision=fares_revision_5,
+            organisation=org,
+            count=0,
         )
 
         # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
@@ -1244,6 +1422,26 @@ class TestOperatorDetailView:
             operating_period_end_date=datetime.date.today()
             + datetime.timedelta(days=50),
             line_names=[all_line_names[5]],
+            national_operator_code=[national_operator_code],
+        )
+        faresmetadata_5 = FaresMetadataFactory(
+            revision=fares_revision_6,
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+        )
+        DataCatalogueMetaDataFactory(
+            fares_metadata=faresmetadata_5,
+            fares_metadata__revision__is_published=True,
+            line_name=[f"::{all_line_names[5]}"],
+            line_id=[f"::{all_line_names[5]}"],
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+            national_operator_code=[national_operator_code],
+        )
+        FaresValidationResultFactory(
+            revision=fares_revision_6,
+            organisation=org,
+            count=9,
         )
 
         # Create Seasonal Services - one in season, one out of season
@@ -1285,160 +1483,75 @@ class TestOperatorDetailView:
         assert response.status_code == 200
         context = response.context_data
         assert context["view"].template_name == "browse/operators/operator_detail.html"
-        # One out of season seasonal service reduces in scope services to 8
         assert context["total_in_scope_in_season_services"] == 8
-        # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
-        assert context["services_require_attention_percentage"] == 75
+        assert context["timetable_services_requiring_attention_count"] == 6
+        assert context["avl_services_requiring_attention_count"] == 8
+        assert context["fares_services_requiring_attention_count"] == 8
+        assert context["total_services_requiring_attention"] == 6
 
-    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    def test_operator_detail_weca_view_timetable_stats_not_compliant(
-        self, mock_avl_line_level_require_attention, request_factory: RequestFactory
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+    @patch.object(publish_attention, "AbodsRegistery")
+    @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
+    @freeze_time("2023-02-24")
+    def test_operator_detail_view_stats_compliant(
+        self, mock_vehivle_activity, mock_abodsregistry, request_factory: RequestFactory
     ):
         """
-        Test Operator WECA details view stat with non complaint data
-        in_scope_in_season.
-
-        Count there are few which required attention
+        Test for operator profile compliant stats relating to:
+            - Total in scope/in season registered services
+            - Overall services requiring attention
+            - Timetables data requiring attention
+            - Location data requiring attention
+            - Fares data requiring attention
 
         Args:
             request_factory (RequestFactory): Request Factory
         """
-        org = OrganisationFactory()
-        today = timezone.now().date()
+        national_operator_code = "BLAC"
+        org = OrganisationFactory(nocs=national_operator_code)
         month = timezone.now().date() + datetime.timedelta(weeks=4)
         two_months = timezone.now().date() + datetime.timedelta(weeks=8)
-        mock_avl_line_level_require_attention.return_value = []
-
-        total_services = 9
-        licence_number = "PD5000229"
-        service_code_prefix = "1101000"
-        atco_code = "110"
-        registration_code_index = -len(service_code_prefix) - 1
-        all_service_codes = [
-            f"{licence_number}:{service_code_prefix}{n}" for n in range(total_services)
+        mock_registry_instance = MagicMock()
+        mock_abodsregistry.return_value = mock_registry_instance
+        mock_registry_instance.records.return_value = [
+            "line0__BLAC",
+            "line1__BLAC",
+            "line2__BLAC",
         ]
-        all_line_names = [f"Line{n}" for n in range(total_services)]
-        bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
-        dataset1 = DatasetFactory(organisation=org)
-
-        # Setup two TXCFileAttributes that will be 'Up to Date'
-        TXCFileAttributesFactory(
-            revision=dataset1.live_revision,
-            service_code=all_service_codes[0],
-            operating_period_end_date=datetime.date.today()
-            + datetime.timedelta(days=50),
-            modification_datetime=timezone.now(),
-            line_names=[all_line_names[0]],
+        mock_vehivle_activity.return_value = pd.DataFrame(
+            {"OperatorRef": ["SDCU"], "LineRef": ["line0"]}
         )
-
-        TXCFileAttributesFactory(
-            revision=dataset1.live_revision,
-            service_code=all_service_codes[1],
-            operating_period_end_date=datetime.date.today()
-            + datetime.timedelta(days=75),
-            modification_datetime=timezone.now() - datetime.timedelta(days=50),
-            line_names=[all_line_names[1]],
-        )
-        # Setup a draft TXCFileAttributes
-        dataset2 = DraftDatasetFactory(organisation=org)
-        TXCFileAttributesFactory(
-            revision=dataset2.revisions.last(),
-            service_code=all_service_codes[2],
-            line_names=[all_line_names[2]],
-        )
-
-        live_revision = DatasetRevisionFactory(dataset=dataset2)
-
-        # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
-        TXCFileAttributesFactory(
-            revision=live_revision,
-            service_code=all_service_codes[3],
-            operating_period_end_date=None,
-            modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
-            line_names=[all_line_names[3]],
-        )
-
-        # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
-        TXCFileAttributesFactory(
-            revision=live_revision,
-            service_code=all_service_codes[4],
-            operating_period_end_date=datetime.date.today()
-            - datetime.timedelta(weeks=105),
-            modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
-            line_names=[all_line_names[4]],
-        )
-
-        # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
-        TXCFileAttributesFactory(
-            revision=live_revision,
-            service_code=all_service_codes[5],
-            operating_period_end_date=datetime.date.today()
-            + datetime.timedelta(days=50),
-            line_names=[all_line_names[5]],
-        )
-
-        # Create Seasonal Services - one in season, one out of season
-        SeasonalServiceFactory(
-            licence=bods_licence,
-            start=today,
-            end=month,
-            registration_code=int(all_service_codes[6][registration_code_index:]),
-        )
-        SeasonalServiceFactory(
-            licence=bods_licence,
-            start=month,
-            end=two_months,
-            registration_code=int(all_service_codes[7][registration_code_index:]),
-        )
-
-        otc_lic1 = LicenceModelFactory(number=licence_number)
-        services = []
-        for index, code in enumerate(all_service_codes):
-            services.append(
-                ServiceModelFactory(
-                    licence=otc_lic1,
-                    registration_number=code.replace(":", "/"),
-                    effective_date=datetime.date(year=2020, month=1, day=1),
-                    atco_code=atco_code,
-                    api_type=API_TYPE_WECA,
-                    service_number=all_line_names[index],
-                )
-            )
-
-        ui_lta = UILtaFactory(name="UI_LTA")
-        LocalAuthorityFactory(
-            id="1", name="first_LTA", registration_numbers=services, ui_lta=ui_lta
-        )
-        AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta, atco_code=atco_code)
-
-        request = request_factory.get("/operators/")
-        request.user = UserFactory()
-
-        response = OperatorDetailView.as_view()(request, pk=org.id)
-        assert response.status_code == 200
-        context = response.context_data
-        assert context["view"].template_name == "browse/operators/operator_detail.html"
-        # One out of season seasonal service reduces in scope services to 8
-        assert context["total_in_scope_in_season_services"] == 8
-        # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
-        assert context["services_require_attention_percentage"] == 75
-
-    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    def test_operator_detail_view_timetable_stats_compliant(
-        self, mock_avl_line_level, request_factory: RequestFactory
-    ):
-        org = OrganisationFactory()
-        month = timezone.now().date() + datetime.timedelta(weeks=4)
-        two_months = timezone.now().date() + datetime.timedelta(weeks=8)
-        mock_avl_line_level.return_value = []
 
         total_services = 4
         licence_number = "PD5000123"
         all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
-        all_line_names = [f"line:{n}" for n in range(total_services)]
+        all_line_names = [f"line{n}" for n in range(total_services)]
         bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
         dataset1 = DatasetFactory(organisation=org)
         dataset2 = DatasetFactory(organisation=org)
+        fares_dataset = DatasetFactory(
+            organisation=org, dataset_type=DatasetType.FARES.value
+        )
+        fares_revision = FaresDatasetRevisionFactory(
+            dataset__organisation=org,
+            dataset__live_revision=fares_dataset.id,
+        )
+        fares_dataset_2 = DatasetFactory(
+            organisation=org, dataset_type=DatasetType.FARES.value
+        )
+        fares_revision_2 = FaresDatasetRevisionFactory(
+            dataset__organisation=org,
+            dataset__live_revision=fares_dataset_2.id,
+        )
+        fares_dataset_3 = DatasetFactory(
+            organisation=org, dataset_type=DatasetType.FARES.value
+        )
+        fares_revision_3 = FaresDatasetRevisionFactory(
+            dataset__organisation=org,
+            dataset__live_revision=fares_dataset_3.id,
+        )
 
         request = request_factory.get("/operators/")
         request.user = UserFactory()
@@ -1451,7 +1564,28 @@ class TestOperatorDetailView:
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
             line_names=[all_line_names[0]],
+            national_operator_code=national_operator_code,
         )
+        faresmetadata = FaresMetadataFactory(
+            revision=fares_revision,
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+        )
+        DataCatalogueMetaDataFactory(
+            fares_metadata=faresmetadata,
+            fares_metadata__revision__is_published=True,
+            line_name=[f":::{all_line_names[0]}"],
+            line_id=[f":::{all_line_names[0]}"],
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+            national_operator_code=[national_operator_code],
+        )
+        FaresValidationResultFactory(
+            revision=fares_revision,
+            organisation=org,
+            count=0,
+        )
+
         TXCFileAttributesFactory(
             revision=dataset1.live_revision,
             service_code=all_service_codes[1],
@@ -1459,7 +1593,28 @@ class TestOperatorDetailView:
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
             line_names=[all_line_names[1]],
+            national_operator_code=national_operator_code,
         )
+        faresmetadata_2 = FaresMetadataFactory(
+            revision=fares_revision_2,
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+        )
+        DataCatalogueMetaDataFactory(
+            fares_metadata=faresmetadata_2,
+            fares_metadata__revision__is_published=True,
+            line_name=[f":::{all_line_names[1]}"],
+            line_id=[f":::{all_line_names[1]}"],
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+            national_operator_code=[national_operator_code],
+        )
+        FaresValidationResultFactory(
+            revision=fares_revision_2,
+            organisation=org,
+            count=0,
+        )
+
         TXCFileAttributesFactory(
             revision=dataset2.live_revision,
             service_code=all_service_codes[2],
@@ -1467,6 +1622,26 @@ class TestOperatorDetailView:
             + datetime.timedelta(days=50),
             modification_datetime=timezone.now(),
             line_names=[all_line_names[2]],
+            national_operator_code=national_operator_code,
+        )
+        faresmetadata_3 = FaresMetadataFactory(
+            revision=fares_revision_3,
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+        )
+        DataCatalogueMetaDataFactory(
+            fares_metadata=faresmetadata_3,
+            fares_metadata__revision__is_published=True,
+            line_name=[f":::{all_line_names[2]}"],
+            line_id=[f":::{all_line_names[2]}"],
+            valid_from=datetime.datetime(2024, 12, 12),
+            valid_to=datetime.datetime(2025, 1, 12),
+            national_operator_code=[national_operator_code],
+        )
+        FaresValidationResultFactory(
+            revision=fares_revision_3,
+            organisation=org,
+            count=0,
         )
 
         # Create Out of Season Seasonal Service
@@ -1506,15 +1681,25 @@ class TestOperatorDetailView:
         assert response.status_code == 200
         context = response.context_data
         assert context["view"].template_name == "browse/operators/operator_detail.html"
-        # One out of season seasonal service reduces in scope services to 3
         assert context["total_in_scope_in_season_services"] == 3
-        # 3 services up to date, including one in season. 0/3 requiring attention = 0%
-        assert context["services_require_attention_percentage"] == 0
+        assert context["timetable_services_requiring_attention_count"] == 0
+        assert context["avl_services_requiring_attention_count"] == 0
+        assert context["fares_services_requiring_attention_count"] == 0
+        assert context["total_services_requiring_attention"] == 0
 
-    @override_flag("dqs_require_attention", active=True)
+    @override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
     def test_operator_detail_view_dqs_stats_compliant(
         self, request_factory: RequestFactory
     ):
+        """
+        Test for Operator SRA timetable stat - DQS critical issues.
+
+        Args:
+            request_factory (RequestFactory): Request Factory
+        """
         org = OrganisationFactory()
         month = timezone.now().date() + datetime.timedelta(weeks=4)
         two_months = timezone.now().date() + datetime.timedelta(weeks=8)
@@ -1627,11 +1812,14 @@ class TestOperatorDetailView:
         assert context["view"].template_name == "browse/operators/operator_detail.html"
         # One out of season seasonal service reduces in scope services to 3
         assert context["total_in_scope_in_season_services"] == 3
-        assert context["total_services_requiring_attention"] == 1  # DQS critical issues
-        # 3 services up to date, including one in season. 0/3 requiring attention = 0%
-        assert context["services_require_attention_percentage"] == 33
+        assert (
+            context["timetable_services_requiring_attention_count"] == 1
+        )  # DQS critical issues
 
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
     def test_operator_detail_weca_view_timetable_stats_compliant(
         self, avl_line_level_require_attention, request_factory: RequestFactory
     ):
@@ -1730,12 +1918,21 @@ class TestOperatorDetailView:
         # One out of season seasonal service reduces in scope services to 3
         assert context["total_in_scope_in_season_services"] == 3
         # 3 services up to date, including one in season. 0/3 requiring attention = 0%
-        assert context["services_require_attention_percentage"] == 0
+        assert context["timetable_services_requiring_attention_count"] == 0
 
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    def test_operator_detail_view_avl_stats(
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+    def test_operator_detail_view_avl_stats_overall_ppc_score(
         self, mock_avl_line_level_require_attention, request_factory: RequestFactory
     ):
+        """
+        Test for 'Weekly overall AVL to timetables matching score' for AVL section.
+
+        Args:
+            request_factory (RequestFactory): Request Factory
+        """
         org = OrganisationFactory()
         num_datasets = 5
         datasets = DatasetFactory.create_batch(
@@ -1764,36 +1961,18 @@ class TestOperatorDetailView:
         assert context["overall_ppc_score"] is None
 
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    def test_operator_detail_view_fares_stats(
-        self, mock_avl_line_level_require_attention, request_factory: RequestFactory
-    ):
-        org = OrganisationFactory()
-        num_datasets = 5
-        datasets = DatasetFactory.create_batch(
-            num_datasets, organisation=org, dataset_type=DatasetType.FARES.value
-        )
-        revisions = [DatasetRevisionFactory(dataset=d) for d in datasets]
-        FaresMetadataFactory(revision=revisions[0], num_of_fare_products=1)
-        FaresMetadataFactory(revision=revisions[1], num_of_fare_products=2)
-
-        mock_avl_line_level_require_attention.return_value = []
-
-        request = request_factory.get("/operators/")
-        request.user = UserFactory()
-
-        response = OperatorDetailView.as_view()(request, pk=org.id)
-        assert response.status_code == 200
-        context = response.context_data
-
-        timetable_stats = context["fares_stats"]
-        assert timetable_stats.total_dataset_count == num_datasets
-        assert timetable_stats.total_fare_products == 3
-        assert context["fares_non_compliant"] == 0
-
-    @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
-    def test_operator_detail_view_urls(
+    @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+    def test_operator_detail_view_api_urls(
         self, mock_line_level_require_attention, request_factory: RequestFactory
     ):
+        """
+        Test for timetable, location and fares API URLs.
+
+        Args:
+            request_factory (RequestFactory): Request Factory
+        """
         nocs = ["NOC1", "NOC2"]
         org = OrganisationFactory(nocs=nocs)
         user = UserFactory()
@@ -1949,6 +2128,49 @@ class TestLTAView:
                 assert len(lta.auth_ids) == 2
 
 
+class TestLineMetadataDetailView:
+    @patch(
+        "django.conf.settings.ABODS_AVL_LINE_LEVEL_DETAILS_URL", "http://dummy_url.com"
+    )
+    @patch("django.conf.settings.ABODS_AVL_AUTH_TOKEN", "dummy_token")
+    @override_flag("dqs_require_attention", active=True)
+    @override_flag("dqs_require_attention", active=True)
+    @override_flag("is_complete_service_pages_active", active=True)
+    @override_flag("is_avl_require_attention_active", active=True)
+    @patch(REQUEST, side_effect=mocked_requests_post_valid_response)
+    @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
+    def test_avl_data(self, mock_vehicle_activity, request_factory):
+        """Test AVL data"""
+
+        mock_vehicle_activity.return_value = pd.DataFrame(
+            {"OperatorRef": ["SDCU"], "LineRef": ["line2"]}
+        )
+        org = OrganisationFactory()
+        total_services = 4
+        licence_number = "PD5000124"
+        all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
+        all_line_names = [f"line:{n}" for n in range(total_services)]
+        print(f"all_line_names: {all_line_names}")
+        dataset1 = DatasetFactory(organisation=org)
+
+        # Setup three TXCFileAttributes that will be 'Up to Date'
+        txcfileattribute1 = TXCFileAttributesFactory(
+            revision=dataset1.live_revision,
+            service_code=all_service_codes[0],
+            operating_period_end_date=datetime.date.today()
+            + datetime.timedelta(days=50),
+            modification_datetime=timezone.now(),
+            line_names=[all_line_names[0]],
+        )
+
+        response = LineMetadataDetailView.get_avl_data(
+            None, [txcfileattribute1], all_line_names[0]
+        )
+
+        assert isinstance(response, dict)
+        assert "is_avl_complaint" in response
+
+
 class TestLTADetailView:
     def test_local_authority_detail_view_timetable_stats_not_compliant(
         self, request_factory: RequestFactory
@@ -2072,7 +2294,7 @@ class TestLTADetailView:
         assert context["total_in_scope_in_season_services"] == 3
         assert context["services_require_attention_percentage"] == 0
 
-    @override_flag("dqs_require_attention", active=True)
+    @override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=True)
     def test_local_authority_detail_view_dqs_non_compliant(
         self, request_factory: RequestFactory
     ):
@@ -2201,7 +2423,7 @@ class TestLTADetailView:
         )
         assert context["total_in_scope_in_season_services"] == 3
         assert context["services_require_attention_percentage"] == 33
-        assert context["total_services_requiring_attention"] == 1
+        assert context["total_timetable_records_requiring_attention"] == 1
 
     def test_weca_local_authority_detail_view_timetable_stats_not_compliant(
         self, request_factory: RequestFactory
@@ -2329,6 +2551,190 @@ class TestLTADetailView:
         )
         assert context["total_in_scope_in_season_services"] == 3
         assert context["services_require_attention_percentage"] == 0
+
+    @override_flag("dqs_require_attention", active=True)
+    @override_flag("is_complete_service_pages_active", active=True)
+    @override_flag("is_avl_require_attention_active", active=True)
+    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @patch.object(publish_attention, "AbodsRegistery")
+    @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
+    @freeze_time("2024-11-24T16:40:40.000Z")
+    def test_complete_service_pages_lta_detail_view(
+        self,
+        mock_vehicle_activity,
+        mock_abodsregistry,
+        request_factory: RequestFactory,
+    ):
+        """Test LTA WECA details view stat with complaint data in_scope_in_season
+        count there are zero which required attention
+
+        Args:
+            request_factory (RequestFactory): Request Factory
+        """
+        mock_registry_instance = MagicMock()
+        mock_abodsregistry.return_value = mock_registry_instance
+        mock_registry_instance.records.return_value = ["line1__SDCU", "line2__SDCU"]
+        mock_vehicle_activity.return_value = pd.DataFrame(
+            {"OperatorRef": ["SDCU"], "LineRef": ["line2"]}
+        )
+        org = OrganisationFactory()
+        total_services = 9
+        licence_number = "PD5000229"
+        service = []
+        service_code_prefix = "1101000"
+        atco_code = "110"
+        all_service_codes = [
+            f"{licence_number}:{service_code_prefix}{n}" for n in range(total_services)
+        ]
+        bods_licence = BODSLicenceFactory(organisation=org, number=licence_number)
+        dataset1 = DatasetFactory(organisation=org)
+        txcfileattributes = []
+
+        otc_lic = LicenceModelFactory(number=licence_number)
+        for code in all_service_codes:
+            service.append(
+                ServiceModelFactory(
+                    licence=otc_lic,
+                    registration_number=code.replace(":", "/"),
+                    effective_date=datetime.date(year=2020, month=1, day=1),
+                    atco_code=atco_code,
+                    service_number="line1",
+                )
+            )
+
+        ui_lta = UILtaFactory(name="Dorset County Council")
+
+        local_authority = LocalAuthorityFactory(
+            id="1",
+            name="Dorset Council",
+            ui_lta=ui_lta,
+            registration_numbers=service[0:6],
+        )
+
+        AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta, atco_code=atco_code)
+
+        # Setup two TXCFileAttributes that will be 'Not Stale'
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=dataset1.live_revision.id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[0],
+                operating_period_end_date=datetime.date.today()
+                + datetime.timedelta(days=50),
+                modification_datetime=timezone.now(),
+                national_operator_code="SDCU",
+            )
+        )
+
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=dataset1.live_revision.id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[1],
+                operating_period_end_date=datetime.date.today()
+                + datetime.timedelta(days=75),
+                modification_datetime=timezone.now() - datetime.timedelta(days=50),
+                national_operator_code="SDCU",
+            )
+        )
+
+        # Setup a draft TXCFileAttributes
+        dataset2 = DraftDatasetFactory(organisation=org)
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=dataset2.revisions.last().id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[2],
+            )
+        )
+
+        live_revision = dataset2.revisions.last()
+        # Setup a TXCFileAttributes that will be 'Stale - 12 months old'
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=live_revision.id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[3],
+                operating_period_end_date=None,
+                modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+                national_operator_code="SDCU",
+            )
+        )
+
+        # Setup a TXCFileAttributes that will be 'Stale - 42 day look ahead'
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=live_revision.id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[4],
+                operating_period_end_date=datetime.date.today()
+                - datetime.timedelta(weeks=105),
+                modification_datetime=timezone.now() - datetime.timedelta(weeks=100),
+            )
+        )
+
+        # Setup a TXCFileAttributes that will be 'Stale - OTC Variation'
+        txcfileattributes.append(
+            TXCFileAttributesFactory(
+                revision_id=live_revision.id,
+                licence_number=otc_lic.number,
+                service_code=all_service_codes[5],
+                operating_period_end_date=datetime.date.today()
+                + datetime.timedelta(days=50),
+            )
+        )
+        check1 = ChecksFactory(importance=Level.critical.value)
+        check2 = ChecksFactory(importance=Level.critical.value)
+
+        services_with_critical = []
+        services_with_advisory = []
+        for i, txcfileattribute in enumerate(txcfileattributes):
+            check_obj = check1 if i % 2 == 0 else check2
+            if check_obj.importance == Level.critical.value:
+                services_with_critical.append(
+                    (txcfileattribute.service_code, txcfileattribute.line_names[0])
+                )
+            else:
+                services_with_advisory.append(
+                    (txcfileattribute.service_code, txcfileattribute.line_names[0])
+                )
+
+            task_result = TaskResultsFactory(
+                status=TaskResultsStatus.PENDING.value,
+                transmodel_txcfileattributes=txcfileattribute,
+                checks=check_obj,
+            )
+            service_pattern = ServicePatternFactory(
+                revision=txcfileattribute.revision,
+                line_name=txcfileattribute.line_names[0],
+            )
+            ServiceFactory(
+                revision=txcfileattribute.revision,
+                service_code=txcfileattribute.service_code,
+                name=txcfileattribute.line_names[0],
+                service_patterns=[service_pattern],
+                txcfileattributes=txcfileattribute,
+            )
+
+            service_pattern_stop = ServicePatternStopFactory(
+                service_pattern=service_pattern
+            )
+
+            ObservationResultsFactory(
+                service_pattern_stop=service_pattern_stop, taskresults=task_result
+            )
+
+        request = request_factory.get(
+            f"/local-authority/?auth_ids={local_authority.id}"
+        )
+        request.user = UserFactory()
+
+        response = LocalAuthorityDetailView.as_view()(request, pk=local_authority.id)
+        assert response.status_code == 200
+        context = response.context_data
+        assert context["total_timetable_records_requiring_attention"] == 9
+        assert context["total_location_records_requiring_attention"] == 7
+        assert context["total_fares_records_requiring_attention"] == 9
 
 
 class TestGlobalFeedbackView:

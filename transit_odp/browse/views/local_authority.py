@@ -36,19 +36,26 @@ from transit_odp.otc.constants import API_TYPE_EP, API_TYPE_WECA, UNDER_MAINTENA
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.otc.models import UILta
+from transit_odp.otc.utils import get_overall_sra_unique_services
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
+    get_avl_records_require_attention_lta_line_level_objects,
     get_dq_critical_observation_services_map,
     get_fares_compliance_status,
     get_fares_dataset_map,
+    get_fares_records_require_attention_lta_line_level_objects,
     get_fares_requires_attention,
     get_fares_timeliness_status,
     get_line_level_txc_map_lta,
     get_requires_attention_data_lta_line_level_length,
+    get_requires_attention_data_lta_line_level_objects,
     get_txc_map_lta,
     is_stale,
+    get_timetable_records_require_attention_lta_line_level_length,
+    get_avl_records_require_attention_lta_line_level_length,
+    get_fares_records_require_attention_lta_line_level_length,
+    get_licence_organisation_map,
 )
-from transit_odp.timetables.csv import _get_timetable_compliance_report_dataframe
 
 STALENESS_STATUS = [
     "42 day look ahead is incomplete",
@@ -237,16 +244,27 @@ class LocalAuthorityView(BaseListView):
 
         ltas = {"names": names}
         context["ltas"] = ltas
+        is_uilta_prefetch_sra_active = flag_is_active(
+            "", FeatureFlags.UILTA_PREFETCH_SRA.value
+        )
 
         for lta in all_ltas_current_page:
             lta_list = lta_list_per_ui_ltas[lta.ui_lta_name_trimmed]
             setattr(lta, "auth_ids", [x.id for x in lta_list])
-            context["total_in_scope_in_season_services"] = len(
-                get_in_scope_in_season_lta_service_numbers(lta_list)
-            )
-            context[
-                "total_services_requiring_attention"
-            ] = get_requires_attention_data_lta_line_level_length(lta_list)
+            ui_lta: UILta = lta_list[0].ui_lta
+            if is_uilta_prefetch_sra_active:
+                total_inscope = ui_lta.total_inscope
+                timetable_sra = ui_lta.timetable_sra
+            else:
+                total_inscope = len(
+                    get_in_scope_in_season_lta_service_numbers(lta_list)
+                )
+                timetable_sra = get_requires_attention_data_lta_line_level_length(
+                    lta_list
+                )
+
+            context["total_in_scope_in_season_services"] = total_inscope
+            context["total_services_requiring_attention"] = timetable_sra
 
             try:
                 context["services_require_attention_percentage"] = round(
@@ -304,9 +322,19 @@ class LocalAuthorityDetailView(BaseDetailView):
 
     def get_context_data(self, **kwargs):
         is_avl_require_attention_active = flag_is_active(
-            "", "is_avl_require_attention_active"
+            "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
+        )
+        is_fares_require_attention_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
+        is_complete_service_pages_active = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        )
+        is_uilta_prefetch_sra_active = flag_is_active(
+            "", FeatureFlags.UILTA_PREFETCH_SRA.value
         )
         context = super().get_context_data(**kwargs)
+        context["is_complete_service_pages_active"] = is_complete_service_pages_active
         combined_authority_ids = self.request.GET.get("auth_ids")
         lta_objs = []
         context["auth_ids"] = combined_authority_ids
@@ -320,27 +348,65 @@ class LocalAuthorityDetailView(BaseDetailView):
         for combined_authority_id in combined_authority_ids:
             lta_objs.append(self.model.objects.get(id=combined_authority_id))
 
-        context["total_in_scope_in_season_services"] = len(
-            get_in_scope_in_season_lta_service_numbers(lta_objs)
-        )
+        if is_uilta_prefetch_sra_active:
+            ui_lta: UILta = lta_objs[0].ui_lta
+            total_inscope = ui_lta.total_inscope
+            timetable_sra = ui_lta.timetable_sra
+            overall_sra = ui_lta.overall_sra
+            avl_sra = ui_lta.avl_sra
+            fares_sra = ui_lta.fares_sra
+        else:
+            total_inscope = len(get_in_scope_in_season_lta_service_numbers(lta_objs))
+            timetable_sra = get_requires_attention_data_lta_line_level_objects(lta_objs)
+            avl_sra = fares_sra = []
+            if is_avl_require_attention_active:
+                avl_sra = get_avl_records_require_attention_lta_line_level_objects(
+                    lta_objs
+                )
 
-        context[
-            "total_services_requiring_attention"
-        ] = get_requires_attention_data_lta_line_level_length(lta_objs)
+            if is_fares_require_attention_active:
+                fares_sra = get_fares_records_require_attention_lta_line_level_objects(
+                    lta_objs
+                )
+            overall_sra = len(
+                get_overall_sra_unique_services(timetable_sra, avl_sra, fares_sra)
+            )
+            timetable_sra = len(timetable_sra)
+            avl_sra = len(avl_sra)
+            fares_sra = len(fares_sra)
 
+        context["total_in_scope_in_season_services"] = total_inscope
+        context["total_timetable_records_requiring_attention"] = timetable_sra
+
+        if is_complete_service_pages_active:
+            context["total_services_requiring_attention"] = overall_sra
+            context["total_location_records_requiring_attention"] = avl_sra
+            context["total_fares_records_requiring_attention"] = fares_sra
+            distinct_licence_names = set(
+                [
+                    service.licence.number
+                    for lta in lta_objs
+                    for service in lta.registration_numbers.all()
+                ]
+            )
+            licence_organisation_map = get_licence_organisation_map(
+                distinct_licence_names
+            )
+            context["licence_organisation_map"] = licence_organisation_map
         try:
             context["services_require_attention_percentage"] = round(
                 100
                 * (
-                    context["total_services_requiring_attention"]
+                    context["total_timetable_records_requiring_attention"]
                     / context["total_in_scope_in_season_services"]
                 )
             )
+
         except ZeroDivisionError:
             context["services_require_attention_percentage"] = 0
 
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
-
+        context["is_fares_require_attention_active"] = is_fares_require_attention_active
         return context
 
 
