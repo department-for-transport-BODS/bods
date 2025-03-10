@@ -68,9 +68,9 @@ class BaseTimetableReviewView(ReviewBaseView):
         is_new_data_quality_service_active = flag_is_active(
             "", "is_new_data_quality_service_active"
         )
-        kwargs["is_new_data_quality_service_active"] = (
-            is_new_data_quality_service_active
-        )
+        kwargs[
+            "is_new_data_quality_service_active"
+        ] = is_new_data_quality_service_active
 
         context = super().get_context_data(**kwargs)
         api_root = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
@@ -183,9 +183,9 @@ class PublishRevisionView(BaseTimetableReviewView):
         is_new_data_quality_service_active = flag_is_active(
             "", "is_new_data_quality_service_active"
         )
-        kwargs["is_new_data_quality_service_active"] = (
-            is_new_data_quality_service_active
-        )
+        kwargs[
+            "is_new_data_quality_service_active"
+        ] = is_new_data_quality_service_active
 
         if is_new_data_quality_service_active:
             report = (
@@ -251,9 +251,9 @@ class UpdateRevisionPublishView(PublishRevisionView):
         is_new_data_quality_service_active = flag_is_active(
             "", "is_new_data_quality_service_active"
         )
-        kwargs["is_new_data_quality_service_active"] = (
-            is_new_data_quality_service_active
-        )
+        kwargs[
+            "is_new_data_quality_service_active"
+        ] = is_new_data_quality_service_active
 
         if is_new_data_quality_service_active:
             report = (
