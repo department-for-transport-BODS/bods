@@ -43,7 +43,20 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% if licence_page %}
-        <h1 class="govuk-heading-xl app-!-mb-4 dont-break-out govuk-!-margin-bottom-2">{{ line_name }}</h1>
+        <h1 class="govuk-heading-xl app-!-mb-4 dont-break-out govuk-!-margin-bottom-2">
+          {{ line_name }}
+          {% if service_inscope == False %}
+            <span class="govuk-tag govuk-tag--red govuk-!-margin-left-2 govuk-!-text-align-centre">Out of Scope</span>
+          {% elif is_avl_compliant and is_fares_compliant and is_timetables_compliant %}
+            <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+              Compliant
+            </span>
+          {% else %}
+            <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+              Non-Compliant
+            </span>
+          {% endif %}
+        </h1>
         <ul class="govuk-list">
           <li>
             <a class="govuk-link" href={% url 'compliance-report' pk1=fares_org_id host hosts.publish %}>
@@ -71,12 +84,7 @@
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{% trans "Registration Number" %}</th>
-            <td class="govuk-table__cell dont-break-out" colspan="2">
-              {{ service_code }}
-              {% if service_inscope == False %}
-                <span class="govuk-tag govuk-tag--red govuk-!-font-size-16 govuk-!-text-align-centre">Out of Scope</span>
-              {% endif %}
-            </td>
+            <td class="govuk-table__cell dont-break-out" colspan="2">{{ service_code }}</td>
           </tr>
           {% if not licence_page %}
             {% include 'publish/snippets/dataset_detail_files.html' with header_text='Current valid file(s)' files=current_valid_files %}
@@ -124,11 +132,11 @@
                   <h2 class="govuk-heading-m">{% trans "AVL" %}</h2>
                 </th>
                 <td class="govuk-table__cell dont-break-out " colspan="2">
-                  <span class="govuk-tag {% if is_avl_complaint %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
-                    {% if is_avl_complaint %}
-                      Complaint
+                  <span class="govuk-tag {% if is_avl_compliant %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+                    {% if is_avl_compliant %}
+                      Compliant
                     {% else %}
-                      Non-Complaint
+                      Non-Compliant
                     {% endif %}
                   </span>
                 </td>
@@ -146,11 +154,11 @@
                   <h2 class="govuk-heading-m">{% trans "Fares" %}</h2>
                 </th>
                 <td class="govuk-table__cell dont-break-out" colspan="2">
-                  <span class="govuk-tag {% if is_fares_complaint %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
-                    {% if is_fares_complaint %}
-                      Complaint
+                  <span class="govuk-tag {% if is_fares_compliant %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+                    {% if is_fares_compliant %}
+                      Compliant
                     {% else %}
-                      Non-Complaint
+                      Non-Compliant
                     {% endif %}
                   </span>
                   {% if fares_dataset_id %}
@@ -184,11 +192,11 @@
                   <h2 class="govuk-heading-m">{% trans "Timetable" %}</h2>
                 </th>
                 <td class="govuk-table__cell dont-break-out" colspan="2">
-                  <span class="govuk-tag {% if is_timetables_complaint %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
-                    {% if is_timetables_complaint %}
-                      Complaint
+                  <span class="govuk-tag {% if is_timetables_compliant %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+                    {% if is_timetables_compliant %}
+                      Compliant
                     {% else %}
-                      Non-Complaint
+                      Non-Compliant
                     {% endif %}
                   </span>
                   {% if object.id %}
