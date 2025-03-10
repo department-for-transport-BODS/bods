@@ -4,12 +4,16 @@ from django.http import HttpResponseRedirect
 from django.views.generic import FormView
 from django_hosts import reverse
 from django_tables2 import SingleTableView
+from waffle import flag_is_active
 
 from config.hosts import PUBLISH_HOST
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.views import BaseTemplateView
 from transit_odp.organisation.constants import AVLType, FaresType, TimetableType
 from transit_odp.publish.forms import SelectDataTypeForm
 from transit_odp.publish.requires_attention import (
+    FaresRequiresAttention,
+    get_avl_requires_attention_line_level_data,
     get_requires_attention_line_level_data,
 )
 from transit_odp.publish.tables import AgentOrganisationsTable
@@ -57,18 +61,39 @@ class SelectOrgView(OrgUserViewMixin, BaseTemplateView):
 
 
 class AgentDashboardView(OrgUserViewMixin, SingleTableView):
+    """
+    View for Agent Dashboard.
+    """
+
     template_name = "publish/agent_dashboard.html"
     model = User.organisations.through
     table_class = AgentOrganisationsTable
     paginate_by = 10
 
-    def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .select_related("organisation")
-            .filter(user=self.request.user)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get("q", "")
+        users = self.model.objects.filter(user=self.request.user)
+        context["is_complete_service_pages_active"] = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
         )
+
+        if users:
+            org_names = {"names": [user.organisation.name for user in users]}
+        else:
+            org_names = {"names": []}
+
+        context["org_names"] = org_names
+        return context
+
+    def get_queryset(self):
+        qs = self.model.objects.filter(user=self.request.user)
+
+        search_term = self.request.GET.get("q", "").strip()
+        if search_term:
+            qs = qs.filter(organisation__name__icontains=search_term)
+
+        return qs
 
     def get_table_data(self):
         next_page = self.request.GET.get("next", "feed-list")
@@ -86,6 +111,14 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
                 "organisation": record.organisation.name,
                 "requires_attention": len(
                     get_requires_attention_line_level_data(record.organisation_id)
+                ),
+                "avl_requires_attention": len(
+                    get_avl_requires_attention_line_level_data(record.organisation_id)
+                ),
+                "fares_requires_attention": len(
+                    FaresRequiresAttention(
+                        record.organisation_id
+                    ).get_fares_requires_attention_line_level_data()
                 ),
             }
             for record in self.get_queryset()
