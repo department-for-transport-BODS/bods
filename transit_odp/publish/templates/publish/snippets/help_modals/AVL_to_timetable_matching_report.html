@@ -1,0 +1,24 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+{% block help_icon %}
+  <i class="help-icon fas fa-question-circle">
+  </i>
+{% endblock %}
+{% block help_heading %}
+  {% trans "AVL to timetable matching report" %}
+{% endblock %}
+{% block help_content %}
+  <p class="govuk-body">
+    {% blocktrans %}
+      The AVL to timetable matching report will describe cases where
+      real time location data does not supply values which can be used
+      to join with the journey within the published timetable data.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+      Please work with your supplier to investigate the cases described
+      in this report.
+    {% endblocktrans %}
+  </p>
+{% endblock %}
