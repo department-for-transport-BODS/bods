@@ -103,5 +103,5 @@ class AVLRealTimeDataView(APIView):
         vehicle_activities = service_delivery.vehicle_monitoring_delivery.vehicle_activities
 
         vehicle_activity_dict = get_vehicle_activity_dict(vehicle_activities, tt_journey_codes)
-        # Return the mock response as JSON
+
         return Response(vehicle_activity_dict, status=200)
