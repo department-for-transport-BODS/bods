@@ -96,8 +96,7 @@ class AVLRealTimeDataView(APIView):
         tt_journey_codes = params.pop("journey_code", None)
         
         content, status_code = _get_consumer_api_response(url, params)
-        """APIView for returning mock JSON response."""
-        
+                
         siri = Siri.from_string(content)
         service_delivery = siri.service_delivery
         vehicle_activities = service_delivery.vehicle_monitoring_delivery.vehicle_activities
