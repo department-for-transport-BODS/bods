@@ -222,23 +222,8 @@
         {% if is_timetable_visualiser_active %}
             BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");
         {% endif %}
-  </script>
-   <script nonce="{{request.csp_nonce}}">
-    function fetchApiData() {
-      const apiUrl = "{% url 'avldetaildatafeedapirealtime' %}";
-      fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('api-response').innerHTML = `
-            <h3>API Response:</h3>
-            <pre>${JSON.stringify(data, null, 2)}</pre>
-          `;
-        })
-        .catch(error => {
-          document.getElementById('api-response').innerHTML = 'Error fetching data: ' + error;
-        });
-    }
-    fetchApiData();
-    setInterval(fetchApiData, 10000);
+
+        const apiUrl = "{% url 'avldetaildatafeedapirealtime' %}";
+        BODSFrontend.fetchAvlLiveLocation(apiUrl);
   </script>
 {% endblock %}
