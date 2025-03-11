@@ -49,7 +49,11 @@
         {% endblocktrans %}
       </p>
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break--invisible" />
+      <div style="position: relative;">
       {% include "publish/snippets/dataset_map.html" %}
+        <span id="map-updated-timestamp" style="position: absolute;bottom: 0px;right: 33px;font-size: 12px;background: #aaa;color: #000;padding: 4px;opacity: 0.6;
+    "> - </span>
+    </div>
       <table class="govuk-table dataset-property-table">
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
@@ -222,11 +226,12 @@
         {% if is_timetable_visualiser_active %}
             BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");
         {% endif %}
-        const apiUrl = "{% url 'avldetaildatafeedapirealtime' %}";
+        {% if is_complete_service_pages_active %}
         const line_name = "{{line_name}}";
         const noc = "{{national_operator_code}}"
         const journey_code = "{{vehicle_journey_codes}}"
-        
+        const apiUrl = "{% url 'avldetaildatafeedapirealtime' %}" + `?lineRef=${line_name}&operatorRef=${noc}&journey_code=${journey_code}`;
         BODSFrontend.fetchAvlLiveLocation(apiUrl);
+        {% endif %}
   </script>
 {% endblock %}

@@ -1,5 +1,6 @@
 import logging
 from datetime import timedelta
+from django.conf import settings
 
 import requests
 from rest_framework.response import Response
@@ -84,34 +85,20 @@ class ProgressAPIView(APIView):
 
         return Response({"progress": progress, "status": revision.status})
 
-# class AVLRealTimeDataView(APIView):
-#     """APIView for returning SIRI VM XML from the consumer API."""
-
-#     renderer_classes = (XMLRender,)
-
-#     def get(self, noc, line, format=None):
-#         """Get SIRI VM response from consumer API."""
-#         # url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm"
-#         content, status_code = _get_consumer_api_response(url, request.query_params)
-#         return Response(content, status=status_code, content_type="text/xml")
-
 class AVLRealTimeDataView(APIView):
     permission_classes = (AllowAny,)
     renderer_classes = (JSONRenderer,)
   
-    def get(self, format=None):
-        # url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm"
-        # url = "https://6tfu67dcng.execute-api.eu-west-2.amazonaws.com/v1"
+    def get(self, request, format=None):
+        url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm"
+       
+        params = request.query_params.copy()
+        journey_codes = params.pop("journey_code", None)
         
-        # content, status_code = _get_consumer_api_response(url, query_param)
-        url = "https://data.dev.bus-data.dft.gov.uk/api/v1/datafeed?lineRef=85&api_key=345ae0020919ec4e24562ae9d36e0e2b36f5558d"
-        resposne = requests.get(url, timeout=60, verify=False)
+        content, status_code = _get_consumer_api_response(url, params)
         """APIView for returning mock JSON response."""
-        # xml_file_path = "transit_odp/publish/views/response_1741637874912.xml"
-        # with open(xml_file_path, 'r') as file:
-        #             xml_content = file.read()
         
-        siri = Siri.from_string(resposne.content)
+        siri = Siri.from_string(content)
         service_delivery = siri.service_delivery
         vehicle_activities = service_delivery.vehicle_monitoring_delivery.vehicle_activities
 

@@ -725,7 +725,7 @@ class LineMetadataDetailView(DetailView):
             "timetables_valid_files": current_valid_files,
             "timetables_future_dated_files": future_files,
             "timetables_expired_files": expired_files,
-            "national_operator_code": national_operator_code,
+            "national_operator_code": ",".join(national_operator_code),
         }
 
     def get_otc_service(self):
@@ -768,10 +768,12 @@ class LineMetadataDetailView(DetailView):
             True,
         ).get_timetable_visualiser()
 
-        vehicle_journey_codes = (
-            timetable_inbound_outbound['outbound']['df_timetable']['vehicle_journey_code'].tolist() +
-            timetable_inbound_outbound['inbound']['df_timetable']['vehicle_journey_code'].tolist()
-        )
+        vehicle_journey_codes= []
+        if not timetable_inbound_outbound['outbound']['df_timetable'].empty:
+            vehicle_journey_codes += timetable_inbound_outbound['outbound']['df_timetable']['vehicle_journey_code'].tolist()
+        if not timetable_inbound_outbound['inbound']['df_timetable'].empty:
+            vehicle_journey_codes += timetable_inbound_outbound['inbound']['df_timetable']['vehicle_journey_code'].tolist()
+
         is_timetable_info_available = False
         timetable = {}
         for direction in ["outbound", "inbound"]:
@@ -802,7 +804,7 @@ class LineMetadataDetailView(DetailView):
             "curr_date": date,
             "timetable": timetable,
             "is_timetable_info_available": is_timetable_info_available,
-            "vehicle_journey_codes": vehicle_journey_codes,
+            "vehicle_journey_codes": ",".join(vehicle_journey_codes),
         }
 
     def get_service_type_data(

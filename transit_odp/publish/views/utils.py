@@ -1,5 +1,5 @@
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from django.db.models import Max
 from django.utils import timezone
@@ -324,7 +324,7 @@ def get_vehicle_activity_dict(vehicle_activities_list) -> dict:
             activities within the last 10 minutes.
     """
     vehicle_dict = {}
-    current_time = datetime.now()
+    current_time = datetime.now(timezone.utc)
 
     for vehicle_activity in vehicle_activities_list:
         monitored_vehicle_journey = vehicle_activity.monitored_vehicle_journey

@@ -1,8 +1,11 @@
 const mapboxgl = require("mapbox-gl");
 var feed_map = null
 var feed_map_markers = {}
+const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 125" style="enable-background:new 0 0 100 100;" xml:space="preserve"><style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;}
+</style><path class="st0" d="M64.2,78.4h14.2v4.7c0,2.6-2.1,4.7-4.7,4.7h-4.7c-2.6,0-4.7-2.1-4.7-4.7V78.4z"/><path class="st0" d="M21.6,78.4h14.2v4.7c0,2.6-2.1,4.7-4.7,4.7h-4.7c-2.6,0-4.7-2.1-4.7-4.7V78.4z"/><path class="st0" d="M87,27h1.6c2.4,0,4.4,1.7,4.4,3.8v4.5c0,2.1-2,3.8-4.4,3.8H87V27z"/><path class="st0" d="M75.4,12.2H24.6c-5.2,0-9.5,4.2-9.5,9.5V67c0,5.2,4.2,9.5,9.5,9.5h50.7c5.2,0,9.5-4.2,9.5-9.5V21.6  C84.8,16.4,80.6,12.2,75.4,12.2z M28.7,68.9c-3.2,0-5.8-2.5-5.8-5.7c0-3.1,2.6-5.7,5.8-5.7s5.8,2.5,5.8,5.7  C34.5,66.4,31.9,68.9,28.7,68.9z M71.3,68.9c-3.2,0-5.8-2.5-5.8-5.7c0-3.1,2.6-5.7,5.8-5.7s5.8,2.5,5.8,5.7  C77.1,66.4,74.5,68.9,71.3,68.9z M78.4,43.3c0,2.6-2.1,4.7-4.7,4.7H26.4c-2.6,0-4.7-2.1-4.7-4.7V24.4c0-2.6,2.1-4.7,4.7-4.7h47.3  c2.6,0,4.7,2.1,4.7,4.7V43.3z"/><path class="st0" d="M12.9,27h-1.6c-2.4,0-4.4,1.7-4.4,3.8v4.5c0,2.1,2,3.8,4.4,3.8h1.6V27z"/></svg>`;
 const customMarker = document.createElement('div');
-customMarker.style.backgroundImage = 'url(data:image/png;base64,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)'; // Replace with your icon URL
+customMarker.innerHTML = svgIcon
 customMarker.style.width = '30px';
 customMarker.style.height = '30px';
 customMarker.style.backgroundSize = 'cover';
@@ -200,6 +203,19 @@ const initMap = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber) => 
   });
 };
 
+const getCurrentDateTime = () => {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const year = now.getFullYear();
+  let hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12; // Convert 0 to 12 for 12-hour format
+  return `${day}/${month}/${year} ${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+}
+
 const addMarker = (feed_map, vehicle_ref, long, lat) => {
   if (feed_map_markers.hasOwnProperty(vehicle_ref)) {
     feed_map_markers[vehicle_ref].setLngLat([long, lat])
@@ -235,6 +251,8 @@ const fetchAvlLiveLocation = (apiUrl) => {
       .catch(error => {
           console.log("ERRRORR" + error)
       });
+      var updated_at_text = `Last updated at - ${getCurrentDateTime()}`
+      document.getElementById("map-updated-timestamp").innerText = updated_at_text;
   setTimeout(fetchAvlLiveLocation, 10000, apiUrl);
 }
 
