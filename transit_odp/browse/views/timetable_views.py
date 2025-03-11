@@ -600,7 +600,9 @@ class LineMetadataDetailView(DetailView):
             start_date = (
                 row["valid_from"].date() if not pd.isnull(row["valid_from"]) else today
             )
-            end_date = row["valid_to"] if not pd.isnull(row["valid_to"]) else today
+            end_date = (
+                row["valid_to"].date() if not pd.isnull(row["valid_to"]) else today
+            )
             file_name = row["xml_file_name"]
 
             if end_date >= today >= start_date:
