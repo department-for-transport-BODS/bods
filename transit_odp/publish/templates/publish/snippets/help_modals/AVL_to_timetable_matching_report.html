@@ -1,0 +1,16 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+{% block help_icon %}
+  <i class="help-icon fas fa-question-circle">
+  </i>
+{% endblock %}
+{% block help_heading %}
+  {% trans "AVL to timetable matching report" %}
+{% endblock %}
+{% block help_content %}
+  <p class="govuk-body">
+    {% blocktrans %}
+    The matching report is important for downstream users of real time data. The score will be impacted if the real time data cannot be matched with a single journey from the published timetable data. Operators can share this report with their suppliers to resolve cases where the data has not been matched successfully.
+    {% endblocktrans %}
+  </p>
+{% endblock %}

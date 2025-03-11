@@ -101,6 +101,11 @@ class Service(models.Model):
 
 class UILta(models.Model):
     name = models.TextField(blank=False, null=False, unique=True)
+    total_inscope = models.IntegerField(default=0, blank=True, null=True)
+    overall_sra = models.IntegerField(default=0, blank=True, null=True)
+    timetable_sra = models.IntegerField(default=0, blank=True, null=True)
+    avl_sra = models.IntegerField(default=0, blank=True, null=True)
+    fares_sra = models.IntegerField(default=0, blank=True, null=True)
 
     def __str__(self) -> str:
         return self.name

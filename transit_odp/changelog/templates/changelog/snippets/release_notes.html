@@ -1,4 +1,50 @@
 {% load i18n %}
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "March 2025 (1.44.0)" %}</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Complete service pages to enable key timetable, AVL and fares data for a service to be reviewed for accuracy purposes.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A fix for the way the Refused state is handled for variations for a registration.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      The deactivation of AVL accessibility notification emails which are not required.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A change to the feedback feature which ensures that feedback is supplied with the
+      correct context for either the stop, the journey or the service.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      The integration of the critical Data Quality Service reports with the
+      Services Require Attention reports.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An improvement to the Data Quality Service reports to include the feedback supplied
+      with the required context.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      The addition of the Fares data type to the Services Require Attention reports.
+    {% endblocktrans %}
+  </li>
+</ul>
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "January 2025 (1.43.0)" %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}

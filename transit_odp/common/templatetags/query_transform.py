@@ -56,3 +56,19 @@ def query_chop(context, key_to_chop):
     if key_to_chop in query:
         del query[key_to_chop]
     return "?" + query.urlencode()
+
+
+@register.simple_tag(takes_context=True)
+def remove_query_params(context):
+    """
+    Returns the URL for the current page,
+    after removing the query params.
+
+    E.g: given the url is https://localhost/view?page=1&details=2
+    {% remove_query_params %} outputs https://localhost/view
+
+    """
+
+    url = context["request"].build_absolute_uri()
+    url = url.split("?")[0]
+    return url

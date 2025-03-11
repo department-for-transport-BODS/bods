@@ -1427,7 +1427,7 @@ def test_lta_export_fares_published():
     assert csv_output["row0"][14] == '"Yes"'  # Fares requires attention
     assert csv_output["row0"][15] == '"Unpublished"'  # Fares Published Status
     assert csv_output["row0"][16] == '"Not Stale"'  # Fares Timeliness Status
-    assert csv_output["row0"][17] == '"Non compliant"'  # Fares Compliance Status
+    assert csv_output["row0"][17] == '"No"'  # Fares Compliance Status
     assert csv_output["row0"][24] == '""'  # Fares Data set ID
     assert csv_output["row0"][25] == '""'  # NETEX:Filename
     assert csv_output["row0"][26] == '""'  # NETEX:Last Modified Date
@@ -1439,7 +1439,7 @@ def test_lta_export_fares_published():
     assert csv_output["row1"][14] == '"Yes"'
     assert csv_output["row1"][15] == '"Published"'
     assert csv_output["row1"][16] == '"42 day look ahead is incomplete"'
-    assert csv_output["row1"][17] == '"Compliant"'
+    assert csv_output["row1"][17] == '"Yes"'
     assert csv_output["row1"][26] == '"2025-02-12"'
     assert csv_output["row1"][27] == '"2026-02-12"'
     assert csv_output["row1"][28] == '"2025-01-12"'
@@ -1449,7 +1449,7 @@ def test_lta_export_fares_published():
     assert csv_output["row2"][14] == '"Yes"'
     assert csv_output["row2"][15] == '"Unpublished"'
     assert csv_output["row2"][16] == '"Not Stale"'
-    assert csv_output["row2"][17] == '"Non compliant"'
+    assert csv_output["row2"][17] == '"No"'
     assert csv_output["row2"][26] == '""'
     assert csv_output["row2"][27] == '""'
     assert csv_output["row2"][28] == '""'
@@ -1459,7 +1459,7 @@ def test_lta_export_fares_published():
     assert csv_output["row3"][14] == '"No"'
     assert csv_output["row3"][15] == '"Published"'
     assert csv_output["row3"][16] == '"Not Stale"'
-    assert csv_output["row3"][17] == '"Compliant"'
+    assert csv_output["row3"][17] == '"Yes"'
     assert csv_output["row3"][26] == '"2025-02-12"'
     assert csv_output["row3"][27] == '"2026-02-12"'
     assert csv_output["row3"][28] == '"2099-01-12"'
@@ -1469,7 +1469,7 @@ def test_lta_export_fares_published():
     assert csv_output["row4"][14] == '"Yes"'
     assert csv_output["row4"][15] == '"Published"'
     assert csv_output["row4"][16] == '"Not Stale"'
-    assert csv_output["row4"][17] == '"Non compliant"'
+    assert csv_output["row4"][17] == '"No"'
     assert csv_output["row4"][26] == '"2025-02-12"'
     assert csv_output["row4"][27] == '"2026-02-12"'
     assert csv_output["row4"][28] == '"2099-01-12"'
@@ -1479,7 +1479,7 @@ def test_lta_export_fares_published():
     assert csv_output["row5"][14] == '"Yes"'
     assert csv_output["row5"][15] == '"Published"'
     assert csv_output["row5"][16] == '"Not Stale"'
-    assert csv_output["row5"][17] == '"Non compliant"'
+    assert csv_output["row5"][17] == '"No"'
     assert csv_output["row5"][26] == '"2025-02-12"'
     assert csv_output["row5"][27] == '"2026-02-12"'
     assert csv_output["row5"][28] == '"2099-01-12"'
@@ -1489,7 +1489,7 @@ def test_lta_export_fares_published():
     assert csv_output["row6"][14] == '"Yes"'
     assert csv_output["row6"][15] == '"Published"'
     assert csv_output["row6"][16] == '"42 day look ahead is incomplete"'
-    assert csv_output["row6"][17] == '"Non compliant"'
+    assert csv_output["row6"][17] == '"No"'
     assert csv_output["row6"][26] == '"2025-02-12"'
     assert csv_output["row6"][27] == '"2026-02-12"'
     assert csv_output["row6"][28] == '"2025-01-12"'
@@ -1499,7 +1499,7 @@ def test_lta_export_fares_published():
     assert csv_output["row7"][14] == '"Yes"'
     assert csv_output["row7"][15] == '"Published"'
     assert csv_output["row7"][16] == '"42 day look ahead is incomplete"'
-    assert csv_output["row7"][17] == '"Non compliant"'
+    assert csv_output["row7"][17] == '"No"'
     assert csv_output["row7"][26] == '"2025-02-12"'
     assert csv_output["row7"][27] == '"2026-02-12"'
     assert csv_output["row7"][28] == '"2025-01-12"'
@@ -1509,7 +1509,7 @@ def test_lta_export_fares_published():
     assert csv_output["row8"][14] == '"Yes"'
     assert csv_output["row8"][15] == '"Unpublished"'
     assert csv_output["row8"][16] == '"Not Stale"'
-    assert csv_output["row8"][17] == '"Non compliant"'
+    assert csv_output["row8"][17] == '"No"'
     assert csv_output["row8"][26] == '""'
     assert csv_output["row8"][27] == '""'
     assert csv_output["row8"][28] == '""'

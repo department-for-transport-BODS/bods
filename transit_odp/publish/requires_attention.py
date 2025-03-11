@@ -1,5 +1,5 @@
 import logging
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -13,20 +13,16 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
 )
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.dqs.constants import Level
-from transit_odp.fares.models import DataCatalogueMetaData, FaresMetadata
 from transit_odp.dqs.models import ObservationResults
-
+from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
-from transit_odp.organisation.models.organisations import ConsumerFeedback
+from transit_odp.organisation.models.organisations import ConsumerFeedback, Licence
 from transit_odp.otc.models import Service as OTCService
-from transit_odp.transmodel.models import (
-    Service as TransmodelService,
-    ServicePatternStop,
-)
-from django.db.models import Q
 from transit_odp.publish.constants import FARES_STALENESS_STATUS
+from transit_odp.transmodel.models import Service as TransmodelService
+from transit_odp.transmodel.models import ServicePatternStop
 
 logger = logging.getLogger(__name__)
 
@@ -354,22 +350,14 @@ def _update_data(
     """
     Append data to object_list of services requiring attention.
     """
-    if not line_number:
-        object_list.append(
-            {
-                "licence_number": service.otc_licence_number,
-                "service_code": service.registration_number,
-                "line_number": service.service_number,
-            }
-        )
-    else:
-        object_list.append(
-            {
-                "licence_number": service.otc_licence_number,
-                "service_code": service.registration_number,
-                "line_number": line_number,
-            }
-        )
+
+    object_list.append(
+        {
+            "licence_number": service.otc_licence_number,
+            "service_code": service.registration_number,
+            "line_number": line_number if line_number else service.service_number,
+        }
+    )
 
 
 def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -> tuple:
@@ -482,6 +470,13 @@ def evaluate_fares_staleness(
     forty_two_days_from_today = today + timedelta(days=42)
     twelve_months_from_last_updated = last_updated_date + timedelta(days=365)
 
+    if isinstance(operating_period_end_date, pd.Timestamp):
+        operating_period_end_date = operating_period_end_date.date()
+    if isinstance(last_updated_date, pd.Timestamp):
+        last_updated_date = last_updated_date.date()
+    if isinstance(twelve_months_from_last_updated, pd.Timestamp):
+        twelve_months_from_last_updated = twelve_months_from_last_updated.date()
+
     staleness_42_day_look_ahead = (
         True
         if not pd.isna(operating_period_end_date)
@@ -564,12 +559,11 @@ def get_fares_compliance_status(is_fares_compliant: bool) -> str:
         is_fares_compliant (bool): BODS compliance
 
     Returns:
-        str: Compliant or Non compliant for 'Fares Compliance Status' column
+        str: Yes or No for 'Fares Compliance Status' column
     """
-    if not pd.isna(is_fares_compliant):
-        if is_fares_compliant:
-            return "Compliant"
-    return "Non compliant"
+    if not pd.isna(is_fares_compliant) and is_fares_compliant:
+        return "Yes"
+    return "No"
 
 
 def get_fares_requires_attention(
@@ -581,7 +575,7 @@ def get_fares_requires_attention(
     Returns value for 'Fares requires attention' column based on the following logic:
         If 'Fares Published Status' equal to Published
         AND 'Fares Timeliness Status' equal to Not Stale
-        AND 'Fares Compliance Status' equal to Compliant
+        AND 'Fares Compliance Status' equal to Yes
         then 'Fares requires attention' = No.
         Else
         the 'Fares requires attention' = Yes.
@@ -597,7 +591,7 @@ def get_fares_requires_attention(
     if (
         (fares_published_status == "Published")
         and (fares_timeliness_status == "Not Stale")
-        and (fares_compliance_status == "Compliant")
+        and (fares_compliance_status == "Yes")
     ):
         return "No"
     return "Yes"
@@ -627,16 +621,44 @@ def get_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
         if file_attribute is None:
-            _update_data(object_list, service)
+            _update_data(object_list, service, service_key[1])
         elif is_stale(service, file_attribute) or (
             is_dqs_require_attention
             and service_key in dqs_critical_issues_service_line_map
         ):
-            _update_data(object_list, service)
+            _update_data(object_list, service, service_key[1])
     return object_list
 
 
-def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, str]]:
+def is_avl_requires_attention(
+    noc: str,
+    line_name: str,
+    synced_in_last_month: bool,
+    uncounted_activity_df: pd.DataFrame,
+):
+    """Return True if the avl service requires the attention, otherwise False"""
+
+    if not noc or (
+        not uncounted_activity_df.loc[
+            (uncounted_activity_df["OperatorRef"] == noc)
+            & (
+                uncounted_activity_df["LineRef"].isin(
+                    [line_name, line_name.replace(" ", "_")]
+                )
+            )
+        ].empty
+        or f"{line_name}__{noc}" not in synced_in_last_month
+    ):
+        return True
+
+    return False
+
+
+def get_avl_requires_attention_line_level_data(
+    org_id: int,
+    uncounted_activity_df: pd.DataFrame = None,
+    synced_in_last_month: List = None,
+) -> List[Dict[str, str]]:
     """
     Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
     dictionaries list to determine which OTC Services require attention ie. service has
@@ -649,48 +671,26 @@ def get_avl_requires_attention_line_level_data(org_id: int) -> List[Dict[str, st
     )
     if not is_avl_require_attention_active:
         return []
-    object_list = []
-    dqs_critical_issues_service_line_map = []
     otc_map = get_line_level_in_scope_otc_map(org_id)
     service_codes = [service_code for (service_code, line_name) in otc_map]
     txcfa_map = get_line_level_txc_map_service_base(service_codes)
-    is_dqs_require_attention = flag_is_active(
-        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
-    )
-    if is_dqs_require_attention:
-        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
-            txcfa_map
-        )
 
-    uncounted_activity_df = get_vehicle_activity_operatorref_linename()
-    abods_registry = AbodsRegistery()
-    synced_in_last_month = abods_registry.records()
+    if uncounted_activity_df is None or synced_in_last_month is None:
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        abods_registry = AbodsRegistery()
+        synced_in_last_month = abods_registry.records()
 
+    object_list = []
     for service_key, service in otc_map.items():
         file_attribute = txcfa_map.get(service_key)
-        if file_attribute is not None:
-            operator_ref = file_attribute.national_operator_code
-            line_name = service_key[1]
+        noc = file_attribute.national_operator_code if file_attribute else None
+        line_name = service_key[1]
 
-            if (
-                not uncounted_activity_df.loc[
-                    (uncounted_activity_df["OperatorRef"] == operator_ref)
-                    & (
-                        uncounted_activity_df["LineRef"].isin(
-                            [line_name, line_name.replace(" ", "_")]
-                        )
-                    )
-                ].empty
-                or f"{line_name}__{operator_ref}" not in synced_in_last_month
-            ):
-                _update_data(object_list, service)
-        elif (
-            is_dqs_require_attention
-            and (service_key, service) in dqs_critical_issues_service_line_map
+        if is_avl_requires_attention(
+            noc, line_name, synced_in_last_month, uncounted_activity_df
         ):
-            _update_data(object_list, service)
-        else:
-            _update_data(object_list, service)
+            _update_data(object_list, service, line_name)
+
     logging.info(f"AVL-REQUIRE-ATTENTION: total objects {len(object_list)}")
     return object_list
 
@@ -718,27 +718,19 @@ def get_requires_attention_data_lta(lta_list: List) -> int:
     return lta_services_requiring_attention
 
 
-def get_requires_attention_data_lta_line_level_length(lta_list: List) -> int:
+def get_timetable_records_require_attention_lta_line_level_length(
+    lta_list: List,
+) -> int:
     """
     Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
-    dictionaries list to determine which OTC Services require attention, i.e., those
-    not live in BODS (Bus Open Data Service) at all, or live but meeting new
-    staleness conditions.
+    dictionaries list to determine which OTC Services require attention ie. service has
+    been published for a service or has a matching issue.
 
-    This function identifies services that require attention based on their status in
-    BODS. It compares the OTC services with the TXCFileAttributes and updates a list
-    of services requiring attention if they are not live or are considered stale.
-    The length of this list is returned as the result.
-
-    Args:
-        lta_list (list): A list of Local Authority objects to filter the services.
-
-    Returns:
-        int: The count of services requiring attention.
+    Returns list of objects of each service requiring attention for an organisation.
     """
     object_list = []
     dqs_critical_issues_service_line_map = []
-    lta_services_requiring_attention = 0
+    timetables_lta_services_requiring_attention = 0
     otc_map = get_line_level_otc_map_lta(lta_list)
     txcfa_map = get_line_level_txc_map_lta(lta_list)
     is_dqs_require_attention = flag_is_active(
@@ -758,9 +750,196 @@ def get_requires_attention_data_lta_line_level_length(lta_list: List) -> int:
             in dqs_critical_issues_service_line_map
         ):
             _update_data(object_list, service, line_number=service_number)
-    lta_services_requiring_attention = len(object_list)
+    timetables_lta_services_requiring_attention = len(object_list)
+    return timetables_lta_services_requiring_attention
 
-    return lta_services_requiring_attention
+
+def get_avl_records_require_attention_lta_line_level_objects(
+    lta_list: List,
+    uncounted_activity_df: pd.DataFrame = None,
+    synced_in_last_month: List = None,
+) -> int:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list to determine which OTC Services require attention ie. service has
+    been published for a service or has a matching issue.
+
+    Returns list of objects of each service requiring attention for an organisation.
+    """
+    object_list = []
+    otc_map = get_line_level_otc_map_lta(lta_list)
+    txcfa_map = get_line_level_txc_map_lta(lta_list)
+    if uncounted_activity_df is None or synced_in_last_month is None:
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        abods_registry = AbodsRegistery()
+        synced_in_last_month = abods_registry.records()
+
+    for service_key, service in otc_map.items():
+        file_attribute = txcfa_map.get(service_key)
+        if file_attribute is not None:
+            operator_ref = file_attribute.national_operator_code
+            line_name = service_key[0]
+            if (
+                not uncounted_activity_df.loc[
+                    (uncounted_activity_df["OperatorRef"] == operator_ref)
+                    & (
+                        uncounted_activity_df["LineRef"].isin(
+                            [line_name, line_name.replace(" ", "_")]
+                        )
+                    )
+                ].empty
+                or f"{line_name}__{operator_ref}" not in synced_in_last_month
+            ):
+                _update_data(object_list, service, line_name)
+        else:
+            _update_data(object_list, service, service_key[0])
+    return object_list
+
+
+def get_avl_records_require_attention_lta_line_level_length(
+    lta_list: List,
+    uncounted_activity_df: pd.DataFrame = None,
+    synced_in_last_month: List = None,
+) -> int:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list to determine which OTC Services require attention ie. service has
+    been published for a service or has a matching issue.
+
+    Returns the length of objects.
+    """
+    return len(
+        get_avl_records_require_attention_lta_line_level_objects(
+            lta_list, uncounted_activity_df, synced_in_last_month
+        )
+    )
+
+
+def get_fares_records_require_attention_lta_line_level_objects(lta_list: List) -> List:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list and Fares list to determine which OTC Services require attention, i.e., those
+    not Published in Fares at all  but meeting new staleness conditions.
+
+    This function identifies services that require attention based on their status in
+    BODS. It compares the OTC services with the TXCFileAttributes and Fares and updates a list
+    of services requiring attention if they are not live or are considered stale.
+    The length of this list is returned as the result.
+
+    Args:
+        lta_list (list): A list of Local Authority objects to filter the services.
+
+    Returns:
+        List: The objects of services requiring attention.
+    """
+    object_list = []
+    otc_map = get_line_level_otc_map_lta(lta_list)
+    txcfa_map = get_line_level_txc_map_lta(lta_list)
+    fares_df = get_fares_dataset_map(txcfa_map)
+
+    for service_key, service in otc_map.items():
+
+        file_attribute = txcfa_map.get(service_key)
+        # If no file attribute (TxcFileAttribute), service requires attention
+        if file_attribute is None:
+            _update_data(object_list, service, service_key[0])
+        elif fares_df.empty:
+            _update_data(object_list, service, service_key[0])
+        else:
+            noc = file_attribute.national_operator_code
+            line_name = file_attribute.line_name_unnested
+            df = fares_df[
+                (fares_df.national_operator_code == noc)
+                & (fares_df.line_name == line_name)
+            ]
+            if not df.empty:
+                row = df.iloc[0].to_dict()
+                valid_to = row.get("valid_to", None)
+                last_modified_date = row.get("last_updated_date", "")
+                valid_to = date.today() if pd.isnull(valid_to) else valid_to
+                last_modified_date = (
+                    datetime.now()
+                    if pd.isnull(last_modified_date)
+                    else last_modified_date
+                )
+                if is_fares_stale(valid_to, last_modified_date):
+                    _update_data(object_list, service, line_name)
+    return object_list
+
+
+def get_fares_records_require_attention_lta_line_level_length(lta_list: List) -> int:
+    """
+    Get the count of services require attention for lta
+    Args:
+        lta_list (list): A list of Local Authority objects to filter the services.
+
+    Returns:
+        int: The count of services requiring attention.
+    """
+    return len(get_fares_records_require_attention_lta_line_level_objects(lta_list))
+
+
+def get_requires_attention_data_lta_line_level_objects(lta_list: List) -> List:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list to determine which OTC Services require attention, i.e., those
+    not live in BODS (Bus Open Data Service) at all, or live but meeting new
+    staleness conditions.
+
+    This function identifies services that require attention based on their status in
+    BODS. It compares the OTC services with the TXCFileAttributes and updates a list
+    of services requiring attention if they are not live or are considered stale.
+    The length of this list is returned as the result.
+
+    Args:
+        lta_list (list): A list of Local Authority objects to filter the services.
+
+    Returns:
+        List: The objects of services requiring attention.
+    """
+    object_list = []
+    dqs_critical_issues_service_line_map = []
+    otc_map = get_line_level_otc_map_lta(lta_list)
+    txcfa_map = get_line_level_txc_map_lta(lta_list)
+    is_dqs_require_attention = flag_is_active(
+        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+    )
+    if is_dqs_require_attention:
+        dqs_critical_issues_service_line_map = get_dq_critical_observation_services_map(
+            txcfa_map
+        )
+    for (service_number, registration_number), service in otc_map.items():
+        file_attribute = txcfa_map.get((service_number, registration_number))
+        if file_attribute is None:
+            _update_data(object_list, service, line_number=service_number)
+        elif is_stale(service, file_attribute) or (
+            is_dqs_require_attention
+            and (registration_number, service_number)
+            in dqs_critical_issues_service_line_map
+        ):
+            _update_data(object_list, service, line_number=service_number)
+    return object_list
+
+
+def get_requires_attention_data_lta_line_level_length(lta_list: List) -> int:
+    """
+    Compares an organisation's OTC Services dictionaries list with TXCFileAttributes
+    dictionaries list to determine which OTC Services require attention, i.e., those
+    not live in BODS (Bus Open Data Service) at all, or live but meeting new
+    staleness conditions.
+
+    This function identifies services that require attention based on their status in
+    BODS. It compares the OTC services with the TXCFileAttributes and updates a list
+    of services requiring attention if they are not live or are considered stale.
+    The length of this list is returned as the result.
+
+    Args:
+        lta_list (list): A list of Local Authority objects to filter the services.
+
+    Returns:
+        int: The count of services requiring attention.
+    """
+    return len(get_requires_attention_data_lta_line_level_objects(lta_list))
 
 
 def get_dq_critical_observation_services_map(
@@ -807,13 +986,19 @@ def query_dq_critical_observation(query) -> List[tuple]:
     Dataframe approch in order to acheive the desired values. Following steps will
     be followed
 
-    1. Get dataframe to get service_patter_ids for the given query of registration number, line name, revision id
-    2. Get dataframe by querying servicepatternstops table from the service_pattern_ids extracted in step 1
-    3. Merge the dataframe built on step 1 and step 2 with left join (To prevent any service.id loss)
-    4. Get the observations with ciritical type and merge the selected stop points with the Step 3 dataframe
-    5. Now to get consumer feedback use the service_ids extracted on Step 1 df and search for feedbacks which are not suppressed
+    1. Get dataframe to get service_patter_ids for the given query of registration number,
+        line name, revision id
+    2. Get dataframe by querying servicepatternstops table from the service_pattern_ids extracted
+        in step 1
+    3. Merge the dataframe built on step 1 and step 2 with left join
+        (To prevent any service.id loss)
+    4. Get the observations with ciritical type and merge the selected stop points with the
+        Step 3 dataframe
+    5. Now to get consumer feedback use the service_ids extracted on Step 1 df and search for
+        feedbacks which are not suppressed
     6. Merge the dataframe of consumer feedbacks with main dataframe
-    7. Return the registration number and line name for which any value (Observation with ciritical or Consumer feedback) is present
+    7. Return the registration number and line name for which any value (Observation with ciritical
+        or Consumer feedback) is present
 
     Returns:
         dict[tuple, str]: return a list of services"""
@@ -835,25 +1020,9 @@ def query_dq_critical_observation(query) -> List[tuple]:
     )
     dqs_require_attention_df.rename(columns={"_merge": "dqs_critical"}, inplace=True)
 
-    is_specific_feedback = flag_is_active("", "is_specific_feedback")
-    if is_specific_feedback:
-        consumer_feedback_df = get_consumer_feedback_df(service_pattern_ids_df)
-
-        dqs_require_attention_df = dqs_require_attention_df.merge(
-            consumer_feedback_df, on=["service_id"], how="left", indicator=True
-        )
-        dqs_require_attention_df.rename(
-            columns={"_merge": "has_feedback"}, inplace=True
-        )
-
-        dqs_require_attention_df = dqs_require_attention_df[
-            (dqs_require_attention_df["dqs_critical"] == "both")
-            | (dqs_require_attention_df["has_feedback"] == "both")
-        ]
-    else:
-        dqs_require_attention_df = dqs_require_attention_df[
-            dqs_require_attention_df["dqs_critical"] == "both"
-        ]
+    dqs_require_attention_df = dqs_require_attention_df[
+        dqs_require_attention_df["dqs_critical"] == "both"
+    ]
 
     dqs_require_attention_df = dqs_require_attention_df[["service_code", "line_name"]]
 
@@ -896,7 +1065,6 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
     nocs_list = []
     noc_linename_dict = []
     for _, file_attribute in txc_map.items():
-
         nocs_list.append(file_attribute.national_operator_code)
         noc_linename_dict.append(
             {
@@ -904,18 +1072,17 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
                 "line_name": file_attribute.line_name_unnested,
             }
         )
-
     noc_df = pd.DataFrame.from_dict(noc_linename_dict)
     noc_df.drop_duplicates(inplace=True)
     nocs_list = list(set(nocs_list))
-
-    fares_df = pd.DataFrame.from_records(
+    qs = (
         DataCatalogueMetaData.objects.filter(national_operator_code__overlap=nocs_list)
         .add_revision_and_dataset()
         .get_live_revision_data()
         .exclude(fares_metadata_id__revision__status=INACTIVE)
         .add_published_date()
         .add_compliance_status()
+        .add_operator_id()
         .values(
             "xml_file_name",
             "valid_from",
@@ -927,11 +1094,15 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
             "last_updated_date",
             "is_fares_compliant",
             "dataset_id",
+            "tariff_basis",
+            "product_name",
+            "operator_id",
         )
     )
+    fares_df = pd.DataFrame.from_records(qs)
 
     if fares_df.empty:
-        return pd.DataFrame()
+        return pd.DataFrame(columns=["national_operator_code", "line_name"])
 
     fares_df = fares_df.explode("line_id")
     fares_df = fares_df.explode("national_operator_code")
@@ -978,6 +1149,38 @@ class FaresRequiresAttention:
     def __init__(self, org_id):
         self._org_id = org_id
 
+    def is_fares_requires_attention(
+        self, txc_file: TXCFileAttributes, fares_df: pd.DataFrame
+    ):
+        """
+        Return True if the fares requires attention, otherwise False
+        """
+
+        if txc_file is None:
+            return True
+
+        if fares_df.empty:
+            return True
+
+        noc = txc_file.national_operator_code
+        line_name = txc_file.line_name_unnested
+        df = fares_df[
+            (fares_df.national_operator_code == noc) & (fares_df.line_name == line_name)
+        ]
+
+        if not df.empty:
+            row = df.iloc[0].to_dict()
+            valid_to = row.get("valid_to", None)
+            last_modified_date = row.get("last_updated_date", "")
+            valid_to = date.today() if pd.isnull(valid_to) else valid_to
+            last_modified_date = (
+                date.today() if pd.isnull(last_modified_date) else last_modified_date
+            )
+            if is_fares_stale(valid_to, last_modified_date):
+                return True
+
+        return False
+
     def get_fares_requires_attention_line_level_data(self) -> List[Dict[str, str]]:
         """
         Compares an organisation's OTC Services dictionaries list with Fares Catalogue
@@ -994,33 +1197,10 @@ class FaresRequiresAttention:
         fares_df = get_fares_dataset_map(txcfa_map)
 
         for service_key, service in otc_map.items():
+            txc_file = txcfa_map.get(service_key)
+            if self.is_fares_requires_attention(txc_file, fares_df):
+                _update_data(object_list, service, service_key[1])
 
-            file_attribute = txcfa_map.get(service_key)
-            # If no file attribute (TxcFileAttribute), service requires attention
-            if file_attribute is None:
-                _update_data(object_list, service)
-            elif fares_df.empty:
-                _update_data(object_list, service)
-            else:
-                noc = file_attribute.national_operator_code
-                line_name = file_attribute.line_name_unnested
-                df = fares_df[
-                    (fares_df.national_operator_code == noc)
-                    & (fares_df.line_name == line_name)
-                ]
-
-                if not df.empty:
-                    row = df.iloc[0].to_dict()
-                    valid_to = row.get("valid_to", None)
-                    last_modified_date = row.get("last_updated_date", "")
-                    valid_to = date.today() if pd.isnull(valid_to) else valid_to
-                    last_modified_date = (
-                        datetime.now()
-                        if pd.isnull(last_modified_date)
-                        else last_modified_date
-                    )
-                    if is_fares_stale(valid_to, last_modified_date):
-                        _update_data(object_list, service)
         return object_list
 
 
@@ -1127,3 +1307,11 @@ def get_consumer_feedback_df(service_pattern_ids_df: pd.DataFrame) -> pd.DataFra
     if consumer_feedback_df.empty:
         consumer_feedback_df = pd.DataFrame(columns=["service_id"])
     return consumer_feedback_df
+
+
+def get_licence_organisation_map(licence_list: list) -> dict:
+    licence_organisation_name_map = dict()
+    licence_qs = Licence.objects.filter(number__in=licence_list)
+    for record in licence_qs:
+        licence_organisation_name_map[record.number] = record.organisation.name
+    return licence_organisation_name_map
