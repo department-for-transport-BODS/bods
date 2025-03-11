@@ -553,17 +553,17 @@ class LineMetadataDetailView(DetailView):
         abods_registry = AbodsRegistery()
         synced_in_last_month = abods_registry.records()
 
-        is_avl_complaint = True
+        is_avl_compliant = True
         for file in txc_file_attributes:
             noc = file.national_operator_code
-            if is_avl_complaint:
-                is_avl_complaint = not is_avl_requires_attention(
+            if is_avl_compliant:
+                is_avl_compliant = not is_avl_requires_attention(
                     noc, line_name, synced_in_last_month, uncounted_activity_df
                 )
             else:
                 break
 
-        return {"is_avl_complaint": is_avl_complaint}
+        return {"is_avl_compliant": is_avl_compliant}
 
     def get_fares_data(
         self,
@@ -577,10 +577,10 @@ class LineMetadataDetailView(DetailView):
         fares_df = get_fares_dataset_map(txc_map)
 
         fra = FaresRequiresAttention(None)
-        is_fares_complaint = True
+        is_fares_compliant = True
         for txc_file in txc_file_attributes:
-            if is_fares_complaint:
-                is_fares_complaint = not fra.is_fares_requires_attention(
+            if is_fares_compliant:
+                is_fares_compliant = not fra.is_fares_requires_attention(
                     txc_file, fares_df
                 )
             else:
@@ -619,7 +619,7 @@ class LineMetadataDetailView(DetailView):
                 )
 
         return {
-            "is_fares_complaint": is_fares_complaint,
+            "is_fares_compliant": is_fares_compliant,
             "fares_dataset_id": dataset_id,
             "fares_tariff_basis": tariff_basis,
             "fares_products": product_name,
@@ -717,7 +717,7 @@ class LineMetadataDetailView(DetailView):
                 is_timetable_compliant = True
 
         return {
-            "is_timetables_complaint": is_timetable_compliant,
+            "is_timetable_compliant": is_timetable_compliant,
             "timetables_dataset_id": dataset_id,
             "timetables_valid_files": current_valid_files,
             "timetables_future_dated_files": future_files,
@@ -847,7 +847,10 @@ class LineMetadataDetailView(DetailView):
 
         kwargs = super().get_context_data(**kwargs)
         dataset = self.object
-        live_revision = dataset.live_revision
+        if dataset:
+            live_revision = dataset.live_revision
+        else:
+            live_revision = None
         kwargs["pk"] = dataset.id if dataset else None
         kwargs["service_inscope"] = self.service_inscope
 

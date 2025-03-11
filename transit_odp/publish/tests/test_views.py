@@ -1172,7 +1172,7 @@ class TestPublishView:
     def test_feedback_counter(self, client_factory):
         host = PUBLISH_HOST
         client = client_factory(host=host)
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
 
         org = OrganisationFactory.create()
         user = UserFactory(

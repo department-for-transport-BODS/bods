@@ -42,6 +42,7 @@ from transit_odp.organisation.models.data import (
     ServiceCodeExemption,
     TXCFileAttributes,
 )
+from transit_odp.otc.models import Service
 from transit_odp.publish.requires_attention import (
     FaresRequiresAttention,
     evaluate_staleness,
@@ -343,11 +344,13 @@ class LicenceDetailView(BaseDetailView):
             if service_txc_file:
                 self.service_txc_file = service_txc_file
                 self.operator_ref = self.service_txc_file.national_operator_code
+                self.service_number = service.get("service_number")
                 service["dataset_id"] = service_txc_file.revision.dataset_id
             else:
                 self.service_txc_file = None
                 self.operator_ref = None
                 service["dataset_id"] = None
+                self.service_number = None
             is_in_scope = self.is_service_in_scope()
             service["is_in_scope"] = is_in_scope
 
@@ -423,7 +426,15 @@ class LicenceDetailView(BaseDetailView):
         if not self.service_txc_file:
             return False
 
-        rad = evaluate_staleness(self.service, self.service_txc_file)
+        service_obj = Service(self.service)
+        service_obj.association_date_otc_effective_date = self.service.get(
+            "association_date_otc_effective_date"
+        )
+        service_obj.effective_stale_date_otc_effective_date = self.service.get(
+            "effective_stale_date_otc_effective_date"
+        )
+
+        rad = evaluate_staleness(service_obj, self.service_txc_file)
         staleness_status = STALENESS_STATUS[rad.index(True)]
         if not self.is_dqs_compliant() or staleness_status != "Up to date":
             return False

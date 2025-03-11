@@ -142,7 +142,7 @@ def send_endpoint_validation_error_notification(dataset, task_name):
 
     if task_name == "dataset_validate":
         report_link = revision.report_url
-    elif task_name == "post_schema_dataset_validate":
+    elif task_name == "task_post_schema_check":
         report_link = revision.post_schema_report_url
 
     if dataset.contact.is_agent_user:
