@@ -9,16 +9,6 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_410_GO
 
 from transit_odp.api.views.avl import _get_consumer_api_response, _get_gtfs_rt_response
 
-import pytest
-from waffle.testutils import override_flag
-
-
-@pytest.fixture(autouse=True)
-def mock_avl_consumer_sub_flag():
-    with override_flag("is_avl_consumer_subs_active", active=True):
-        yield
-
-
 def get_error_element():
     """Get a standard error response element."""
     error_element = Element("response")

@@ -49,7 +49,6 @@ class AVLApiServiceView(LoginRequiredMixin, TemplateView):
 
 
 class AVLOpenApiView(LoginRequiredMixin, TemplateView):
-    is_avl_consumer_subs_active = flag_is_active("", "is_avl_consumer_subs_active")
     template_name = "swagger_ui/avl.html"
 
     def get_context_data(self, **kwargs):
