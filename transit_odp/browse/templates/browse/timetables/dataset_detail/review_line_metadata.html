@@ -222,8 +222,11 @@
         {% if is_timetable_visualiser_active %}
             BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");
         {% endif %}
-
         const apiUrl = "{% url 'avldetaildatafeedapirealtime' %}";
+        const line_name = "{{line_name}}";
+        const noc = "{{national_operator_code}}"
+        const journey_code = "{{vehicle_journey_codes}}"
+        
         BODSFrontend.fetchAvlLiveLocation(apiUrl);
   </script>
 {% endblock %}

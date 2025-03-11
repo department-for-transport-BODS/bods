@@ -675,6 +675,7 @@ class LineMetadataDetailView(DetailView):
                         file_name,
                     )
                 )
+
             national_operator_code.add(file.national_operator_code)
             if start_date > today:
                 future_files.append(
@@ -717,6 +718,7 @@ class LineMetadataDetailView(DetailView):
             ):
                 is_timetable_compliant = True
 
+        national_operator_code = list(national_operator_code)
         return {
             "is_timetables_complaint": is_timetable_compliant,
             "timetables_dataset_id": dataset_id,
@@ -766,6 +768,10 @@ class LineMetadataDetailView(DetailView):
             True,
         ).get_timetable_visualiser()
 
+        vehicle_journey_codes = (
+            timetable_inbound_outbound['outbound']['df_timetable']['vehicle_journey_code'].tolist() +
+            timetable_inbound_outbound['inbound']['df_timetable']['vehicle_journey_code'].tolist()
+        )
         is_timetable_info_available = False
         timetable = {}
         for direction in ["outbound", "inbound"]:
@@ -796,6 +802,7 @@ class LineMetadataDetailView(DetailView):
             "curr_date": date,
             "timetable": timetable,
             "is_timetable_info_available": is_timetable_info_available,
+            "vehicle_journey_codes": vehicle_journey_codes,
         }
 
     def get_service_type_data(
