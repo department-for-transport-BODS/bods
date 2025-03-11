@@ -307,7 +307,7 @@ def get_valid_files(revision_id, valid_files, service_code, line_name):
         )
 
 
-def get_vehicle_activity_dict(vehicle_activities_list) -> dict:
+def get_vehicle_activity_dict(vehicle_activities_list: list, tt_journey_codes: list) -> dict:
     """
     Get Vehicle Activity dictionary with VehicleRef as the key. 
     This function keeps the latest VehicleRef based on the RecordedAtTime property 
@@ -334,6 +334,10 @@ def get_vehicle_activity_dict(vehicle_activities_list) -> dict:
         operator_ref = monitored_vehicle_journey.operator_ref
         longitude = monitored_vehicle_journey.vehicle_location.longitude
         latitude = monitored_vehicle_journey.vehicle_location.latitude
+        vehicle_journey_code = monitored_vehicle_journey.framed_vehicle_journey_ref.dated_vehicle_journey_ref
+        
+        if vehicle_journey_code not in tt_journey_codes:
+            continue 
 
         time_diff = current_time - recorded_at_time
         if time_diff <= timedelta(minutes=10):
@@ -344,6 +348,7 @@ def get_vehicle_activity_dict(vehicle_activities_list) -> dict:
                     "OperatorRef": operator_ref,
                     "Longitude": longitude,
                     "Latitude": latitude,
+                    "VehicleJourneyCode": vehicle_journey_code,
                 }
             else:
                 current_latest_time = vehicle_dict[vehicle_ref]["RecordedAtTime"]
@@ -354,6 +359,7 @@ def get_vehicle_activity_dict(vehicle_activities_list) -> dict:
                         "OperatorRef": operator_ref,
                         "Longitude": longitude,
                         "Latitude": latitude,
+                        "VehicleJourneyCode": vehicle_journey_code,
                     }
 
     return vehicle_dict

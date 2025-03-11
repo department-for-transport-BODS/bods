@@ -216,13 +216,15 @@ const getCurrentDateTime = () => {
   return `${day}/${month}/${year} ${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
 }
 
-const addMarker = (feed_map, vehicle_ref, long, lat) => {
+const addMarker = (feed_map, vehicle_ref, long, lat, vehicle_journey_code) => {
   if (feed_map_markers.hasOwnProperty(vehicle_ref)) {
     feed_map_markers[vehicle_ref].setLngLat([long, lat])
   } else {
     feed_map_markers[vehicle_ref] = new mapboxgl.Marker(customMarker.cloneNode(true))
       .setLngLat([long, lat]) // Longitude, Latitude
-      .setPopup(new mapboxgl.Popup().setHTML(`<h3>Vehicle Ref: ${vehicle_ref}</h3>`))
+      .setPopup(new mapboxgl.Popup().setHTML(`<h3>Vehicle Ref: ${vehicle_ref}</h3>
+        <p>Vehicle Journey Code: ${vehicle_journey_code}</p>
+        `))
       .addTo(feed_map);
     }
 }
@@ -243,7 +245,7 @@ const fetchAvlLiveLocation = (apiUrl) => {
       .then(data => {
         for (const key in data) {
           if (data.hasOwnProperty(key)) {
-              addMarker(feed_map, key, data[key].Longitude, data[key].Latitude)
+              addMarker(feed_map, key, data[key].Longitude, data[key].Latitude, data[key].VehicleJourneyCode)
           }
         }
         removeExtraVehicleMarkers(data)

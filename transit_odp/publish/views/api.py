@@ -93,7 +93,7 @@ class AVLRealTimeDataView(APIView):
         url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm"
        
         params = request.query_params.copy()
-        journey_codes = params.pop("journey_code", None)
+        tt_journey_codes = params.pop("journey_code", None)
         
         content, status_code = _get_consumer_api_response(url, params)
         """APIView for returning mock JSON response."""
@@ -102,6 +102,6 @@ class AVLRealTimeDataView(APIView):
         service_delivery = siri.service_delivery
         vehicle_activities = service_delivery.vehicle_monitoring_delivery.vehicle_activities
 
-        vehicle_activity_dict = get_vehicle_activity_dict(vehicle_activities)
+        vehicle_activity_dict = get_vehicle_activity_dict(vehicle_activities, tt_journey_codes)
         # Return the mock response as JSON
         return Response(vehicle_activity_dict, status=200)
