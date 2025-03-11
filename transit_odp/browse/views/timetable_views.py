@@ -771,10 +771,6 @@ class LineMetadataDetailView(DetailView):
         ).get_timetable_visualiser()
 
         vehicle_journey_codes= []
-        if not timetable_inbound_outbound['outbound']['df_timetable'].empty:
-            vehicle_journey_codes += timetable_inbound_outbound['outbound']['df_timetable']['vehicle_journey_code'].tolist()
-        if not timetable_inbound_outbound['inbound']['df_timetable'].empty:
-            vehicle_journey_codes += timetable_inbound_outbound['inbound']['df_timetable']['vehicle_journey_code'].tolist()
 
         is_timetable_info_available = False
         timetable = {}
