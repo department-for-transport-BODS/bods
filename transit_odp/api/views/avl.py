@@ -15,6 +15,7 @@ from transit_odp.avl.forms import (
     AvlSubscriptionsSubscribeForm,
     AvlSubscriptionsUnsubscribeForm,
 )
+from django.http import HttpResponse
 from waffle import flag_is_active
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
@@ -39,9 +40,24 @@ BODS_USER_API_KEY_PROPERTY = "api_key"
 class AVLApiServiceView(LoginRequiredMixin, TemplateView):
     template_name = "api/avl_api_service.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_avl_consumer_subs_active"] = flag_is_active(
+            "", "is_avl_consumer_subs_active"
+        )
+        return context
+
 
 class AVLOpenApiView(LoginRequiredMixin, TemplateView):
+    is_avl_consumer_subs_active = flag_is_active("", "is_avl_consumer_subs_active")
     template_name = "swagger_ui/avl.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_avl_consumer_subs_active"] = flag_is_active(
+            "", "is_avl_consumer_subs_active"
+        )
+        return context
 
 
 def _format_query_params(query_params):
@@ -85,6 +101,13 @@ def _format_query_params(query_params):
 class AVLManageSubscriptionsView(LoginRequiredMixin, TemplateView):
     template_name = "api/avl_subscriptions_manage.html"
     cavl_subscription_service = CAVLSubscriptionService()
+
+    def get(self, request, *args, **kwargs):
+        """Check whether AVL Consumer Subscriptions feature flag is active before rendering page."""
+        is_avl_consumer_subs_active = flag_is_active("", "is_avl_consumer_subs_active")
+        if is_avl_consumer_subs_active is False:
+            return HttpResponse(status=404)
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -259,6 +282,13 @@ class AVLSubscriptionsSubscribeView(LoginRequiredMixin, FormView):
     template_name = "api/avl_subscriptions_subscribe.html"
     form_class = AvlSubscriptionsSubscribeForm
     cavl_subscription_service = CAVLSubscriptionService()
+
+    def get(self, request, *args, **kwargs):
+        """Check whether AVL Consumer Subscriptions feature flag is active before rendering page."""
+        is_avl_consumer_subs_active = flag_is_active("", "is_avl_consumer_subs_active")
+        if is_avl_consumer_subs_active is False:
+            return HttpResponse(status=404)
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
