@@ -305,3 +305,41 @@ def get_valid_files(revision_id, valid_files, service_code, line_name):
         return get_single_booking_arrangements_file(
             booking_arrangements_qs.revision_id, [service_code]
         )
+
+
+def get_vehicle_activity_dict(vehicle_activities_list) -> dict :
+    """
+    Get Vehicle Activity dictionary with VehicleRef as the key. Keeps the latest VehicleRef based on
+    RecordedAtTime property.
+    """
+    vehicle_dict = {}
+
+    for vehicle_activity in vehicle_activities_list:
+        monitored_vehicle_journey = vehicle_activity.monitored_vehicle_journey
+        vehicle_ref = monitored_vehicle_journey.vehicle_ref
+        recorded_at_time = vehicle_activity.recorded_at_time
+        line_ref = monitored_vehicle_journey.line_ref
+        operator_ref = monitored_vehicle_journey.operator_ref
+        longitude = monitored_vehicle_journey.vehicle_location.longitude
+        latitude = monitored_vehicle_journey.vehicle_location.latitude
+
+        if vehicle_ref not in vehicle_dict:
+            vehicle_dict[vehicle_ref] = {
+                "RecordedAtTime": recorded_at_time,
+                "LineRef": line_ref,
+                "OperatorRef": operator_ref,
+                "Longitude": longitude,
+                "Latitude": latitude,
+            }
+        else:
+            current_latest_time = vehicle_dict[vehicle_ref]["RecordedAtTime"]
+            if recorded_at_time > current_latest_time:
+                vehicle_dict[vehicle_ref] = {
+                    "RecordedAtTime": recorded_at_time,
+                    "LineRef": line_ref,
+                    "OperatorRef": operator_ref,
+                    "Longitude": longitude,
+                    "Latitude": latitude,
+                }
+    return vehicle_dict
+ 

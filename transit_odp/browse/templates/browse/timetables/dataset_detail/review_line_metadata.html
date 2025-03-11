@@ -60,6 +60,7 @@
             <th scope="row" class="govuk-table__header">{% trans "Registration Number" %}</th>
             <td class="govuk-table__cell dont-break-out" colspan="2">
               {{ service_code }}
+
               {% if service_inscope == False %}
                 <span class="govuk-tag govuk-tag--red govuk-!-font-size-16 govuk-!-text-align-centre">Out of Scope</span>
               {% endif %}

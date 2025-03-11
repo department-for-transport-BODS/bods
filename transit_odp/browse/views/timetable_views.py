@@ -652,6 +652,7 @@ class LineMetadataDetailView(DetailView):
         current_valid_files = []
         future_files = []
         expired_files = []
+        national_operator_code=set()
 
         for file in file_attributes:
             start_date = (
@@ -663,7 +664,7 @@ class LineMetadataDetailView(DetailView):
                 file.operating_period_end_date
                 if file.operating_period_end_date
                 else today
-            )
+            ) 
             file_name = file.filename
 
             if end_date >= today >= start_date:
@@ -674,7 +675,7 @@ class LineMetadataDetailView(DetailView):
                         file_name,
                     )
                 )
-
+            national_operator_code.add(file.national_operator_code)
             if start_date > today:
                 future_files.append(
                     self.get_file_object(
@@ -722,6 +723,7 @@ class LineMetadataDetailView(DetailView):
             "timetables_valid_files": current_valid_files,
             "timetables_future_dated_files": future_files,
             "timetables_expired_files": expired_files,
+            "national_operator_code": national_operator_code,
         }
 
     def get_otc_service(self):
