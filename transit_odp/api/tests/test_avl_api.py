@@ -9,6 +9,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_410_GO
 
 from transit_odp.api.views.avl import _get_consumer_api_response, _get_gtfs_rt_response
 
+
 def get_error_element():
     """Get a standard error response element."""
     error_element = Element("response")
