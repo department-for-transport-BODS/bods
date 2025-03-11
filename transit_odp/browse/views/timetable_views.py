@@ -710,11 +710,9 @@ class LineMetadataDetailView(DetailView):
         txc_file = txcfa_map.get((service_code, self.line))
         is_timetable_compliant = False
         if self.service and txc_file:
-            
 
-            if (
-                len(dqs_critical_issues_service_line_map) == 0
-                and not is_stale(self.service, txc_file)
+            if len(dqs_critical_issues_service_line_map) == 0 and not is_stale(
+                self.service, txc_file
             ):
                 is_timetable_compliant = True
 
