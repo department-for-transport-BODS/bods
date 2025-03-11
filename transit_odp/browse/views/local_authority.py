@@ -51,9 +51,6 @@ from transit_odp.publish.requires_attention import (
     get_requires_attention_data_lta_line_level_objects,
     get_txc_map_lta,
     is_stale,
-    get_timetable_records_require_attention_lta_line_level_length,
-    get_avl_records_require_attention_lta_line_level_length,
-    get_fares_records_require_attention_lta_line_level_length,
     get_licence_organisation_map,
 )
 
