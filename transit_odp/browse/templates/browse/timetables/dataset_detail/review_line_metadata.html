@@ -43,7 +43,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% if licence_page %}
-        <h1 class="govuk-heading-xl app-!-mb-4 dont-break-out govuk-!-margin-bottom-2">
+        <h1 class="govuk-heading-xl app-!-mb-4 dont-break-out govuk-!-margin-bottom-5">
           {{ line_name }}
           {% if service_inscope == False %}
             <span class="govuk-tag govuk-tag--red govuk-!-margin-left-2 govuk-!-text-align-centre">Out of Scope</span>
@@ -52,14 +52,14 @@
               Compliant
             </span>
           {% else %}
-            <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
-              Non-Compliant
+            <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+              Not Compliant
             </span>
           {% endif %}
         </h1>
         <ul class="govuk-list">
           <li>
-            <a class="govuk-link" href={% url 'compliance-report' pk1=fares_org_id host hosts.publish %}>
+            <a class="govuk-link" href="{% url 'compliance-report' pk1=organisation.id host hosts.publish %}">
               {% filter force_escape %}
                 {% trans "Download compliance report" %}
               {% endfilter %}
@@ -136,7 +136,7 @@
                     {% if is_avl_compliant %}
                       Compliant
                     {% else %}
-                      Non-Compliant
+                      Not Compliant
                     {% endif %}
                   </span>
                 </td>
@@ -154,27 +154,39 @@
                   <h2 class="govuk-heading-m">{% trans "Fares" %}</h2>
                 </th>
                 <td class="govuk-table__cell dont-break-out" colspan="2">
-                  <span class="govuk-tag {% if is_fares_compliant %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+                  <span class="govuk-tag {% if is_fares_compliant %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre govuk-!-margin-right-2">
                     {% if is_fares_compliant %}
                       Compliant
                     {% else %}
-                      Non-Compliant
+                      Not Compliant
                     {% endif %}
                   </span>
                   {% if fares_dataset_id %}
                     <a href="{% url 'fares-feed-detail' pk=fares_dataset_id host hosts.data %}" target="_blank">Dataset ID: {{ fares_dataset_id }}</a>
                   {% else %}
-                    <span class="govuk-tag govuk-tag--red govuk-!-font-size-16 govuk-!-text-align-centre">Unpublished</span>
+                    <span class="govuk-tag govuk-tag--red govuk-!-font-size-16 govuk-!-text-align-centre govuk-!-margin-right-2">Unpublished</span>
                   {% endif %}
                 </td>
               </tr>
               <tr class="govuk-table__row">
                 <th scope="row" class="govuk-table__header govuk-!-width-one-half">{% trans "Tariff basis" %}</th>
-                <td class="govuk-table__cell dont-break-out" colspan="2">{{ fares_tariff_basis | join:', ' }}</td>
+                <td class="govuk-table__cell dont-break-out" colspan="2">
+                  {% if fares_tariff_basis %}
+                    {{ fares_tariff_basis | join:', ' }}
+                  {% else %}
+                    {% trans "N/A" %}
+                  {% endif %}
+                </td>
               </tr>
               <tr class="govuk-table__row">
                 <th scope="row" class="govuk-table__header">{% trans "Products" %}</th>
-                <td class="govuk-table__cell dont-break-out" colspan="2">{{ fares_products|join:', ' }}</td>
+                <td class="govuk-table__cell dont-break-out" colspan="2">
+                  {% if fares_products %}
+                    {{ fares_products|join:', ' }}
+                  {% else %}
+                    {% trans "N/A" %}
+                  {% endif %}
+                </td>
               </tr>
               {% include 'publish/snippets/dataset_detail_files.html' with header_text='Current valid file(s)' files=fares_valid_files %}
               {% include 'publish/snippets/dataset_detail_files.html' with header_text='Future dated file(s)' files=fares_future_dated_files %}
@@ -192,17 +204,17 @@
                   <h2 class="govuk-heading-m">{% trans "Timetable" %}</h2>
                 </th>
                 <td class="govuk-table__cell dont-break-out" colspan="2">
-                  <span class="govuk-tag {% if is_timetables_compliant %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+                  <span class="govuk-tag {% if is_timetables_compliant %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre govuk-!-margin-right-2">
                     {% if is_timetables_compliant %}
                       Compliant
                     {% else %}
-                      Non-Compliant
+                      Not Compliant
                     {% endif %}
                   </span>
                   {% if object.id %}
                     <a href="{% url 'feed-detail' pk=object.id host host.name %}" target="_blank">Dataset ID: {{ timetables_dataset_id }}</a>
                   {% else %}
-                    <span class="govuk-tag govuk-tag--red govuk-!-font-size-16 govuk-!-text-align-centre">Unpublished</span>
+                    <span class="govuk-tag govuk-tag--red govuk-!-font-size-16 govuk-!-text-align-centre govuk-!-margin-right-2">Unpublished</span>
                   {% endif %}
                 </td>
               </tr>
