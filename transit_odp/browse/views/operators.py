@@ -312,7 +312,6 @@ class LicenceDetailView(BaseDetailView):
         organisation_licence = self.get_object()
         context["pk"] = organisation_licence.id
         context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-
         self.otc_map, self.txc_map = otc_map_txc_map_from_licence(licence_number)
         self.uncounted_activity_df = get_vehicle_activity_operatorref_linename()
         self.dq_critical_observation_map = get_dq_critical_observation_services_map(
