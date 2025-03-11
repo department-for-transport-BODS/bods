@@ -50,6 +50,7 @@
       <div class="govuk-!-margin-top-5">
         <h2 class="govuk-heading-l">Review Service Numbers</h2>
         <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
+          {% if licence_services %}
           {% for service in licence_services %}
             <p class="govuk-body govuk-!-padding-bottom-2 border-bottom-custom">
               <a class="govuk-link"
@@ -59,6 +60,9 @@
               </span>
             </p>
           {% endfor %}
+          {% else %}
+            <span>No Services Available</span>
+          {% endif %}
         </div>
       </div>
     </div>
