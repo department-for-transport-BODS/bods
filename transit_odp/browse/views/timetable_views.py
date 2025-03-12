@@ -77,7 +77,6 @@ from transit_odp.publish.requires_attention import (
     get_fares_dataset_map,
     get_line_level_txc_map_service_base,
     is_avl_requires_attention,
-    is_stale,
 )
 from transit_odp.site_admin.models import ResourceRequestCounter
 from transit_odp.timetables.tables import TimetableChangelogTable
@@ -712,9 +711,12 @@ class LineMetadataDetailView(DetailView):
         txc_file = txcfa_map.get((service_code, self.line))
         is_timetable_compliant = False
         if self.service and txc_file:
+            rad = evaluate_staleness(self.service, txc_file)
+            staleness_status = STALENESS_STATUS[rad.index(True)]
 
-            if len(dqs_critical_issues_service_line_map) == 0 and not is_stale(
-                self.service, txc_file
+            if (
+                len(dqs_critical_issues_service_line_map) == 0
+                and staleness_status == "Up to date"
             ):
                 is_timetable_compliant = True
 
@@ -767,9 +769,6 @@ class LineMetadataDetailView(DetailView):
             target_date,
             True,
         ).get_timetable_visualiser()
-
-        vehicle_journey_codes= []
-
         is_timetable_info_available = False
         timetable = {}
         for direction in ["outbound", "inbound"]:
@@ -800,7 +799,6 @@ class LineMetadataDetailView(DetailView):
             "curr_date": date,
             "timetable": timetable,
             "is_timetable_info_available": is_timetable_info_available,
-            "vehicle_journey_codes": ",".join(vehicle_journey_codes),
         }
 
     def get_service_type_data(

@@ -262,7 +262,7 @@
         {% if is_timetable_visualiser_active %}
             BODSFrontend.initDatePicker('#timetable_date', "{{ curr_date }}", "{{ start_date }}", "{{ end_date }}", "{{ allowed_dates }}");
         {% endif %}
-        {% if is_complete_service_pages_active %}
+        {% if is_complete_service_pages_active and licence_page %}
         const line_name = "{{line_name}}";
         const noc = "{{national_operator_code}}"
         const journey_code = "{{vehicle_journey_codes}}"
