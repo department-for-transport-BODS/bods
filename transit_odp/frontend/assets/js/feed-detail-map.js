@@ -239,7 +239,6 @@ const removeExtraVehicleMarkers = (data) => {
 }
 
 const fetchAvlLiveLocation = (apiUrl) => {
-  console.log("Called and received the following url" + apiUrl)
   fetch(apiUrl)
       .then(response => response.json())
       .then(data => {
@@ -251,7 +250,7 @@ const fetchAvlLiveLocation = (apiUrl) => {
         removeExtraVehicleMarkers(data)
       })
       .catch(error => {
-          console.log("ERRRORR" + error)
+          console.log("Error while calling AVL real time data API" + error)
       });
       var updated_at_text = `Last updated at - ${getCurrentDateTime()}`
       document.getElementById("map-updated-timestamp").innerText = updated_at_text;
