@@ -59,7 +59,6 @@ from transit_odp.organisation.constants import (
     TimetableType,
     TravelineRegions,
 )
-from transit_odp.organisation.csv.service_codes import STALENESS_STATUS
 from transit_odp.organisation.models import (
     ConsumerFeedback,
     Dataset,
@@ -72,7 +71,6 @@ from transit_odp.otc.models import Service as OTCService
 from transit_odp.pipelines.models import BulkDataArchive, ChangeDataArchive
 from transit_odp.publish.requires_attention import (
     FaresRequiresAttention,
-    evaluate_staleness,
     get_dq_critical_observation_services_map,
     get_fares_dataset_map,
     get_line_level_txc_map_service_base,
@@ -655,7 +653,7 @@ class LineMetadataDetailView(DetailView):
         current_valid_files = []
         future_files = []
         expired_files = []
-        national_operator_code=set()
+        national_operator_code = set()
 
         for file in file_attributes:
             start_date = (
@@ -667,7 +665,7 @@ class LineMetadataDetailView(DetailView):
                 file.operating_period_end_date
                 if file.operating_period_end_date
                 else today
-            ) 
+            )
             file_name = file.filename
 
             if end_date >= today >= start_date:
@@ -768,7 +766,7 @@ class LineMetadataDetailView(DetailView):
             True,
         ).get_timetable_visualiser()
 
-        vehicle_journey_codes= []
+        vehicle_journey_codes = []
 
         is_timetable_info_available = False
         timetable = {}
@@ -1262,9 +1260,9 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             response = StreamingHttpResponse(
                 gtfs_region_file, content_type="application/zip"
             )
-            response[
-                "Content-Disposition"
-            ] = f'attachment; filename="itm_{id_}_gtfs.zip"'
+            response["Content-Disposition"] = (
+                f'attachment; filename="itm_{id_}_gtfs.zip"'
+            )
         else:
             gtfs = self.get_download_file(id_)
             if gtfs.file is None:

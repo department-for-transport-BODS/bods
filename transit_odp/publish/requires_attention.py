@@ -1313,5 +1313,8 @@ def get_licence_organisation_map(licence_list: list) -> dict:
     licence_organisation_name_map = dict()
     licence_qs = Licence.objects.filter(number__in=licence_list)
     for record in licence_qs:
-        licence_organisation_name_map[record.number] = record.organisation.name
+        licence_organisation_name_map[record.number] = {
+            "organisation_id": record.organisation.id,
+            "organisation_name": record.organisation.name,
+        }
     return licence_organisation_name_map

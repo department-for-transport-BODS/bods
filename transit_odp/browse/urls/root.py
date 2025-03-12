@@ -24,9 +24,9 @@ from transit_odp.browse.views.local_authority import (
     LocalAuthorityView,
 )
 from transit_odp.browse.views.operators import (
-    LicenceDetailView,
-    LicenceLineMetadataDetailView,
     OperatorDetailView,
+    OperatorLicenceDetailView,
+    OperatorLicenceLineMetadataDetailView,
     OperatorsView,
 )
 from transit_odp.common.views import CoachDownloadView, ComingSoonView, VersionView
@@ -59,23 +59,6 @@ urlpatterns = [
             [
                 path("", view=OperatorsView.as_view(), name="operators"),
                 path(
-                    "licence/<slug:number>/",
-                    include(
-                        [
-                            path(
-                                "",
-                                view=LicenceDetailView.as_view(),
-                                name="operator-licence-detail",
-                            ),
-                            path(
-                                "line/details/",
-                                view=LicenceLineMetadataDetailView.as_view(),
-                                name="licence-line-detail",
-                            ),
-                        ]
-                    ),
-                ),
-                path(
                     "<int:pk>/",
                     include(
                         [
@@ -83,6 +66,23 @@ urlpatterns = [
                                 "",
                                 view=OperatorDetailView.as_view(),
                                 name="operator-detail",
+                            ),
+                            path(
+                                "licence/<slug:number>/",
+                                include(
+                                    [
+                                        path(
+                                            "",
+                                            view=OperatorLicenceDetailView.as_view(),
+                                            name="operator-licence-detail",
+                                        ),
+                                        path(
+                                            "detail/",
+                                            view=OperatorLicenceLineMetadataDetailView.as_view(),
+                                            name="operator-licence-line-detail",
+                                        ),
+                                    ]
+                                ),
                             ),
                             path(
                                 "contact/",
