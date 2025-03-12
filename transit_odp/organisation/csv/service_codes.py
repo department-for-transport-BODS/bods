@@ -1075,7 +1075,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     exempted,
                     seasonal_service,
                 )
-            
+
             if not dq_require_attention_active:
                 dq_require_attention = UNDER_MAINTENANCE
 
