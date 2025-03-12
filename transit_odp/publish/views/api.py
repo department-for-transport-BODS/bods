@@ -1,20 +1,22 @@
 import logging
 from datetime import timedelta
-from django.conf import settings
 
 import requests
+from django.conf import settings
+from rest_framework.permissions import AllowAny
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.renderers import JSONRenderer 
 
-from rest_framework.permissions import AllowAny
 from transit_odp.api.views.avl import _get_consumer_api_response
 from transit_odp.avl.models import CAVLValidationTaskResult
+from transit_odp.avl.post_publishing_checks.models.siri import Siri
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import DatasetRevision
-from transit_odp.publish.views.utils import get_simulated_progress
-from transit_odp.avl.post_publishing_checks.models.siri import Siri
-from transit_odp.publish.views.utils import get_vehicle_activity_dict
+from transit_odp.publish.views.utils import (
+    get_simulated_progress,
+    get_vehicle_activity_dict,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -85,22 +87,25 @@ class ProgressAPIView(APIView):
 
         return Response({"progress": progress, "status": revision.status})
 
+
 class AVLRealTimeDataView(APIView):
     permission_classes = (AllowAny,)
     renderer_classes = (JSONRenderer,)
-  
+
     def get(self, request, format=None):
         url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm"
-       
+
         params = request.query_params.copy()
         journey_codes = params.pop("journey_code", None)
-        
+
         content, status_code = _get_consumer_api_response(url, params)
         """APIView for returning mock JSON response."""
-        
+
         siri = Siri.from_string(content)
         service_delivery = siri.service_delivery
-        vehicle_activities = service_delivery.vehicle_monitoring_delivery.vehicle_activities
+        vehicle_activities = (
+            service_delivery.vehicle_monitoring_delivery.vehicle_activities
+        )
 
         vehicle_activity_dict = get_vehicle_activity_dict(vehicle_activities)
         # Return the mock response as JSON

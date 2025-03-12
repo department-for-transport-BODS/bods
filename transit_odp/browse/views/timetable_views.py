@@ -1260,9 +1260,9 @@ class DownloadRegionalGTFSFileView(BaseDownloadFileView):
             response = StreamingHttpResponse(
                 gtfs_region_file, content_type="application/zip"
             )
-            response["Content-Disposition"] = (
-                f'attachment; filename="itm_{id_}_gtfs.zip"'
-            )
+            response[
+                "Content-Disposition"
+            ] = f'attachment; filename="itm_{id_}_gtfs.zip"'
         else:
             gtfs = self.get_download_file(id_)
             if gtfs.file is None:

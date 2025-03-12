@@ -309,18 +309,18 @@ def get_valid_files(revision_id, valid_files, service_code, line_name):
 
 def get_vehicle_activity_dict(vehicle_activities_list) -> dict:
     """
-    Get Vehicle Activity dictionary with VehicleRef as the key. 
-    This function keeps the latest VehicleRef based on the RecordedAtTime property 
-    and only includes records that have a RecordedAtTime within the last 10 minutes 
+    Get Vehicle Activity dictionary with VehicleRef as the key.
+    This function keeps the latest VehicleRef based on the RecordedAtTime property
+    and only includes records that have a RecordedAtTime within the last 10 minutes
     from the current time.
 
     Args:
         vehicle_activities_list (list)
     Returns:
-        dict: A dictionary where the keys are vehicle references (VehicleRef) 
-            and the values are dictionaries containing the latest activity 
-            information for that vehicle (e.g., RecordedAtTime, LineRef, 
-            OperatorRef, Longitude, Latitude), filtered to include only 
+        dict: A dictionary where the keys are vehicle references (VehicleRef)
+            and the values are dictionaries containing the latest activity
+            information for that vehicle (e.g., RecordedAtTime, LineRef,
+            OperatorRef, Longitude, Latitude), filtered to include only
             activities within the last 10 minutes.
     """
     vehicle_dict = {}
@@ -357,4 +357,3 @@ def get_vehicle_activity_dict(vehicle_activities_list) -> dict:
                     }
 
     return vehicle_dict
- 

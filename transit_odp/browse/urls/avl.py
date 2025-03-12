@@ -88,5 +88,9 @@ urlpatterns = [
             ]
         ),
     ),
-    path("v1/avl-feed/siri-vm", AVLRealTimeDataView.as_view(), name="avldetaildatafeedapirealtime"),
+    path(
+        "v1/avl-feed/siri-vm",
+        AVLRealTimeDataView.as_view(),
+        name="avldetaildatafeedapirealtime",
+    ),
 ]
