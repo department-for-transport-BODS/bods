@@ -21,7 +21,6 @@ class RegistrationStatusEnum(Enum):
             cls.ADMIN_CANCELLED.value,
             cls.CANCELLED.value,
             cls.NEW.value,
-            cls.REFUSED.value,
             cls.SURRENDERED.value,
             cls.REVOKED.value,
             cls.CNS.value,
@@ -34,6 +33,7 @@ class RegistrationStatusEnum(Enum):
             cls.EXPIRED.value,
             cls.WITHDRAWN.value,
             cls.VARIATION.value,
+            cls.REFUSED.value,
         ]
 
 

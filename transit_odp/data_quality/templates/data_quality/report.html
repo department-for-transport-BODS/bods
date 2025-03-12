@@ -1,6 +1,7 @@
 {% extends "data_quality/base.html" %}
 {% load i18n %}
 {% load filters %}
+{% load parse_dictionary %}
 {% block title_tag %}
   {% trans "Data quality report" %}
 {% endblock %}
@@ -17,14 +18,26 @@
         </div>
         {% if is_dqs_new_report %}
           <div class="content-center">
-            {% if warning_data.Critical.count == 0 %}
+            {% if is_specific_feedback %}
+              {% if warning_data.Critical.count == 0 and warning_data.Feedback.count == 0 %}
               <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
                 NO CRITICAL ISSUES
               </span>
-            {% else %}
+              {% else %}
               <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
                 CRITICAL ISSUES
               </span>
+              {% endif %}
+            {% else %}
+              {% if warning_data.Critical.count == 0 %}
+              <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+                NO CRITICAL ISSUES
+              </span>
+              {% else %}
+              <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+                CRITICAL ISSUES
+              </span>
+              {% endif %}
             {% endif %}
           </div>
         {% endif %}
@@ -82,6 +95,7 @@
                 </div>
               {% endif %}
             {% endif %}
+            
             <div class="govuk-grid-column-one-quarter-from-desktop">
               <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Critical.count }}</p>
               <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
@@ -94,6 +108,14 @@
                 Advisory observation{{ warning_data.Advisory.count|pluralize:"s" }}
               </p>
             </div>
+            {% if warning_data|is_value_in_dict:'Feedback' %}
+            <div class="govuk-grid-column-one-quarter-from-desktop">
+              <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Feedback.count }}</p>
+              <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
+                Feedback observation{{ warning_data.Feedback.count |pluralize:"s" }}
+              </p>
+            </div>
+            {% endif %}
           </div>
         </div>
       </div>

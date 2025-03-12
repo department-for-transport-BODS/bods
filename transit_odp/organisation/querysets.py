@@ -26,6 +26,7 @@ from django.db.models import (
     Sum,
     Value,
     When,
+    TextField,
 )
 from django.db.models.expressions import Exists, RawSQL
 from django.db.models.functions import (
@@ -36,6 +37,14 @@ from django.db.models.functions import (
     Substr,
     TruncDate,
     Upper,
+    Concat,
+    Coalesce,
+    Upper,
+    Substr,
+    ExtractHour,
+    ExtractMinute,
+    LPad,
+    Cast,
 )
 from django.db.models.query import Prefetch
 from django.utils import timezone
@@ -62,6 +71,10 @@ from transit_odp.organisation.constants import (
 )
 from transit_odp.organisation.view_models import GlobalFeedStats
 from transit_odp.users.constants import AccountType
+from transit_odp.browse.constants import (
+    REPORT_BASE_PAGE_COLUMNS,
+    REPORT_DETAILS_PAGE_COLUMNS,
+)
 
 User = get_user_model()
 ANONYMOUS = "Anonymous"
@@ -1389,8 +1402,154 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             service_txcfileattributes__revision_id=revision_id
         ).distinct()
 
+    def add_service_code(self, service_code: str) -> list:
+        """Returns TXCFileAttributes objects for the given service code."""
+        qs = self.filter(service_code=service_code).distinct()
+        return qs
+
 
 class ConsumerFeedbackQuerySet(models.QuerySet):
+    def get_feedbacks(
+        self,
+        report_id: int,
+        revision_id: int,
+        is_published: bool = False,
+        dqs_details: str = None,
+        is_details_link: bool = True,
+        org_id: int = None,
+        show_suppressed: bool = False,
+        show_suppressed_button: bool = False,
+    ):
+        """
+        Get the queryset for the feedback summarised page
+        """
+
+        qs = (
+            self.filter(
+                revision_id=revision_id,
+                organisation_id=org_id,
+                service_id__isnull=False,
+            )
+            .annotate(
+                observation=Value("Consumer Feedback", output_field=TextField()),
+                service_code=F("service__service_code"),
+                line_name=F("service_pattern__line_name"),
+                message=Concat(
+                    F("service__service_code"),
+                    F("service__service_code"),
+                ),
+                dqs_details=Value(dqs_details, output_field=TextField()),
+                is_published=Value(is_published, output_field=BooleanField()),
+                is_details_link=Value(is_details_link, output_field=BooleanField()),
+                report_id=Value(report_id, output_field=TextField()),
+                show_suppressed=Value(show_suppressed, output_field=BooleanField()),
+                show_suppressed_button=Value(
+                    show_suppressed_button, output_field=BooleanField()
+                ),
+                is_feedback=Value(True, output_field=BooleanField()),
+            )
+            .values(*REPORT_BASE_PAGE_COLUMNS)
+            .distinct()
+        )
+
+        return qs
+
+    def get_feedback_details(
+        self,
+        revision_id: int,
+        service: str,
+        line: str,
+        show_suppressed: bool = False,
+        show_suppressed_button: bool = False,
+    ):
+        """
+        Get the queryset for the feedback detailed page
+        """
+
+        qs = (
+            self.filter(
+                revision_id=revision_id,
+                service__service_code=service,
+                service_pattern__line_name=line,
+            )
+            .annotate(
+                observation=Value("Consumer Feedback", output_field=TextField()),
+                journey_start_time=Case(
+                    When(
+                        Q(vehicle_journey__start_time__isnull=False),
+                        then=Concat(
+                            LPad(
+                                Cast(
+                                    ExtractHour(F("vehicle_journey__start_time")),
+                                    output_field=CharField(),
+                                ),
+                                2,
+                                Value("0"),
+                            ),
+                            Value(":"),
+                            LPad(
+                                Cast(
+                                    ExtractMinute(F("vehicle_journey__start_time")),
+                                    output_field=CharField(),
+                                ),
+                                2,
+                                Value("0"),
+                            ),
+                        ),
+                    ),
+                    default=Value("-", output_field=CharField()),
+                ),
+                direction=Case(
+                    When(
+                        Q(vehicle_journey__direction__isnull=False),
+                        then=Concat(
+                            Upper(Substr(F("vehicle_journey__direction"), 1, 1)),
+                            Substr(F("vehicle_journey__direction"), 2),
+                            output_field=CharField(),
+                        ),
+                    ),
+                    default=Value("-", output_field=CharField()),
+                ),
+                stop_name=Case(
+                    When(
+                        Q(service_pattern_stop__isnull=False),
+                        then=Concat(
+                            Coalesce(
+                                "service_pattern_stop__naptan_stop__common_name",
+                                "service_pattern_stop__txc_common_name",
+                                output_field=CharField(),
+                            ),
+                            Value(" ("),
+                            Coalesce(
+                                F("service_pattern_stop__naptan_stop__atco_code"),
+                                F("service_pattern_stop__atco_code"),
+                                output_field=CharField(),
+                            ),
+                            Value(")"),
+                        ),
+                    ),
+                    default=Value("-", output_field=CharField()),
+                ),
+                journey_code=F("vehicle_journey__journey_code"),
+                stop_type=F("service_pattern_stop__naptan_stop__stop_type"),
+                details=Value("", output_field=TextField()),
+                serviced_organisation=Value("", output_field=TextField()),
+                serviced_organisation_code=Value("", output_field=TextField()),
+                last_working_day=Value("", output_field=TextField()),
+                message=Value("Read message here", output_field=TextField()),
+                show_suppressed=Value(show_suppressed, output_field=BooleanField()),
+                show_suppressed_button=Value(
+                    show_suppressed_button, output_field=BooleanField()
+                ),
+                is_feedback=Value(True, output_field=BooleanField()),
+                row_id=F("id"),
+            )
+            .values(*REPORT_DETAILS_PAGE_COLUMNS)
+            .distinct()
+        )
+
+        return qs
+
     def add_feedback_type(self):
         return self.annotate(
             feedback_type=Case(

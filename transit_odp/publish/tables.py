@@ -1,11 +1,11 @@
 import django_tables2 as tables
 import pytz
-from django.template.loader import render_to_string
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 from django_hosts.resolvers import reverse
+from waffle import flag_is_active
 
 from config.hosts import PUBLISH_HOST
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.tables import GovUkTable, TruncatedTextColumn
 from transit_odp.organisation.tables import FeedStatusColumn, get_feed_name_linkify
 
@@ -55,16 +55,18 @@ class DraftDatasetRevisionTable(DatasetTable):
     draft_revision_name = TruncatedTextColumn(
         verbose_name="Data set",
         attrs={"a": {"class": "govuk-link"}},
-        linkify=lambda record: reverse(
-            "revision-publish",
-            kwargs={"pk": record.dataset.id, "pk1": record.dataset.organisation_id},
-            host=PUBLISH_HOST,
-        )
-        if record.dataset.live_revision is None
-        else reverse(
-            "revision-update-publish",
-            kwargs={"pk": record.dataset.id, "pk1": record.dataset.organisation_id},
-            host=PUBLISH_HOST,
+        linkify=lambda record: (
+            reverse(
+                "revision-publish",
+                kwargs={"pk": record.dataset.id, "pk1": record.dataset.organisation_id},
+                host=PUBLISH_HOST,
+            )
+            if record.dataset.live_revision is None
+            else reverse(
+                "revision-update-publish",
+                kwargs={"pk": record.dataset.id, "pk1": record.dataset.organisation_id},
+                host=PUBLISH_HOST,
+            )
         ),
     )
 
@@ -97,17 +99,34 @@ class DatasetRevisionTable(GovUkTable):
 class RequiresAttentionColumn(tables.Column):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.verbose_name = "Timetable data requiring attention"
-        self.attrs["annotation"] = mark_safe(
-            render_to_string(
-                "browse/snippets/help_modals/timetables_data_requiring_attention.html"
-            )
-        )
+        self.verbose_name = "Timetable services requiring attention"
+
+
+class AVLRequiresAttentionColumn(tables.Column):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.verbose_name = "Location services requiring attention"
+
+
+class FaresRequiresAttentionColumn(tables.Column):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.verbose_name = "Fares services requiring attention"
 
 
 class AgentOrganisationsTable(GovUkTable):
+    """
+    Table displaying all organisations assoicated with an agent along
+    with timetables, location and fares data requiring attention.
+    """
+
     class Meta(GovUkTable.Meta):
-        attrs = {"th": {"class": "govuk-table__header"}, "class": "agent_dashboard"}
+        attrs = {
+            "th": {
+                "class": "govuk-table__header govuk-!-width-one-quarter govuk-!-padding-bottom-3"
+            },
+            "class": "agent_dashboard",
+        }
 
     organisation = tables.Column(
         linkify=lambda value, record: record["next"],
@@ -118,14 +137,30 @@ class AgentOrganisationsTable(GovUkTable):
         verbose_name="Organisation",
     )
     requires_attention = RequiresAttentionColumn(empty_values=())
+    avl_requires_attention = AVLRequiresAttentionColumn(empty_values=())
+    fares_requires_attention = FaresRequiresAttentionColumn(empty_values=())
 
     def render_organisation(self, value, record):
         # status refers to the name of the css class found here:
         # sass/components/status_indicator/_status_indicator.scss
-        if record["requires_attention"] > 0:
-            status = "unavailable"
+        is_complete_service_pages_active = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        )
+        if is_complete_service_pages_active:
+            if (
+                (record["requires_attention"] > 0)
+                or (record["avl_requires_attention"] > 0)
+                or (record["fares_requires_attention"] > 0)
+            ):
+                status = "error"
+            else:
+                status = "success"
         else:
-            status = "success"
+            if record["requires_attention"] > 0:
+                status = "unavailable"
+            else:
+                status = "success"
+
         return format_html(
             '<span class="status-indicator status-indicator--{status}"></span> {value}',
             status=status,
@@ -148,3 +183,37 @@ class AgentOrganisationsTable(GovUkTable):
                 ),
             )
         return requires_attention
+
+    def render_avl_requires_attention(self, value, record):
+        avl_requires_attention = record["avl_requires_attention"]
+        if avl_requires_attention > 0:
+            return format_html(
+                "{count} "
+                '<a class="govuk-link govuk-!-margin-left-1" href={href}>'
+                "View"
+                "</a>",
+                count=record["avl_requires_attention"],
+                href=reverse(
+                    "avl:requires-attention",
+                    args=[record["organisation_id"]],
+                    host=PUBLISH_HOST,
+                ),
+            )
+        return avl_requires_attention
+
+    def render_fares_requires_attention(self, value, record):
+        fares_requires_attention = record["fares_requires_attention"]
+        if fares_requires_attention > 0:
+            return format_html(
+                "{count} "
+                '<a class="govuk-link govuk-!-margin-left-1" href={href}>'
+                "View"
+                "</a>",
+                count=record["fares_requires_attention"],
+                href=reverse(
+                    "requires-attention",
+                    args=[record["organisation_id"]],
+                    host=PUBLISH_HOST,
+                ),
+            )
+        return fares_requires_attention

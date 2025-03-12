@@ -31,6 +31,7 @@ ADMIN_TASKS: Final = "transit_odp.site_admin.tasks."
 BROWSE_TASKS: Final = "transit_odp.browse.tasks."
 PUBLISH_TASKS: Final = "transit_odp.publish.tasks."
 DISRUPTIONS_TASKS: Final = "transit_odp.disruptions.tasks."
+ORGANISATION_TASKS: Final = "transit_odp.organisation.tasks."
 
 
 class CeleryAppConfig(AppConfig):
@@ -192,5 +193,13 @@ class CeleryAppConfig(AppConfig):
             "yearly_task_load_bank_holidays": {
                 "task": TIMETABLE_TASKS + "task_load_bank_holidays",
                 "schedule": crontab(minute=0, hour=0, day_of_month=1, month_of_year=1),
+            },
+            "task_precalculate_operator_sra": {
+                "task": ORGANISATION_TASKS + "task_precalculate_operator_sra",
+                "schedule": crontab(minute=0, hour="*"),
+            },
+            "task_precalculate_ui_lta_sra": {
+                "task": OTC_TASKS + "task_precalculate_ui_lta_sra",
+                "schedule": crontab(minute=0, hour="*"),
             },
         }

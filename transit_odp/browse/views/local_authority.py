@@ -27,20 +27,31 @@ from transit_odp.browse.lta_column_headers import (
     header_accessor_data_line_level,
 )
 from transit_odp.browse.views.base_views import BaseListView
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
-from transit_odp.otc.constants import API_TYPE_EP, API_TYPE_WECA
+from transit_odp.otc.constants import API_TYPE_EP, API_TYPE_WECA, UNDER_MAINTENANCE
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.otc.models import UILta
+from transit_odp.otc.utils import get_overall_sra_unique_services
 from transit_odp.publish.requires_attention import (
     evaluate_staleness,
+    get_avl_records_require_attention_lta_line_level_objects,
+    get_dq_critical_observation_services_map,
+    get_fares_compliance_status,
+    get_fares_dataset_map,
+    get_fares_records_require_attention_lta_line_level_objects,
+    get_fares_requires_attention,
+    get_fares_timeliness_status,
     get_line_level_txc_map_lta,
     get_requires_attention_data_lta_line_level_length,
+    get_requires_attention_data_lta_line_level_objects,
     get_txc_map_lta,
     is_stale,
+    get_licence_organisation_map,
 )
 
 STALENESS_STATUS = [
@@ -230,16 +241,27 @@ class LocalAuthorityView(BaseListView):
 
         ltas = {"names": names}
         context["ltas"] = ltas
+        is_uilta_prefetch_sra_active = flag_is_active(
+            "", FeatureFlags.UILTA_PREFETCH_SRA.value
+        )
 
         for lta in all_ltas_current_page:
             lta_list = lta_list_per_ui_ltas[lta.ui_lta_name_trimmed]
             setattr(lta, "auth_ids", [x.id for x in lta_list])
-            context["total_in_scope_in_season_services"] = len(
-                get_in_scope_in_season_lta_service_numbers(lta_list)
-            )
-            context[
-                "total_services_requiring_attention"
-            ] = get_requires_attention_data_lta_line_level_length(lta_list)
+            ui_lta: UILta = lta_list[0].ui_lta
+            if is_uilta_prefetch_sra_active:
+                total_inscope = ui_lta.total_inscope
+                timetable_sra = ui_lta.timetable_sra
+            else:
+                total_inscope = len(
+                    get_in_scope_in_season_lta_service_numbers(lta_list)
+                )
+                timetable_sra = get_requires_attention_data_lta_line_level_length(
+                    lta_list
+                )
+
+            context["total_in_scope_in_season_services"] = total_inscope
+            context["total_services_requiring_attention"] = timetable_sra
 
             try:
                 context["services_require_attention_percentage"] = round(
@@ -297,9 +319,19 @@ class LocalAuthorityDetailView(BaseDetailView):
 
     def get_context_data(self, **kwargs):
         is_avl_require_attention_active = flag_is_active(
-            "", "is_avl_require_attention_active"
+            "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
+        )
+        is_fares_require_attention_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
+        is_complete_service_pages_active = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        )
+        is_uilta_prefetch_sra_active = flag_is_active(
+            "", FeatureFlags.UILTA_PREFETCH_SRA.value
         )
         context = super().get_context_data(**kwargs)
+        context["is_complete_service_pages_active"] = is_complete_service_pages_active
         combined_authority_ids = self.request.GET.get("auth_ids")
         lta_objs = []
         context["auth_ids"] = combined_authority_ids
@@ -313,27 +345,65 @@ class LocalAuthorityDetailView(BaseDetailView):
         for combined_authority_id in combined_authority_ids:
             lta_objs.append(self.model.objects.get(id=combined_authority_id))
 
-        context["total_in_scope_in_season_services"] = len(
-            get_in_scope_in_season_lta_service_numbers(lta_objs)
-        )
+        if is_uilta_prefetch_sra_active:
+            ui_lta: UILta = lta_objs[0].ui_lta
+            total_inscope = ui_lta.total_inscope
+            timetable_sra = ui_lta.timetable_sra
+            overall_sra = ui_lta.overall_sra
+            avl_sra = ui_lta.avl_sra
+            fares_sra = ui_lta.fares_sra
+        else:
+            total_inscope = len(get_in_scope_in_season_lta_service_numbers(lta_objs))
+            timetable_sra = get_requires_attention_data_lta_line_level_objects(lta_objs)
+            avl_sra = fares_sra = []
+            if is_avl_require_attention_active:
+                avl_sra = get_avl_records_require_attention_lta_line_level_objects(
+                    lta_objs
+                )
 
-        context[
-            "total_services_requiring_attention"
-        ] = get_requires_attention_data_lta_line_level_length(lta_objs)
+            if is_fares_require_attention_active:
+                fares_sra = get_fares_records_require_attention_lta_line_level_objects(
+                    lta_objs
+                )
+            overall_sra = len(
+                get_overall_sra_unique_services(timetable_sra, avl_sra, fares_sra)
+            )
+            timetable_sra = len(timetable_sra)
+            avl_sra = len(avl_sra)
+            fares_sra = len(fares_sra)
 
+        context["total_in_scope_in_season_services"] = total_inscope
+        context["total_timetable_records_requiring_attention"] = timetable_sra
+
+        if is_complete_service_pages_active:
+            context["total_services_requiring_attention"] = overall_sra
+            context["total_location_records_requiring_attention"] = avl_sra
+            context["total_fares_records_requiring_attention"] = fares_sra
+            distinct_licence_names = set(
+                [
+                    service.licence.number
+                    for lta in lta_objs
+                    for service in lta.registration_numbers.all()
+                ]
+            )
+            licence_organisation_map = get_licence_organisation_map(
+                distinct_licence_names
+            )
+            context["licence_organisation_map"] = licence_organisation_map
         try:
             context["services_require_attention_percentage"] = round(
                 100
                 * (
-                    context["total_services_requiring_attention"]
+                    context["total_timetable_records_requiring_attention"]
                     / context["total_in_scope_in_season_services"]
                 )
             )
+
         except ZeroDivisionError:
             context["services_require_attention_percentage"] = 0
 
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
-
+        context["is_fares_require_attention_active"] = is_fares_require_attention_active
         return context
 
 
@@ -441,6 +511,16 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         error_in_avl_to_timetable_matching: str,
         avl_requires_attention: str,
         overall_requires_attention: str,
+        dq_require_attention: str,
+        fares_requires_attention: str,
+        fares_published_status: str,
+        fares_compliance_status: str,
+        fares_timeliness_status: str,
+        fares_dataset_id: str,
+        fares_filename: str,
+        fares_last_modified: str,
+        fares_one_year_date: str,
+        fares_operating_period_end: str,
     ) -> None:
         self._object_list.append(
             {
@@ -500,6 +580,16 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 "error_in_avl_to_timetable_matching": error_in_avl_to_timetable_matching,
                 "avl_requires_attention": avl_requires_attention,
                 "overall_requires_attention": overall_requires_attention,
+                "dq_require_attention": dq_require_attention,
+                "fares_requires_attention": fares_requires_attention,
+                "fares_published_status": fares_published_status,
+                "fares_compliance_status": fares_compliance_status,
+                "fares_timeliness_status": fares_timeliness_status,
+                "fares_dataset_id": fares_dataset_id,
+                "fares_filename": fares_filename,
+                "fares_last_modified": fares_last_modified,
+                "fares_one_year_date": fares_one_year_date,
+                "fares_operating_period_end": fares_operating_period_end,
             }
         )
 
@@ -521,16 +611,16 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         avl_requires_attention: Optional[str],
         exempted: Optional[bool],
         seasonal_service: Optional[SeasonalService],
+        fares_requires_attention: Optional[str],
     ) -> str:
         """
         Returns value for 'Requires attention' column based on the following logic:
             If 'Scope Status' = Out of Scope OR 'Seasonal Status' = Out of Season,
             then 'Requires attention' = No.
-            If 'Timetables requires attention' = No AND 'AVL requires attention' = No,
-            then 'Requires attention' = No.
+            If 'Timetables requires attention' = No AND 'AVL requires attention' = No
+            AND 'Fares requires attention' = No, then 'Requires attention' = No.
             If 'Timetables requires attention' = Yes OR 'AVL requires attention' = Yes,
-            then 'Requires attention' = Yes.
-
+            or 'Fares requires attention' = Yes then 'Requires attention' = Yes.
         Args:
             otc_service (dict): OTC Service dictionary
 
@@ -539,7 +629,11 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         """
         if exempted or (seasonal_service and not seasonal_service.seasonal_status):
             return "No"
-        if (timetable_requires_attention == "No") and (avl_requires_attention == "No"):
+        if (
+            (timetable_requires_attention == "No")
+            and (avl_requires_attention == "No")
+            and (fares_requires_attention == "No")
+        ):
             return "No"
         return "Yes"
 
@@ -550,6 +644,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         service: Optional[OTCService],
         file_attribute: Optional[TXCFileAttributes],
         staleness_status: Optional[str],
+        dq_require_attention: Optional[str],
     ) -> str:
         if exempted or (seasonal_service and not seasonal_service.seasonal_status):
             return "No"
@@ -563,6 +658,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 and (not exempted)
                 and published_status
                 and (staleness_status == "Up to date")
+                and dq_require_attention == "No"
             ):
                 return "No"
         return "Yes"
@@ -585,7 +681,12 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
             return "Yes"
         return "No"
 
-    def get_error_in_avl_to_timetable_matching(self, operator_ref, line_name) -> str:
+    def get_error_in_avl_to_timetable_matching(
+        self,
+        operator_ref: Optional[str],
+        line_name: str,
+        uncounted_activity_df: pd.DataFrame,
+    ) -> str:
         """
         Returns value for 'Error in AVL to Timetable Matching' column.
 
@@ -596,7 +697,6 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         Returns:
             str: Yes or No for 'Error in AVL to Timetable Matching' column
         """
-        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
 
         if not uncounted_activity_df.loc[
             (uncounted_activity_df["OperatorRef"] == operator_ref)
@@ -737,7 +837,24 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         """
         ui_lta = lta_list[0].ui_lta
         otc_map = get_line_level_otc_map_lta(lta_list)
+
         txcfa_map = get_line_level_txc_map_lta(lta_list)
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        dq_require_attention_active = flag_is_active(
+            "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+        )
+
+        if dq_require_attention_active:
+            dq_critical_observation_map = get_dq_critical_observation_services_map(
+                txcfa_map
+            )
+
+        fares_require_attention_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
+        if fares_require_attention_active:
+            fares_require_attention_df = get_fares_dataset_map(txcfa_map)
+
         seasonal_service_map = get_seasonal_service_map(lta_list)
         service_code_exemption_map = get_service_code_exemption_map(lta_list)
         naptan_adminarea_df = get_all_naptan_atco_df()
@@ -746,6 +863,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
         service_number_registration_number_map = sorted(
             service_number_registration_number_map
         )
+
         abods_registry = AbodsRegistery()
         synced_in_last_month = abods_registry.records()
 
@@ -777,10 +895,22 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
             ):
                 exempted = True
 
+            dq_require_attention = (
+                "Yes"
+                if dq_require_attention_active
+                and (registration_number, service_number) in dq_critical_observation_map
+                else "No"
+            )
+
             staleness_status = "Up to date"
             if file_attribute is None:
                 require_attention = self._get_require_attention(
-                    exempted, seasonal_service, service, None, staleness_status
+                    exempted,
+                    seasonal_service,
+                    service,
+                    None,
+                    staleness_status,
+                    dq_require_attention,
                 )
             elif service and is_stale(service, file_attribute):
                 rad = evaluate_staleness(service, file_attribute)
@@ -791,9 +921,20 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     service,
                     file_attribute,
                     staleness_status,
+                    dq_require_attention,
                 )
             else:
-                require_attention = "No"
+                require_attention = dq_require_attention
+
+            fares_published_status = "Unpublished"
+            fares_compliance_status = "No"
+            fares_requires_attention = "No"
+            fares_timeliness_status = "Not Stale"
+            fares_dataset_id = (
+                fares_filename
+            ) = (
+                fares_last_modified
+            ) = fares_one_year_date = fares_operating_period_end = ""
 
             if file_attribute is not None:
                 avl_published_status = self.get_avl_published_status(
@@ -805,14 +946,55 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     self.get_error_in_avl_to_timetable_matching(
                         file_attribute.national_operator_code,
                         service_number,
+                        uncounted_activity_df,
                     )
                 )
+                if fares_require_attention_active:
+                    fares_file_details = fares_require_attention_df[
+                        (
+                            fares_require_attention_df["national_operator_code"]
+                            == file_attribute.national_operator_code
+                        )
+                        & (fares_require_attention_df["line_name"] == service_number)
+                    ]
+                    if not fares_file_details.empty:
+                        fares_published_status = "Published"
+                        row = fares_file_details.iloc[0]
+                        row["valid_to"] = (
+                            row["valid_to"].date()
+                            if pd.notna(row["valid_to"])
+                            else None
+                        )
+                        row["valid_from"] = (
+                            row["valid_from"].date()
+                            if pd.notna(row["valid_from"])
+                            else None
+                        )
+                        fares_timeliness_status = get_fares_timeliness_status(
+                            row["valid_to"], row["last_updated_date"].date()
+                        )
+                        fares_compliance_status = get_fares_compliance_status(
+                            row["is_fares_compliant"]
+                        )
+
+                        fares_filename = row["xml_file_name"]
+                        fares_last_modified = row["last_updated_date"].date()
+                        fares_one_year_date = (
+                            fares_last_modified + timedelta(days=365)
+                            if fares_last_modified
+                            else None
+                        )
+
+                        fares_operating_period_end = row["valid_to"]
+                        fares_dataset_id = str(row["dataset_id"])
             else:
                 avl_published_status = self.get_avl_published_status(
                     "", service_number, synced_in_last_month
                 )
                 error_in_avl_to_timetable_matching = (
-                    self.get_error_in_avl_to_timetable_matching("", service_number)
+                    self.get_error_in_avl_to_timetable_matching(
+                        "", service_number, uncounted_activity_df
+                    )
                 )
 
             avl_requires_attention = self.get_avl_requires_attention(
@@ -820,12 +1002,38 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 error_in_avl_to_timetable_matching,
             )
 
+            if fares_require_attention_active:
+                fares_requires_attention = get_fares_requires_attention(
+                    fares_published_status,
+                    fares_timeliness_status,
+                    fares_compliance_status,
+                )
+
             overall_requires_attention = self.get_overall_requires_attention(
                 require_attention,
                 avl_requires_attention,
                 exempted,
                 seasonal_service,
+                fares_requires_attention,
             )
+
+            if not dq_require_attention_active:
+                dq_require_attention = UNDER_MAINTENANCE
+
+            if not fares_require_attention_active:
+                fares_requires_attention = (
+                    fares_published_status
+                ) = (
+                    fares_compliance_status
+                ) = (
+                    fares_timeliness_status
+                ) = (
+                    fares_dataset_id
+                ) = (
+                    fares_filename
+                ) = (
+                    fares_last_modified
+                ) = fares_one_year_date = fares_operating_period_end = UNDER_MAINTENANCE
 
             self._update_data(
                 service,
@@ -841,6 +1049,16 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 error_in_avl_to_timetable_matching,
                 avl_requires_attention,
                 overall_requires_attention,
+                dq_require_attention,
+                fares_requires_attention,
+                fares_published_status,
+                fares_compliance_status,
+                fares_timeliness_status,
+                fares_dataset_id,
+                fares_filename,
+                fares_last_modified,
+                fares_one_year_date,
+                fares_operating_period_end,
             )
 
     def get_queryset(self):

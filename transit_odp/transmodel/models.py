@@ -17,7 +17,7 @@ class Service(models.Model):
     revision = models.ForeignKey(
         DatasetRevision, related_name="services", on_delete=models.CASCADE, null=True
     )
-    service_code = models.CharField(max_length=255)
+    service_code = models.CharField(max_length=255, db_index=True)
 
     name = models.CharField(max_length=255, blank=True)
     other_names = ArrayField(
@@ -57,7 +57,7 @@ class ServicePattern(models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
-    line_name = models.CharField(max_length=255, null=True, blank=True)
+    line_name = models.CharField(max_length=255, null=True, blank=True, db_index=True)
     origin = models.CharField(max_length=255)
     destination = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)

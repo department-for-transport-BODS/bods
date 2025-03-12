@@ -1,47 +1,41 @@
 import numpy as np
 import pandas as pd
-import uuid
-
 from celery.utils.log import get_task_logger
 
-from transit_odp.common.utils.geometry import grid_gemotry_from_str
-from transit_odp.naptan.models import StopPoint, FlexibleZone
+from transit_odp.naptan.models import FlexibleZone, StopPoint
 from transit_odp.pipelines.pipelines.dataset_etl.utils.etl_base import ETLUtility
 from transit_odp.pipelines.pipelines.dataset_etl.utils.models import (
     ExtractedData,
     TransformedData,
 )
+
 from .utils.dataframes import (
+    create_naptan_flexible_zone_df_from_queryset,
     create_naptan_stoppoint_df,
     create_naptan_stoppoint_df_from_queryset,
-    create_naptan_flexible_zone_df_from_queryset,
 )
 from .utils.transform import (
-    agg_service_pattern_sequences,
     create_route_links,
     create_route_to_route_links,
     create_routes,
-    create_stop_sequence,
-    get_most_common_districts,
     get_most_common_localities,
+    get_vehicle_journey_with_timing_refs,
+    get_vehicle_journey_without_timing_refs,
+    merge_journey_pattern_with_vj_for_departure_time,
+    merge_serviced_organisations_with_operating_profile,
+    merge_vehicle_journeys_with_jp,
     sync_localities_and_adminareas,
+    transform_flexible_service_pattern_to_service_links,
+    transform_flexible_service_patterns,
+    transform_flexible_stop_sequence,
+    transform_geometry,
+    transform_geometry_tracks,
     transform_line_names,
     transform_service_links,
     transform_service_pattern_stops,
     transform_service_pattern_to_service_links,
     transform_service_patterns,
     transform_stop_sequence,
-    transform_geometry,
-    transform_flexible_stop_sequence,
-    merge_vehicle_journeys_with_jp,
-    transform_flexible_service_patterns,
-    get_vehicle_journey_with_timing_refs,
-    get_vehicle_journey_without_timing_refs,
-    merge_journey_pattern_with_vj_for_departure_time,
-    merge_serviced_organisations_with_operating_profile,
-    transform_flexible_service_pattern_to_service_links,
-    transform_geometry_tracks,
-    add_tracks_sequence,
 )
 
 logger = get_task_logger(__name__)
@@ -164,11 +158,11 @@ class Transform(ETLUtility):
 
         stop_points.drop(columns=["common_name"], axis=1, inplace=True)
 
-        ### Tracks geometry transformation
+        # Tracks geometry transformation
         if not journey_pattern_tracks.empty:
             journey_pattern_tracks = transform_geometry_tracks(journey_pattern_tracks)
 
-        ### logic for flexible stop points transformation
+        # logic for flexible stop points transformation
         if not flexible_stop_points.empty:
             # 2. extract flexible zone data
             flexible_zone = self.sync_flexible_zone(flexible_stop_points)

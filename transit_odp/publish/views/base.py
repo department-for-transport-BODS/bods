@@ -1,12 +1,14 @@
+import logging
 from collections import OrderedDict
 from typing import List, Tuple, Type
+from uuid import uuid4
 
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from django.db.models.query_utils import Q
 from django.forms import Form
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -19,12 +21,14 @@ from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.common.forms import ConfirmationForm
+from transit_odp.common.utils.aws_common import StepFunctionsClientWrapper
 from transit_odp.common.view_mixins import BODSBaseView
 from transit_odp.common.views import BaseDetailView, BaseTemplateView, BaseUpdateView
 from transit_odp.fares_validator.views.validate import FaresXmlValidator
 from transit_odp.notifications import get_notifications
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
+from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.forms import (
     FaresRevisionPublishFormViolations,
     FeedDescriptionForm,
@@ -32,8 +36,11 @@ from transit_odp.publish.forms import (
     FeedUploadForm,
     RevisionPublishForm,
 )
+from transit_odp.timetables.utils import create_tt_state_machine_payload
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.views.mixins import OrgUserViewMixin
+
+logger = logging.getLogger(__name__)
 
 ExpiredStatus = FeedStatus.expired.value
 
@@ -485,6 +492,20 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
             contact=self.request.user, organisation=self.organisation
         )
 
+    def delete_existing_revision_data(self, revision):
+        """
+        Delete any existing violations for the given revision id.
+        This allows validation to occur multiple times for the same DatasetRevision
+        Includes: SchemaViolation, PostSchemaViolation, PTIObservation, TXCFileAttributes and ServicePattern objects
+        Cascade deletes so that other related objects ex-Service, dqstasks,etc. are also deleted
+        """
+        revision.schema_violations.all().delete()
+        revision.post_schema_violations.all().delete()
+        revision.txc_file_attributes.all().delete()
+        revision.pti_observations.all().delete()
+        revision.service_patterns.all().delete()
+        revision.dqs_report.all().delete()
+
     @transaction.atomic
     def done(self, form_list, **kwargs):
         all_data = self.get_all_cleaned_data()
@@ -497,8 +518,47 @@ class BaseFeedUploadWizard(FeedWizardBaseView):
             Q(dataset=dataset) & Q(is_published=False)
         ).update_or_create(dataset=dataset, is_published=False, defaults=all_data)[0]
 
-        # trigger ETL job to run
-        revision.start_etl()
+        is_serverless_publishing_active = flag_is_active(
+            "", "is_serverless_publishing_active"
+        )
+
+        if not is_serverless_publishing_active:
+            # trigger ETL job to run
+            revision.start_etl()
+
+        else:
+            with transaction.atomic():
+                if not revision.status == FeedStatus.pending.value:
+                    revision.to_pending()
+                    revision.save()
+                task = DatasetETLTaskResult.objects.create(
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=str(uuid4()),
+                )
+            # 'Update data' flow allows validation to occur multiple times
+            self.delete_existing_revision_data(revision)
+            # trigger state machine
+            input_payload = create_tt_state_machine_payload(revision, task.id, False)
+            try:
+                step_fucntions_client = StepFunctionsClientWrapper()
+                step_function_arn = (
+                    settings.TIMETABLES_STATE_MACHINE_ARN
+                )  # ARN of timetable pipeline Step Function
+
+                if not step_function_arn:
+                    logger.error(
+                        "Timetable pipeline: AWS Step Function ARN is missing or invalid"
+                    )
+                    raise
+
+                # Invoke the Step Function
+                step_fucntions_client.start_step_function(
+                    input_payload, step_function_arn
+                )
+
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=500)
 
         return HttpResponseRedirect(
             reverse(
