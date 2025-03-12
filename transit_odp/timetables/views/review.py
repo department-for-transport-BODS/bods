@@ -433,11 +433,6 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
             timetable_inbound_outbound = TimetableVisualiser(
                 revision_id, service_code, line, target_date
             ).get_timetable_visualiser()
-            vehicle_journey_codes = set()
-            if not timetable_inbound_outbound['outbound']['df_timetable'].empty:
-                vehicle_journey_codes.update(timetable_inbound_outbound['outbound']['df_timetable'].columns.tolist())
-            if not timetable_inbound_outbound['inbound']['df_timetable'].empty:
-                vehicle_journey_codes.update(timetable_inbound_outbound['inbound']['df_timetable'].columns.tolist())
 
             # Set the context for the timetable visualiser and the line details
             context["curr_date"] = date
@@ -470,7 +465,6 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
 
             context["timetable"] = timetable
             context["is_timetable_info_available"] = is_timetable_info_available
-            context["vehicle_journey_codes"] = vehicle_journey_codes
         return context
 
 
