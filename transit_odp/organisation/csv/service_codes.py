@@ -1071,11 +1071,11 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 overall_requires_attention = self.get_overall_requires_attention(
                     require_attention,
                     avl_requires_attention,
-                    None,
+                    "No",
                     exempted,
                     seasonal_service,
                 )
-
+            
             if not dq_require_attention_active:
                 dq_require_attention = UNDER_MAINTENANCE
 
