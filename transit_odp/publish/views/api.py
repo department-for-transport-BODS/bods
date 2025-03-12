@@ -5,7 +5,7 @@ from django.conf import settings
 import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.renderers import JSONRenderer 
+from rest_framework.renderers import JSONRenderer
 
 from rest_framework.permissions import AllowAny
 from transit_odp.api.views.avl import _get_consumer_api_response
@@ -85,22 +85,27 @@ class ProgressAPIView(APIView):
 
         return Response({"progress": progress, "status": revision.status})
 
+
 class AVLRealTimeDataView(APIView):
     permission_classes = (AllowAny,)
     renderer_classes = (JSONRenderer,)
-  
+
     def get(self, request, format=None):
         url = f"{settings.AVL_CONSUMER_API_BASE_URL}/siri-vm"
-       
+
         params = request.query_params.copy()
         tt_journey_codes = params.pop("journey_code", None)
-        
+
         content, status_code = _get_consumer_api_response(url, params)
-                
+
         siri = Siri.from_string(content)
         service_delivery = siri.service_delivery
-        vehicle_activities = service_delivery.vehicle_monitoring_delivery.vehicle_activities
+        vehicle_activities = (
+            service_delivery.vehicle_monitoring_delivery.vehicle_activities
+        )
 
-        vehicle_activity_dict = get_vehicle_activity_dict(vehicle_activities, tt_journey_codes)
+        vehicle_activity_dict = get_vehicle_activity_dict(
+            vehicle_activities, tt_journey_codes
+        )
 
         return Response(vehicle_activity_dict, status=200)

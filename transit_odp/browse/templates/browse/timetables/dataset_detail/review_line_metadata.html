@@ -266,8 +266,14 @@
         const line_name = "{{line_name}}";
         const noc = "{{national_operator_code}}"
         const journey_code = "{{vehicle_journey_codes}}"
+        const trimmedNoc = noc.trim();
+        const nocIsEmpty = trimmedNoc === "" || trimmedNoc.split(",").every(value => value.trim() === ""); 
+        if (nocIsEmpty) {
+          console.log("National Operator Code is empty. Real time data is not fetched");
+        } else {
         const apiUrl = "{% url 'avldetaildatafeedapirealtime' %}" + `?lineRef=${line_name}&operatorRef=${noc}&journey_code=${journey_code}`;
         BODSFrontend.fetchAvlLiveLocation(apiUrl);
+        }
         {% endif %}
   </script>
 {% endblock %}
