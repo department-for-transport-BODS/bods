@@ -13,6 +13,7 @@ from transit_odp.browse.views.avl_views import (
     DownloadSIRIVMDataArchiveView,
     DownloadSIRIVMTflDataArchiveView,
 )
+from transit_odp.publish.views.api import AVLRealTimeDataView
 
 urlpatterns = [
     path(
@@ -86,5 +87,10 @@ urlpatterns = [
                 )
             ]
         ),
+    ),
+    path(
+        "v1/avl-feed/siri-vm",
+        AVLRealTimeDataView.as_view(),
+        name="avldetaildatafeedapirealtime",
     ),
 ]

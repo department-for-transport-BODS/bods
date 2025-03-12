@@ -126,11 +126,11 @@
           <div class="govuk-grid-column-two-thirds">
             <div class="feed-stat">
               <ul class="govuk-list">
-                {% for licence_number, organisation_name in licence_organisation_map.items %}
+                {% for licence_number, organisation_info in licence_organisation_map.items %}
                   <li class="govuk-grid-row">
-                    <span class="govuk-grid-column-two-thirds text-wrap">{{ organisation_name }}</span>
+                    <span class="govuk-grid-column-two-thirds text-wrap">{{ organisation_info.organisation_name }}</span>
                     <a class="govuk-grid-column-one-third govuk-link"
-                       href="{% url 'operator-licence-detail' number=licence_number host hosts.data %}">{{ licence_number }}</a>
+                       href="{% url 'operator-licence-detail' pk=organisation_info.organisation_id number=licence_number host hosts.data %}">{{ licence_number }}</a>
                   </li>
                 {% endfor %}
               </ul>
