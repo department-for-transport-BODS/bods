@@ -47,7 +47,7 @@
           {{ line_name }}
           {% if service_inscope == False %}
             <span class="govuk-tag govuk-tag--red govuk-!-margin-left-2 govuk-!-text-align-centre">Out of Scope</span>
-          {% elif is_avl_compliant and is_fares_compliant and is_timetables_compliant %}
+          {% elif is_avl_compliant and is_fares_compliant and is_timetable_compliant %}
             <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
               Compliant
             </span>
@@ -208,8 +208,8 @@
                   <h2 class="govuk-heading-m">{% trans "Timetable" %}</h2>
                 </th>
                 <td class="govuk-table__cell dont-break-out" colspan="2">
-                  <span class="govuk-tag {% if is_timetables_compliant %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre govuk-!-margin-right-2">
-                    {% if is_timetables_compliant %}
+                  <span class="govuk-tag {% if is_timetable_compliant %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre govuk-!-margin-right-2">
+                    {% if is_timetable_compliant %}
                       Compliant
                     {% else %}
                       Not Compliant
