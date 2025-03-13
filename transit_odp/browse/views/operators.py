@@ -443,6 +443,12 @@ class LicenceDetailView(BaseDetailView):
             "effective_stale_date_otc_effective_date"
         )
 
+        if self.service.get("service_number") in ["74"]:
+            logger.info("Checking for a single service")
+            logger.info(self.service_txc_file)
+            logger.info(is_stale(service_obj, self.service_txc_file))
+            logger.info(self.is_dqs_compliant())
+
         if not self.is_dqs_compliant() or is_stale(service_obj, self.service_txc_file):
             return False
         return True
@@ -581,10 +587,6 @@ class LicenceLineMetadataDetailView(LineMetadataDetailView):
         try:
             txcfileattribute = self.get_txcfileattribute()
             if txcfileattribute:
-                line = self.request.GET.get("line")
-                service_code = self.request.GET.get("service")
-                logger.info(f"Got the file attribute {service_code} == {line}")
-                logger.info(txcfileattribute.revision.dataset_id)
                 object = (
                     super()
                     .get_queryset()
@@ -598,7 +600,6 @@ class LicenceLineMetadataDetailView(LineMetadataDetailView):
                     .add_nocs()
                     .select_related("live_revision")
                 ).first()
-                logger.info(object)
                 return object
         except Dataset.DoesNotExist:
             line = self.request.GET.get("line")
