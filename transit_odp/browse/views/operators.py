@@ -444,13 +444,13 @@ class LicenceDetailView(BaseDetailView):
             bool: True if compliant False if not
         """
         return (
-            True
+            False
             if (
                 self.service.get("registration_number"),
                 self.service.get("service_number"),
             )
             in self.dq_critical_observation_map
-            else False
+            else True
         )
 
     def is_avl_compliant(self) -> bool:

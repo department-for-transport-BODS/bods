@@ -1172,10 +1172,11 @@ class FaresRequiresAttention:
             row = df.iloc[0].to_dict()
             valid_to = row.get("valid_to", None)
             last_modified_date = row.get("last_updated_date", "")
-            valid_to = date.today() if pd.isnull(valid_to) else valid_to
+            valid_to = None if pd.isnull(valid_to) else valid_to
             last_modified_date = (
-                date.today() if pd.isnull(last_modified_date) else last_modified_date
+                None if pd.isnull(last_modified_date) else last_modified_date
             )
+
             if is_fares_stale(valid_to, last_modified_date):
                 return True
 
