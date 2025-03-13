@@ -405,6 +405,16 @@ class LicenceDetailView(BaseDetailView):
             row["valid_to"], row["last_updated_date"].date()
         )
         fares_compliance_status = get_fares_compliance_status(row["is_fares_compliant"])
+        if self.service.get('service_number') in ['724', '74']:
+            logger.info(row)
+            logger.info(row['valid_to'])
+            logger.info(row["last_updated_date"])
+            logger.info(f"fares compliance status {fares_compliance_status}")
+            logger.info(f"fares timeliness status {fares_timeliness_status}")
+            fares_req_att = get_fares_requires_attention(
+                "Published", fares_timeliness_status, fares_compliance_status
+            )
+            logger.info(f"Fares require attention {fares_req_att}")
 
         if (
             get_fares_requires_attention(
