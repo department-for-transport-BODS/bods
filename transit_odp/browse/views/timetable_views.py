@@ -722,7 +722,7 @@ class LineMetadataDetailView(DetailView):
             else:
                 logger.info("Timetable is not compliant")
                 logger.info(txc_file)
-                logger.info(len(len(dqs_critical_issues_service_line_map)))
+                logger.info(len(dqs_critical_issues_service_line_map))
                 logger.info(evaluate_staleness(self.service, txc_file))
                 logger.info(is_stale(self.service, txc_file))
         else:
