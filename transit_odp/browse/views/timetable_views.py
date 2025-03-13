@@ -714,7 +714,16 @@ class LineMetadataDetailView(DetailView):
             if len(dqs_critical_issues_service_line_map) == 0 and not is_stale(
                 self.service, txc_file
             ):
+                logger.info("Timetable is compliant")
                 is_timetable_compliant = True
+            else:
+                logger.info("Timetable is not compliant")
+                logger.info(txc_file)
+                logger.info(len(len(dqs_critical_issues_service_line_map)))
+                logger.info(evaluate_staleness(self.service, txc_file))
+                logger.info(is_stale(self.service, txc_file))
+        else:
+            logger.info("Either service or txc file missing")
 
         return {
             "is_timetable_compliant": is_timetable_compliant,
