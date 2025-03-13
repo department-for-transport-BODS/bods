@@ -579,10 +579,7 @@ class LineMetadataDetailView(DetailView):
 
         fra = FaresRequiresAttention(None)
         is_fares_compliant = True
-        logger.info("Running the fares compliant check")
         for txc_file in txc_file_attributes:
-            logger.info("Got fares require attention")
-            logger.info(fra.is_fares_requires_attention(txc_file, fares_df))
             if is_fares_compliant:
                 is_fares_compliant = not fra.is_fares_requires_attention(
                     txc_file, fares_df
@@ -713,20 +710,10 @@ class LineMetadataDetailView(DetailView):
         txc_file = txcfa_map.get((service_code, self.line))
         is_timetable_compliant = False
         if self.service and txc_file:
-
             if len(dqs_critical_issues_service_line_map) == 0 and not is_stale(
                 self.service, txc_file
             ):
-                logger.info("Timetable is compliant")
                 is_timetable_compliant = True
-            else:
-                logger.info("Timetable is not compliant")
-                logger.info(txc_file)
-                logger.info(len(dqs_critical_issues_service_line_map))
-                logger.info(evaluate_staleness(self.service, txc_file))
-                logger.info(is_stale(self.service, txc_file))
-        else:
-            logger.info("Either service or txc file missing")
 
         return {
             "is_timetable_compliant": is_timetable_compliant,

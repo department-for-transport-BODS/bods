@@ -405,16 +405,6 @@ class LicenceDetailView(BaseDetailView):
             row["valid_to"], row["last_updated_date"].date()
         )
         fares_compliance_status = get_fares_compliance_status(row["is_fares_compliant"])
-        if self.service.get("service_number") in ["724", "74"]:
-            logger.info(row)
-            logger.info(row["valid_to"])
-            logger.info(row["last_updated_date"])
-            logger.info(f"fares compliance status {fares_compliance_status}")
-            logger.info(f"fares timeliness status {fares_timeliness_status}")
-            fares_req_att = get_fares_requires_attention(
-                "Published", fares_timeliness_status, fares_compliance_status
-            )
-            logger.info(f"Fares require attention {fares_req_att}")
 
         if (
             get_fares_requires_attention(
@@ -442,12 +432,6 @@ class LicenceDetailView(BaseDetailView):
         service_obj.effective_stale_date_otc_effective_date = self.service.get(
             "effective_stale_date_otc_effective_date"
         )
-
-        if self.service.get("service_number") in ["74"]:
-            logger.info("Checking for a single service")
-            logger.info(self.service_txc_file)
-            logger.info(is_stale(service_obj, self.service_txc_file))
-            logger.info(self.is_dqs_compliant())
 
         if not self.is_dqs_compliant() or is_stale(service_obj, self.service_txc_file):
             return False
