@@ -24,27 +24,22 @@ from django.db.models import (
     Q,
     Subquery,
     Sum,
+    TextField,
     Value,
     When,
-    TextField,
 )
 from django.db.models.expressions import Exists, RawSQL
 from django.db.models.functions import (
     Cast,
     Coalesce,
     Concat,
+    ExtractHour,
+    ExtractMinute,
     Floor,
+    LPad,
     Substr,
     TruncDate,
     Upper,
-    Concat,
-    Coalesce,
-    Upper,
-    Substr,
-    ExtractHour,
-    ExtractMinute,
-    LPad,
-    Cast,
 )
 from django.db.models.query import Prefetch
 from django.utils import timezone
@@ -52,6 +47,10 @@ from django.utils import timezone
 from config.hosts import DATA_HOST
 from transit_odp.avl.constants import MORE_DATA_NEEDED
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
+from transit_odp.browse.constants import (
+    REPORT_BASE_PAGE_COLUMNS,
+    REPORT_DETAILS_PAGE_COLUMNS,
+)
 from transit_odp.common.utils import reverse_path
 from transit_odp.organisation.constants import (
     EXPIRED,
@@ -71,10 +70,6 @@ from transit_odp.organisation.constants import (
 )
 from transit_odp.organisation.view_models import GlobalFeedStats
 from transit_odp.users.constants import AccountType
-from transit_odp.browse.constants import (
-    REPORT_BASE_PAGE_COLUMNS,
-    REPORT_DETAILS_PAGE_COLUMNS,
-)
 
 User = get_user_model()
 ANONYMOUS = "Anonymous"
@@ -1347,7 +1342,7 @@ class TXCFileAttributesQuerySet(models.QuerySet):
                 "line_name_unnested",
                 "-revision__published_at",
                 "-revision_number",
-                "-modification_datetime",
+                "-operating_period_end_date",
                 "-operating_period_start_date",
                 "-filename",
             )
