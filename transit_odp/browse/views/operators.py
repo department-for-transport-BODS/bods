@@ -443,7 +443,7 @@ class LicenceDetailView(BaseDetailView):
             "effective_stale_date_otc_effective_date"
         )
 
-        if self.service.get("service_number") in ['74']:
+        if self.service.get("service_number") in ["74"]:
             logger.info("Checking for a single service")
             logger.info(self.service_txc_file)
             logger.info(is_stale(service_obj, self.service_txc_file))
