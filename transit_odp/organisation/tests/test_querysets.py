@@ -1314,10 +1314,10 @@ class TestTXCFileAttributesQueryset:
 
     def test_service_code_in_multiple_datasets_line_level_data(self):
         """
-        Given we have a service code that is shared across multiple datasets
-        When we apply the queryset method get_active_txc_files
-        Then we pick the txc attribute (service_code) that belongs to the latest
-        dataset
+        Given we have a service code with multiple lines that is shared across multiple datasets
+        When we apply the queryset method get_active_txc_files_line_level()
+        Then we pick the txc attributes (service_code and line_names) that belongs to the latest
+        dataset.
         """
 
         for number in range(3):
@@ -1336,7 +1336,10 @@ class TestTXCFileAttributesQueryset:
         self,
     ):
         """
-        ...
+        Given we have a service code with multiple lines that is shared across multiple TxC files
+        in the same dataset, when we apply the queryset method get_active_txc_files_line_level()
+        Then we pick the txc attributes (service_code and line_names) that belongs to the file with
+        the latest revision_number.
         """
 
         for number in range(3):
@@ -1368,7 +1371,10 @@ class TestTXCFileAttributesQueryset:
         self,
     ):
         """
-        ...
+        Given we have a service code with multiple lines that is shared across multiple TxC files
+        in the same dataset, when we apply the queryset method get_active_txc_files_line_level()
+        Then we pick the txc attributes (service_code and line_names) that belongs to the file with
+        the latest operating period end date, if the files has the same revision number.
         """
         for number in range(3):
             service_code = f"PF0000{number}"
@@ -1400,7 +1406,11 @@ class TestTXCFileAttributesQueryset:
         self,
     ):
         """
-        ...
+        Given we have a service code with multiple lines that is shared across multiple TxC files
+        in the same dataset, when we apply the queryset method get_active_txc_files_line_level()
+        Then we pick the txc attributes (service_code and line_names) that belongs to the file with
+        the latest operating period start date, if the files has the same revision number and
+        operating period end date.
         """
         for number in range(3):
             service_code = f"PF0000{number}"
@@ -1433,7 +1443,11 @@ class TestTXCFileAttributesQueryset:
         self,
     ):
         """
-        ...
+        Given we have a service code with multiple lines that is shared across multiple TxC files
+        in the same dataset, when we apply the queryset method get_active_txc_files_line_level()
+        Then we pick the txc attributes (service_code and line_names) that belong to the first file
+        once sorted by filename in descending order, if the files has the same revision number,
+        operating period start date and operating period start date.
         """
         for number in range(3):
             service_code = f"PF0000{number}"
