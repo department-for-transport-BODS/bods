@@ -1171,13 +1171,35 @@ class FaresRequiresAttention:
         if not df.empty:
             row = df.iloc[0].to_dict()
             valid_to = row.get("valid_to", None)
-            last_modified_date = row.get("last_updated_date", "")
-            valid_to = None if pd.isnull(valid_to) else valid_to
+            last_modified_date = row.get("last_updated_date", None)
+            print(row)
+            print(last_modified_date)
+            valid_to = None if pd.isnull(valid_to) else valid_to.date()
             last_modified_date = (
-                None if pd.isnull(last_modified_date) else last_modified_date
+                None if pd.isnull(last_modified_date) else last_modified_date.date()
             )
 
-            if is_fares_stale(valid_to, last_modified_date):
+            fares_compliance_status = get_fares_compliance_status(
+                row["is_fares_compliant"]
+            )
+            fares_timeliness_status = get_fares_timeliness_status(
+                valid_to, last_modified_date
+            )
+            logger.info(valid_to)
+            logger.info(last_modified_date)
+            logger.info(f"fares compliance status {fares_compliance_status}")
+            logger.info(f"fares timeliness status {fares_timeliness_status}")
+            fares_req_att = get_fares_requires_attention(
+                "Published", fares_timeliness_status, fares_compliance_status
+            )
+            logger.info(f"Fares require attention {fares_req_att}")
+
+            if (
+                get_fares_requires_attention(
+                    "Published", fares_timeliness_status, fares_compliance_status
+                )
+                == "Yes"
+            ):
                 return True
 
         return False
