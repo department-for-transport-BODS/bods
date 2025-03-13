@@ -575,7 +575,7 @@ class LicenceLineMetadataDetailView(LineMetadataDetailView):
                 service_code = self.request.GET.get("service")
                 logger.info(f"Got the file attribute {service_code} == {line}")
                 logger.info(txcfileattribute.revision.dataset_id)
-                object = ( 
+                object = (
                     super()
                     .get_queryset()
                     .filter(id=txcfileattribute.revision.dataset_id)
