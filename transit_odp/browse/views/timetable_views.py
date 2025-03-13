@@ -579,7 +579,10 @@ class LineMetadataDetailView(DetailView):
 
         fra = FaresRequiresAttention(None)
         is_fares_compliant = True
+        logger.info("Running the fares compliant check")
         for txc_file in txc_file_attributes:
+            logger.info("Got fares require attention")
+            logger.info(fra.is_fares_requires_attention(txc_file, fares_df))
             if is_fares_compliant:
                 is_fares_compliant = not fra.is_fares_requires_attention(
                     txc_file, fares_df
