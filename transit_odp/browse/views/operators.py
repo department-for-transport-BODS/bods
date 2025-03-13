@@ -571,7 +571,11 @@ class LicenceLineMetadataDetailView(LineMetadataDetailView):
         try:
             txcfileattribute = self.get_txcfileattribute()
             if txcfileattribute:
-                object = (
+                line = self.request.GET.get("line")
+                service_code = self.request.GET.get("service")
+                logger.info(f"Got the file attribute {service_code} == {line}")
+                logger.info(txcfileattribute.revision.dataset_id)
+                object = ( 
                     super()
                     .get_queryset()
                     .filter(id=txcfileattribute.revision.dataset_id)
@@ -584,6 +588,7 @@ class LicenceLineMetadataDetailView(LineMetadataDetailView):
                     .add_nocs()
                     .select_related("live_revision")
                 ).first()
+                logger.info(object)
                 return object
         except Dataset.DoesNotExist:
             line = self.request.GET.get("line")
