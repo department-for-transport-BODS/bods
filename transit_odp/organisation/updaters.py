@@ -3,11 +3,9 @@
 
 import hashlib
 import logging
-from uuid import uuid4
 
 import requests
 from django.conf import settings
-from django.http import JsonResponse
 from requests.exceptions import ConnectionError as RequestConnectionError
 from requests.exceptions import ConnectTimeout, RequestException
 from tenacity import retry, wait_exponential
@@ -16,7 +14,6 @@ from tenacity.stop import stop_after_attempt
 from waffle import flag_is_active
 
 from transit_odp.common.loggers import MonitoringLoggerContext, PipelineAdapter
-from transit_odp.common.utils.aws_common import StepFunctionsClientWrapper
 from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.organisation.notifications import (
@@ -25,8 +22,7 @@ from transit_odp.organisation.notifications import (
     send_feed_monitor_fail_first_try_notification,
     send_feed_monitor_fail_half_way_try_notification,
 )
-from transit_odp.pipelines.models import DatasetETLTaskResult
-from transit_odp.timetables.utils import create_tt_state_machine_payload
+from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
 
 ERROR = "error"
 DEFUALT_COMMENT = "Automatically detected change in data set"
@@ -186,46 +182,28 @@ def update_dataset(dataset: Dataset, publish_task):
             new_revision = updater.start_new_revision()
             if new_revision is not None:
                 adapter.info("Creating new revision.")
-                is_serverless_publishing_active = flag_is_active(
+                is_tt_serverless_publishing_active = flag_is_active(
                     "", "is_serverless_publishing_active"
                 )
-                if (
-                    not is_serverless_publishing_active
-                    or publish_task.name.split(".")[-1] == "task_run_fares_pipeline"
-                ):
-                    args = (new_revision.id,)
-                    kwargs = {"do_publish": True}
-                    adapter.info("Start data set ETL pipeline.")
-                    publish_task.apply_async(args=args, kwargs=kwargs)
-                else:
-                    task = DatasetETLTaskResult.objects.create(
-                        revision=new_revision,
-                        status=DatasetETLTaskResult.STARTED,
-                        task_id=str(uuid4()),
-                    )
-                    # trigger state machine
-                    input_payload = create_tt_state_machine_payload(
-                        new_revision, task.id, True
-                    )
-                    try:
-                        step_fucntions_client = StepFunctionsClientWrapper()
-                        step_function_arn = (
-                            settings.TIMETABLES_STATE_MACHINE_ARN
-                        )  # ARN of timetable pipeline Step Function
-
-                        if not step_function_arn:
-                            logger.error(
-                                "Timetable pipeline: AWS Step Function ARN is missing or invalid"
-                            )
-                            raise
-
-                        # Invoke the Step Function
-                        step_fucntions_client.start_step_function(
-                            input_payload, step_function_arn
-                        )
-
-                    except Exception as e:
-                        return JsonResponse({"error": str(e)}, status=500)
+                is_fares_serverless_publishing_active = flag_is_active(
+                    "", "is_fares_serverless_publishing_active"
+                )
+                if publish_task.name.split(".")[-1] == "task_dataset_pipeline":
+                    if not is_tt_serverless_publishing_active:
+                        args = (new_revision.id,)
+                        kwargs = {"do_publish": True}
+                        adapter.info("Start data set ETL pipeline.")
+                        publish_task.apply_async(args=args, kwargs=kwargs)
+                    else:
+                        trigger_state_machine(new_revision, "timetables", True)
+                elif publish_task.name.split(".")[-1] == "task_run_fares_pipeline":
+                    if not is_fares_serverless_publishing_active:
+                        args = (new_revision.id,)
+                        kwargs = {"do_publish": True}
+                        adapter.info("Start data set ETL pipeline.")
+                        publish_task.apply_async(args=args, kwargs=kwargs)
+                    else:
+                        trigger_state_machine(new_revision, "fares", True)
 
             else:
                 adapter.info("Dataset contains a good revision. Do nothing.")
