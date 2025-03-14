@@ -33,7 +33,6 @@ from transit_odp.organisation.constants import (
     FaresType,
     TimetableType,
 )
-from transit_odp.organisation.csv.service_codes import STALENESS_STATUS
 from transit_odp.organisation.models import Dataset
 from transit_odp.organisation.models import Licence as OrganisationLicence
 from transit_odp.organisation.models import Organisation
@@ -45,7 +44,6 @@ from transit_odp.organisation.models.data import (
 from transit_odp.otc.models import Service
 from transit_odp.publish.requires_attention import (
     FaresRequiresAttention,
-    evaluate_staleness,
     get_avl_requires_attention_line_level_data,
     get_dq_critical_observation_services_map,
     get_fares_compliance_status,
@@ -53,6 +51,7 @@ from transit_odp.publish.requires_attention import (
     get_fares_requires_attention,
     get_fares_timeliness_status,
     get_requires_attention_line_level_data,
+    is_stale,
 )
 
 logger = getLogger(__name__)
@@ -434,9 +433,7 @@ class LicenceDetailView(BaseDetailView):
             "effective_stale_date_otc_effective_date"
         )
 
-        rad = evaluate_staleness(service_obj, self.service_txc_file)
-        staleness_status = STALENESS_STATUS[rad.index(True)]
-        if not self.is_dqs_compliant() or staleness_status != "Up to date":
+        if not self.is_dqs_compliant() or is_stale(service_obj, self.service_txc_file):
             return False
         return True
 
@@ -447,13 +444,13 @@ class LicenceDetailView(BaseDetailView):
             bool: True if compliant False if not
         """
         return (
-            True
+            False
             if (
                 self.service.get("registration_number"),
                 self.service.get("service_number"),
             )
             in self.dq_critical_observation_map
-            else False
+            else True
         )
 
     def is_avl_compliant(self) -> bool:
