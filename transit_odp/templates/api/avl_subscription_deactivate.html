@@ -1,0 +1,26 @@
+{% extends "page.html" %}
+{% load static %}
+{% load breadcrumbs %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block title_tag %}
+  {% if form.errors %}
+    {% trans "Error: " %}
+  {% endif %}
+  {% trans "Deactivate Subscription" %}
+{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
+{% block backlink %}
+  {% url 'api:buslocation-manage-subscription' subscription_id=subscription_id host hosts.data as backlink_url %}
+  {% include "snippets/backlink.html" with url=backlink_url %}
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <h1 class="govuk-heading-xl">{% trans "Would you like to deactivate this subscription?" %}</h1>
+    </div>
+  </div>
+  {% block inner %}
+    {% crispy form %}
+  {% endblock %}
+{% endblock %}
