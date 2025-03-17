@@ -32,8 +32,8 @@ def delete_fares_existing_revision_data(revision):
     """
     Delete any existing violations for the given revision id.
     This allows validation to occur multiple times for the same DatasetRevision
-    Includes only SchemaViolation, 
-    FaresValidation, FaresValidationResult, DataCatalogueMetaData and stops data 
+    Includes only SchemaViolation,
+    FaresValidation, FaresValidationResult, DataCatalogueMetaData and stops data
     is deleted in by the lambdas***
     """
     revision.schema_violations.all().delete()

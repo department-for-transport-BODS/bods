@@ -10,6 +10,8 @@ from transit_odp.pipelines.factories import (
 from transit_odp.publish.views.utils import create_state_machine_payload
 
 pytestmark = pytest.mark.django_db
+
+
 def test_create_payload_url_upload():
     mock_revision = DatasetRevisionFactory(
         id=123,
@@ -19,7 +21,9 @@ def test_create_payload_url_upload():
 
     task = DatasetETLTaskResultFactory(revision=mock_revision)
 
-    payload_json = create_state_machine_payload(mock_revision, task.id, True, "timetables")
+    payload_json = create_state_machine_payload(
+        mock_revision, task.id, True, "timetables"
+    )
     payload = json.loads(payload_json)
     assert payload is not None
     assert payload["datasetRevisionId"] == 123
@@ -29,8 +33,10 @@ def test_create_payload_url_upload():
     assert payload["publishDatasetRevision"]
     assert payload["datasetETLTaskResultId"] == task.id
     assert "s3" not in payload  # Ensure 's3' is excluded when None
-    
-    payload_json_fares = create_state_machine_payload(mock_revision, task.id, False, "fares")
+
+    payload_json_fares = create_state_machine_payload(
+        mock_revision, task.id, False, "fares"
+    )
     payload = json.loads(payload_json_fares)
     assert payload is not None
     assert payload["datasetRevisionId"] == 123
@@ -40,6 +46,7 @@ def test_create_payload_url_upload():
     assert not payload["publishDatasetRevision"]
     assert payload["datasetETLTaskResultId"] == task.id
     assert "s3" not in payload  # Ensure 's3' is excluded when None
+
 
 def test_create_payload_file_upload():
     mock_file = Mock()
@@ -52,7 +59,9 @@ def test_create_payload_file_upload():
 
     task = DatasetETLTaskResultFactory(revision=mock_revision)
 
-    payload_json = create_state_machine_payload(mock_revision, task.id, False, "timetables")
+    payload_json = create_state_machine_payload(
+        mock_revision, task.id, False, "timetables"
+    )
     payload = json.loads(payload_json)
     assert payload is not None
     assert payload["datasetRevisionId"] == 123
@@ -62,8 +71,10 @@ def test_create_payload_file_upload():
     assert not payload["publishDatasetRevision"]
     assert payload["datasetETLTaskResultId"] == task.id
     assert "url" not in payload  # Ensure 'url' is excluded when None
-    
-    payload_json_fares = create_state_machine_payload(mock_revision, task.id, True, "fares")
+
+    payload_json_fares = create_state_machine_payload(
+        mock_revision, task.id, True, "fares"
+    )
     payload = json.loads(payload_json_fares)
     assert payload is not None
     assert payload["datasetRevisionId"] == 123
@@ -73,6 +84,7 @@ def test_create_payload_file_upload():
     assert payload["publishDatasetRevision"]
     assert payload["datasetETLTaskResultId"] == task.id
     assert "url" not in payload  # Ensure 'url' is excluded when None
+
 
 def test_create_payload_missing_inputs(caplog):
     mock_revision = DatasetRevisionFactory(
