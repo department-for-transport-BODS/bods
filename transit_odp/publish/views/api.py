@@ -107,5 +107,6 @@ class AVLRealTimeDataView(APIView):
         vehicle_activity_dict = get_vehicle_activity_dict(
             vehicle_activities, tt_journey_codes
         )
+        print(f"vehicle_activities {vehicle_activity_dict}")
 
         return Response(vehicle_activity_dict, status=200)

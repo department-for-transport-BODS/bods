@@ -242,6 +242,7 @@ const fetchAvlLiveLocation = (apiUrl) => {
   fetch(apiUrl)
       .then(response => response.json())
       .then(data => {
+        console.log("data is >> " + data)
         for (const key in data) {
           if (data.hasOwnProperty(key)) {
               addMarker(feed_map, key, data[key].Longitude, data[key].Latitude, data[key].VehicleJourneyCode)
