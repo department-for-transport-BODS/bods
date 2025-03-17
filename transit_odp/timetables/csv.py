@@ -913,7 +913,9 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     staleness_42_day_look_ahead = (
         (staleness_otc == False)
         & pd.notna(df["operating_period_end_date"])
+        & pd.notna(df["expiry_date"])
         & (df["operating_period_end_date"] < forty_two_days_from_today)
+        & (df["operating_period_end_date"] < df["expiry_date"])
     )
 
     """
