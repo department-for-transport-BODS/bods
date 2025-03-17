@@ -32,14 +32,11 @@ def delete_fares_existing_revision_data(revision):
     """
     Delete any existing violations for the given revision id.
     This allows validation to occur multiple times for the same DatasetRevision
-    Includes: SchemaViolation, FaresValidation, FaresValidationResult
-    ****DataCatalogueMetaData is also deleted but it does not have a foreign key constraint to revision***
+    Includes only SchemaViolation, 
+    FaresValidation, FaresValidationResult, DataCatalogueMetaData and stops data 
+    is deleted in by the lambdas***
     """
     revision.schema_violations.all().delete()
-    revision.fares_validations.all().delete()
-    revision.fares_validation_result.all().delete()
-    revision.metadata.all().delete()
-    # DataCatalogueMetaData is also deleted but it does not have a foreign key constraint to revision
 
 
 def trigger_state_machine(revision, dataset_type, do_publish: bool = False):
