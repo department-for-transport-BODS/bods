@@ -259,7 +259,7 @@ def test_service_in_otc_and_not_in_bods():
         assert row["OTC:Finish Point"] == service.finish_point
         assert row["OTC:Via"] == service.via
         assert row["OTC:Granted Date"] == licence.granted_date
-        assert row["OTC:Expiry Date"] == licence.expiry_date
+        assert row["OTC:Expiry Date"] == service.end_date
         assert row["OTC:Effective Date"] == service.effective_date
         assert row["OTC:Received Date"] == service.received_date
         assert (
