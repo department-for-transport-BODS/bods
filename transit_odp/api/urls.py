@@ -4,6 +4,7 @@ from rest_framework_swagger.views import get_swagger_view
 
 from transit_odp.api.views import (
     AVLApiView,
+    AVLApiServiceView,
     AVLDetailApiView,
     AVLGTFSRTApiView,
     AVLOpenApiView,
@@ -16,6 +17,16 @@ from transit_odp.api.views import (
     TimetablesApiView,
     TimetablesViewSet,
     v2,
+)
+from transit_odp.api.views.avl import (
+    AVLManageSubscriptionsView,
+    AVLManageSubscriptionDetailView,
+    AVLManageSubscriptionDeactivateView,
+    AVLManageSubscriptionDeactivateSuccessView,
+    AVLConsumerSubscriptionsApiViewSet,
+    AVLConsumerSubscriptionApiViewSet,
+    AVLSubscriptionsSubscribeView,
+    AVLSubscriptionsSubscribeSuccessView,
 )
 from transit_odp.api.views.disruptions import DisruptionsApiView
 from transit_odp.api.views.cancellations import CancellationsApiView
@@ -40,7 +51,42 @@ disruptions_views = get_swagger_view(title="Disruption Data API")
 
 urlpatterns = [
     path("timetable-openapi/", TimetablesApiView.as_view(), name="timetableopenapi"),
-    path("buslocation-openapi/", AVLOpenApiView.as_view(), name="avlopenapi"),
+    path("buslocation-api/", AVLApiServiceView.as_view(), name="buslocation-api"),
+    path(
+        "buslocation-api/openapi/",
+        AVLOpenApiView.as_view(),
+        name="buslocation-tryapi",
+    ),
+    path(
+        "buslocation-api/subscribe/",
+        AVLSubscriptionsSubscribeView.as_view(),
+        name="buslocation-subscribe",
+    ),
+    path(
+        "buslocation-api/manage-subscriptions/",
+        AVLManageSubscriptionsView.as_view(),
+        name="buslocation-manage-subscriptions",
+    ),
+    path(
+        "buslocation-api/manage-subscriptions/<str:subscription_id>/",
+        AVLManageSubscriptionDetailView.as_view(),
+        name="buslocation-manage-subscription",
+    ),
+    path(
+        "buslocation-api/manage-subscriptions/<str:subscription_id>/deactivate",
+        AVLManageSubscriptionDeactivateView.as_view(),
+        name="buslocation-manage-subscription-deactivate",
+    ),
+    path(
+        "buslocation-api/manage-subscriptions/<str:subscription_id>/deactivate/success",
+        AVLManageSubscriptionDeactivateSuccessView.as_view(),
+        name="buslocation-manage-subscription-deactivate-success",
+    ),
+    path(
+        "buslocation-api/subscribe/success/",
+        AVLSubscriptionsSubscribeSuccessView.as_view(),
+        name="buslocation-subscribe-success",
+    ),
     path("fares-openapi/", FaresOpenApiView.as_view(), name="faresopenapi"),
     path(
         "disruptions-api-overview/",
@@ -65,6 +111,26 @@ urlpatterns = [
     path("app/", include("transit_odp.api.app.urls")),
     path("v1/", include(router_v1.urls)),
     path("v1/datafeed/", AVLApiView.as_view(), name="avldatafeedapi"),
+    path(
+        "v1/siri-vm/subscriptions/",
+        AVLConsumerSubscriptionsApiViewSet.as_view(
+            {
+                "get": "list",
+                "post": "create",
+            }
+        ),
+        name="avlconsumersubscriptionsapi",
+    ),
+    path(
+        "v1/siri-vm/subscriptions/<str:subscription_id>/",
+        AVLConsumerSubscriptionApiViewSet.as_view(
+            {
+                "get": "list",
+                "delete": "destroy",
+            }
+        ),
+        name="avlconsumersubscriptionapi",
+    ),
     path("v1/siri-sx/", DisruptionsApiView.as_view(), name="disruptionsapi"),
     path(
         "v1/siri-sx/cancellations/",
