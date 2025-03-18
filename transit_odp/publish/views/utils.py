@@ -327,6 +327,7 @@ def get_vehicle_activity_dict(
     """
     vehicle_dict = {}
     current_time = datetime.now(timezone.utc)
+    print(f"Journey codes >> {tt_journey_codes}")
 
     for vehicle_activity in vehicle_activities_list:
         monitored_vehicle_journey = vehicle_activity.monitored_vehicle_journey

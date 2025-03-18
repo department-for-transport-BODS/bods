@@ -95,6 +95,7 @@ class AVLRealTimeDataView(APIView):
 
         params = request.query_params.copy()
         tt_journey_codes = params.pop("journey_code", None)
+        tt_journey_codes_list = tt_journey_codes.split(',')
 
         content, status_code = _get_consumer_api_response(url, params)
 
@@ -105,7 +106,7 @@ class AVLRealTimeDataView(APIView):
         )
 
         vehicle_activity_dict = get_vehicle_activity_dict(
-            vehicle_activities, tt_journey_codes
+            vehicle_activities, tt_journey_codes_list
         )
         print(f"vehicle_activities {vehicle_activity_dict}")
 
