@@ -343,8 +343,9 @@ def get_vehicle_activity_dict(
         vehicle_journey_code = "-"
         if framed_vehicle_journey_ref:
             vehicle_journey_code = framed_vehicle_journey_ref.dated_vehicle_journey_ref
+            print(f"inside vehicle_journey_code {vehicle_journey_code}")
 
-        if vehicle_journey_code != "-" and vehicle_journey_code not in tt_journey_codes:
+        if vehicle_journey_code not in tt_journey_codes:
             continue
         print(f"vehicle_journey_code {vehicle_journey_code}")
         time_diff = current_time - recorded_at_time
