@@ -328,6 +328,7 @@ def get_vehicle_activity_dict(
     vehicle_dict = {}
     current_time = datetime.now(timezone.utc)
     print(f"Journey codes >> {tt_journey_codes}")
+    journey_codes_list = tt_journey_codes[0].split(',')
 
     for vehicle_activity in vehicle_activities_list:
         monitored_vehicle_journey = vehicle_activity.monitored_vehicle_journey
@@ -345,7 +346,7 @@ def get_vehicle_activity_dict(
             vehicle_journey_code = framed_vehicle_journey_ref.dated_vehicle_journey_ref
             print(f"inside vehicle_journey_code {vehicle_journey_code}")
 
-        if vehicle_journey_code not in tt_journey_codes:
+        if vehicle_journey_code not in journey_codes_list:
             continue
         print(f"vehicle_journey_code {vehicle_journey_code}")
         time_diff = current_time - recorded_at_time
