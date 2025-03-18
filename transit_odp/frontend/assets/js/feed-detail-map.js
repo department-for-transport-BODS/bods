@@ -193,7 +193,7 @@ const initMap = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber) => 
 
       // Populate the popup and set its coordinates
       // based on the feature found.
-      popup.setLongLat(e.lngLat).setHTML(description).addTo(map);
+      popup.setLngLat(e.lngLat).setHTML(description).addTo(map);
     });
 
     feed_map.on("mouseleave", "service-patterns", function () {
@@ -218,10 +218,10 @@ const getCurrentDateTime = () => {
 
 const addMarker = (feed_map, vehicle_ref, long, lat, vehicle_journey_code) => {
   if (feed_map_markers.hasOwnProperty(vehicle_ref)) {
-    feed_map_markers[vehicle_ref].setLongLat([long, lat])
+    feed_map_markers[vehicle_ref].setLngLat([long, lat])
   } else {
     feed_map_markers[vehicle_ref] = new mapboxgl.Marker(customMarker.cloneNode(true))
-      .setLongLat([long, lat]) // Longitude, Latitude
+      .setLngLat([long, lat]) // Longitude, Latitude
       .setPopup(new mapboxgl.Popup().setHTML(`<h3>Vehicle Ref: ${vehicle_ref}</h3>
         <p>Vehicle Journey Code: ${vehicle_journey_code}</p>
         `))
