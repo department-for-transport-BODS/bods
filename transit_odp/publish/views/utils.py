@@ -346,7 +346,7 @@ def get_vehicle_activity_dict(
 
         if vehicle_journey_code != "-" and vehicle_journey_code not in tt_journey_codes:
             continue
-
+        print(f"vehicle_journey_code {vehicle_journey_code}")
         time_diff = current_time - recorded_at_time
         if time_diff <= timedelta(minutes=10):
             if vehicle_ref not in vehicle_dict:

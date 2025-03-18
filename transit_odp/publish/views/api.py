@@ -95,9 +95,10 @@ class AVLRealTimeDataView(APIView):
 
         params = request.query_params.copy()
         tt_journey_codes = params.pop("journey_code", None)
-        tt_journey_codes_list = tt_journey_codes.split(',')
+        print(f"tt_journey_list {tt_journey_codes}")
 
         content, status_code = _get_consumer_api_response(url, params)
+        print(f"The content of api is {content}")
 
         siri = Siri.from_string(content)
         service_delivery = siri.service_delivery
@@ -106,7 +107,7 @@ class AVLRealTimeDataView(APIView):
         )
 
         vehicle_activity_dict = get_vehicle_activity_dict(
-            vehicle_activities, tt_journey_codes_list
+            vehicle_activities, tt_journey_codes
         )
         print(f"vehicle_activities {vehicle_activity_dict}")
 
