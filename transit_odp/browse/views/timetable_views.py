@@ -769,13 +769,16 @@ class LineMetadataDetailView(DetailView):
 
         vehicle_journey_codes = set()
         if not timetable_inbound_outbound["outbound"]["df_timetable"].empty:
+
             vehicle_journey_codes.update(
                 timetable_inbound_outbound["outbound"]["df_timetable"].columns.tolist()
             )
         if not timetable_inbound_outbound["inbound"]["df_timetable"].empty:
+
             vehicle_journey_codes.update(
                 timetable_inbound_outbound["inbound"]["df_timetable"].columns.tolist()
             )
+
         is_timetable_info_available = False
         timetable = {}
         for direction in ["outbound", "inbound"]:
@@ -879,6 +882,9 @@ class LineMetadataDetailView(DetailView):
         kwargs["is_timetable_visualiser_active"] = is_timetable_visualiser_active
         kwargs["is_complete_service_pages_active"] = flag_is_active(
             "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        )
+        kwargs["is_complete_service_pages_real_time_data_active"] = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES_REAL_TIME_DATA.value
         )
 
         kwargs["current_valid_files"] = []
