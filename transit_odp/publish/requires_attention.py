@@ -1003,8 +1003,6 @@ def query_dq_critical_observation(query, revision_ids: list) -> List[tuple]:
     Returns:
         dict[tuple, str]: return a list of services"""
 
-    logger.info("DQS is being called.")
-
     service_pattern_ids_df = get_service_patterns_df(query)
     if service_pattern_ids_df.empty:
         return []
@@ -1065,7 +1063,6 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
     Returns:
         pd.DataFrame: DataFrame containing the fares files details
     """
-    logger.info("Fares df class was called.")
     nocs_list = []
     noc_linename_dict = []
     for _, file_attribute in txc_map.items():
@@ -1151,7 +1148,6 @@ class FaresRequiresAttention:
     org_id: int
 
     def __init__(self, org_id):
-        logger.info("Fares require attention class was called")
         self._org_id = org_id
 
     def is_fares_requires_attention(
@@ -1273,8 +1269,6 @@ def get_service_pattern_stops_df(service_pattern_ids_df: pd.DataFrame) -> pd.Dat
         .order_by()
         .values("id", "service_pattern_id")
     )
-
-    logger.info(service_pattern_stops_qs.query)
 
     service_pattern_stops_df = pd.DataFrame.from_records(service_pattern_stops_qs)
     if service_pattern_stops_df.empty:
