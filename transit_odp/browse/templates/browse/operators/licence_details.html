@@ -9,7 +9,7 @@
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
-  {% breadcrumb_url 'Operator Profiles' 'operators' %}
+  {% breadcrumb_url 'Operator Profiles' 'operators'  host hosts.data %}
   {% with name=organisation.name|truncatechars:19 %}
     {% breadcrumb_url name 'operator-detail' organisation.id host hosts.data %}
   {% endwith %}
