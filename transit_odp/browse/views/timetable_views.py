@@ -192,6 +192,10 @@ class LineMetadataDetailView(DetailView):
     template_name = "browse/timetables/dataset_detail/review_line_metadata.html"
     model = Dataset
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.page = "line-details"
+
     def get_queryset(self):
         return (
             super()
@@ -857,6 +861,12 @@ class LineMetadataDetailView(DetailView):
         kwargs["is_complete_service_pages_active"] = flag_is_active(
             "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
         )
+        kwargs["is_fares_require_attention_active"] = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
+        kwargs["is_avl_require_attention_active"] = flag_is_active(
+            "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
+        )
 
         kwargs["current_valid_files"] = []
         kwargs["service_type"] = "N/A"
@@ -879,7 +889,7 @@ class LineMetadataDetailView(DetailView):
                     )
                 )
 
-            if FeatureFlags.COMPLETE_SERVICE_PAGES:
+            if FeatureFlags.COMPLETE_SERVICE_PAGES and self.page == "licence":
                 self.line = line
                 self.service_code = service_code
                 self.service = self.get_otc_service()

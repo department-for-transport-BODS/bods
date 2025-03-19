@@ -594,6 +594,10 @@ class LicenceLineMetadataDetailView(LineMetadataDetailView):
     slug_url_kwarg = "number"
     slug_field = "number"
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.page = "licence"
+
     def get_object(self):
         try:
             txcfileattribute = self.get_txcfileattribute()

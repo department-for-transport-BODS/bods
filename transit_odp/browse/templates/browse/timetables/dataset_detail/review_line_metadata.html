@@ -121,30 +121,32 @@
       </table>
     </div>
   </div>
-  {% if licence_page %}
-    {% if is_complete_service_pages_active %}
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-          <table class="govuk-table dataset-property-table">
-            <tbody class="govuk-table__body">
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header govuk-!-width-one-half">
-                  <h2 class="govuk-heading-m">{% trans "AVL" %}</h2>
-                </th>
-                <td class="govuk-table__cell dont-break-out " colspan="2">
-                  <span class="govuk-tag {% if is_avl_compliant %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
-                    {% if is_avl_compliant %}
-                      Compliant
-                    {% else %}
-                      Not Compliant
-                    {% endif %}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    {% if is_complete_service_pages_active and licence_page %}
+      {% if is_avl_require_attention_active %}
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds">
+            <table class="govuk-table dataset-property-table">
+              <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header govuk-!-width-one-half">
+                    <h2 class="govuk-heading-m">{% trans "AVL" %}</h2>
+                  </th>
+                  <td class="govuk-table__cell dont-break-out " colspan="2">
+                    <span class="govuk-tag {% if is_avl_compliant %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+                      {% if is_avl_compliant %}
+                        Compliant
+                      {% else %}
+                        Not Compliant
+                      {% endif %}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      {% endif %}
+      {% if is_fares_require_attention_active %}
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
           <table class="govuk-table dataset-property-table">
@@ -195,6 +197,7 @@
           </table>
         </div>
       </div>
+      {% endif %}
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
           <table class="govuk-table dataset-property-table">
@@ -226,7 +229,6 @@
         </div>
       </div>
     {% endif %}
-  {% endif %}
   {% if is_timetable_visualiser_active %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">

@@ -1010,13 +1010,11 @@ def query_dq_critical_observation(query, revision_ids: list) -> List[tuple]:
         return []
 
     service_pattern_stops_df = get_service_pattern_stops_df(service_pattern_ids_df)
-
     service_pattern_ids_df = service_pattern_ids_df.merge(
         service_pattern_stops_df, on=["service_pattern_id"], how="left"
     )
 
     dqs_observation_df = get_dqs_observations_df(service_pattern_stops_df, revision_ids)
-
     dqs_require_attention_df = service_pattern_ids_df.merge(
         dqs_observation_df, on=["service_pattern_stop_id"], how="left", indicator=True
     )
@@ -1054,6 +1052,7 @@ def get_dq_critical_observation_services_map_from_dataframe(
             revision_id=row["revision_id"],
             txcfileattributes_id=row["id"],
         )
+
     return query_dq_critical_observation(query, revision_ids)
 
 
