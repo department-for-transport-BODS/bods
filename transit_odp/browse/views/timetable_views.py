@@ -192,10 +192,6 @@ class LineMetadataDetailView(DetailView):
     template_name = "browse/timetables/dataset_detail/review_line_metadata.html"
     model = Dataset
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.page = "line-details"
-
     def get_queryset(self):
         return (
             super()
@@ -577,24 +573,19 @@ class LineMetadataDetailView(DetailView):
         """
         Get the fares data for the dataset
         """
-        is_fares_require_attention_active = flag_is_active(
-            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
-        )
 
         txc_map = dict(enumerate(txc_file_attributes))
+        fares_df = get_fares_dataset_map(txc_map)
+
+        fra = FaresRequiresAttention(None)
         is_fares_compliant = True
-        if is_fares_require_attention_active:
-            fares_df = get_fares_dataset_map(txc_map)
-            fra = FaresRequiresAttention(None)
-            for txc_file in txc_file_attributes:
-                if is_fares_compliant:
-                    is_fares_compliant = not fra.is_fares_requires_attention(
-                        txc_file, fares_df
-                    )
-                else:
-                    break
-        else:
-            fares_df = pd.DataFrame()
+        for txc_file in txc_file_attributes:
+            if is_fares_compliant:
+                is_fares_compliant = not fra.is_fares_requires_attention(
+                    txc_file, fares_df
+                )
+            else:
+                break
 
         tariff_basis, product_name = [], []
         today = datetime.today().date()
@@ -733,9 +724,6 @@ class LineMetadataDetailView(DetailView):
         }
 
     def get_otc_service(self):
-        if not self.service_code:
-            return None
-
         otc_map = {
             (
                 f"{service.registration_number.replace('/', ':')}",
@@ -840,8 +828,21 @@ class LineMetadataDetailView(DetailView):
         """
         line = self.request.GET.get("line")
         service_code = self.request.GET.get("service")
-        kwargs["line_name"] = line
-        kwargs["service_code"] = service_code
+
+        self.line = line
+        self.service_code = service_code
+        self.service = self.get_otc_service()
+        licence_number = None
+        self.service_code_exemption_map = {}
+        self.seasonal_service_map = {}
+        self.service_inscope = True
+        if self.service:
+            licence_number = self.service.licence.number
+            self.service_code_exemption_map = self.get_service_code_exemption_map(
+                licence_number
+            )
+            self.seasonal_service_map = self.get_seasonal_service_map(licence_number)
+            self.service_inscope = self.is_service_in_scope()
 
         kwargs = super().get_context_data(**kwargs)
         dataset = self.object
@@ -850,6 +851,10 @@ class LineMetadataDetailView(DetailView):
         else:
             live_revision = None
         kwargs["pk"] = dataset.id if dataset else None
+        kwargs["service_inscope"] = self.service_inscope
+
+        kwargs["line_name"] = line
+        kwargs["service_code"] = service_code
 
         kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
@@ -860,12 +865,6 @@ class LineMetadataDetailView(DetailView):
         kwargs["is_timetable_visualiser_active"] = is_timetable_visualiser_active
         kwargs["is_complete_service_pages_active"] = flag_is_active(
             "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
-        )
-        kwargs["is_fares_require_attention_active"] = flag_is_active(
-            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
-        )
-        kwargs["is_avl_require_attention_active"] = flag_is_active(
-            "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
         )
 
         kwargs["current_valid_files"] = []
@@ -889,34 +888,13 @@ class LineMetadataDetailView(DetailView):
                     )
                 )
 
-            if FeatureFlags.COMPLETE_SERVICE_PAGES and self.page == "licence":
-                self.line = line
-                self.service_code = service_code
-                self.service = self.get_otc_service()
-                licence_number = None
-                self.service_code_exemption_map = {}
-                self.seasonal_service_map = {}
-                self.service_inscope = True
-                if self.service:
-                    licence_number = self.service.licence.number
-                    self.service_code_exemption_map = (
-                        self.get_service_code_exemption_map(licence_number)
-                    )
-                    self.seasonal_service_map = self.get_seasonal_service_map(
-                        licence_number
-                    )
-                    self.service_inscope = self.is_service_in_scope()
+            txc_file_attributes = (
+                self.get_timetable_files_for_line(live_revision.id, service_code, line)
+                .add_service_code(service_code)
+                .add_split_linenames()
+            )
 
-                kwargs["service_inscope"] = self.service_inscope
-
-                txc_file_attributes = (
-                    self.get_timetable_files_for_line(
-                        live_revision.id, service_code, line
-                    )
-                    .add_service_code(service_code)
-                    .add_split_linenames()
-                )
-
+            if FeatureFlags.COMPLETE_SERVICE_PAGES:
                 kwargs.update(
                     self.get_avl_data(
                         txc_file_attributes,

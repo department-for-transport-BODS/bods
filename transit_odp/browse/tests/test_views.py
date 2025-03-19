@@ -52,7 +52,6 @@ from transit_odp.dqs.constants import Level, TaskResultsStatus
 from transit_odp.dqs.factories import (
     ChecksFactory,
     ObservationResultsFactory,
-    ReportFactory,
     TaskResultsFactory,
 )
 from transit_odp.fares.factories import (
@@ -1781,11 +1780,8 @@ class TestOperatorDetailView:
         check2 = ChecksFactory(queue_name="Queue1")
         check1.importance = "Critical"
 
-        dataquality_report = ReportFactory(revision=dataset1.live_revision)
-
         taskresult = TaskResultsFactory(
             transmodel_txcfileattributes=txcfileattribute1,
-            dataquality_report=dataquality_report,
             checks=check1,
         )
         observation_result = ObservationResultsFactory(
@@ -2154,6 +2150,7 @@ class TestLineMetadataDetailView:
         licence_number = "PD5000124"
         all_service_codes = [f"{licence_number}:{n}" for n in range(total_services)]
         all_line_names = [f"line:{n}" for n in range(total_services)]
+        print(f"all_line_names: {all_line_names}")
         dataset1 = DatasetFactory(organisation=org)
 
         # Setup three TXCFileAttributes that will be 'Up to Date'
@@ -2171,7 +2168,7 @@ class TestLineMetadataDetailView:
         )
 
         assert isinstance(response, dict)
-        assert "is_avl_compliant" in response
+        assert "is_avl_complaint" in response
 
 
 class TestLTADetailView:
@@ -2381,11 +2378,8 @@ class TestLTADetailView:
         check1 = ChecksFactory(queue_name="Queue1", importance="Critical")
         check2 = ChecksFactory(queue_name="Queue1")
 
-        dataquality_report = ReportFactory(revision=dataset1.live_revision)
-
         taskresult = TaskResultsFactory(
             transmodel_txcfileattributes=txcfileattribute1,
-            dataquality_report=dataquality_report,
             checks=check1,
         )
         observation_result = ObservationResultsFactory(
@@ -2708,7 +2702,6 @@ class TestLTADetailView:
             task_result = TaskResultsFactory(
                 status=TaskResultsStatus.PENDING.value,
                 transmodel_txcfileattributes=txcfileattribute,
-                dataquality_report=ReportFactory(revision=txcfileattribute.revision),
                 checks=check_obj,
             )
             service_pattern = ServicePatternFactory(

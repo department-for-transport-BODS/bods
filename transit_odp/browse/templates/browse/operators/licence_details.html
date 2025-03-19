@@ -9,7 +9,7 @@
 {% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
-  {% breadcrumb_url 'Operator Profiles' 'operators' host hosts.data %}
+  {% breadcrumb_url 'Operator Profiles' 'operators' %}
   {% with name=organisation.name|truncatechars:19 %}
     {% breadcrumb_url name 'operator-detail' organisation.id host hosts.data %}
   {% endwith %}
@@ -51,15 +51,15 @@
         <h2 class="govuk-heading-l">Review Service Numbers</h2>
         <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
           {% if licence_services %}
-            {% for service in licence_services %}
-              <p class="govuk-body govuk-!-padding-bottom-2 border-bottom-custom">
-                <a class="govuk-link"
-                   href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?line={{ service.service_number }}&service={{ service.registration_number }}">{{ service.service_number }} - {{ service.registration_number }}</a>
-                <span class="govuk-tag govuk-!-margin-left-2 {% if service.is_label_green %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
-                  {{ service.label_str }}
-                </span>
-              </p>
-            {% endfor %}
+          {% for service in licence_services %}
+            <p class="govuk-body govuk-!-padding-bottom-2 border-bottom-custom">
+              <a class="govuk-link"
+                 href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?line={{ service.service_number }}&service={{ service.registration_number }}">{{ service.service_number }} - {{ service.registration_number }}</a>
+              <span class="govuk-tag govuk-!-margin-left-2 {% if service.is_label_green %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+                {{ service.label_str }}
+              </span>
+            </p>
+          {% endfor %}
           {% else %}
             <span>No Services Available</span>
           {% endif %}
