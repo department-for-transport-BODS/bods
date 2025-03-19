@@ -11,9 +11,7 @@ from django.conf import settings
 from pydantic import BaseModel, Field, ValidationError
 from requests import RequestException
 
-from transit_odp.common.utils.aws_common import get_s3_bucket_storage
 from transit_odp.dqs.constants import OBSERVATIONS, STOPNAMEOBSERVATION
-from transit_odp.organisation.models import DatasetRevision
 from transit_odp.pipelines.constants import SchemaCategory
 from transit_odp.pipelines.models import SchemaDefinition
 from transit_odp.pipelines.pipelines.xml_schema import SchemaLoader
@@ -646,60 +644,3 @@ def observation_contents_mapper(observations_list) -> Dict:
                 }
 
     return requested_observation
-
-
-class InputDataSourceEnum(Enum):
-    URL_UPLOAD = "URL_DOWNLOAD"
-    FILE_UPLOAD = "S3_FILE"
-
-
-class S3Payload(BaseModel):
-    object: str
-    bucket: Optional[str] = None
-
-
-class StepFunctionsTTPayload(BaseModel):
-    datasetRevisionId: int  # Always a int
-    datasetType: str  # Always a string
-    url: Optional[str] = None  # Optional or can be an empty string
-    inputDataSource: str  # Always a string
-    s3: Optional[S3Payload] = None  # Nested object
-    publishDatasetRevision: bool
-    datasetETLTaskResultId: int
-
-
-def create_tt_state_machine_payload(
-    revision: DatasetRevision, task_id: int, do_publish: bool = False
-) -> StepFunctionsTTPayload:
-    """Creates payload for AWS Step Function execution."""
-
-    if not revision.url_link and not revision.upload_file:
-        logger.warning(
-            "Both URL link and uploaded file are missing in the dataset revision."
-        )
-        return {}
-
-    DATASET_TYPE_TIMETABLES = "timetables"
-    datasetRevisionId = revision.id
-
-    if revision.url_link:
-        payload = StepFunctionsTTPayload(
-            url=revision.url_link,
-            inputDataSource=InputDataSourceEnum.URL_UPLOAD.value,
-            datasetRevisionId=datasetRevisionId,
-            datasetType=DATASET_TYPE_TIMETABLES,
-            publishDatasetRevision=do_publish,
-            datasetETLTaskResultId=task_id,
-        )
-
-    elif revision.upload_file:
-        payload = StepFunctionsTTPayload(
-            s3=S3Payload(object=revision.upload_file.name),
-            inputDataSource=InputDataSourceEnum.FILE_UPLOAD.value,
-            datasetRevisionId=datasetRevisionId,
-            datasetType=DATASET_TYPE_TIMETABLES,
-            publishDatasetRevision=do_publish,
-            datasetETLTaskResultId=task_id,
-        )
-
-    return payload.model_dump_json(exclude_none=True)
