@@ -382,6 +382,10 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
             Staleness status is not OTC Variation
             AND
             Operating period end date < today + 42 days
+            AND
+            if Service End Date is present
+            And
+            Operating period end date < Service End Date
         Staleness Status - Stale - 12 months old:
             If Staleness status is not OTC Variation
             AND
@@ -399,6 +403,7 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
     association_date_otc_effective_date = service.association_date_otc_effective_date
     operating_period_start_date = file_attribute.operating_period_start_date
     operating_period_end_date = file_attribute.operating_period_end_date
+    expiry_date = service.end_date
     forty_two_days_from_today = today + timedelta(days=42)
 
     is_data_associated = (
@@ -411,10 +416,28 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
         if today >= effective_stale_date_otc_effective_date
         else False
     )
-    staleness_42_day_look_ahead = (
-        (not staleness_otc and operating_period_end_date < forty_two_days_from_today)
+
+    is_operating_period_lt_forty_two_days = (
+        operating_period_end_date
+        and operating_period_end_date < forty_two_days_from_today
         if operating_period_end_date
         else False
+    )
+    is_operating_period_lt_expiry_date = (
+        (
+            operating_period_end_date
+            and expiry_date
+            and operating_period_end_date < expiry_date
+        )
+        if operating_period_end_date and expiry_date
+        else False
+        if not operating_period_end_date
+        else True
+    )
+    staleness_42_day_look_ahead = (
+        not staleness_otc
+        and is_operating_period_lt_forty_two_days
+        and is_operating_period_lt_expiry_date
     )
     staleness_12_months_old = (
         True
