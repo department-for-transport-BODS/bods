@@ -71,7 +71,7 @@ def read_all_linenames_from_weekly_files() -> pd.DataFrame:
                                     "DatedVehicleJourneyRef": "object",
                                     "LineRef": "object",
                                     "DestinationRef": "object",
-                                    "OriginRef": "object"
+                                    "OriginRef": "object",
                                 },
                             )
                     except Exception as e:
@@ -83,7 +83,7 @@ def read_all_linenames_from_weekly_files() -> pd.DataFrame:
                                 "VehicleRef",
                                 "DestinationRef",
                                 "LineRef",
-                                "OriginRef"
+                                "OriginRef",
                             ]
                         )
 
@@ -222,7 +222,7 @@ def get_directionref_df(
                 dtype={
                     "VehicleRef in SIRI": "object",
                     "DatedVehicleJourneyRef in SIRI": "object",
-                    "OriginRef in SIRI": "object"
+                    "OriginRef in SIRI": "object",
                 },
             )
             origin_ref_df = origin_ref_df[
@@ -282,7 +282,7 @@ def get_destinationref_df(
                 dtype={
                     "VehicleRef in SIRI": "object",
                     "DatedVehicleJourneyRef in SIRI": "object",
-                    "DestinationRef in SIRI" : "object"
+                    "DestinationRef in SIRI": "object",
                 },
             )
             origin_ref_df = origin_ref_df[
