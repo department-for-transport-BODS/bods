@@ -858,9 +858,8 @@ class LineMetadataDetailView(DetailView):
             "", "is_timetable_visualiser_active"
         )
         kwargs["is_timetable_visualiser_active"] = is_timetable_visualiser_active
-        kwargs["is_complete_service_pages_active"] = flag_is_active(
-            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
-        )
+        is_complete_service_pages_active = flag_is_active("", FeatureFlags.COMPLETE_SERVICE_PAGES.value)
+        kwargs["is_complete_service_pages_active"] = is_complete_service_pages_active
         kwargs["is_fares_require_attention_active"] = flag_is_active(
             "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
@@ -889,7 +888,7 @@ class LineMetadataDetailView(DetailView):
                     )
                 )
 
-            if FeatureFlags.COMPLETE_SERVICE_PAGES and self.page == "licence":
+            if is_complete_service_pages_active and self.page == "licence":
                 self.line = line
                 self.service_code = service_code
                 self.service = self.get_otc_service()
