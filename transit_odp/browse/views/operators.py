@@ -313,21 +313,39 @@ class LicenceDetailView(BaseDetailView):
         context["pk"] = organisation_licence.id
         context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
         self.otc_map, self.txc_map = otc_map_txc_map_from_licence(licence_number)
-        self.uncounted_activity_df = get_vehicle_activity_operatorref_linename()
-        self.dq_critical_observation_map = get_dq_critical_observation_services_map(
-            self.txc_map
-        )
-        self.fares_require_attention_df = get_fares_dataset_map(self.txc_map)
-
         self.service_code_exemption_map = self.get_service_code_exemption_map(
             licence_number
         )
         self.seasonal_service_map = self.get_seasonal_service_map(licence_number)
 
-        abods_registry = AbodsRegistery()
-        self.synced_in_last_month = abods_registry.records()
+        self.is_fra_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
+        self.is_dqs_ra_active = flag_is_active(
+            "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+        )
+        self.is_avl_ra_active = flag_is_active(
+            "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
+        )
+        self.dq_critical_observation_map = []
+        if self.is_dqs_ra_active:
+            self.dq_critical_observation_map = get_dq_critical_observation_services_map(
+                self.txc_map
+            )
 
-        self.fares_map = get_fares_dataset_map(self.txc_map)
+        self.fares_require_attention_df = pd.DataFrame(
+            columns=["national_operator_code", "line_name"]
+        )
+        if self.is_fra_active:
+            self.fares_require_attention_df = get_fares_dataset_map(self.txc_map)
+
+        self.synced_in_last_month = []
+        self.uncounted_activity_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
+        if self.is_avl_ra_active:
+            abods_registry = AbodsRegistery()
+            self.synced_in_last_month = abods_registry.records()
+            self.uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+
         context["organisation"] = organisation_licence.organisation
         context["licence_services"] = self.otc_map
 
@@ -382,6 +400,9 @@ class LicenceDetailView(BaseDetailView):
         Returns:
             bool: True if compliant else False
         """
+        if not self.is_fra_active:
+            return True
+
         if not self.service_txc_file:
             return False
 
@@ -443,6 +464,9 @@ class LicenceDetailView(BaseDetailView):
         Returns:
             bool: True if compliant False if not
         """
+        if not self.is_dqs_ra_active:
+            return True
+
         return (
             False
             if (
@@ -459,6 +483,9 @@ class LicenceDetailView(BaseDetailView):
         Returns:
             bool: True if compliant else False
         """
+        if not self.is_avl_ra_active:
+            return True
+
         if not self.service_txc_file:
             return False
 
@@ -566,6 +593,10 @@ class LicenceDetailView(BaseDetailView):
 class LicenceLineMetadataDetailView(LineMetadataDetailView):
     slug_url_kwarg = "number"
     slug_field = "number"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.page = "licence"
 
     def get_object(self):
         try:
