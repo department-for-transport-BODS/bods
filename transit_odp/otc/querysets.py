@@ -48,7 +48,8 @@ class ServiceQuerySet(QuerySet):
                 "registration_number",
                 Value("/", output_field=CharField()),
                 Value(":", output_field=CharField()),
-            )
+            ),
+            expiry_date=F("end_date"),
         )
 
     def add_operator_details(self) -> TServiceQuerySet:
@@ -62,7 +63,6 @@ class ServiceQuerySet(QuerySet):
         return self.annotate(
             otc_licence_number=F("licence__number"),
             licence_status=F("licence__status"),
-            expiry_date=F("licence__expiry_date"),
             granted_date=F("licence__granted_date"),
         )
 

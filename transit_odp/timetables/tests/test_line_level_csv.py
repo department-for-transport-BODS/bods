@@ -172,7 +172,7 @@ def test_service_in_bods_and_otc():
             == service.service_type_description
         )
         assert row["Registration:Variation Number"] == service.variation_number
-        assert row["Registration:Expiry Date"] == licence.expiry_date
+        assert row["Registration:Expiry Date"] == service.end_date
         assert row["Registration:Effective Date"] == service.effective_date
         assert row["Registration:Received Date"] == service.received_date
 
@@ -210,7 +210,7 @@ def test_service_in_otc_and_not_in_bods():
         assert row["Registration:Licence Number"] == licence.number
         assert row["Registration:Registration Number"] == service.registration_number
         assert row["Registration:Service Number"] == service.service_number
-        assert row["Registration:Expiry Date"] == licence.expiry_date
+        assert row["Registration:Expiry Date"] == service.end_date
         assert row["Registration:Effective Date"] == service.effective_date
         assert row["Registration:Received Date"] == service.received_date
         assert row["Requires Attention"] == "Yes"

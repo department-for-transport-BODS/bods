@@ -2166,9 +2166,10 @@ class TestLineMetadataDetailView:
         response = LineMetadataDetailView.get_avl_data(
             None, [txcfileattribute1], all_line_names[0]
         )
+        print(f"response: {response}")
 
         assert isinstance(response, dict)
-        assert "is_avl_complaint" in response
+        assert "is_avl_compliant" in response
 
 
 class TestLTADetailView:
