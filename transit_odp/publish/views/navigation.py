@@ -7,6 +7,10 @@ from django_tables2 import SingleTableView
 from waffle import flag_is_active
 
 from config.hosts import PUBLISH_HOST
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.views import BaseTemplateView
 from transit_odp.organisation.constants import AVLType, FaresType, TimetableType
@@ -109,13 +113,21 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
         is_fares_require_attention_active = flag_is_active(
             "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
+
         for record in self.get_queryset():
             fares_sra = 0
             avl_sra = 0
 
             if is_avl_require_attention_active:
+                uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+                abods_registry = AbodsRegistery()
+                synced_in_last_month = abods_registry.records()
                 avl_sra = len(
-                    get_avl_requires_attention_line_level_data(record.organisation_id)
+                    get_avl_requires_attention_line_level_data(
+                        record.organisation_id,
+                        uncounted_activity_df,
+                        synced_in_last_month,
+                    )
                 )
 
             if is_fares_require_attention_active:
