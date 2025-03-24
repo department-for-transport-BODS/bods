@@ -139,13 +139,14 @@ class OperatorDetailView(BaseDetailView):
         context["is_complete_service_pages_active"] = is_complete_service_pages_active
         context["is_fares_require_attention_active"] = is_fares_require_attention_active
 
-        total_fares_sra = total_avl_sra = 0
+        total_fares_sra = total_avl_sra = total_overall_sra = 0
         if is_operator_prefetch_sra_active:
             logger.debug("Operator Prefetch SRA active, Displaying from DB")
             total_timetable_sra = organisation.timetable_sra
             total_avl_sra = organisation.avl_sra
             total_fares_sra = organisation.fares_sra
             total_in_scope = organisation.total_inscope
+            total_overall_sra = organisation.overall_sra
         else:
             logger.debug("Operator Prefetch SRA inactive, calculating SRA")
             total_in_scope = len(
@@ -169,6 +170,7 @@ class OperatorDetailView(BaseDetailView):
         context["total_services_requiring_attention"] = total_timetable_sra
 
         if is_complete_service_pages_active:
+            context["total_services_requiring_attention"] = total_overall_sra
             context[
                 "timetable_services_requiring_attention_count"
             ] = total_timetable_sra
