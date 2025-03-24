@@ -1,4 +1,5 @@
 from typing import Dict, List, TypedDict
+import pandas as pd
 
 from django.http import HttpResponseRedirect
 from django.views.generic import FormView
@@ -114,14 +115,19 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
             "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
 
+        uncounted_activity_df = pd.DataFrame()
+        synced_in_last_month = []
+
+        if is_avl_require_attention_active:
+            uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+            abods_registry = AbodsRegistery()
+            synced_in_last_month = abods_registry.records()
+
         for record in self.get_queryset():
             fares_sra = 0
             avl_sra = 0
 
             if is_avl_require_attention_active:
-                uncounted_activity_df = get_vehicle_activity_operatorref_linename()
-                abods_registry = AbodsRegistery()
-                synced_in_last_month = abods_registry.records()
                 avl_sra = len(
                     get_avl_requires_attention_line_level_data(
                         record.organisation_id,
