@@ -1188,11 +1188,11 @@ class FaresRequiresAttention:
                 get_fares_requires_attention(
                     "Published", fares_timeliness_status, fares_compliance_status
                 )
-                == "Yes"
+                == "No"
             ):
-                return True
+                return False
 
-        return False
+        return True
 
     def get_fares_requires_attention_line_level_data(self) -> List[Dict[str, str]]:
         """
