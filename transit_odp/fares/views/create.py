@@ -6,6 +6,7 @@ from django.forms import Form
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.fares.forms import FaresFeedDescriptionForm, FaresFeedUploadForm
@@ -14,6 +15,7 @@ from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.publish.forms import FeedPublishCancelForm
 from transit_odp.publish.views.base import FeedWizardBaseView
+from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
 
 
 class FaresUploadWizard(FeedWizardBaseView):
@@ -103,11 +105,17 @@ class FaresUploadWizard(FeedWizardBaseView):
             Q(dataset=dataset) & Q(is_published=False)
         ).update_or_create(dataset=dataset, is_published=False, defaults=all_data)[0]
 
-        if not revision.status == FeedStatus.pending.value:
-            revision.to_pending()
-            revision.save()
+        is_fares_serverless_publishing_active = flag_is_active(
+            "", "is_fares_serverless_publishing_active"
+        )
+        if not is_fares_serverless_publishing_active:
+            if not revision.status == FeedStatus.pending.value:
+                revision.to_pending()
+                revision.save()
 
-        transaction.on_commit(lambda: task_run_fares_pipeline.delay(revision.id))
+            transaction.on_commit(lambda: task_run_fares_pipeline.delay(revision.id))
+        else:
+            trigger_state_machine(revision, "fares")
 
         return HttpResponseRedirect(
             reverse(

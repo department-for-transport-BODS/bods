@@ -660,6 +660,8 @@ AWS_ENVIRONMENT = env("AWS_ENVIRONMENT", default="LOCAL")
 
 # TT STATE MACHINE
 TIMETABLES_STATE_MACHINE_ARN = env("TIMETABLES_STATE_MACHINE_ARN", default="")
+# FARES STATE MACHINE
+FARES_STATE_MACHINE_ARN = env("FARES_STATE_MACHINE_ARN", default="")
 
 # ABODS AVL LINE LEVEL DETAILS
 # -------------------------------------------------------------------------------
