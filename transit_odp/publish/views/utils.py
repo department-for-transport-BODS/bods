@@ -1,12 +1,8 @@
 import logging
 import math
-<<<<<<< HEAD
 from datetime import datetime, timedelta, timezone
-=======
-from datetime import datetime, timedelta
 from enum import Enum
 from typing import Optional
->>>>>>> dev
 
 from django.db.models import Max
 from django.utils import timezone

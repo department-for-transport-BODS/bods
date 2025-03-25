@@ -89,7 +89,7 @@ urlpatterns = [
         ),
     ),
     path(
-        "v1/avl-feed/siri-vm",
+        "v1/avl-feed/real-time-bus-location",
         AVLRealTimeDataView.as_view(),
         name="avldetaildatafeedapirealtime",
     ),
