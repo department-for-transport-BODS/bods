@@ -165,6 +165,7 @@ class OperatorDetailView(BaseDetailView):
                 total_fares_sra = len(
                     fares_reqiures_attention.get_fares_requires_attention_line_level_data()
                 )
+            total_overall_sra = max(total_timetable_sra, total_fares_sra, total_avl_sra)
 
         context["total_in_scope_in_season_services"] = total_in_scope
         context["total_services_requiring_attention"] = total_timetable_sra

@@ -1190,6 +1190,7 @@ class TestOperatorDetailView:
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+    @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=False)
     @patch.object(publish_attention, "AbodsRegistery")
     @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
     def test_operator_detail_view_stats_not_compliant(
@@ -1482,12 +1483,13 @@ class TestOperatorDetailView:
         response = OperatorDetailView.as_view()(request, pk=org.id)
         assert response.status_code == 200
         context = response.context_data
+
         assert context["view"].template_name == "browse/operators/operator_detail.html"
         assert context["total_in_scope_in_season_services"] == 8
         assert context["timetable_services_requiring_attention_count"] == 6
         assert context["avl_services_requiring_attention_count"] == 8
         assert context["fares_services_requiring_attention_count"] == 8
-        assert context["total_services_requiring_attention"] == 6
+        assert context["total_services_requiring_attention"] == 8
 
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
