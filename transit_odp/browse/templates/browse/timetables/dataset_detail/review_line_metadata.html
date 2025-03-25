@@ -10,7 +10,7 @@
 {% block breadcrumb.content %}
   {{ block.super }}
   {% if licence_page %}
-    {% breadcrumb_url 'Operator Profiles' 'operators' %}
+    {% breadcrumb_url 'Operator Profiles' 'operators' host hosts.data %}
     {% with name=organisation.name|truncatechars:19 %}
       {% breadcrumb_url name 'operator-detail' organisation.id host hosts.data %}
     {% endwith %}
@@ -121,8 +121,8 @@
       </table>
     </div>
   </div>
-  {% if licence_page %}
-    {% if is_complete_service_pages_active %}
+  {% if is_complete_service_pages_active and licence_page %}
+    {% if is_avl_require_attention_active %}
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
           <table class="govuk-table dataset-property-table">
@@ -145,6 +145,8 @@
           </table>
         </div>
       </div>
+    {% endif %}
+    {% if is_fares_require_attention_active %}
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
           <table class="govuk-table dataset-property-table">
@@ -195,37 +197,37 @@
           </table>
         </div>
       </div>
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-          <table class="govuk-table dataset-property-table">
-            <tbody class="govuk-table__body">
-              <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header govuk-!-width-one-half">
-                  <h2 class="govuk-heading-m">{% trans "Timetable" %}</h2>
-                </th>
-                <td class="govuk-table__cell dont-break-out" colspan="2">
-                  <span class="govuk-tag {% if is_timetable_compliant %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre govuk-!-margin-right-2">
-                    {% if is_timetable_compliant %}
-                      Compliant
-                    {% else %}
-                      Not Compliant
-                    {% endif %}
-                  </span>
-                  {% if object.id %}
-                    <a href="{% url 'feed-detail' pk=object.id host host.name %}" target="_blank">Dataset ID: {{ timetables_dataset_id }}</a>
-                  {% else %}
-                    <span class="govuk-tag govuk-tag--red govuk-!-font-size-16 govuk-!-text-align-centre govuk-!-margin-right-2">Unpublished</span>
-                  {% endif %}
-                </td>
-              </tr>
-              {% include 'publish/snippets/dataset_detail_files.html' with header_text='Current valid file(s)' files=timetables_valid_files %}
-              {% include 'publish/snippets/dataset_detail_files.html' with header_text='Future dated file(s)' files=timetables_future_dated_files %}
-              {% include 'publish/snippets/dataset_detail_files.html' with header_text='Expired file(s)' files=timetables_expired_files %}
-            </tbody>
-          </table>
-        </div>
-      </div>
     {% endif %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <table class="govuk-table dataset-property-table">
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header govuk-!-width-one-half">
+                <h2 class="govuk-heading-m">{% trans "Timetable" %}</h2>
+              </th>
+              <td class="govuk-table__cell dont-break-out" colspan="2">
+                <span class="govuk-tag {% if is_timetable_compliant %}govuk-tag--green{% else %}govuk-tag--red{% endif %} govuk-!-font-size-16 govuk-!-text-align-centre govuk-!-margin-right-2">
+                  {% if is_timetable_compliant %}
+                    Compliant
+                  {% else %}
+                    Not Compliant
+                  {% endif %}
+                </span>
+                {% if object.id %}
+                  <a href="{% url 'feed-detail' pk=object.id host host.name %}" target="_blank">Dataset ID: {{ timetables_dataset_id }}</a>
+                {% else %}
+                  <span class="govuk-tag govuk-tag--red govuk-!-font-size-16 govuk-!-text-align-centre govuk-!-margin-right-2">Unpublished</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% include 'publish/snippets/dataset_detail_files.html' with header_text='Current valid file(s)' files=timetables_valid_files %}
+            {% include 'publish/snippets/dataset_detail_files.html' with header_text='Future dated file(s)' files=timetables_future_dated_files %}
+            {% include 'publish/snippets/dataset_detail_files.html' with header_text='Expired file(s)' files=timetables_expired_files %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   {% endif %}
   {% if is_timetable_visualiser_active %}
     <div class="govuk-grid-row">
