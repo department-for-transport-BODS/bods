@@ -1,0 +1,55 @@
+name: "Test AWS Role Chaining"
+
+on:
+  push:
+    branches:
+      - "touhid-test"
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  test_role_chaining:
+    name: "Test"
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v4.1.4
+
+      # Configure AWS credentials with Shared Services
+      - name: Configure AWS Credentials in Shared Services
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+          role-session-name: testAWSCLISession
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+
+      # Now assume a role in the PROD
+      - name: Configure AWS Credentials in bodds-prod
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.PROD_ASSUME_ROLE_ARN }}
+          role-session-name: testAWSCLISession
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+          role-chaining: true
+
+      # Now assume a role in the NON-PROD
+      - name: Configure AWS Credentials in bodds-prod
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.NON_PROD_ASSUME_ROLE_ARN }}
+          role-session-name: testAWSCLISession
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+          role-chaining: true
+
