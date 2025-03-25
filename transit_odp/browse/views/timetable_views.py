@@ -664,6 +664,7 @@ class LineMetadataDetailView(DetailView):
         current_valid_files = []
         future_files = []
         expired_files = []
+        national_operator_code = set()
 
         for file in file_attributes:
             start_date = (
@@ -687,6 +688,7 @@ class LineMetadataDetailView(DetailView):
                     )
                 )
 
+            national_operator_code.add(file.national_operator_code)
             if start_date > today:
                 future_files.append(
                     self.get_file_object(
@@ -724,12 +726,14 @@ class LineMetadataDetailView(DetailView):
             ):
                 is_timetable_compliant = True
 
+        national_operator_code = list(national_operator_code)
         return {
             "is_timetable_compliant": is_timetable_compliant,
             "timetables_dataset_id": dataset_id,
             "timetables_valid_files": current_valid_files,
             "timetables_future_dated_files": future_files,
             "timetables_expired_files": expired_files,
+            "national_operator_code": ",".join(national_operator_code),
         }
 
     def get_otc_service(self):
@@ -775,6 +779,18 @@ class LineMetadataDetailView(DetailView):
             True,
         ).get_timetable_visualiser()
 
+        vehicle_journey_codes = set()
+        if not timetable_inbound_outbound["outbound"]["df_timetable"].empty:
+
+            vehicle_journey_codes.update(
+                timetable_inbound_outbound["outbound"]["df_timetable"].columns.tolist()
+            )
+        if not timetable_inbound_outbound["inbound"]["df_timetable"].empty:
+
+            vehicle_journey_codes.update(
+                timetable_inbound_outbound["inbound"]["df_timetable"].columns.tolist()
+            )
+
         is_timetable_info_available = False
         timetable = {}
         for direction in ["outbound", "inbound"]:
@@ -805,6 +821,7 @@ class LineMetadataDetailView(DetailView):
             "curr_date": date,
             "timetable": timetable,
             "is_timetable_info_available": is_timetable_info_available,
+            "vehicle_journey_codes": ",".join(vehicle_journey_codes),
         }
 
     def get_service_type_data(
@@ -860,6 +877,9 @@ class LineMetadataDetailView(DetailView):
         kwargs["is_timetable_visualiser_active"] = is_timetable_visualiser_active
         is_complete_service_pages_active = flag_is_active(
             "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        )
+        kwargs["is_complete_service_pages_real_time_data_active"] = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES_REAL_TIME_DATA.value
         )
         kwargs["is_complete_service_pages_active"] = is_complete_service_pages_active
         kwargs["is_fares_require_attention_active"] = flag_is_active(

@@ -1,6 +1,6 @@
 import logging
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Optional
 
@@ -311,6 +311,71 @@ def get_valid_files(revision_id, valid_files, service_code, line_name):
         return get_single_booking_arrangements_file(
             booking_arrangements_qs.revision_id, [service_code]
         )
+
+
+def get_vehicle_activity_dict(
+    vehicle_activities_list: list, tt_journey_codes: list
+) -> dict:
+    """
+    Get Vehicle Activity dictionary with VehicleRef as the key.
+    This function keeps the latest VehicleRef based on the RecordedAtTime property
+    and only includes records that have a RecordedAtTime within the last 10 minutes
+    from the current time.
+
+    Args:
+        vehicle_activities_list (list)
+    Returns:
+        dict: A dictionary where the keys are vehicle references (VehicleRef)
+            and the values are dictionaries containing the latest activity
+            information for that vehicle (e.g., RecordedAtTime, LineRef,
+            OperatorRef, Longitude, Latitude), filtered to include only
+            activities within the last 10 minutes.
+    """
+    vehicle_dict = {}
+    current_time = datetime.now(timezone.utc)
+    journey_codes_list = tt_journey_codes[0].split(",")
+
+    for vehicle_activity in vehicle_activities_list:
+        monitored_vehicle_journey = vehicle_activity.monitored_vehicle_journey
+        vehicle_ref = monitored_vehicle_journey.vehicle_ref
+        recorded_at_time = vehicle_activity.recorded_at_time
+        line_ref = monitored_vehicle_journey.line_ref
+        operator_ref = monitored_vehicle_journey.operator_ref
+        longitude = monitored_vehicle_journey.vehicle_location.longitude
+        latitude = monitored_vehicle_journey.vehicle_location.latitude
+        framed_vehicle_journey_ref = (
+            monitored_vehicle_journey.framed_vehicle_journey_ref
+        )
+        vehicle_journey_code = "-"
+        if framed_vehicle_journey_ref:
+            vehicle_journey_code = framed_vehicle_journey_ref.dated_vehicle_journey_ref
+
+        if vehicle_journey_code not in journey_codes_list:
+            continue
+        time_diff = current_time - recorded_at_time
+        if time_diff <= timedelta(minutes=10):
+            if vehicle_ref not in vehicle_dict:
+                vehicle_dict[vehicle_ref] = {
+                    "RecordedAtTime": recorded_at_time,
+                    "LineRef": line_ref,
+                    "OperatorRef": operator_ref,
+                    "Longitude": longitude,
+                    "Latitude": latitude,
+                    "VehicleJourneyCode": vehicle_journey_code,
+                }
+            else:
+                current_latest_time = vehicle_dict[vehicle_ref]["RecordedAtTime"]
+                if recorded_at_time > current_latest_time:
+                    vehicle_dict[vehicle_ref] = {
+                        "RecordedAtTime": recorded_at_time,
+                        "LineRef": line_ref,
+                        "OperatorRef": operator_ref,
+                        "Longitude": longitude,
+                        "Latitude": latitude,
+                        "VehicleJourneyCode": vehicle_journey_code,
+                    }
+
+    return vehicle_dict
 
 
 class InputDataSourceEnum(Enum):
