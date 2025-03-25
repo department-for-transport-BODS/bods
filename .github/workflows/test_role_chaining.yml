@@ -10,6 +10,13 @@ permissions:
   contents: read
   pull-requests: write
 
+env:
+  ENVIRONMENT_NAME: dev2
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN: ${{ secrets.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+  PROD_ASSUME_ROLE_ARN: ${{ secrets.PROD_ASSUME_ROLE_ARN }}
+  NON_PROD_ASSUME_ROLE_ARN: ${{ secrets.NON_PROD_ASSUME_ROLE_ARN }}
+
 jobs:
   test_role_chaining:
     name: "Test"
@@ -25,8 +32,8 @@ jobs:
       - name: Configure AWS Credentials in Shared Services
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ vars.AWS_REGION }}
-          role-to-assume: ${{ secrets.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
           role-session-name: testAWSCLISession
           role-duration-seconds: 3600
           role-skip-session-tagging: true
@@ -35,8 +42,8 @@ jobs:
       - name: Configure AWS Credentials in bodds-prod
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ vars.AWS_REGION }}
-          role-to-assume: ${{ secrets.PROD_ASSUME_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.PROD_ASSUME_ROLE_ARN }}
           role-session-name: testAWSCLISession
           role-duration-seconds: 3600
           role-skip-session-tagging: true
@@ -46,8 +53,8 @@ jobs:
       - name: Configure AWS Credentials in Shared Services
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ vars.AWS_REGION }}
-          role-to-assume: ${{ secrets.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
           role-session-name: testAWSCLISession
           role-duration-seconds: 3600
           role-skip-session-tagging: true
@@ -57,8 +64,8 @@ jobs:
       - name: Configure AWS Credentials in bodds-non-prod
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ vars.AWS_REGION }}
-          role-to-assume: ${{ secrets.NON_PROD_ASSUME_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.NON_PROD_ASSUME_ROLE_ARN }}
           role-session-name: testAWSCLISession
           role-duration-seconds: 3600
           role-skip-session-tagging: true
