@@ -6,7 +6,7 @@ on:
     - version.txt
   workflow_dispatch:
 
-name: 'dev_deployment'
+name: 'dev2_deployment'
 
 permissions:
   id-token: write
@@ -19,24 +19,24 @@ defaults:
 env:
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
   ECR_BASE_REPOSITORY_NAME: ${{ secrets.ECR_BASE_REPOSITORY }}
-  ENVIRONMENT_NAME: dev
+  ENVIRONMENT_NAME: dev2
   AWS_REGION: ${{ vars.AWS_REGION }}
   BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN: ${{ secrets.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
   PROD_ASSUME_ROLE_ARN: ${{ secrets.PROD_ASSUME_ROLE_ARN }}
 
 jobs:
 
-  dev_deployment:
-    name: 'dev_deployment'
+  dev2_deployment:
+    name: 'dev2_deployment'
     runs-on: ubuntu-latest
-    environment: dev
+    environment: dev2
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
     # Configure AWS credentials against the BODS Shared-Services Account
-    - name: Configure AWS credentials
+    - name: Configure AWS credentials in Shared-Services
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ env.AWS_REGION }}
@@ -115,6 +115,28 @@ jobs:
     - name: Logout of Amazon ECR
       if: always()
       run: docker logout ${{ steps.login-ecr.outputs.registry }}
+
+    # Configure AWS credentials against the BODS Shared-Services Account
+    - name: Configure AWS credentials in Shared-Services
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ env.AWS_REGION }}
+        role-to-assume: arn:aws:iam::${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+        role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+        unset-current-credentials: true
+
+    # Now assume a role in the Environemnt Specific Account
+    - name: Configure AWS Credentials in the environment specific account
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
+        role-session-name: testAWSCLISession
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+        role-chaining: true
 
     - name: Update celeryflower Task
       uses: "./.github/workflows/templates/update_task_def"
