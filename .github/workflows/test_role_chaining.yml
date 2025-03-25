@@ -51,5 +51,6 @@ jobs:
           role-session-name: testAWSCLISession
           role-duration-seconds: 3600
           role-skip-session-tagging: true
+          unset-current-credentials: true
           role-chaining: true
 
