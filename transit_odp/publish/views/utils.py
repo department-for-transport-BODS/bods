@@ -376,6 +376,8 @@ def get_vehicle_activity_dict(
                     }
 
     return vehicle_dict
+
+
 class InputDataSourceEnum(Enum):
     URL_UPLOAD = "URL_DOWNLOAD"
     FILE_UPLOAD = "S3_FILE"
