@@ -78,10 +78,9 @@ jobs:
       run: |
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
         if docker manifest inspect $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG >/dev/null; then
-            echo "The image $IMAGE_TAG already exists in the $ECR_REPOSITORY Repository"
-            exit 1
+            echo "The image $IMAGE_TAG exists in the $ECR_REPOSITORY Repository, environment will be updated"
         else
-            echo "Build and push docker image with that tag $IMAGE_TAG "
+            echo "The image $IMAGE_TAG does not exist in the $ECR_REPOSITORY Repository. It will build and push docker image with that tag $IMAGE_TAG "
         fi
 
     - name: Base Image Changes
@@ -228,7 +227,7 @@ jobs:
     - name: Invoke Lambda Function
       shell: bash
       run: |
-        aws lambda invoke --function-name bodds_pg_mutate_lambda_dev --payload file://credentials.json out --log-type Tail \
+        aws lambda invoke --function-name bodds_pg_mutate_lambda_${{ env.ENVIRONMENT_NAME }} --payload file://credentials.json out --log-type Tail \
         --query 'LogResult' --output text --cli-binary-format raw-in-base64-out | base64 --decode
 
     - name: Update Confluence Page
