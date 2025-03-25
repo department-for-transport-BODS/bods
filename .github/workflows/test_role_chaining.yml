@@ -42,8 +42,19 @@ jobs:
           role-skip-session-tagging: true
           role-chaining: true
 
-      # Now assume a role in the NON-PROD
-      - name: Configure AWS Credentials in bodds-prod
+      # Now assume a role back in the Shared Services
+      - name: Configure AWS Credentials in Shared Services
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+          role-session-name: testAWSCLISession
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+          unset-current-credentials: true
+
+      # Now assume a role in the NON_PROD
+      - name: Configure AWS Credentials in bodds-non-prod
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ vars.AWS_REGION }}
@@ -51,6 +62,6 @@ jobs:
           role-session-name: testAWSCLISession
           role-duration-seconds: 3600
           role-skip-session-tagging: true
-          unset-current-credentials: true
           role-chaining: true
+
 
