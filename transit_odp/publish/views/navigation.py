@@ -101,25 +101,52 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
         # Each record requires a separate request to the database which is in no way
         # ideal. We need to rethink the data model, possibly making the otc licence and
         # the organisation licence a foreign key.
-        return [
-            {
-                "next": reverse(
-                    next_page, args=[record.organisation_id], host=PUBLISH_HOST
-                )
-                + (f"?prev={prev_page}" if prev_page is not None else ""),
-                "organisation_id": record.organisation_id,
-                "organisation": record.organisation.name,
-                "requires_attention": len(
-                    get_requires_attention_line_level_data(record.organisation_id)
-                ),
-                "avl_requires_attention": len(
-                    get_avl_requires_attention_line_level_data(record.organisation_id)
-                ),
-                "fares_requires_attention": len(
-                    FaresRequiresAttention(
-                        record.organisation_id
-                    ).get_fares_requires_attention_line_level_data()
-                ),
-            }
-            for record in self.get_queryset()
-        ]
+        org_list = []
+        is_avl_require_attention_active = flag_is_active(
+            "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
+        )
+        is_fares_require_attention_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
+
+        is_complete_service_page_active = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        )
+        for record in self.get_queryset():
+            fares_sra = 0
+            avl_sra = 0
+
+            if is_complete_service_page_active:
+                fares_sra = record.organisation.fares_sra
+                avl_sra = record.organisation.avl_sra
+            else:
+                if is_avl_require_attention_active:
+                    avl_sra = len(
+                        get_avl_requires_attention_line_level_data(
+                            record.organisation_id
+                        )
+                    )
+
+                if is_fares_require_attention_active:
+                    fares_sra = len(
+                        FaresRequiresAttention(
+                            record.organisation_id
+                        ).get_fares_requires_attention_line_level_data()
+                    )
+            org_list.append(
+                {
+                    "next": reverse(
+                        next_page, args=[record.organisation_id], host=PUBLISH_HOST
+                    )
+                    + (f"?prev={prev_page}" if prev_page is not None else ""),
+                    "organisation_id": record.organisation_id,
+                    "organisation": record.organisation.name,
+                    "requires_attention": len(
+                        get_requires_attention_line_level_data(record.organisation_id)
+                    ),
+                    "avl_requires_attention": avl_sra,
+                    "fares_requires_attention": fares_sra,
+                }
+            )
+
+        return org_list

@@ -1,6 +1,9 @@
 const SwaggerUI = require("swagger-ui");
 
 const initAPIDocs = (domId, schemaUrl) => {
+  const csrfTokenElement = document.querySelector('input[name="csrfmiddlewaretoken"');
+  const csrftoken = csrfTokenElement.value;
+
   SwaggerUI({
     dom_id: domId,
     url: schemaUrl,
@@ -9,6 +12,10 @@ const initAPIDocs = (domId, schemaUrl) => {
     plugins: [SwaggerUI.plugins.DownloadUrl],
     validatorUrl: null,
     syntaxHighlight: false,
+    requestInterceptor: (request) => {
+        request.headers['X-CSRFToken'] = csrftoken;
+        return request;
+    },
   });
 };
 

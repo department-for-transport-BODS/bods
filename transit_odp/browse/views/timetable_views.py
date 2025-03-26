@@ -192,6 +192,10 @@ class LineMetadataDetailView(DetailView):
     template_name = "browse/timetables/dataset_detail/review_line_metadata.html"
     model = Dataset
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.page = "line-details"
+
     def get_queryset(self):
         return (
             super()
@@ -573,19 +577,24 @@ class LineMetadataDetailView(DetailView):
         """
         Get the fares data for the dataset
         """
+        is_fares_require_attention_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
 
         txc_map = dict(enumerate(txc_file_attributes))
-        fares_df = get_fares_dataset_map(txc_map)
-
-        fra = FaresRequiresAttention(None)
         is_fares_compliant = True
-        for txc_file in txc_file_attributes:
-            if is_fares_compliant:
-                is_fares_compliant = not fra.is_fares_requires_attention(
-                    txc_file, fares_df
-                )
-            else:
-                break
+        if is_fares_require_attention_active:
+            fares_df = get_fares_dataset_map(txc_map)
+            fra = FaresRequiresAttention(None)
+            for txc_file in txc_file_attributes:
+                if is_fares_compliant:
+                    is_fares_compliant = not fra.is_fares_requires_attention(
+                        txc_file, fares_df
+                    )
+                else:
+                    break
+        else:
+            fares_df = pd.DataFrame()
 
         tariff_basis, product_name = [], []
         today = datetime.today().date()
@@ -655,6 +664,7 @@ class LineMetadataDetailView(DetailView):
         current_valid_files = []
         future_files = []
         expired_files = []
+        national_operator_code = set()
 
         for file in file_attributes:
             start_date = (
@@ -678,6 +688,7 @@ class LineMetadataDetailView(DetailView):
                     )
                 )
 
+            national_operator_code.add(file.national_operator_code)
             if start_date > today:
                 future_files.append(
                     self.get_file_object(
@@ -715,15 +726,20 @@ class LineMetadataDetailView(DetailView):
             ):
                 is_timetable_compliant = True
 
+        national_operator_code = list(national_operator_code)
         return {
             "is_timetable_compliant": is_timetable_compliant,
             "timetables_dataset_id": dataset_id,
             "timetables_valid_files": current_valid_files,
             "timetables_future_dated_files": future_files,
             "timetables_expired_files": expired_files,
+            "national_operator_code": ",".join(national_operator_code),
         }
 
     def get_otc_service(self):
+        if not self.service_code:
+            return None
+
         otc_map = {
             (
                 f"{service.registration_number.replace('/', ':')}",
@@ -763,6 +779,18 @@ class LineMetadataDetailView(DetailView):
             True,
         ).get_timetable_visualiser()
 
+        vehicle_journey_codes = set()
+        if not timetable_inbound_outbound["outbound"]["df_timetable"].empty:
+
+            vehicle_journey_codes.update(
+                timetable_inbound_outbound["outbound"]["df_timetable"].columns.tolist()
+            )
+        if not timetable_inbound_outbound["inbound"]["df_timetable"].empty:
+
+            vehicle_journey_codes.update(
+                timetable_inbound_outbound["inbound"]["df_timetable"].columns.tolist()
+            )
+
         is_timetable_info_available = False
         timetable = {}
         for direction in ["outbound", "inbound"]:
@@ -793,6 +821,7 @@ class LineMetadataDetailView(DetailView):
             "curr_date": date,
             "timetable": timetable,
             "is_timetable_info_available": is_timetable_info_available,
+            "vehicle_journey_codes": ",".join(vehicle_journey_codes),
         }
 
     def get_service_type_data(
@@ -828,21 +857,8 @@ class LineMetadataDetailView(DetailView):
         """
         line = self.request.GET.get("line")
         service_code = self.request.GET.get("service")
-
-        self.line = line
-        self.service_code = service_code
-        self.service = self.get_otc_service()
-        licence_number = None
-        self.service_code_exemption_map = {}
-        self.seasonal_service_map = {}
-        self.service_inscope = True
-        if self.service:
-            licence_number = self.service.licence.number
-            self.service_code_exemption_map = self.get_service_code_exemption_map(
-                licence_number
-            )
-            self.seasonal_service_map = self.get_seasonal_service_map(licence_number)
-            self.service_inscope = self.is_service_in_scope()
+        kwargs["line_name"] = line
+        kwargs["service_code"] = service_code
 
         kwargs = super().get_context_data(**kwargs)
         dataset = self.object
@@ -851,10 +867,6 @@ class LineMetadataDetailView(DetailView):
         else:
             live_revision = None
         kwargs["pk"] = dataset.id if dataset else None
-        kwargs["service_inscope"] = self.service_inscope
-
-        kwargs["line_name"] = line
-        kwargs["service_code"] = service_code
 
         kwargs["is_specific_feedback"] = flag_is_active("", "is_specific_feedback")
         kwargs["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
@@ -863,8 +875,18 @@ class LineMetadataDetailView(DetailView):
             "", "is_timetable_visualiser_active"
         )
         kwargs["is_timetable_visualiser_active"] = is_timetable_visualiser_active
-        kwargs["is_complete_service_pages_active"] = flag_is_active(
+        is_complete_service_pages_active = flag_is_active(
             "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        )
+        kwargs["is_complete_service_pages_real_time_data_active"] = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES_REAL_TIME_DATA.value
+        )
+        kwargs["is_complete_service_pages_active"] = is_complete_service_pages_active
+        kwargs["is_fares_require_attention_active"] = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
+        kwargs["is_avl_require_attention_active"] = flag_is_active(
+            "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
         )
 
         kwargs["current_valid_files"] = []
@@ -888,13 +910,34 @@ class LineMetadataDetailView(DetailView):
                     )
                 )
 
-            txc_file_attributes = (
-                self.get_timetable_files_for_line(live_revision.id, service_code, line)
-                .add_service_code(service_code)
-                .add_split_linenames()
-            )
+            if is_complete_service_pages_active and self.page == "licence":
+                self.line = line
+                self.service_code = service_code
+                self.service = self.get_otc_service()
+                licence_number = None
+                self.service_code_exemption_map = {}
+                self.seasonal_service_map = {}
+                self.service_inscope = True
+                if self.service:
+                    licence_number = self.service.licence.number
+                    self.service_code_exemption_map = (
+                        self.get_service_code_exemption_map(licence_number)
+                    )
+                    self.seasonal_service_map = self.get_seasonal_service_map(
+                        licence_number
+                    )
+                    self.service_inscope = self.is_service_in_scope()
 
-            if FeatureFlags.COMPLETE_SERVICE_PAGES:
+                kwargs["service_inscope"] = self.service_inscope
+
+                txc_file_attributes = (
+                    self.get_timetable_files_for_line(
+                        live_revision.id, service_code, line
+                    )
+                    .add_service_code(service_code)
+                    .add_split_linenames()
+                )
+
                 kwargs.update(
                     self.get_avl_data(
                         txc_file_attributes,

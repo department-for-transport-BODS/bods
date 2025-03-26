@@ -21,6 +21,8 @@ info:
 tags:
   - name: SIRI-VM Data feed
     description: Interact with SIRI-VM datafeeds
+  - name: SIRI-VM Subscriptions
+    description: Interact with SIRI-VM subscriptions
   - name: GTFS RT Data feed
     description: Interact with GTFS-RT datafeeds
 
@@ -98,6 +100,125 @@ paths:
             example: "21027012"
 
       responses: {}
+
+  /api/v1/siri-vm/subscriptions/:
+    post:
+      tags:
+        - SIRI-VM Subscriptions
+      description: Create a location data subscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiriSubscriptionRequest"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/CreateSubscriptionResponse"
+        400:
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        429:
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        503:
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+
+    get:
+      tags:
+        - SIRI-VM Subscriptions
+      description: Returns a list of location data subscriptions for the user
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/GetConsumerSubscriptionsResponse"
+
+  /api/v1/siri-vm/subscriptions/{subscriptionId}/:
+    get:
+      tags:
+        - SIRI-VM Subscriptions
+      description: Returns a single location data subscription for the user
+      parameters:
+        - name: subscriptionId
+          description: The subscription ID
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/GetConsumerSubscriptionResponse"
+        400:
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+
+    delete:
+      tags:
+        - SIRI-VM Subscriptions
+      description: Unsubscribe a location data subscription
+      parameters:
+        - name: subscriptionId
+          description: The subscription ID
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        204:
+          description: Success
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        429:
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
+        503:
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/ApiError"
 
   /api/v1/datafeed/{datafeedID}/:
     get:
@@ -186,6 +307,13 @@ components:
           items:
             type: string
           example: ["Example error message"]
+
+    CreateSubscriptionResponse:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+          example: "1234"
 
     ServiceDelivery:
       type: object
@@ -288,3 +416,152 @@ components:
         Latitude:
           type: number
           example: 52.09376837
+
+    SiriSubscriptionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Set a user-friendly name for the subscription
+          example: "My subscription"
+        dataFeedIds:
+          type: array
+          description: List of data feed IDs to subscribe to. The Data feed(s) must be live. At least one is required, and up to 5 can be included.
+          items:
+            type: string
+          minItems: 1
+          maxItems: 5
+          example: ["example-data-feed-id"]
+        url:
+          type: string
+          description: The URL to send the data to
+          example: "https://example.com"
+        updateInterval:
+          type: string
+          description: The interval in seconds in which data will be sent
+          enum: [PT10S, PT15S, PT20S, PT30S]
+          example: PT10S
+        boundingBox:
+          type: array
+          items:
+            type: number
+          minItems: 4
+          maxItems: 4
+          example: [-2.930, 53.374, -3.085, 53.453]
+        operatorRef:
+          type: array
+          items:
+            type: string
+          example: [SCGH, SCLI, HRBT]
+        vehicleRef:
+          type: string
+          example: BUSC
+        lineRef:
+          type: string
+          example: 85A
+        producerRef:
+          type: string
+          example: SCLI
+        originRef:
+          type: string
+          example: "21024515"
+        destinationRef:
+          type: string
+          example: "21027012"
+
+    ConsumerSubscriptionQueryParams:
+      type: object
+      properties:
+        subscriptionId:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 5
+          example: ["example-data-feed-id"]
+
+        boundingBox:
+          type: array
+          items:
+            type: number
+          minItems: 4
+          maxItems: 4
+          example: [-2.930, 53.374, -3.085, 53.453]
+
+        operatorRef:
+          type: array
+          items:
+            type: string
+          example: [SCGH, SCLI, HRBT]
+
+        vehicleRef:
+          type: string
+          example: BUSC
+
+        lineRef:
+          type: string
+          example: 85A
+
+        producerRef:
+          type: string
+          example: SCLI
+
+        originRef:
+          type: string
+          example: "21024515"
+
+        destinationRef:
+          type: string
+          example: "21027012"
+
+    ConsumerSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        subscriptionId:
+          type: string
+          example: "1234"
+        status:
+          type: string
+          enum: [live, inactive, error]
+          example: inactive
+        url:
+          type: string
+          example: "https://example.com"
+        requestorRef:
+          type: string
+          example: "my-ref"
+        updateInterval:
+          type: string
+          enum: [PT10S, PT15S, PT20S, PT30S]
+          example: "PT10S"
+        heartbeatInterval:
+          type: string
+          enum: [PT30S]
+          example: "PT30S"
+        initialTerminationTime:
+          type: string
+          format: date-time
+          example: "2050-01-01T00:00:00.000Z"
+        requestTimestamp:
+          type: string
+          format: date-time
+          example: "2024-01-01T00:00:00.000Z"
+        queryParams:
+          $ref: "#/components/schemas/ConsumerSubscriptionQueryParams"
+
+    GetConsumerSubscriptionsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          ConsumerSubscription:
+            $ref: "#/components/schemas/ConsumerSubscription"
+
+    GetConsumerSubscriptionResponse:
+      type: object
+      properties:
+        ConsumerSubscription:
+          $ref: "#/components/schemas/ConsumerSubscription"

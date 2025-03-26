@@ -8,6 +8,7 @@ from transit_odp.browse.tests.test_views import AVL_LINE_LEVEL_REQUIRE_ATTENTION
 from transit_odp.dqs.factories import (
     ChecksFactory,
     ObservationResultsFactory,
+    ReportFactory,
     TaskResultsFactory,
 )
 from transit_odp.naptan.factories import AdminAreaFactory
@@ -461,8 +462,11 @@ class TestOperatorPeriodicTask:
         check2 = ChecksFactory(queue_name="Queue1")
         check1.importance = "Critical"
 
+        dataquality_report = ReportFactory(revision=txcfileattribute1.revision)
+
         taskresult = TaskResultsFactory(
             transmodel_txcfileattributes=txcfileattribute1,
+            dataquality_report=dataquality_report,
             checks=check1,
         )
         observation_result = ObservationResultsFactory(
@@ -489,8 +493,6 @@ class TestOperatorPeriodicTask:
 
         task_precalculate_operator_sra()
         org_updated = Organisation.objects.filter(id=org.id).first()
-        print(org_updated.total_inscope)
-        print(org_updated.timetable_sra)
         # One out of season seasonal service reduces in scope services to 3
         assert org_updated.total_inscope == 3
         assert org_updated.timetable_sra == 1  # DQS critical issues
