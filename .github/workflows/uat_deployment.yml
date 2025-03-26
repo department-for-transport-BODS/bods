@@ -196,7 +196,7 @@ jobs:
       uses: jsdaniell/create-json@v1.2.3
       with:
         name: "credentials.json"
-        json: ${{ secrets.PG_MUTATION_DEV }}
+        json: ${{ secrets.PG_MUTATION_UAT }}
 
     - name: Invoke Lambda Function
       shell: bash
