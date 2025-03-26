@@ -163,6 +163,7 @@ def get_originref_df(zipfile: ZipFile, all_activity_df: pd.DataFrame) -> pd.Data
                 dtype={
                     "VehicleRef in SIRI": "object",
                     "DatedVehicleJourneyRef in SIRI": "object",
+                    "OriginRef in SIRI": "object",
                 },
             )
             origin_ref_df = origin_ref_df[
@@ -222,7 +223,7 @@ def get_directionref_df(
                 dtype={
                     "VehicleRef in SIRI": "object",
                     "DatedVehicleJourneyRef in SIRI": "object",
-                    "OriginRef in SIRI": "object",
+                    "DirectionRef in SIRI": "object",
                 },
             )
             origin_ref_df = origin_ref_df[

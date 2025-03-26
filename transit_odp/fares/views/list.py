@@ -26,9 +26,7 @@ class ListView(BasePublishListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         org_id = context["pk1"]
-        context["is_fares_require_attention_active"] = flag_is_active(
-            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
-        )
+
         context["data_activity_url"] = (
             reverse(
                 "data-activity", kwargs={"pk1": self.organisation.id}, host=PUBLISH_HOST
@@ -38,9 +36,19 @@ class ListView(BasePublishListView):
         context["applicable_services"] = len(
             get_in_scope_in_season_services_line_level(org_id)
         )
-        fares_sra = FaresRequiresAttention(org_id)
-        context["services_requiring_attention"] = len(
-            fares_sra.get_fares_requires_attention_line_level_data()
+
+        is_fares_require_attention_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
+        context["is_fares_require_attention_active"] = is_fares_require_attention_active
+
+        fares_sra_count = 0
+        if is_fares_require_attention_active:
+            fares_sra = FaresRequiresAttention(org_id)
+            fares_sra_count = len(
+                fares_sra.get_fares_requires_attention_line_level_data()
+            )
+
+        context["services_requiring_attention"] = fares_sra_count
 
         return context
