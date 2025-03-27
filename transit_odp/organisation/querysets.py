@@ -1337,12 +1337,15 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .add_organisation_name()
             .add_string_lines()
             .add_split_linenames()
+            .add_is_null_operating_period_end()
             .order_by(
                 "service_code",
                 "line_name_unnested",
                 "-revision__published_at",
                 "-revision_number",
+                "-is_null_operating_period_end",
                 "-operating_period_end_date",
+                "-modification_datetime",
                 "-operating_period_start_date",
                 "-filename",
             )
@@ -1378,6 +1381,16 @@ class TXCFileAttributesQuerySet(models.QuerySet):
                     F("operating_period_end_date") - timedelta(days=42),
                     output_field=DateField(),
                 )
+            )
+        )
+
+    def add_is_null_operating_period_end(self):
+        """add is null field for checking the null value for operating period end"""
+        return self.annotate(
+            is_null_operating_period_end=Case(
+                When(operating_period_end_date__isnull=True, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField(),
             )
         )
 
