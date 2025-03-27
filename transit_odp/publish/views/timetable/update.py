@@ -1,11 +1,10 @@
 import logging
 from typing import List, Tuple, Type
-from uuid import uuid4
 
 from django.conf import settings
 from django.db import transaction
 from django.forms import Form
-from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 from django.views.generic.detail import SingleObjectMixin
@@ -13,18 +12,15 @@ from django_hosts import reverse
 from waffle import flag_is_active
 
 import config.hosts
-from transit_odp.common.utils.aws_common import StepFunctionsClientWrapper
 from transit_odp.common.views import BaseDetailView, BaseTemplateView
-from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision
-from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.forms import (
     FeedCommentForm,
     FeedPublishCancelForm,
     FeedUploadForm,
 )
 from transit_odp.publish.views.base import FeedWizardBaseView
-from transit_odp.timetables.utils import create_tt_state_machine_payload
+from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 logger = logging.getLogger(__name__)
@@ -202,37 +198,7 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             revision.start_etl()
 
         else:
-            with transaction.atomic():
-                if not revision.status == FeedStatus.pending.value:
-                    revision.to_pending()
-                    revision.save()
-                task = DatasetETLTaskResult.objects.create(
-                    revision=revision,
-                    status=DatasetETLTaskResult.STARTED,
-                    task_id=str(uuid4()),
-                )
-            # 'Update data' flow allows validation to occur multiple times
-            self.delete_existing_revision_data(revision)
-            # trigger state machine
-            input_payload = create_tt_state_machine_payload(revision, task.id, False)
-            try:
-                step_fucntions_client = StepFunctionsClientWrapper()
-                step_function_arn = (
-                    settings.TIMETABLES_STATE_MACHINE_ARN
-                )  # ARN of timetable pipeline Step Function
-
-                if not step_function_arn:
-                    logger.error(
-                        "Timetable pipeline: AWS Step Function ARN is missing or invalid"
-                    )
-                    raise
-                # Invoke the Step Function
-                step_fucntions_client.start_step_function(
-                    input_payload, step_function_arn
-                )
-
-            except Exception as e:
-                return JsonResponse({"error": str(e)}, status=500)
+            trigger_state_machine(revision, "timetables")
 
         return HttpResponseRedirect(
             reverse(

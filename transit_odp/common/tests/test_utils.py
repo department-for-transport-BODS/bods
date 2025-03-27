@@ -44,6 +44,7 @@ def test_remove_query_string_param():
     "path_info,expected",
     [
         ("/api/v1/datafeed/", "SIRI VM"),
+        ("/api/v1/siri-vm/subscriptions", "SIRI VM"),
         ("/v1/gtfsrtdatafeed/", "GTFS RT"),
         ("/fares/", "Fares"),
         ("/api/v1/dataset/", "Timetable"),

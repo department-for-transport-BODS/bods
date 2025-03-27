@@ -245,6 +245,10 @@ class LocalAuthorityView(BaseListView):
             "", FeatureFlags.UILTA_PREFETCH_SRA.value
         )
 
+        is_complete_service_page_active = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        )
+
         for lta in all_ltas_current_page:
             lta_list = lta_list_per_ui_ltas[lta.ui_lta_name_trimmed]
             setattr(lta, "auth_ids", [x.id for x in lta_list])
@@ -252,6 +256,8 @@ class LocalAuthorityView(BaseListView):
             if is_uilta_prefetch_sra_active:
                 total_inscope = ui_lta.total_inscope
                 timetable_sra = ui_lta.timetable_sra
+                if is_complete_service_page_active:
+                    timetable_sra = ui_lta.overall_sra
             else:
                 total_inscope = len(
                     get_in_scope_in_season_lta_service_numbers(lta_list)
