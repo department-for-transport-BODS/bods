@@ -1,4 +1,5 @@
 from typing import Dict, List, TypedDict
+import pandas as pd
 
 from django.http import HttpResponseRedirect
 from django.views.generic import FormView
@@ -7,6 +8,10 @@ from django_tables2 import SingleTableView
 from waffle import flag_is_active
 
 from config.hosts import PUBLISH_HOST
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.views import BaseTemplateView
 from transit_odp.organisation.constants import AVLType, FaresType, TimetableType
@@ -112,6 +117,14 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
         is_complete_service_page_active = flag_is_active(
             "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
         )
+        uncounted_activity_df = pd.DataFrame()
+        synced_in_last_month = []
+
+        if is_avl_require_attention_active:
+            uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+            abods_registry = AbodsRegistery()
+            synced_in_last_month = abods_registry.records()
+
         for record in self.get_queryset():
             fares_sra = 0
             avl_sra = 0
@@ -123,7 +136,9 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
                 if is_avl_require_attention_active:
                     avl_sra = len(
                         get_avl_requires_attention_line_level_data(
-                            record.organisation_id
+                            record.organisation_id,
+                            uncounted_activity_df,
+                            synced_in_last_month,
                         )
                     )
 
