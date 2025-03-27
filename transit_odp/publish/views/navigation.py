@@ -138,7 +138,7 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
                         get_avl_requires_attention_line_level_data(
                             record.organisation_id,
                             uncounted_activity_df,
-                            synced_in_last_month
+                            synced_in_last_month,
                         )
                     )
 
