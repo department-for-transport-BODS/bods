@@ -197,10 +197,13 @@ def get_line_level_txc_map_lta(lta_list) -> Dict[tuple, TXCFileAttributes]:
             .add_staleness_dates()
             .add_split_linenames()
             .add_organisation_name()
+            .add_is_null_operating_period_end()
             .order_by(
                 "service_code",
                 "-revision__published_at",
                 "-revision_number",
+                "-is_null_operating_period_end",
+                "-operating_period_end_date",
                 "-modification_datetime",
                 "-operating_period_start_date",
                 "-filename",
@@ -264,11 +267,14 @@ def get_line_level_txc_map_service_base(
         .add_staleness_dates()
         .add_split_linenames()
         .add_organisation_name()
+        .add_is_null_operating_period_end()
         .order_by(
             "service_code",
             "line_name_unnested",
             "-revision__published_at",
             "-revision_number",
+            "-is_null_operating_period_end",
+            "-operating_period_end_date",
             "-modification_datetime",
             "-operating_period_start_date",
             "-filename",
