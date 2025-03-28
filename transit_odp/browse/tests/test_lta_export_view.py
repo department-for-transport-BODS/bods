@@ -1359,7 +1359,7 @@ def test_lta_export_fares_published():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_one,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L1"],
+        line_name=["L1"],
         line_id=[":::L1"],
         national_operator_code=national_operator_code,
         valid_from=datetime.datetime(2024, 12, 12),
@@ -1369,7 +1369,7 @@ def test_lta_export_fares_published():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_one,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L2"],
+        line_name=["L2"],
         line_id=[":::L2"],
         national_operator_code=national_operator_code,
         valid_from=datetime.datetime(2025, 1, 12),
@@ -1385,7 +1385,7 @@ def test_lta_export_fares_published():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_three,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L3", ":::L4"],
+        line_name=["L3", "L4"],
         line_id=[":::L3", ":::L4"],
         national_operator_code=national_operator_code,
         valid_from=datetime.datetime(2025, 1, 12),
@@ -1395,7 +1395,7 @@ def test_lta_export_fares_published():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_three,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L5", ":::L6"],
+        line_name=["L5", "L6"],
         line_id=[":::L5", ":::L6"],
         national_operator_code=national_operator_code,
         valid_from=datetime.datetime(2025, 1, 12),
@@ -1405,7 +1405,7 @@ def test_lta_export_fares_published():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_three,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L7", ":::L8"],
+        line_name=["L7", "L8"],
         line_id=[":::L7", ":::L8"],
         national_operator_code=["SR", "BR"],
     )

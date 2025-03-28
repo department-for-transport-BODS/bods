@@ -661,7 +661,7 @@ def test_csv_output():
     faresdatacatalogue4 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata4,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[3]}"],
+        line_name=[f"{service_numbers[3]}"],
         line_id=[f":::{service_numbers[3]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -725,7 +725,7 @@ def test_csv_output():
     faresdatacatalogue5 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata5,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[4]}"],
+        line_name=[f"{service_numbers[4]}"],
         line_id=[f":::{service_numbers[4]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -787,7 +787,7 @@ def test_csv_output():
     faresdatacatalogue6 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata6,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[5]}"],
+        line_name=[f"{service_numbers[5]}"],
         line_id=[f":::{service_numbers[5]}"],
         valid_from=datetime.datetime(2022, 12, 12),
         valid_to=datetime.datetime(2023, 1, 2),
@@ -851,7 +851,7 @@ def test_csv_output():
     faresdatacatalogue7 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata7,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[6]}"],
+        line_name=[f"{service_numbers[6]}"],
         line_id=[f":::{service_numbers[6]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -921,7 +921,7 @@ def test_csv_output():
     faresdatacatalogue8 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata8,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[7]}"],
+        line_name=[f"{service_numbers[7]}"],
         line_id=[f":::{service_numbers[7]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -985,7 +985,7 @@ def test_csv_output():
     faresdatacatalogue9 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata9,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[8]}"],
+        line_name=[f"{service_numbers[8]}"],
         line_id=[f":::{service_numbers[8]}"],
         valid_from=datetime.datetime(2022, 12, 12),
         valid_to=datetime.datetime(2023, 1, 2),

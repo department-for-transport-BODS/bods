@@ -2532,7 +2532,7 @@ def test_agent_dashboard_sra_stats(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[0]}"],
+        line_name=[f"{all_line_names[0]}"],
         line_id=[f"::{all_line_names[0]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -2560,7 +2560,7 @@ def test_agent_dashboard_sra_stats(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_1,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[1]}"],
+        line_name=[f"{all_line_names[1]}"],
         line_id=[f"::{all_line_names[1]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -2588,7 +2588,7 @@ def test_agent_dashboard_sra_stats(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_2,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[2]}"],
+        line_name=[f"{all_line_names[2]}"],
         line_id=[f"::{all_line_names[2]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -2619,7 +2619,7 @@ def test_agent_dashboard_sra_stats(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_3,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[3]}"],
+        line_name=[f"{all_line_names[3]}"],
         line_id=[f"::{all_line_names[3]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -2648,7 +2648,7 @@ def test_agent_dashboard_sra_stats(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_4,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[4]}"],
+        line_name=[f"{all_line_names[4]}"],
         line_id=[f"::{all_line_names[4]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -2676,7 +2676,7 @@ def test_agent_dashboard_sra_stats(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_5,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[5]}"],
+        line_name=[f"{all_line_names[5]}"],
         line_id=[f"::{all_line_names[5]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -2831,7 +2831,7 @@ def test_agent_dashboard_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[0]}"],
+        line_name=[f"{all_line_names[0]}"],
         line_id=[f"::{all_line_names[0]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -2859,7 +2859,7 @@ def test_agent_dashboard_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_1,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[1]}"],
+        line_name=[f"{all_line_names[1]}"],
         line_id=[f"::{all_line_names[1]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -2887,7 +2887,7 @@ def test_agent_dashboard_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_2,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[2]}"],
+        line_name=[f"{all_line_names[2]}"],
         line_id=[f"::{all_line_names[2]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -2918,7 +2918,7 @@ def test_agent_dashboard_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_3,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[3]}"],
+        line_name=[f"{all_line_names[3]}"],
         line_id=[f"::{all_line_names[3]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -2947,7 +2947,7 @@ def test_agent_dashboard_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_4,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[4]}"],
+        line_name=[f"{all_line_names[4]}"],
         line_id=[f"::{all_line_names[4]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -2975,7 +2975,7 @@ def test_agent_dashboard_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_5,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[5]}"],
+        line_name=[f"{all_line_names[5]}"],
         line_id=[f"::{all_line_names[5]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -3109,7 +3109,7 @@ def test_agent_dashboard_no_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[0]}"],
+        line_name=[f"{all_line_names[0]}"],
         line_id=[f"::{all_line_names[0]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -3137,7 +3137,7 @@ def test_agent_dashboard_no_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_1,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[1]}"],
+        line_name=[f"{all_line_names[1]}"],
         line_id=[f"::{all_line_names[1]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -3165,7 +3165,7 @@ def test_agent_dashboard_no_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_2,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[2]}"],
+        line_name=[f"{all_line_names[2]}"],
         line_id=[f"::{all_line_names[2]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -3196,7 +3196,7 @@ def test_agent_dashboard_no_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_3,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[3]}"],
+        line_name=[f"{all_line_names[3]}"],
         line_id=[f"::{all_line_names[3]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -3225,7 +3225,7 @@ def test_agent_dashboard_no_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_4,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[4]}"],
+        line_name=[f"{all_line_names[4]}"],
         line_id=[f"::{all_line_names[4]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -3253,7 +3253,7 @@ def test_agent_dashboard_no_search_results(client_factory):
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_5,
         fares_metadata__revision__is_published=True,
-        line_name=[f"::{all_line_names[5]}"],
+        line_name=[f"{all_line_names[5]}"],
         line_id=[f"::{all_line_names[5]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
