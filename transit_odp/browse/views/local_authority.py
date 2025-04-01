@@ -1041,6 +1041,11 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     fares_last_modified
                 ) = fares_one_year_date = fares_operating_period_end = UNDER_MAINTENANCE
 
+            if exempted or (seasonal_service and not seasonal_service.seasonal_status):
+                avl_requires_attention = "No"
+                if fares_require_attention_active:
+                    fares_requires_attention = "No"
+
             self._update_data(
                 service,
                 service_number,

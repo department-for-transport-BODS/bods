@@ -197,10 +197,13 @@ def get_line_level_txc_map_lta(lta_list) -> Dict[tuple, TXCFileAttributes]:
             .add_staleness_dates()
             .add_split_linenames()
             .add_organisation_name()
+            .add_is_null_operating_period_end()
             .order_by(
                 "service_code",
                 "-revision__published_at",
                 "-revision_number",
+                "-is_null_operating_period_end",
+                "-operating_period_end_date",
                 "-modification_datetime",
                 "-operating_period_start_date",
                 "-filename",
@@ -264,11 +267,14 @@ def get_line_level_txc_map_service_base(
         .add_staleness_dates()
         .add_split_linenames()
         .add_organisation_name()
+        .add_is_null_operating_period_end()
         .order_by(
             "service_code",
             "line_name_unnested",
             "-revision__published_at",
             "-revision_number",
+            "-is_null_operating_period_end",
+            "-operating_period_end_date",
             "-modification_datetime",
             "-operating_period_start_date",
             "-filename",
@@ -846,24 +852,10 @@ def get_fares_records_require_attention_lta_line_level_objects(lta_list: List) -
         elif fares_df.empty:
             _update_data(object_list, service, service_key[0])
         else:
-            noc = file_attribute.national_operator_code
-            line_name = file_attribute.line_name_unnested
-            df = fares_df[
-                (fares_df.national_operator_code == noc)
-                & (fares_df.line_name == line_name)
-            ]
-            if not df.empty:
-                row = df.iloc[0].to_dict()
-                valid_to = row.get("valid_to", None)
-                last_modified_date = row.get("last_updated_date", "")
-                valid_to = date.today() if pd.isnull(valid_to) else valid_to
-                last_modified_date = (
-                    datetime.now()
-                    if pd.isnull(last_modified_date)
-                    else last_modified_date
-                )
-                if is_fares_stale(valid_to, last_modified_date):
-                    _update_data(object_list, service, line_name)
+            fra = FaresRequiresAttention(None)
+            if fra.is_fares_requires_attention(file_attribute, fares_df):
+                line_name = file_attribute.line_name_unnested
+                _update_data(object_list, service, line_name)
     return object_list
 
 
@@ -1088,7 +1080,7 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
             "xml_file_name",
             "valid_from",
             "valid_to",
-            "line_id",
+            "line_name",
             "id",
             "national_operator_code",
             "fares_metadata_id",
@@ -1105,13 +1097,8 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
     if fares_df.empty:
         return pd.DataFrame(columns=["national_operator_code", "line_name"])
 
-    fares_df = fares_df.explode("line_id")
+    fares_df = fares_df.explode("line_name")
     fares_df = fares_df.explode("national_operator_code")
-    fares_df["line_name"] = fares_df["line_id"].apply(
-        lambda x: (
-            x.split(":")[3] if isinstance(x, str) and len(x.split(":")) > 3 else None
-        )
-    )
 
     fares_df_merged = pd.DataFrame.merge(
         fares_df,
