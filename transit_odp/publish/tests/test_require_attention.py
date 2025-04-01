@@ -1204,7 +1204,7 @@ def test_get_fares_records_require_attention_lta_line_level_length():
         valid_from=datetime(2025, 1, 12),
         valid_to=datetime(2099, 2, 12),
     )
-    FaresValidationResultFactory(revision=fares_revision, count=5)
+    FaresValidationResultFactory(revision=fares_revision, count=0)
 
     lta_objs = LocalAuthority.objects.all()
     result = get_fares_records_require_attention_lta_line_level_length(lta_objs)

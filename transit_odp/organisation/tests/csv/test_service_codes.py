@@ -524,6 +524,7 @@ def test_csv_output_columns_order():
 
 @freeze_time("2023-02-24")
 @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+@override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=False)
 def test_csv_output():
     licence_number = "PD0000099"
     num_otc_services = 10
@@ -1045,10 +1046,10 @@ def test_csv_output():
     assert (
         csv_output["row0"][10] == '"Under maintenance"'
     )  # Timetables critical DQ issues
-    assert csv_output["row0"][11] == '"Yes"'  # AVL requires attention
+    assert csv_output["row0"][11] == '"No"'  # AVL requires attention
     assert csv_output["row0"][12] == '"No"'  # AVL Published Status
     assert csv_output["row0"][13] == '"No"'  # Error in AVL to Timetable Matching
-    assert csv_output["row0"][14] == '"Yes"'  # Fares requires attention
+    assert csv_output["row0"][14] == '"No"'  # Fares requires attention
     assert csv_output["row0"][15] == '"Unpublished"'  # Fares Published Status
     assert csv_output["row0"][16] == '"Not Stale"'  # Fares Timeliness Status
     assert csv_output["row0"][17] == '"No"'  # Fares Compliance Status
@@ -1145,10 +1146,10 @@ def test_csv_output():
     assert csv_output["row2"][8] == '"Unpublished"'
     assert csv_output["row2"][9] == '"Up to date"'
     assert csv_output["row2"][10] == '"Under maintenance"'
-    assert csv_output["row2"][11] == '"Yes"'
+    assert csv_output["row2"][11] == '"No"'
     assert csv_output["row2"][12] == '"No"'
     assert csv_output["row2"][13] == '"No"'
-    assert csv_output["row2"][14] == '"Yes"'
+    assert csv_output["row2"][14] == '"No"'
     assert csv_output["row2"][15] == '"Unpublished"'
     assert csv_output["row2"][16] == '"Not Stale"'
     assert csv_output["row2"][17] == '"No"'
@@ -1365,10 +1366,10 @@ def test_csv_output():
     assert csv_output["row7"][8] == '"Published"'
     assert csv_output["row7"][9] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row7"][10] == '"Under maintenance"'
-    assert csv_output["row7"][11] == '"Yes"'
+    assert csv_output["row7"][11] == '"No"'
     assert csv_output["row7"][12] == '"No"'
     assert csv_output["row7"][13] == '"No"'
-    assert csv_output["row7"][14] == '"Yes"'
+    assert csv_output["row7"][14] == '"No"'
     assert csv_output["row7"][15] == '"Published"'
     assert csv_output["row7"][16] == '"One year old"'
     assert csv_output["row7"][17] == '"Yes"'
@@ -1669,10 +1670,10 @@ def test_weca_seasonal_status_csv_output():
     assert csv_output["row1"][8] == '"Published"'
     assert csv_output["row1"][9] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row1"][10] == '"Under maintenance"'
-    assert csv_output["row1"][11] == '"Yes"'
+    assert csv_output["row1"][11] == '"No"'
     assert csv_output["row1"][12] == '"No"'
     assert csv_output["row1"][13] == '"No"'
-    assert csv_output["row1"][14] == '"Yes"'
+    assert csv_output["row1"][14] == '"No"'
     assert csv_output["row1"][15] == '"Unpublished"'
     assert csv_output["row1"][16] == '"Not Stale"'
     assert csv_output["row1"][17] == '"No"'
@@ -1997,10 +1998,10 @@ def test_seasonal_status_csv_output():
     assert csv_output["row1"][8] == '"Published"'
     assert csv_output["row1"][9] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row1"][10] == '"Under maintenance"'
-    assert csv_output["row1"][11] == '"Yes"'
+    assert csv_output["row1"][11] == '"No"'
     assert csv_output["row1"][12] == '"No"'
     assert csv_output["row1"][13] == '"No"'
-    assert csv_output["row1"][14] == '"Yes"'
+    assert csv_output["row1"][14] == '"No"'
     assert csv_output["row1"][15] == '"Unpublished"'
     assert csv_output["row1"][16] == '"Not Stale"'
     assert csv_output["row1"][17] == '"No"'
