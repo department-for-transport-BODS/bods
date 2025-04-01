@@ -216,4 +216,8 @@ class AgentOrganisationsTable(GovUkTable):
                     host=PUBLISH_HOST,
                 ),
             )
-        return fares_requires_attention
+        else:
+            return format_html(
+                "{count} ",
+                count=record["fares_requires_attention"],
+            )
