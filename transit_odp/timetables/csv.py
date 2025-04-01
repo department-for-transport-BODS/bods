@@ -25,6 +25,7 @@ from transit_odp.organisation.models import (
     TXCFileAttributes,
 )
 from transit_odp.otc.constants import (
+    CANCELLED_SERVICE_STATUS,
     OTC_SCOPE_STATUS_IN_SCOPE,
     OTC_SCOPE_STATUS_OUT_OF_SCOPE,
     OTC_STATUS_REGISTERED,
@@ -81,6 +82,7 @@ OTC_COLUMNS = (
     "traveline_region",
     "local_authority_ui_lta",
     "api_type",
+    "registration_status",
 )
 
 SEASONAL_SERVICE_COLUMNS = ("registration_number", "start", "end")
@@ -865,6 +867,31 @@ def defer_one_year(d):
     return d if pd.isna(d) else (d + pd.DateOffset(years=1)).date()
 
 
+def find_minimum_timeliness_date(row: Series) -> datetime.date:
+    forty_two_days_from_today = np.datetime64(datetime.date.today()) + np.timedelta64(
+        42, "D"
+    )
+
+    if row["registration_status"] in CANCELLED_SERVICE_STATUS:
+        if forty_two_days_from_today > row["effective_date"] and (
+            ~pd.notna(row["expiry_date"])
+            or (
+                pd.notna(row["expiry_date"])
+                and row["expiry_date"] > row["effective_date"]
+            )
+        ):
+            return row["effective_date"]
+        elif forty_two_days_from_today > row["expiry_date"]:
+            return row["expiry_date"]
+    else:
+        if (
+            pd.notna(row["expiry_date"])
+            and forty_two_days_from_today > row["expiry_date"]
+        ):
+            return row["expiry_date"]
+    return forty_two_days_from_today
+
+
 def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
     today = np.datetime64(today)
     df["last_modified_date"] = df["modification_datetime"].dt.date
@@ -905,17 +932,18 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     is_data_associated is set to true if operating period start date equals
     effective date or last modified date is greater than (effective_date - 70 days)
     """
-    not_stale_otc = df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
+    not_stale_otc = df["registration_status"].isin(CANCELLED_SERVICE_STATUS) | (
+        df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
+    )
     staleness_otc = ~not_stale_otc
 
-    forty_two_days_from_today = today + np.timedelta64(42, "D")
+    df["least_timeliness_date"] = df.apply(find_minimum_timeliness_date, axis=1)
 
     staleness_42_day_look_ahead = (
         (staleness_otc == False)
         & pd.notna(df["operating_period_end_date"])
-        & pd.notna(df["expiry_date"])
-        & (df["operating_period_end_date"] < forty_two_days_from_today)
-        & (df["operating_period_end_date"] < df["expiry_date"])
+        & pd.notna(df["least_timeliness_date"])
+        & (df["operating_period_end_date"] < df["least_timeliness_date"])
     )
 
     """

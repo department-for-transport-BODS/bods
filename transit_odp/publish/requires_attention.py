@@ -19,6 +19,7 @@ from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.organisation.models.organisations import ConsumerFeedback, Licence
+from transit_odp.otc.constants import CANCELLED_SERVICE_STATUS
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.constants import FARES_STALENESS_STATUS
 from transit_odp.transmodel.models import Service as TransmodelService
@@ -417,28 +418,30 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
         else False
     )
 
+    if expiry_date is None:
+        expiry_date = forty_two_days_from_today
+
+    least_date = (
+        expiry_date
+        if expiry_date < forty_two_days_from_today
+        else forty_two_days_from_today
+    )
+
+    if service.registration_status in CANCELLED_SERVICE_STATUS:
+        staleness_otc = False
+        if least_date > service.effective_date:
+            least_date = service.effective_date
+
     is_operating_period_lt_forty_two_days = (
-        operating_period_end_date
-        and operating_period_end_date < forty_two_days_from_today
+        operating_period_end_date and operating_period_end_date < least_date
         if operating_period_end_date
         else False
     )
-    is_operating_period_lt_expiry_date = (
-        (
-            operating_period_end_date
-            and expiry_date
-            and operating_period_end_date < expiry_date
-        )
-        if operating_period_end_date and expiry_date
-        else False
-        if not operating_period_end_date
-        else True
-    )
+
     staleness_42_day_look_ahead = (
-        not staleness_otc
-        and is_operating_period_lt_forty_two_days
-        and is_operating_period_lt_expiry_date
+        not staleness_otc and is_operating_period_lt_forty_two_days
     )
+
     staleness_12_months_old = (
         True
         if not staleness_42_day_look_ahead
