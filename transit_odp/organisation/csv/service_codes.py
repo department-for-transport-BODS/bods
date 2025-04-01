@@ -1082,6 +1082,11 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             if not dq_require_attention_active:
                 dq_require_attention = UNDER_MAINTENANCE
 
+            if exempted or (seasonal_service and not seasonal_service.seasonal_status):
+                avl_requires_attention = "No"
+                if is_fares_require_attention_active:
+                    fares_requires_attention = "No"
+
             self._update_data(
                 service,
                 file_attribute,

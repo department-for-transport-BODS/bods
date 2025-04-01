@@ -114,8 +114,8 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
             "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
 
-        is_complete_service_page_active = flag_is_active(
-            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        is_operator_prefetch_sra_active = flag_is_active(
+            "", FeatureFlags.OPERATOR_PREFETCH_SRA.value
         )
         uncounted_activity_df = pd.DataFrame()
         synced_in_last_month = []
@@ -129,7 +129,7 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
             fares_sra = 0
             avl_sra = 0
 
-            if is_complete_service_page_active:
+            if is_operator_prefetch_sra_active:
                 fares_sra = record.organisation.fares_sra
                 avl_sra = record.organisation.avl_sra
             else:

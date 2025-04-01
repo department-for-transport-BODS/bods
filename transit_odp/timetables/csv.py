@@ -1117,6 +1117,8 @@ def add_avl_requires_attention(row: Series) -> str:
     """
     Returns value for 'AVL requires attention' column based on the following logic:
 
+    If service is out of scope or out of season, AVL require attention is No
+
     If both 'AVL Published Status' equal to Yes
     and 'Error in AVL to Timetable Matching' equal to No,
     then 'AVL requires attention' = No.
@@ -1132,9 +1134,37 @@ def add_avl_requires_attention(row: Series) -> str:
     avl_published_status = row["avl_published_status"]
     error_in_avl_to_timetable_matching = row["error_in_avl_to_timetable_matching"]
 
+    if (
+        row["scope_status"] == OTC_SCOPE_STATUS_OUT_OF_SCOPE
+        or row["seasonal_status"] == "Out of Season"
+    ):
+        return "No"
+
     if (avl_published_status == "Yes") and (error_in_avl_to_timetable_matching == "No"):
         return "No"
     return "Yes"
+
+
+def get_fares_requires_attention_with_scope_check(row: Series) -> str:
+    """Get Fares require attention column value with the In Scope and In Season check
+    If service is out of scope and out of season, then service
+
+    Args:
+        row (Series): Service record
+
+    Returns:
+        str: Yes or No for 'fares require attention' column
+    """
+    if (
+        row["scope_status"] == OTC_SCOPE_STATUS_OUT_OF_SCOPE
+        or row["seasonal_status"] == "Out of Season"
+    ):
+        return "No"
+    return get_fares_requires_attention(
+        row.fares_published_status,
+        row.fares_timeliness_status,
+        row.fares_compliance_status,
+    )
 
 
 def add_overall_requires_attention(row: Series) -> str:
@@ -1400,11 +1430,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
             )
         )
         merged["fares_requires_attention"] = merged.apply(
-            lambda row: get_fares_requires_attention(
-                row.fares_published_status,
-                row.fares_timeliness_status,
-                row.fares_compliance_status,
-            ),
+            lambda row: get_fares_requires_attention_with_scope_check(row),
             axis=1,
         )
 
