@@ -2737,9 +2737,10 @@ def test_agent_dashboard_sra_stats(client_factory):
         re.sub(r"<.*?>", "", timetables_requires_attention_html).strip()[0]
     )
 
+    print("Logs for agent dashboard error")
     print(fares_requires_attention_html)
     print(type(fares_requires_attention_html))
-    
+
     fares_requires_attention = int(
         re.sub(r"<.*?>", "", fares_requires_attention_html).strip()[0]
     )
