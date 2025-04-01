@@ -2449,6 +2449,7 @@ def test_require_attention_compliant(publish_client):
 
 
 @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+@override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
 def test_agent_dashboard_sra_stats(client_factory):
     """
     Test for Agent Dashboard displaying services requiring attention
