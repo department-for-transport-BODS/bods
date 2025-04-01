@@ -46,12 +46,12 @@ from transit_odp.publish.requires_attention import (
     get_fares_records_require_attention_lta_line_level_objects,
     get_fares_requires_attention,
     get_fares_timeliness_status,
+    get_licence_organisation_map,
     get_line_level_txc_map_lta,
     get_requires_attention_data_lta_line_level_length,
     get_requires_attention_data_lta_line_level_objects,
     get_txc_map_lta,
     is_stale,
-    get_licence_organisation_map,
 )
 
 STALENESS_STATUS = [
@@ -904,6 +904,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
 
             staleness_status = "Up to date"
             if file_attribute is None:
+                staleness_status = "OTC variation not published"
                 require_attention = self._get_require_attention(
                     exempted,
                     seasonal_service,

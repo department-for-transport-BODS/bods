@@ -881,7 +881,10 @@ def find_minimum_timeliness_date(row: Series) -> datetime.date:
             )
         ):
             return row["effective_date"]
-        elif forty_two_days_from_today > row["expiry_date"]:
+        elif (
+            pd.notna(row["expiry_date"])
+            and forty_two_days_from_today > row["expiry_date"]
+        ):
             return row["expiry_date"]
     else:
         if (
@@ -970,6 +973,10 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         default="Up to date",
     )
     df["date_42_day_look_ahead"] = today + 42
+
+    df.loc[
+        df["published_status"] == "Unpublished", "staleness_status"
+    ] = "OTC variation not published"
 
     return df
 
