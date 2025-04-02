@@ -6,6 +6,7 @@ from django.db.models.expressions import datetime
 from freezegun import freeze_time
 from waffle.testutils import override_flag
 
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.fares.factories import (
     DataCatalogueMetaDataFactory,
     FaresMetadataFactory,
@@ -33,7 +34,6 @@ from transit_odp.otc.factories import (
     ServiceModelFactory,
     UILtaFactory,
 )
-from transit_odp.common.constants import FeatureFlags
 
 pytestmark = pytest.mark.django_db
 CSV_NUMBER_COLUMNS = 43
@@ -525,6 +525,7 @@ def test_csv_output_columns_order():
 @freeze_time("2023-02-24")
 @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
 @override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=False)
+@override_flag(FeatureFlags.CANCELLATION_LOGIC.value, active=True)
 def test_csv_output():
     licence_number = "PD0000099"
     num_otc_services = 10
@@ -1042,7 +1043,9 @@ def test_csv_output():
     assert csv_output["row0"][6] == '"No"'  # Requires Attention
     assert csv_output["row0"][7] == '"No"'  # Timetables requires attention
     assert csv_output["row0"][8] == '"Unpublished"'  # Timetables Published Status
-    assert csv_output["row0"][9] == '"Up to date"'  # Timetables Timeliness Status
+    assert (
+        csv_output["row0"][9] == '"OTC variation not published"'
+    )  # Timetables Timeliness Status
     assert (
         csv_output["row0"][10] == '"Under maintenance"'
     )  # Timetables critical DQ issues
@@ -1100,7 +1103,7 @@ def test_csv_output():
     assert csv_output["row1"][6] == '"Yes"'
     assert csv_output["row1"][7] == '"Yes"'
     assert csv_output["row1"][8] == '"Unpublished"'
-    assert csv_output["row1"][9] == '"Up to date"'
+    assert csv_output["row1"][9] == '"OTC variation not published"'
     assert csv_output["row1"][10] == '"Under maintenance"'
     assert csv_output["row1"][11] == '"Yes"'
     assert csv_output["row1"][12] == '"No"'
@@ -1144,7 +1147,7 @@ def test_csv_output():
     assert csv_output["row2"][6] == '"No"'
     assert csv_output["row2"][7] == '"No"'
     assert csv_output["row2"][8] == '"Unpublished"'
-    assert csv_output["row2"][9] == '"Up to date"'
+    assert csv_output["row2"][9] == '"OTC variation not published"'
     assert csv_output["row2"][10] == '"Under maintenance"'
     assert csv_output["row2"][11] == '"No"'
     assert csv_output["row2"][12] == '"No"'
