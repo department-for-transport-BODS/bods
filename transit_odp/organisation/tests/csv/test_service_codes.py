@@ -1041,7 +1041,9 @@ def test_csv_output():
     assert csv_output["row0"][6] == '"No"'  # Requires Attention
     assert csv_output["row0"][7] == '"No"'  # Timetables requires attention
     assert csv_output["row0"][8] == '"Unpublished"'  # Timetables Published Status
-    assert csv_output["row0"][9] == '"Up to date"'  # Timetables Timeliness Status
+    assert (
+        csv_output["row0"][9] == '"OTC variation not published"'
+    )  # Timetables Timeliness Status
     assert (
         csv_output["row0"][10] == '"Under maintenance"'
     )  # Timetables critical DQ issues
@@ -1099,7 +1101,7 @@ def test_csv_output():
     assert csv_output["row1"][6] == '"Yes"'
     assert csv_output["row1"][7] == '"Yes"'
     assert csv_output["row1"][8] == '"Unpublished"'
-    assert csv_output["row1"][9] == '"Up to date"'
+    assert csv_output["row1"][9] == '"OTC variation not published"'
     assert csv_output["row1"][10] == '"Under maintenance"'
     assert csv_output["row1"][11] == '"Yes"'
     assert csv_output["row1"][12] == '"No"'
@@ -1143,7 +1145,7 @@ def test_csv_output():
     assert csv_output["row2"][6] == '"No"'
     assert csv_output["row2"][7] == '"No"'
     assert csv_output["row2"][8] == '"Unpublished"'
-    assert csv_output["row2"][9] == '"Up to date"'
+    assert csv_output["row2"][9] == '"OTC variation not published"'
     assert csv_output["row2"][10] == '"Under maintenance"'
     assert csv_output["row2"][11] == '"Yes"'
     assert csv_output["row2"][12] == '"No"'
