@@ -1010,6 +1010,9 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 is_fares_compliant = None
 
                 if file_attribute is not None and not fares_dataset_df.empty:
+                    fares_published_status = "Unpublished"
+                    fares_timeliness_status = None
+                    fares_compliance_status = "No"
                     national_operator_code = file_attribute.national_operator_code
                     fares_noc = fares_dataset_df["national_operator_code"]
                     fares_line_name = fares_dataset_df["line_name"]
@@ -1084,6 +1087,11 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
 
             if not dq_require_attention_active:
                 dq_require_attention = UNDER_MAINTENANCE
+
+            if exempted or (seasonal_service and not seasonal_service.seasonal_status):
+                avl_requires_attention = "No"
+                if is_fares_require_attention_active:
+                    fares_requires_attention = "No"
 
             self._update_data(
                 service,

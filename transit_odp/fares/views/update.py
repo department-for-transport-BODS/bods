@@ -18,6 +18,7 @@ from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.publish.forms import FeedPublishCancelForm
 from transit_odp.publish.views.base import FeedWizardBaseView
+from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
 
@@ -195,11 +196,17 @@ class FeedUpdateWizard(SingleObjectMixin, FeedWizardBaseView):
             setattr(revision, key, value)
         revision.save()
 
-        if not revision.status == FeedStatus.pending.value:
-            revision.to_pending()
-            revision.save()
+        is_fares_serverless_publishing_active = flag_is_active(
+            "", "is_fares_serverless_publishing_active"
+        )
+        if not is_fares_serverless_publishing_active:
+            if not revision.status == FeedStatus.pending.value:
+                revision.to_pending()
+                revision.save()
 
-        transaction.on_commit(lambda: task_run_fares_pipeline.delay(revision.id))
+            transaction.on_commit(lambda: task_run_fares_pipeline.delay(revision.id))
+        else:
+            trigger_state_machine(revision, "fares")
 
         return HttpResponseRedirect(
             reverse(

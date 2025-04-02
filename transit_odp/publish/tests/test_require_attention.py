@@ -26,6 +26,7 @@ from transit_odp.dqs.constants import Level, TaskResultsStatus
 from transit_odp.dqs.factories import (
     ChecksFactory,
     ObservationResultsFactory,
+    ReportFactory,
     TaskResultsFactory,
 )
 from transit_odp.fares.factories import (
@@ -117,6 +118,7 @@ def test_dq_require_attention_with_only_critical_observation_results():
         task_result = TaskResultsFactory(
             status=TaskResultsStatus.PENDING.value,
             transmodel_txcfileattributes=txcfileattribute,
+            dataquality_report=ReportFactory(revision=txcfileattribute.revision),
             checks=check_obj,
         )
         service_pattern = ServicePatternFactory(
@@ -189,6 +191,7 @@ def test_dq_require_attention_with_only_critical_observation_results_with_feedba
         task_result = TaskResultsFactory(
             status=TaskResultsStatus.PENDING.value,
             transmodel_txcfileattributes=txcfileattribute,
+            dataquality_report=ReportFactory(revision=txcfileattribute.revision),
             checks=check_obj,
         )
         service_pattern = ServicePatternFactory(
@@ -401,6 +404,7 @@ def test_dq_require_attention_with_feedback_and_dqsobservation():
         task_result = TaskResultsFactory(
             status=TaskResultsStatus.PENDING.value,
             transmodel_txcfileattributes=txcfileattribute,
+            dataquality_report=ReportFactory(revision=txcfileattribute.revision),
             checks=check_obj,
         )
         service_pattern = ServicePatternFactory(
@@ -491,7 +495,7 @@ def test_get_fares_dataset_map():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L1", ":::L2", ":::L3"],
+        line_name=["L1", "L2", "L3"],
         line_id=[":::L1", ":::L2", ":::L3"],
         national_operator_code=national_operator_code,
         valid_from=datetime(2024, 12, 12),
@@ -500,7 +504,7 @@ def test_get_fares_dataset_map():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L1", ":::L2", ":::L3"],
+        line_name=["L1", "L2", "L3"],
         line_id=[":::L1", ":::L2", ":::L3"],
         national_operator_code=national_operator_code,
         valid_from=datetime(2025, 1, 12),
@@ -509,7 +513,7 @@ def test_get_fares_dataset_map():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L1", ":::L2", ":::L3"],
+        line_name=["L1", "L2", "L3"],
         line_id=[":::L1", ":::L2", ":::L3"],
         national_operator_code=["SR", "BR"],
     )
@@ -1048,6 +1052,7 @@ def test_get_timetable_records_require_attention_lta_line_level_length():
         task_result = TaskResultsFactory(
             status=TaskResultsStatus.PENDING.value,
             transmodel_txcfileattributes=txcfileattribute,
+            dataquality_report=ReportFactory(revision=txcfileattribute.revision),
             checks=check_obj,
         )
         service_pattern = ServicePatternFactory(
@@ -1175,7 +1180,7 @@ def test_get_fares_records_require_attention_lta_line_level_length():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata,
         fares_metadata__revision__is_published=True,
-        line_name=[":::line1", ":::line2", ":::line3"],
+        line_name=["line1", "line2", "line3"],
         line_id=[":::line1", ":::line2", ":::line3"],
         national_operator_code=["SDCU"],
         valid_from=datetime(2024, 12, 12),
@@ -1184,7 +1189,7 @@ def test_get_fares_records_require_attention_lta_line_level_length():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata,
         fares_metadata__revision__is_published=True,
-        line_name=[":::line1", ":::line2", ":::line3"],
+        line_name=["line1", "line2", "line3"],
         line_id=[":::line1", ":::line2", ":::line3"],
         national_operator_code=["SDCU"],
         valid_from=datetime(2025, 1, 12),
@@ -1193,13 +1198,13 @@ def test_get_fares_records_require_attention_lta_line_level_length():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata,
         fares_metadata__revision__is_published=True,
-        line_name=[":::line1", ":::line2", ":::line3"],
+        line_name=["line1", "line2", "line3"],
         line_id=[":::line1", ":::line2", ":::line3"],
         national_operator_code=["SDCU"],
         valid_from=datetime(2025, 1, 12),
         valid_to=datetime(2099, 2, 12),
     )
-    FaresValidationResultFactory(revision=fares_revision, count=5)
+    FaresValidationResultFactory(revision=fares_revision, count=0)
 
     lta_objs = LocalAuthority.objects.all()
     result = get_fares_records_require_attention_lta_line_level_length(lta_objs)

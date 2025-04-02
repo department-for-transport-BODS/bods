@@ -321,6 +321,7 @@ def otc_map_txc_map_from_licence(licence_number: str) -> tuple:
         .add_traveline_region_details()
         .add_otc_association_date()
         .add_otc_stale_date()
+        .order_by("service_number")
     )
 
     otc_services_df = pd.DataFrame.from_records(otc_services)

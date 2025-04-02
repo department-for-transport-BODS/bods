@@ -13,7 +13,7 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
 )
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.dqs.constants import Level
-from transit_odp.dqs.models import ObservationResults
+from transit_odp.dqs.models import ObservationResults, TaskResults
 from transit_odp.fares.models import DataCatalogueMetaData
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import INACTIVE
@@ -198,10 +198,13 @@ def get_line_level_txc_map_lta(lta_list) -> Dict[tuple, TXCFileAttributes]:
             .add_staleness_dates()
             .add_split_linenames()
             .add_organisation_name()
+            .add_is_null_operating_period_end()
             .order_by(
                 "service_code",
                 "-revision__published_at",
                 "-revision_number",
+                "-is_null_operating_period_end",
+                "-operating_period_end_date",
                 "-modification_datetime",
                 "-operating_period_start_date",
                 "-filename",
@@ -265,11 +268,14 @@ def get_line_level_txc_map_service_base(
         .add_staleness_dates()
         .add_split_linenames()
         .add_organisation_name()
+        .add_is_null_operating_period_end()
         .order_by(
             "service_code",
             "line_name_unnested",
             "-revision__published_at",
             "-revision_number",
+            "-is_null_operating_period_end",
+            "-operating_period_end_date",
             "-modification_datetime",
             "-operating_period_start_date",
             "-filename",
@@ -885,24 +891,10 @@ def get_fares_records_require_attention_lta_line_level_objects(lta_list: List) -
         elif fares_df.empty:
             _update_data(object_list, service, service_key[0])
         else:
-            noc = file_attribute.national_operator_code
-            line_name = file_attribute.line_name_unnested
-            df = fares_df[
-                (fares_df.national_operator_code == noc)
-                & (fares_df.line_name == line_name)
-            ]
-            if not df.empty:
-                row = df.iloc[0].to_dict()
-                valid_to = row.get("valid_to", None)
-                last_modified_date = row.get("last_updated_date", "")
-                valid_to = date.today() if pd.isnull(valid_to) else valid_to
-                last_modified_date = (
-                    datetime.now()
-                    if pd.isnull(last_modified_date)
-                    else last_modified_date
-                )
-                if is_fares_stale(valid_to, last_modified_date):
-                    _update_data(object_list, service, line_name)
+            fra = FaresRequiresAttention(None)
+            if fra.is_fares_requires_attention(file_attribute, fares_df):
+                line_name = file_attribute.line_name_unnested
+                _update_data(object_list, service, line_name)
     return object_list
 
 
@@ -1005,7 +997,7 @@ def get_dq_critical_observation_services_map(
     return get_dq_critical_observation_services_map_from_dataframe(txc_map_df)
 
 
-def query_dq_critical_observation(query) -> List[tuple]:
+def query_dq_critical_observation(query, revision_ids: list) -> List[tuple]:
     """Query for data quality critical issue for service code
     and line name combination for the current revision only,
     Using two scenarions, Any of the scenario with mark
@@ -1047,13 +1039,11 @@ def query_dq_critical_observation(query) -> List[tuple]:
         return []
 
     service_pattern_stops_df = get_service_pattern_stops_df(service_pattern_ids_df)
-
     service_pattern_ids_df = service_pattern_ids_df.merge(
         service_pattern_stops_df, on=["service_pattern_id"], how="left"
     )
 
-    dqs_observation_df = get_dqs_observations_df(service_pattern_stops_df)
-
+    dqs_observation_df = get_dqs_observations_df(service_pattern_stops_df, revision_ids)
     dqs_require_attention_df = service_pattern_ids_df.merge(
         dqs_observation_df, on=["service_pattern_stop_id"], how="left", indicator=True
     )
@@ -1082,14 +1072,17 @@ def get_dq_critical_observation_services_map_from_dataframe(
         return []
 
     query = Q()
+    revision_ids = []
     for _, row in txc_map.iterrows():
+        revision_ids.append(row["revision_id"])
         query |= Q(
             service_code=row["service_code"],
             service_patterns__line_name=row["line_name_unnested"],
             revision_id=row["revision_id"],
             txcfileattributes_id=row["id"],
         )
-    return query_dq_critical_observation(query)
+
+    return query_dq_critical_observation(query, revision_ids)
 
 
 def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFrame:
@@ -1126,7 +1119,7 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
             "xml_file_name",
             "valid_from",
             "valid_to",
-            "line_id",
+            "line_name",
             "id",
             "national_operator_code",
             "fares_metadata_id",
@@ -1143,13 +1136,8 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
     if fares_df.empty:
         return pd.DataFrame(columns=["national_operator_code", "line_name"])
 
-    fares_df = fares_df.explode("line_id")
+    fares_df = fares_df.explode("line_name")
     fares_df = fares_df.explode("national_operator_code")
-    fares_df["line_name"] = fares_df["line_id"].apply(
-        lambda x: (
-            x.split(":")[3] if isinstance(x, str) and len(x.split(":")) > 3 else None
-        )
-    )
 
     fares_df_merged = pd.DataFrame.merge(
         fares_df,
@@ -1227,11 +1215,11 @@ class FaresRequiresAttention:
                 get_fares_requires_attention(
                     "Published", fares_timeliness_status, fares_compliance_status
                 )
-                == "Yes"
+                == "No"
             ):
-                return True
+                return False
 
-        return False
+        return True
 
     def get_fares_requires_attention_line_level_data(self) -> List[Dict[str, str]]:
         """
@@ -1300,11 +1288,15 @@ def get_service_pattern_stops_df(service_pattern_ids_df: pd.DataFrame) -> pd.Dat
     Returns:
         pd.DataFrame: Dataframe with service pattern stop ids
     """
-    service_pattern_stops_df = pd.DataFrame.from_records(
+    service_pattern_stops_qs = (
         ServicePatternStop.objects.filter(
             service_pattern_id__in=list(service_pattern_ids_df["service_pattern_id"])
-        ).values("id", "service_pattern_id")
+        )
+        .order_by()
+        .values("id", "service_pattern_id")
     )
+
+    service_pattern_stops_df = pd.DataFrame.from_records(service_pattern_stops_qs)
     if service_pattern_stops_df.empty:
         service_pattern_stops_df = pd.DataFrame(columns=["id", "service_pattern_id"])
 
@@ -1314,7 +1306,9 @@ def get_service_pattern_stops_df(service_pattern_ids_df: pd.DataFrame) -> pd.Dat
     return service_pattern_stops_df
 
 
-def get_dqs_observations_df(service_pattern_stops_df: pd.DataFrame) -> pd.DataFrame:
+def get_dqs_observations_df(
+    service_pattern_stops_df: pd.DataFrame, revision_ids=List
+) -> pd.DataFrame:
     """Get Critical DQS Observations for the given service pattern stops
 
     Args:
@@ -1325,14 +1319,19 @@ def get_dqs_observations_df(service_pattern_stops_df: pd.DataFrame) -> pd.DataFr
     """
     dqs_observation_df = pd.DataFrame(columns=["service_pattern_stop_id"])
     if not service_pattern_stops_df.empty:
-        dqs_observation_df = pd.DataFrame.from_records(
-            ObservationResults.objects.filter(
-                service_pattern_stop_id__in=list(
-                    service_pattern_stops_df["service_pattern_stop_id"]
-                ),
-                taskresults__checks__importance=Level.critical.value,
-            ).values("service_pattern_stop_id")
-        )
+        task_result_ids = TaskResults.objects.filter(
+            dataquality_report__revision_id__in=revision_ids,
+            checks__importance=Level.critical.value,
+        ).values_list("id", flat=True)
+
+        observation_result_qs = ObservationResults.objects.filter(
+            service_pattern_stop_id__in=list(
+                service_pattern_stops_df["service_pattern_stop_id"]
+            ),
+            taskresults_id__in=list(task_result_ids),
+        ).values("service_pattern_stop_id")
+
+        dqs_observation_df = pd.DataFrame.from_records(observation_result_qs)
 
         if dqs_observation_df.empty:
             dqs_observation_df = pd.DataFrame(columns=["service_pattern_stop_id"])

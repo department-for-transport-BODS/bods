@@ -1,12 +1,18 @@
+import logging
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Optional
 
 from django.db.models import Max
 from django.utils import timezone
+from pydantic import BaseModel
 
 from transit_odp.organisation.models import DatasetRevision, TXCFileAttributes
 from transit_odp.publish.constants import LICENCE_NUMBER_NOT_SUPPLIED_MESSAGE
 from transit_odp.transmodel.models import BookingArrangements, Service
+
+logger = logging.getLogger(__name__)
 
 
 def get_simulated_progress(start_time: datetime, max_minutes: timedelta):
@@ -305,3 +311,128 @@ def get_valid_files(revision_id, valid_files, service_code, line_name):
         return get_single_booking_arrangements_file(
             booking_arrangements_qs.revision_id, [service_code]
         )
+
+
+def get_vehicle_activity_dict(
+    vehicle_activities_list: list, tt_journey_codes: list
+) -> dict:
+    """
+    Get Vehicle Activity dictionary with VehicleRef as the key.
+    This function keeps the latest VehicleRef based on the RecordedAtTime property
+    and only includes records that have a RecordedAtTime within the last 10 minutes
+    from the current time.
+
+    Args:
+        vehicle_activities_list (list)
+    Returns:
+        dict: A dictionary where the keys are vehicle references (VehicleRef)
+            and the values are dictionaries containing the latest activity
+            information for that vehicle (e.g., RecordedAtTime, LineRef,
+            OperatorRef, Longitude, Latitude), filtered to include only
+            activities within the last 10 minutes.
+    """
+    vehicle_dict = {}
+    current_time = datetime.now(timezone.utc)
+    journey_codes_list = tt_journey_codes[0].split(",")
+
+    for vehicle_activity in vehicle_activities_list:
+        monitored_vehicle_journey = vehicle_activity.monitored_vehicle_journey
+        vehicle_ref = monitored_vehicle_journey.vehicle_ref
+        recorded_at_time = vehicle_activity.recorded_at_time
+        line_ref = monitored_vehicle_journey.line_ref
+        operator_ref = monitored_vehicle_journey.operator_ref
+        longitude = monitored_vehicle_journey.vehicle_location.longitude
+        latitude = monitored_vehicle_journey.vehicle_location.latitude
+        framed_vehicle_journey_ref = (
+            monitored_vehicle_journey.framed_vehicle_journey_ref
+        )
+        vehicle_journey_code = "-"
+        if framed_vehicle_journey_ref:
+            vehicle_journey_code = framed_vehicle_journey_ref.dated_vehicle_journey_ref
+
+        if vehicle_journey_code not in journey_codes_list:
+            continue
+        time_diff = current_time - recorded_at_time
+        if time_diff <= timedelta(minutes=10):
+            if vehicle_ref not in vehicle_dict:
+                vehicle_dict[vehicle_ref] = {
+                    "RecordedAtTime": recorded_at_time,
+                    "LineRef": line_ref,
+                    "OperatorRef": operator_ref,
+                    "Longitude": longitude,
+                    "Latitude": latitude,
+                    "VehicleJourneyCode": vehicle_journey_code,
+                }
+            else:
+                current_latest_time = vehicle_dict[vehicle_ref]["RecordedAtTime"]
+                if recorded_at_time > current_latest_time:
+                    vehicle_dict[vehicle_ref] = {
+                        "RecordedAtTime": recorded_at_time,
+                        "LineRef": line_ref,
+                        "OperatorRef": operator_ref,
+                        "Longitude": longitude,
+                        "Latitude": latitude,
+                        "VehicleJourneyCode": vehicle_journey_code,
+                    }
+
+    return vehicle_dict
+
+
+class InputDataSourceEnum(Enum):
+    URL_UPLOAD = "URL_DOWNLOAD"
+    FILE_UPLOAD = "S3_FILE"
+
+
+class S3Payload(BaseModel):
+    object: str
+    bucket: Optional[str] = None
+
+
+class StepFunctionsTTPayload(BaseModel):
+    datasetRevisionId: int  # Always a int
+    datasetType: str  # Always a string
+    url: Optional[str] = None  # Optional or can be an empty string
+    inputDataSource: str  # Always a string
+    s3: Optional[S3Payload] = None  # Nested object
+    publishDatasetRevision: bool
+    datasetETLTaskResultId: int
+
+
+def create_state_machine_payload(
+    revision: DatasetRevision,
+    task_id: int,
+    do_publish: bool = False,
+    dataset_type: str = "timetables",
+) -> StepFunctionsTTPayload:
+    """Creates payload for AWS Step Function execution."""
+
+    if not revision.url_link and not revision.upload_file:
+        logger.warning(
+            "Both URL link and uploaded file are missing in the dataset revision."
+        )
+        return {}
+
+    DATASET_TYPE = dataset_type
+    datasetRevisionId = revision.id
+
+    if revision.url_link:
+        payload = StepFunctionsTTPayload(
+            url=revision.url_link,
+            inputDataSource=InputDataSourceEnum.URL_UPLOAD.value,
+            datasetRevisionId=datasetRevisionId,
+            datasetType=DATASET_TYPE,
+            publishDatasetRevision=do_publish,
+            datasetETLTaskResultId=task_id,
+        )
+
+    elif revision.upload_file:
+        payload = StepFunctionsTTPayload(
+            s3=S3Payload(object=revision.upload_file.name),
+            inputDataSource=InputDataSourceEnum.FILE_UPLOAD.value,
+            datasetRevisionId=datasetRevisionId,
+            datasetType=DATASET_TYPE,
+            publishDatasetRevision=do_publish,
+            datasetETLTaskResultId=task_id,
+        )
+
+    return payload.model_dump_json(exclude_none=True)

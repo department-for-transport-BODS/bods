@@ -524,6 +524,7 @@ def test_csv_output_columns_order():
 
 @freeze_time("2023-02-24")
 @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+@override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=False)
 def test_csv_output():
     licence_number = "PD0000099"
     num_otc_services = 10
@@ -661,7 +662,7 @@ def test_csv_output():
     faresdatacatalogue4 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata4,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[3]}"],
+        line_name=[f"{service_numbers[3]}"],
         line_id=[f":::{service_numbers[3]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -725,7 +726,7 @@ def test_csv_output():
     faresdatacatalogue5 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata5,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[4]}"],
+        line_name=[f"{service_numbers[4]}"],
         line_id=[f":::{service_numbers[4]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -787,7 +788,7 @@ def test_csv_output():
     faresdatacatalogue6 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata6,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[5]}"],
+        line_name=[f"{service_numbers[5]}"],
         line_id=[f":::{service_numbers[5]}"],
         valid_from=datetime.datetime(2022, 12, 12),
         valid_to=datetime.datetime(2023, 1, 2),
@@ -851,7 +852,7 @@ def test_csv_output():
     faresdatacatalogue7 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata7,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[6]}"],
+        line_name=[f"{service_numbers[6]}"],
         line_id=[f":::{service_numbers[6]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -921,7 +922,7 @@ def test_csv_output():
     faresdatacatalogue8 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata8,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[7]}"],
+        line_name=[f"{service_numbers[7]}"],
         line_id=[f":::{service_numbers[7]}"],
         valid_from=datetime.datetime(2024, 12, 12),
         valid_to=datetime.datetime(2025, 1, 12),
@@ -985,7 +986,7 @@ def test_csv_output():
     faresdatacatalogue9 = DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata9,
         fares_metadata__revision__is_published=True,
-        line_name=[f":::{service_numbers[8]}"],
+        line_name=[f"{service_numbers[8]}"],
         line_id=[f":::{service_numbers[8]}"],
         valid_from=datetime.datetime(2022, 12, 12),
         valid_to=datetime.datetime(2023, 1, 2),
@@ -1047,10 +1048,10 @@ def test_csv_output():
     assert (
         csv_output["row0"][10] == '"Under maintenance"'
     )  # Timetables critical DQ issues
-    assert csv_output["row0"][11] == '"Yes"'  # AVL requires attention
+    assert csv_output["row0"][11] == '"No"'  # AVL requires attention
     assert csv_output["row0"][12] == '"No"'  # AVL Published Status
     assert csv_output["row0"][13] == '"No"'  # Error in AVL to Timetable Matching
-    assert csv_output["row0"][14] == '"Yes"'  # Fares requires attention
+    assert csv_output["row0"][14] == '"No"'  # Fares requires attention
     assert csv_output["row0"][15] == '"Unpublished"'  # Fares Published Status
     assert csv_output["row0"][16] == '"Not Stale"'  # Fares Timeliness Status
     assert csv_output["row0"][17] == '"No"'  # Fares Compliance Status
@@ -1147,10 +1148,10 @@ def test_csv_output():
     assert csv_output["row2"][8] == '"Unpublished"'
     assert csv_output["row2"][9] == '"OTC variation not published"'
     assert csv_output["row2"][10] == '"Under maintenance"'
-    assert csv_output["row2"][11] == '"Yes"'
+    assert csv_output["row2"][11] == '"No"'
     assert csv_output["row2"][12] == '"No"'
     assert csv_output["row2"][13] == '"No"'
-    assert csv_output["row2"][14] == '"Yes"'
+    assert csv_output["row2"][14] == '"No"'
     assert csv_output["row2"][15] == '"Unpublished"'
     assert csv_output["row2"][16] == '"Not Stale"'
     assert csv_output["row2"][17] == '"No"'
@@ -1367,10 +1368,10 @@ def test_csv_output():
     assert csv_output["row7"][8] == '"Published"'
     assert csv_output["row7"][9] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row7"][10] == '"Under maintenance"'
-    assert csv_output["row7"][11] == '"Yes"'
+    assert csv_output["row7"][11] == '"No"'
     assert csv_output["row7"][12] == '"No"'
     assert csv_output["row7"][13] == '"No"'
-    assert csv_output["row7"][14] == '"Yes"'
+    assert csv_output["row7"][14] == '"No"'
     assert csv_output["row7"][15] == '"Published"'
     assert csv_output["row7"][16] == '"One year old"'
     assert csv_output["row7"][17] == '"Yes"'
@@ -1671,10 +1672,10 @@ def test_weca_seasonal_status_csv_output():
     assert csv_output["row1"][8] == '"Published"'
     assert csv_output["row1"][9] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row1"][10] == '"Under maintenance"'
-    assert csv_output["row1"][11] == '"Yes"'
+    assert csv_output["row1"][11] == '"No"'
     assert csv_output["row1"][12] == '"No"'
     assert csv_output["row1"][13] == '"No"'
-    assert csv_output["row1"][14] == '"Yes"'
+    assert csv_output["row1"][14] == '"No"'
     assert csv_output["row1"][15] == '"Unpublished"'
     assert csv_output["row1"][16] == '"Not Stale"'
     assert csv_output["row1"][17] == '"No"'
@@ -1999,10 +2000,10 @@ def test_seasonal_status_csv_output():
     assert csv_output["row1"][8] == '"Published"'
     assert csv_output["row1"][9] == '"Service hasn\'t been updated within a year"'
     assert csv_output["row1"][10] == '"Under maintenance"'
-    assert csv_output["row1"][11] == '"Yes"'
+    assert csv_output["row1"][11] == '"No"'
     assert csv_output["row1"][12] == '"No"'
     assert csv_output["row1"][13] == '"No"'
-    assert csv_output["row1"][14] == '"Yes"'
+    assert csv_output["row1"][14] == '"No"'
     assert csv_output["row1"][15] == '"Unpublished"'
     assert csv_output["row1"][16] == '"Not Stale"'
     assert csv_output["row1"][17] == '"No"'
