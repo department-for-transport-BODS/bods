@@ -945,6 +945,12 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
 
             staleness_status = "Up to date"
             if file_attribute is None:
+                is_cancellation_logic_active = flag_is_active(
+                    "", FeatureFlags.CANCELLATION_LOGIC.value
+                )
+                if is_cancellation_logic_active:
+                    staleness_status = "OTC variation not published"
+
                 require_attention = self._get_require_attention(
                     exempted,
                     seasonal_service,

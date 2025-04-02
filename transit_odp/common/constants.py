@@ -23,6 +23,7 @@ class FeatureFlags(Enum):
     AVL_REQUIRES_ATTENTION = "is_avl_require_attention_active"
     OPERATOR_PREFETCH_SRA = "is_operator_prefetch_sra_active"
     UILTA_PREFETCH_SRA = "is_uilta_prefetch_sra_active"
+    CANCELLATION_LOGIC = "is_cancellation_logic_active"
     COMPLETE_SERVICE_PAGES_REAL_TIME_DATA = (
         "is_complete_service_pages_real_time_data_active"
     )
