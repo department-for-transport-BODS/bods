@@ -935,13 +935,11 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     is_data_associated is set to true if operating period start date equals
     effective date or last modified date is greater than (effective_date - 70 days)
     """
-    if df["registration_status"].isin(CANCELLED_SERVICE_STATUS):
-        staleness_otc = False
-    else:
-        not_stale_otc = (
-            df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
-        )
-        staleness_otc = ~not_stale_otc
+
+    not_stale_otc = (df["registration_status"].isin(CANCELLED_SERVICE_STATUS) | (
+        df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
+    ))
+    staleness_otc = ~not_stale_otc
 
     df["least_timeliness_date"] = df.apply(find_minimum_timeliness_date, axis=1)
 
