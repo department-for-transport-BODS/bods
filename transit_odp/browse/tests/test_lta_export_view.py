@@ -5,6 +5,7 @@ import faker
 import pytest
 from django.db.models.expressions import datetime
 from freezegun import freeze_time
+from waffle.testutils import override_flag
 
 from transit_odp.browse.lta_column_headers import header_accessor_data_compliance_report
 from transit_odp.browse.views.local_authority import LTAComplianceReportCSV
@@ -26,7 +27,6 @@ from transit_odp.organisation.factories import (
     ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
-from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.constants import FLEXIBLE_REG, SCHOOL_OR_WORKS
 from transit_odp.otc.factories import (
     LicenceModelFactory,
@@ -35,8 +35,6 @@ from transit_odp.otc.factories import (
     ServiceModelFactory,
     UILtaFactory,
 )
-from waffle.testutils import override_flag
-
 
 pytestmark = pytest.mark.django_db
 FAKER = faker.Faker()
@@ -550,6 +548,8 @@ def test_lta_line_level_columns_order():
 
 
 @freeze_time("2023-02-24")
+@override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=False)
+@override_flag(FeatureFlags.CANCELLATION_LOGIC.value, active=True)
 def test_lta_line_level_csv():
     services_list_1 = []
     licence_number = "PD0000099"

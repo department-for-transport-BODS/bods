@@ -6,6 +6,7 @@ from django.db.models.expressions import datetime
 from freezegun import freeze_time
 from waffle.testutils import override_flag
 
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.fares.factories import (
     DataCatalogueMetaDataFactory,
     FaresMetadataFactory,
@@ -33,7 +34,6 @@ from transit_odp.otc.factories import (
     ServiceModelFactory,
     UILtaFactory,
 )
-from transit_odp.common.constants import FeatureFlags
 
 pytestmark = pytest.mark.django_db
 CSV_NUMBER_COLUMNS = 43
@@ -525,6 +525,7 @@ def test_csv_output_columns_order():
 @freeze_time("2023-02-24")
 @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
 @override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=False)
+@override_flag(FeatureFlags.CANCELLATION_LOGIC.value, active=True)
 def test_csv_output():
     licence_number = "PD0000099"
     num_otc_services = 10
