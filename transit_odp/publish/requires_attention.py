@@ -394,6 +394,9 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
             AND
             last_modified + 365 days <= today
     """
+    is_cancellation_logic_active = flag_is_active(
+        "", FeatureFlags.CANCELLATION_LOGIC.value
+    )
     today = now().date()
     last_modified = file_attribute.modification_datetime.date()
     effective_date = service.effective_date
@@ -418,29 +421,39 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
         else False
     )
 
-    if expiry_date is None:
-        expiry_date = forty_two_days_from_today
+    if is_cancellation_logic_active:
+        if expiry_date is None:
+            expiry_date = forty_two_days_from_today
 
-    least_date = (
-        expiry_date
-        if expiry_date < forty_two_days_from_today
-        else forty_two_days_from_today
-    )
+        least_date = (
+            expiry_date
+            if expiry_date < forty_two_days_from_today
+            else forty_two_days_from_today
+        )
 
-    if service.registration_status in CANCELLED_SERVICE_STATUS:
-        staleness_otc = False
-        if least_date > service.effective_date:
-            least_date = service.effective_date
+        if service.registration_status in CANCELLED_SERVICE_STATUS:
+            staleness_otc = False
+            if least_date > service.effective_date:
+                least_date = service.effective_date
 
-    is_operating_period_lt_forty_two_days = (
-        operating_period_end_date and operating_period_end_date < least_date
-        if operating_period_end_date
-        else False
-    )
+        is_operating_period_lt_forty_two_days = (
+            operating_period_end_date and operating_period_end_date < least_date
+            if operating_period_end_date
+            else False
+        )
 
-    staleness_42_day_look_ahead = (
-        not staleness_otc and is_operating_period_lt_forty_two_days
-    )
+        staleness_42_day_look_ahead = (
+            not staleness_otc and is_operating_period_lt_forty_two_days
+        )
+    else:
+        staleness_42_day_look_ahead = (
+            (
+                not staleness_otc
+                and operating_period_end_date < forty_two_days_from_today
+            )
+            if operating_period_end_date
+            else False
+        )
 
     staleness_12_months_old = (
         True

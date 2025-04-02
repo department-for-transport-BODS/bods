@@ -896,6 +896,9 @@ def find_minimum_timeliness_date(row: Series) -> datetime.date:
 
 
 def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
+    is_cancellation_logic_active = flag_is_active(
+        "", FeatureFlags.CANCELLATION_LOGIC.value
+    )
     today = np.datetime64(today)
     df["last_modified_date"] = df["modification_datetime"].dt.date
     df["effective_last_modified_date"] = df["last_modified_date"]
@@ -935,20 +938,31 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     is_data_associated is set to true if operating period start date equals
     effective date or last modified date is greater than (effective_date - 70 days)
     """
+    if is_cancellation_logic_active:
+        not_stale_otc = df["registration_status"].isin(CANCELLED_SERVICE_STATUS) | (
+            df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
+        )
+        staleness_otc = ~(not_stale_otc)
 
-    not_stale_otc = df["registration_status"].isin(CANCELLED_SERVICE_STATUS) | (
-        df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
-    )
-    staleness_otc = ~(not_stale_otc)
+        df["least_timeliness_date"] = df.apply(find_minimum_timeliness_date, axis=1)
+        staleness_42_day_look_ahead = (
+            (staleness_otc == False)
+            & pd.notna(df["operating_period_end_date"])
+            & pd.notna(df["least_timeliness_date"])
+            & (df["operating_period_end_date"] < df["least_timeliness_date"])
+        )
+    else:
+        not_stale_otc = (
+            df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
+        )
+        staleness_otc = ~not_stale_otc
 
-    df["least_timeliness_date"] = df.apply(find_minimum_timeliness_date, axis=1)
-
-    staleness_42_day_look_ahead = (
-        (staleness_otc == False)
-        & pd.notna(df["operating_period_end_date"])
-        & pd.notna(df["least_timeliness_date"])
-        & (df["operating_period_end_date"] < df["least_timeliness_date"])
-    )
+        forty_two_days_from_today = today + np.timedelta64(42, "D")
+        staleness_42_day_look_ahead = (
+            (staleness_otc == False)
+            & pd.notna(df["operating_period_end_date"])
+            & (df["operating_period_end_date"] < forty_two_days_from_today)
+        )
 
     """
     effective_stale_date_from_end_date = effective_date - 42 days
@@ -975,9 +989,10 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     )
     df["date_42_day_look_ahead"] = today + 42
 
-    df.loc[
-        df["published_status"] == "Unpublished", "staleness_status"
-    ] = "OTC variation not published"
+    if is_cancellation_logic_active:
+        df.loc[
+            df["published_status"] == "Unpublished", "staleness_status"
+        ] = "OTC variation not published"
 
     return df
 
