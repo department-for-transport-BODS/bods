@@ -5,6 +5,7 @@ import faker
 import pytest
 from django.db.models.expressions import datetime
 from freezegun import freeze_time
+from waffle.testutils import override_flag
 
 from transit_odp.browse.lta_column_headers import header_accessor_data_compliance_report
 from transit_odp.browse.views.local_authority import LTAComplianceReportCSV
@@ -26,7 +27,6 @@ from transit_odp.organisation.factories import (
     ServiceCodeExemptionFactory,
     TXCFileAttributesFactory,
 )
-from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.otc.constants import FLEXIBLE_REG, SCHOOL_OR_WORKS
 from transit_odp.otc.factories import (
     LicenceModelFactory,
@@ -35,8 +35,6 @@ from transit_odp.otc.factories import (
     ServiceModelFactory,
     UILtaFactory,
 )
-from waffle.testutils import override_flag
-
 
 pytestmark = pytest.mark.django_db
 FAKER = faker.Faker()
@@ -550,6 +548,8 @@ def test_lta_line_level_columns_order():
 
 
 @freeze_time("2023-02-24")
+@override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=False)
+@override_flag(FeatureFlags.CANCELLATION_LOGIC.value, active=True)
 def test_lta_line_level_csv():
     services_list_1 = []
     licence_number = "PD0000099"
@@ -800,9 +800,9 @@ def test_lta_line_level_csv():
     assert csv_output["row0"][6] == '"No"'
     assert csv_output["row0"][7] == '"No"'
     assert csv_output["row0"][8] == '"Unpublished"'
-    assert csv_output["row0"][9] == '"Up to date"'
+    assert csv_output["row0"][9] == '"OTC variation not published"'
     assert csv_output["row0"][10] == '"Under maintenance"'
-    assert csv_output["row0"][11] == '"Yes"'
+    assert csv_output["row0"][11] == '"No"'
     assert csv_output["row0"][12] == '"No"'
     assert csv_output["row0"][13] == '"No"'
     assert csv_output["row0"][14] == '"Under maintenance"'
@@ -844,7 +844,7 @@ def test_lta_line_level_csv():
     assert csv_output["row1"][6] == '"Yes"'
     assert csv_output["row1"][7] == '"Yes"'
     assert csv_output["row1"][8] == '"Unpublished"'
-    assert csv_output["row1"][9] == '"Up to date"'
+    assert csv_output["row1"][9] == '"OTC variation not published"'
     assert csv_output["row1"][10] == '"Under maintenance"'
     assert csv_output["row1"][11] == '"Yes"'
     assert csv_output["row1"][12] == '"No"'
@@ -888,9 +888,9 @@ def test_lta_line_level_csv():
     assert csv_output["row2"][6] == '"No"'
     assert csv_output["row2"][7] == '"No"'
     assert csv_output["row2"][8] == '"Unpublished"'
-    assert csv_output["row2"][9] == '"Up to date"'
+    assert csv_output["row2"][9] == '"OTC variation not published"'
     assert csv_output["row2"][10] == '"Under maintenance"'
-    assert csv_output["row2"][11] == '"Yes"'
+    assert csv_output["row2"][11] == '"No"'
     assert csv_output["row2"][12] == '"No"'
     assert csv_output["row2"][13] == '"No"'
     assert csv_output["row2"][14] == '"Under maintenance"'
@@ -932,7 +932,7 @@ def test_lta_line_level_csv():
     assert csv_output["row3"][6] == '"Yes"'
     assert csv_output["row3"][7] == '"Yes"'
     assert csv_output["row3"][8] == '"Unpublished"'
-    assert csv_output["row3"][9] == '"Up to date"'
+    assert csv_output["row3"][9] == '"OTC variation not published"'
     assert csv_output["row3"][10] == '"Under maintenance"'
     assert csv_output["row3"][11] == '"Yes"'
     assert csv_output["row3"][12] == '"No"'
@@ -976,7 +976,7 @@ def test_lta_line_level_csv():
     assert csv_output["row4"][6] == '"Yes"'
     assert csv_output["row4"][7] == '"Yes"'
     assert csv_output["row4"][8] == '"Unpublished"'
-    assert csv_output["row4"][9] == '"Up to date"'
+    assert csv_output["row4"][9] == '"OTC variation not published"'
     assert csv_output["row4"][10] == '"Under maintenance"'
     assert csv_output["row4"][11] == '"Yes"'
     assert csv_output["row4"][12] == '"No"'
@@ -1020,7 +1020,7 @@ def test_lta_line_level_csv():
     assert csv_output["row5"][6] == '"Yes"'
     assert csv_output["row5"][7] == '"Yes"'
     assert csv_output["row5"][8] == '"Unpublished"'
-    assert csv_output["row5"][9] == '"Up to date"'
+    assert csv_output["row5"][9] == '"OTC variation not published"'
     assert csv_output["row5"][10] == '"Under maintenance"'
     assert csv_output["row5"][11] == '"Yes"'
     assert csv_output["row5"][12] == '"No"'
@@ -1064,7 +1064,7 @@ def test_lta_line_level_csv():
     assert csv_output["row6"][6] == '"Yes"'
     assert csv_output["row6"][7] == '"Yes"'
     assert csv_output["row6"][8] == '"Unpublished"'
-    assert csv_output["row6"][9] == '"Up to date"'
+    assert csv_output["row6"][9] == '"OTC variation not published"'
     assert csv_output["row6"][10] == '"Under maintenance"'
     assert csv_output["row6"][11] == '"Yes"'
     assert csv_output["row6"][12] == '"No"'
@@ -1359,7 +1359,7 @@ def test_lta_export_fares_published():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_one,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L1"],
+        line_name=["L1"],
         line_id=[":::L1"],
         national_operator_code=national_operator_code,
         valid_from=datetime.datetime(2024, 12, 12),
@@ -1369,7 +1369,7 @@ def test_lta_export_fares_published():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_one,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L2"],
+        line_name=["L2"],
         line_id=[":::L2"],
         national_operator_code=national_operator_code,
         valid_from=datetime.datetime(2025, 1, 12),
@@ -1385,7 +1385,7 @@ def test_lta_export_fares_published():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_three,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L3", ":::L4"],
+        line_name=["L3", "L4"],
         line_id=[":::L3", ":::L4"],
         national_operator_code=national_operator_code,
         valid_from=datetime.datetime(2025, 1, 12),
@@ -1395,7 +1395,7 @@ def test_lta_export_fares_published():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_three,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L5", ":::L6"],
+        line_name=["L5", "L6"],
         line_id=[":::L5", ":::L6"],
         national_operator_code=national_operator_code,
         valid_from=datetime.datetime(2025, 1, 12),
@@ -1405,7 +1405,7 @@ def test_lta_export_fares_published():
     DataCatalogueMetaDataFactory(
         fares_metadata=faresmetadata_three,
         fares_metadata__revision__is_published=True,
-        line_name=[":::L7", ":::L8"],
+        line_name=["L7", "L8"],
         line_id=[":::L7", ":::L8"],
         national_operator_code=["SR", "BR"],
     )

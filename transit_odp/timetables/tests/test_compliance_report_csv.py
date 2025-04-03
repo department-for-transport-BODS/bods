@@ -185,7 +185,7 @@ def test_service_in_bods_and_otc():
             == service.service_type_description
         )
         assert row["Registration:Variation Number"] == service.variation_number
-        assert row["Registration:Expiry Date"] == licence.expiry_date
+        assert row["Registration:Expiry Date"] == service.end_date
         assert row["Registration:Effective Date"] == service.effective_date
         assert row["Registration:Received Date"] == service.received_date
 

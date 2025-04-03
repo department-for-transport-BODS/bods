@@ -46,12 +46,12 @@ from transit_odp.publish.requires_attention import (
     get_fares_records_require_attention_lta_line_level_objects,
     get_fares_requires_attention,
     get_fares_timeliness_status,
+    get_licence_organisation_map,
     get_line_level_txc_map_lta,
     get_requires_attention_data_lta_line_level_length,
     get_requires_attention_data_lta_line_level_objects,
     get_txc_map_lta,
     is_stale,
-    get_licence_organisation_map,
 )
 
 STALENESS_STATUS = [
@@ -245,6 +245,10 @@ class LocalAuthorityView(BaseListView):
             "", FeatureFlags.UILTA_PREFETCH_SRA.value
         )
 
+        is_complete_service_page_active = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        )
+
         for lta in all_ltas_current_page:
             lta_list = lta_list_per_ui_ltas[lta.ui_lta_name_trimmed]
             setattr(lta, "auth_ids", [x.id for x in lta_list])
@@ -252,6 +256,8 @@ class LocalAuthorityView(BaseListView):
             if is_uilta_prefetch_sra_active:
                 total_inscope = ui_lta.total_inscope
                 timetable_sra = ui_lta.timetable_sra
+                if is_complete_service_page_active:
+                    timetable_sra = ui_lta.overall_sra
             else:
                 total_inscope = len(
                     get_in_scope_in_season_lta_service_numbers(lta_list)
@@ -904,6 +910,12 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
 
             staleness_status = "Up to date"
             if file_attribute is None:
+                is_cancellation_logic_active = flag_is_active(
+                    "", FeatureFlags.CANCELLATION_LOGIC.value
+                )
+                if is_cancellation_logic_active:
+                    staleness_status = "OTC variation not published"
+
                 require_attention = self._get_require_attention(
                     exempted,
                     seasonal_service,
@@ -1034,6 +1046,11 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 ) = (
                     fares_last_modified
                 ) = fares_one_year_date = fares_operating_period_end = UNDER_MAINTENANCE
+
+            if exempted or (seasonal_service and not seasonal_service.seasonal_status):
+                avl_requires_attention = "No"
+                if fares_require_attention_active:
+                    fares_requires_attention = "No"
 
             self._update_data(
                 service,
