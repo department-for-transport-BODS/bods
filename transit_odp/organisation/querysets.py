@@ -1335,6 +1335,7 @@ class TXCFileAttributesQuerySet(models.QuerySet):
             .add_revision_details()
             .get_active_organisation()
             .add_organisation_name()
+            .add_organisation_id()
             .add_string_lines()
             .add_split_linenames()
             .add_is_null_operating_period_end()

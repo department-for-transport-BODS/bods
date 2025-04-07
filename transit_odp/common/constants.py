@@ -27,3 +27,4 @@ class FeatureFlags(Enum):
     COMPLETE_SERVICE_PAGES_REAL_TIME_DATA = (
         "is_complete_service_pages_real_time_data_active"
     )
+    PREFETCH_DATABASE_COMPLIANCE_REPORT = "is_prefetch_db_compliance_report_active"
