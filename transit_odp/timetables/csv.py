@@ -1388,7 +1388,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     otc_df["service_number"] = otc_df["service_number"].str.split("|")
     otc_df = otc_df.explode("service_number")
     dq_require_attention_active = flag_is_active(
-        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+        "", FeatureFlags.DQS_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value
     )
     if dq_require_attention_active:
         dq_critical_observations_map = (
@@ -1405,7 +1405,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     )
 
     is_fares_require_attention_active = flag_is_active(
-        "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        "", FeatureFlags.FARES_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value
     )
     if is_fares_require_attention_active:
         for txc_attribute in txc_attributes:
@@ -1514,7 +1514,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
 
     if is_prefetch_db_compliance_report_flag_active:
         try:
-            store_compliance_report_in_db(merged)
+            merged = store_compliance_report_in_db(merged)
         except Exception as e:
             logger.error(
                 "OPERATOR_PREFETCH_COMPLIANCE_REPORT: Error occured while saving report in db"
@@ -1535,7 +1535,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     return merged
 
 
-def store_compliance_report_in_db(merged: pd.DataFrame) -> None:
+def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
     """Save report values in database
 
     Args:
@@ -1561,6 +1561,9 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> None:
         how="left",
     )
 
+    merged["licence_organisation_name"] = merged["licence_organisation_name"].fillna(
+        "Organisation not yet created"
+    )
     merged["organisation_name"] = merged["licence_organisation_name"]
 
     report_columns = list(TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()) + [
@@ -1586,6 +1589,8 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> None:
     ComplianceReport.objects.all().delete()
     ComplianceReport.objects.bulk_create(db_report_instances, batch_size=1000)
 
+    return merged
+
 
 def clean_localauthorities_ids(row: Series) -> dict:
     """Convert service to dict as well as clear localauthority ids
@@ -1598,6 +1603,13 @@ def clean_localauthorities_ids(row: Series) -> dict:
     """
     if None in row["local_authorities_ids"]:
         row["local_authorities_ids"] = row["local_authorities_ids"].remove(None)
+
+    if UNDER_MAINTENANCE == row["fares_filename"]:
+        row["fares_dataset_id"] = None
+        row["fares_last_modified_date"] = None
+        row["fares_effective_stale_date_from_last_modified"] = None
+        row["fares_operating_period_end_date"] = None
+
     return row.to_dict()
 
 

@@ -25,6 +25,7 @@ from transit_odp.browse.lta_column_headers import (
     header_accessor_data,
     header_accessor_data_compliance_report,
     header_accessor_data_line_level,
+    header_accessor_data_db_compliance_report,
 )
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.constants import FeatureFlags
@@ -1090,7 +1091,7 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
 
 
 class LTAComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
-    columns = create_columns(header_accessor_data_compliance_report)
+    columns = create_columns(header_accessor_data_db_compliance_report)
 
     def _update_data(
         self,
