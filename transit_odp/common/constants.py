@@ -28,3 +28,9 @@ class FeatureFlags(Enum):
         "is_complete_service_pages_real_time_data_active"
     )
     PREFETCH_DATABASE_COMPLIANCE_REPORT = "is_prefetch_db_compliance_report_active"
+    DQS_REQUIRE_ATTENTION_COMPLIANCE_REPORT = (
+        "dqs_require_attention_compliance_report_active"
+    )
+    FARES_REQUIRE_ATTENTION_COMPLIANCE_REPORT = (
+        "is_fares_require_attention_compliance_report_active"
+    )

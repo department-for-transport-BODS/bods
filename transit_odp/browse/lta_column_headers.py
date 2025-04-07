@@ -439,3 +439,178 @@ header_accessor_data_line_level = [
         lambda otc_service: otc_service.get("ui_lta_name"),
     ),
 ]
+
+header_accessor_data_db_compliance_report = [
+    (
+        "Registration:Registration Number",
+        lambda otc_service: otc_service.get("otc_registration_number"),
+    ),
+    (
+        "Registration:Service Number",
+        lambda otc_service: otc_service.get("otc_service_number"),
+    ),
+    (
+        "Registration Status",
+        lambda otc_service: otc_service.get("otc_licence_number"),
+    ),
+    (
+        "Scope Status",
+        lambda otc_service: otc_service.get("scope_status"),
+    ),
+    (
+        "Seasonal Status",
+        lambda otc_service: otc_service.get("seasonal_status"),
+    ),
+    (
+        "Organisation Name",
+        lambda otc_service: otc_service.get("operator_name"),
+    ),
+    (
+        "Requires Attention",
+        lambda otc_service: otc_service.get("overall_requires_attention"),
+    ),
+    (
+        "Timetables requires attention",
+        lambda otc_service: otc_service.get("require_attention"),
+    ),
+    (
+        "Timetables Published Status",
+        lambda otc_service: (
+            "Published" if otc_service.get("dataset_id") else "Unpublished"
+        ),
+    ),
+    (
+        "Timetables Timeliness Status",
+        lambda otc_service: otc_service.get("staleness_status"),
+    ),
+    (
+        "Timetables critical DQ issues",
+        lambda otc_service: otc_service.get("dq_require_attention"),
+    ),
+    (
+        "AVL requires attention",
+        lambda otc_service: otc_service.get("avl_requires_attention"),
+    ),
+    (
+        "AVL Published Status",
+        lambda otc_service: otc_service.get("avl_published_status"),
+    ),
+    (
+        "Error in AVL to Timetable Matching",
+        lambda otc_service: otc_service.get("error_in_avl_to_timetable_matching"),
+    ),
+    (
+        "Fares requires attention",
+        lambda otc_service: otc_service.get("fares_requires_attention"),
+    ),
+    (
+        "Fares Published Status",
+        lambda otc_service: otc_service.get("fares_published_status"),
+    ),
+    (
+        "Fares Timeliness Status",
+        lambda otc_service: otc_service.get("fares_timeliness_status"),
+    ),
+    (
+        "Fares Compliance Status",
+        lambda otc_service: otc_service.get("fares_compliance_status"),
+    ),
+    ("Timetables Data set ID", lambda otc_service: otc_service.get("dataset_id")),
+    ("TXC:Filename", lambda otc_service: otc_service.get("xml_filename")),
+    (
+        "TXC:NOC",
+        lambda otc_service: otc_service.get("national_operator_code"),
+    ),
+    (
+        "TXC:Last Modified Date",
+        lambda otc_service: otc_service.get("last_modified_date"),
+    ),
+    (
+        "Date when timetable data is over 1 year old",
+        lambda otc_service: otc_service.get("effective_stale_date_last_modified_date"),
+    ),
+    (
+        "TXC:Operating Period End Date",
+        lambda otc_service: otc_service.get("operating_period_end_date"),
+    ),
+    (
+        "Fares Data set ID",
+        lambda otc_service: (
+            UNDER_MAINTENANCE
+            if otc_service.get("fares_filename") == UNDER_MAINTENANCE
+            else otc_service.get("fares_dataset_id")
+        ),
+    ),
+    ("NETEX:Filename", lambda otc_service: otc_service.get("fares_filename")),
+    (
+        "NETEX:Last Modified Date",
+        lambda otc_service: (
+            otc_service.get("fares_last_modified")
+            if otc_service.get("fares_filename") != UNDER_MAINTENANCE
+            else UNDER_MAINTENANCE
+        ),
+    ),
+    (
+        "Date when fares data is over 1 year old",
+        lambda otc_service: (
+            otc_service.get("fares_one_year_date")
+            if otc_service.get("fares_filename") != UNDER_MAINTENANCE
+            else UNDER_MAINTENANCE
+        ),
+    ),
+    (
+        "NETEX:Operating Period End Date",
+        lambda otc_service: (
+            otc_service.get("fares_operating_period_end")
+            if otc_service.get("fares_filename") != UNDER_MAINTENANCE
+            else UNDER_MAINTENANCE
+        ),
+    ),
+    (
+        "Date Registration variation needs to be published",
+        lambda otc_service: otc_service.get("effective_stale_date_otc_effective_date"),
+    ),
+    (
+        "Date for complete 42 day look ahead",
+        lambda otc_service: get_42_day_look_ahead_date(),
+    ),
+    (
+        "Date seasonal service should be published",
+        lambda otc_service: otc_service.get("effective_seasonal_start_date"),
+    ),
+    ("Seasonal Start Date", lambda otc_service: otc_service.get("seasonal_start")),
+    ("Seasonal End Date", lambda otc_service: otc_service.get("seasonal_end")),
+    (
+        "Registration:Operator Name",
+        lambda otc_service: otc_service.get("otc_operator"),
+    ),
+    (
+        "Registration:Licence Number",
+        lambda otc_service: otc_service.get("otc_licence_number"),
+    ),
+    (
+        "Registration:Service Type Description",
+        lambda otc_service: otc_service.get("otc_service_type_description"),
+    ),
+    (
+        "Registration:Variation Number",
+        lambda otc_service: otc_service.get("otc_variation_number"),
+    ),
+    (
+        "Registration:Expiry Date",
+        lambda otc_service: otc_service.get("otc_licence_expiry_date"),
+    ),
+    (
+        "Registration:Effective Date",
+        lambda otc_service: otc_service.get("otc_effective_date"),
+    ),
+    (
+        "Registration:Received Date",
+        lambda otc_service: otc_service.get("otc_received_date"),
+    ),
+    ("Traveline Region", lambda otc_service: otc_service.get("traveline_region")),
+    (
+        "Local Transport Authority",
+        lambda otc_service: otc_service.get("ui_lta_name"),
+    ),
+]
