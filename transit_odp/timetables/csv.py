@@ -1514,7 +1514,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
 
     if is_prefetch_db_compliance_report_flag_active:
         try:
-            store_compliance_report_in_db(merged)
+            merged = store_compliance_report_in_db(merged)
         except Exception as e:
             logger.error(
                 "OPERATOR_PREFETCH_COMPLIANCE_REPORT: Error occured while saving report in db"
@@ -1535,7 +1535,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     return merged
 
 
-def store_compliance_report_in_db(merged: pd.DataFrame) -> None:
+def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
     """Save report values in database
 
     Args:
@@ -1561,6 +1561,7 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> None:
         how="left",
     )
 
+    merged["licence_organisation_name"] = merged["licence_organisation_name"].fillna("Organisation not yet created")
     merged["organisation_name"] = merged["licence_organisation_name"]
 
     report_columns = list(TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()) + [
@@ -1585,6 +1586,8 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> None:
     ]
     ComplianceReport.objects.all().delete()
     ComplianceReport.objects.bulk_create(db_report_instances, batch_size=1000)
+
+    return merged
 
 
 def clean_localauthorities_ids(row: Series) -> dict:
