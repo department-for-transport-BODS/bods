@@ -1561,7 +1561,9 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
         how="left",
     )
 
-    merged["licence_organisation_name"] = merged["licence_organisation_name"].fillna("Organisation not yet created")
+    merged["licence_organisation_name"] = merged["licence_organisation_name"].fillna(
+        "Organisation not yet created"
+    )
     merged["organisation_name"] = merged["licence_organisation_name"]
 
     report_columns = list(TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()) + [
