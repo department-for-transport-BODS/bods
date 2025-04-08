@@ -1,4 +1,5 @@
 import datetime
+from logging import getLogger
 from collections import OrderedDict
 from typing import List, Optional
 
@@ -24,6 +25,7 @@ from transit_odp.organisation.models import (
     ServiceCodeExemption,
     TXCFileAttributes,
 )
+from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.constants import (
     CANCELLED_SERVICE_STATUS,
     OTC_SCOPE_STATUS_IN_SCOPE,
@@ -40,6 +42,10 @@ from transit_odp.publish.requires_attention import (
     get_fares_requires_attention,
     get_fares_timeliness_status,
 )
+
+from transit_odp.organisation.models import Licence as BODSLicence
+
+logger = getLogger(__name__)
 
 TXC_COLUMNS = (
     "organisation_name",
@@ -58,7 +64,12 @@ TXC_COLUMNS = (
     "destination",
 )
 
-TXC_LINE_LEVEL_COLUMNS = TXC_COLUMNS + ("line_name_unnested", "revision_id", "id")
+TXC_LINE_LEVEL_COLUMNS = TXC_COLUMNS + (
+    "line_name_unnested",
+    "revision_id",
+    "id",
+    "organisation_id",
+)
 
 OTC_COLUMNS = (
     "service_code",
@@ -83,6 +94,7 @@ OTC_COLUMNS = (
     "local_authority_ui_lta",
     "api_type",
     "registration_status",
+    "local_authorities_ids",
 )
 
 SEASONAL_SERVICE_COLUMNS = ("registration_number", "start", "end")
@@ -1376,7 +1388,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     otc_df["service_number"] = otc_df["service_number"].str.split("|")
     otc_df = otc_df.explode("service_number")
     dq_require_attention_active = flag_is_active(
-        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+        "", FeatureFlags.DQS_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value
     )
     if dq_require_attention_active:
         dq_critical_observations_map = (
@@ -1393,7 +1405,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     )
 
     is_fares_require_attention_active = flag_is_active(
-        "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        "", FeatureFlags.FARES_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value
     )
     if is_fares_require_attention_active:
         for txc_attribute in txc_attributes:
@@ -1437,7 +1449,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         merged[field] = merged[field].astype(type_)
 
     merged.sort_values("dataset_id", inplace=True)
-    merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
+
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
@@ -1495,10 +1507,110 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         old_name: column_tuple.field_name
         for old_name, column_tuple in TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.items()
     }
+
+    is_prefetch_db_compliance_report_flag_active = flag_is_active(
+        "", FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value
+    )
+
+    if is_prefetch_db_compliance_report_flag_active:
+        try:
+            merged = store_compliance_report_in_db(merged)
+        except Exception as e:
+            logger.error(
+                "OPERATOR_PREFETCH_COMPLIANCE_REPORT: Error occured while saving report in db"
+            )
+            logger.exception(e)
+            merged["organisation_name"] = merged.apply(
+                lambda x: add_operator_name(x), axis=1
+            )
+    else:
+        merged["organisation_name"] = merged.apply(
+            lambda x: add_operator_name(x), axis=1
+        )
+
     merged = merged[TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()].rename(
         columns=rename_map
     )
+
     return merged
+
+
+def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
+    """Save report values in database
+
+    Args:
+        merged (pd.DataFrame): Final Report Dataframe
+    """
+    merged.rename(columns={"organisation_id": "publish_organisation_id"}, inplace=True)
+    licence_org_df = pd.DataFrame.from_records(
+        BODSLicence.objects.values("number", "organisation_id", "organisation__name")
+    )
+    licence_org_df.rename(
+        columns={
+            "organisation_id": "licence_organisation_id",
+            "organisation__name": "licence_organisation_name",
+        },
+        inplace=True,
+    )
+    licence_org_df.drop_duplicates(subset=["number"], inplace=True)
+    merged = pd.merge(
+        merged,
+        licence_org_df,
+        left_on="otc_licence_number",
+        right_on="number",
+        how="left",
+    )
+
+    merged["licence_organisation_name"] = merged["licence_organisation_name"].fillna(
+        "Organisation not yet created"
+    )
+    merged["organisation_name"] = merged["licence_organisation_name"]
+
+    report_columns = list(TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()) + [
+        "publish_organisation_id",
+        "licence_organisation_id",
+        "licence_organisation_name",
+        "local_authorities_ids",
+    ]
+
+    report_columns.remove("otc_status")
+
+    db_report = merged[report_columns]
+    db_report.loc[
+        db_report["local_authority_ui_lta"] == "", "local_authorities_ids"
+    ] = []
+    db_report = db_report.replace({np.nan: None})
+    db_report = db_report.where(pd.notna(db_report), None)
+
+    db_report_instances = [
+        ComplianceReport(**clean_localauthorities_ids(row))
+        for _, row in db_report.iterrows()
+    ]
+    ComplianceReport.objects.all().delete()
+    ComplianceReport.objects.bulk_create(db_report_instances, batch_size=1000)
+
+    return merged
+
+
+def clean_localauthorities_ids(row: Series) -> dict:
+    """Convert service to dict as well as clear localauthority ids
+
+    Args:
+        row (Series): Registration record
+
+    Returns:
+        dict: dict to be saved in db
+    """
+    if None in row["local_authorities_ids"]:
+        row["local_authorities_ids"] = row["local_authorities_ids"].remove(None)
+
+    if UNDER_MAINTENANCE == row["fares_filename"]:
+        row["fares_dataset_id"] = None
+        row["fares_last_modified_date"] = None
+        row["fares_effective_stale_date_from_last_modified"] = None
+        row["fares_operating_period_end_date"] = None
+
+    return row.to_dict()
 
 
 def get_timetable_catalogue_csv():
