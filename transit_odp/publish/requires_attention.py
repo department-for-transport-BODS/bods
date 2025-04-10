@@ -19,6 +19,7 @@ from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.organisation.models.organisations import ConsumerFeedback, Licence
+from transit_odp.otc.constants import CANCELLED_SERVICE_STATUS
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.constants import FARES_STALENESS_STATUS
 from transit_odp.transmodel.models import Service as TransmodelService
@@ -388,6 +389,10 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
             Staleness status is not OTC Variation
             AND
             Operating period end date < today + 42 days
+            AND
+            if Service End Date is present
+            And
+            Operating period end date < Service End Date
         Staleness Status - Stale - 12 months old:
             If Staleness status is not OTC Variation
             AND
@@ -395,6 +400,9 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
             AND
             last_modified + 365 days <= today
     """
+    is_cancellation_logic_active = flag_is_active(
+        "", FeatureFlags.CANCELLATION_LOGIC.value
+    )
     today = now().date()
     last_modified = file_attribute.modification_datetime.date()
     effective_date = service.effective_date
@@ -405,6 +413,7 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
     association_date_otc_effective_date = service.association_date_otc_effective_date
     operating_period_start_date = file_attribute.operating_period_start_date
     operating_period_end_date = file_attribute.operating_period_end_date
+    expiry_date = service.end_date
     forty_two_days_from_today = today + timedelta(days=42)
 
     is_data_associated = (
@@ -417,11 +426,41 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
         if today >= effective_stale_date_otc_effective_date
         else False
     )
-    staleness_42_day_look_ahead = (
-        (not staleness_otc and operating_period_end_date < forty_two_days_from_today)
-        if operating_period_end_date
-        else False
-    )
+
+    if is_cancellation_logic_active:
+        if expiry_date is None:
+            expiry_date = forty_two_days_from_today
+
+        least_date = (
+            expiry_date
+            if expiry_date < forty_two_days_from_today
+            else forty_two_days_from_today
+        )
+
+        if service.registration_status in CANCELLED_SERVICE_STATUS:
+            staleness_otc = False
+            if least_date > service.effective_date:
+                least_date = service.effective_date
+
+        is_operating_period_lt_forty_two_days = (
+            operating_period_end_date and operating_period_end_date < least_date
+            if operating_period_end_date
+            else False
+        )
+
+        staleness_42_day_look_ahead = (
+            not staleness_otc and is_operating_period_lt_forty_two_days
+        )
+    else:
+        staleness_42_day_look_ahead = (
+            (
+                not staleness_otc
+                and operating_period_end_date < forty_two_days_from_today
+            )
+            if operating_period_end_date
+            else False
+        )
+
     staleness_12_months_old = (
         True
         if not staleness_42_day_look_ahead
@@ -852,24 +891,10 @@ def get_fares_records_require_attention_lta_line_level_objects(lta_list: List) -
         elif fares_df.empty:
             _update_data(object_list, service, service_key[0])
         else:
-            noc = file_attribute.national_operator_code
-            line_name = file_attribute.line_name_unnested
-            df = fares_df[
-                (fares_df.national_operator_code == noc)
-                & (fares_df.line_name == line_name)
-            ]
-            if not df.empty:
-                row = df.iloc[0].to_dict()
-                valid_to = row.get("valid_to", None)
-                last_modified_date = row.get("last_updated_date", "")
-                valid_to = date.today() if pd.isnull(valid_to) else valid_to
-                last_modified_date = (
-                    datetime.now()
-                    if pd.isnull(last_modified_date)
-                    else last_modified_date
-                )
-                if is_fares_stale(valid_to, last_modified_date):
-                    _update_data(object_list, service, line_name)
+            fra = FaresRequiresAttention(None)
+            if fra.is_fares_requires_attention(file_attribute, fares_df):
+                line_name = file_attribute.line_name_unnested
+                _update_data(object_list, service, line_name)
     return object_list
 
 
@@ -1094,7 +1119,7 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
             "xml_file_name",
             "valid_from",
             "valid_to",
-            "line_id",
+            "line_name",
             "id",
             "national_operator_code",
             "fares_metadata_id",
@@ -1111,13 +1136,8 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
     if fares_df.empty:
         return pd.DataFrame(columns=["national_operator_code", "line_name"])
 
-    fares_df = fares_df.explode("line_id")
+    fares_df = fares_df.explode("line_name")
     fares_df = fares_df.explode("national_operator_code")
-    fares_df["line_name"] = fares_df["line_id"].apply(
-        lambda x: (
-            x.split(":")[3] if isinstance(x, str) and len(x.split(":")) > 3 else None
-        )
-    )
 
     fares_df_merged = pd.DataFrame.merge(
         fares_df,

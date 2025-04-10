@@ -18,6 +18,7 @@ from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
+from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.constants import (
     API_TYPE_EP,
     API_TYPE_WECA,
@@ -43,6 +44,404 @@ STALENESS_STATUS = [
     "42 day look ahead is incomplete",
     "Service hasn't been updated within a year",
     "OTC variation not published",
+]
+
+COMPLIANCE_REPORT_COLUMN = [
+    CSVColumn(
+        header="Registration:Registration Number",
+        accessor=lambda otc_service: otc_service.get("otc_registration_number"),
+    ),
+    CSVColumn(
+        header="Registration:Service Number",
+        accessor=lambda otc_service: otc_service.get("otc_service_number"),
+    ),
+    CSVColumn(
+        header="Registration Status",
+        accessor=lambda otc_service: (
+            "Registered" if otc_service.get("otc_licence_number") else "Unregistered"
+        ),
+    ),
+    CSVColumn(
+        header="Scope Status",
+        accessor=lambda otc_service: (
+            OTC_SCOPE_STATUS_OUT_OF_SCOPE
+            if otc_service.get("scope_status", False)
+            else OTC_SCOPE_STATUS_IN_SCOPE
+        ),
+    ),
+    CSVColumn(
+        header="Seasonal Status",
+        accessor=lambda otc_service: (
+            get_seasonal_service_status(otc_service)
+            if otc_service.get("seasonal_status") is not None
+            else "Not Seasonal"
+        ),
+    ),
+    CSVColumn(
+        header="Organisation Name",
+        accessor=lambda otc_service: (
+            get_operator_name(otc_service)
+            if otc_service.get("operator_name") is None
+            or otc_service.get("operator_name") == ""
+            else otc_service.get("operator_name")
+        ),
+    ),
+    CSVColumn(
+        header="Requires Attention",
+        accessor=lambda otc_service: otc_service.get("overall_requires_attention"),
+    ),
+    CSVColumn(
+        header="Timetables requires attention",
+        accessor=lambda otc_service: otc_service.get("require_attention"),
+    ),
+    CSVColumn(
+        header="Timetables Published Status",
+        accessor=lambda otc_service: (
+            "Published" if otc_service.get("dataset_id") else "Unpublished"
+        ),
+    ),
+    CSVColumn(
+        header="Timetables Timeliness Status",
+        accessor=lambda otc_service: otc_service.get("staleness_status"),
+    ),
+    CSVColumn(
+        header="Timetables critical DQ issues",
+        accessor=lambda otc_service: otc_service.get("dq_require_attention"),
+    ),
+    CSVColumn(
+        header="AVL requires attention",
+        accessor=lambda otc_service: otc_service.get("avl_requires_attention"),
+    ),
+    CSVColumn(
+        header="AVL Published Status",
+        accessor=lambda otc_service: otc_service.get("avl_published_status"),
+    ),
+    CSVColumn(
+        header="Error in AVL to Timetable Matching",
+        accessor=lambda otc_service: otc_service.get(
+            "error_in_avl_to_timetable_matching"
+        ),
+    ),
+    CSVColumn(
+        header="Fares requires attention",
+        accessor=lambda otc_service: otc_service.get("fares_requires_attention"),
+    ),
+    CSVColumn(
+        header="Fares Published Status",
+        accessor=lambda otc_service: otc_service.get("fares_published_status"),
+    ),
+    CSVColumn(
+        header="Fares Timeliness Status",
+        accessor=lambda otc_service: otc_service.get("fares_timeliness_status"),
+    ),
+    CSVColumn(
+        header="Fares Compliance Status",
+        accessor=lambda otc_service: otc_service.get("fares_compliance_status"),
+    ),
+    CSVColumn(
+        header="Timetables Data set ID",
+        accessor=lambda otc_service: otc_service.get("dataset_id"),
+    ),
+    CSVColumn(
+        header="TXC:Filename",
+        accessor=lambda otc_service: otc_service.get("xml_filename"),
+    ),
+    CSVColumn(
+        header="TXC:NOC",
+        accessor=lambda otc_service: otc_service.get("national_operator_code"),
+    ),
+    CSVColumn(
+        header="TXC:Last Modified Date",
+        accessor=lambda otc_service: otc_service.get("last_modified_date"),
+    ),
+    CSVColumn(
+        header="Date when timetable data is over 1 year old",
+        accessor=lambda otc_service: otc_service.get(
+            "effective_stale_date_last_modified_date"
+        ),
+    ),
+    CSVColumn(
+        header="TXC:Operating Period End Date",
+        accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
+    ),
+    CSVColumn(
+        header="Fares Data set ID",
+        accessor=lambda otc_service: otc_service.get("fares_dataset_id"),
+    ),
+    CSVColumn(
+        header="NETEX:Filename",
+        accessor=lambda otc_service: otc_service.get("fares_filename"),
+    ),
+    CSVColumn(
+        header="NETEX:Last Modified Date",
+        accessor=lambda otc_service: otc_service.get("fares_last_modified_date"),
+    ),
+    CSVColumn(
+        header="Date when fares data is over 1 year old",
+        accessor=lambda otc_service: otc_service.get("fares_data_over_one_year"),
+    ),
+    CSVColumn(
+        header="NETEX:Operating Period End Date",
+        accessor=lambda otc_service: otc_service.get("fares_operating_period_end_date"),
+    ),
+    CSVColumn(
+        header="Date Registration variation needs to be published",
+        accessor=lambda otc_service: otc_service.get(
+            "effective_stale_date_otc_effective_date"
+        ),
+    ),
+    CSVColumn(
+        header="Date for complete 42 day look ahead",
+        accessor=lambda otc_service: get_42_day_look_ahead_date(),
+    ),
+    CSVColumn(
+        header="Date seasonal service should be published",
+        accessor=lambda otc_service: otc_service.get("effective_seasonal_start_date"),
+    ),
+    CSVColumn(
+        header="Seasonal Start Date",
+        accessor=lambda otc_service: otc_service.get("seasonal_start"),
+    ),
+    CSVColumn(
+        header="Seasonal End Date",
+        accessor=lambda otc_service: otc_service.get("seasonal_end"),
+    ),
+    CSVColumn(
+        header="Registration:Operator Name",
+        accessor=lambda otc_service: otc_service.get("registration_operator_name"),
+    ),
+    CSVColumn(
+        header="Registration:Licence Number",
+        accessor=lambda otc_service: otc_service.get("otc_licence_number"),
+    ),
+    CSVColumn(
+        header="Registration:Service Type Description",
+        accessor=lambda otc_service: otc_service.get("service_type_description"),
+    ),
+    CSVColumn(
+        header="Registration:Variation Number",
+        accessor=lambda otc_service: otc_service.get("variation_number"),
+    ),
+    CSVColumn(
+        header="Registration:Expiry Date",
+        accessor=lambda otc_service: otc_service.get("expiry_date"),
+    ),
+    CSVColumn(
+        header="Registration:Effective Date",
+        accessor=lambda otc_service: otc_service.get("effective_date"),
+    ),
+    CSVColumn(
+        header="Registration:Received Date",
+        accessor=lambda otc_service: otc_service.get("received_date"),
+    ),
+    CSVColumn(
+        header="Traveline Region",
+        accessor=lambda otc_service: otc_service.get("traveline_region"),
+    ),
+    CSVColumn(
+        header="Local Transport Authority",
+        accessor=lambda otc_service: otc_service.get("ui_lta_name"),
+    ),
+]
+
+
+COMPLIANCE_REPORT_COLUMN_DB = [
+    CSVColumn(
+        header="Registration:Registration Number",
+        accessor=lambda otc_service: otc_service.get("otc_registration_number"),
+    ),
+    CSVColumn(
+        header="Registration:Service Number",
+        accessor=lambda otc_service: otc_service.get("otc_service_number"),
+    ),
+    CSVColumn(
+        header="Registration Status",
+        accessor=lambda otc_service: otc_service.get("otc_licence_number"),
+    ),
+    CSVColumn(
+        header="Scope Status",
+        accessor=lambda otc_service: otc_service.get("scope_status"),
+    ),
+    CSVColumn(
+        header="Seasonal Status",
+        accessor=lambda otc_service: otc_service.get("seasonal_status"),
+    ),
+    CSVColumn(
+        header="Organisation Name",
+        accessor=lambda otc_service: otc_service.get("operator_name"),
+    ),
+    CSVColumn(
+        header="Requires Attention",
+        accessor=lambda otc_service: otc_service.get("overall_requires_attention"),
+    ),
+    CSVColumn(
+        header="Timetables requires attention",
+        accessor=lambda otc_service: otc_service.get("require_attention"),
+    ),
+    CSVColumn(
+        header="Timetables Published Status",
+        accessor=lambda otc_service: (
+            "Published" if otc_service.get("dataset_id") else "Unpublished"
+        ),
+    ),
+    CSVColumn(
+        header="Timetables Timeliness Status",
+        accessor=lambda otc_service: otc_service.get("staleness_status"),
+    ),
+    CSVColumn(
+        header="Timetables critical DQ issues",
+        accessor=lambda otc_service: otc_service.get("dq_require_attention"),
+    ),
+    CSVColumn(
+        header="AVL requires attention",
+        accessor=lambda otc_service: otc_service.get("avl_requires_attention"),
+    ),
+    CSVColumn(
+        header="AVL Published Status",
+        accessor=lambda otc_service: otc_service.get("avl_published_status"),
+    ),
+    CSVColumn(
+        header="Error in AVL to Timetable Matching",
+        accessor=lambda otc_service: otc_service.get(
+            "error_in_avl_to_timetable_matching"
+        ),
+    ),
+    CSVColumn(
+        header="Fares requires attention",
+        accessor=lambda otc_service: otc_service.get("fares_requires_attention"),
+    ),
+    CSVColumn(
+        header="Fares Published Status",
+        accessor=lambda otc_service: otc_service.get("fares_published_status"),
+    ),
+    CSVColumn(
+        header="Fares Timeliness Status",
+        accessor=lambda otc_service: otc_service.get("fares_timeliness_status"),
+    ),
+    CSVColumn(
+        header="Fares Compliance Status",
+        accessor=lambda otc_service: otc_service.get("fares_compliance_status"),
+    ),
+    CSVColumn(
+        header="Timetables Data set ID",
+        accessor=lambda otc_service: otc_service.get("dataset_id"),
+    ),
+    CSVColumn(
+        header="TXC:Filename",
+        accessor=lambda otc_service: otc_service.get("xml_filename"),
+    ),
+    CSVColumn(
+        header="TXC:NOC",
+        accessor=lambda otc_service: otc_service.get("national_operator_code"),
+    ),
+    CSVColumn(
+        header="TXC:Last Modified Date",
+        accessor=lambda otc_service: otc_service.get("last_modified_date"),
+    ),
+    CSVColumn(
+        header="Date when timetable data is over 1 year old",
+        accessor=lambda otc_service: otc_service.get(
+            "effective_stale_date_last_modified_date"
+        ),
+    ),
+    CSVColumn(
+        header="TXC:Operating Period End Date",
+        accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
+    ),
+    CSVColumn(
+        header="Fares Data set ID",
+        accessor=lambda otc_service: (
+            UNDER_MAINTENANCE
+            if otc_service.get("fares_filename") == UNDER_MAINTENANCE
+            else otc_service.get("fares_dataset_id")
+        ),
+    ),
+    CSVColumn(
+        header="NETEX:Filename",
+        accessor=lambda otc_service: otc_service.get("fares_filename"),
+    ),
+    CSVColumn(
+        header="NETEX:Last Modified Date",
+        accessor=lambda otc_service: (
+            otc_service.get("fares_last_modified_date")
+            if otc_service.get("fares_filename") != UNDER_MAINTENANCE
+            else UNDER_MAINTENANCE
+        ),
+    ),
+    CSVColumn(
+        header="Date when fares data is over 1 year old",
+        accessor=lambda otc_service: (
+            otc_service.get("fares_data_over_one_year")
+            if otc_service.get("fares_filename") != UNDER_MAINTENANCE
+            else UNDER_MAINTENANCE
+        ),
+    ),
+    CSVColumn(
+        header="NETEX:Operating Period End Date",
+        accessor=lambda otc_service: (
+            otc_service.get("fares_operating_period_end_date")
+            if otc_service.get("fares_filename") != UNDER_MAINTENANCE
+            else UNDER_MAINTENANCE
+        ),
+    ),
+    CSVColumn(
+        header="Date Registration variation needs to be published",
+        accessor=lambda otc_service: otc_service.get(
+            "effective_stale_date_otc_effective_date"
+        ),
+    ),
+    CSVColumn(
+        header="Date for complete 42 day look ahead",
+        accessor=lambda otc_service: get_42_day_look_ahead_date(),
+    ),
+    CSVColumn(
+        header="Date seasonal service should be published",
+        accessor=lambda otc_service: otc_service.get("effective_seasonal_start_date"),
+    ),
+    CSVColumn(
+        header="Seasonal Start Date",
+        accessor=lambda otc_service: otc_service.get("seasonal_start"),
+    ),
+    CSVColumn(
+        header="Seasonal End Date",
+        accessor=lambda otc_service: otc_service.get("seasonal_end"),
+    ),
+    CSVColumn(
+        header="Registration:Operator Name",
+        accessor=lambda otc_service: otc_service.get("registration_operator_name"),
+    ),
+    CSVColumn(
+        header="Registration:Licence Number",
+        accessor=lambda otc_service: otc_service.get("otc_licence_number"),
+    ),
+    CSVColumn(
+        header="Registration:Service Type Description",
+        accessor=lambda otc_service: otc_service.get("service_type_description"),
+    ),
+    CSVColumn(
+        header="Registration:Variation Number",
+        accessor=lambda otc_service: otc_service.get("variation_number"),
+    ),
+    CSVColumn(
+        header="Registration:Expiry Date",
+        accessor=lambda otc_service: otc_service.get("expiry_date"),
+    ),
+    CSVColumn(
+        header="Registration:Effective Date",
+        accessor=lambda otc_service: otc_service.get("effective_date"),
+    ),
+    CSVColumn(
+        header="Registration:Received Date",
+        accessor=lambda otc_service: otc_service.get("received_date"),
+    ),
+    CSVColumn(
+        header="Traveline Region",
+        accessor=lambda otc_service: otc_service.get("traveline_region"),
+    ),
+    CSVColumn(
+        header="Local Transport Authority",
+        accessor=lambda otc_service: otc_service.get("ui_lta_name"),
+    ),
 ]
 
 
@@ -416,209 +815,7 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
     Compliance CSV operator report.
     """
 
-    columns = [
-        CSVColumn(
-            header="Registration:Registration Number",
-            accessor=lambda otc_service: otc_service.get("otc_registration_number"),
-        ),
-        CSVColumn(
-            header="Registration:Service Number",
-            accessor=lambda otc_service: otc_service.get("otc_service_number"),
-        ),
-        CSVColumn(
-            header="Registration Status",
-            accessor=lambda otc_service: (
-                "Registered"
-                if otc_service.get("otc_licence_number")
-                else "Unregistered"
-            ),
-        ),
-        CSVColumn(
-            header="Scope Status",
-            accessor=lambda otc_service: (
-                OTC_SCOPE_STATUS_OUT_OF_SCOPE
-                if otc_service.get("scope_status", False)
-                else OTC_SCOPE_STATUS_IN_SCOPE
-            ),
-        ),
-        CSVColumn(
-            header="Seasonal Status",
-            accessor=lambda otc_service: (
-                get_seasonal_service_status(otc_service)
-                if otc_service.get("seasonal_status") is not None
-                else "Not Seasonal"
-            ),
-        ),
-        CSVColumn(
-            header="Organisation Name",
-            accessor=lambda otc_service: (
-                get_operator_name(otc_service)
-                if otc_service.get("operator_name") is None
-                or otc_service.get("operator_name") == ""
-                else otc_service.get("operator_name")
-            ),
-        ),
-        CSVColumn(
-            header="Requires Attention",
-            accessor=lambda otc_service: otc_service.get("overall_requires_attention"),
-        ),
-        CSVColumn(
-            header="Timetables requires attention",
-            accessor=lambda otc_service: otc_service.get("require_attention"),
-        ),
-        CSVColumn(
-            header="Timetables Published Status",
-            accessor=lambda otc_service: (
-                "Published" if otc_service.get("dataset_id") else "Unpublished"
-            ),
-        ),
-        CSVColumn(
-            header="Timetables Timeliness Status",
-            accessor=lambda otc_service: otc_service.get("staleness_status"),
-        ),
-        CSVColumn(
-            header="Timetables critical DQ issues",
-            accessor=lambda otc_service: otc_service.get("dq_require_attention"),
-        ),
-        CSVColumn(
-            header="AVL requires attention",
-            accessor=lambda otc_service: otc_service.get("avl_requires_attention"),
-        ),
-        CSVColumn(
-            header="AVL Published Status",
-            accessor=lambda otc_service: otc_service.get("avl_published_status"),
-        ),
-        CSVColumn(
-            header="Error in AVL to Timetable Matching",
-            accessor=lambda otc_service: otc_service.get(
-                "error_in_avl_to_timetable_matching"
-            ),
-        ),
-        CSVColumn(
-            header="Fares requires attention",
-            accessor=lambda otc_service: otc_service.get("fares_requires_attention"),
-        ),
-        CSVColumn(
-            header="Fares Published Status",
-            accessor=lambda otc_service: otc_service.get("fares_published_status"),
-        ),
-        CSVColumn(
-            header="Fares Timeliness Status",
-            accessor=lambda otc_service: otc_service.get("fares_timeliness_status"),
-        ),
-        CSVColumn(
-            header="Fares Compliance Status",
-            accessor=lambda otc_service: otc_service.get("fares_compliance_status"),
-        ),
-        CSVColumn(
-            header="Timetables Data set ID",
-            accessor=lambda otc_service: otc_service.get("dataset_id"),
-        ),
-        CSVColumn(
-            header="TXC:Filename",
-            accessor=lambda otc_service: otc_service.get("xml_filename"),
-        ),
-        CSVColumn(
-            header="TXC:NOC",
-            accessor=lambda otc_service: otc_service.get("national_operator_code"),
-        ),
-        CSVColumn(
-            header="TXC:Last Modified Date",
-            accessor=lambda otc_service: otc_service.get("last_modified_date"),
-        ),
-        CSVColumn(
-            header="Date when timetable data is over 1 year old",
-            accessor=lambda otc_service: otc_service.get(
-                "effective_stale_date_last_modified_date"
-            ),
-        ),
-        CSVColumn(
-            header="TXC:Operating Period End Date",
-            accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
-        ),
-        CSVColumn(
-            header="Fares Data set ID",
-            accessor=lambda otc_service: otc_service.get("fares_dataset_id"),
-        ),
-        CSVColumn(
-            header="NETEX:Filename",
-            accessor=lambda otc_service: otc_service.get("fares_filename"),
-        ),
-        CSVColumn(
-            header="NETEX:Last Modified Date",
-            accessor=lambda otc_service: otc_service.get("fares_last_modified_date"),
-        ),
-        CSVColumn(
-            header="Date when fares data is over 1 year old",
-            accessor=lambda otc_service: otc_service.get("fares_data_over_one_year"),
-        ),
-        CSVColumn(
-            header="NETEX:Operating Period End Date",
-            accessor=lambda otc_service: otc_service.get(
-                "fares_operating_period_end_date"
-            ),
-        ),
-        CSVColumn(
-            header="Date Registration variation needs to be published",
-            accessor=lambda otc_service: otc_service.get(
-                "effective_stale_date_otc_effective_date"
-            ),
-        ),
-        CSVColumn(
-            header="Date for complete 42 day look ahead",
-            accessor=lambda otc_service: get_42_day_look_ahead_date(),
-        ),
-        CSVColumn(
-            header="Date seasonal service should be published",
-            accessor=lambda otc_service: otc_service.get(
-                "effective_seasonal_start_date"
-            ),
-        ),
-        CSVColumn(
-            header="Seasonal Start Date",
-            accessor=lambda otc_service: otc_service.get("seasonal_start"),
-        ),
-        CSVColumn(
-            header="Seasonal End Date",
-            accessor=lambda otc_service: otc_service.get("seasonal_end"),
-        ),
-        CSVColumn(
-            header="Registration:Operator Name",
-            accessor=lambda otc_service: otc_service.get("registration_operator_name"),
-        ),
-        CSVColumn(
-            header="Registration:Licence Number",
-            accessor=lambda otc_service: otc_service.get("otc_licence_number"),
-        ),
-        CSVColumn(
-            header="Registration:Service Type Description",
-            accessor=lambda otc_service: otc_service.get("service_type_description"),
-        ),
-        CSVColumn(
-            header="Registration:Variation Number",
-            accessor=lambda otc_service: otc_service.get("variation_number"),
-        ),
-        CSVColumn(
-            header="Registration:Expiry Date",
-            accessor=lambda otc_service: otc_service.get("expiry_date"),
-        ),
-        CSVColumn(
-            header="Registration:Effective Date",
-            accessor=lambda otc_service: otc_service.get("effective_date"),
-        ),
-        CSVColumn(
-            header="Registration:Received Date",
-            accessor=lambda otc_service: otc_service.get("received_date"),
-        ),
-        CSVColumn(
-            header="Traveline Region",
-            accessor=lambda otc_service: otc_service.get("traveline_region"),
-        ),
-        CSVColumn(
-            header="Local Transport Authority",
-            accessor=lambda otc_service: otc_service.get("ui_lta_name"),
-        ),
-    ]
+    columns = COMPLIANCE_REPORT_COLUMN
 
     def __init__(self, organisation_id: int):
         super().__init__()
@@ -945,6 +1142,12 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
 
             staleness_status = "Up to date"
             if file_attribute is None:
+                is_cancellation_logic_active = flag_is_active(
+                    "", FeatureFlags.CANCELLATION_LOGIC.value
+                )
+                if is_cancellation_logic_active:
+                    staleness_status = "OTC variation not published"
+
                 require_attention = self._get_require_attention(
                     exempted,
                     seasonal_service,
@@ -1082,6 +1285,11 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
             if not dq_require_attention_active:
                 dq_require_attention = UNDER_MAINTENANCE
 
+            if exempted or (seasonal_service and not seasonal_service.seasonal_status):
+                avl_requires_attention = "No"
+                if is_fares_require_attention_active:
+                    fares_requires_attention = "No"
+
             self._update_data(
                 service,
                 file_attribute,
@@ -1107,6 +1315,86 @@ class ComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 overall_requires_attention,
                 dq_require_attention,
             )
+
+    def get_queryset(self):
+        self.get_otc_service_bods_data(self._organisation_id)
+        return self._object_list
+
+
+class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
+    """
+    Compliance CSV operator report.
+    """
+
+    columns = COMPLIANCE_REPORT_COLUMN_DB
+
+    def __init__(self, organisation_id: int):
+        super().__init__()
+        self._organisation_id = organisation_id
+        self._object_list = []
+
+    def _update_data(self, service_report: ComplianceReport) -> None:
+        self._object_list.append(
+            {
+                "require_attention": service_report.requires_attention,
+                "scope_status": service_report.scope_status,
+                "otc_licence_number": service_report.otc_licence_number,
+                "otc_registration_number": service_report.registration_number,
+                "otc_service_number": service_report.service_number,
+                "last_modified_date": service_report.last_modified_date,
+                "operating_period_end_date": service_report.operating_period_end_date,
+                "xml_filename": service_report.filename,
+                "dataset_id": service_report.dataset_id,
+                "operator_name": service_report.organisation_name,
+                "national_operator_code": service_report.national_operator_code,
+                "seasonal_status": service_report.seasonal_status,
+                "seasonal_start": service_report.seasonal_start,
+                "seasonal_end": service_report.seasonal_end,
+                "staleness_status": service_report.staleness_status,
+                "effective_seasonal_start_date": service_report.effective_seasonal_start,
+                "effective_stale_date_last_modified_date": service_report.effective_stale_date_from_last_modified,
+                "effective_stale_date_otc_effective_date": service_report.effective_stale_date_from_otc_effective,
+                "traveline_region": service_report.traveline_region,
+                "ui_lta_name": service_report.local_authority_ui_lta,
+                "variation_number": service_report.variation_number,
+                "service_type_description": service_report.service_type_description,
+                "registration_operator_name": service_report.operator_name,
+                "expiry_date": service_report.expiry_date,
+                "effective_date": service_report.effective_date,
+                "received_date": service_report.received_date,
+                "avl_published_status": service_report.avl_published_status,
+                "error_in_avl_to_timetable_matching": service_report.error_in_avl_to_timetable_matching,
+                "avl_requires_attention": service_report.avl_requires_attention,
+                "fares_published_status": service_report.fares_published_status,
+                "fares_timeliness_status": service_report.fares_timeliness_status,
+                "fares_compliance_status": service_report.fares_compliance_status,
+                "fares_requires_attention": service_report.fares_requires_attention,
+                "fares_dataset_id": service_report.fares_dataset_id,
+                "fares_filename": service_report.fares_filename,
+                "fares_last_modified_date": service_report.fares_last_modified_date,
+                "fares_data_over_one_year": service_report.fares_effective_stale_date_from_last_modified,
+                "fares_operating_period_end_date": service_report.fares_operating_period_end_date,
+                "overall_requires_attention": service_report.overall_requires_attention,
+                "dq_require_attention": service_report.critical_dq_issues,
+            }
+        )
+
+    def get_otc_service_bods_data(self, organisation_id: int) -> None:
+        """
+        Compares an organisation's OTC Services dictionaries list with
+        TXCFileAttributes dictionaries list and the SeasonalService list
+        to determine which OTC Services require attention and which
+        doesn't ie. not live in BODS at all, or live but meeting new
+        Staleness conditions.
+
+        Args:
+            organisation_id (int): Organisation ID
+        """
+        compliance_report = ComplianceReport.objects.filter(
+            licence_organisation_id=organisation_id
+        ).all()
+        for service_record in compliance_report:
+            self._update_data(service_record)
 
     def get_queryset(self):
         self.get_otc_service_bods_data(self._organisation_id)

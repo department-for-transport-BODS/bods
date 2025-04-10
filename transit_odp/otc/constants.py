@@ -1,6 +1,8 @@
 from django.db.models import TextChoices
 from django.utils.translation import gettext_lazy as _
 
+from transit_odp.otc.client.enums import RegistrationStatusEnum
+
 
 class LicenceStatuses(TextChoices):
     VALID = ("valid", _("Valid"))
@@ -43,3 +45,12 @@ OTC_SCOPE_STATUS_IN_SCOPE = "In Scope"
 OTC_NOT_SEASONAL = "Not Seasonal"
 
 UNDER_MAINTENANCE = "Under maintenance"
+
+
+CANCELLED_SERVICE_STATUS = [
+    RegistrationStatusEnum.ADMIN_CANCELLED.value,
+    RegistrationStatusEnum.CANCELLED.value,
+    RegistrationStatusEnum.SURRENDERED.value,
+    RegistrationStatusEnum.REVOKED.value,
+    RegistrationStatusEnum.CNS.value,
+]
