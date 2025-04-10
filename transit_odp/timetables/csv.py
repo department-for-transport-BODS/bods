@@ -730,6 +730,12 @@ TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP = OrderedDict(
     }
 )
 
+TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP = TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.copy()
+TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP["cancelled_date"] = Column(
+    "Registration: Cancellation Date",
+    "The Cancelled date for OTC Service.",
+)
+
 
 def add_operator_name(row: Series) -> str:
     if row["organisation_name"] is None or pd.isna(row["organisation_name"]):
@@ -1450,6 +1456,13 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
 
     merged.sort_values("dataset_id", inplace=True)
 
+    is_cancellation_logic_active = flag_is_active(
+        "", FeatureFlags.CANCELLATION_LOGIC.value
+    )
+    if is_cancellation_logic_active:
+        condition = merged["registration_status"].isin(CANCELLED_SERVICE_STATUS)
+        merged["cancelled_date"] = np.where(condition, merged["effective_date"], "")
+
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
@@ -1503,11 +1516,6 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         lambda x: add_overall_requires_attention(x), axis=1
     )
 
-    rename_map = {
-        old_name: column_tuple.field_name
-        for old_name, column_tuple in TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.items()
-    }
-
     is_prefetch_db_compliance_report_flag_active = flag_is_active(
         "", FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value
     )
@@ -1528,7 +1536,18 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
             lambda x: add_operator_name(x), axis=1
         )
 
-    merged = merged[TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()].rename(
+    if is_cancellation_logic_active:
+        TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP_FIELDS = (
+            TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP
+        )
+    else:
+        TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP_FIELDS = TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP
+
+    rename_map = {
+        old_name: column_tuple.field_name
+        for old_name, column_tuple in TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP_FIELDS.items()
+    }
+    merged = merged[TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP_FIELDS.keys()].rename(
         columns=rename_map
     )
 
