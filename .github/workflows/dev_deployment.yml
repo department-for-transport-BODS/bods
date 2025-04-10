@@ -25,224 +25,224 @@ env:
 
 jobs:
 
-  dev_deployment:
-    name: 'dev_deployment'
-    runs-on: ubuntu-latest
-    environment: dev
-    env:
-      ENVIRONMENT_NAME: dev
+  # dev_deployment:
+  #   name: 'dev_deployment'
+  #   runs-on: ubuntu-latest
+  #   environment: dev
+  #   env:
+  #     ENVIRONMENT_NAME: dev
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
 
-    # Configure AWS credentials against the BODS Shared-Services Account
-    - name: Configure AWS credentials in Shared-Services
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: ${{ env.AWS_REGION }}
-        role-to-assume: ${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
-        role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
-        role-duration-seconds: 3600
-        role-skip-session-tagging: true
+  #   # Configure AWS credentials against the BODS Shared-Services Account
+  #   - name: Configure AWS credentials in Shared-Services
+  #     uses: aws-actions/configure-aws-credentials@v4
+  #     with:
+  #       aws-region: ${{ env.AWS_REGION }}
+  #       role-to-assume: ${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+  #       role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
+  #       role-duration-seconds: 3600
+  #       role-skip-session-tagging: true
 
-    # Assume a role into the BODS-PROD account
-    - name: Configure AWS Credentials in bodds-prod
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: ${{ env.AWS_REGION }}
-        role-to-assume: ${{ env.PROD_ASSUME_ROLE_ARN }}
-        role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
-        role-duration-seconds: 3600
-        role-skip-session-tagging: true
-        role-chaining: true
+  #   # Assume a role into the BODS-PROD account
+  #   - name: Configure AWS Credentials in bodds-prod
+  #     uses: aws-actions/configure-aws-credentials@v4
+  #     with:
+  #       aws-region: ${{ env.AWS_REGION }}
+  #       role-to-assume: ${{ env.PROD_ASSUME_ROLE_ARN }}
+  #       role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
+  #       role-duration-seconds: 3600
+  #       role-skip-session-tagging: true
+  #       role-chaining: true
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
+  #   - name: Login to Amazon ECR
+  #     id: login-ecr
+  #     uses: aws-actions/amazon-ecr-login@v2
 
-    - id: set-version-number
-      run: |
-        TEXT=$(cat ./version.txt)
-        echo "version=${TEXT//'%'/'%25'}" >> $GITHUB_OUTPUT
+  #   - id: set-version-number
+  #     run: |
+  #       TEXT=$(cat ./version.txt)
+  #       echo "version=${TEXT//'%'/'%25'}" >> $GITHUB_OUTPUT
 
-    - id: echo-version
-      run: |
-        echo ${{ steps.set-version-number.outputs.version }}
+  #   - id: echo-version
+  #     run: |
+  #       echo ${{ steps.set-version-number.outputs.version }}
 
-    - name: Check if Image exists in Amazon ECR
-      id: check-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
-        IMAGE_TAG: ${{ steps.set-version-number.outputs.version }}
-      run: |
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-        if docker manifest inspect $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG >/dev/null; then
-            echo "The image $IMAGE_TAG already exists in the $ECR_REPOSITORY Repository"
-            exit 1
-        else
-            echo "Build and push docker image with that tag $IMAGE_TAG "
-        fi
+  #   - name: Check if Image exists in Amazon ECR
+  #     id: check-image
+  #     env:
+  #       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #       ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+  #       IMAGE_TAG: ${{ steps.set-version-number.outputs.version }}
+  #     run: |
+  #       echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+  #       if docker manifest inspect $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG >/dev/null; then
+  #           echo "The image $IMAGE_TAG already exists in the $ECR_REPOSITORY Repository"
+  #           exit 1
+  #       else
+  #           echo "Build and push docker image with that tag $IMAGE_TAG "
+  #       fi
 
-    - name: Base Image Changes
-      uses: dorny/paths-filter@v2
-      id: base-image-changes
-      with:
-        filters: |
-          django_base:
-           - ./docker/production/django_base/Dockerfile
+  #   - name: Base Image Changes
+  #     uses: dorny/paths-filter@v2
+  #     id: base-image-changes
+  #     with:
+  #       filters: |
+  #         django_base:
+  #          - ./docker/production/django_base/Dockerfile
 
-    - name: Build, tag, and push base image to Amazon ECR
-      if: steps.base-image-changes.outputs.django_base == 'true'
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}
-      run: |
-        echo "base_image=$ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }}" >> $GITHUB_OUTPUT
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }} -t $ECR_REGISTRY/$ECR_REPOSITORY:latest -f ./docker/production/django_base/Dockerfile .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+  #   - name: Build, tag, and push base image to Amazon ECR
+  #     if: steps.base-image-changes.outputs.django_base == 'true'
+  #     env:
+  #       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #       ECR_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}
+  #     run: |
+  #       echo "base_image=$ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }}" >> $GITHUB_OUTPUT
+  #       docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.set-version-number.outputs.version }} -t $ECR_REGISTRY/$ECR_REPOSITORY:latest -f ./docker/production/django_base/Dockerfile .
+  #       docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
-    - name: Build, tag, and push image to Amazon ECR
-      id: build-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
-        ECR_BASE_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}
-      run: |
-        docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg BASE_IMAGE=$ECR_REGISTRY/$ECR_BASE_REPOSITORY:latest .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
+  #   - name: Build, tag, and push image to Amazon ECR
+  #     id: build-image
+  #     env:
+  #       ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+  #       ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+  #       ECR_BASE_REPOSITORY: ${{ env.ECR_BASE_REPOSITORY_NAME }}
+  #     run: |
+  #       docker build -t ${{ steps.check-image.outputs.image }} -f ./docker/production/django/Dockerfile --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg BASE_IMAGE=$ECR_REGISTRY/$ECR_BASE_REPOSITORY:latest .
+  #       docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
 
-    - name: Logout of Amazon ECR
-      if: always()
-      run: docker logout ${{ steps.login-ecr.outputs.registry }}
+  #   - name: Logout of Amazon ECR
+  #     if: always()
+  #     run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
-    # Configure AWS credentials against the BODS Shared-Services Account
-    - name: Configure AWS credentials in Shared-Services
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: ${{ env.AWS_REGION }}
-        role-to-assume: ${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
-        role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
-        role-duration-seconds: 3600
-        role-skip-session-tagging: true
-        unset-current-credentials: true
+  #   # Configure AWS credentials against the BODS Shared-Services Account
+  #   - name: Configure AWS credentials in Shared-Services
+  #     uses: aws-actions/configure-aws-credentials@v4
+  #     with:
+  #       aws-region: ${{ env.AWS_REGION }}
+  #       role-to-assume: ${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+  #       role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
+  #       role-duration-seconds: 3600
+  #       role-skip-session-tagging: true
+  #       unset-current-credentials: true
 
-    # Now assume a role in the Environemnt Specific Account
-    - name: Configure AWS Credentials in the environment specific account
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: ${{ vars.AWS_REGION }}
-        role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
-        role-session-name: testAWSCLISession
-        role-duration-seconds: 3600
-        role-skip-session-tagging: true
-        role-chaining: true
+  #   # Now assume a role in the Environemnt Specific Account
+  #   - name: Configure AWS Credentials in the environment specific account
+  #     uses: aws-actions/configure-aws-credentials@v4
+  #     with:
+  #       aws-region: ${{ vars.AWS_REGION }}
+  #       role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
+  #       role-session-name: testAWSCLISession
+  #       role-duration-seconds: 3600
+  #       role-skip-session-tagging: true
+  #       role-chaining: true
 
-    - name: Update celeryflower Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: celeryflower
-        container: celeryflower
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+  #   - name: Update celeryflower Task
+  #     uses: "./.github/workflows/templates/update_task_def"
+  #     with:
+  #       service: celeryflower
+  #       container: celeryflower
+  #       environment: ${{ env.ENVIRONMENT_NAME }}
+  #       image_id: ${{ steps.check-image.outputs.image }}
 
-    - name: Update celeryworker Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: celeryworker
-        container: celeryworker
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+  #   - name: Update celeryworker Task
+  #     uses: "./.github/workflows/templates/update_task_def"
+  #     with:
+  #       service: celeryworker
+  #       container: celeryworker
+  #       environment: ${{ env.ENVIRONMENT_NAME }}
+  #       image_id: ${{ steps.check-image.outputs.image }}
 
-    - name: Update celerybeat Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: celerybeat
-        container: celerybeat
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+  #   - name: Update celerybeat Task
+  #     uses: "./.github/workflows/templates/update_task_def"
+  #     with:
+  #       service: celerybeat
+  #       container: celerybeat
+  #       environment: ${{ env.ENVIRONMENT_NAME }}
+  #       image_id: ${{ steps.check-image.outputs.image }}
 
-    - name: Update frontend Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: frontend
-        container: frontend
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+  #   - name: Update frontend Task
+  #     uses: "./.github/workflows/templates/update_task_def"
+  #     with:
+  #       service: frontend
+  #       container: frontend
+  #       environment: ${{ env.ENVIRONMENT_NAME }}
+  #       image_id: ${{ steps.check-image.outputs.image }}
 
-    - name: Update api_frontend Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: api_frontend
-        container: frontend
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+  #   - name: Update api_frontend Task
+  #     uses: "./.github/workflows/templates/update_task_def"
+  #     with:
+  #       service: api_frontend
+  #       container: frontend
+  #       environment: ${{ env.ENVIRONMENT_NAME }}
+  #       image_id: ${{ steps.check-image.outputs.image }}
 
-    - name: Update api_frontend_internal Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: api_frontend_internal
-        container: frontend
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+  #   - name: Update api_frontend_internal Task
+  #     uses: "./.github/workflows/templates/update_task_def"
+  #     with:
+  #       service: api_frontend_internal
+  #       container: frontend
+  #       environment: ${{ env.ENVIRONMENT_NAME }}
+  #       image_id: ${{ steps.check-image.outputs.image }}
 
-    - name: Update pg_migration
-      uses: "./.github/workflows/templates/register_task_def"
-      with:
-        service: pg_migration
-        container: db-migrate
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+  #   - name: Update pg_migration
+  #     uses: "./.github/workflows/templates/register_task_def"
+  #     with:
+  #       service: pg_migration
+  #       container: db-migrate
+  #       environment: ${{ env.ENVIRONMENT_NAME }}
+  #       image_id: ${{ steps.check-image.outputs.image }}
 
-    - name: Update pg_superuser
-      uses: "./.github/workflows/templates/register_task_def"
-      with:
-        service: pg_superuser
-        container: pg-superuser
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+  #   - name: Update pg_superuser
+  #     uses: "./.github/workflows/templates/register_task_def"
+  #     with:
+  #       service: pg_superuser
+  #       container: pg-superuser
+  #       environment: ${{ env.ENVIRONMENT_NAME }}
+  #       image_id: ${{ steps.check-image.outputs.image }}
 
-    - name: Check for service stability
-      uses: robsteel24/ecs-wait@v2
-      with:
-        aws-region: ${{ env.AWS_REGION }}
-        ecs-cluster: bodds-${{ env.ENVIRONMENT_NAME }}
-        ecs-services: '["celeryflower", "celeryworker", "celerybeat", "frontend", "api_frontend", "api_frontend_internal" ]'
-        retries: 5
-        verbose: true
+  #   - name: Check for service stability
+  #     uses: robsteel24/ecs-wait@v2
+  #     with:
+  #       aws-region: ${{ env.AWS_REGION }}
+  #       ecs-cluster: bodds-${{ env.ENVIRONMENT_NAME }}
+  #       ecs-services: '["celeryflower", "celeryworker", "celerybeat", "frontend", "api_frontend", "api_frontend_internal" ]'
+  #       retries: 5
+  #       verbose: true
 
-    - name: Run pg migration
-      uses: "./.github/workflows/templates/run_pg_migration_task"
-      with:
-        subnets: ${{ secrets.SUBNETS }}
-        security_groups: ${{ secrets.SECURITY_GROUPS }}
-        environment: ${{ env.ENVIRONMENT_NAME }}
+  #   - name: Run pg migration
+  #     uses: "./.github/workflows/templates/run_pg_migration_task"
+  #     with:
+  #       subnets: ${{ secrets.SUBNETS }}
+  #       security_groups: ${{ secrets.SECURITY_GROUPS }}
+  #       environment: ${{ env.ENVIRONMENT_NAME }}
 
-    - name: Move secret to json payload
-      id: create-json
-      uses: jsdaniell/create-json@v1.2.3
-      with:
-        name: "credentials.json"
-        json: ${{ secrets.PG_MUTATION_DEV }}
+  #   - name: Move secret to json payload
+  #     id: create-json
+  #     uses: jsdaniell/create-json@v1.2.3
+  #     with:
+  #       name: "credentials.json"
+  #       json: ${{ secrets.PG_MUTATION_DEV }}
 
-    - name: Invoke Lambda Function
-      shell: bash
-      run: |
-        aws lambda invoke --function-name bodds_pg_mutate_lambda_${{ env.ENVIRONMENT_NAME }} --payload file://credentials.json out --log-type Tail \
-        --query 'LogResult' --output text --cli-binary-format raw-in-base64-out | base64 --decode
+  #   - name: Invoke Lambda Function
+  #     shell: bash
+  #     run: |
+  #       aws lambda invoke --function-name bodds_pg_mutate_lambda_${{ env.ENVIRONMENT_NAME }} --payload file://credentials.json out --log-type Tail \
+  #       --query 'LogResult' --output text --cli-binary-format raw-in-base64-out | base64 --decode
 
-    - name: Update Confluence Page
-      uses: robsteel24/update-confluence@v1
-      with:
-        confluence_base_url: ${{ vars.CONFLUENCE_BASE_URL }}
-        confluence_page_id: ${{ vars.CONFLUENCE_PAGE_ID }}
-        atlassian_username: ${{ secrets.ATLASSIAN_USERNAME }}
-        atlassian_api_token: ${{ secrets.ATLASSIAN_API_TOKEN }}
-        component: 'bods'
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        version: ${{ steps.set-version-number.outputs.version }}
-      continue-on-error: true
+  #   - name: Update Confluence Page
+  #     uses: robsteel24/update-confluence@v1
+  #     with:
+  #       confluence_base_url: ${{ vars.CONFLUENCE_BASE_URL }}
+  #       confluence_page_id: ${{ vars.CONFLUENCE_PAGE_ID }}
+  #       atlassian_username: ${{ secrets.ATLASSIAN_USERNAME }}
+  #       atlassian_api_token: ${{ secrets.ATLASSIAN_API_TOKEN }}
+  #       component: 'bods'
+  #       environment: ${{ env.ENVIRONMENT_NAME }}
+  #       version: ${{ steps.set-version-number.outputs.version }}
+  #     continue-on-error: true
 
   dev2_deployment:
     name: 'dev2_deployment'
@@ -250,7 +250,6 @@ jobs:
     environment: dev2
     env:
       ENVIRONMENT_NAME: dev2
-    needs: [ dev_deployment ]
 
     steps:
     - name: Checkout
