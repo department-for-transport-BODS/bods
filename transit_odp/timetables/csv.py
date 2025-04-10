@@ -1,6 +1,6 @@
 import datetime
-from logging import getLogger
 from collections import OrderedDict
+from logging import getLogger
 from typing import List, Optional
 
 import numpy as np
@@ -19,6 +19,7 @@ from transit_odp.organisation.constants import (
     TravelineRegions,
 )
 from transit_odp.organisation.csv import EmptyDataFrame
+from transit_odp.organisation.models import Licence as BODSLicence
 from transit_odp.organisation.models import (
     Organisation,
     SeasonalService,
@@ -42,8 +43,6 @@ from transit_odp.publish.requires_attention import (
     get_fares_requires_attention,
     get_fares_timeliness_status,
 )
-
-from transit_odp.organisation.models import Licence as BODSLicence
 
 logger = getLogger(__name__)
 
@@ -739,12 +738,46 @@ TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP["cancelled_date"] = Col
 )
 
 
+def get_organisation(reg_number: str) -> Organisation:
+    """
+    Returns the organisation object based on registration number from the report dataframe.
+
+    Args:
+        reg_number (str): Registration number
+
+    Returns:
+        Organisation: Organisation object
+    """
+    otc_atco_code = OTCService.objects.filter(
+        registration_number=reg_number
+    ).values_list("atco_code", flat=True)
+    return Organisation.objects.filter(admin_areas__atco_code__in=otc_atco_code).first()
+
+
 def add_operator_name(row: Series) -> str:
+    """
+    Returns value for 'Organisation Name' column in report.
+
+    Args:
+        row (Series): Row from dataframe
+
+    Returns:
+        str: Organisation name
+    """
+    is_franchise_organisation_active = flag_is_active(
+        "", FeatureFlags.FRANCHISE_ORGANISATION.value
+    )
+
     if row["organisation_name"] is None or pd.isna(row["organisation_name"]):
         otc_licence_number = row["otc_licence_number"]
         operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
+        if is_franchise_organisation_active:
+            organisation = get_organisation(row["registration_number"])
 
         if not operator_name:
+            if is_franchise_organisation_active:
+                if organisation and organisation.is_franchise:
+                    return organisation.name
             return "Organisation not yet created"
         else:
             return operator_name
@@ -1530,9 +1563,10 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
                 "OPERATOR_PREFETCH_COMPLIANCE_REPORT: Error occured while saving report in db"
             )
             logger.exception(e)
-            merged["organisation_name"] = merged.apply(
-                lambda x: add_operator_name(x), axis=1
-            )
+
+        merged["organisation_name"] = merged.apply(
+            lambda x: add_operator_name(x), axis=1
+        )
     else:
         merged["organisation_name"] = merged.apply(
             lambda x: add_operator_name(x), axis=1
@@ -1584,9 +1618,6 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
         how="left",
     )
 
-    merged["licence_organisation_name"] = merged["licence_organisation_name"].fillna(
-        "Organisation not yet created"
-    )
     merged["organisation_name"] = merged["licence_organisation_name"]
 
     report_columns = list(TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()) + [
