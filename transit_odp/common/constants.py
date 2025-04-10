@@ -28,6 +28,10 @@ class FeatureFlags(Enum):
         "is_complete_service_pages_real_time_data_active"
     )
     PREFETCH_DATABASE_COMPLIANCE_REPORT = "is_prefetch_db_compliance_report_active"
+
+    # Report Flags are different from the portal flags
+    # Reason: Reports are processed in the background, slowness won't be an issue for
+    # compliance report, also these values from report will be consumed in ABODS
     DQS_REQUIRE_ATTENTION_COMPLIANCE_REPORT = (
         "dqs_require_attention_compliance_report_active"
     )
