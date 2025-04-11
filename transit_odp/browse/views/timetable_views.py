@@ -976,16 +976,14 @@ class LineMetadataDetailView(DetailView):
             set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions)
         )
 
-        if not (
-            not (exemption and exemption.registration_code) and is_english_region
-        ):
+        if not (not (exemption and exemption.registration_code) and is_english_region):
             return False
 
         return True
-    
+
     def is_service_in_season_service(self) -> bool:
         """check is service is in season or not system will
-        check 1 points to decide in season, Seasonal Service Status 
+        check 1 points to decide in season, Seasonal Service Status
 
         Returns:
             bool: True if in season else False
@@ -993,11 +991,10 @@ class LineMetadataDetailView(DetailView):
         seasonal_service = self.seasonal_service_map.get(
             self.service.registration_number.replace("/", ":")
         )
-        
-        if (seasonal_service and not seasonal_service.seasonal_status):
+
+        if seasonal_service and not seasonal_service.seasonal_status:
             return False
         return True
-
 
     def get_seasonal_service_map(
         self, licence_number: str

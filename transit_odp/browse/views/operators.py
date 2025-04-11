@@ -329,7 +329,9 @@ class LicenceDetailView(BaseDetailView):
                     "overall_requires_attention",
                     "scope_status",
                     "seasonal_status",
-                ).filter(otc_licence_number=licence_number).order_by("service_number", "registration_number")
+                )
+                .filter(otc_licence_number=licence_number)
+                .order_by("service_number", "registration_number")
             )
             self.otc_map = licence_services_df.to_dict("records")
             self.prefetch_service_sra()
@@ -354,7 +356,9 @@ class LicenceDetailView(BaseDetailView):
             )
 
             is_in_scope = True if service["scope_status"] == "In Scope" else False
-            is_in_season = True if service["seasonal_status"] != 'Out of Season' else False
+            is_in_season = (
+                True if service["seasonal_status"] != "Out of Season" else False
+            )
             service["is_in_scope"] = is_in_scope
             service["is_in_season"] = is_in_season
 
@@ -588,10 +592,10 @@ class LicenceDetailView(BaseDetailView):
             return False
 
         return True
-    
+
     def is_service_in_season(self) -> bool:
         """check is service is in season or not system will
-        check 1 points to decide service in season, 
+        check 1 points to decide service in season,
         Seasonal service status
 
         Returns:
@@ -600,11 +604,9 @@ class LicenceDetailView(BaseDetailView):
         seasonal_service = self.seasonal_service_map.get(
             self.service.get("registration_number").replace("/", ":")
         )
-        if (seasonal_service and not seasonal_service.seasonal_status):
+        if seasonal_service and not seasonal_service.seasonal_status:
             return False
         return True
-
-
 
     def get_service_compliant_status(
         self, registration_number: str, line_name: str
