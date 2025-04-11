@@ -918,6 +918,7 @@ class LineMetadataDetailView(DetailView):
                 self.service_code_exemption_map = {}
                 self.seasonal_service_map = {}
                 self.service_inscope = True
+                self.service_inseason = True
                 if self.service:
                     licence_number = self.service.licence.number
                     self.service_code_exemption_map = (
@@ -927,8 +928,10 @@ class LineMetadataDetailView(DetailView):
                         licence_number
                     )
                     self.service_inscope = self.is_service_in_scope()
+                    self.service_inseason = self.is_service_in_scope()
 
                 kwargs["service_inscope"] = self.service_inscope
+                kwargs["service_inseason"] = self.service_inscope
 
                 txc_file_attributes = (
                     self.get_timetable_files_for_line(
@@ -961,9 +964,6 @@ class LineMetadataDetailView(DetailView):
         Returns:
             bool: True if in scope else False
         """
-        seasonal_service = self.seasonal_service_map.get(
-            self.service.registration_number
-        )
         exemption = self.service_code_exemption_map.get(
             self.service.registration_number
         )
@@ -978,10 +978,25 @@ class LineMetadataDetailView(DetailView):
 
         if not (
             not (exemption and exemption.registration_code) and is_english_region
-        ) or (seasonal_service and not seasonal_service.seasonal_status):
+        ):
             return False
 
         return True
+    
+    def is_service_in_season(self) -> bool:
+        """check is service is in season or not system will
+        check 1 points to decide in season, Seasonal Service Status 
+
+        Returns:
+            bool: True if in season else False
+        """
+        seasonal_service = self.seasonal_service_map.get(
+            self.service.registration_number
+        )
+        if (seasonal_service and not seasonal_service.seasonal_status):
+            return False
+        return True
+
 
     def get_seasonal_service_map(
         self, licence_number: str
