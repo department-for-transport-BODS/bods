@@ -19,6 +19,8 @@ def get_dataset_type_from_path_info(path_info: str) -> str:
     dataset_type = ""
     if "/datafeed" in path_info:
         dataset_type = "SIRI VM"
+    if "/siri-vm" in path_info:
+        dataset_type = "SIRI VM"
     elif "/gtfsrtdatafeed" in path_info:
         dataset_type = "GTFS RT"
     elif "/fares" in path_info:

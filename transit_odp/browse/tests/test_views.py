@@ -1191,6 +1191,7 @@ class TestOperatorDetailView:
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=True)
+    @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=False)
     @patch.object(publish_attention, "AbodsRegistery")
     @patch.object(publish_attention, "get_vehicle_activity_operatorref_linename")
     def test_operator_detail_view_stats_not_compliant(
@@ -1286,7 +1287,7 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata,
             fares_metadata__revision__is_published=True,
-            line_name=[f"::{all_line_names[0]}"],
+            line_name=[f"{all_line_names[0]}"],
             line_id=[f"::{all_line_names[0]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
@@ -1315,7 +1316,7 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata_1,
             fares_metadata__revision__is_published=True,
-            line_name=[f"::{all_line_names[1]}"],
+            line_name=[f"{all_line_names[1]}"],
             line_id=[f"::{all_line_names[1]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
@@ -1343,7 +1344,7 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata_2,
             fares_metadata__revision__is_published=True,
-            line_name=[f"::{all_line_names[2]}"],
+            line_name=[f"{all_line_names[2]}"],
             line_id=[f"::{all_line_names[2]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
@@ -1374,7 +1375,7 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata_3,
             fares_metadata__revision__is_published=True,
-            line_name=[f"::{all_line_names[3]}"],
+            line_name=[f"{all_line_names[3]}"],
             line_id=[f"::{all_line_names[3]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
@@ -1404,7 +1405,7 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata_4,
             fares_metadata__revision__is_published=True,
-            line_name=[f"::{all_line_names[4]}"],
+            line_name=[f"{all_line_names[4]}"],
             line_id=[f"::{all_line_names[4]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
@@ -1433,7 +1434,7 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata_5,
             fares_metadata__revision__is_published=True,
-            line_name=[f"::{all_line_names[5]}"],
+            line_name=[f"{all_line_names[5]}"],
             line_id=[f"::{all_line_names[5]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
@@ -1483,12 +1484,13 @@ class TestOperatorDetailView:
         response = OperatorDetailView.as_view()(request, pk=org.id)
         assert response.status_code == 200
         context = response.context_data
+
         assert context["view"].template_name == "browse/operators/operator_detail.html"
         assert context["total_in_scope_in_season_services"] == 8
         assert context["timetable_services_requiring_attention_count"] == 6
         assert context["avl_services_requiring_attention_count"] == 8
         assert context["fares_services_requiring_attention_count"] == 8
-        assert context["total_services_requiring_attention"] == 6
+        assert context["total_services_requiring_attention"] == 8
 
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
     @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
@@ -1575,7 +1577,7 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata,
             fares_metadata__revision__is_published=True,
-            line_name=[f":::{all_line_names[0]}"],
+            line_name=[f"{all_line_names[0]}"],
             line_id=[f":::{all_line_names[0]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
@@ -1604,7 +1606,7 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata_2,
             fares_metadata__revision__is_published=True,
-            line_name=[f":::{all_line_names[1]}"],
+            line_name=[f"{all_line_names[1]}"],
             line_id=[f":::{all_line_names[1]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
@@ -1633,7 +1635,7 @@ class TestOperatorDetailView:
         DataCatalogueMetaDataFactory(
             fares_metadata=faresmetadata_3,
             fares_metadata__revision__is_published=True,
-            line_name=[f":::{all_line_names[2]}"],
+            line_name=[f"{all_line_names[2]}"],
             line_id=[f":::{all_line_names[2]}"],
             valid_from=datetime.datetime(2024, 12, 12),
             valid_to=datetime.datetime(2025, 1, 12),
@@ -2169,7 +2171,6 @@ class TestLineMetadataDetailView:
         response = LineMetadataDetailView.get_avl_data(
             None, [txcfileattribute1], all_line_names[0]
         )
-
         assert isinstance(response, dict)
         assert "is_avl_compliant" in response
 

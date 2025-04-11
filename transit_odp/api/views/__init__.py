@@ -1,5 +1,6 @@
 from transit_odp.api.views.avl import (
     AVLApiView,
+    AVLApiServiceView,
     AVLDetailApiView,
     AVLGTFSRTApiView,
     AVLOpenApiView,
@@ -18,6 +19,7 @@ from transit_odp.api.views.cancellations import (
 
 __all__ = [
     "AVLApiView",
+    "AVLApiServiceView",
     "AVLGTFSRTApiView",
     "AVLOpenApiView",
     "AVLDetailApiView",

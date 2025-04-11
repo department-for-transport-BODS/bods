@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 from transit_odp.avl.constants import AVL_API_STATUS_MAP
-from transit_odp.avl.enums import AVLFeedStatus, ValidationTaskResultStatus
+from transit_odp.avl.enums import ValidationTaskResultStatus
 
 
 class ValidationTaskResult(BaseModel):

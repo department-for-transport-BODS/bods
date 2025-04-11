@@ -25,6 +25,7 @@ from transit_odp.browse.lta_column_headers import (
     header_accessor_data,
     header_accessor_data_compliance_report,
     header_accessor_data_line_level,
+    header_accessor_data_db_compliance_report,
 )
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.constants import FeatureFlags
@@ -32,6 +33,7 @@ from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
+from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.constants import API_TYPE_EP, API_TYPE_WECA, UNDER_MAINTENANCE
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service as OTCService
@@ -46,12 +48,12 @@ from transit_odp.publish.requires_attention import (
     get_fares_records_require_attention_lta_line_level_objects,
     get_fares_requires_attention,
     get_fares_timeliness_status,
+    get_licence_organisation_map,
     get_line_level_txc_map_lta,
     get_requires_attention_data_lta_line_level_length,
     get_requires_attention_data_lta_line_level_objects,
     get_txc_map_lta,
     is_stale,
-    get_licence_organisation_map,
 )
 
 STALENESS_STATUS = [
@@ -245,6 +247,10 @@ class LocalAuthorityView(BaseListView):
             "", FeatureFlags.UILTA_PREFETCH_SRA.value
         )
 
+        is_complete_service_page_active = flag_is_active(
+            "", FeatureFlags.COMPLETE_SERVICE_PAGES.value
+        )
+
         for lta in all_ltas_current_page:
             lta_list = lta_list_per_ui_ltas[lta.ui_lta_name_trimmed]
             setattr(lta, "auth_ids", [x.id for x in lta_list])
@@ -252,6 +258,8 @@ class LocalAuthorityView(BaseListView):
             if is_uilta_prefetch_sra_active:
                 total_inscope = ui_lta.total_inscope
                 timetable_sra = ui_lta.timetable_sra
+                if is_complete_service_page_active:
+                    timetable_sra = ui_lta.overall_sra
             else:
                 total_inscope = len(
                     get_in_scope_in_season_lta_service_numbers(lta_list)
@@ -427,8 +435,13 @@ class LocalAuthorityComplianceReportView(View):
         updated_ui_lta_name = lta_objs[0].ui_lta_name().replace(",", " ").strip()
 
         csv_filename = f"{updated_ui_lta_name} compliance report.csv"
-
-        csv_export = LTAComplianceReportCSV(lta_objs)
+        is_fetch_report_from_db = flag_is_active(
+            "", FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value
+        )
+        if is_fetch_report_from_db:
+            csv_export = LTAComplianceReportDBCSV(lta_objs)
+        else:
+            csv_export = LTAComplianceReportCSV(lta_objs)
         file_ = csv_export.to_string()
         response = HttpResponse(file_, content_type="text/csv")
         response["Content-Disposition"] = f"attachment; filename={csv_filename}"
@@ -904,6 +917,12 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
 
             staleness_status = "Up to date"
             if file_attribute is None:
+                is_cancellation_logic_active = flag_is_active(
+                    "", FeatureFlags.CANCELLATION_LOGIC.value
+                )
+                if is_cancellation_logic_active:
+                    staleness_status = "OTC variation not published"
+
                 require_attention = self._get_require_attention(
                     exempted,
                     seasonal_service,
@@ -1035,6 +1054,11 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                     fares_last_modified
                 ) = fares_one_year_date = fares_operating_period_end = UNDER_MAINTENANCE
 
+            if exempted or (seasonal_service and not seasonal_service.seasonal_status):
+                avl_requires_attention = "No"
+                if fares_require_attention_active:
+                    fares_requires_attention = "No"
+
             self._update_data(
                 service,
                 service_number,
@@ -1060,6 +1084,88 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 fares_one_year_date,
                 fares_operating_period_end,
             )
+
+    def get_queryset(self):
+        self.get_otc_service_bods_data(self._combined_authorities)
+        return self._object_list
+
+
+class LTAComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
+    columns = create_columns(header_accessor_data_db_compliance_report)
+
+    def _update_data(
+        self,
+        service: ComplianceReport,
+    ) -> None:
+        self._object_list.append(
+            {
+                "require_attention": service.requires_attention,
+                "scope_status": service.scope_status,
+                "otc_licence_number": service.otc_licence_number,
+                "otc_registration_number": service.registration_number,
+                "otc_service_number": service.service_number,
+                "otc_operator": service.operator_name,
+                "otc_licence": service.otc_licence_number,
+                "otc_service_type_description": service.service_type_description,
+                "otc_variation_number": service.variation_number,
+                "otc_effective_date": service.effective_date,
+                "otc_received_date": service.received_date,
+                "operator_name": service.organisation_name,
+                "operating_period_end_date": service.operating_period_end_date,
+                "last_modified_date": service.last_modified_date,
+                "dataset_id": service.dataset_id,
+                "xml_filename": service.filename,
+                "seasonal_status": service.seasonal_status,
+                "seasonal_start": service.seasonal_start,
+                "seasonal_end": service.seasonal_end,
+                "staleness_status": service.staleness_status,
+                "effective_seasonal_start_date": service.effective_seasonal_start,
+                "effective_stale_date_last_modified_date": service.effective_stale_date_from_last_modified,
+                "effective_stale_date_otc_effective_date": service.effective_stale_date_from_otc_effective,
+                "national_operator_code": service.national_operator_code,
+                "traveline_region": service.traveline_region,
+                "ui_lta_name": service.local_authority_ui_lta,
+                "otc_licence_expiry_date": service.expiry_date,
+                "avl_published_status": service.avl_published_status,
+                "error_in_avl_to_timetable_matching": service.error_in_avl_to_timetable_matching,
+                "avl_requires_attention": service.avl_requires_attention,
+                "overall_requires_attention": service.overall_requires_attention,
+                "dq_require_attention": service.critical_dq_issues,
+                "fares_requires_attention": service.fares_requires_attention,
+                "fares_published_status": service.fares_published_status,
+                "fares_compliance_status": service.fares_compliance_status,
+                "fares_timeliness_status": service.fares_timeliness_status,
+                "fares_dataset_id": service.fares_dataset_id,
+                "fares_filename": service.fares_filename,
+                "fares_last_modified": service.fares_last_modified_date,
+                "fares_one_year_date": service.fares_effective_stale_date_from_last_modified,
+                "fares_operating_period_end": service.fares_operating_period_end_date,
+            }
+        )
+
+    def __init__(self, combined_authorities):
+        super().__init__()
+        self._combined_authorities = combined_authorities
+        self._object_list = []
+
+    def get_otc_service_bods_data(self, lta_list) -> None:
+        """
+        Compares an LTA's OTC and WECA Services dictionaries list with
+        TXCFileAttributes dictionaries list and the SeasonalService list
+        to determine which OTC and WECA Services require attention and which
+        doesn't ie. not live in BODS at all, or live but meeting new
+        Staleness conditions.
+        """
+        ui_lta = lta_list[0].ui_lta
+
+        if ui_lta:
+            ui_lta_compliance_report = ComplianceReport.objects.filter(
+                local_authorities_ids__contains=[ui_lta.id]
+            ).all()
+            for service in ui_lta_compliance_report:
+                self._update_data(
+                    service,
+                )
 
     def get_queryset(self):
         self.get_otc_service_bods_data(self._combined_authorities)

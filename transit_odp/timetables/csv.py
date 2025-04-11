@@ -1,4 +1,5 @@
 import datetime
+from logging import getLogger
 from collections import OrderedDict
 from typing import List, Optional
 
@@ -24,7 +25,9 @@ from transit_odp.organisation.models import (
     ServiceCodeExemption,
     TXCFileAttributes,
 )
+from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.constants import (
+    CANCELLED_SERVICE_STATUS,
     OTC_SCOPE_STATUS_IN_SCOPE,
     OTC_SCOPE_STATUS_OUT_OF_SCOPE,
     OTC_STATUS_REGISTERED,
@@ -39,6 +42,10 @@ from transit_odp.publish.requires_attention import (
     get_fares_requires_attention,
     get_fares_timeliness_status,
 )
+
+from transit_odp.organisation.models import Licence as BODSLicence
+
+logger = getLogger(__name__)
 
 TXC_COLUMNS = (
     "organisation_name",
@@ -57,7 +64,12 @@ TXC_COLUMNS = (
     "destination",
 )
 
-TXC_LINE_LEVEL_COLUMNS = TXC_COLUMNS + ("line_name_unnested", "revision_id", "id")
+TXC_LINE_LEVEL_COLUMNS = TXC_COLUMNS + (
+    "line_name_unnested",
+    "revision_id",
+    "id",
+    "organisation_id",
+)
 
 OTC_COLUMNS = (
     "service_code",
@@ -81,6 +93,8 @@ OTC_COLUMNS = (
     "traveline_region",
     "local_authority_ui_lta",
     "api_type",
+    "registration_status",
+    "local_authorities_ids",
 )
 
 SEASONAL_SERVICE_COLUMNS = ("registration_number", "start", "end")
@@ -716,6 +730,14 @@ TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP = OrderedDict(
     }
 )
 
+TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP = (
+    TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.copy()
+)
+TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP["cancelled_date"] = Column(
+    "Registration: Cancellation Date",
+    "The Cancelled date for OTC Service.",
+)
+
 
 def add_operator_name(row: Series) -> str:
     if row["organisation_name"] is None or pd.isna(row["organisation_name"]):
@@ -865,7 +887,38 @@ def defer_one_year(d):
     return d if pd.isna(d) else (d + pd.DateOffset(years=1)).date()
 
 
+def find_minimum_timeliness_date(row: Series) -> datetime.date:
+    forty_two_days_from_today = np.datetime64(datetime.date.today()) + np.timedelta64(
+        42, "D"
+    )
+
+    if row["registration_status"] in CANCELLED_SERVICE_STATUS:
+        if forty_two_days_from_today > row["effective_date"] and (
+            ~pd.notna(row["expiry_date"])
+            or (
+                pd.notna(row["expiry_date"])
+                and row["expiry_date"] > row["effective_date"]
+            )
+        ):
+            return row["effective_date"]
+        elif (
+            pd.notna(row["expiry_date"])
+            and forty_two_days_from_today > row["expiry_date"]
+        ):
+            return row["expiry_date"]
+    else:
+        if (
+            pd.notna(row["expiry_date"])
+            and forty_two_days_from_today > row["expiry_date"]
+        ):
+            return row["expiry_date"]
+    return forty_two_days_from_today
+
+
 def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFrame:
+    is_cancellation_logic_active = flag_is_active(
+        "", FeatureFlags.CANCELLATION_LOGIC.value
+    )
     today = np.datetime64(today)
     df["last_modified_date"] = df["modification_datetime"].dt.date
     df["effective_last_modified_date"] = df["last_modified_date"]
@@ -905,16 +958,31 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     is_data_associated is set to true if operating period start date equals
     effective date or last modified date is greater than (effective_date - 70 days)
     """
-    not_stale_otc = df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
-    staleness_otc = ~not_stale_otc
+    if is_cancellation_logic_active:
+        not_stale_otc = df["registration_status"].isin(CANCELLED_SERVICE_STATUS) | (
+            df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
+        )
+        staleness_otc = ~(not_stale_otc)
 
-    forty_two_days_from_today = today + np.timedelta64(42, "D")
+        df["least_timeliness_date"] = df.apply(find_minimum_timeliness_date, axis=1)
+        staleness_42_day_look_ahead = (
+            (staleness_otc == False)
+            & pd.notna(df["operating_period_end_date"])
+            & pd.notna(df["least_timeliness_date"])
+            & (df["operating_period_end_date"] < df["least_timeliness_date"])
+        )
+    else:
+        not_stale_otc = (
+            df["today_lt_effective_stale_date_otc"] | df["is_data_associated"]
+        )
+        staleness_otc = ~not_stale_otc
 
-    staleness_42_day_look_ahead = (
-        (staleness_otc == False)
-        & pd.notna(df["operating_period_end_date"])
-        & (df["operating_period_end_date"] < forty_two_days_from_today)
-    )
+        forty_two_days_from_today = today + np.timedelta64(42, "D")
+        staleness_42_day_look_ahead = (
+            (staleness_otc == False)
+            & pd.notna(df["operating_period_end_date"])
+            & (df["operating_period_end_date"] < forty_two_days_from_today)
+        )
 
     """
     effective_stale_date_from_end_date = effective_date - 42 days
@@ -940,6 +1008,11 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         default="Up to date",
     )
     df["date_42_day_look_ahead"] = today + 42
+
+    if is_cancellation_logic_active:
+        df.loc[
+            df["published_status"] == "Unpublished", "staleness_status"
+        ] = "OTC variation not published"
 
     return df
 
@@ -1117,6 +1190,8 @@ def add_avl_requires_attention(row: Series) -> str:
     """
     Returns value for 'AVL requires attention' column based on the following logic:
 
+    If service is out of scope or out of season, AVL require attention is No
+
     If both 'AVL Published Status' equal to Yes
     and 'Error in AVL to Timetable Matching' equal to No,
     then 'AVL requires attention' = No.
@@ -1132,9 +1207,37 @@ def add_avl_requires_attention(row: Series) -> str:
     avl_published_status = row["avl_published_status"]
     error_in_avl_to_timetable_matching = row["error_in_avl_to_timetable_matching"]
 
+    if (
+        row["scope_status"] == OTC_SCOPE_STATUS_OUT_OF_SCOPE
+        or row["seasonal_status"] == "Out of Season"
+    ):
+        return "No"
+
     if (avl_published_status == "Yes") and (error_in_avl_to_timetable_matching == "No"):
         return "No"
     return "Yes"
+
+
+def get_fares_requires_attention_with_scope_check(row: Series) -> str:
+    """Get Fares require attention column value with the In Scope and In Season check
+    If service is out of scope and out of season, then service
+
+    Args:
+        row (Series): Service record
+
+    Returns:
+        str: Yes or No for 'fares require attention' column
+    """
+    if (
+        row["scope_status"] == OTC_SCOPE_STATUS_OUT_OF_SCOPE
+        or row["seasonal_status"] == "Out of Season"
+    ):
+        return "No"
+    return get_fares_requires_attention(
+        row.fares_published_status,
+        row.fares_timeliness_status,
+        row.fares_compliance_status,
+    )
 
 
 def add_overall_requires_attention(row: Series) -> str:
@@ -1293,7 +1396,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     otc_df["service_number"] = otc_df["service_number"].str.split("|")
     otc_df = otc_df.explode("service_number")
     dq_require_attention_active = flag_is_active(
-        "", FeatureFlags.DQS_REQUIRE_ATTENTION.value
+        "", FeatureFlags.DQS_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value
     )
     if dq_require_attention_active:
         dq_critical_observations_map = (
@@ -1310,7 +1413,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     )
 
     is_fares_require_attention_active = flag_is_active(
-        "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        "", FeatureFlags.FARES_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value
     )
     if is_fares_require_attention_active:
         for txc_attribute in txc_attributes:
@@ -1354,7 +1457,14 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         merged[field] = merged[field].astype(type_)
 
     merged.sort_values("dataset_id", inplace=True)
-    merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
+
+    is_cancellation_logic_active = flag_is_active(
+        "", FeatureFlags.CANCELLATION_LOGIC.value
+    )
+    if is_cancellation_logic_active:
+        condition = merged["registration_status"].isin(CANCELLED_SERVICE_STATUS)
+        merged["cancelled_date"] = np.where(condition, merged["effective_date"], "")
+
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
@@ -1400,11 +1510,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
             )
         )
         merged["fares_requires_attention"] = merged.apply(
-            lambda row: get_fares_requires_attention(
-                row.fares_published_status,
-                row.fares_timeliness_status,
-                row.fares_compliance_status,
-            ),
+            lambda row: get_fares_requires_attention_with_scope_check(row),
             axis=1,
         )
 
@@ -1412,14 +1518,122 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         lambda x: add_overall_requires_attention(x), axis=1
     )
 
+    is_prefetch_db_compliance_report_flag_active = flag_is_active(
+        "", FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value
+    )
+
+    if is_prefetch_db_compliance_report_flag_active:
+        try:
+            merged = store_compliance_report_in_db(merged)
+        except Exception as e:
+            logger.error(
+                "OPERATOR_PREFETCH_COMPLIANCE_REPORT: Error occured while saving report in db"
+            )
+            logger.exception(e)
+            merged["organisation_name"] = merged.apply(
+                lambda x: add_operator_name(x), axis=1
+            )
+    else:
+        merged["organisation_name"] = merged.apply(
+            lambda x: add_operator_name(x), axis=1
+        )
+
+    if is_cancellation_logic_active:
+        TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP_FIELDS = (
+            TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP
+        )
+    else:
+        TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP_FIELDS = (
+            TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP
+        )
+
     rename_map = {
         old_name: column_tuple.field_name
-        for old_name, column_tuple in TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.items()
+        for old_name, column_tuple in TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP_FIELDS.items()
     }
-    merged = merged[TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()].rename(
+    merged = merged[TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP_FIELDS.keys()].rename(
         columns=rename_map
     )
+
     return merged
+
+
+def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
+    """Save report values in database
+
+    Args:
+        merged (pd.DataFrame): Final Report Dataframe
+    """
+    merged.rename(columns={"organisation_id": "publish_organisation_id"}, inplace=True)
+    licence_org_df = pd.DataFrame.from_records(
+        BODSLicence.objects.values("number", "organisation_id", "organisation__name")
+    )
+    licence_org_df.rename(
+        columns={
+            "organisation_id": "licence_organisation_id",
+            "organisation__name": "licence_organisation_name",
+        },
+        inplace=True,
+    )
+    licence_org_df.drop_duplicates(subset=["number"], inplace=True)
+    merged = pd.merge(
+        merged,
+        licence_org_df,
+        left_on="otc_licence_number",
+        right_on="number",
+        how="left",
+    )
+
+    merged["licence_organisation_name"] = merged["licence_organisation_name"].fillna(
+        "Organisation not yet created"
+    )
+    merged["organisation_name"] = merged["licence_organisation_name"]
+
+    report_columns = list(TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()) + [
+        "publish_organisation_id",
+        "licence_organisation_id",
+        "licence_organisation_name",
+        "local_authorities_ids",
+    ]
+
+    report_columns.remove("otc_status")
+
+    db_report = merged[report_columns]
+    db_report.loc[
+        db_report["local_authority_ui_lta"] == "", "local_authorities_ids"
+    ] = []
+    db_report = db_report.replace({np.nan: None})
+    db_report = db_report.where(pd.notna(db_report), None)
+
+    db_report_instances = [
+        ComplianceReport(**clean_localauthorities_ids(row))
+        for _, row in db_report.iterrows()
+    ]
+    ComplianceReport.objects.all().delete()
+    ComplianceReport.objects.bulk_create(db_report_instances, batch_size=1000)
+
+    return merged
+
+
+def clean_localauthorities_ids(row: Series) -> dict:
+    """Convert service to dict as well as clear localauthority ids
+
+    Args:
+        row (Series): Registration record
+
+    Returns:
+        dict: dict to be saved in db
+    """
+    if None in row["local_authorities_ids"]:
+        row["local_authorities_ids"] = row["local_authorities_ids"].remove(None)
+
+    if UNDER_MAINTENANCE == row["fares_filename"]:
+        row["fares_dataset_id"] = None
+        row["fares_last_modified_date"] = None
+        row["fares_effective_stale_date_from_last_modified"] = None
+        row["fares_operating_period_end_date"] = None
+
+    return row.to_dict()
 
 
 def get_timetable_catalogue_csv():
