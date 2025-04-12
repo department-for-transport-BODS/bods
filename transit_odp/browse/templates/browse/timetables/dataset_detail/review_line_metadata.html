@@ -47,6 +47,8 @@
           {{ line_name }}
           {% if service_inscope == False %}
             <span class="govuk-tag govuk-tag--red govuk-!-margin-left-2 govuk-!-text-align-centre">Out of Scope</span>
+          {% elif service_inseason == False %}
+            <span class="govuk-tag govuk-tag--red govuk-!-margin-left-2 govuk-!-text-align-centre">Out of Season</span>
           {% elif is_avl_compliant and is_fares_compliant and is_timetable_compliant %}
             <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
               Compliant
