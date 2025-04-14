@@ -4,6 +4,7 @@ import json
 from logging import getLogger
 from pathlib import Path
 from urllib.parse import unquote
+import time
 
 import celery
 from celery import shared_task
@@ -66,6 +67,7 @@ from transit_odp.validate import (
     FileScanner,
     ValidationException,
 )
+from transit_odp.publish.views.utils import StepFunctionsTTPayload, S3Payload, InputDataSourceEnum
 
 logger = getLogger(__name__)
 
@@ -806,6 +808,146 @@ def task_rerun_timetables_etl_specific_datasets():
                     logger.info(
                         f"The task completed for {processed_count} of {total_count}"
                     )
+
+                except Exception as e:
+                    task.to_error("", DatasetETLTaskResult.FAILURE)
+                    raise
+
+        except Exception as exc:
+            failed_datasets.append(output_id)
+            message = f"Error processing dataset id {output_id}: {exc}"
+            logger.exception(message, exc_info=True)
+
+    logger.info(
+        f"Total number of datasets processed successfully is {len(successfully_processed_ids)} out of {total_count}"
+    )
+    logger.info(
+        f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
+    )
+
+class StepFunctionsReprocessPayload(StepFunctionsTTPayload):
+    """
+    Extends existing StepFunctionsTTPayload to allow addition of the performETLOnly flag
+    which is only used for reprocessing
+    """
+    performETLOnly: bool
+
+
+@shared_task(ignore_errors=True)
+def task_rerun_timetables_serverless_etl_specific_datasets():
+    """This is a one-off task to rerun the timetables ETL for a list of datasets
+    provided in a csv file available in AWS S3 bucket using the serverless pipeline
+    """
+    csv_file_name = CSVFileName.RERUN_ETL_TIMETABLES.value
+    _ids, _id_type, _s3_file_names_ids_map = read_datasets_file_from_s3(csv_file_name)
+
+    if not _ids:
+        logger.info("Serverless reprocessing - no valid dataset IDs or dataset revision IDs found in the file.")
+        return
+
+    timetables_datasets = []
+    if _id_type == "dataset_id":
+        logger.info(f"Serverless reprocessing - total number of datasets to be processed: {len(_ids)}")
+        timetables_datasets = Dataset.objects.filter(id__in=_ids).get_active()
+    elif _id_type == "dataset_revision_id":
+        logger.info(f"Serverless reprocessing - total number of dataset revisions to be processed: {len(_ids)}")
+        timetables_datasets = _ids
+
+    if not timetables_datasets:
+        logger.info("Serverless reprocessing - no active datasets found in BODS with these dataset IDs")
+        return
+
+    processed_count = 0
+    successfully_processed_ids = []
+    failed_datasets = []
+
+    total_count = len(timetables_datasets)
+    for timetables_dataset in timetables_datasets:
+        try:
+            if _id_type == "dataset_id":
+                logger.info(
+                    f"Serverless reprocessing - running Timetables ETL pipeline for dataset id {timetables_dataset.id}"
+                )
+                revision = timetables_dataset.live_revision
+                if revision:
+                    revision_id = revision.id
+                    output_id = revision.id
+                else:
+                    raise PipelineException(
+                        f"Serverless reprocessing - no live revision for dataset id {timetables_dataset.id}"
+                    )
+            elif _id_type == "dataset_revision_id":
+                revision_id = timetables_dataset
+                output_id = timetables_dataset
+                logger.info(
+                    f"Serverless reprocessing - running Timetables ETL pipeline for revision id {timetables_dataset}"
+                )
+
+            try:
+                revision = DatasetRevision.objects.get(
+                    pk=revision_id, dataset__dataset_type=TimetableType
+                )
+                if _s3_file_names_ids_map:
+                    s3_file_name = get_file_name_by_id(
+                        revision_id, _s3_file_names_ids_map
+                    )
+                    if s3_file_name:
+                        revision.upload_file = s3_file_name
+                        revision.save()
+
+            except DatasetRevision.DoesNotExist as exc:
+                message = f"Serverless reprocessing - DatasetRevision {revision_id} does not exist."
+                logger.exception(message, exc_info=True)
+                raise PipelineException(message) from exc
+
+            if revision:
+                task_id = uuid.uuid4()
+                task = DatasetETLTaskResult.objects.create(
+                    revision=revision,
+                    status=DatasetETLTaskResult.STARTED,
+                    task_id=task_id,
+                )
+                try:
+                    step_functions_client = StepFunctionsClientWrapper()
+                    step_function_arn = settings.TIMETABLES_STATE_MACHINE_ARN
+
+                    # revision.schema_violations.all().delete()
+                    # revision.post_schema_violations.all().delete()
+                    # revision.pti_observations.all().delete()
+                    # revision.dqs_report.all().delete()
+                    revision.txc_file_attributes.all().delete()
+                    revision.num_of_lines = None
+                    revision.admin_areas.clear()
+                    revision.localities.clear()
+                    revision.services.all().delete()
+                    revision.service_patterns.all().delete()
+                    revision.save()
+
+                    payload = StepFunctionsReprocessPayload(
+                        s3=S3Payload(object=revision.upload_file.name),
+                        inputDataSource=InputDataSourceEnum.FILE_UPLOAD.value,
+                        datasetRevisionId=revision_id,
+                        datasetType="timetables",
+                        publishDatasetRevision=False, 
+                        datasetETLTaskResultId=task_id,
+                        performETLOnly=True
+                    ).model_dump_json(exclude_none=True)
+
+                    step_functions_client.start_step_function(payload, step_function_arn)
+
+                    while task.status not in [DatasetETLTaskResult.SUCCESS, DatasetETLTaskResult.FAILURE]:
+                        time.sleep(10)
+
+                    
+
+
+                    successfully_processed_ids.append(output_id)
+                    processed_count += 1
+                    logger.info(
+                        f"Serverless reprocessing - The task completed for {processed_count} of {total_count}"
+                    )
+
+
 
                 except Exception as e:
                     task.to_error("", DatasetETLTaskResult.FAILURE)
