@@ -67,7 +67,11 @@ from transit_odp.validate import (
     FileScanner,
     ValidationException,
 )
-from transit_odp.publish.views.utils import StepFunctionsTTPayload, S3Payload, InputDataSourceEnum
+from transit_odp.publish.views.utils import (
+    StepFunctionsTTPayload,
+    S3Payload,
+    InputDataSourceEnum,
+)
 
 logger = getLogger(__name__)
 
@@ -825,11 +829,13 @@ def task_rerun_timetables_etl_specific_datasets():
         f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
     )
 
+
 class StepFunctionsReprocessPayload(StepFunctionsTTPayload):
     """
     Extends existing StepFunctionsTTPayload to allow addition of the performETLOnly flag
     which is only used for reprocessing
     """
+
     performETLOnly: bool
 
 
@@ -842,19 +848,27 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
     _ids, _id_type, _s3_file_names_ids_map = read_datasets_file_from_s3(csv_file_name)
 
     if not _ids:
-        logger.info("Serverless reprocessing - no valid dataset IDs or dataset revision IDs found in the file.")
+        logger.info(
+            "Serverless reprocessing - no valid dataset IDs or dataset revision IDs found in the file."
+        )
         return
 
     timetables_datasets = []
     if _id_type == "dataset_id":
-        logger.info(f"Serverless reprocessing - total number of datasets to be processed: {len(_ids)}")
+        logger.info(
+            f"Serverless reprocessing - total number of datasets to be processed: {len(_ids)}"
+        )
         timetables_datasets = Dataset.objects.filter(id__in=_ids).get_active()
     elif _id_type == "dataset_revision_id":
-        logger.info(f"Serverless reprocessing - total number of dataset revisions to be processed: {len(_ids)}")
+        logger.info(
+            f"Serverless reprocessing - total number of dataset revisions to be processed: {len(_ids)}"
+        )
         timetables_datasets = _ids
 
     if not timetables_datasets:
-        logger.info("Serverless reprocessing - no active datasets found in BODS with these dataset IDs")
+        logger.info(
+            "Serverless reprocessing - no active datasets found in BODS with these dataset IDs"
+        )
         return
 
     processed_count = 0
@@ -928,26 +942,26 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                         inputDataSource=InputDataSourceEnum.FILE_UPLOAD.value,
                         datasetRevisionId=revision_id,
                         datasetType="timetables",
-                        publishDatasetRevision=False, 
+                        publishDatasetRevision=False,
                         datasetETLTaskResultId=task_id,
-                        performETLOnly=True
+                        performETLOnly=True,
                     ).model_dump_json(exclude_none=True)
 
-                    step_functions_client.start_step_function(payload, step_function_arn)
+                    step_functions_client.start_step_function(
+                        payload, step_function_arn
+                    )
 
-                    while task.status not in [DatasetETLTaskResult.SUCCESS, DatasetETLTaskResult.FAILURE]:
+                    while task.status not in [
+                        DatasetETLTaskResult.SUCCESS,
+                        DatasetETLTaskResult.FAILURE,
+                    ]:
                         time.sleep(10)
-
-                    
-
 
                     successfully_processed_ids.append(output_id)
                     processed_count += 1
                     logger.info(
                         f"Serverless reprocessing - The task completed for {processed_count} of {total_count}"
                     )
-
-
 
                 except Exception as e:
                     task.to_error("", DatasetETLTaskResult.FAILURE)
