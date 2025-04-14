@@ -1,6 +1,7 @@
 from datetime import timedelta
 from typing import TypeVar
 
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import (
     Case,
     CharField,
@@ -9,18 +10,19 @@ from django.db.models import (
     ExpressionWrapper,
     F,
     OuterRef,
+    Q,
     QuerySet,
     Subquery,
     Value,
     When,
     Window,
-    Q,
 )
-
-from django.db.models.functions import Replace, RowNumber, TruncDate, Coalesce
+from django.db.models.functions import Coalesce, Replace, RowNumber, TruncDate
 from django.db.models.query_utils import Q
 from django.utils import timezone
-from django.contrib.postgres.aggregates import ArrayAgg
+from waffle import flag_is_active
+
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.querysets import GroupConcat
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
@@ -31,6 +33,7 @@ from transit_odp.organisation.models import (
     ServiceCodeExemption,
     TXCFileAttributes,
 )
+from transit_odp.organisation.models.organisations import Organisation
 from transit_odp.otc.constants import (
     API_TYPE_EP,
     API_TYPE_WECA,
@@ -283,8 +286,15 @@ class ServiceQuerySet(QuerySet):
         )
 
     def get_in_scope_in_season_services(self, organisation_id: int) -> TServiceQuerySet:
+        from transit_odp.browse.common import get_franchise_registration_numbers
+
+        is_franchise_organisation_active = flag_is_active(
+            "", FeatureFlags.FRANCHISE_ORGANISATION.value
+        )
+        organisation = Organisation.objects.get(id=organisation_id)
+        is_franchise = organisation.is_franchise
         now = timezone.now()
-        licences_subquery = BODSLicence.objects.filter(organisation__id=organisation_id)
+
         seasonal_services_subquery = Subquery(
             SeasonalService.objects.filter(licence__organisation__id=organisation_id)
             .filter(start__gt=now.date())
@@ -296,22 +306,40 @@ class ServiceQuerySet(QuerySet):
             .filter(licence__organisation__id=organisation_id)
             .values("registration_number")
         )
-
         traveline_region_subquery = Subquery(
             self.get_org_traveline_region_exemption(organisation_id)
         )
 
-        return (
-            self.filter(
-                licence__number__in=Subquery(licences_subquery.values("number"))
+        if is_franchise_organisation_active and is_franchise:
+            registration_number_subquery = get_franchise_registration_numbers(
+                organisation
             )
-            .add_service_code()
-            .exclude(registration_number__in=exemptions_subquery)
-            .exclude(registration_number__in=seasonal_services_subquery)
-            .exclude(registration_number__in=traveline_region_subquery)
-            .order_by("licence__number", "registration_number", "service_number")
-            .distinct("licence__number", "registration_number")
-        )
+
+            return (
+                self.filter(registration_number__in=registration_number_subquery)
+                .add_service_code()
+                .exclude(registration_number__in=exemptions_subquery)
+                .exclude(registration_number__in=seasonal_services_subquery)
+                .exclude(registration_number__in=traveline_region_subquery)
+                .order_by("licence__number", "registration_number", "service_number")
+                .distinct("licence__number", "registration_number")
+            )
+        else:
+            licences_subquery = BODSLicence.objects.filter(
+                organisation__id=organisation_id
+            )
+
+            return (
+                self.filter(
+                    licence__number__in=Subquery(licences_subquery.values("number"))
+                )
+                .add_service_code()
+                .exclude(registration_number__in=exemptions_subquery)
+                .exclude(registration_number__in=seasonal_services_subquery)
+                .exclude(registration_number__in=traveline_region_subquery)
+                .order_by("licence__number", "registration_number", "service_number")
+                .distinct("licence__number", "registration_number")
+            )
 
     def get_org_traveline_region_exemption(self, organisation_id: int):
         """Return registration numbers to be exempted based on traveline_region_id
@@ -320,9 +348,22 @@ class ServiceQuerySet(QuerySet):
         Args:
             organisation_id (int): Organisation to filter services for
         """
-        organisation_licences = OrganisationLicence.objects.filter(
-            organisation_id=organisation_id
-        ).values("number")
+        from transit_odp.browse.common import get_franchise_licences
+
+        is_franchise_organisation_active = flag_is_active(
+            "", FeatureFlags.FRANCHISE_ORGANISATION.value
+        )
+        organisation = Organisation.objects.get(id=organisation_id)
+        org_atco_codes = organisation.admin_areas.values_list("atco_code", flat=True)
+        is_franchise = organisation.is_franchise
+
+        if is_franchise_organisation_active and is_franchise:
+            organisation_licences = get_franchise_licences(org_atco_codes)
+        else:
+            organisation_licences = OrganisationLicence.objects.filter(
+                organisation_id=organisation_id
+            ).values("number")
+
         weca_registrations = [
             (
                 self.filter(
@@ -538,19 +579,40 @@ class ServiceQuerySet(QuerySet):
     def get_all_otc_data_for_organisation(
         self, organisation_id: int
     ) -> TServiceQuerySet:
-        licences_subquery = Subquery(
-            BODSLicence.objects.filter(organisation__id=organisation_id).values(
-                "number"
+        from transit_odp.browse.common import get_franchise_registration_numbers
+
+        is_franchise_organisation_active = flag_is_active(
+            "", FeatureFlags.FRANCHISE_ORGANISATION.value
+        )
+        organisation = Organisation.objects.get(id=organisation_id)
+        is_franchise = organisation.is_franchise
+
+        if is_franchise_organisation_active and is_franchise:
+            registration_number_subquery = get_franchise_registration_numbers(
+                organisation
             )
-        )
-        return (
-            self.add_otc_stale_date()
-            .add_otc_association_date()
-            .annotate(otc_licence_number=F("licence__number"))
-            .filter(licence__number__in=licences_subquery)
-            .order_by("licence__number", "registration_number", "service_number")
-            .distinct("licence__number", "registration_number")
-        )
+            return (
+                self.add_otc_stale_date()
+                .add_otc_association_date()
+                .annotate(otc_licence_number=F("licence__number"))
+                .filter(registration_number__in=registration_number_subquery)
+                .order_by("licence__number", "registration_number", "service_number")
+                .distinct("licence__number", "registration_number")
+            )
+        else:
+            licences_subquery = Subquery(
+                BODSLicence.objects.filter(organisation__id=organisation_id).values(
+                    "number"
+                )
+            )
+            return (
+                self.add_otc_stale_date()
+                .add_otc_association_date()
+                .annotate(otc_licence_number=F("licence__number"))
+                .filter(licence__number__in=licences_subquery)
+                .order_by("licence__number", "registration_number", "service_number")
+                .distinct("licence__number", "registration_number")
+            )
 
     def get_otc_data_for_organisation(self, organisation_id: int) -> TServiceQuerySet:
         now = timezone.now()

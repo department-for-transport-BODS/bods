@@ -108,15 +108,27 @@
                 {% trans "Licence number" %}
               {% endfilter %}
             </th>
-            <td class="govuk-table__cell" colspan="2">
-              <ul class="govuk-list govuk-!-margin-bottom-2">
-                {% for licence in organisation.licences.all %}
-                  <li class="govuk-!-margin-bottom-1">
-                    <a class="govuk-link" href="{% url 'operator-licence-detail' number=licence.number host hosts.data %}">{{ licence.number }}</a>
-                  </li>
-                {% endfor %}
-              </ul>
-            </td>
+            {% if is_franchise_organisation_active and is_franchise %}
+              <td class="govuk-table__cell" colspan="2">
+                <ul class="govuk-list govuk-!-margin-bottom-2">
+                  {% for licence in franchise_licences %}
+                    <li class="govuk-!-margin-bottom-1">
+                      <a class="govuk-link" href="{% url 'operator-licence-detail' number=licence host hosts.data %}">{{ licence }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </td>
+            {% else %}
+              <td class="govuk-table__cell" colspan="2">
+                <ul class="govuk-list govuk-!-margin-bottom-2">
+                  {% for licence in organisation.licences.all %}
+                    <li class="govuk-!-margin-bottom-1">
+                      <a class="govuk-link" href="{% url 'operator-licence-detail' number=licence.number host hosts.data %}">{{ licence.number }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </td>
+            {% endif %}
           </tr>
         </tbody>
       </table>
