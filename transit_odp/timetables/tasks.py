@@ -944,7 +944,7 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                         datasetRevisionId=revision_id,
                         datasetType="timetables",
                         publishDatasetRevision=False,
-                        datasetETLTaskResultId=task_id,
+                        datasetETLTaskResultId=task.id,
                         performETLOnly=True,
                     ).model_dump_json(exclude_none=True)
 
