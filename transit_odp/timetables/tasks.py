@@ -5,6 +5,7 @@ from logging import getLogger
 from pathlib import Path
 from urllib.parse import unquote
 import time
+import datetime
 
 import celery
 from celery import shared_task
@@ -955,6 +956,13 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                         DatasetETLTaskResult.SUCCESS,
                         DatasetETLTaskResult.FAILURE,
                     ]:
+                        time.sleep(10)
+
+                    while (
+                        datetime.time(18, 30)
+                        <= datetime.datetime.now().time()
+                        <= datetime.time(19, 30)
+                    ):
                         time.sleep(10)
 
                     successfully_processed_ids.append(output_id)
