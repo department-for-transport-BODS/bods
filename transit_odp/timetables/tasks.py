@@ -917,6 +917,9 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
 
             if revision:
                 task_id = uuid.uuid4()
+                # Get the status of the revision before processing so we can re-set it later
+                revision_before_status = revision.status
+
                 task = DatasetETLTaskResult.objects.create(
                     revision=revision,
                     status=DatasetETLTaskResult.STARTED,
@@ -958,12 +961,22 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                     while task.status not in [
                         DatasetETLTaskResult.SUCCESS,
                         DatasetETLTaskResult.FAILURE,
+                        DatasetETLTaskResult.ERROR
                     ]:
                         logger.info(
                             f"Serverless reprocessing - waiting on task completion for {timetables_dataset} - current status of task {task.id} is {task.status}"
                         )                        
                         time.sleep(30)
                         task.refresh_from_db()
+
+                    
+                    # Check if there's been a failure or an error and set as error or else reset the revision status
+                    if task.status == DatasetETLTaskResult.FAILURE or task.status == DatasetETLTaskResult.ERROR:
+                        task.to_error("", DatasetETLTaskResult.FAILURE)
+                        raise
+                    else:
+                        revision.status = revision_before_status
+                        revision.save()
 
                     while (
                         datetime.time(18, 30)
@@ -973,7 +986,7 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                         logger.info(
                             f"Serverless reprocessing - waiting for excluded time to finish for {timetables_dataset} - current status of task {task.id} is {task.status}"
                         )                        
-                        time.sleep(30)
+                        time.sleep(60)
 
                     successfully_processed_ids.append(output_id)
                     processed_count += 1
