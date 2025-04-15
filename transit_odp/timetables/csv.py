@@ -1563,10 +1563,6 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
                 "OPERATOR_PREFETCH_COMPLIANCE_REPORT: Error occured while saving report in db"
             )
             logger.exception(e)
-
-        merged["organisation_name"] = merged.apply(
-            lambda x: add_operator_name(x), axis=1
-        )
     else:
         merged["organisation_name"] = merged.apply(
             lambda x: add_operator_name(x), axis=1
@@ -1618,7 +1614,7 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
         how="left",
     )
 
-    merged["organisation_name"] = merged["licence_organisation_name"]
+    merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
 
     report_columns = list(TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()) + [
         "publish_organisation_id",
