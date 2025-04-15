@@ -951,19 +951,29 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                     step_functions_client.start_step_function(
                         payload, step_function_arn
                     )
+                    logger.info(
+                        f"Serverless reprocessing - successfully submitted Timetables ETL pipeline for revision id {timetables_dataset}"
+                    )
 
                     while task.status not in [
                         DatasetETLTaskResult.SUCCESS,
                         DatasetETLTaskResult.FAILURE,
                     ]:
-                        time.sleep(10)
+                        logger.info(
+                            f"Serverless reprocessing - waiting on task completion for {timetables_dataset} - current status of task {task.id} is {task.status}"
+                        )                        
+                        time.sleep(30)
+                        task.refresh_from_db()
 
                     while (
                         datetime.time(18, 30)
                         <= datetime.datetime.now().time()
                         <= datetime.time(19, 30)
                     ):
-                        time.sleep(10)
+                        logger.info(
+                            f"Serverless reprocessing - waiting for excluded time to finish for {timetables_dataset} - current status of task {task.id} is {task.status}"
+                        )                        
+                        time.sleep(30)
 
                     successfully_processed_ids.append(output_id)
                     processed_count += 1
