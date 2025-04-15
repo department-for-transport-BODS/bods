@@ -12,6 +12,7 @@ from transit_odp.browse.common import (
     LTACSVHelper,
     get_all_naptan_atco_df,
     get_all_weca_traveline_region_map,
+    get_franchise_registration_numbers,
 )
 from transit_odp.browse.lta_column_headers import get_operator_name
 from transit_odp.common.constants import FeatureFlags
@@ -1381,24 +1382,6 @@ class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
             }
         )
 
-    def get_franchise_registration_numbers(self, organisation: Organisation) -> list:
-        """
-        Returns the services associated with a franchise based on the atco codes
-        associated with the organisation.
-
-        Args:
-            organisation (Organisation): Organisation object
-
-        Returns:
-            list: List of services associated with the franchise
-        """
-        org_atco_codes = organisation.admin_areas.values_list("atco_code", flat=True)
-        return list(
-            OTCService.objects.filter(atco_code__in=org_atco_codes).values_list(
-                "registration_number", flat=True
-            )
-        )
-
     def get_otc_service_bods_data(self, organisation_id: int) -> None:
         """
         Compares an organisation's OTC Services dictionaries list with
@@ -1415,7 +1398,7 @@ class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
         )
         if is_franchise_organisation_active:
             organisation = Organisation.objects.get(id=organisation_id)
-            franchise_registration_numbers = self.get_franchise_registration_numbers(
+            franchise_registration_numbers = get_franchise_registration_numbers(
                 organisation
             )
 
