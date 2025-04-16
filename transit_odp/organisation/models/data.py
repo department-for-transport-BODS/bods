@@ -391,7 +391,6 @@ class DatasetRevision(
                         password=self.password,
                         description=self.description,
                         short_description=self.short_description,
-                        requestor_ref=self.requestor_ref,
                     )
                 else:
                     cavl_service.update_feed(
@@ -401,7 +400,6 @@ class DatasetRevision(
                         password=self.password,
                         description=self.description,
                         short_description=self.short_description,
-                        requestor_ref=self.requestor_ref,
                     )
             # TODO - should likely fold the logic in 'update_live_revision' receiver
             # into this method, i.e. update live_revision on the dataset to point to

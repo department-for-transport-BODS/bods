@@ -38,11 +38,10 @@ class CAVLService(ICAVLService):
         password: str,
         description: str,
         short_description: str,
-        requestor_ref: Optional[str] = None,
     ) -> bool:
         api_url = self.AVL_PRODUCER_URL + "/subscriptions"
 
-        body = {
+        post = {
             "subscriptionId": str(feed_id),
             "publisherId": str(publisher_id),
             "dataProducerEndpoint": url,
@@ -52,12 +51,9 @@ class CAVLService(ICAVLService):
             "shortDescription": short_description,
         }
 
-        if requestor_ref:
-            body["requestorRef"] = requestor_ref
-
         try:
             response = requests.post(
-                api_url, json=body, timeout=30, headers=self.headers
+                api_url, json=post, timeout=30, headers=self.headers
             )
             response.raise_for_status()
         except RequestException as e:
@@ -86,7 +82,6 @@ class CAVLService(ICAVLService):
         password: str,
         description: str,
         short_description: str,
-        requestor_ref: Optional[str] = None,
     ) -> bool:
         api_url = self.AVL_PRODUCER_URL + f"/subscriptions/{feed_id}"
 
@@ -97,9 +92,6 @@ class CAVLService(ICAVLService):
             "description": description,
             "shortDescription": short_description,
         }
-
-        if requestor_ref:
-            body["requestorRef"] = requestor_ref
 
         try:
             response = requests.put(
