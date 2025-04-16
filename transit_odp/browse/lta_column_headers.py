@@ -451,7 +451,9 @@ header_accessor_data_db_compliance_report = [
     ),
     (
         "Registration Status",
-        lambda otc_service: otc_service.get("otc_licence_number"),
+        lambda otc_service: (
+            "Registered" if otc_service.get("otc_licence_number") else "Unregistered"
+        ),
     ),
     (
         "Scope Status",
