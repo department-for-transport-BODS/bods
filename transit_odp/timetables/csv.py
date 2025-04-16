@@ -738,6 +738,8 @@ TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP["cancelled_date"] = Col
     "The Cancelled date for OTC Service.",
 )
 
+LOG_PREFIX = "OVERALL-COMPLIENCE-REPORT : "
+
 
 def add_operator_name(row: Series) -> str:
     if row["organisation_name"] is None or pd.isna(row["organisation_name"]):
@@ -1380,7 +1382,6 @@ def _get_timetable_line_level_catalogue_dataframe() -> pd.DataFrame:
 
 
 def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
-    LOG_PREFIX = "OVERALL-COMPLIENCE-REPORT : "
     today = datetime.date.today()
     abods_registry = AbodsRegistery()
     synced_in_last_month = abods_registry.records()
@@ -1399,12 +1400,13 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     dq_require_attention_active = flag_is_active(
         "", FeatureFlags.DQS_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value
     )
+    logger.info("{} Prepared txc and otc dataframes".format(LOG_PREFIX))
     if dq_require_attention_active:
         logger.info("{} Fetching the dqs information".format(LOG_PREFIX))
         dq_critical_observations_map = (
             get_dq_critical_observation_services_map_from_dataframe(txc_df)
         )
-        logger.info("{} Fetching the dqs information".format(LOG_PREFIX))
+        logger.info("{} Fetched the dqs information".format(LOG_PREFIX))
 
     castings = (
         ("dataset_id", "Int64"),
@@ -1422,7 +1424,13 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         logger.info("{} Calculating Fares SRA".format(LOG_PREFIX))
         for txc_attribute in txc_attributes:
             txc_service_map[txc_attribute.service_code] = txc_attribute
+        logger.info(
+            "{} Preparing Fares dataframe for total {} txc files".format(
+                LOG_PREFIX, len(list(txc_service_map.values()))
+            )
+        )
         fares_df = get_fares_dataset_map(txc_map=txc_service_map)
+        logger.info("{} Done preparing Fares dataframe".format(LOG_PREFIX))
         fares_df["valid_to"] = fares_df["valid_to"].dt.date
         fares_df["last_updated_date"] = fares_df["last_updated_date"].dt.date
         fares_df["is_fares_compliant"] = fares_df.apply(
@@ -1450,6 +1458,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         )
         logger.info("{} Finished calculating Fares SRA".format(LOG_PREFIX))
 
+    logger.info("{} merging txc df with otc df".format(LOG_PREFIX))
     merged = pd.merge(
         otc_df,
         txc_df,
@@ -1467,8 +1476,10 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         "", FeatureFlags.CANCELLATION_LOGIC.value
     )
     if is_cancellation_logic_active:
+        logger.info("{} Found cancellation logic active".format(LOG_PREFIX))
         condition = merged["registration_status"].isin(CANCELLED_SERVICE_STATUS)
         merged["cancelled_date"] = np.where(condition, merged["effective_date"], "")
+        logger.info("{} Added cancelled date in the new column".format(LOG_PREFIX))
 
     logger.info("{} Adding Status Column".format(LOG_PREFIX))
     merged = add_status_columns(merged)
@@ -1495,7 +1506,11 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     merged["avl_published_status"] = merged.apply(
         lambda x: add_avl_published_status(x, synced_in_last_month), axis=1
     )
-    logger.info("{} Adding Error in timetable catalogue column".format(LOG_PREFIX))
+    logger.info(
+        "{} Adding Error maching in timetable catalogue and avl require attention column".format(
+            LOG_PREFIX
+        )
+    )
     merged["error_in_avl_to_timetable_matching"] = merged.apply(
         lambda x: add_error_in_avl_to_timetable_matching(x, uncounted_activity_df),
         axis=1,
@@ -1505,10 +1520,12 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     )
 
     merged = merged[merged["otc_status"] == OTC_STATUS_REGISTERED]
-
+    logger.info("{} Only selected registered services".format(LOG_PREFIX))
     if is_fares_require_attention_active:
         logger.info("{} Adding Fares column in value".format(LOG_PREFIX))
         merged = add_fares_status_columns(merged)
+
+        logger.info("{} Adding Fares timeliness column value".format(LOG_PREFIX))
         merged["fares_timeliness_status"] = merged.apply(
             lambda row: get_fares_timeliness_status(
                 row["fares_operating_period_end_date"],
@@ -1516,6 +1533,8 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
             ),
             axis=1,
         )
+
+        logger.info("{} Adding Fares compliance column value".format(LOG_PREFIX))
         merged["fares_compliance_status"] = merged["fares_compliance_status"].apply(
             lambda x: (
                 "No"
@@ -1523,11 +1542,14 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
                 else "Yes"
             )
         )
+
+        logger.info("{} Adding Fares require attention column value".format(LOG_PREFIX))
         merged["fares_requires_attention"] = merged.apply(
             lambda row: get_fares_requires_attention_with_scope_check(row),
             axis=1,
         )
 
+    logger.info("{} Adding overall require attention column value".format(LOG_PREFIX))
     merged["overall_requires_attention"] = merged.apply(
         lambda x: add_overall_requires_attention(x), axis=1
     )
@@ -1540,7 +1562,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         try:
             logger.info("{} Storing prefetched values in db".format(LOG_PREFIX))
             merged = store_compliance_report_in_db(merged)
-            logger.info("{} Storing prefetched values in db".format(LOG_PREFIX))
+            logger.info("{} Stored prefetched values in db".format(LOG_PREFIX))
         except Exception as e:
             logger.error(
                 "OPERATOR_PREFETCH_COMPLIANCE_REPORT: Error occured while saving report in db"
@@ -1571,6 +1593,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         columns=rename_map
     )
 
+    logger.info("{} Last line of the compliance report".format(LOG_PREFIX))
     return merged
 
 
@@ -1584,6 +1607,8 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
     licence_org_df = pd.DataFrame.from_records(
         BODSLicence.objects.values("number", "organisation_id", "organisation__name")
     )
+
+    logger.info("{} Found all the liences for organisation".format(LOG_PREFIX))
     licence_org_df.rename(
         columns={
             "organisation_id": "licence_organisation_id",
@@ -1600,11 +1625,14 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
         how="left",
     )
 
+    logger.info("{} Merged licence details".format(LOG_PREFIX))
+
     merged["licence_organisation_name"] = merged["licence_organisation_name"].fillna(
         "Organisation not yet created"
     )
     merged["organisation_name"] = merged["licence_organisation_name"]
 
+    logger.info("{} Renaming columns".format(LOG_PREFIX))
     report_columns = list(TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()) + [
         "publish_organisation_id",
         "licence_organisation_id",
@@ -1621,13 +1649,15 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
     db_report = db_report.replace({np.nan: None})
     db_report = db_report.where(pd.notna(db_report), None)
 
+    logger.info("{} Creating db report instances".format(LOG_PREFIX))
     db_report_instances = [
         ComplianceReport(**clean_localauthorities_ids(row))
         for _, row in db_report.iterrows()
     ]
+    logger.info("{} Storing prefetched values in db".format(LOG_PREFIX))
     ComplianceReport.objects.all().delete()
     ComplianceReport.objects.bulk_create(db_report_instances, batch_size=1000)
-
+    logger.info("{} Done for each batch".format(LOG_PREFIX))
     return merged
 
 
