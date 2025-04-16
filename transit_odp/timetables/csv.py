@@ -738,7 +738,7 @@ TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP["cancelled_date"] = Col
     "The Cancelled date for OTC Service.",
 )
 
-LOG_PREFIX = "OVERALL-COMPLIENCE-REPORT : "
+LOG_PREFIX = "OVERALL-COMPLIANCE-REPORT : "
 
 
 def add_operator_name(row: Series) -> str:
