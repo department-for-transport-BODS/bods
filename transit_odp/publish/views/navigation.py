@@ -132,7 +132,6 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
             if is_operator_prefetch_sra_active:
                 fares_sra = record.organisation.fares_sra
                 avl_sra = record.organisation.avl_sra
-                require_attention = record.organisation.timetable_sra
             else:
                 if is_avl_require_attention_active:
                     avl_sra = len(
@@ -149,9 +148,6 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
                             record.organisation_id
                         ).get_fares_requires_attention_line_level_data()
                     )
-                require_attention  = len(
-                        get_requires_attention_line_level_data(record.organisation_id)
-                    )
             org_list.append(
                 {
                     "next": reverse(
@@ -160,7 +156,9 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
                     + (f"?prev={prev_page}" if prev_page is not None else ""),
                     "organisation_id": record.organisation_id,
                     "organisation": record.organisation.name,
-                    "requires_attention": require_attention,
+                    "requires_attention": len(
+                        get_requires_attention_line_level_data(record.organisation_id)
+                    ),
                     "avl_requires_attention": avl_sra,
                     "fares_requires_attention": fares_sra,
                 }
