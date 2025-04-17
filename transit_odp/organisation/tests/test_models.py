@@ -206,6 +206,7 @@ class TestDatasetRevision:
             password="password123",
             description="test-description",
             short_description="test--short-description",
+            requestor_ref="test-requestor-ref",
         )
         cavl_service = mocker.patch(f"{self.mut}.CAVLService").return_value
         revision.publish()
@@ -217,6 +218,7 @@ class TestDatasetRevision:
             password="password123",
             description="test-description",
             short_description="test--short-description",
+            requestor_ref="test-requestor-ref",
         )
 
     def test_avl_dataset_publish_update_cavl(self, mocker):
@@ -230,6 +232,7 @@ class TestDatasetRevision:
                 password="password123",
                 description="test-description",
                 short_description="test-short-description",
+                requestor_ref="test-requestor-ref",
             )
 
         new_revision = AVLDatasetRevisionFactory(
@@ -240,6 +243,7 @@ class TestDatasetRevision:
             password="password123.v2",
             description="test-description2",
             short_description="test--short-description2",
+            requestor_ref="test-requestor-ref",
         )
 
         cavl_service = mocker.patch(f"{self.mut}.CAVLService").return_value
@@ -251,6 +255,7 @@ class TestDatasetRevision:
             password="password123.v2",
             description="test-description2",
             short_description="test--short-description2",
+            requestor_ref="test-requestor-ref",
         )
 
     def test_revision_draft_url_for_new_dataset(self):
