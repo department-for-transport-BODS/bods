@@ -5,8 +5,10 @@ from django_tables2 import SingleTableView
 from waffle import flag_is_active
 
 from transit_odp.browse.common import get_in_scope_in_season_services_line_level
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.organisation.csv.service_codes import (
     ComplianceReportCSV,
+    ComplianceReportDBCSV,
     ServiceCodesCSV,
 )
 from transit_odp.organisation.models import Organisation
@@ -94,7 +96,13 @@ class ComplianceReportView(View):
 
     def render_to_response(self):
         csv_filename = f"{self.org.name} compliance report.csv"
-        csv_export = ComplianceReportCSV(self.org.id)
+        is_prefetch_db_compliance_report_active = flag_is_active(
+            "", FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value
+        )
+        if is_prefetch_db_compliance_report_active:
+            csv_export = ComplianceReportDBCSV(self.org.id)
+        else:
+            csv_export = ComplianceReportCSV(self.org.id)
         file_ = csv_export.to_string()
         response = HttpResponse(file_, content_type="text/csv")
         response["Content-Disposition"] = f"attachment; filename={csv_filename}"

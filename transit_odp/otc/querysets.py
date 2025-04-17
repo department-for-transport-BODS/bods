@@ -16,10 +16,11 @@ from django.db.models import (
     Window,
     Q,
 )
-from django.db.models.functions import Replace, RowNumber, TruncDate
+
+from django.db.models.functions import Replace, RowNumber, TruncDate, Coalesce
 from django.db.models.query_utils import Q
 from django.utils import timezone
-
+from django.contrib.postgres.aggregates import ArrayAgg
 from transit_odp.common.querysets import GroupConcat
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import ENGLISH_TRAVELINE_REGIONS
@@ -48,7 +49,8 @@ class ServiceQuerySet(QuerySet):
                 "registration_number",
                 Value("/", output_field=CharField()),
                 Value(":", output_field=CharField()),
-            )
+            ),
+            expiry_date=F("end_date"),
         )
 
     def add_operator_details(self) -> TServiceQuerySet:
@@ -62,7 +64,6 @@ class ServiceQuerySet(QuerySet):
         return self.annotate(
             otc_licence_number=F("licence__number"),
             licence_status=F("licence__status"),
-            expiry_date=F("licence__expiry_date"),
             granted_date=F("licence__granted_date"),
         )
 
@@ -148,7 +149,11 @@ class ServiceQuerySet(QuerySet):
         return self.annotate(
             ui_lta_otc=GroupConcat(
                 F("registration__ui_lta__name"), delimiter="|", distinct=True
-            )
+            ),
+            ui_lta_otc_ids=Coalesce(
+                ArrayAgg(F("registration__ui_lta__id"), delimiter=",", distinct=True),
+                Value([]),
+            ),
         )
 
     def add_ui_lta_weca(self) -> TServiceQuerySet:
@@ -168,7 +173,16 @@ class ServiceQuerySet(QuerySet):
                 ),
                 delimiter="|",
                 distinct=True,
-            )
+            ),
+            ui_lta_weca_ids=Coalesce(
+                ArrayAgg(
+                    AdminArea.objects.filter(atco_code=OuterRef("atco_code")).values(
+                        "ui_lta__id"
+                    ),
+                    distinct=True,
+                ),
+                Value([]),
+            ),
         )
 
     def add_ui_lta(self):
@@ -190,6 +204,14 @@ class ServiceQuerySet(QuerySet):
                 default=F("ui_lta_otc"),
                 output_field=CharField(),
             )
+        ).annotate(
+            local_authorities_ids=Case(
+                When(
+                    Q(api_type__in=[API_TYPE_WECA]),
+                    then=F("ui_lta_weca_ids"),
+                ),
+                default=F("ui_lta_otc_ids"),
+            ),
         )
 
     def add_timetable_data_annotations(self) -> TServiceQuerySet:

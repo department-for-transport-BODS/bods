@@ -349,3 +349,18 @@ fieldset {
 .text-wrap {
   text-wrap: wrap;
 }
+
+.position-relative {
+  position: relative;
+}
+
+#map-updated-timestamp {
+  position: absolute;
+  bottom: 0px;
+  right: 33px;
+  font-size: 12px;
+  background: #aaa;
+  color: #000;
+  padding: 4px;
+  opacity: 0.6;  
+}
