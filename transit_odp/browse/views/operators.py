@@ -41,6 +41,7 @@ from transit_odp.organisation.models.data import (
     ServiceCodeExemption,
     TXCFileAttributes,
 )
+from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.models import Service
 from transit_odp.publish.requires_attention import (
     FaresRequiresAttention,
@@ -315,12 +316,73 @@ class LicenceDetailView(BaseDetailView):
         organisation_licence = self.get_object()
         context["pk"] = organisation_licence.id
         context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
-        self.otc_map, self.txc_map = otc_map_txc_map_from_licence(licence_number)
-        self.service_code_exemption_map = self.get_service_code_exemption_map(
-            licence_number
-        )
-        self.seasonal_service_map = self.get_seasonal_service_map(licence_number)
 
+        is_prefetch_compliance_report_active = flag_is_active(
+            "", FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value
+        )
+
+        if is_prefetch_compliance_report_active:
+            licence_services_df = pd.DataFrame.from_records(
+                ComplianceReport.objects.values(
+                    "registration_number",
+                    "service_number",
+                    "overall_requires_attention",
+                    "scope_status",
+                    "seasonal_status",
+                )
+                .filter(otc_licence_number=licence_number)
+                .order_by("service_number", "registration_number")
+            )
+            self.otc_map = licence_services_df.to_dict("records")
+            self.prefetch_service_sra()
+
+        else:
+            self.otc_map, self.txc_map = otc_map_txc_map_from_licence(licence_number)
+            self.service_code_exemption_map = self.get_service_code_exemption_map(
+                licence_number
+            )
+            self.seasonal_service_map = self.get_seasonal_service_map(licence_number)
+
+            self.calculate_service_sra()
+
+        context["organisation"] = organisation_licence.organisation
+        context["licence_services"] = self.otc_map
+        return context
+
+    def prefetch_service_sra(self):
+        for service in self.otc_map:
+            service["registration_number"] = service["registration_number"].replace(
+                "/", ":"
+            )
+
+            is_in_scope = True if service["scope_status"] == "In Scope" else False
+            is_in_season = (
+                True if service["seasonal_status"] != "Out of Season" else False
+            )
+            service["is_in_scope"] = is_in_scope
+            service["is_in_season"] = is_in_season
+
+            is_label_green = False
+            label_str = ""
+
+            if not is_in_scope or not is_in_season:
+                is_compliant = True
+                label_str = "Out of Season"
+                if not is_in_scope:
+                    label_str = "Out of Scope"
+            elif service["overall_requires_attention"] == "No":
+                is_compliant = True
+                is_label_green = True
+                label_str = "Compliant"
+            else:
+                is_compliant = False
+                label_str = "Not Compliant"
+
+            service["is_compliant"] = is_compliant
+            service["is_label_green"] = is_label_green
+            service["label_str"] = label_str
+
+    def calculate_service_sra(self):
         self.is_fra_active = flag_is_active(
             "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
         )
@@ -349,9 +411,6 @@ class LicenceDetailView(BaseDetailView):
             self.synced_in_last_month = abods_registry.records()
             self.uncounted_activity_df = get_vehicle_activity_operatorref_linename()
 
-        context["organisation"] = organisation_licence.organisation
-        context["licence_services"] = self.otc_map
-
         for service in self.otc_map:
             service["registration_number"] = service["registration_number"].replace(
                 "/", ":"
@@ -372,14 +431,18 @@ class LicenceDetailView(BaseDetailView):
                 service["dataset_id"] = None
                 self.service_number = None
             is_in_scope = self.is_service_in_scope()
+            is_in_season = self.is_service_in_season()
             service["is_in_scope"] = is_in_scope
+            service["is_in_season"] = is_in_season
 
             is_label_green = False
             label_str = ""
 
-            if not is_in_scope:
+            if not is_in_scope or not is_in_season:
                 is_compliant = True
-                label_str = "Out of Scope"
+                label_str = "Out of Season"
+                if not is_in_scope:
+                    label_str = "Out of Scope"
             elif (
                 not self.is_fares_compliant()
                 or not self.is_timetable_compliant()
@@ -394,8 +457,6 @@ class LicenceDetailView(BaseDetailView):
             service["is_compliant"] = is_compliant
             service["is_label_green"] = is_label_green
             service["label_str"] = label_str
-
-        return context
 
     def is_fares_compliant(self) -> bool:
         """Check if a given service is fairs compliant or not
@@ -509,15 +570,12 @@ class LicenceDetailView(BaseDetailView):
 
     def is_service_in_scope(self) -> bool:
         """check is service is in scope or not system will
-        check 3 points to decide in scope Service Exception,
-        Seasonal Service Status and Traveling region
+        check 2 points to decide in scope Service Exception,
+        and Traveling region
 
         Returns:
             bool: True if in scope else False
         """
-        seasonal_service = self.seasonal_service_map.get(
-            self.service.get("registration_number")
-        )
         exemption = self.service_code_exemption_map.get(
             self.service.get("registration_number")
         )
@@ -530,11 +588,24 @@ class LicenceDetailView(BaseDetailView):
             set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions)
         )
 
-        if not (
-            not (exemption and exemption.registration_code) and is_english_region
-        ) or (seasonal_service and not seasonal_service.seasonal_status):
+        if not (not (exemption and exemption.registration_code) and is_english_region):
             return False
 
+        return True
+
+    def is_service_in_season(self) -> bool:
+        """check is service is in season or not system will
+        check 1 points to decide service in season,
+        Seasonal service status
+
+        Returns:
+            bool: True if in scope else False
+        """
+        seasonal_service = self.seasonal_service_map.get(
+            self.service.get("registration_number").replace("/", ":")
+        )
+        if seasonal_service and not seasonal_service.seasonal_status:
+            return False
         return True
 
     def get_service_compliant_status(
@@ -568,7 +639,7 @@ class LicenceDetailView(BaseDetailView):
         return {
             service.registration_number.replace("/", ":"): service
             for service in SeasonalService.objects.filter(
-                licence__organisation__licences__number__in=licence_number
+                licence__organisation__licences__number__in=[licence_number]
             )
             .add_registration_number()
             .add_seasonal_status()
