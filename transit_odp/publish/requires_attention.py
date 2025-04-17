@@ -26,6 +26,7 @@ from transit_odp.transmodel.models import Service as TransmodelService
 from transit_odp.transmodel.models import ServicePatternStop
 
 logger = logging.getLogger(__name__)
+DQS_SRA_PREFIX = "DQS-SRA-PREFIX"
 
 
 def get_line_level_in_scope_otc_map(organisation_id: int) -> Dict[tuple, OTCService]:
@@ -1038,23 +1039,32 @@ def query_dq_critical_observation(query, revision_ids: list) -> List[tuple]:
     if service_pattern_ids_df.empty:
         return []
 
-    service_pattern_stops_df = get_service_pattern_stops_df(service_pattern_ids_df)
-    service_pattern_ids_df = service_pattern_ids_df.merge(
-        service_pattern_stops_df, on=["service_pattern_id"], how="left"
+    logger.info(
+        "{} Found service patterns {}".format(
+            DQS_SRA_PREFIX, len(list(service_pattern_ids_df["service_id"]))
+        )
     )
 
-    dqs_observation_df = get_dqs_observations_df(service_pattern_stops_df, revision_ids)
-    dqs_require_attention_df = service_pattern_ids_df.merge(
-        dqs_observation_df, on=["service_pattern_stop_id"], how="left", indicator=True
+    dqs_observation_df = get_dqs_observations_df(service_pattern_ids_df, revision_ids)
+    logger.info(
+        "{} Found service patterns stops {}".format(
+            DQS_SRA_PREFIX, len(list(dqs_observation_df["service_pattern_stop_id"]))
+        )
     )
-    dqs_require_attention_df.rename(columns={"_merge": "dqs_critical"}, inplace=True)
 
-    dqs_require_attention_df = dqs_require_attention_df[
-        dqs_require_attention_df["dqs_critical"] == "both"
-    ]
+    service_pattern_stops_df = get_service_pattern_stops_df(dqs_observation_df)
+    logger.info(
+        "{} Found service patterns from stops {}".format(
+            DQS_SRA_PREFIX, len(list(service_pattern_stops_df["service_pattern_stop_id"]))
+        )
+    )
 
-    dqs_require_attention_df = dqs_require_attention_df[["service_code", "line_name"]]
+    service_pattern_ids_df = service_pattern_stops_df.merge(
+        service_pattern_ids_df, on=["service_pattern_id"], how="left"
+    )
 
+    dqs_require_attention_df = service_pattern_ids_df[["service_code", "line_name"]]
+    logger.info("{} Returning the df".format(DQS_SRA_PREFIX))
     return list(dqs_require_attention_df.itertuples(index=False, name=None))
 
 
@@ -1255,7 +1265,11 @@ def get_service_patterns_df(query) -> pd.DataFrame:
     """
     service_pattern_ids_df = pd.DataFrame.from_records(
         TransmodelService.objects.filter(query).values(
-            "id", "service_code", "service_patterns__line_name", "service_patterns__id"
+            "id",
+            "service_code",
+            "service_patterns__line_name",
+            "service_patterns__id",
+            "txcfileattributes_id",
         )
     )
     if service_pattern_ids_df.empty:
@@ -1265,6 +1279,7 @@ def get_service_patterns_df(query) -> pd.DataFrame:
                 "service_code",
                 "service_patterns__line_name",
                 "service_patterns__id",
+                "txcfileattributes_id",
             ]
         )
 
@@ -1279,7 +1294,9 @@ def get_service_patterns_df(query) -> pd.DataFrame:
     return service_pattern_ids_df
 
 
-def get_service_pattern_stops_df(service_pattern_ids_df: pd.DataFrame) -> pd.DataFrame:
+def get_service_pattern_stops_via_sp_id_df(
+    service_pattern_ids_df: pd.DataFrame,
+) -> pd.DataFrame:
     """Get Service pattern stop ids for given service pattern ids
 
     Args:
@@ -1306,7 +1323,34 @@ def get_service_pattern_stops_df(service_pattern_ids_df: pd.DataFrame) -> pd.Dat
     return service_pattern_stops_df
 
 
-def get_dqs_observations_df(
+def get_service_pattern_stops_df(dqs_observation_df: pd.DataFrame) -> pd.DataFrame:
+    """Get Service pattern stop ids for given service pattern ids
+
+    Args:
+        service_pattern_ids_df (pd.DataFrame): Dataframe with service pattern ids
+
+    Returns:
+        pd.DataFrame: Dataframe with service pattern stop ids
+    """
+    service_pattern_stops_qs = (
+        ServicePatternStop.objects.filter(
+            id__in=list(dqs_observation_df["service_pattern_stop_id"])
+        )
+        .order_by()
+        .values("id", "service_pattern_id")
+    )
+
+    service_pattern_stops_df = pd.DataFrame.from_records(service_pattern_stops_qs)
+    if service_pattern_stops_df.empty:
+        service_pattern_stops_df = pd.DataFrame(columns=["id", "service_pattern_id"])
+
+    service_pattern_stops_df.rename(
+        columns={"id": "service_pattern_stop_id"}, inplace=True
+    )
+    return service_pattern_stops_df
+
+
+def get_dqs_observations_via_stops_df(
     service_pattern_stops_df: pd.DataFrame, revision_ids=List
 ) -> pd.DataFrame:
     """Get Critical DQS Observations for the given service pattern stops
@@ -1337,6 +1381,50 @@ def get_dqs_observations_df(
             dqs_observation_df = pd.DataFrame(columns=["service_pattern_stop_id"])
 
     return dqs_observation_df
+
+
+def get_dqs_observations_df(
+    service_pattern_df: pd.DataFrame, revision_ids=List
+) -> pd.DataFrame:
+    """Get Critical DQS Observations for the given service pattern stops
+
+    Args:
+        service_pattern_stops_df (pd.DataFrame): service pattern stop ids
+
+    Returns:
+        pd.DataFrame: Dataframe with service pattern stops details
+    """
+    dqs_observation_df = pd.DataFrame(
+        columns=["service_pattern_stop_id"]
+    )
+    if not service_pattern_df.empty:
+        task_result_ids_df = pd.DataFrame.from_records(
+            TaskResults.objects.filter(
+                dataquality_report__revision_id__in=revision_ids,
+                transmodel_txcfileattributes_id__in=list(
+                    service_pattern_df["txcfileattributes_id"]
+                ),
+                checks__importance=Level.critical.value,
+            ).values("id", "transmodel_txcfileattributes_id")
+        )
+
+        observation_result_qs = ObservationResults.objects.filter(
+            taskresults_id__in=list(task_result_ids_df["id"]),
+            service_pattern_stop_id__isnull=False,
+        ).values("taskresults_id", "service_pattern_stop_id")
+
+        dqs_observation_df = pd.DataFrame.from_records(observation_result_qs)
+
+        dqs_observation_df = dqs_observation_df.merge(
+            task_result_ids_df, how="left", left_on="taskresults_id", right_on="id"
+        )
+
+        if dqs_observation_df.empty:
+            dqs_observation_df = pd.DataFrame(
+                columns=["service_pattern_stop_id"]
+            )
+
+    return dqs_observation_df[["service_pattern_stop_id"]]
 
 
 def get_consumer_feedback_df(service_pattern_ids_df: pd.DataFrame) -> pd.DataFrame:
