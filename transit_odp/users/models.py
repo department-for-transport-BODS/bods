@@ -151,6 +151,7 @@ class Invitation(UserRoleMixin, InvitationBase):
             AccountType.org_admin.value: config.hosts.PUBLISH_HOST,
             AccountType.org_staff.value: config.hosts.PUBLISH_HOST,
             AccountType.agent_user.value: config.hosts.PUBLISH_HOST,
+            AccountType.abods_user.value: config.hosts.PUBLISH_HOST,
             AccountType.developer.value: config.hosts.DATA_HOST,
         }
 
