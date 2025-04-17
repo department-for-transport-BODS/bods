@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 
+from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import (
     ORG_ACTIVE,
     ORG_INACTIVE,
@@ -20,12 +21,11 @@ from transit_odp.organisation.managers import (
 from transit_odp.organisation.models import Dataset, DatasetRevision
 from transit_odp.transmodel.models import (
     Service,
-    VehicleJourney,
-    ServicePatternStop,
     ServicePattern,
+    ServicePatternStop,
+    VehicleJourney,
 )
 from transit_odp.users.models import User
-from transit_odp.naptan.models import AdminArea
 
 
 class Organisation(TimeStampedModel):
@@ -48,6 +48,10 @@ class Organisation(TimeStampedModel):
     is_abods_global_viewer = models.BooleanField(
         default=False,
         help_text="Whether organisation will be used solely for managing ABODS global viewer users",
+    )
+    is_franchise = models.BooleanField(
+        default=False,
+        help_text="Whether the organisation is a franchise or not",
     )
     licence_required = models.BooleanField(
         _("Whether an organisation requires a PSV licence"), null=True, default=None
