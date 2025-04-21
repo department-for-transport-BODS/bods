@@ -1055,7 +1055,8 @@ def query_dq_critical_observation(query, revision_ids: list) -> List[tuple]:
     service_pattern_stops_df = get_service_pattern_stops_df(dqs_observation_df)
     logger.info(
         "{} Found service patterns from stops {}".format(
-            DQS_SRA_PREFIX, len(list(service_pattern_stops_df["service_pattern_stop_id"]))
+            DQS_SRA_PREFIX,
+            len(list(service_pattern_stops_df["service_pattern_stop_id"])),
         )
     )
 
@@ -1394,9 +1395,7 @@ def get_dqs_observations_df(
     Returns:
         pd.DataFrame: Dataframe with service pattern stops details
     """
-    dqs_observation_df = pd.DataFrame(
-        columns=["service_pattern_stop_id"]
-    )
+    dqs_observation_df = pd.DataFrame(columns=["service_pattern_stop_id"])
     if not service_pattern_df.empty:
         task_result_ids_df = pd.DataFrame.from_records(
             TaskResults.objects.filter(
@@ -1420,9 +1419,7 @@ def get_dqs_observations_df(
         )
 
         if dqs_observation_df.empty:
-            dqs_observation_df = pd.DataFrame(
-                columns=["service_pattern_stop_id"]
-            )
+            dqs_observation_df = pd.DataFrame(columns=["service_pattern_stop_id"])
 
     return dqs_observation_df[["service_pattern_stop_id"]]
 
