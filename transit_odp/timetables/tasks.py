@@ -929,10 +929,6 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                     step_functions_client = StepFunctionsClientWrapper()
                     step_function_arn = settings.TIMETABLES_STATE_MACHINE_ARN
 
-                    # revision.schema_violations.all().delete()
-                    # revision.post_schema_violations.all().delete()
-                    # revision.pti_observations.all().delete()
-                    # revision.dqs_report.all().delete()
                     revision.txc_file_attributes.all().delete()
                     revision.num_of_lines = None
                     revision.admin_areas.clear()

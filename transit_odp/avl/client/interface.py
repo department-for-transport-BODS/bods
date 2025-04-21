@@ -13,7 +13,6 @@ class ICAVLService(Protocol):
         password: str,
         description: str,
         short_description: str,
-        requestor_ref: str,
     ) -> bool:
         """
         Registers a feed in the AVL service.
@@ -25,7 +24,6 @@ class ICAVLService(Protocol):
             password: The data producers password
             description: Description of the data feed (entered by user)
             short_description: Short description of the data feed (entered by user)
-            requestor_ref: RequestorRef for the data feed (entered by user)
 
         Returns: Boolean indicating the feed was added successfully
         """
@@ -49,7 +47,6 @@ class ICAVLService(Protocol):
         password: str,
         description: str,
         short_description: str,
-        requestor_ref: str,
     ) -> bool:
         """
         Updates an existing feed in the CAVL service.
@@ -60,7 +57,6 @@ class ICAVLService(Protocol):
             password: The data producers password
             description: Description of the data feed (entered by user)
             short_description: Short description of the data feed (entered by user)
-            requestor_ref: RequestorRef for the data feed (entered by user)
 
         Returns:
         """

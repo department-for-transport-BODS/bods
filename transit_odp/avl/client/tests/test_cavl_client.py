@@ -115,7 +115,6 @@ class TestCAVLService:
                 password="dummy_p",
                 description="dummy_description",
                 short_description="dummy_short_description",
-                requestor_ref="dummy_requestor_ref",
             )
 
         assert [rec.message for rec in caplog.records] == expected_message
@@ -231,9 +230,7 @@ class TestCAVLService:
         kwargs["m"].put(url, json=response_mock, status_code=status)
 
         with expected_result:
-            cavl_service.update_feed(
-                1, "dummy", "dummy", "dummy", "dummy", "dummy", "dummy"
-            )
+            cavl_service.update_feed(1, "dummy", "dummy", "dummy", "dummy", "dummy")
 
         assert [rec.message for rec in caplog.records] == expected_message
 
