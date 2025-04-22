@@ -1,0 +1,23 @@
+Hello,
+Welcome to the Bus Open Data Service. You have received this email as an invitation to register your account as a publisher to the Bus Open Data Service on behalf of {{ organisation }}.
+
+Action Required:
+
+1) Please click this link within 72 hours to activate your account:
+{{ signup_link }}
+
+2) You can bookmark the following link which is the homepage of the Bus Open Data Service:
+https://publish.bus-data.dft.gov.uk/
+
+Important:
+
+You are legally required to publish your routes & timetables data, your basic fares, and live location data to the Bus Open Data Service for all services registered with the Traffic Commissioner. Please note that if you intend to use an agent to publish your data, you are required to activate your account on the Bus Open Data Service to then invite your agent to publish on your behalf.
+
+For more information on whether your services are in scope of the Bus Open Data Service, please follow the guidance available here: https://www.gov.uk/guidance/publish-bus-open-data#who-must-publish-bus-data
+
+For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
+
+We may email you to ask for feedback. If you do not want us to do this, please email “no research” to BusOpenData@dft.gov.uk.
+
+Kind regards,
+Bus Open Data Service

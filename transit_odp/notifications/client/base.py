@@ -975,6 +975,27 @@ class NotificationBase:
             organisation=organisation_name,
             signup_link=invite_url,
         )
+    
+    @validate_call
+    def send_abods_user_invitation_notification(
+        self, contact_email: str, organisation_name: str, invite_url: str
+    ):
+        template = "ABODS_USER_INVITATION"
+        subject = (
+            "You have been invited to publish bus data"
+        )
+        logger.debug(
+            f"[notify_{template.lower()}] inviting abods user ({contact_email} to "
+            f"{organisation_name}>"
+        )
+
+        self._send_mail(
+            template,
+            contact_email,
+            subject=subject,
+            organisation=organisation_name,
+            signup_link=invite_url,
+        )
 
     @validate_call
     def send_agent_invite_rejected_notification(
