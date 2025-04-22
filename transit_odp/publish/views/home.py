@@ -1,10 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django_hosts import reverse
 
 from config.hosts import PUBLISH_HOST
 from transit_odp.common.views import BaseTemplateView
 from transit_odp.users.constants import AccountType
-from django.shortcuts import redirect
 
 
 class PublishHomeView(LoginRequiredMixin, BaseTemplateView):
@@ -40,6 +40,9 @@ class PublishHomeView(LoginRequiredMixin, BaseTemplateView):
         return context
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.account_type == AccountType.abods_user.value:
+        if (
+            request.user.is_authenticated
+            and request.user.account_type == AccountType.abods_user.value
+        ):
             return redirect(reverse("abods-gatekeeper", host=PUBLISH_HOST))
         return super().dispatch(request, *args, **kwargs)
