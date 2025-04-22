@@ -126,6 +126,8 @@ class Invitation(UserRoleMixin, InvitationBase):
 
         if self.account_type == AccountType.agent_user.value:
             client.send_agent_invite_no_account_notification(**invite_kwargs)
+        elif self.account_type == AccountType.abods_user.value:
+            client.send_abods_user_invitation_notification(**invite_kwargs)
         else:
             client.send_invitation_notification(**invite_kwargs)
 
@@ -151,6 +153,7 @@ class Invitation(UserRoleMixin, InvitationBase):
             AccountType.org_admin.value: config.hosts.PUBLISH_HOST,
             AccountType.org_staff.value: config.hosts.PUBLISH_HOST,
             AccountType.agent_user.value: config.hosts.PUBLISH_HOST,
+            AccountType.abods_user.value: config.hosts.PUBLISH_HOST,
             AccountType.developer.value: config.hosts.DATA_HOST,
         }
 

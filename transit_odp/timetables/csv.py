@@ -960,18 +960,18 @@ def find_minimum_timeliness_date(row: Series) -> datetime.date:
                 and row["expiry_date"] > row["effective_date"]
             )
         ):
-            return row["effective_date"]
+            return row["effective_date"] - pd.Timedelta(days=1)
         elif (
             pd.notna(row["expiry_date"])
             and forty_two_days_from_today > row["expiry_date"]
         ):
-            return row["expiry_date"]
+            return row["expiry_date"] - pd.Timedelta(days=1)
     else:
         if (
             pd.notna(row["expiry_date"])
             and forty_two_days_from_today > row["expiry_date"]
         ):
-            return row["expiry_date"]
+            return row["expiry_date"] - pd.Timedelta(days=1)
     return forty_two_days_from_today
 
 
