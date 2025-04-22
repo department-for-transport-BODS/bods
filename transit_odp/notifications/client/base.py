@@ -981,7 +981,7 @@ class NotificationBase:
         self, contact_email: str, organisation_name: str, invite_url: str
     ):
         template = "ABODS_USER_INVITATION"
-        subject = "You have been invited to publish bus data"
+        subject = "You have been invited to analyse bus data"
         logger.debug(
             f"[notify_{template.lower()}] inviting abods user ({contact_email} to "
             f"{organisation_name}>"
