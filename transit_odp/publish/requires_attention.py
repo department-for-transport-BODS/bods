@@ -433,7 +433,7 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
             expiry_date = forty_two_days_from_today
 
         least_date = (
-            expiry_date
+            expiry_date - timedelta(days=1)
             if expiry_date < forty_two_days_from_today
             else forty_two_days_from_today
         )
@@ -441,7 +441,7 @@ def evaluate_staleness(service: OTCService, file_attribute: TXCFileAttributes) -
         if service.registration_status in CANCELLED_SERVICE_STATUS:
             staleness_otc = False
             if least_date > service.effective_date:
-                least_date = service.effective_date
+                least_date = service.effective_date - timedelta(days=1)
 
         is_operating_period_lt_forty_two_days = (
             operating_period_end_date and operating_period_end_date < least_date
