@@ -756,6 +756,40 @@ def get_organisation(reg_number: str) -> Organisation:
     return Organisation.objects.filter(admin_areas__atco_code__in=otc_atco_code).first()
 
 
+def update_licence_organisation_id_and_name(row: Series) -> Series:
+    """
+    Updates the licence_organisation_id and licence_organisation_name fields for
+    each row in the compliance report dataframe. This is done by retrieving the
+    organisation object based on the service code (registration number).
+
+    Args:
+        row (Series): Row from dataframe
+
+    Returns:
+        Series: Row with updated fields
+    """
+    is_franchise_organisation_active = flag_is_active(
+        "", FeatureFlags.FRANCHISE_ORGANISATION.value
+    )
+    if (
+        is_franchise_organisation_active
+        and (
+            pd.isna(row["licence_organisation_id"])
+            or row["licence_organisation_id"] is None
+        )
+        and (
+            pd.isna(row["licence_organisation_name"])
+            or row["licence_organisation_name"] is None
+        )
+    ):
+        organisation = get_organisation(row["registration_number"])
+        if organisation:
+            row["licence_organisation_id"] = organisation.id
+            row["licence_organisation_name"] = organisation.name
+
+    return row
+
+
 def add_operator_name(row: Series) -> str:
     """
     Returns value for 'Organisation Name' column in report.
@@ -766,20 +800,11 @@ def add_operator_name(row: Series) -> str:
     Returns:
         str: Organisation name
     """
-    is_franchise_organisation_active = flag_is_active(
-        "", FeatureFlags.FRANCHISE_ORGANISATION.value
-    )
-
     if row["organisation_name"] is None or pd.isna(row["organisation_name"]):
         otc_licence_number = row["otc_licence_number"]
         operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
-        if is_franchise_organisation_active:
-            organisation = get_organisation(row["registration_number"])
 
         if not operator_name:
-            if is_franchise_organisation_active:
-                if organisation and organisation.is_franchise:
-                    return organisation.name
             return "Organisation not yet created"
         else:
             return operator_name
@@ -1601,6 +1626,10 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
                 "OPERATOR_PREFETCH_COMPLIANCE_REPORT: Error occured while saving report in db"
             )
             logger.exception(e)
+
+        merged["organisation_name"] = merged.apply(
+            lambda x: add_operator_name(x), axis=1
+        )
     else:
         merged["organisation_name"] = merged.apply(
             lambda x: add_operator_name(x), axis=1
@@ -1657,7 +1686,8 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
 
     logger.info("{} Merged licence details".format(LOG_PREFIX))
 
-    merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
+    merged = merged.apply(update_licence_organisation_id_and_name, axis=1)
+    merged["organisation_name"] = merged["licence_organisation_name"]
 
     logger.info("{} Renaming columns".format(LOG_PREFIX))
     report_columns = list(TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP.keys()) + [
