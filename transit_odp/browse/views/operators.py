@@ -19,7 +19,6 @@ from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
 from transit_odp.browse.common import (
     get_franchise_licences,
     get_franchise_organisation,
-    get_franchise_registration_numbers,
     get_in_scope_in_season_services_line_level,
     otc_map_txc_map_from_licence,
 )
@@ -362,9 +361,6 @@ class LicenceDetailView(BaseDetailView):
                 and franchise_organisation
                 and franchise_organisation.is_franchise
             ):
-                franchise_registration_numbers = get_franchise_registration_numbers(
-                    franchise_organisation
-                )
                 licence_services_df = pd.DataFrame.from_records(
                     ComplianceReport.objects.values(
                         "registration_number",
@@ -375,7 +371,7 @@ class LicenceDetailView(BaseDetailView):
                     )
                     .filter(
                         otc_licence_number=licence_number,
-                        registration_number__in=franchise_registration_numbers,
+                        licence_organisation_id=franchise_organisation.id,
                     )
                     .order_by("service_number", "registration_number")
                 )
