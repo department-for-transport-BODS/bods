@@ -1,0 +1,24 @@
+{% extends "publish/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load breadcrumbs %}
+{# TODO - not sure if this template is being used any more#}
+{% block title_tag %}
+  {% trans "Publish your data" %}
+{% endblock %}
+{% block breadcrumb.content %}
+  {% breadcrumb_url root_site.name 'home' host hosts.root %}
+{% endblock %}
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{% trans "Analyse Bus Open Data" %}</h1>
+      <p class="govuk-body-l">
+        {% blocktrans %}
+          Use this link to navigate to the Analyse Bus Open Data service.
+        {% endblocktrans %}
+      </p>
+      <a role="button" class="govuk-button" href="https://analyse.bus-data.dft.gov.uk/">{% trans "Access ABODS" %}</a>
+    </div>
+  </div>
+{% endblock %}
