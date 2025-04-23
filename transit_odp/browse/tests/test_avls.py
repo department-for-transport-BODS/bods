@@ -189,15 +189,15 @@ class TestBaseAVLSearchView:
         client = client_factory(host=self.host)
         response = client.get(
             self.url,
-            data={"publisher": self.organisation1.id, "q": expected.description},
+            data={"publisher": self.organisation1.id, "q": expected.organisation.name},
         )
 
         assert response.status_code == 200
         assert response.context_data["view"].template_name == self.template_path
 
         actual = response.context_data["object_list"]
-        assert len(actual) == 1
-        assert actual[0] == expected
+        assert len(actual) == 2
+        assert actual[1] == expected
 
 
 class TestUserAVLFeedbackView:
