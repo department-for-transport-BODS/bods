@@ -16,6 +16,7 @@ class UserRoleMixin(models.Model):
         (AccountType.org_staff.value, "Organisation Staff"),
         (AccountType.developer.value, "Developer"),
         (AccountType.agent_user.value, "Agent User"),
+        (AccountType.abods_user.value, "Abods Only"),
     )
 
     account_type = IntegerField(
@@ -66,6 +67,7 @@ class UserRoleMixin(models.Model):
             AccountType.org_admin.value,
             AccountType.org_staff.value,
             AccountType.agent_user.value,
+            AccountType.abods_user.value,
         )
 
     def validate(self):

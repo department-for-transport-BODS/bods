@@ -120,7 +120,7 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
         uncounted_activity_df = pd.DataFrame()
         synced_in_last_month = []
 
-        if is_avl_require_attention_active:
+        if is_avl_require_attention_active and not is_operator_prefetch_sra_active:
             uncounted_activity_df = get_vehicle_activity_operatorref_linename()
             abods_registry = AbodsRegistery()
             synced_in_last_month = abods_registry.records()
@@ -132,6 +132,7 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
             if is_operator_prefetch_sra_active:
                 fares_sra = record.organisation.fares_sra
                 avl_sra = record.organisation.avl_sra
+                timetable_sra = record.organisation.timetable_sra
             else:
                 if is_avl_require_attention_active:
                     avl_sra = len(
@@ -148,6 +149,9 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
                             record.organisation_id
                         ).get_fares_requires_attention_line_level_data()
                     )
+                timetable_sra = len(
+                    get_requires_attention_line_level_data(record.organisation_id)
+                )
             org_list.append(
                 {
                     "next": reverse(
@@ -156,9 +160,7 @@ class AgentDashboardView(OrgUserViewMixin, SingleTableView):
                     + (f"?prev={prev_page}" if prev_page is not None else ""),
                     "organisation_id": record.organisation_id,
                     "organisation": record.organisation.name,
-                    "requires_attention": len(
-                        get_requires_attention_line_level_data(record.organisation_id)
-                    ),
+                    "requires_attention": timetable_sra,
                     "avl_requires_attention": avl_sra,
                     "fares_requires_attention": fares_sra,
                 }

@@ -790,3 +790,20 @@ class INotifications(Protocol):
             contact_email: email address of datasets key contact
         """
         ...
+
+    def send_abods_user_invitation_notification(
+        self, contact_email: str, organisation_name: str, invite_url: str
+    ):
+        """
+        Sends a notification to abods user confirming they have accepted invitation
+
+        The notification is sent to `abods user`.
+
+        Args:
+            operator_name: The name of the operator
+            user_email: The email of the recipient
+
+        Returns: None
+
+        """
+        ...
