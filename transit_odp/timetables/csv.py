@@ -1423,7 +1423,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     if is_fares_require_attention_active:
         logger.info("{} Calculating Fares SRA".format(LOG_PREFIX))
         for txc_attribute in txc_attributes:
-            txc_service_map[txc_attribute.service_code] = txc_attribute
+            txc_service_map[(txc_attribute.service_code, txc_attribute.line_name_unnested)] = txc_attribute
         logger.info(
             "{} Preparing Fares dataframe for total {} txc files".format(
                 LOG_PREFIX, len(list(txc_service_map.values()))
