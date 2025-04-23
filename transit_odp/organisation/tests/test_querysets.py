@@ -507,20 +507,20 @@ class TestDatasetQuerySet:
         ]
         FaresMetadataFactory(revision=revision, stops=stops)
 
-        qs = Dataset.objects.search("Lon")
-        assert len(qs) == 1
-        assert qs[0] == datasets[1]
-
+        # # Check browse search only includes NOC and Operator:
         qs = Dataset.objects.search("org")
         assert len(qs) == 2
-
-        qs = Dataset.objects.search("Descriptive")
-        assert len(qs) == 1
-        assert qs[0] == datasets[0]
 
         qs = Dataset.objects.search("bravo")
         assert len(qs) == 1
         assert qs[0] == datasets[0]
+
+        # Check browse search does not include Location or Description:
+        qs = Dataset.objects.search("Lon")
+        assert len(qs) == 0
+
+        qs = Dataset.objects.search("Descriptive")
+        assert len(qs) == 0
 
     def test_get_local(self):
         """Tests QuerySet filter method to return local datasets"""
