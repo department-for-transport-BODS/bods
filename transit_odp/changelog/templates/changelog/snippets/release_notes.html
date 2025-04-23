@@ -1,4 +1,27 @@
 {% load i18n %}
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "April 2025 (1.46.0)" %}</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      A new user type specifically limited to access ABODS.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A bug fix to the Registration column within the Local Transport Authority compliance reports.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A bug fix to the way cancelled or expiring services are handled within the compliance reports.
+    {% endblocktrans %}
+  </li>
+</ul>
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "April 2025 (1.45.0) and (Backend V1.01)" %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}
