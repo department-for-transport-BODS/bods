@@ -24,7 +24,6 @@ env:
   PROD_ASSUME_ROLE_ARN: ${{ secrets.PROD_ASSUME_ROLE_ARN }}
 
 jobs:
-
   uat_deployment:
     name: 'uat_deployment'
     runs-on: ubuntu-latest

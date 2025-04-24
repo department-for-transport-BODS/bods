@@ -23,7 +23,6 @@ env:
   AWS_ASSUME_ROLE_NAME: ${{ vars.AWS_ASSUME_ROLE_NAME }}
 
 jobs:
-
   prod_deployment:
     name: 'prod_deployment'
     runs-on: ubuntu-latest

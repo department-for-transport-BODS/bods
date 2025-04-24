@@ -17,7 +17,6 @@ env:
   AWS_ASSUME_ROLE_NAME: ${{ vars.AWS_ASSUME_ROLE_NAME }}
 
 jobs:
-
   rerun_test_deployment:
     name: 'rerun_test_deployment'
     runs-on: ubuntu-latest

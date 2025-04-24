@@ -20,7 +20,6 @@ env:
   AWS_ASSUME_ROLE_NAME: ${{ vars.AWS_ASSUME_ROLE_NAME }}
 
 jobs:
-
   hotfix_deployment:
     if: github.ref_name == 'main'
     name: 'hotfix_deployment'
