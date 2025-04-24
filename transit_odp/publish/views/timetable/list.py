@@ -1,9 +1,11 @@
 import datetime
 
 from django_hosts import reverse
+from waffle import flag_is_active
 
 from config.hosts import PUBLISH_HOST
 from transit_odp.browse.common import get_in_scope_in_season_services_line_level
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.models import ConsumerFeedback, SeasonalService
 from transit_odp.publish.requires_attention import (
@@ -28,12 +30,24 @@ class ListView(BasePublishListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         org_id = context["pk1"]
-        context["applicable_services"] = len(
-            get_in_scope_in_season_services_line_level(org_id)
+        is_operator_prefetch_active = flag_is_active(
+            "", FeatureFlags.OPERATOR_PREFETCH_SRA.value
         )
-        context["services_requiring_attention"] = len(
-            get_requires_attention_line_level_data(org_id)
-        )
+
+        if is_operator_prefetch_active:
+            organisation = context["organisation"]
+            applicable_services = organisation.total_inscope
+            service_require_attention = organisation.timetable_sra
+        else:
+            applicable_services = len(
+                get_in_scope_in_season_services_line_level(org_id)
+            )
+            service_require_attention = len(
+                get_requires_attention_line_level_data(org_id)
+            )
+
+        context["applicable_services"] = applicable_services
+        context["services_requiring_attention"] = service_require_attention
         today_start = datetime.datetime.today().replace(
             hour=0, minute=0, second=0, microsecond=0
         )

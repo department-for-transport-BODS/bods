@@ -902,18 +902,18 @@ def find_minimum_timeliness_date(row: Series) -> datetime.date:
                 and row["expiry_date"] > row["effective_date"]
             )
         ):
-            return row["effective_date"]
+            return row["effective_date"] - pd.Timedelta(days=1)
         elif (
             pd.notna(row["expiry_date"])
             and forty_two_days_from_today > row["expiry_date"]
         ):
-            return row["expiry_date"]
+            return row["expiry_date"] - pd.Timedelta(days=1)
     else:
         if (
             pd.notna(row["expiry_date"])
             and forty_two_days_from_today > row["expiry_date"]
         ):
-            return row["expiry_date"]
+            return row["expiry_date"] - pd.Timedelta(days=1)
     return forty_two_days_from_today
 
 
@@ -1423,7 +1423,9 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     if is_fares_require_attention_active:
         logger.info("{} Calculating Fares SRA".format(LOG_PREFIX))
         for txc_attribute in txc_attributes:
-            txc_service_map[txc_attribute.service_code] = txc_attribute
+            txc_service_map[
+                (txc_attribute.service_code, txc_attribute.line_name_unnested)
+            ] = txc_attribute
         logger.info(
             "{} Preparing Fares dataframe for total {} txc files".format(
                 LOG_PREFIX, len(list(txc_service_map.values()))

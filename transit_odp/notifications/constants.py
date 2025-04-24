@@ -78,4 +78,5 @@ TEMPLATE_LOOKUP: Dict[str, str] = {
     "REPORTS_AVAILABLE": "notifications/reports_are_available.txt",
     "AGENT_REPORTS_AVAILABLE": "notifications/reports_are_available_agent.txt",
     "DATASET_NO_LONGER_COMPLIANT": "notifications/dataset_no_longer_compliant.txt",
+    "ABODS_USER_INVITATION": "notifications/abods_user_invitation.txt",
 }

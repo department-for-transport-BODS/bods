@@ -59,7 +59,6 @@ from transit_odp.organisation.constants import (
     TimetableType,
     TravelineRegions,
 )
-from transit_odp.organisation.csv.service_codes import STALENESS_STATUS
 from transit_odp.organisation.models import (
     ConsumerFeedback,
     Dataset,
@@ -72,7 +71,6 @@ from transit_odp.otc.models import Service as OTCService
 from transit_odp.pipelines.models import BulkDataArchive, ChangeDataArchive
 from transit_odp.publish.requires_attention import (
     FaresRequiresAttention,
-    evaluate_staleness,
     get_dq_critical_observation_services_map,
     get_fares_dataset_map,
     get_line_level_txc_map_service_base,
@@ -1188,9 +1186,8 @@ class SearchView(BaseSearchView):
         qs = (
             super()
             .get_queryset()
-            .get_dataset_type(dataset_type=TimetableType)
-            .get_published()
             .get_active_org()
+            .get_dataset_type(dataset_type=TimetableType)
             .get_viewable_statuses()
             .add_organisation_name()
             .add_live_data()

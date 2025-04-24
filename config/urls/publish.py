@@ -10,7 +10,10 @@ from transit_odp.common.utils.custom_error_handlers import (
 from transit_odp.common.views import ComingSoonView, VersionView
 from transit_odp.publish.views.api import ProgressAPIView
 from transit_odp.publish.views.base import DataActivityView
-from transit_odp.publish.views.gatekeeper import PublishGateKeeperView
+from transit_odp.publish.views.gatekeeper import (
+    PublishAbodsGateKeeperView,
+    PublishGateKeeperView,
+)
 from transit_odp.publish.views.guide_me import (
     PublishGuideMeView,
     RedirectDashBoardView,
@@ -67,6 +70,11 @@ urlpatterns = [
     path("agent-dashboard/", view=AgentDashboardView.as_view(), name="agent-dashboard"),
     path("api/dq/", include("transit_odp.data_quality.api.urls")),
     path("gatekeeper", view=PublishGateKeeperView.as_view(), name="gatekeeper"),
+    path(
+        "abods-gatekeeper",
+        view=PublishAbodsGateKeeperView.as_view(),
+        name="abods-gatekeeper",
+    ),
     path(
         "dataset/<int:pk>/progress/",
         view=ProgressAPIView.as_view(),
