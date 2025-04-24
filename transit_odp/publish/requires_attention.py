@@ -1421,9 +1421,13 @@ def get_dqs_observations_df(
 
             dqs_observation_df = pd.DataFrame.from_records(observation_result_qs)
 
-            dqs_observation_df = dqs_observation_df.merge(
-                task_result_ids_df, how="left", left_on="taskresults_id", right_on="id"
-            )
+            if not dqs_observation_df.empty:
+                dqs_observation_df = dqs_observation_df.merge(
+                    task_result_ids_df,
+                    how="left",
+                    left_on="taskresults_id",
+                    right_on="id",
+                )
 
         if dqs_observation_df.empty:
             dqs_observation_df = pd.DataFrame(columns=["service_pattern_stop_id"])
