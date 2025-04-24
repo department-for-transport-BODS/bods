@@ -1,7 +1,11 @@
 from django_tables2 import SingleTableView
+from waffle import flag_is_active
 
 from transit_odp.avl.tables import AVLRequiresAttentionTable
 from transit_odp.browse.common import get_in_scope_in_season_services_line_level
+from transit_odp.common.constants import FeatureFlags
+from transit_odp.organisation.models.organisations import Organisation
+from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.models import Service as OTCService
 from transit_odp.publish.requires_attention import (
     get_avl_requires_attention_line_level_data,
@@ -23,9 +27,17 @@ class AVLRequiresAttentionView(OrgUserViewMixin, SingleTableView):
 
         context["ancestor"] = f"Review {data_owner} Bus Location Data"
         context["services_requiring_attention"] = len(self.object_list)
-        context["total_in_scope_in_season_services"] = len(
-            get_in_scope_in_season_services_line_level(org_id)
+
+        is_operator_prefetch_sra_active = flag_is_active(
+            "", FeatureFlags.OPERATOR_PREFETCH_SRA.value
         )
+
+        if is_operator_prefetch_sra_active:
+            org_object = Organisation.objects.filter(id=org_id).first()
+            total_inscope = org_object.total_inscope
+        else:
+            total_inscope = len(get_in_scope_in_season_services_line_level(org_id))
+        context["total_in_scope_in_season_services"] = total_inscope
         try:
             context["services_require_attention_percentage"] = round(
                 100
@@ -54,4 +66,22 @@ class AVLRequiresAttentionView(OrgUserViewMixin, SingleTableView):
 
     def get_queryset(self):
         org_id = self.kwargs["pk1"]
-        return get_avl_requires_attention_line_level_data(org_id)
+        is_prefetch_compliance_report = flag_is_active(
+            "", FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value
+        )
+
+        if is_prefetch_compliance_report:
+            return (
+                ComplianceReport.objects.extra(
+                    select={
+                        "licence_number": "otc_licence_number",
+                        "service_code": "registration_number",
+                        "line_number": "service_number",
+                    }
+                )
+                .filter(licence_organisation_id=org_id, avl_requires_attention="Yes")
+                .order_by("otc_licence_number", "service_number")
+                .values()
+            )
+        else:
+            return get_avl_requires_attention_line_level_data(org_id)

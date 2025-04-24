@@ -8,6 +8,7 @@ class AccountType(enum.IntEnum):
     org_staff = 3
     developer = 4
     agent_user = 5
+    abods_user = 6
 
 
 SiteAdminType = AccountType.site_admin.value
@@ -15,5 +16,6 @@ OrgAdminType = AccountType.org_admin.value
 OrgStaffType = AccountType.org_staff.value
 DeveloperType = AccountType.developer.value
 AgentUserType = AccountType.agent_user.value
+AbodsUserType = AccountType.abods_user.value
 
 DATASET_MANAGE_TABLE_PAGINATE_BY = 10

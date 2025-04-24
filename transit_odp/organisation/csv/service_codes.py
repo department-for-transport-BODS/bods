@@ -256,7 +256,9 @@ COMPLIANCE_REPORT_COLUMN_DB = [
     ),
     CSVColumn(
         header="Registration Status",
-        accessor=lambda otc_service: otc_service.get("otc_licence_number"),
+        accessor=lambda otc_service: (
+            "Registered" if otc_service.get("otc_licence_number") else "Unregistered"
+        ),
     ),
     CSVColumn(
         header="Scope Status",
