@@ -1423,7 +1423,10 @@ def get_dqs_observations_df(
 
             if not dqs_observation_df.empty:
                 dqs_observation_df = dqs_observation_df.merge(
-                    task_result_ids_df, how="left", left_on="taskresults_id", right_on="id"
+                    task_result_ids_df,
+                    how="left",
+                    left_on="taskresults_id",
+                    right_on="id",
                 )
 
         if dqs_observation_df.empty:
