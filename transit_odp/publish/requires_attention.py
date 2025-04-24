@@ -1060,6 +1060,9 @@ def query_dq_critical_observation(query, revision_ids: list) -> List[tuple]:
         )
     )
 
+    if service_pattern_stops_df.empty:
+        return []
+
     service_pattern_ids_df = service_pattern_stops_df.merge(
         service_pattern_ids_df, on=["service_pattern_id"], how="left"
     )
@@ -1333,6 +1336,9 @@ def get_service_pattern_stops_df(dqs_observation_df: pd.DataFrame) -> pd.DataFra
     Returns:
         pd.DataFrame: Dataframe with service pattern stop ids
     """
+    if dqs_observation_df.empty:
+        pd.DataFrame(columns=["service_pattern_stop_id", "service_pattern_id"])
+
     service_pattern_stops_qs = (
         ServicePatternStop.objects.filter(
             id__in=list(dqs_observation_df["service_pattern_stop_id"])
@@ -1407,16 +1413,17 @@ def get_dqs_observations_df(
             ).values("id", "transmodel_txcfileattributes_id")
         )
 
-        observation_result_qs = ObservationResults.objects.filter(
-            taskresults_id__in=list(task_result_ids_df["id"]),
-            service_pattern_stop_id__isnull=False,
-        ).values("taskresults_id", "service_pattern_stop_id")
+        if not task_result_ids_df.empty:
+            observation_result_qs = ObservationResults.objects.filter(
+                taskresults_id__in=list(task_result_ids_df["id"]),
+                service_pattern_stop_id__isnull=False,
+            ).values("taskresults_id", "service_pattern_stop_id")
 
-        dqs_observation_df = pd.DataFrame.from_records(observation_result_qs)
+            dqs_observation_df = pd.DataFrame.from_records(observation_result_qs)
 
-        dqs_observation_df = dqs_observation_df.merge(
-            task_result_ids_df, how="left", left_on="taskresults_id", right_on="id"
-        )
+            dqs_observation_df = dqs_observation_df.merge(
+                task_result_ids_df, how="left", left_on="taskresults_id", right_on="id"
+            )
 
         if dqs_observation_df.empty:
             dqs_observation_df = pd.DataFrame(columns=["service_pattern_stop_id"])
