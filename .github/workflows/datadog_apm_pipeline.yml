@@ -19,7 +19,6 @@ env:
   AWS_ASSUME_ROLE_NAME: ${{ vars.AWS_ASSUME_ROLE_NAME }}
 
 jobs:
-
   hotfix_deployment:
     name: 'datadog_apm_pipeline'
     runs-on: ubuntu-latest

@@ -13,11 +13,10 @@ env:
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
   ENVIRONMENT_NAME: dev
   AWS_REGION: ${{ vars.AWS_REGION }}
-  AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
-  AWS_ASSUME_ROLE_NAME: ${{ vars.AWS_ASSUME_ROLE_NAME }}
+  BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN: ${{ secrets.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+  PROD_ASSUME_ROLE_ARN: ${{ secrets.PROD_ASSUME_ROLE_ARN }}
 
 jobs:
-
   rerun_dev_deployment:
     name: 'rerun_dev_deployment'
     runs-on: ubuntu-latest

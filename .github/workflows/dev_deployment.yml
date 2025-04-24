@@ -24,7 +24,6 @@ env:
   PROD_ASSUME_ROLE_ARN: ${{ secrets.PROD_ASSUME_ROLE_ARN }}
 
 jobs:
-
   dev_deployment:
     name: 'dev_deployment'
     runs-on: ubuntu-latest
