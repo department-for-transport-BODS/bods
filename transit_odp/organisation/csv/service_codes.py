@@ -12,12 +12,11 @@ from transit_odp.browse.common import (
     LTACSVHelper,
     get_all_naptan_atco_df,
     get_all_weca_traveline_region_map,
-    get_franchise_registration_numbers,
 )
 from transit_odp.browse.lta_column_headers import get_operator_name
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.csv import CSVBuilder, CSVColumn
-from transit_odp.organisation.models import Organisation, TXCFileAttributes
+from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
 from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.constants import (
@@ -1393,27 +1392,9 @@ class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
         Args:
             organisation_id (int): Organisation ID
         """
-        is_franchise_organisation_active = flag_is_active(
-            "", FeatureFlags.FRANCHISE_ORGANISATION.value
-        )
-        if is_franchise_organisation_active:
-            organisation = Organisation.objects.get(id=organisation_id)
-            franchise_registration_numbers = get_franchise_registration_numbers(
-                organisation
-            )
-
-            if organisation.is_franchise:
-                compliance_report = ComplianceReport.objects.filter(
-                    registration_number__in=franchise_registration_numbers
-                ).all()
-            else:
-                compliance_report = ComplianceReport.objects.filter(
-                    licence_organisation_id=organisation_id
-                ).exclude(registration_number__in=franchise_registration_numbers)
-        else:
-            compliance_report = ComplianceReport.objects.filter(
-                licence_organisation_id=organisation_id
-            ).all()
+        compliance_report = ComplianceReport.objects.filter(
+            licence_organisation_id=organisation_id
+        ).all()
 
         for service_record in compliance_report:
             self._update_data(service_record)

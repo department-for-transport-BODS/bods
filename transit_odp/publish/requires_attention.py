@@ -1,5 +1,5 @@
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -1456,5 +1456,8 @@ def get_licence_organisation_map(licence_list: list) -> dict:
     licence_organisation_name_map = dict()
     licence_qs = Licence.objects.filter(number__in=licence_list)
     for record in licence_qs:
-        licence_organisation_name_map[record.number] = record.organisation.name
+        licence_organisation_name_map[record.number] = {
+            "id": record.organisation.id,
+            "name": record.organisation.name,
+        }
     return licence_organisation_name_map

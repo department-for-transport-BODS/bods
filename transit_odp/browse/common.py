@@ -6,7 +6,6 @@ from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import TravelineRegions
 from transit_odp.organisation.models import Organisation
 from transit_odp.otc.constants import API_TYPE_EP
-from transit_odp.otc.models import Licence as OTCLicence
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service
 from transit_odp.otc.models import Service as OTCService
@@ -362,17 +361,14 @@ def get_franchise_licences(atco_codes: AdminArea) -> list:
     Returns:
         list: List of OTC licences
     """
-    licence_ids = (
+    return (
         OTCService.objects.filter(atco_code__in=atco_codes)
-        .values_list("licence_id", flat=True)
+        .values_list("licence__number", flat=True)
         .distinct()
     )
-    return list(
-        OTCLicence.objects.filter(id__in=licence_ids).values_list("number", flat=True)
-    )
 
 
-def get_franchise_organisation(licence_number: str) -> Organisation:
+def get_franchise_organisation(licence_number: str, org_id: int) -> Organisation:
     """
     Returns organisaton object for a franchise.
 
@@ -382,12 +378,9 @@ def get_franchise_organisation(licence_number: str) -> Organisation:
     Returns:
         Organisation: Franchise organisation
     """
-    licence_id = OTCLicence.objects.filter(number=licence_number).values_list(
-        "id", flat=True
-    )
     otc_atco_code = (
         OTCService.objects.filter(
-            licence__in=licence_id,
+            licence__number=licence_number,
             api_type=API_TYPE_EP,
         )
         .values_list("atco_code", flat=True)
@@ -395,7 +388,12 @@ def get_franchise_organisation(licence_number: str) -> Organisation:
     )
 
     try:
-        return Organisation.objects.get(admin_areas__atco_code__in=otc_atco_code)
+        organisation = Organisation.objects.get(
+            admin_areas__atco_code__in=otc_atco_code,
+            is_franchise=True,
+            id=org_id,
+        )
+        return organisation
     except Organisation.DoesNotExist:
         return None
 
