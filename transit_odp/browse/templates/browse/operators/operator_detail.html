@@ -113,7 +113,7 @@
                 <ul class="govuk-list govuk-!-margin-bottom-2">
                   {% for licence in franchise_licences %}
                     <li class="govuk-!-margin-bottom-1">
-                      <a class="govuk-link" href="{% url 'operator-licence-detail' number=licence host hosts.data %}">{{ licence }}</a>
+                      <a class="govuk-link" href="{% url 'operator-licence-detail' pk=object.id number=licence host hosts.data %}">{{ licence }}</a>
                     </li>
                   {% endfor %}
                 </ul>
@@ -123,7 +123,7 @@
                 <ul class="govuk-list govuk-!-margin-bottom-2">
                   {% for licence in organisation.licences.all %}
                     <li class="govuk-!-margin-bottom-1">
-                      <a class="govuk-link" href="{% url 'operator-licence-detail' number=licence.number host hosts.data %}">{{ licence.number }}</a>
+                      <a class="govuk-link" href="{% url 'operator-licence-detail' pk=object.id number=licence.number host hosts.data %}">{{ licence.number }}</a>
                     </li>
                   {% endfor %}
                 </ul>

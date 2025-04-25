@@ -12,6 +12,7 @@ from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
+from transit_odp.browse.common import get_franchise_registration_numbers
 from transit_odp.common.collections import Column
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.organisation.constants import (
@@ -771,21 +772,16 @@ def update_licence_organisation_id_and_name(row: Series) -> Series:
     is_franchise_organisation_active = flag_is_active(
         "", FeatureFlags.FRANCHISE_ORGANISATION.value
     )
-    if (
-        is_franchise_organisation_active
-        and (
-            pd.isna(row["licence_organisation_id"])
-            or row["licence_organisation_id"] is None
-        )
-        and (
-            pd.isna(row["licence_organisation_name"])
-            or row["licence_organisation_name"] is None
-        )
-    ):
+    if is_franchise_organisation_active:
         organisation = get_organisation(row["registration_number"])
-        if organisation:
-            row["licence_organisation_id"] = organisation.id
-            row["licence_organisation_name"] = organisation.name
+        if organisation and organisation.is_franchise:
+            franchise_registration_numbers = get_franchise_registration_numbers(
+                organisation
+            )
+
+            if row["registration_number"] in franchise_registration_numbers:
+                row["licence_organisation_id"] = organisation.id
+                row["licence_organisation_name"] = organisation.name
 
     return row
 

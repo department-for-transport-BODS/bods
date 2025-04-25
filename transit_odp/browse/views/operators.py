@@ -144,11 +144,11 @@ class OperatorDetailView(BaseDetailView):
 
         if is_franchise_organisation_active:
             is_franchise = organisation.is_franchise
-            org_atco_codes = organisation.admin_areas.values_list(
-                "atco_code", flat=True
-            )
 
             if is_franchise:
+                org_atco_codes = organisation.admin_areas.values_list(
+                    "atco_code", flat=True
+                )
                 context["is_franchise"] = is_franchise
                 context[
                     "is_franchise_organisation_active"
@@ -324,31 +324,33 @@ class LicenceDetailView(BaseDetailView):
     slug_url_kwarg = "number"
     slug_field = "number"
 
-    def get_queryset(self):
+    def get_object(self):
         licence_number = self.kwargs.get("number")
+        org_id = self.kwargs.get("pk", "-")
         is_franchise_organisation_active = flag_is_active(
             "", FeatureFlags.FRANCHISE_ORGANISATION.value
         )
-        franchise_organisation = get_franchise_organisation(licence_number)
+        franchise_organisation = get_franchise_organisation(licence_number, org_id)
 
         if (
             is_franchise_organisation_active
             and franchise_organisation
             and franchise_organisation.is_franchise
         ):
-            return OTCLicence.objects.filter(number=licence_number)
-        return super().get_queryset().filter(number=licence_number)
+            return OTCLicence.objects.get(number=licence_number)
+        return self.model.objects.get(number=licence_number)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         licence_number = self.kwargs.get("number", "-")
+        org_id = self.kwargs.get("pk", "-")
         context["licence_number"] = licence_number
-        organisation_licence = self.get_object()
+        licence_obj = self.get_object()
         is_franchise_organisation_active = flag_is_active(
             "", FeatureFlags.FRANCHISE_ORGANISATION.value
         )
-        franchise_organisation = get_franchise_organisation(licence_number)
-        context["pk"] = organisation_licence.id
+        franchise_organisation = get_franchise_organisation(licence_number, org_id)
+        context["pk"] = org_id
         context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
 
         is_prefetch_compliance_report_active = flag_is_active(
@@ -356,37 +358,20 @@ class LicenceDetailView(BaseDetailView):
         )
 
         if is_prefetch_compliance_report_active:
-            if (
-                is_franchise_organisation_active
-                and franchise_organisation
-                and franchise_organisation.is_franchise
-            ):
-                licence_services_df = pd.DataFrame.from_records(
-                    ComplianceReport.objects.values(
-                        "registration_number",
-                        "service_number",
-                        "overall_requires_attention",
-                        "scope_status",
-                        "seasonal_status",
-                    )
-                    .filter(
-                        otc_licence_number=licence_number,
-                        licence_organisation_id=franchise_organisation.id,
-                    )
-                    .order_by("service_number", "registration_number")
+            licence_services_df = pd.DataFrame.from_records(
+                ComplianceReport.objects.values(
+                    "registration_number",
+                    "service_number",
+                    "overall_requires_attention",
+                    "scope_status",
+                    "seasonal_status",
                 )
-            else:
-                licence_services_df = pd.DataFrame.from_records(
-                    ComplianceReport.objects.values(
-                        "registration_number",
-                        "service_number",
-                        "overall_requires_attention",
-                        "scope_status",
-                        "seasonal_status",
-                    )
-                    .filter(otc_licence_number=licence_number)
-                    .order_by("service_number", "registration_number")
+                .filter(
+                    otc_licence_number=licence_number,
+                    licence_organisation_id=org_id,
                 )
+                .order_by("service_number", "registration_number")
+            )
             self.otc_map = licence_services_df.to_dict("records")
             self.prefetch_service_sra()
 
@@ -406,7 +391,7 @@ class LicenceDetailView(BaseDetailView):
         ):
             context["organisation"] = franchise_organisation
         else:
-            context["organisation"] = organisation_licence.organisation
+            context["organisation"] = licence_obj.organisation
         context["licence_services"] = self.otc_map
         return context
 
@@ -783,15 +768,14 @@ class LicenceLineMetadataDetailView(LineMetadataDetailView):
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
         licence_number = self.kwargs.get("number", "-")
+        org_id = self.kwargs.get("pk", "-")
         kwargs["licence_number"] = licence_number
         kwargs["licence_page"] = True
         is_franchise_organisation_active = flag_is_active(
             "", FeatureFlags.FRANCHISE_ORGANISATION.value
         )
-        franchise_organisation = get_franchise_organisation(licence_number)
-        organisation_licence = OrganisationLicence.objects.filter(
-            number=licence_number
-        ).first()
+        franchise_organisation = get_franchise_organisation(licence_number, org_id)
+        licence_obj = OrganisationLicence.objects.filter(number=licence_number).first()
 
         if (
             is_franchise_organisation_active
@@ -800,6 +784,6 @@ class LicenceLineMetadataDetailView(LineMetadataDetailView):
         ):
             kwargs["organisation"] = franchise_organisation
         else:
-            kwargs["organisation"] = organisation_licence.organisation
+            kwargs["organisation"] = licence_obj.organisation
 
         return kwargs
