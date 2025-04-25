@@ -1,18 +1,18 @@
 import datetime
 import logging
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple
 from zipfile import ZipFile
-import os
 
 from lxml import etree
 
 from transit_odp.avl.post_publishing_checks.constants import (
     ErrorCategory,
+    ErrorCode,
     SirivmField,
     TransXChangeField,
-    ErrorCode,
 )
 from transit_odp.avl.post_publishing_checks.daily.results import (
     MiscFieldPPC,
@@ -33,7 +33,6 @@ from transit_odp.timetables.transxchange import (
     TransXChangeDocument,
     TransXChangeElement,
 )
-from transit_odp.common.xmlelements.exceptions import XMLAttributeError
 
 logger = logging.getLogger(__name__)
 
@@ -138,65 +137,6 @@ class VehicleJourneyFinder:
             )
 
         return txc_file_attrs
-
-    def check_same_dataset(
-        self,
-        txc_file_attrs: List[TXCFileAttributes],
-        mvj: MonitoredVehicleJourney,
-        result: ValidationResult,
-    ) -> bool:
-        """
-        Checks if the matched TXC files belong to the same dataset. If they do, sets various attributes in the result object.
-        If they don't, logs an error and adds an error to the result object.
-
-        Args:
-            txc_file_attrs (List[TXCFileAttributes]): List of TXC file attributes.
-            mvj (MonitoredVehicleJourney): The monitored vehicle journey.
-            result (ValidationResult): The result object to be updated.
-
-        Returns:
-            bool: True if the matched TXC files belong to the same dataset, False otherwise.
-        """
-        dataset_ids = {txc.dataset_id for txc in txc_file_attrs}
-        consistent_data = len(dataset_ids) == 1
-        if consistent_data:
-            dataset_id = dataset_ids.pop()
-            result.set_misc_value(MiscFieldPPC.BODS_DATASET_ID, dataset_id)
-            result.set_txc_value(SirivmField.OPERATOR_REF, mvj.operator_ref)
-            result.set_matches(SirivmField.OPERATOR_REF)
-            result.set_txc_value(SirivmField.LINE_REF, mvj.line_ref)
-            result.set_txc_value(
-                SirivmField.PUBLISHED_LINE_NAME, mvj.published_line_name
-            )
-            result.set_transxchange_attribute(TransXChangeField.DATASET_ID, dataset_id)
-            result.set_transxchange_attribute(
-                TransXChangeField.MODIFICATION_DATE,
-                txc_file_attrs[0].modification_datetime,
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.FILENAME, txc_file_attrs[0].filename
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.OPERATING_PERIOD_END_DATE,
-                txc_file_attrs[0].operating_period_end_date,
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.OPERATING_PERIOD_START_DATE,
-                txc_file_attrs[0].operating_period_start_date,
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.SERVICE_CODE, txc_file_attrs[0].service_code
-            )
-            result.set_transxchange_attribute(TransXChangeField.LINE_REF, mvj.line_ref)
-            result.set_matches(SirivmField.LINE_REF)
-        else:
-            logger.error("Matching TXC files belong to different datasets!\n")
-            result.add_error(
-                ErrorCategory.GENERAL,
-                "Matched OperatorRef and PublishedLineName in more than one dataset",
-            )
-
-        return consistent_data
 
     def get_corresponding_timetable_xml_files(
         self, txc_file_attrs: List[TXCFileAttributes]
@@ -926,9 +866,6 @@ class VehicleJourneyFinder:
             result=result,
         )
         if not matching_txc_file_attrs:
-            return None
-
-        if not self.check_same_dataset(matching_txc_file_attrs, mvj, result):
             return None
 
         txc_xml = self.get_corresponding_timetable_xml_files(matching_txc_file_attrs)
