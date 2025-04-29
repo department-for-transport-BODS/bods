@@ -20,8 +20,8 @@ env:
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
   ENVIRONMENT_NAME: uat
   AWS_REGION: ${{ vars.AWS_REGION }}
-  BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN: ${{ secrets.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
-  PROD_ASSUME_ROLE_ARN: ${{ secrets.PROD_ASSUME_ROLE_ARN }}
+  BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN: ${{ vars.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+  PROD_ASSUME_ROLE_ARN: ${{ vars.PROD_ASSUME_ROLE_ARN }}
 
 jobs:
   uat_deployment:
@@ -103,7 +103,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ vars.AWS_REGION }}
-        role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
+        role-to-assume: ${{ vars.ASSUME_ROLE_ARN }}
         role-session-name: testAWSCLISession
         role-duration-seconds: 3600
         role-skip-session-tagging: true
@@ -293,7 +293,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ vars.AWS_REGION }}
-        role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
+        role-to-assume: ${{ vars.ASSUME_ROLE_ARN }}
         role-session-name: testAWSCLISession
         role-duration-seconds: 3600
         role-skip-session-tagging: true
