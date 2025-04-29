@@ -12,6 +12,7 @@ from transit_odp.common.constants import FeatureFlags
 
 logger = getLogger(__name__)
 
+
 class PPCArchiveCreator:
     """Creates a PPC archive, consisting of 4 weeks' worth of PPC reports
     for all active data feeds in an organisation.
