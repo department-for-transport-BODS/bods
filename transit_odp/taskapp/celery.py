@@ -156,7 +156,7 @@ class CeleryAppConfig(AppConfig):
             "weekly_post_publishing_checks_report": {
                 "task": AVL_TASKS
                 + "task_weekly_assimilate_post_publishing_check_reports",
-                "schedule": crontab(day_of_week=0, hour=23, minute=0),
+                "schedule": crontab(hour=23, minute=0),
             },
             "task_seasonal_service_updated_dates": {
                 "task": ADMIN_TASKS + "task_seasonal_service_updated_dates",
