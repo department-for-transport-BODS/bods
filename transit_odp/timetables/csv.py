@@ -1316,7 +1316,7 @@ def add_overall_requires_attention(row: Series) -> str:
         str: Value for the column
     """
     is_fares_require_attention_active = flag_is_active(
-        "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        "", FeatureFlags.FARES_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value
     )
     exempted = row["scope_status"]
     seasonal_service = row["seasonal_status"]

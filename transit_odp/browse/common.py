@@ -415,3 +415,19 @@ def get_franchise_registration_numbers(organisation: Organisation) -> list:
             "registration_number", flat=True
         )
     )
+
+
+def get_all_franchise_atco_codes_except_current(organisation_id: int) -> list:
+    """
+    Returns the services associated with a franchise based on the atco codes
+    associated with the organisation.
+
+    Args:
+        organisation (Organisation): Organisation object
+
+    Returns:
+        list: List of services associated with the franchise
+    """
+    return Organisation.objects.exclude(id=organisation_id).values_list(
+        "admin_areas__atco_code", flat=True
+    )
