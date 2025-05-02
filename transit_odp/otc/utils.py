@@ -173,7 +173,7 @@ def get_service_in_scotland_from_db(service_ref: str) -> bool:
     return is_scottish
 
 
-def uilta_calcualte_sra(uilta: UILta):
+def uilta_calculate_sra(uilta: UILta):
     """SRA calculation for single UI LTA
 
     Args:

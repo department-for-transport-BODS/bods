@@ -24,7 +24,7 @@ from .utils import (
     check_missing_csv_lta_names,
     get_ui_lta,
     read_local_authority_comparison_file_from_s3_bucket,
-    uilta_calcualte_sra,
+    uilta_calculate_sra,
 )
 
 logger = getLogger(__name__)
@@ -145,5 +145,5 @@ def task_precalculate_ui_lta_sra():
     uilta_qs = UILta.objects.all()
     logger.info(f"Total UI LTA's found {uilta_qs.count()}")
     for uilta in uilta_qs:
-        uilta_calcualte_sra(uilta)
+        uilta_calculate_sra(uilta)
     logger.info("Finished updating UI LTA service require attention")
