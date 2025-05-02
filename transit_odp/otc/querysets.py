@@ -286,7 +286,10 @@ class ServiceQuerySet(QuerySet):
         )
 
     def get_in_scope_in_season_services(self, organisation_id: int) -> TServiceQuerySet:
-        from transit_odp.browse.common import get_franchise_registration_numbers
+        from transit_odp.browse.common import (
+            get_franchise_registration_numbers,
+            get_all_franchise_atco_codes_except_current,
+        )
 
         is_franchise_organisation_active = flag_is_active(
             "", FeatureFlags.FRANCHISE_ORGANISATION.value
@@ -313,15 +316,23 @@ class ServiceQuerySet(QuerySet):
         licences_subquery = BODSLicence.objects.filter(organisation__id=organisation_id)
 
         if is_franchise_organisation_active:
-            registration_number_subquery = get_franchise_registration_numbers(
-                organisation
-            )
             if is_franchise:
-                qs = self.filter(registration_number__in=registration_number_subquery)
+                qs = self.filter(
+                    atco_code__in=list(
+                        organisation.admin_areas.values_list("atco_code", flat=True)
+                    )
+                )
             else:
+                atco_code_of_other_frenchise = list(
+                    set(
+                        list(
+                            get_all_franchise_atco_codes_except_current(organisation_id)
+                        )
+                    )
+                )
                 qs = self.filter(
                     licence__number__in=Subquery(licences_subquery.values("number"))
-                ).exclude(registration_number__in=registration_number_subquery)
+                ).exclude(atco_code__in=atco_code_of_other_frenchise)
 
         else:
             qs = self.filter(

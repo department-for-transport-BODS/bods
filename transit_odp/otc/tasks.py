@@ -136,10 +136,6 @@ def task_precalculate_ui_lta_sra():
         "", FeatureFlags.UILTA_PREFETCH_SRA.value
     )
 
-    is_avl_require_attention_active = flag_is_active(
-        "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
-    )
-
     if not is_uilta_prefetch_sra_active:
         logger.info(
             f"Flag {FeatureFlags.UILTA_PREFETCH_SRA.value} is not active, skipping the execution."
@@ -148,15 +144,6 @@ def task_precalculate_ui_lta_sra():
 
     uilta_qs = UILta.objects.all()
     logger.info(f"Total UI LTA's found {uilta_qs.count()}")
-    uncounted_activity_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
-    synced_in_last_month = []
-    if is_avl_require_attention_active:
-        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
-        abods_registry = AbodsRegistery()
-        synced_in_last_month = abods_registry.records()
-    logger.info(
-        f"Step: Starting UI LTA level processing. With Synced in last month {len(synced_in_last_month)} Uncounded vehicle activity df {uncounted_activity_df.shape}"
-    )
     for uilta in uilta_qs:
-        uilta_calcualte_sra(uilta, uncounted_activity_df, synced_in_last_month)
+        uilta_calcualte_sra(uilta)
     logger.info("Finished updating UI LTA service require attention")
