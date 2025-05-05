@@ -1625,9 +1625,6 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
             )
             logger.exception(e)
 
-        merged["organisation_name"] = merged.apply(
-            lambda x: add_operator_name(x), axis=1
-        )
     else:
         merged["organisation_name"] = merged.apply(
             lambda x: add_operator_name(x), axis=1
