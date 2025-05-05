@@ -428,6 +428,8 @@ def get_all_franchise_atco_codes_except_current(organisation_id: int) -> list:
     Returns:
         list: List of services associated with the franchise
     """
-    return Organisation.objects.exclude(id=organisation_id).filter(is_franchise=True).values_list(
-        "admin_areas__atco_code", flat=True
+    return (
+        Organisation.objects.exclude(id=organisation_id)
+        .filter(is_franchise=True)
+        .values_list("admin_areas__atco_code", flat=True)
     )
