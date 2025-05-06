@@ -189,9 +189,8 @@ urlpatterns = [
     path("django_axe/", include("django_axe.urls")),
     path(
         "robots.txt",
-        TemplateView.as_view(
-            template_name="pages/robots.txt", content_type="text/plain"
-        ),
+        TemplateView.as_view(template_name="pages/robots.txt"),
+        content_type="text/plain",
     ),
 ]
 
