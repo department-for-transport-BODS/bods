@@ -260,31 +260,36 @@ def get_dataframe(services: object, columns: list) -> pd.DataFrame:
     """
     Returns a pandas dataframe for django query object
     """
-    pd.set_option('display.max_columns', None)
+    pd.set_option("display.max_columns", None)
 
     data = [
-    {
-        "registration_number": service.registration_number,
-        "variation_number": service.variation_number,
-        "service_number": service.service_number,
-        "registration_status": service.registration_status
-    }
-    for service in services
-]
+        {
+            "registration_number": service.registration_number,
+            "variation_number": service.variation_number,
+            "service_number": service.service_number,
+            "registration_status": service.registration_status,
+        }
+        for service in services
+    ]
     df = pd.DataFrame(data)
     return df
 
+
 def find_differing_registration_numbers(df1: pd.DataFrame, df2: pd.DataFrame) -> list:
     """
-    Returns a list of service numbers that have a difference between local otc data and otc service api data 
+    Returns a list of service numbers that have a difference between local otc data and otc service api data
     """
-    
-    columns_to_compare = ['variation_number', 'service_number', 'registration_status']
-    merged_df = df1.merge(df2, on='registration_number', suffixes=('_df1', '_df2'), how='inner')
-    differences = merged_df.apply(
-        lambda row: any(row[f'{col}_df1'] != row[f'{col}_df2'] for col in columns_to_compare),
-        axis=1
+
+    columns_to_compare = ["variation_number", "service_number", "registration_status"]
+    merged_df = df1.merge(
+        df2, on="registration_number", suffixes=("_df1", "_df2"), how="inner"
     )
- 
-    differing_reg_numbers = merged_df.loc[differences, 'registration_number'].tolist()
+    differences = merged_df.apply(
+        lambda row: any(
+            row[f"{col}_df1"] != row[f"{col}_df2"] for col in columns_to_compare
+        ),
+        axis=1,
+    )
+
+    differing_reg_numbers = merged_df.loc[differences, "registration_number"].tolist()
     return differing_reg_numbers
