@@ -40,3 +40,4 @@ class FeatureFlags(Enum):
     )
     FRANCHISE_ORGANISATION = "is_franchise_organisation_active"
     CREARE_SEVEN_DAY_PPC_REPROT_DAILY = "is_create_seven_day_ppc_report_daily"
+    CREATE_SEVEN_DAY_PPC_REPROT_DAILY = "is_create_seven_day_ppc_report_daily"
