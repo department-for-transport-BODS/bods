@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /timetable/dataset/
+Disallow: /avl/dataset/
+Disallow: /fares/dataset/
+Disallow: /disruptions/organisations/
+Disallow: /local-authority/detail/
+Disallow: /org/
