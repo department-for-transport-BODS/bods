@@ -1,7 +1,6 @@
 import datetime
 import io
 import zipfile
-from logging import getLogger
 
 from django.db.models import Subquery
 from waffle import flag_is_active
@@ -9,8 +8,6 @@ from waffle import flag_is_active
 from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.common.constants import FeatureFlags
-
-logger = getLogger(__name__)
 
 
 class PPCArchiveCreator:
