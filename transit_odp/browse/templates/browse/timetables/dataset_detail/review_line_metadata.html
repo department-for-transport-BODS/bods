@@ -15,11 +15,11 @@
       {% breadcrumb_url name 'operator-detail' organisation.id host hosts.data %}
     {% endwith %}
     {% with name=licence_number %}
-      {% breadcrumb_url name 'operator-licence-detail' number=licence_number host hosts.data %}
+      {% breadcrumb_url name 'operator-licence-detail' pk=organisation.id number=licence_number host hosts.data %}
     {% endwith %}
     <li class="govuk-breadcrumbs__list-item">
       <a class="govuk-breadcrumbs__link"
-         href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?line={{ line_name }}&service={{ service_code }}">
+         href="{% url 'licence-line-detail' pk=organisation.id number=licence_number host hosts.data %}?line={{ line_name }}&service={{ service_code }}">
         {{ line_name }}
       </a>
     </li>
@@ -78,9 +78,9 @@
       </p>
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break--invisible" />
       <div class="position-relative">
-      {% include "publish/snippets/dataset_map.html" %}
-        <span id="map-updated-timestamp"> - </span>
-    </div>
+        {% include "publish/snippets/dataset_map.html" %}
+        <span id="map-updated-timestamp">-</span>
+      </div>
       <table class="govuk-table dataset-property-table">
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
@@ -270,7 +270,7 @@
         const noc = "{{national_operator_code}}"
         const journey_code = "{{vehicle_journey_codes}}"
         const trimmedNoc = noc.trim();
-        const nocIsEmpty = trimmedNoc === "" || trimmedNoc.split(",").every(value => value.trim() === ""); 
+        const nocIsEmpty = trimmedNoc === "" || trimmedNoc.split(",").every(value => value.trim() === "");
         if (nocIsEmpty) {
           console.log("National Operator Code is empty. Real time data is not fetched");
         } else {

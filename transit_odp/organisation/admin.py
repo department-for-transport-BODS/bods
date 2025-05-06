@@ -41,7 +41,7 @@ class OperatorCodeInline(admin.TabularInline):
 
 @admin.register(Organisation)
 class OrganisationAdmin(admin.ModelAdmin):
-    list_display = ["name", "is_abods_global_viewer"]
+    list_display = ["name", "is_franchise", "is_abods_global_viewer"]
     search_fields = ["name"]
     exclude = ["admin_areas"]
 

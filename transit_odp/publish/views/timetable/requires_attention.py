@@ -38,7 +38,6 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
 
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
         context["ancestor"] = f"Review {data_owner} Timetables Data"
-        context["services_requiring_attention"] = len(self.object_list)
         is_operator_prefetch_active = flag_is_active(
             "", FeatureFlags.OPERATOR_PREFETCH_SRA.value
         )
@@ -46,9 +45,12 @@ class RequiresAttentionView(OrgUserViewMixin, SingleTableView):
         if is_operator_prefetch_active:
             org_object = Organisation.objects.filter(id=org_id).first()
             total_inscope = org_object.total_inscope
+            services_requiring_attention = org_object.timetable_sra
         else:
+            services_requiring_attention = len(self.object_list)
             total_inscope = len(get_in_scope_in_season_services_line_level(org_id))
 
+        context["services_requiring_attention"] = services_requiring_attention
         context["total_in_scope_in_season_services"] = total_inscope
         try:
             context["services_require_attention_percentage"] = round(
