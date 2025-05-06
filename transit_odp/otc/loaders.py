@@ -381,11 +381,16 @@ class Loader:
         Loads all services where service numbers have been updated
         """
         logger.info("Starting celery task to check for updates on otc...")
-        columns = ["registration_number", "variation_number", "service_number", "registration_status"]
+        columns = [
+            "registration_number",
+            "variation_number",
+            "service_number",
+            "registration_status",
+        ]
 
         all_services_bods_db = Service.objects.values()
         all_services_bods_df = pd.DataFrame.from_records(all_services_bods_db)
-        
+
         all_services_bods_df = all_services_bods_df[columns]
         new_otc_objects = []
 
@@ -397,12 +402,16 @@ class Loader:
 
         logger.info("Completed sync with otc_registry.")
         otc_objects_df = get_dataframe(new_otc_objects, columns)
-        registration_numbers = find_differing_registration_numbers(all_services_bods_df, otc_objects_df)
-        registration_numbers_to_update = ','.join(registration_numbers)
+        registration_numbers = find_differing_registration_numbers(
+            all_services_bods_df, otc_objects_df
+        )
+        registration_numbers_to_update = ",".join(registration_numbers)
 
         logger.info("Running refresh job for list of services...")
         try:
             task_refresh_otc_services(registration_numbers_to_update)
         except Exception as e:
-            raise Exception(f"Unexpected error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(e)}") from e
+            raise Exception(
+                f"Unexpected error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(e)}"
+            ) from e
         logger.info("Finished refresh job for list of services.")
