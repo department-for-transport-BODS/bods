@@ -58,9 +58,8 @@ class Location(BaseModel):
     def parse_easting(cls, v):
         if not v:
             return v
-        
+
         if isinstance(v, str):
-            if " " in v:
             v = v.strip()
         return int(v)
 
@@ -68,9 +67,8 @@ class Location(BaseModel):
     def parse_northing(cls, v):
         if not v:
             return v
-        
+
         if isinstance(v, str):
-            if " " in v:
             v = v.strip()
         return int(v)
 
