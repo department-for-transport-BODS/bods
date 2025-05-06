@@ -136,7 +136,7 @@ class PPCArchiveCreator:
 
     def create_archive(self, organisation_id: int) -> io.BytesIO:
         is_create_seven_day_ppc_report_daily = flag_is_active(
-            "", FeatureFlags.CREARE_SEVEN_DAY_PPC_REPROT_DAILY.value
+            "", FeatureFlags.CREATE_SEVEN_DAY_PPC_REPROT_DAILY.value
         )
         self._get_datasets_for_org(organisation_id)
         if is_create_seven_day_ppc_report_daily:
