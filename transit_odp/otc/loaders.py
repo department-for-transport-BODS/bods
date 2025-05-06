@@ -1,3 +1,4 @@
+import pandas as pd
 from datetime import date, datetime, timedelta
 from functools import cached_property
 from itertools import chain
@@ -17,6 +18,8 @@ from transit_odp.otc.models import (
 )
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.registry import Registry
+from transit_odp.otc.tasks import task_refresh_otc_services
+from transit_odp.otc.utils import get_dataframe, find_differing_registration_numbers
 
 logger = getLogger(__name__)
 
@@ -372,3 +375,30 @@ class Loader:
             self.delete_bad_data()
             self.inactivate_bad_services()
             self.refresh_lta(_registrations)
+
+    def load_services_with_updated_service_numbers(self):
+        """
+        Loads all services where service numbers have been updated
+        """
+        columns = ["registration_number", "variation_number", "service_number", "registration_status"]
+
+        all_services_bods_db = Service.objects.values()
+        all_services_bods_df = pd.DataFrame.from_records(all_services_bods_db)
+        
+        all_services_bods_df = all_services_bods_df[columns]
+        new_otc_objects = []
+        self.registry.sync_with_otc_registry()
+        for service in self.registry.services:
+            new_otc_objects.append(service)
+        
+        otc_objects_df = get_dataframe(new_otc_objects, columns)
+        registration_numbers = find_differing_registration_numbers(all_services_bods_df, otc_objects_df)
+        registration_numbers_to_update = ','.join(registration_numbers)
+        try:
+            task_refresh_otc_services(registration_numbers_to_update)
+        except Exception as e:
+            raise Exception(f"Unexpected error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(e)}") from e
+
+
+
+ 
