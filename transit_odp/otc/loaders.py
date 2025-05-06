@@ -380,6 +380,7 @@ class Loader:
         """
         Loads all services where service numbers have been updated
         """
+        logger.info("Starting celery task to check for updates on otc...")
         columns = ["registration_number", "variation_number", "service_number", "registration_status"]
 
         all_services_bods_db = Service.objects.values()
@@ -387,18 +388,21 @@ class Loader:
         
         all_services_bods_df = all_services_bods_df[columns]
         new_otc_objects = []
+
+        logger.info("Running sync with otc_registry...")
+
         self.registry.sync_with_otc_registry()
         for service in self.registry.services:
             new_otc_objects.append(service)
-        
+
+        logger.info("Completed sync with otc_registry.")
         otc_objects_df = get_dataframe(new_otc_objects, columns)
         registration_numbers = find_differing_registration_numbers(all_services_bods_df, otc_objects_df)
         registration_numbers_to_update = ','.join(registration_numbers)
+
+        logger.info("Running refresh job for list of services...")
         try:
             task_refresh_otc_services(registration_numbers_to_update)
         except Exception as e:
             raise Exception(f"Unexpected error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(e)}") from e
-
-
-
- 
+        logger.info("Finished refresh job for list of services.")
