@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from pyproj import CRS, Transformer
 
 BNG = CRS("EPSG:27700")
@@ -53,6 +53,26 @@ class Location(BaseModel):
     northing: Optional[int] = None
     translation: Translation
     sequence_number: Optional[int] = None
+
+    @field_validator("easting", mode="before")
+    def parse_easting(cls, v):
+        if not v:
+            return v
+        
+        if isinstance(v, str):
+            if " " in v:
+            v = v.strip()
+        return int(v)
+
+    @field_validator("northing", mode="before")
+    def parse_northing(cls, v):
+        if not v:
+            return v
+        
+        if isinstance(v, str):
+            if " " in v:
+            v = v.strip()
+        return int(v)
 
     @classmethod
     def from_xml(cls, location, sequence_number=None):
