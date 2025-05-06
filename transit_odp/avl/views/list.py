@@ -79,8 +79,8 @@ class ListView(BasePublishListView):
                     host=PUBLISH_HOST,
                 )
                 + "?prev=avl-feed-list",
-                "services_requiring_attention": total_inscope,
-                "total_in_scope_in_season_services": avl_sra,
+                "services_requiring_attention": avl_sra,
+                "total_in_scope_in_season_services": total_inscope,
                 "is_avl_require_attention_active": is_avl_require_attention_active,
             }
         )

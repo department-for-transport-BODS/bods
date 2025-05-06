@@ -1395,6 +1395,7 @@ class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
         compliance_report = ComplianceReport.objects.filter(
             licence_organisation_id=organisation_id
         ).all()
+
         for service_record in compliance_report:
             self._update_data(service_record)
 

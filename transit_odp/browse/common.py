@@ -4,8 +4,12 @@ import pandas as pd
 
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import TravelineRegions
-from transit_odp.otc.models import Service, UILta
-from transit_odp.otc.models import Service as OTCService, LocalAuthority
+from transit_odp.organisation.models import Organisation
+from transit_odp.otc.constants import API_TYPE_EP
+from transit_odp.otc.models import LocalAuthority
+from transit_odp.otc.models import Service
+from transit_odp.otc.models import Service as OTCService
+from transit_odp.otc.models import UILta
 from transit_odp.publish.requires_attention import get_line_level_txc_map_service_base
 
 
@@ -344,3 +348,88 @@ def otc_map_txc_map_from_licence(licence_number: str) -> tuple:
     )
 
     return otc_services_df.to_dict("records"), txc_map
+
+
+def get_franchise_licences(atco_codes: AdminArea) -> list:
+    """
+    Returns the licences associated with a franchise based on the atco codes
+    associated with the organisation.
+
+    Args:
+        atco_codes (AdminArea): Atco codes
+
+    Returns:
+        list: List of OTC licences
+    """
+    return (
+        OTCService.objects.filter(atco_code__in=atco_codes)
+        .values_list("licence__number", flat=True)
+        .distinct()
+    )
+
+
+def get_franchise_organisation(licence_number: str, org_id: int) -> Organisation:
+    """
+    Returns organisaton object for a franchise.
+
+    Args:
+        licence_number (str): OTC licence number
+
+    Returns:
+        Organisation: Franchise organisation
+    """
+    otc_atco_code = (
+        OTCService.objects.filter(
+            licence__number=licence_number,
+            api_type=API_TYPE_EP,
+        )
+        .values_list("atco_code", flat=True)
+        .distinct()
+    )
+
+    try:
+        organisation = Organisation.objects.get(
+            admin_areas__atco_code__in=otc_atco_code,
+            is_franchise=True,
+            id=org_id,
+        )
+        return organisation
+    except Organisation.DoesNotExist:
+        return None
+
+
+def get_franchise_registration_numbers(organisation: Organisation) -> list:
+    """
+    Returns the services associated with a franchise based on the atco codes
+    associated with the organisation.
+
+    Args:
+        organisation (Organisation): Organisation object
+
+    Returns:
+        list: List of services associated with the franchise
+    """
+    org_atco_codes = organisation.admin_areas.values_list("atco_code", flat=True)
+    return list(
+        OTCService.objects.filter(atco_code__in=org_atco_codes).values_list(
+            "registration_number", flat=True
+        )
+    )
+
+
+def get_all_franchise_atco_codes_except_current(organisation_id: int) -> list:
+    """
+    Returns the services associated with a franchise based on the atco codes
+    associated with the organisation.
+
+    Args:
+        organisation (Organisation): Organisation object
+
+    Returns:
+        list: List of services associated with the franchise
+    """
+    return (
+        Organisation.objects.exclude(id=organisation_id)
+        .filter(is_franchise=True)
+        .values_list("admin_areas__atco_code", flat=True)
+    )
