@@ -1,10 +1,10 @@
 from crispy_forms.helper import Layout
 from crispy_forms.layout import HTML
-from transit_odp.crispy_forms_govuk.forms import GOVUKModelForm
-from transit_odp.crispy_forms_govuk.layout import ButtonSubmit
 from django import forms
 from django.utils.translation import gettext as _
 
+from transit_odp.crispy_forms_govuk.forms import GOVUKModelForm
+from transit_odp.crispy_forms_govuk.layout import ButtonSubmit
 from transit_odp.users.models import UserSettings
 
 INVITATION_NOTIFY = "notify_invitation_accepted"
@@ -62,6 +62,6 @@ class PublishAdminNotifications(GOVUKModelForm):
             self.hint,
             AVL_NOTIFY,
             COMPLIANCE_NOTIFY,
-            INVITATION_NOTIFY,
+            INVITATION_NOTIFY if self.instance.user.is_org_admin else None,
             self.save_button,
         )

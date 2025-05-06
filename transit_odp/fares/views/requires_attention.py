@@ -21,26 +21,25 @@ class FaresRequiresAttentionView(OrgUserViewMixin, SingleTableView):
         is_avl_require_attention_active = flag_is_active(
             "", "is_avl_require_attention_active"
         )
-
         is_operator_prefetch_sra_active = flag_is_active(
             "", FeatureFlags.OPERATOR_PREFETCH_SRA.value
         )
-
         context = super().get_context_data(**kwargs)
         org_id = self.kwargs["pk1"]
         context["org_id"] = org_id
         data_owner = self.organisation.name if self.request.user.is_agent_user else "My"
-
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
         context["ancestor"] = f"Review {data_owner} Fares Data"
-        context["services_requiring_attention"] = len(self.object_list)
 
         if is_operator_prefetch_sra_active:
             org_object = Organisation.objects.filter(id=org_id).first()
             total_inscope = org_object.total_inscope
+            services_requiring_attention = org_object.fares_sra
         else:
             total_inscope = len(get_in_scope_in_season_services_line_level(org_id))
+            services_requiring_attention = len(self.object_list)
 
+        context["services_requiring_attention"] = services_requiring_attention
         context["total_in_scope_in_season_services"] = total_inscope
         try:
             context["services_require_attention_percentage"] = round(

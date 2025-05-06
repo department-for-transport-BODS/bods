@@ -24,10 +24,7 @@ class AVLRequiresAttentionView(OrgUserViewMixin, SingleTableView):
         org_id = self.kwargs["pk1"]
         context["org_id"] = org_id
         data_owner = self.organisation.name if self.request.user.is_agent_user else "My"
-
         context["ancestor"] = f"Review {data_owner} Bus Location Data"
-        context["services_requiring_attention"] = len(self.object_list)
-
         is_operator_prefetch_sra_active = flag_is_active(
             "", FeatureFlags.OPERATOR_PREFETCH_SRA.value
         )
@@ -35,8 +32,12 @@ class AVLRequiresAttentionView(OrgUserViewMixin, SingleTableView):
         if is_operator_prefetch_sra_active:
             org_object = Organisation.objects.filter(id=org_id).first()
             total_inscope = org_object.total_inscope
+            services_requiring_attention = org_object.avl_sra
         else:
             total_inscope = len(get_in_scope_in_season_services_line_level(org_id))
+            services_requiring_attention = len(self.object_list)
+
+        context["services_requiring_attention"] = services_requiring_attention
         context["total_in_scope_in_season_services"] = total_inscope
         try:
             context["services_require_attention_percentage"] = round(
