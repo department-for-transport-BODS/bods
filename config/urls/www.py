@@ -59,6 +59,12 @@ urlpatterns = [
     path("account/", include("config.urls.allauth")),
     path("changelog/", ChangelogView.as_view(), name="changelog"),
     path("django_axe/", include("django_axe.urls")),
+    path(
+        "robots.txt/",
+        TemplateView.as_view(
+            template_name="pages/robots.txt", content_type="text/plain"
+        ),
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
