@@ -18,7 +18,6 @@ from transit_odp.otc.models import (
 )
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.registry import Registry
-from transit_odp.otc.tasks import task_refresh_otc_services
 from transit_odp.otc.utils import get_dataframe, find_differing_registration_numbers
 
 logger = getLogger(__name__)
@@ -409,7 +408,9 @@ class Loader:
 
         logger.info("Running refresh job for list of services...")
         try:
-            task_refresh_otc_services(registration_numbers_to_update)
+            registry = Registry()
+            loader = Loader(registry)
+            loader.load_given_services(registration_numbers_to_update)
         except Exception as e:
             raise Exception(
                 f"Unexpected error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(e)}"
