@@ -133,7 +133,7 @@ export class AutoCompleteSearch {
   search(searchTerm) {
     this.removeSuggestions();
 
-    if (!searchTerm || searchTerm.length < 3) {
+    if (!searchTerm || searchTerm.length < 2) {
       return false;
     }
 
