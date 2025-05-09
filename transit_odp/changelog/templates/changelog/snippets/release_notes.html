@@ -1,4 +1,27 @@
 {% load i18n %}
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "May 2025 (1.46.1)" %}</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    An improvement to the way web crawlers are guided to scan the service.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    An update to the logic for selecting the fares file used for compliance reporting.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    A replacement to the backend infrastructure used for processing fares files.
+    {% endblocktrans %}
+  </li>
+</ul>
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "April 2025 (1.46.0)" %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}
