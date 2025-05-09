@@ -212,25 +212,24 @@ jobs:
         retries: 5
         verbose: true
 
+    - name: Obtain SSM parameters for pg migration
+      id: params
+      shell: bash
+      run: |
+        security_group_ids=`aws ssm get-parameter --name "/bodds/${{ env.ENVIRONMENT_NAME }}/pg-migration-sg-ids" \
+          | jq -r '.Parameter.Value'`
+        subnet_ids=`aws ssm get-parameter --name "/bodds/${{ env.ENVIRONMENT_NAME }}/private-subnets" \
+          | jq -r '.Parameter.Value'`
+
+        echo "SECURITY_GROUPS=${security_group_ids}" >> "$GITHUB_OUTPUT"
+        echo "SUBNETS=${subnet_ids}" >> "$GITHUB_OUTPUT"
+
     - name: Run pg migration
       uses: "./.github/workflows/templates/run_pg_migration_task"
       with:
-        subnets: ${{ secrets.SUBNETS }}
-        security_groups: ${{ secrets.SECURITY_GROUPS }}
+        subnets: ${{ steps.params.outputs.SUBNETS }}
+        security_groups: ${{ steps.params.outputs.SECURITY_GROUPS }}
         environment: ${{ env.ENVIRONMENT_NAME }}
-
-    - name: Move secret to json payload
-      id: create-json
-      uses: jsdaniell/create-json@v1.2.3
-      with:
-        name: "credentials.json"
-        json: ${{ secrets.PG_MUTATION_DEV }}
-
-    - name: Invoke Lambda Function
-      shell: bash
-      run: |
-        aws lambda invoke --function-name bodds-${{ env.ENVIRONMENT_NAME }}-pg-mutate-lambda --payload file://credentials.json out --log-type Tail \
-        --query 'LogResult' --output text --cli-binary-format raw-in-base64-out | base64 --decode
 
     - name: Update Confluence Page
       uses: robsteel24/update-confluence@v1
