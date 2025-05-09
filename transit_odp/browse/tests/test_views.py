@@ -2094,6 +2094,7 @@ class TestLTAView:
     @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=False)
     @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=False)
     @override_flag(FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value, active=False)
+    @override_flag(FeatureFlags.UILTA_PREFETCH_SRA.value, active=False)
     def test_lta_view_complaint(self, request_factory: RequestFactory):
         get_lta_complaint_data_queryset()
 
