@@ -188,7 +188,7 @@ urlpatterns = [
     path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
     path("django_axe/", include("django_axe.urls")),
     path(
-        "robots.txt/",
+        "robots.txt",
         TemplateView.as_view(
             template_name="pages/robots.txt", content_type="text/plain"
         ),

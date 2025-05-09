@@ -60,7 +60,7 @@ urlpatterns = [
     path("changelog/", ChangelogView.as_view(), name="changelog"),
     path("django_axe/", include("django_axe.urls")),
     path(
-        "robots.txt/",
+        "robots.txt",
         TemplateView.as_view(
             template_name="pages/robots.txt", content_type="text/plain"
         ),
