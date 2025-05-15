@@ -27,7 +27,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    # Configure AWS credentials against the BODS Shared-Services Account
+    # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -79,7 +79,7 @@ jobs:
       if: always()
       run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
-    # Configure AWS credentials against the BODS Shared-Services Account
+    # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -90,7 +90,7 @@ jobs:
         role-skip-session-tagging: true
         unset-current-credentials: true
 
-    # Now assume a role in the Environemnt Specific Account
+    # Now assume a role in the Environment Specific account
     - name: Configure AWS Credentials in the environment specific account
       uses: aws-actions/configure-aws-credentials@v4
       with:
