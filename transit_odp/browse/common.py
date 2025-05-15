@@ -5,6 +5,7 @@ import pandas as pd
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import TravelineRegions
 from transit_odp.organisation.models import Organisation
+from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.constants import API_TYPE_EP
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service
@@ -147,9 +148,9 @@ class LTACSVHelper:
             str: pipe "|" seprated string of UI LTA's
         """
         if ui_ltas_dict_key not in self.otc_service_traveline_region:
-            self.otc_service_traveline_region[
-                ui_ltas_dict_key
-            ] = get_service_traveline_regions(ui_ltas)
+            self.otc_service_traveline_region[ui_ltas_dict_key] = (
+                get_service_traveline_regions(ui_ltas)
+            )
         return self.otc_service_traveline_region.get(ui_ltas_dict_key, "")
 
     def get_otc_ui_lta(
@@ -188,16 +189,17 @@ class LTACSVHelper:
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if ui_ltas_dict_key not in self.otc_traveline_region_status:
-            self.otc_traveline_region_status[
-                ui_ltas_dict_key
-            ] = not naptan_adminarea_df.empty and any(
-                (
-                    naptan_adminarea_df[
-                        naptan_adminarea_df["ui_lta_id"].isin(
-                            [ui_lta.id for ui_lta in ui_ltas]
-                        )
-                    ]
-                )["is_english_region"]
+            self.otc_traveline_region_status[ui_ltas_dict_key] = (
+                not naptan_adminarea_df.empty
+                and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["ui_lta_id"].isin(
+                                [ui_lta.id for ui_lta in ui_ltas]
+                            )
+                        ]
+                    )["is_english_region"]
+                )
             )
         return self.otc_traveline_region_status.get(ui_ltas_dict_key, "")
 
@@ -217,12 +219,15 @@ class LTACSVHelper:
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if atco_code not in self.weca_traveline_region_status:
-            self.weca_traveline_region_status[
-                atco_code
-            ] = not naptan_adminarea_df.empty and any(
-                (naptan_adminarea_df[naptan_adminarea_df["atco_code"] == atco_code])[
-                    "is_english_region"
-                ]
+            self.weca_traveline_region_status[atco_code] = (
+                not naptan_adminarea_df.empty
+                and any(
+                    (
+                        naptan_adminarea_df[
+                            naptan_adminarea_df["atco_code"] == atco_code
+                        ]
+                    )["is_english_region"]
+                )
             )
         return self.weca_traveline_region_status.get(atco_code, "")
 
@@ -433,3 +438,47 @@ def get_all_franchise_atco_codes_except_current(organisation_id: int) -> list:
         .filter(is_franchise=True)
         .values_list("admin_areas__atco_code", flat=True)
     )
+
+
+def get_operator_with_licence_number(licence_numbers: List):
+    operator_licences_df = pd.DataFrame(licence_numbers, columns=["licence_number"])
+
+    # get licences list from otc service with operator name
+    licence_df = pd.DataFrame.from_records(
+        OTCService.objects.filter(licence__number__in=licence_numbers).values(
+            "licence__number", "operator__operator_name"
+        )
+    )
+    licence_df.drop_duplicates(inplace=True)
+    licence_df.rename(
+        columns={
+            "licence__number": "licence_number",
+            "operator__operator_name": "operator_name",
+        },
+        inplace=True,
+    )
+
+    operator_licences_df = operator_licences_df.merge(licence_df, how="left")
+
+    # get compliance status for each licence
+    compliance_report_df = pd.DataFrame.from_records(
+        ComplianceReport.objects.filter(
+            otc_licence_number__in=licence_numbers, overall_requires_attention="Yes"
+        ).values("otc_licence_number")
+    )
+    compliance_report_df.drop_duplicates(inplace=True)
+    compliance_report_df.rename(
+        columns={"otc_licence_number": "licence_number"}, inplace=True
+    )
+    compliance_report_df["non_compliant"] = True
+
+    # merge the operator licences
+    operator_licences_df = operator_licences_df.merge(compliance_report_df, how="left")
+    operator_licences_df["non_compliant"] = operator_licences_df[
+        "non_compliant"
+    ].fillna(False)
+    operator_licences_df["operator_name"] = operator_licences_df[
+        "operator_name"
+    ].fillna("--")
+
+    return operator_licences_df.reset_index().to_dict("records")

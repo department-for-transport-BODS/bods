@@ -20,6 +20,7 @@ from transit_odp.browse.common import (
     get_franchise_licences,
     get_franchise_organisation,
     get_in_scope_in_season_services_line_level,
+    get_operator_with_licence_number,
     otc_map_txc_map_from_licence,
 )
 from transit_odp.browse.views.base_views import BaseListView
@@ -139,21 +140,30 @@ class OperatorDetailView(BaseDetailView):
         is_franchise_organisation_active = flag_is_active(
             "", FeatureFlags.FRANCHISE_ORGANISATION.value
         )
+        is_prefetch_database_compliance_report_active = flag_is_active(
+            "", FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value
+        )
         context = super().get_context_data(**kwargs)
         organisation = self.object
+
+        is_franchise = False
+        licences_list = []
 
         if is_franchise_organisation_active:
             is_franchise = organisation.is_franchise
 
             if is_franchise:
+                context["is_franchise"] = is_franchise
+                context["is_franchise_organisation_active"] = (
+                    is_franchise_organisation_active
+                )
                 org_atco_codes = organisation.admin_areas.values_list(
                     "atco_code", flat=True
                 )
-                context["is_franchise"] = is_franchise
-                context[
-                    "is_franchise_organisation_active"
-                ] = is_franchise_organisation_active
-                context["franchise_licences"] = get_franchise_licences(org_atco_codes)
+                licences_list = get_franchise_licences(org_atco_codes)
+
+        if not is_franchise:
+            licences_list = organisation.licences.values_list("number", flat=True)
 
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
         context["is_complete_service_pages_active"] = is_complete_service_pages_active
@@ -189,12 +199,13 @@ class OperatorDetailView(BaseDetailView):
 
         context["total_in_scope_in_season_services"] = total_in_scope
         context["total_services_requiring_attention"] = total_timetable_sra
+        context["operator_licences"] = get_operator_with_licence_number(licences_list)
 
         if is_complete_service_pages_active:
             context["total_services_requiring_attention"] = total_overall_sra
-            context[
-                "timetable_services_requiring_attention_count"
-            ] = total_timetable_sra
+            context["timetable_services_requiring_attention_count"] = (
+                total_timetable_sra
+            )
 
             if is_avl_require_attention_active:
                 context["avl_services_requiring_attention_count"] = total_avl_sra
@@ -229,13 +240,13 @@ class OperatorDetailView(BaseDetailView):
             if is_fares_require_attention_active:
                 context["fares_total_services_requiring_attention"] = total_fares_sra
                 try:
-                    context[
-                        "fares_total_services_requiring_attention_percentage"
-                    ] = round(
-                        100
-                        * (
-                            context["fares_total_services_requiring_attention"]
-                            / context["total_in_scope_in_season_services"]
+                    context["fares_total_services_requiring_attention_percentage"] = (
+                        round(
+                            100
+                            * (
+                                context["fares_total_services_requiring_attention"]
+                                / context["total_in_scope_in_season_services"]
+                            )
                         )
                     )
                 except ZeroDivisionError:
