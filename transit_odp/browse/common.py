@@ -445,6 +445,11 @@ def get_operator_with_licence_number(licence_numbers: List):
             "licence__number", "operator__operator_name"
         )
     )
+    if licence_df.empty:
+        licence_df = pd.DataFrame(
+            columns=["licence__number", "operator__operator_name"]
+        )
+
     licence_df.drop_duplicates(inplace=True)
     licence_df.rename(
         columns={
@@ -462,6 +467,9 @@ def get_operator_with_licence_number(licence_numbers: List):
             otc_licence_number__in=licence_numbers, overall_requires_attention="Yes"
         ).values("otc_licence_number")
     )
+    if compliance_report_df.empty:
+        compliance_report_df = pd.DataFrame(columns=["otc_licence_number"])
+
     compliance_report_df.drop_duplicates(inplace=True)
     compliance_report_df.rename(
         columns={"otc_licence_number": "licence_number"}, inplace=True
