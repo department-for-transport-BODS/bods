@@ -1,0 +1,26 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+{% block help_icon %}
+  <i class="help-icon fas fa-question-circle">
+  </i>
+{% endblock %}
+{% block help_heading %}
+  {% trans "Overall services require attention score" %}
+{% endblock %}
+{% block help_content %}
+  <p class="govuk-body">
+    {% blocktrans %}
+    Each active registered service that falls within the scope of the BODS legislation is reviewed and will require attention if any issues exist for that service.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    The overall score will count a service that has at least one issue relating to either timetables, location data or fares.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    A service will require attention if the data for timetables, fares or AVL is not published, is out of date, or has data matching issues. The compliance report provides the results for all checks that are done to help you to resolve the issues impacting that service.
+    {% endblocktrans %}
+  </p>
+{% endblock %}
