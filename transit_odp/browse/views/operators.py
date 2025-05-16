@@ -154,9 +154,9 @@ class OperatorDetailView(BaseDetailView):
 
             if is_franchise:
                 context["is_franchise"] = is_franchise
-                context["is_franchise_organisation_active"] = (
-                    is_franchise_organisation_active
-                )
+                context[
+                    "is_franchise_organisation_active"
+                ] = is_franchise_organisation_active
                 org_atco_codes = organisation.admin_areas.values_list(
                     "atco_code", flat=True
                 )
@@ -203,9 +203,9 @@ class OperatorDetailView(BaseDetailView):
 
         if is_complete_service_pages_active:
             context["total_services_requiring_attention"] = total_overall_sra
-            context["timetable_services_requiring_attention_count"] = (
-                total_timetable_sra
-            )
+            context[
+                "timetable_services_requiring_attention_count"
+            ] = total_timetable_sra
 
             if is_avl_require_attention_active:
                 context["avl_services_requiring_attention_count"] = total_avl_sra
@@ -240,13 +240,13 @@ class OperatorDetailView(BaseDetailView):
             if is_fares_require_attention_active:
                 context["fares_total_services_requiring_attention"] = total_fares_sra
                 try:
-                    context["fares_total_services_requiring_attention_percentage"] = (
-                        round(
-                            100
-                            * (
-                                context["fares_total_services_requiring_attention"]
-                                / context["total_in_scope_in_season_services"]
-                            )
+                    context[
+                        "fares_total_services_requiring_attention_percentage"
+                    ] = round(
+                        100
+                        * (
+                            context["fares_total_services_requiring_attention"]
+                            / context["total_in_scope_in_season_services"]
                         )
                     )
                 except ZeroDivisionError:

@@ -148,9 +148,9 @@ class LTACSVHelper:
             str: pipe "|" seprated string of UI LTA's
         """
         if ui_ltas_dict_key not in self.otc_service_traveline_region:
-            self.otc_service_traveline_region[ui_ltas_dict_key] = (
-                get_service_traveline_regions(ui_ltas)
-            )
+            self.otc_service_traveline_region[
+                ui_ltas_dict_key
+            ] = get_service_traveline_regions(ui_ltas)
         return self.otc_service_traveline_region.get(ui_ltas_dict_key, "")
 
     def get_otc_ui_lta(
@@ -189,17 +189,16 @@ class LTACSVHelper:
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if ui_ltas_dict_key not in self.otc_traveline_region_status:
-            self.otc_traveline_region_status[ui_ltas_dict_key] = (
-                not naptan_adminarea_df.empty
-                and any(
-                    (
-                        naptan_adminarea_df[
-                            naptan_adminarea_df["ui_lta_id"].isin(
-                                [ui_lta.id for ui_lta in ui_ltas]
-                            )
-                        ]
-                    )["is_english_region"]
-                )
+            self.otc_traveline_region_status[
+                ui_ltas_dict_key
+            ] = not naptan_adminarea_df.empty and any(
+                (
+                    naptan_adminarea_df[
+                        naptan_adminarea_df["ui_lta_id"].isin(
+                            [ui_lta.id for ui_lta in ui_ltas]
+                        )
+                    ]
+                )["is_english_region"]
             )
         return self.otc_traveline_region_status.get(ui_ltas_dict_key, "")
 
@@ -219,15 +218,12 @@ class LTACSVHelper:
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if atco_code not in self.weca_traveline_region_status:
-            self.weca_traveline_region_status[atco_code] = (
-                not naptan_adminarea_df.empty
-                and any(
-                    (
-                        naptan_adminarea_df[
-                            naptan_adminarea_df["atco_code"] == atco_code
-                        ]
-                    )["is_english_region"]
-                )
+            self.weca_traveline_region_status[
+                atco_code
+            ] = not naptan_adminarea_df.empty and any(
+                (naptan_adminarea_df[naptan_adminarea_df["atco_code"] == atco_code])[
+                    "is_english_region"
+                ]
             )
         return self.weca_traveline_region_status.get(atco_code, "")
 
