@@ -1,6 +1,6 @@
 import datetime
-from logging import getLogger
 from collections import OrderedDict
+from logging import getLogger
 from typing import List, Optional
 
 import numpy as np
@@ -12,6 +12,7 @@ from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
+from transit_odp.browse.common import get_franchise_registration_numbers
 from transit_odp.common.collections import Column
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.organisation.constants import (
@@ -19,6 +20,7 @@ from transit_odp.organisation.constants import (
     TravelineRegions,
 )
 from transit_odp.organisation.csv import EmptyDataFrame
+from transit_odp.organisation.models import Licence as BODSLicence
 from transit_odp.organisation.models import (
     Organisation,
     SeasonalService,
@@ -42,8 +44,6 @@ from transit_odp.publish.requires_attention import (
     get_fares_requires_attention,
     get_fares_timeliness_status,
 )
-
-from transit_odp.organisation.models import Licence as BODSLicence
 
 logger = getLogger(__name__)
 
@@ -741,7 +741,61 @@ TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP["cancelled_date"] = Col
 LOG_PREFIX = "OVERALL-COMPLIANCE-REPORT : "
 
 
+def get_organisation(reg_number: str) -> Organisation:
+    """
+    Returns the organisation object based on registration number from the report dataframe.
+
+    Args:
+        reg_number (str): Registration number
+
+    Returns:
+        Organisation: Organisation object
+    """
+    otc_atco_code = OTCService.objects.filter(
+        registration_number=reg_number
+    ).values_list("atco_code", flat=True)
+    return Organisation.objects.filter(admin_areas__atco_code__in=otc_atco_code).first()
+
+
+def update_licence_organisation_id_and_name(row: Series) -> Series:
+    """
+    Updates the licence_organisation_id and licence_organisation_name fields for
+    each row in the compliance report dataframe. This is done by retrieving the
+    organisation object based on the service code (registration number).
+
+    Args:
+        row (Series): Row from dataframe
+
+    Returns:
+        Series: Row with updated fields
+    """
+    is_franchise_organisation_active = flag_is_active(
+        "", FeatureFlags.FRANCHISE_ORGANISATION.value
+    )
+    if is_franchise_organisation_active:
+        organisation = get_organisation(row["registration_number"])
+        if organisation and organisation.is_franchise:
+            franchise_registration_numbers = get_franchise_registration_numbers(
+                organisation
+            )
+
+            if row["registration_number"] in franchise_registration_numbers:
+                row["licence_organisation_id"] = organisation.id
+                row["licence_organisation_name"] = organisation.name
+
+    return row
+
+
 def add_operator_name(row: Series) -> str:
+    """
+    Returns value for 'Organisation Name' column in report.
+
+    Args:
+        row (Series): Row from dataframe
+
+    Returns:
+        str: Organisation name
+    """
     if row["organisation_name"] is None or pd.isna(row["organisation_name"]):
         otc_licence_number = row["otc_licence_number"]
         operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
@@ -1262,7 +1316,7 @@ def add_overall_requires_attention(row: Series) -> str:
         str: Value for the column
     """
     is_fares_require_attention_active = flag_is_active(
-        "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        "", FeatureFlags.FARES_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value
     )
     exempted = row["scope_status"]
     seasonal_service = row["seasonal_status"]
@@ -1423,7 +1477,9 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     if is_fares_require_attention_active:
         logger.info("{} Calculating Fares SRA".format(LOG_PREFIX))
         for txc_attribute in txc_attributes:
-            txc_service_map[txc_attribute.service_code] = txc_attribute
+            txc_service_map[
+                (txc_attribute.service_code, txc_attribute.line_name_unnested)
+            ] = txc_attribute
         logger.info(
             "{} Preparing Fares dataframe for total {} txc files".format(
                 LOG_PREFIX, len(list(txc_service_map.values()))
@@ -1568,9 +1624,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
                 "OPERATOR_PREFETCH_COMPLIANCE_REPORT: Error occured while saving report in db"
             )
             logger.exception(e)
-            merged["organisation_name"] = merged.apply(
-                lambda x: add_operator_name(x), axis=1
-            )
+
     else:
         merged["organisation_name"] = merged.apply(
             lambda x: add_operator_name(x), axis=1
@@ -1627,9 +1681,7 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
 
     logger.info("{} Merged licence details".format(LOG_PREFIX))
 
-    merged["licence_organisation_name"] = merged["licence_organisation_name"].fillna(
-        "Organisation not yet created"
-    )
+    merged = merged.apply(update_licence_organisation_id_and_name, axis=1)
     merged["organisation_name"] = merged["licence_organisation_name"]
 
     logger.info("{} Renaming columns".format(LOG_PREFIX))

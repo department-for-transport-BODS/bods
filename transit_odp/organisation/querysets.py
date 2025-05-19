@@ -676,35 +676,14 @@ class DatasetQuerySet(models.QuerySet):
 
     def search(self, keywords):
         """Searches the dataset and live_revision using keywords"""
-        from transit_odp.organisation.models import DatasetRevision
-
         # The important part is to ensure no duplicate datasets are returned due
         # to search over this many-to-many
         # TODO - add expression indexes to AdminArea name for efficient icontains
         # search, e.g. `CREATE INDEX admin_area_lower_email ON admin_area(upper(name));`
-        fares_icontains = Q(
-            metadata__faresmetadata__stops__admin_area__name__icontains=keywords
-        )
-        timetables_icontains = Q(admin_areas__name__icontains=keywords)
-        revisions = (
-            DatasetRevision.objects.get_live_revisions()
-            .filter(timetables_icontains | fares_icontains)
-            .order_by("id")
-            .distinct("id")
-            .values("id")
-        )
-
-        location_contains_keywords = Q(live_revision__in=revisions)
-        desc_contains_keywords = Q(live_revision__description__icontains=keywords)
         org_name_contains_keywords = Q(organisation__name__icontains=keywords)
         noc_contains_keywords = Q(organisation__nocs__noc__icontains=keywords)
 
-        qs = self.filter(
-            location_contains_keywords
-            | desc_contains_keywords
-            | org_name_contains_keywords
-            | noc_contains_keywords
-        ).distinct()
+        qs = self.filter(org_name_contains_keywords | noc_contains_keywords).distinct()
 
         return qs
 

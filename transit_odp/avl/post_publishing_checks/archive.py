@@ -3,9 +3,11 @@ import io
 import zipfile
 
 from django.db.models import Subquery
+from waffle import flag_is_active
 
 from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
 from transit_odp.avl.proxies import AVLDataset
+from transit_odp.common.constants import FeatureFlags
 
 
 class PPCArchiveCreator:
@@ -86,6 +88,38 @@ class PPCArchiveCreator:
             weekly_buffer.seek(0)
             self._weekly_zips.append((weekly_buffer.getvalue(), archive_name))
 
+    def _create_past_seven_days_zip(self):
+        archive_end = datetime.date.today() - datetime.timedelta(days=1)
+        ppc_reports = (
+            PostPublishingCheckReport.objects.filter(granularity=PPCReportType.WEEKLY)
+            .filter(dataset_id__in=Subquery(self._avl_datasets.values("id")))
+            .filter(created__gte=archive_end)
+            .order_by("dataset_id", "-created")
+        )
+        weekly_buffer = io.BytesIO()
+        with zipfile.ZipFile(
+            weekly_buffer, mode="w", compression=zipfile.ZIP_DEFLATED
+        ) as zout:
+            score_count = 0
+            added_dataset_ids = set()
+            for report in ppc_reports:
+                # Filter out multiple reports for the same dataset. If this happens,
+                # the first in the list is chosen, which is the report with the
+                # latest date.
+                if report.dataset_id not in added_dataset_ids:
+                    content = report.file.read()
+                    zout.writestr(report.file.name, content)
+                    if report.vehicle_activities_analysed > 0:
+                        score_count += (
+                            report.vehicle_activities_completely_matching
+                            * 100.0
+                            / report.vehicle_activities_analysed
+                        )
+                    added_dataset_ids.add(report.dataset_id)
+
+        weekly_buffer.seek(0)
+        return weekly_buffer
+
     def _create_four_week_archive(self):
         """Add each of the weekly zips to one container zip."""
         self._four_week_buffer = io.BytesIO()
@@ -98,8 +132,14 @@ class PPCArchiveCreator:
         self._four_week_buffer.seek(0)
 
     def create_archive(self, organisation_id: int) -> io.BytesIO:
+        is_create_seven_day_ppc_report_daily = flag_is_active(
+            "", FeatureFlags.CREATE_SEVEN_DAY_PPC_REPROT_DAILY.value
+        )
         self._get_datasets_for_org(organisation_id)
-        self._set_weekly_archive_dates()
-        self._create_weekly_zips()
-        self._create_four_week_archive()
-        return self._four_week_buffer
+        if is_create_seven_day_ppc_report_daily:
+            return self._create_past_seven_days_zip()
+        else:
+            self._set_weekly_archive_dates()
+            self._create_weekly_zips()
+            self._create_four_week_archive()
+            return self._four_week_buffer

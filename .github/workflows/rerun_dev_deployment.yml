@@ -13,11 +13,10 @@ env:
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
   ENVIRONMENT_NAME: dev
   AWS_REGION: ${{ vars.AWS_REGION }}
-  AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
-  AWS_ASSUME_ROLE_NAME: ${{ vars.AWS_ASSUME_ROLE_NAME }}
+  BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN: ${{ vars.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+  PROD_ASSUME_ROLE_ARN: ${{ vars.PROD_ASSUME_ROLE_ARN }}
 
 jobs:
-
   rerun_dev_deployment:
     name: 'rerun_dev_deployment'
     runs-on: ubuntu-latest
@@ -28,7 +27,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    # Configure AWS credentials against the BODS Shared-Services Account
+    # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -81,7 +80,7 @@ jobs:
       if: always()
       run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
-    # Configure AWS credentials against the BODS Shared-Services Account
+    # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -92,12 +91,12 @@ jobs:
         role-skip-session-tagging: true
         unset-current-credentials: true
 
-    # Now assume a role in the Environemnt Specific Account
+    # Now assume a role in the Environment Specific account
     - name: Configure AWS Credentials in the environment specific account
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ vars.AWS_REGION }}
-        role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
+        role-to-assume: ${{ vars.ASSUME_ROLE_ARN }}
         role-session-name: testAWSCLISession
         role-duration-seconds: 3600
         role-skip-session-tagging: true
@@ -175,18 +174,26 @@ jobs:
         ecs-services: '["celeryflower", "celeryworker", "celerybeat", "frontend", "api_frontend", "api_frontend_internal" ]'
         retries: 5
         verbose: true
+
+    - name: Obtain SSM parameters for pg migration
+      id: params
+      shell: bash
+      run: |
+        security_group_ids=`aws ssm get-parameter --name "/bodds/${{ env.ENVIRONMENT_NAME }}/pg-migration-sg-ids" \
+          | jq -r '.Parameter.Value'`
+        subnet_ids=`aws ssm get-parameter --name "/bodds/${{ env.ENVIRONMENT_NAME }}/private-subnets" \
+          | jq -r '.Parameter.Value'`
+
+        echo "SECURITY_GROUPS=${security_group_ids}" >> "$GITHUB_OUTPUT"
+        echo "SUBNETS=${subnet_ids}" >> "$GITHUB_OUTPUT"
+
     - name: Run pg migration
       uses: "./.github/workflows/templates/run_pg_migration_task"
       with:
-        subnets: ${{ secrets.SUBNETS }}
-        security_groups: ${{ secrets.SECURITY_GROUPS }}
+        subnets: ${{ steps.params.outputs.SUBNETS }}
+        security_groups: ${{ steps.params.outputs.SECURITY_GROUPS }}
         environment: ${{ env.ENVIRONMENT_NAME }}
 
-    - name: Invoke Lambda Function
-      shell: bash
-      run: |
-        aws lambda invoke --function-name bodds-${{ env.ENVIRONMENT_NAME }}-pg-mutate-lambda --payload file://credentials.json out --log-type Tail \
-        --query 'LogResult' --output text --cli-binary-format raw-in-base64-out | base64 --decode
 
     - name: Update Confluence Page
       uses: robsteel24/update-confluence@v1
