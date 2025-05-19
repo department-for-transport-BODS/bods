@@ -196,7 +196,7 @@ class OperatorDetailView(BaseDetailView):
 
         context["total_in_scope_in_season_services"] = total_in_scope
         context["total_services_requiring_attention"] = total_timetable_sra
-        
+
         if is_complete_service_pages_active:
             context["total_services_requiring_attention"] = total_overall_sra
             context[
@@ -207,7 +207,9 @@ class OperatorDetailView(BaseDetailView):
                 context["avl_services_requiring_attention_count"] = total_avl_sra
             if is_fares_require_attention_active:
                 context["fares_services_requiring_attention_count"] = total_fares_sra
-            context["operator_licences"] = get_operator_with_licence_number(licences_list)
+            context["operator_licences"] = get_operator_with_licence_number(
+                licences_list
+            )
         else:
             context["operator_licences"] = []
             try:
