@@ -1,0 +1,51 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+{% block help_icon %}
+  <i class="help-icon fas fa-question-circle">
+  </i>
+{% endblock %}
+{% block help_heading %}
+  {% trans "Compliance of real time data" %}
+{% endblock %}
+{% block help_content %}
+  <p class="govuk-body">
+    {% blocktrans %}
+    The real-time data for each service is assessed to review the health and compliance in the following ways:
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    <b>Completeness</b> - is the data published?
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    <b>Accuracy</b> - Real time data published to BODS is used by a diverse set of consumers that rely on 'ready to match', high quality data, using three key elements:
+    {% endblocktrans %}
+    <ol class="govuk-list govuk-list--number govuk-!-margin-left-5">
+      <li>{% blocktrans %}National Operator code.{% endblocktrans %}</li>
+      <li>{% blocktrans %}Line ref.{% endblocktrans %}</li>
+      <li>{% blocktrans %}Dated vehicle journey ref.{% endblocktrans %}</li>
+    </ol>
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    The matching report ensures that all consumers can easily use these three elements to confidently present real time data directly to passengers.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    Existing journey planners, the BODS GTFS-RT output, and ABODS are highly engineered to overcome matching issues that are present in the data using additional data elements.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    The purpose of this report is to highlight cases where matching requires additional engineering steps that are beyond the three key elements listed.
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    Please contact your supplier or our helpdesk to resolve the cases identified within the report.
+    {% endblocktrans %}
+  </p>
+{% endblock %}

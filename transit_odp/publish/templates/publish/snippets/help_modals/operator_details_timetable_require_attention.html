@@ -1,0 +1,38 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+{% block help_icon %}
+  <i class="help-icon fas fa-question-circle">
+  </i>
+{% endblock %}
+{% block help_heading %}
+  {% trans "Compliance of timetables data" %}
+{% endblock %}
+{% block help_content %}
+  <p class="govuk-body">
+    {% blocktrans %}
+      The timetables data for each service is assessed to review the health and compliance in the following ways:
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    <b>Completeness</b> - is the data published?
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    <b>Timeliness</b> - is the data up to date in the following ways:
+    {% endblocktrans %}
+    <ol class="govuk-list govuk-list--number govuk-!-margin-left-5">
+      <li>{% blocktrans %}Has an appropriate validity period for at least the next 42 days?{% endblocktrans %}</li>
+      <li>{% blocktrans %}Has been updated within the last 12 months?{% endblocktrans %}</li>
+      <li>
+        {% blocktrans %}Has been updated to reflect changes made to the registration authority for that service?{% endblocktrans %}
+      </li>
+    </ol>
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+        <b>Data Quality</b> - Are there any critical data quality issues relating to this service?
+    {% endblocktrans %}
+  </p>
+{% endblock %}
