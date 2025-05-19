@@ -13,11 +13,14 @@ from transit_odp.avl.post_publishing_checks.daily.vehicle_journey_finder import 
     TxcVehicleJourney,
     VehicleJourneyFinder,
 )
+from transit_odp.avl.post_publishing_checks.models.siri import MonitoredVehicleJourney
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
+    DatasetFactory,
     DatasetRevisionFactory,
     TXCFileAttributesFactory,
 )
+from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.timetables.transxchange import TransXChangeDocument
 
 pytestmark = pytest.mark.django_db
@@ -46,6 +49,32 @@ def test_get_txc_file_metadata():
     )
     assert len(txc_file_list) == 1
     assert txc_file_list[0].id == txc_file_attrs.id
+
+
+def test_check_same_dataset_succeeds():
+    dataset = DatasetFactory()
+    TXCFileAttributesFactory.create_batch(5, revision__dataset=dataset)
+    txc_file_attrs = list(TXCFileAttributes.objects.add_revision_details())
+    mvj = MonitoredVehicleJourney(operator_ref="Itoworld", vehicle_ref="Bertha")
+    vehicle_journey_finder = VehicleJourneyFinder()
+    consistent = vehicle_journey_finder.check_same_dataset(
+        txc_file_attrs, mvj, ValidationResult()
+    )
+    assert consistent
+
+
+def test_check_same_dataset_fails():
+    datasets = DatasetFactory.create_batch(2)
+    TXCFileAttributesFactory.create_batch(3, revision__dataset=datasets[0])
+    TXCFileAttributesFactory.create_batch(2, revision__dataset=datasets[1])
+    txc_file_attrs = list(TXCFileAttributes.objects.add_revision_details())
+    mvj = MonitoredVehicleJourney(operator_ref="Itoworld", vehicle_ref="Bertha")
+    vehicle_journey_finder = VehicleJourneyFinder()
+    consistent = vehicle_journey_finder.check_same_dataset(
+        txc_file_attrs, mvj, ValidationResult()
+    )
+    # Started allowing different dataset as part of change for BODS-8568
+    assert consistent
 
 
 def test_append_txc_revision_number():
