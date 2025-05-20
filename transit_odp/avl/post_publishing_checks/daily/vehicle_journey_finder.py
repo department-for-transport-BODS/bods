@@ -509,7 +509,6 @@ class VehicleJourneyFinder:
         """
         highest_revision_number = -1
         for vj in reversed(vehicle_journeys):
-            operating_profile = self.get_operating_profile_for_journey(vj)
             try:
                 revision_number = int(vj.txc_xml.get_revision_number())
             except (ValueError, XMLAttributeError):
