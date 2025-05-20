@@ -422,8 +422,12 @@ class VehicleJourneyFinder:
             for day in DayOfWeek:
                 if profile_days_of_week[0].get_element_or_none(day.value) is not None:
                     specified_days.append(day)
-            if day_of_week not in specified_days and not self.is_vehicle_journey_operational_special_days(
-                operating_profile, activity_date, result, vj):
+            if (
+                day_of_week not in specified_days
+                and not self.is_vehicle_journey_operational_special_days(
+                    operating_profile, activity_date, result, vj
+                )
+            ):
                 logger.debug(
                     "Ignoring VehicleJourney with operating profile inapplicable to "
                     f"{day_of_week}"
@@ -563,7 +567,7 @@ class VehicleJourneyFinder:
         except NoElement:
             return []
         return working_days
-    
+
     def get_op_special_days(
         self, org: TransXChangeElement
     ) -> Optional[TransXChangeElement]:
@@ -573,7 +577,7 @@ class VehicleJourneyFinder:
         except NoElement:
             return []
         return op_days
-    
+
     def get_nonop_special_days(
         self, org: TransXChangeElement
     ) -> Optional[TransXChangeElement]:
@@ -722,13 +726,11 @@ class VehicleJourneyFinder:
             start_date_formatted = datetime.datetime.strptime(
                 start_date, "%Y-%m-%d"
             ).date()
-            end_date_formatted = datetime.datetime.strptime(
-                end_date, "%Y-%m-%d"
-            ).date()
+            end_date_formatted = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
             if start_date_formatted <= recorded_at <= end_date_formatted:
                 return True
         return False
-    
+
     def is_vehicle_journey_nonoperational_special_days(
         self,
         operating_profile: TransXChangeElement,
@@ -774,9 +776,7 @@ class VehicleJourneyFinder:
             start_date_formatted = datetime.datetime.strptime(
                 start_date, "%Y-%m-%d"
             ).date()
-            end_date_formatted = datetime.datetime.strptime(
-                end_date, "%Y-%m-%d"
-            ).date()
+            end_date_formatted = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
             if start_date_formatted <= recorded_at <= end_date_formatted:
                 return True
         return False
@@ -1039,7 +1039,7 @@ class VehicleJourneyFinder:
             recorded_at_time, vehicle_journeys, result
         ):
             return None
-        
+
         if not self.filter_by_special_days_of_operation(
             recorded_at_time, vehicle_journeys, result
         ):
@@ -1063,9 +1063,9 @@ class VehicleJourneyFinder:
         vehicle_journeys: List[TxcVehicleJourney],
         result: ValidationResult,
     ) -> bool:
-        """Filter vehicle journeys based on days of SpecialDaysOperation DaysOfNonOperations 
+        """Filter vehicle journeys based on days of SpecialDaysOperation DaysOfNonOperations
         date range.
-        if DaysOfNonOperation is present and recorded_at_time is BETWEEN start date and end date, 
+        if DaysOfNonOperation is present and recorded_at_time is BETWEEN start date and end date,
         VehicleJourney will be removed from the list
 
         if DaysOfOperation is present and recorded_at_time is OUTSIDE start date and end date for
@@ -1081,7 +1081,11 @@ class VehicleJourneyFinder:
         """
         for vj in reversed(vehicle_journeys):
             operating_profile = self.get_operating_profile_for_journey(vj)
-            is_vj_nonoperational_on_recorded_at_time = self.is_vehicle_journey_nonoperational_special_days(operating_profile, recorded_at_time, result, vj)
+            is_vj_nonoperational_on_recorded_at_time = (
+                self.is_vehicle_journey_nonoperational_special_days(
+                    operating_profile, recorded_at_time, result, vj
+                )
+            )
 
             if is_vj_nonoperational_on_recorded_at_time:
                 vehicle_journeys.remove(vj)
