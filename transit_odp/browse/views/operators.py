@@ -20,6 +20,7 @@ from transit_odp.browse.common import (
     get_franchise_licences,
     get_franchise_organisation,
     get_in_scope_in_season_services_line_level,
+    get_operator_with_licence_number,
     otc_map_txc_map_from_licence,
 )
 from transit_odp.browse.views.base_views import BaseListView
@@ -142,18 +143,24 @@ class OperatorDetailView(BaseDetailView):
         context = super().get_context_data(**kwargs)
         organisation = self.object
 
+        is_franchise = False
+        licences_list = []
+
         if is_franchise_organisation_active:
             is_franchise = organisation.is_franchise
 
             if is_franchise:
-                org_atco_codes = organisation.admin_areas.values_list(
-                    "atco_code", flat=True
-                )
                 context["is_franchise"] = is_franchise
                 context[
                     "is_franchise_organisation_active"
                 ] = is_franchise_organisation_active
-                context["franchise_licences"] = get_franchise_licences(org_atco_codes)
+                org_atco_codes = organisation.admin_areas.values_list(
+                    "atco_code", flat=True
+                )
+                licences_list = get_franchise_licences(org_atco_codes)
+
+        if not is_franchise:
+            licences_list = organisation.licences.values_list("number", flat=True)
 
         context["is_avl_require_attention_active"] = is_avl_require_attention_active
         context["is_complete_service_pages_active"] = is_complete_service_pages_active
@@ -200,7 +207,11 @@ class OperatorDetailView(BaseDetailView):
                 context["avl_services_requiring_attention_count"] = total_avl_sra
             if is_fares_require_attention_active:
                 context["fares_services_requiring_attention_count"] = total_fares_sra
+            context["operator_licences"] = get_operator_with_licence_number(
+                licences_list
+            )
         else:
+            context["operator_licences"] = []
             try:
                 context["services_require_attention_percentage"] = round(
                     100
