@@ -375,7 +375,6 @@ class Loader:
             self.inactivate_bad_services()
             self.refresh_lta(_registrations)
 
-
     def load_services_with_updated_service_numbers(self):
         """
         Loads all services where service numbers have been updated with enhanced error handling.
@@ -432,7 +431,9 @@ class Loader:
 
             registration_numbers_to_update = ",".join(registration_numbers)
             if not registration_numbers_to_update:
-                logger.warning("No registration numbers to update after join operation.")
+                logger.warning(
+                    "No registration numbers to update after join operation."
+                )
                 return
 
             logger.info("Running refresh job for list of services...")
@@ -464,4 +465,6 @@ class Loader:
             logger.error(
                 f"Critical error in load_services_with_updated_service_numbers: {str(e)}"
             )
-            raise Exception(f"Critical error in service update process: {str(e)}") from e
+            raise Exception(
+                f"Critical error in service update process: {str(e)}"
+            ) from e
