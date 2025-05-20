@@ -57,7 +57,7 @@ def test_check_same_dataset_succeeds():
     txc_file_attrs = list(TXCFileAttributes.objects.add_revision_details())
     mvj = MonitoredVehicleJourney(operator_ref="Itoworld", vehicle_ref="Bertha")
     vehicle_journey_finder = VehicleJourneyFinder()
-    consistent = vehicle_journey_finder.check_same_dataset(
+    consistent = vehicle_journey_finder.set_dataset_attributes(
         txc_file_attrs, mvj, ValidationResult()
     )
     assert consistent
@@ -70,7 +70,7 @@ def test_check_same_dataset_fails():
     txc_file_attrs = list(TXCFileAttributes.objects.add_revision_details())
     mvj = MonitoredVehicleJourney(operator_ref="Itoworld", vehicle_ref="Bertha")
     vehicle_journey_finder = VehicleJourneyFinder()
-    consistent = vehicle_journey_finder.check_same_dataset(
+    consistent = vehicle_journey_finder.set_dataset_attributes(
         txc_file_attrs, mvj, ValidationResult()
     )
     # Started allowing different dataset as part of change for BODS-8568
