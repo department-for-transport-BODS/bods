@@ -469,7 +469,8 @@ class VehicleJourneyFinder:
             for day in DayOfWeek:
                 if profile_days_of_week[0].get_element_or_none(day.value) is not None:
                     specified_days.append(day)
-            if day_of_week not in specified_days:
+            if day_of_week not in specified_days and not self.is_vehicle_journey_operational_special_days(
+                operating_profile, activity_date, result, vj):
                 logger.debug(
                     "Ignoring VehicleJourney with operating profile inapplicable to "
                     f"{day_of_week}"
@@ -508,6 +509,7 @@ class VehicleJourneyFinder:
         """
         highest_revision_number = -1
         for vj in reversed(vehicle_journeys):
+            operating_profile = self.get_operating_profile_for_journey(vj)
             try:
                 revision_number = int(vj.txc_xml.get_revision_number())
             except (ValueError, XMLAttributeError):
@@ -609,6 +611,26 @@ class VehicleJourneyFinder:
         except NoElement:
             return []
         return working_days
+    
+    def get_op_special_days(
+        self, org: TransXChangeElement
+    ) -> Optional[TransXChangeElement]:
+        try:
+            xpath = ["DaysOfOperation", "DateRange"]
+            op_days = org.get_elements(xpath)
+        except NoElement:
+            return []
+        return op_days
+    
+    def get_nonop_special_days(
+        self, org: TransXChangeElement
+    ) -> Optional[TransXChangeElement]:
+        try:
+            xpath = ["DaysOfNonOperation", "DateRange"]
+            non_op_days = org.get_elements(xpath)
+        except NoElement:
+            return []
+        return non_op_days
 
     def get_service_org_ref_and_days_of_operation(
         self, vehicle_journey: TxcVehicleJourney
@@ -649,8 +671,6 @@ class VehicleJourneyFinder:
 
         return (
             service_org_ref,
-            days_of_non_operation,
-            days_of_operation,
             service_org_ref_dict,
         )
 
@@ -705,6 +725,110 @@ class VehicleJourneyFinder:
                 return True
         return False
 
+    def is_vehicle_journey_operational_special_days(
+        self,
+        operating_profile: TransXChangeElement,
+        recorded_at: datetime.date,
+        result: ValidationResult,
+        vj: TxcVehicleJourney,
+    ) -> bool:
+        """Method to find out the recorded_at_time is present in the start date or end date
+        provided in the SepecialDaysOperation DaysOfOperation date range
+
+        Args:
+            org (TransXChangeElement): _description_
+            result (ValidationResult): validation results class for error collection
+            recorded_at (datetime.date): date on which vehicle activity was recorded
+
+        Returns:
+            bool: True means recorded_at is between the dates given in service organisation
+        """
+        op_working_days = self.get_op_special_days(operating_profile)
+        for date_range in op_working_days:
+            start_date = date_range.get_text_or_default("StartDate")
+            if not start_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as DaysOfOperation has no Start date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                break
+
+            end_date = date_range.get_text_or_default("EndDate")
+            if not end_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as DaysOfOperation has no End date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                break
+
+            start_date_formatted = datetime.datetime.strptime(
+                start_date, "%Y-%m-%d"
+            ).date()
+            end_date_formatted = datetime.datetime.strptime(
+                end_date, "%Y-%m-%d"
+            ).date()
+            if start_date_formatted <= recorded_at <= end_date_formatted:
+                return True
+        return False
+    
+    def is_vehicle_journey_nonoperational_special_days(
+        self,
+        operating_profile: TransXChangeElement,
+        recorded_at: datetime.date,
+        result: ValidationResult,
+        vj: TxcVehicleJourney,
+    ) -> bool:
+        """Method to find out the recorded_at_time is present in the start date or end date
+        Provided in the service organisation of TXC file
+
+        Args:
+            org (TransXChangeElement): _description_
+            result (ValidationResult): validation results class for error collection
+            recorded_at (datetime.date): date on which vehicle activity was recorded
+
+        Returns:
+            bool: True means recorded_at is between the dates given in service organisation
+        """
+        non_op_working_days = self.get_nonop_special_days(operating_profile)
+        for date_range in non_op_working_days:
+            start_date = date_range.get_text_or_default("StartDate")
+            if not start_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as DaysOfNonOperation has no Start date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                break
+
+            end_date = date_range.get_text_or_default("EndDate")
+            if not end_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as DaysOfNonOperation has no End date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                break
+
+            start_date_formatted = datetime.datetime.strptime(
+                start_date, "%Y-%m-%d"
+            ).date()
+            end_date_formatted = datetime.datetime.strptime(
+                end_date, "%Y-%m-%d"
+            ).date()
+            if start_date_formatted <= recorded_at <= end_date_formatted:
+                return True
+        return False
+
     def filter_by_days_of_operation(
         self,
         recorded_at_time: datetime.date,
@@ -732,8 +856,6 @@ class VehicleJourneyFinder:
 
             (
                 service_org_ref,
-                days_of_non_operation,
-                days_of_operation,
                 service_org_ref_dict,
             ) = self.get_service_org_ref_and_days_of_operation(vj)
             service_orgs = self.get_serviced_organisations(vj)
@@ -967,6 +1089,11 @@ class VehicleJourneyFinder:
             recorded_at_time, vehicle_journeys, result
         ):
             return None
+        
+        if not self.filter_by_special_days_of_operation(
+            recorded_at_time, vehicle_journeys, result
+        ):
+            return None
 
         if len(vehicle_journeys) > 1:
             if not self.filter_by_service_code(
@@ -979,3 +1106,42 @@ class VehicleJourneyFinder:
         txc_vehicle_journey = vehicle_journeys[0]
         self.record_journey_match(result, vehicle_journey_ref, txc_vehicle_journey)
         return txc_vehicle_journey
+
+    def filter_by_special_days_of_operation(
+        self,
+        recorded_at_time: datetime.date,
+        vehicle_journeys: List[TxcVehicleJourney],
+        result: ValidationResult,
+    ) -> bool:
+        """Filter vehicle journeys based on days of SpecialDaysOperation DaysOfNonOperations 
+        date range.
+        if DaysOfNonOperation is present and recorded_at_time is BETWEEN start date and end date, 
+        VehicleJourney will be removed from the list
+
+        if DaysOfOperation is present and recorded_at_time is OUTSIDE start date and end date for
+        ServicedOrganisation, VehicleJourney will be removed from the list
+
+        Args:
+            recorded_at_time (datetime.date): vehicle movement recorded date
+            vehicle_journeys (List[TxcVehicleJourney]): list of vehicle journeys
+            result (ValidationResult): result class for recording errors
+
+        Returns:
+            bool:
+        """
+        for vj in reversed(vehicle_journeys):
+            operating_profile = self.get_operating_profile_for_journey(vj)
+            is_vj_nonoperational_on_recorded_at_time = self.is_vehicle_journey_nonoperational_special_days(operating_profile, recorded_at_time, result, vj)
+
+            if is_vj_nonoperational_on_recorded_at_time:
+                vehicle_journeys.remove(vj)
+
+        if len(vehicle_journeys) == 0:
+            result.add_error(
+                ErrorCategory.GENERAL,
+                "Journeys can be found for the operating profile, but they belong to "
+                "the SpecialDaysOperation DaysOfNonOperation date range",
+            )
+            return False
+
+        return True
