@@ -868,7 +868,7 @@ class VehicleJourneyFinder:
             result.set_transxchange_attribute(
                 TransXChangeField.FILENAME, vj.txc_xml.get_file_name()
             )
-            service_org_ref, _, _, _ = self.get_service_org_ref_and_days_of_operation(
+            service_org_ref, _ = self.get_service_org_ref_and_days_of_operation(
                 vj
             )
             operating_profile_xml_string = (

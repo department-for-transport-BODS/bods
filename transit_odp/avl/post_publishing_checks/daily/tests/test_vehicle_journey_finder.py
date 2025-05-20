@@ -325,16 +325,12 @@ def test_get_service_org_ref_and_days_of_operation():
     vehicle_journey_finder = VehicleJourneyFinder()
     (
         service_org_ref,
-        days_of_non_operation,
-        days_of_operation,
         service_org_ref_dict,
     ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
         txc_vehicle_journeys[0]
     )
 
     assert service_org_ref == "KPMG"
-    assert days_of_non_operation is None
-    assert days_of_operation is not None
     assert "KPMG" in service_org_ref_dict["days_of_operation"]
 
 
@@ -346,13 +342,9 @@ def test_get_service_org_ref_and_days_of_non_operation():
     vehicle_journey_finder = VehicleJourneyFinder()
     (
         service_org_ref,
-        days_of_non_operation,
-        days_of_operation,
         service_org_ref_dict,
     ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
         txc_vehicle_journeys[0]
     )
 
     assert service_org_ref is None
-    assert days_of_non_operation is None
-    assert days_of_operation is None
