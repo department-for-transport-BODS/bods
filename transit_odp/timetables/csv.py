@@ -1214,7 +1214,7 @@ def add_under_maintenance_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def add_derive_termination_date(df: pd.DataFrame) -> pd.DataFrame:
+def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
     """
     TXC: Derived termination date = earliest start date of selected TXC file belonging to the
     service number with the next highest revision number that belongs to the same registration.
@@ -1227,20 +1227,21 @@ def add_derive_termination_date(df: pd.DataFrame) -> pd.DataFrame:
         df["operating_period_start_date"], dayfirst=True
     )
 
-    # Work row-by-row per (Registration, LineName) group
     for (reg), group in df.groupby(["service_code"]):
         # Sort group by RevisionNumber
         group_sorted = group.sort_values("revision_number")
 
         for idx, row in group_sorted.iterrows():
-            current_rev = row["revision_number"]
+            current_revision = row["revision_number"]
 
             # Get next higher revision
-            higher_revs = group_sorted[group_sorted["revision_number"] > current_rev]
+            higher_revision = group_sorted[
+                group_sorted["revision_number"] > current_revision
+            ]
 
-            if not higher_revs.empty:
+            if not higher_revision.empty:
                 # Get the one with the next smallest revision
-                next_entry = higher_revs.iloc[0]
+                next_entry = higher_revision.iloc[0]
                 df.at[idx, "derived_termination_date"] = next_entry[
                     "operating_period_start_date"
                 ]
@@ -1421,6 +1422,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
 
     merged.sort_values("dataset_id", inplace=True)
     merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
+    merged = add_derived_termination_date(merged)
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
@@ -1594,7 +1596,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         logger.info("{} Added cancelled date in the new column".format(LOG_PREFIX))
 
     logger.info("{} Adding derived termination date".format(LOG_PREFIX))
-    merged = add_derive_termination_date(merged)
+    merged = add_derived_termination_date(merged)
     logger.info("{} Adding Status Column".format(LOG_PREFIX))
     merged = add_status_columns(merged)
     logger.info("{} Adding Seasonal Status".format(LOG_PREFIX))
