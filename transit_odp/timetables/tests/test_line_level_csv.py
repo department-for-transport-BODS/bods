@@ -146,7 +146,10 @@ def test_service_in_bods_and_otc():
         assert row["Registration Status"] == "Registered"
         assert row["Scope Status"] == "In Scope"
         assert row["Seasonal Status"] == "Not Seasonal"
-        assert row["Timeliness Status"] == "Latest registration variation not published to BODS"
+        assert (
+            row["Timeliness Status"]
+            == "Latest registration variation not published to BODS"
+        )
         assert row["Data set ID"] == dataset.id
         assert (
             row["Date Registration variation needs to be published"]
@@ -506,7 +509,10 @@ def test_stale_otc_variation(effective, modified, period_end, period_start, is_s
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_line_level_catalogue_dataframe()
-    assert (df["Timeliness Status"][0] == "Latest registration variation not published to BODS") == is_stale
+    assert (
+        df["Timeliness Status"][0]
+        == "Latest registration variation not published to BODS"
+    ) == is_stale
     assert df["Requires Attention"][0] == "Yes" if is_stale else "No"
 
 
