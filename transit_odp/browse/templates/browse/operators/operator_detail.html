@@ -116,7 +116,8 @@
                   <div id="accordion-default-content-1" class="govuk-accordion__section-content">
                     <ul class="govuk-list govuk-!-margin-bottom-1 licence-list">
                       {% for licence_dict in operator_licences %}
-                        <li class="govuk-!-margin-bottom-1 {% if licence_dict.non_compliant == True %} non-compliant {% else %} compliant {% endif %}">
+                        <li class="govuk-!-margin-bottom-1">
+                          {% include 'publish/snippets/help_modals/licence_color_symbol_popup.html' with non_compliant=licence_dict.non_compliant %}
                           <a class="govuk-link"
                              href="{% url 'operator-licence-detail' pk=object.id number=licence_dict.licence_number host hosts.data %}">{{ licence_dict.licence_number }}: {{ licence_dict.operator_name }}</a>
                         </li>
