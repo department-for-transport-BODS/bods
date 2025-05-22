@@ -1,0 +1,16 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+{% block help_icon %}
+  <i class="help-icon fas fa-question-circle">
+  </i>
+{% endblock %}
+{% block help_heading %}
+  {% trans "Licence colour indicates compliance" %}
+{% endblock %}
+{% block help_content %}
+  <p class="govuk-body">
+    {% blocktrans %}
+    The red or green symbol indicates whether the data for each in scope and in season service associated with that licence is compliant. The symbol will be red if a service belonging to that licence is not compliant. The symbol will be green if all services belonging to that licence are compliant.
+    {% endblocktrans %}
+  </p>
+{% endblock %}
