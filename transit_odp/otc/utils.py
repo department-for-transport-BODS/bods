@@ -260,7 +260,7 @@ def get_dataframe(services: object, columns: list) -> pd.DataFrame:
     """
     Returns a pandas dataframe for django query object
     """
-    
+
     data = [
         {
             "registration_number": service.registration_number,
