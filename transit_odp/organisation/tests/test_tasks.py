@@ -21,6 +21,7 @@ from transit_odp.organisation.factories import (
     TXCFileAttributesFactory,
 )
 from transit_odp.organisation.models.organisations import Organisation
+from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.organisation.tasks import task_precalculate_operator_sra
 from transit_odp.otc.constants import API_TYPE_WECA
 from transit_odp.otc.factories import (
@@ -29,6 +30,7 @@ from transit_odp.otc.factories import (
     ServiceModelFactory,
     UILtaFactory,
 )
+from transit_odp.timetables.csv import get_timetable_compliance_report
 from transit_odp.transmodel.factories import (
     ServiceFactory,
     ServicePatternFactory,
@@ -45,6 +47,7 @@ pytestmark = pytest.mark.django_db
 class TestOperatorPeriodicTask:
     @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=True)
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
+    @override_flag(FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value, active=True)
     def test_operator_timetable_stats_not_compliant(
         self, mock_avl_requires_attention, request_factory: RequestFactory
     ):
@@ -152,6 +155,7 @@ class TestOperatorPeriodicTask:
 
         request = request_factory.get("/operators/")
         request.user = UserFactory()
+        get_timetable_compliance_report()
         task_precalculate_operator_sra()
 
         org_updated = Organisation.objects.filter(id=org.id).first()
@@ -162,6 +166,7 @@ class TestOperatorPeriodicTask:
 
     @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=True)
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
+    @override_flag(FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value, active=True)
     def test_operator_weca_timetable_stats_not_compliant(
         self, mock_avl_line_level_require_attention, request_factory: RequestFactory
     ):
@@ -285,6 +290,7 @@ class TestOperatorPeriodicTask:
         request = request_factory.get("/operators/")
         request.user = UserFactory()
 
+        get_timetable_compliance_report()
         task_precalculate_operator_sra()
         org_updated = Organisation.objects.filter(id=org.id).first()
         # One out of season seasonal service reduces in scope services to 8
@@ -294,6 +300,7 @@ class TestOperatorPeriodicTask:
 
     @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=True)
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
+    @override_flag(FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value, active=True)
     def test_operator_detail_timetable_stats_compliant(
         self, mock_avl_line_level, request_factory: RequestFactory
     ):
@@ -372,6 +379,7 @@ class TestOperatorPeriodicTask:
         )
         AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
+        get_timetable_compliance_report()
         task_precalculate_operator_sra()
         org_updated = Organisation.objects.filter(id=org.id).first()
         # One out of season seasonal service reduces in scope services to 3
@@ -380,7 +388,10 @@ class TestOperatorPeriodicTask:
         assert org_updated.timetable_sra == 0
 
     @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=True)
-    @override_flag(FeatureFlags.DQS_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(
+        FeatureFlags.DQS_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value, active=True
+    )
+    @override_flag(FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value, active=True)
     def test_operator_detail_dqs_stats_compliant(self, request_factory: RequestFactory):
         org = OrganisationFactory()
         month = timezone.now().date() + datetime.timedelta(weeks=4)
@@ -491,6 +502,7 @@ class TestOperatorPeriodicTask:
         )
         AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
+        get_timetable_compliance_report()
         task_precalculate_operator_sra()
         org_updated = Organisation.objects.filter(id=org.id).first()
         # One out of season seasonal service reduces in scope services to 3
@@ -499,6 +511,7 @@ class TestOperatorPeriodicTask:
 
     @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=True)
     @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
+    @override_flag(FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value, active=True)
     def test_operator_detail_weca_timetable_stats_compliant(
         self, avl_line_level_require_attention, request_factory: RequestFactory
     ):
@@ -590,6 +603,7 @@ class TestOperatorPeriodicTask:
         )
         AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta, atco_code=atco_code)
 
+        get_timetable_compliance_report()
         task_precalculate_operator_sra()
         org_updated = Organisation.objects.filter(id=org.id).first()
         # One out of season seasonal service reduces in scope services to 3
@@ -598,8 +612,11 @@ class TestOperatorPeriodicTask:
         assert org_updated.timetable_sra == 0
 
     @override_flag(FeatureFlags.OPERATOR_PREFETCH_SRA.value, active=True)
-    @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=True)
+    @override_flag(
+        FeatureFlags.FARES_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value, active=True
+    )
     @override_flag(FeatureFlags.AVL_REQUIRES_ATTENTION.value, active=True)
+    @override_flag(FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value, active=True)
     # @patch(AVL_LINE_LEVEL_REQUIRE_ATTENTION)
     def test_operator_detail_multiple_lines_in_service(
         self, request_factory: RequestFactory
@@ -687,6 +704,7 @@ class TestOperatorPeriodicTask:
         )
         AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
+        get_timetable_compliance_report()
         task_precalculate_operator_sra()
         org_updated = Organisation.objects.filter(id=org.id).first()
         # One out of season seasonal service reduces in scope services to 3
