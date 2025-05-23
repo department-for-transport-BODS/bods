@@ -260,8 +260,7 @@ def get_dataframe(services: object, columns: list) -> pd.DataFrame:
     """
     Returns a pandas dataframe for django query object
     """
-    pd.set_option("display.max_columns", None)
-
+    
     data = [
         {
             "registration_number": service.registration_number,
