@@ -26,14 +26,14 @@
     {% with name=licence_number %}
       <li class="govuk-breadcrumbs__list-item">
         <a class="govuk-breadcrumbs__link"
-          href="{% url 'operator-licence-detail' number=licence_number host hosts.data %}?org_id={% if organisation %}{{organisation.id}}{% else %}None{% endif %}">
+          href="{% url 'operator-licence-detail' number=licence_number host hosts.data %}?org_id={% if organisation %}{{ organisation.id }}{% else %}None{% endif %}">
           {{ name }}
         </a>
       </li>
     {% endwith %}
     <li class="govuk-breadcrumbs__list-item">
       <a class="govuk-breadcrumbs__link"
-         href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?org_id={% if organisation %}{{organisation.id}}{% else %}None{% endif %}&line={{ line_name }}&service={{ service_code }}">
+         href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?org_id={% if organisation %}{{ organisation.id }}{% else %}None{% endif %}&line={{ line_name }}&service={{ service_code }}">
         {{ line_name }}
       </a>
     </li>
