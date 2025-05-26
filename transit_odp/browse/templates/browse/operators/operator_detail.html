@@ -119,7 +119,7 @@
                         <li class="govuk-!-margin-bottom-1">
                           {% include 'publish/snippets/help_modals/licence_color_symbol_popup.html' with non_compliant=licence_dict.non_compliant %}
                           <a class="govuk-link"
-                             href="{% url 'operator-licence-detail' pk=object.id number=licence_dict.licence_number host hosts.data %}">{{ licence_dict.licence_number }}: {{ licence_dict.operator_name }}</a>
+                             href="{% url 'operator-licence-detail' number=licence_dict.licence_number host hosts.data %}?org_id={{object.id}}">{{ licence_dict.licence_number }}: {{ licence_dict.operator_name }}</a>
                         </li>
                       {% endfor %}
                     </ul>
