@@ -477,7 +477,7 @@ def get_operator_with_licence_number(licence_numbers: List):
                 "licence_number",
                 "licence_organisation_id",
                 "overall_requires_attention",
-                "non_compliant"
+                "non_compliant",
             ]
         )
     else:
@@ -493,7 +493,11 @@ def get_operator_with_licence_number(licence_numbers: List):
         compliance_report_df = compliance_report_df.groupby(
             ["licence_number", "licence_organisation_id"], as_index=False, dropna=False
         ).agg(
-            {"overall_requires_attention": lambda x: "Yes" if "Yes" in x.values else "No"}
+            {
+                "overall_requires_attention": lambda x: "Yes"
+                if "Yes" in x.values
+                else "No"
+            }
         )
 
         compliance_report_df.loc[
