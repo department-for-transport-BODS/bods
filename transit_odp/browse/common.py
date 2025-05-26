@@ -495,8 +495,6 @@ def get_operator_with_licence_number(licence_numbers: List):
         {"overall_requires_attention": lambda x: "Yes" if "Yes" in x.values else "No"}
     )
 
-    compliance_report_df.to_csv("compliance_report_after_group_by.csv")
-
     compliance_report_df.loc[
         compliance_report_df["overall_requires_attention"] == "Yes", "non_compliant"
     ] = True
@@ -510,4 +508,12 @@ def get_operator_with_licence_number(licence_numbers: List):
         "operator_name"
     ].fillna("--")
 
-    return operator_licences_df.reset_index().to_dict("records")
+    # to remove duplicate licence when we have operator name -- for some of the duplicate values
+    counts = operator_licences_df["licence_number"].value_counts()
+
+    operator_filtered = operator_licences_df[
+        (operator_licences_df["licence_number"].map(counts) == 1) |
+        ((operator_licences_df["licence_number"].map(counts) > 1) & (operator_licences_df['operator_name'] != '--'))
+    ]
+
+    return operator_filtered.reset_index().to_dict("records")

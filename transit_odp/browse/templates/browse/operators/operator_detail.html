@@ -51,7 +51,7 @@
       <div id="feed-stat-list" class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
           <div class="feed-stat">
-            <span class="feed-stat__value">{{ total_services_requiring_attention }}/{{ total_in_scope_in_season_services }}</span>
+            <span class="feed-stat__value csp-inline">{{ total_services_requiring_attention }}</span><span class="csp-total-inscope-inseason">/{{ total_in_scope_in_season_services }}</span>
             <span class="feed-stat__label">
               {% trans "Total services that require attention" %}
               <b class="govuk-!-font-size-16 bods-relative-bottom">
