@@ -138,6 +138,53 @@ class VehicleJourneyFinder:
 
         return txc_file_attrs
 
+    def set_dataset_attributes(
+        self,
+        txc_file_attrs: List[TXCFileAttributes],
+        mvj: MonitoredVehicleJourney,
+        result: ValidationResult,
+    ) -> bool:
+        """
+        Checks if the matched TXC files belong to the same dataset. If they do, sets various attributes in the result object.
+        If they don't, logs an error and adds an error to the result object.
+        Args:
+            txc_file_attrs (List[TXCFileAttributes]): List of TXC file attributes.
+            mvj (MonitoredVehicleJourney): The monitored vehicle journey.
+            result (ValidationResult): The result object to be updated.
+        Returns:
+            bool: True if the matched TXC files belong to the same dataset, False otherwise.
+        """
+        dataset_ids = {txc.dataset_id for txc in txc_file_attrs}
+        dataset_id = dataset_ids.pop()
+        result.set_misc_value(MiscFieldPPC.BODS_DATASET_ID, dataset_id)
+        result.set_txc_value(SirivmField.OPERATOR_REF, mvj.operator_ref)
+        result.set_matches(SirivmField.OPERATOR_REF)
+        result.set_txc_value(SirivmField.LINE_REF, mvj.line_ref)
+        result.set_txc_value(SirivmField.PUBLISHED_LINE_NAME, mvj.published_line_name)
+        result.set_transxchange_attribute(TransXChangeField.DATASET_ID, dataset_id)
+        result.set_transxchange_attribute(
+            TransXChangeField.MODIFICATION_DATE,
+            txc_file_attrs[0].modification_datetime,
+        )
+        result.set_transxchange_attribute(
+            TransXChangeField.FILENAME, txc_file_attrs[0].filename
+        )
+        result.set_transxchange_attribute(
+            TransXChangeField.OPERATING_PERIOD_END_DATE,
+            txc_file_attrs[0].operating_period_end_date,
+        )
+        result.set_transxchange_attribute(
+            TransXChangeField.OPERATING_PERIOD_START_DATE,
+            txc_file_attrs[0].operating_period_start_date,
+        )
+        result.set_transxchange_attribute(
+            TransXChangeField.SERVICE_CODE, txc_file_attrs[0].service_code
+        )
+        result.set_transxchange_attribute(TransXChangeField.LINE_REF, mvj.line_ref)
+        result.set_matches(SirivmField.LINE_REF)
+
+        return True
+
     def get_corresponding_timetable_xml_files(
         self, txc_file_attrs: List[TXCFileAttributes]
     ) -> List[TransXChangeDocument]:
@@ -867,6 +914,8 @@ class VehicleJourneyFinder:
         )
         if not matching_txc_file_attrs:
             return None
+
+        self.set_dataset_attributes(matching_txc_file_attrs, mvj, result)
 
         txc_xml = self.get_corresponding_timetable_xml_files(matching_txc_file_attrs)
 
