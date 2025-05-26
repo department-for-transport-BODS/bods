@@ -474,30 +474,31 @@ def get_operator_with_licence_number(licence_numbers: List):
     if compliance_report_df.empty:
         compliance_report_df = pd.DataFrame(
             columns=[
-                "otc_licence_number",
+                "licence_number",
                 "licence_organisation_id",
                 "overall_requires_attention",
+                "non_compliant"
             ]
         )
+    else:
+        compliance_report_df.drop_duplicates(inplace=True)
 
-    compliance_report_df.drop_duplicates(inplace=True)
+        compliance_report_df.rename(
+            columns={"otc_licence_number": "licence_number"}, inplace=True
+        )
+        compliance_report_df["licence_organisation_id"] = compliance_report_df[
+            "licence_organisation_id"
+        ].astype("Int64")
 
-    compliance_report_df.rename(
-        columns={"otc_licence_number": "licence_number"}, inplace=True
-    )
-    compliance_report_df["licence_organisation_id"] = compliance_report_df[
-        "licence_organisation_id"
-    ].astype("Int64")
+        compliance_report_df = compliance_report_df.groupby(
+            ["licence_number", "licence_organisation_id"], as_index=False, dropna=False
+        ).agg(
+            {"overall_requires_attention": lambda x: "Yes" if "Yes" in x.values else "No"}
+        )
 
-    compliance_report_df = compliance_report_df.groupby(
-        ["licence_number", "licence_organisation_id"], as_index=False, dropna=False
-    ).agg(
-        {"overall_requires_attention": lambda x: "Yes" if "Yes" in x.values else "No"}
-    )
-
-    compliance_report_df.loc[
-        compliance_report_df["overall_requires_attention"] == "Yes", "non_compliant"
-    ] = True
+        compliance_report_df.loc[
+            compliance_report_df["overall_requires_attention"] == "Yes", "non_compliant"
+        ] = True
 
     # merge the operator licences
     operator_licences_df = operator_licences_df.merge(compliance_report_df, how="left")
