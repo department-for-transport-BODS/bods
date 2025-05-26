@@ -512,8 +512,11 @@ def get_operator_with_licence_number(licence_numbers: List):
     counts = operator_licences_df["licence_number"].value_counts()
 
     operator_filtered = operator_licences_df[
-        (operator_licences_df["licence_number"].map(counts) == 1) |
-        ((operator_licences_df["licence_number"].map(counts) > 1) & (operator_licences_df['operator_name'] != '--'))
+        (operator_licences_df["licence_number"].map(counts) == 1)
+        | (
+            (operator_licences_df["licence_number"].map(counts) > 1)
+            & (operator_licences_df["operator_name"] != "--")
+        )
     ]
 
     return operator_filtered.reset_index().to_dict("records")
