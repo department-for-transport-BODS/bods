@@ -370,13 +370,16 @@ ul.licence-list {
   padding-left: 0;
 }
 
-ul.licence-list li {
-  position: relative;
+ui li {
   padding-left: 24px;
+}
+
+ul.licence-list .compliance-indicator {
+  position: relative;
   margin-bottom: 8px;
 }
 
-ul.licence-list li::before {
+ul.licence-list .compliance-indicator {
   content: "";
   position: absolute;
   left: 0;
@@ -387,10 +390,27 @@ ul.licence-list li::before {
   background-color: grey;
 }
 
-ul.licence-list li.compliant::before {
+ul.licence-list .compliance-indicator.compliant {
   background-color: #00703c;
 }
 
-ul.licence-list li.non-compliant::before {
+ul.licence-list .compliance-indicator.non-compliant {
   background-color: #d4351c;
+}
+
+ul.licence-list a {
+  padding-left: 25px;
+}
+
+.compliance-indicator-help-icon {
+  position: relative;
+}
+
+.csp-total-inscope-inseason {
+  font-weight: normal;
+  font-size: 1.8rem;
+}
+
+.csp-inline {
+  display: inline;
 }
