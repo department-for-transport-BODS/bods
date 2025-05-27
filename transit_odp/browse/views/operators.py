@@ -1573,7 +1573,7 @@ class LicenceLineMetadataDetailView(DetailView):
                 licence__organisation__licences__number__in=licence_number
             )
         }
-    
+
     def is_service_in_scope_service(self) -> bool:
         """check is service is in scope or not system will
         check 3 points to decide in scope Service Exception,
