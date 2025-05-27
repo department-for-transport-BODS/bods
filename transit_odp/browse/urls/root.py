@@ -57,6 +57,23 @@ urlpatterns = [
         "operators/",
         include(
             [
+                path(
+                    "licence/<slug:number>/",
+                    include(
+                        [
+                            path(
+                                "",
+                                view=LicenceDetailView.as_view(),
+                                name="operator-licence-detail",
+                            ),
+                            path(
+                                "line/details/",
+                                view=LicenceLineMetadataDetailView.as_view(),
+                                name="licence-line-detail",
+                            ),
+                        ]
+                    ),
+                ),
                 path("", view=OperatorsView.as_view(), name="operators"),
                 path(
                     "<int:pk>/",
@@ -66,23 +83,6 @@ urlpatterns = [
                                 "",
                                 view=OperatorDetailView.as_view(),
                                 name="operator-detail",
-                            ),
-                            path(
-                                "licence/<slug:number>/",
-                                include(
-                                    [
-                                        path(
-                                            "",
-                                            view=LicenceDetailView.as_view(),
-                                            name="operator-licence-detail",
-                                        ),
-                                        path(
-                                            "line/details/",
-                                            view=LicenceLineMetadataDetailView.as_view(),
-                                            name="licence-line-detail",
-                                        ),
-                                    ]
-                                ),
                             ),
                             path(
                                 "contact/",
