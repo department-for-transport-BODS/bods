@@ -1,5 +1,6 @@
 from logging import getLogger
 from math import floor, ceil
+import re
 from typing import Dict, List
 from datetime import datetime, timedelta
 
@@ -1554,3 +1555,77 @@ class LicenceLineMetadataDetailView(DetailView):
                 data["booking_methods"] = booking_arrangements_info[0][1:]
 
         return data
+
+    def get_service_code_exemption_map(
+        self, licence_number: str
+    ) -> Dict[str, ServiceCodeExemption]:
+        """Get the status of service excemption
+
+        Args:
+            licence_number (str): licence number to check for excemption
+
+        Returns:
+            Dict[str, ServiceCodeExemption]: dict for excemption object
+        """
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in ServiceCodeExemption.objects.add_registration_number().filter(
+                licence__organisation__licences__number__in=licence_number
+            )
+        }
+    
+    def is_service_in_scope_service(self) -> bool:
+        """check is service is in scope or not system will
+        check 3 points to decide in scope Service Exception,
+        Seasonal Service Status and Traveling region
+
+        Returns:
+            bool: True if in scope else False
+        """
+        exemption = self.service_code_exemption_map.get(
+            self.service.registration_number
+        )
+        traveline_regions = self.service.traveline_region
+        if traveline_regions:
+            traveline_regions = traveline_regions.split("|")
+        else:
+            traveline_regions = []
+        is_english_region = list(
+            set(ENGLISH_TRAVELINE_REGIONS) & set(traveline_regions)
+        )
+
+        if not (not (exemption and exemption.registration_code) and is_english_region):
+            return False
+
+        return True
+
+    def is_service_in_season_service(self) -> bool:
+        """check is service is in season or not system will
+        check 1 points to decide in season, Seasonal Service Status
+
+        Returns:
+            bool: True if in season else False
+        """
+        seasonal_service = self.seasonal_service_map.get(
+            self.service.registration_number.replace("/", ":")
+        )
+
+        if seasonal_service and not seasonal_service.seasonal_status:
+            return False
+        return True
+
+    def get_seasonal_service_map(
+        self, licence_number: str
+    ) -> Dict[str, SeasonalService]:
+        """
+        Get a dictionary which includes all the Seasonal Services
+        for an organisation.
+        """
+        return {
+            service.registration_number.replace("/", ":"): service
+            for service in SeasonalService.objects.filter(
+                licence__organisation__licences__number__in=[licence_number]
+            )
+            .add_registration_number()
+            .add_seasonal_status()
+        }
