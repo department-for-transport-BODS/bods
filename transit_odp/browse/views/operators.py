@@ -50,7 +50,6 @@ from transit_odp.organisation.models.data import (
 from transit_odp.organisation.models.organisations import Licence
 from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.models import Licence as OTCLicence
-from transit_odp.otc.models import Service
 from transit_odp.publish.requires_attention import (
     FaresRequiresAttention,
     get_avl_requires_attention_line_level_data,
