@@ -147,3 +147,10 @@ def task_precalculate_ui_lta_sra():
     for uilta in uilta_qs:
         uilta_calculate_sra(uilta)
     logger.info("Finished updating UI LTA service require attention")
+
+
+@shared_task()
+def task_refresh_otc_updates_in_service_number():
+    registry = Registry()
+    loader = Loader(registry)
+    loader.load_services_with_updated_service_numbers()
