@@ -48,6 +48,7 @@ class ExtractTracksData(ExtractBaseTestCase):
         route_map["file_id"] = file_id
         tracks_df = pd.DataFrame(tracks_data)
         tracks_df["file_id"] = file_id
+        tracks_df["rl_order"] = [1, 2]
         self.assertTrue(check_frame_equal(extracted.journey_pattern_tracks, tracks_df))
         self.assertTrue(check_frame_equal(extracted.route_map, route_map))
 
