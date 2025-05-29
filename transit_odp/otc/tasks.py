@@ -1,20 +1,15 @@
 from logging import getLogger
-import pandas as pd
 
 from celery import shared_task
 from waffle import flag_is_active
 
-from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
-from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
-    get_vehicle_activity_operatorref_linename,
-)
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.naptan.models import AdminArea
 from transit_odp.otc.ep.loaders import Loader as EPLoader
 from transit_odp.otc.ep.registry import Registry as EPRegistry
 from transit_odp.otc.loaders import Loader
 from transit_odp.otc.loaderslta import LoaderLTA
-from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority, UILta
+from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.registry import Registry
 from transit_odp.otc.weca.loaders import Loader as WecaLoader
@@ -23,8 +18,9 @@ from transit_odp.otc.weca.registry import Registry as WecaRegistry
 from .utils import (
     check_missing_csv_lta_names,
     get_ui_lta,
+    precalculate_ui_lta_sra_compliance_report,
+    precalculate_ui_lta_sra_db,
     read_local_authority_comparison_file_from_s3_bucket,
-    uilta_calculate_sra,
 )
 
 logger = getLogger(__name__)
@@ -136,16 +132,24 @@ def task_precalculate_ui_lta_sra():
         "", FeatureFlags.UILTA_PREFETCH_SRA.value
     )
 
+    is_uilta_prefetch_sra_from_db_active = flag_is_active(
+        "", FeatureFlags.UILTA_PREFETCH_SRA_FROM_DB.value
+    )
+
     if not is_uilta_prefetch_sra_active:
         logger.info(
             f"Flag {FeatureFlags.UILTA_PREFETCH_SRA.value} is not active, skipping the execution."
         )
         return
 
-    uilta_qs = UILta.objects.all()
-    logger.info(f"Total UI LTA's found {uilta_qs.count()}")
-    for uilta in uilta_qs:
-        uilta_calculate_sra(uilta)
+    if is_uilta_prefetch_sra_from_db_active:
+        logger.info("Calculating UI LTA service require attention from database")
+        precalculate_ui_lta_sra_db()
+    else:
+        logger.info(
+            "Calculating UI LTA service require attention from compliance report"
+        )
+        precalculate_ui_lta_sra_compliance_report()
     logger.info("Finished updating UI LTA service require attention")
 
 

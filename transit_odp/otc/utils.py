@@ -1,15 +1,19 @@
-import pandas as pd
 import csv
 import logging
 from io import StringIO
 from typing import List, Optional
 
 import botocore
+import pandas as pd
 from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
 from waffle import flag_is_active
 
+from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
+from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
+    get_vehicle_activity_operatorref_linename,
+)
 from transit_odp.browse.common import get_in_scope_in_season_lta_service_numbers
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.utils.s3_bucket_connection import get_s3_bodds_bucket_storage
@@ -173,7 +177,47 @@ def get_service_in_scotland_from_db(service_ref: str) -> bool:
     return is_scottish
 
 
-def uilta_calculate_sra(uilta: UILta):
+def precalculate_ui_lta_sra_db():
+    """
+    Calculate UI LTA SRA from database
+    Uses the old methods for calculation
+    """
+    logger.info("Executing the job for ui lta service require attention from database.")
+    is_avl_require_attention_active = flag_is_active(
+        "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
+    )
+
+    uncounted_activity_df = pd.DataFrame(columns=["OperatorRef", "LineRef"])
+    synced_in_last_month = []
+    if is_avl_require_attention_active:
+        uncounted_activity_df = get_vehicle_activity_operatorref_linename()
+        abods_registry = AbodsRegistery()
+        synced_in_last_month = abods_registry.records()
+
+    logger.info(
+        f"Step: Starting UI LTA level processing. With Synced in last month {len(synced_in_last_month)} Uncounded vehicle activity df {uncounted_activity_df.shape}"
+    )
+    uilta_qs = UILta.objects.all()
+    logger.info(f"Total UI LTA's found {uilta_qs.count()}")
+    for uilta in uilta_qs:
+        uilta_calculate_sra_from_db(uilta, uncounted_activity_df, synced_in_last_month)
+
+
+def precalculate_ui_lta_sra_compliance_report():
+    """
+    Calculate UI LTA SRA from compliance report
+    Uses compliance report table for the calculation
+    """
+    logger.info(
+        "Executing the job for ui lta service require attention from compliance report."
+    )
+    uilta_qs = UILta.objects.all()
+    logger.info(f"Total UI LTA's found {uilta_qs.count()}")
+    for uilta in uilta_qs:
+        uilta_calculate_sra_from_compliance_report(uilta)
+
+
+def uilta_calculate_sra_from_compliance_report(uilta: UILta):
     """SRA calculation for single UI LTA
 
     Args:
@@ -292,3 +336,64 @@ def find_differing_registration_numbers(df1: pd.DataFrame, df2: pd.DataFrame) ->
 
     differing_reg_numbers = merged_df.loc[differences, "registration_number"].tolist()
     return differing_reg_numbers
+
+
+def uilta_calculate_sra_from_db(
+    uilta: UILta, uncounted_activity_df: pd.DataFrame, synced_in_last_month: List
+):
+    """SRA calculation for single UI LTA
+
+    Args:
+        organisation (Organisation): Organisation object
+        uncounted_activity_df (pd.DataFrame): vehicle activity value
+        synced_in_last_month (List): Abods lines list
+    """
+    try:
+        is_avl_require_attention_active = flag_is_active(
+            "", FeatureFlags.AVL_REQUIRES_ATTENTION.value
+        )
+
+        is_fares_require_attention_active = flag_is_active(
+            "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        )
+
+        lta_objs = uilta.localauthority_ui_lta_records.all()
+
+        logger.debug(
+            "UILTA Calculate SRA DB: Total {} Local Authority Objects Found".format(
+                len(lta_objs)
+            )
+        )
+
+        if lta_objs.count() <= 0:
+            logger.debug(
+                "Skipping SRA for UILTA {} with Zero Local Authorities".format(
+                    uilta.name
+                )
+            )
+            return
+
+        avl_sra = fares_sra = []
+        in_scope_services = get_in_scope_in_season_lta_service_numbers(lta_objs)
+        timetable_sra = get_requires_attention_data_lta_line_level_objects(lta_objs)
+
+        if is_avl_require_attention_active:
+            avl_sra = get_avl_records_require_attention_lta_line_level_objects(
+                lta_objs, uncounted_activity_df, synced_in_last_month
+            )
+
+        if is_fares_require_attention_active:
+            fares_sra = get_fares_records_require_attention_lta_line_level_objects(
+                lta_objs
+            )
+
+        overall_sra = get_overall_sra_unique_services(timetable_sra, avl_sra, fares_sra)
+        uilta.total_inscope = len(in_scope_services)
+        uilta.timetable_sra = len(timetable_sra)
+        uilta.avl_sra = len(avl_sra)
+        uilta.fares_sra = len(fares_sra)
+        uilta.overall_sra = len(overall_sra)
+        uilta.save()
+    except Exception as e:
+        logger.error(f"Error occured while syncing sra for uilta {uilta.name}")
+        logger.exception(e)

@@ -40,3 +40,5 @@ class FeatureFlags(Enum):
     )
     FRANCHISE_ORGANISATION = "is_franchise_organisation_active"
     CREATE_SEVEN_DAY_PPC_REPROT_DAILY = "is_create_seven_day_ppc_report_daily"
+    OPERATOR_PREFETCH_SRA_FROM_DB = "is_operator_prefetch_sra_from_db_active"
+    UILTA_PREFETCH_SRA_FROM_DB = "is_uilta_prefetch_sra_from_db_active"
