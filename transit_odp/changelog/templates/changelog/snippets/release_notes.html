@@ -1,4 +1,42 @@
 {% load i18n %}
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "May 2025 (1.47.0)" %}</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      An improvement to the display of the Operator and Local Transport Authority profiles.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An improvement to the way the AVL to timetable matching logic handles special days of operation and non-operation.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An improvement to the way the AVL to timetable matching logic handles duplicate journeys for service codes that are present within a single dataset.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      An improvement to the way the AVL to timetable matching reports are generated, so that they reflect analysis done over a 7 day rolling period.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A feature to enable to re-allocation of franchise services to the franchise organisation.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      A fix to the integration with the Naptan ETL.
+    {% endblocktrans %}
+  </li>
+</ul>
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">{% trans "April 2025 (1.46.0)" %}</h3>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}
