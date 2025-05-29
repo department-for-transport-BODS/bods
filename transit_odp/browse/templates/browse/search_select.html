@@ -34,7 +34,7 @@
 {% block heading.subtitle %}
   <div class="govuk-!-padding-right-9 ">
     <div class="govuk-grid-row">
-      <a class="govuk-link-bold govuk-body" href="{% url 'search' host hosts.data %}?status=live">
+      <a class="govuk-link govuk-body" href="{% url 'search' host hosts.data %}?status=live">
         {% trans "Timetables data" %}
       </a>
       <p class="govuk-body govuk-!-padding-top-3">
@@ -71,7 +71,7 @@
       </ul>
     </div>
     <div class="govuk-grid-row govuk-!-margin-top-7">
-      <a class="govuk-link-bold govuk-body" href="{% url 'avl-search' host hosts.data %}?status=live">
+      <a class="govuk-link govuk-body" href="{% url 'avl-search' host hosts.data %}?status=live">
         {% trans "Location data" %}
       </a>
       <p class="govuk-body govuk-!-padding-top-3">
@@ -108,7 +108,7 @@
       </ul>
     </div>
     <div class="govuk-grid-row govuk-!-margin-top-7">
-      <a class="govuk-link-bold govuk-body" href="{% url 'search-fares' host hosts.data %}?status=live">
+      <a class="govuk-link govuk-body" href="{% url 'search-fares' host hosts.data %}?status=live">
         {% trans "Fares data" %}
       </a>
       <p class="govuk-body govuk-!-padding-top-3">
@@ -145,7 +145,7 @@
       </ul>
     </div>
     <div class="govuk-grid-row govuk-!-margin-top-7">
-      <a class="govuk-link-bold govuk-body" href="{% url 'disruptions-data' host hosts.data %}">
+      <a class="govuk-link govuk-body" href="{% url 'disruptions-data' host hosts.data %}">
         {% trans "Disruption data" %}
       </a>
       <p class="govuk-body govuk-!-padding-top-3">
