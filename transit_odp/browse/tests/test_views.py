@@ -2093,6 +2093,7 @@ class TestLTAView:
     @override_flag(FeatureFlags.FARES_REQUIRE_ATTENTION.value, active=False)
     @override_flag(FeatureFlags.COMPLETE_SERVICE_PAGES.value, active=False)
     @override_flag(FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value, active=False)
+    @override_flag(FeatureFlags.UILTA_PREFETCH_SRA.value, active=False)
     def test_lta_view_complaint(self, request_factory: RequestFactory):
         get_lta_complaint_data_queryset()
 
@@ -2108,6 +2109,7 @@ class TestLTAView:
         # 2 non-stale, 6 requiring attention. 6/8 services requiring attention = 75%
         assert context["services_require_attention_percentage"] == 75
 
+    @override_flag(FeatureFlags.UILTA_PREFETCH_SRA.value, active=False)
     def test_lta_weca_view_complaint(self, request_factory: RequestFactory):
         get_lta_complaint_weca_data_queryset()
 

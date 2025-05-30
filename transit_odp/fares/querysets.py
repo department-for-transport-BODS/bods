@@ -1,5 +1,15 @@
 from django.db import models
-from django.db.models import BooleanField, Case, CharField, F, Func, Q, Value, When
+from django.db.models import (
+    BooleanField,
+    Case,
+    CharField,
+    F,
+    Func,
+    Q,
+    Value,
+    When,
+    IntegerField,
+)
 
 from transit_odp.organisation.constants import INACTIVE
 from transit_odp.organisation.querysets import DatasetQuerySet
@@ -169,6 +179,16 @@ class FaresNetexFileAttributesQuerySet(models.QuerySet):
                 Value("", output_field=CharField()),
                 function="array_to_string",
                 output_field=CharField(),
+            )
+        )
+
+    def add_is_null_valid_to(self):
+        """add is null field for checking the null value for valid to date"""
+        return self.annotate(
+            is_null_valid_to=Case(
+                When(valid_to__isnull=True, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField(),
             )
         )
 

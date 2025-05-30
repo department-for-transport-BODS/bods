@@ -1129,6 +1129,7 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
         .add_published_date()
         .add_compliance_status()
         .add_operator_id()
+        .add_is_null_valid_to()
         .values(
             "xml_file_name",
             "valid_from",
@@ -1143,6 +1144,7 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
             "tariff_basis",
             "product_name",
             "operator_id",
+            "is_null_valid_to",
         )
     )
     fares_df = pd.DataFrame.from_records(qs)
@@ -1186,7 +1188,7 @@ def get_fares_dataset_map(txc_map: Dict[tuple, TXCFileAttributes]) -> pd.DataFra
 
     fares_df_merged = (
         fares_df_merged.sort_values(
-            by=["valid_to", "valid_from", "xml_file_name"],
+            by=["is_null_valid_to", "valid_to", "xml_file_name"],
             ascending=[False, False, False],
         )
         .drop_duplicates(subset=["line_name", "national_operator_code"])
