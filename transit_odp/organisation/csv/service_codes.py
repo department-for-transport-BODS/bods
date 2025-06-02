@@ -16,7 +16,7 @@ from transit_odp.browse.common import (
 from transit_odp.browse.lta_column_headers import get_operator_name
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.csv import CSVBuilder, CSVColumn
-from transit_odp.organisation.models import TXCFileAttributes
+from transit_odp.organisation.models import Organisation, TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
 from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.constants import (
@@ -1381,6 +1381,24 @@ class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
             }
         )
 
+    def get_franchise_registration_numbers(self, organisation: Organisation) -> list:
+        """
+        Returns the services associated with a franchise based on the atco codes
+        associated with the organisation.
+
+        Args:
+            organisation (Organisation): Organisation object
+
+        Returns:
+            list: List of services associated with the franchise
+        """
+        org_atco_codes = organisation.admin_areas.values_list("atco_code", flat=True)
+        return list(
+            OTCService.objects.filter(atco_code__in=org_atco_codes).values_list(
+                "registration_number", flat=True
+            )
+        )
+
     def get_otc_service_bods_data(self, organisation_id: int) -> None:
         """
         Compares an organisation's OTC Services dictionaries list with
@@ -1392,9 +1410,28 @@ class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
         Args:
             organisation_id (int): Organisation ID
         """
-        compliance_report = ComplianceReport.objects.filter(
-            licence_organisation_id=organisation_id
-        ).all()
+        is_franchise_organisation_active = flag_is_active(
+            "", FeatureFlags.FRANCHISE_ORGANISATION.value
+        )
+        if is_franchise_organisation_active:
+            organisation = Organisation.objects.get(id=organisation_id)
+            franchise_registration_numbers = self.get_franchise_registration_numbers(
+                organisation
+            )
+
+            if organisation.is_franchise:
+                compliance_report = ComplianceReport.objects.filter(
+                    registration_number__in=franchise_registration_numbers
+                ).all()
+            else:
+                compliance_report = ComplianceReport.objects.filter(
+                    licence_organisation_id=organisation_id
+                ).exclude(registration_number__in=franchise_registration_numbers)
+        else:
+            compliance_report = ComplianceReport.objects.filter(
+                licence_organisation_id=organisation_id
+            ).all()
+
         for service_record in compliance_report:
             self._update_data(service_record)
 
