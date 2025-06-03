@@ -267,7 +267,7 @@ class VehicleJourneyFinder:
                                 continue
 
                         end_date_str = "-" if end_date is None else str(end_date)
-                        logger.debug(
+                        logger.info(
                             f"Filtering out timetable {txc_xml[idx].get_file_name()} "
                             f"with OperatingPeriod ({start_date} to {end_date_str})"
                         )
@@ -306,7 +306,7 @@ class VehicleJourneyFinder:
                 )
             except NoElement:
                 vehicle_journeys = []
-            logger.debug(
+            logger.info(
                 f"Timetable {timetable} has {len(vehicle_journeys)} vehicle journeys"
             )
             for vehicle_journey in vehicle_journeys:
@@ -318,7 +318,7 @@ class VehicleJourneyFinder:
                 except (NoElement, TooManyElements):
                     continue
                 if journey_code == vehicle_journey_ref:
-                    logger.debug(
+                    logger.info(
                         f"Found TicketMachine/JourneyCode {journey_code} in timetable "
                         f"{timetable.get_file_name()}"
                     )
@@ -329,7 +329,7 @@ class VehicleJourneyFinder:
         logger.info(
             f"Filtering by JourneyCode gave {len(vehicle_journeys)} matching journeys"
         )
-        logger.debug(
+        logger.info(
             f"In {len(txc_xml)} timetables, found JourneyCode's: {debug_journey_codes}"
         )
 
@@ -451,7 +451,7 @@ class VehicleJourneyFinder:
             journey_code_operating_profile.append(operating_profile_xml_string)
 
             if operating_profile is None:
-                logger.debug(
+                logger.info(
                     "Ignoring VehicleJourney with no operating profile: "
                     f"{vj.vehicle_journey}"
                 )
@@ -472,25 +472,17 @@ class VehicleJourneyFinder:
             for day in DayOfWeek:
                 if profile_days_of_week[0].get_element_or_none(day.value) is not None:
                     specified_days.append(day)
-            if is_special_days_ppc_logic_active:
-                if (
-                    day_of_week not in specified_days
-                    and not self.is_vehicle_journey_operational_special_days(
-                        operating_profile, activity_date, result, vj
-                    )
-                ):
-                    logger.debug(
-                        "Ignoring VehicleJourney with operating profile inapplicable to "
-                        f"{day_of_week}"
-                    )
-                    vehicle_journeys.remove(vj)
-            else:
-                if day_of_week not in specified_days:
-                    logger.debug(
-                        "Ignoring VehicleJourney with operating profile inapplicable to "
-                        f"{day_of_week}"
-                    )
-                    vehicle_journeys.remove(vj)
+            if day_of_week not in specified_days and (
+                not is_special_days_ppc_logic_active
+                or not self.is_vehicle_journey_operational_special_days(
+                    operating_profile, activity_date, result, vj
+                )
+            ):
+                logger.debug(
+                    "Ignoring VehicleJourney with operating profile inapplicable to "
+                    f"{day_of_week}"
+                )
+                vehicle_journeys.remove(vj)
 
         logger.info(
             f"Filtering by OperatingProfile left {len(vehicle_journeys)} matching "
