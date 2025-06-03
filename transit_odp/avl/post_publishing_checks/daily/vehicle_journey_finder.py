@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple
 from zipfile import ZipFile
-
+from waffle import flag_is_active
 from lxml import etree
 
 from transit_odp.avl.post_publishing_checks.constants import (
@@ -434,6 +434,9 @@ class VehicleJourneyFinder:
         in place with inapplicable vehicle journeys removed.
         NOTE: Bank Holidays not yet supported
         """
+        is_special_days_ppc_logic_active = flag_is_active(
+            "", "is_special_days_ppc_logic_active"
+        )
         journey_code_operating_profile = []
         for vj in reversed(vehicle_journeys):
             result.set_transxchange_attribute(
@@ -469,17 +472,26 @@ class VehicleJourneyFinder:
             for day in DayOfWeek:
                 if profile_days_of_week[0].get_element_or_none(day.value) is not None:
                     specified_days.append(day)
-            if (
-                day_of_week not in specified_days
-                and not self.is_vehicle_journey_operational_special_days(
-                    operating_profile, activity_date, result, vj
-                )
-            ):
-                logger.debug(
-                    "Ignoring VehicleJourney with operating profile inapplicable to "
-                    f"{day_of_week}"
-                )
-                vehicle_journeys.remove(vj)
+            if is_special_days_ppc_logic_active:
+                if (
+                    day_of_week not in specified_days
+                    and not self.is_vehicle_journey_operational_special_days(
+                        operating_profile, activity_date, result, vj
+                    )
+                ):
+                    logger.debug(
+                        "Ignoring VehicleJourney with operating profile inapplicable to "
+                        f"{day_of_week}"
+                    )
+                    vehicle_journeys.remove(vj)
+            else:
+                if day_of_week not in specified_days:
+                    logger.debug(
+                        "Ignoring VehicleJourney with operating profile inapplicable to "
+                        f"{day_of_week}"
+                    )
+                    vehicle_journeys.remove(vj)
+
         logger.info(
             f"Filtering by OperatingProfile left {len(vehicle_journeys)} matching "
             "journeys"
@@ -1021,6 +1033,9 @@ class VehicleJourneyFinder:
         result: ValidationResult,
     ) -> Optional[TxcVehicleJourney]:
         """Match a SRI-VM VehicleActivity to a TXC VehicleJourney."""
+        is_special_days_ppc_logic_active = flag_is_active(
+            "", "is_special_days_ppc_logic_active"
+        )
         mvj = activity.monitored_vehicle_journey
 
         if not self.check_operator_and_line_present(activity, result):
@@ -1087,10 +1102,11 @@ class VehicleJourneyFinder:
         ):
             return None
 
-        if not self.filter_by_special_days_of_operation(
-            recorded_at_time, vehicle_journeys, result
-        ):
-            return None
+        if is_special_days_ppc_logic_active:
+            if not self.filter_by_special_days_of_operation(
+                recorded_at_time, vehicle_journeys, result
+            ):
+                return None
 
         if len(vehicle_journeys) > 1:
             if not self.filter_by_service_code(
