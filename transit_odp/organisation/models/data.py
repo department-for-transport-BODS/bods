@@ -573,22 +573,22 @@ class DatasetRevision(
 
         if not self.status_before_reprocessing:
             logger.info(
-                f"Revision {self.id} first time reprocessing: "
-                f"Preserving status='{self.status}'"
+                f"Revision {self.id} reprocessing: Preserving status='{self.status}'"
             )
             self.status_before_reprocessing = self.status
             was_updated = True
 
         if self.modified_before_reprocessing is None:
             logger.info(
-                f"Revision {self.id} First-time reprocessing: "
-                f"Preserving modified={self.modified}"
+                f"Revision {self.id} reprocessing: Preserving modified={self.modified}"
             )
             self.modified_before_reprocessing = self.modified
             was_updated = True
 
         if was_updated:
             self.save()
+        else:
+            logger.info(f"Revision {self.id} reprocessing: No value preserved")
 
         return was_updated
 
