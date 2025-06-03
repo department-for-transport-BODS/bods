@@ -127,11 +127,11 @@ class VehicleJourneyFinder:
                 f"published line name {published_line_name}",
             )
 
-        logger.debug(
+        logger.info(
             f"Found {len(txc_file_attrs)} timetable files matching NOC and LineName"
         )
         for idx, txc_file in enumerate(txc_file_attrs):
-            logger.debug(
+            logger.info(
                 f"{idx + 1}: Dataset id {txc_file.dataset_id} "
                 f"filename {txc_file.filename}"
             )
