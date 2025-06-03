@@ -567,13 +567,13 @@ class DatasetRevision(
     def prepare_for_reprocessing(self):
         """
         Preserves status and modified before reprocessing, only if not already set.
-        Returns True if any value was set  
+        Returns True if any value was set
         """
         was_updated = False
 
         if not self.status_before_reprocessing:
             logger.info(
-                f"[Revision {self.id}] first time reprocessing: "
+                f"Revision {self.id} first time reprocessing: "
                 f"Preserving status='{self.status}'"
             )
             self.status_before_reprocessing = self.status
@@ -581,7 +581,7 @@ class DatasetRevision(
 
         if self.modified_before_reprocessing is None:
             logger.info(
-                f"[Revision {self.id}] First-time reprocessing: "
+                f"Revision {self.id} First-time reprocessing: "
                 f"Preserving modified={self.modified}"
             )
             self.modified_before_reprocessing = self.modified
