@@ -57,6 +57,23 @@ urlpatterns = [
         "operators/",
         include(
             [
+                path(
+                    "licence/<slug:number>/",
+                    include(
+                        [
+                            path(
+                                "",
+                                view=LicenceDetailView.as_view(),
+                                name="operator-licence-detail",
+                            ),
+                            path(
+                                "line/details/",
+                                view=LicenceLineMetadataDetailView.as_view(),
+                                name="licence-line-detail",
+                            ),
+                        ]
+                    ),
+                ),
                 path("", view=OperatorsView.as_view(), name="operators"),
                 path(
                     "<int:pk>/",
@@ -66,23 +83,6 @@ urlpatterns = [
                                 "",
                                 view=OperatorDetailView.as_view(),
                                 name="operator-detail",
-                            ),
-                            path(
-                                "licence/<slug:number>/",
-                                include(
-                                    [
-                                        path(
-                                            "",
-                                            view=LicenceDetailView.as_view(),
-                                            name="operator-licence-detail",
-                                        ),
-                                        path(
-                                            "line/details/",
-                                            view=LicenceLineMetadataDetailView.as_view(),
-                                            name="licence-line-detail",
-                                        ),
-                                    ]
-                                ),
                             ),
                             path(
                                 "contact/",
@@ -188,7 +188,7 @@ urlpatterns = [
     path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
     path("django_axe/", include("django_axe.urls")),
     path(
-        "robots.txt/",
+        "robots.txt",
         TemplateView.as_view(
             template_name="pages/robots.txt", content_type="text/plain"
         ),

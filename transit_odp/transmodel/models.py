@@ -119,6 +119,7 @@ class Tracks(models.Model):
 
 
 class TracksVehicleJourney(models.Model):
+    id = models.BigAutoField(primary_key=True)
     vehicle_journey = models.ForeignKey(
         VehicleJourney,
         on_delete=models.CASCADE,
