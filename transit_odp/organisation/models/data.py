@@ -287,6 +287,14 @@ class DatasetRevision(
     modified_file_hash = models.CharField(
         _("Hash of modified file"), max_length=40, default=""
     )
+    status_before_reprocessing = models.CharField(
+        _("The Status field value before reprocessing"),
+        max_length=20,
+        default="",
+    )
+    modified_before_reprocessing = models.DateTimeField(
+        null=True, help_text="The modified field value before reprocessing"
+    )
 
     objects = DatasetRevisionManager()
     tracker = FieldTracker()
@@ -555,6 +563,34 @@ class DatasetRevision(
         org_name = self.dataset.organisation.name
         dataset_id = self.dataset.id
         self.name = f"{org_name}_{dataset_id}_{now:%Y%m%d %H:%M:%S}"
+
+    def prepare_for_reprocessing(self):
+        """
+        Preserves status and modified before reprocessing, only if not already set.
+        Returns True if any value was set
+        """
+        was_updated = False
+
+        if not self.status_before_reprocessing:
+            logger.info(
+                f"Revision {self.id} reprocessing: Preserving status='{self.status}'"
+            )
+            self.status_before_reprocessing = self.status
+            was_updated = True
+
+        if self.modified_before_reprocessing is None:
+            logger.info(
+                f"Revision {self.id} reprocessing: Preserving modified={self.modified}"
+            )
+            self.modified_before_reprocessing = self.modified
+            was_updated = True
+
+        if was_updated:
+            self.save()
+        else:
+            logger.info(f"Revision {self.id} reprocessing: No value preserved")
+
+        return was_updated
 
 
 class DatasetMetadata(models.Model):
