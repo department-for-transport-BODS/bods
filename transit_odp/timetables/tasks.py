@@ -982,7 +982,7 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                         task.to_error("", DatasetETLTaskResult.FAILURE)
                         raise
                     else:
-                        revision.status = revision_before_status
+                        revision.status = revision.status_before_reprocessing
                         revision.save()
 
                     while (
