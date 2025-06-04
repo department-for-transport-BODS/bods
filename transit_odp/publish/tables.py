@@ -211,7 +211,7 @@ class AgentOrganisationsTable(GovUkTable):
                 "</a>",
                 count=record["fares_requires_attention"],
                 href=reverse(
-                    "requires-attention",
+                    "fares:requires-attention",
                     args=[record["organisation_id"]],
                     host=PUBLISH_HOST,
                 ),

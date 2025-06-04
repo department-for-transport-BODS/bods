@@ -668,7 +668,20 @@ class DatasetQuerySet(models.QuerySet):
         """Filter queryset to datasets which have a published revision in a
         non-expired state"""
         exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
-        qs = self.get_published().exclude(live_revision__status__in=exclude_status)
+        qs = (
+            self.get_published()
+            .annotate(
+                effective_status=Case(
+                    When(
+                        ~Q(live_revision__status_before_reprocessing=""),
+                        then=F("live_revision__status_before_reprocessing"),
+                    ),
+                    default=F("live_revision__status"),
+                    output_field=CharField(),
+                )
+            )
+            .exclude(effective_status__in=exclude_status)
+        )
         if dataset_type is not None:
             qs = qs.filter(dataset_type=dataset_type)
 

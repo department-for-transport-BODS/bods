@@ -13,11 +13,10 @@ env:
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
   ENVIRONMENT_NAME: dev
   AWS_REGION: ${{ vars.AWS_REGION }}
-  AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
-  AWS_ASSUME_ROLE_NAME: ${{ vars.AWS_ASSUME_ROLE_NAME }}
+  BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN: ${{ vars.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+  PROD_ASSUME_ROLE_ARN: ${{ vars.PROD_ASSUME_ROLE_ARN }}
 
 jobs:
-
   rerun_dev_deployment:
     name: 'rerun_dev_deployment'
     runs-on: ubuntu-latest
@@ -28,7 +27,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    # Configure AWS credentials against the BODS Shared-Services Account
+    # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -81,7 +80,7 @@ jobs:
       if: always()
       run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
-    # Configure AWS credentials against the BODS Shared-Services Account
+    # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -92,12 +91,12 @@ jobs:
         role-skip-session-tagging: true
         unset-current-credentials: true
 
-    # Now assume a role in the Environemnt Specific Account
+    # Now assume a role in the Environment Specific account
     - name: Configure AWS Credentials in the environment specific account
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ vars.AWS_REGION }}
-        role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
+        role-to-assume: ${{ vars.ASSUME_ROLE_ARN }}
         role-session-name: testAWSCLISession
         role-duration-seconds: 3600
         role-skip-session-tagging: true

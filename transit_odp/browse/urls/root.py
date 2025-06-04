@@ -57,7 +57,6 @@ urlpatterns = [
         "operators/",
         include(
             [
-                path("", view=OperatorsView.as_view(), name="operators"),
                 path(
                     "licence/<slug:number>/",
                     include(
@@ -75,6 +74,7 @@ urlpatterns = [
                         ]
                     ),
                 ),
+                path("", view=OperatorsView.as_view(), name="operators"),
                 path(
                     "<int:pk>/",
                     include(

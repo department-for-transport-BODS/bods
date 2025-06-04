@@ -1,6 +1,6 @@
 import datetime
-from logging import getLogger
 from collections import OrderedDict
+from logging import getLogger
 from typing import List, Optional
 
 import numpy as np
@@ -12,6 +12,7 @@ from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
+from transit_odp.browse.common import get_franchise_registration_numbers
 from transit_odp.common.collections import Column
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.organisation.constants import (
@@ -19,6 +20,7 @@ from transit_odp.organisation.constants import (
     TravelineRegions,
 )
 from transit_odp.organisation.csv import EmptyDataFrame
+from transit_odp.organisation.models import Licence as BODSLicence
 from transit_odp.organisation.models import (
     Organisation,
     SeasonalService,
@@ -42,8 +44,6 @@ from transit_odp.publish.requires_attention import (
     get_fares_requires_attention,
     get_fares_timeliness_status,
 )
-
-from transit_odp.organisation.models import Licence as BODSLicence
 
 logger = getLogger(__name__)
 
@@ -741,7 +741,61 @@ TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP["cancelled_date"] = Col
 LOG_PREFIX = "OVERALL-COMPLIANCE-REPORT : "
 
 
+def get_organisation(reg_number: str) -> Organisation:
+    """
+    Returns the organisation object based on registration number from the report dataframe.
+
+    Args:
+        reg_number (str): Registration number
+
+    Returns:
+        Organisation: Organisation object
+    """
+    otc_atco_code = OTCService.objects.filter(
+        registration_number=reg_number
+    ).values_list("atco_code", flat=True)
+    return Organisation.objects.filter(admin_areas__atco_code__in=otc_atco_code).first()
+
+
+def update_licence_organisation_id_and_name(row: Series) -> Series:
+    """
+    Updates the licence_organisation_id and licence_organisation_name fields for
+    each row in the compliance report dataframe. This is done by retrieving the
+    organisation object based on the service code (registration number).
+
+    Args:
+        row (Series): Row from dataframe
+
+    Returns:
+        Series: Row with updated fields
+    """
+    is_franchise_organisation_active = flag_is_active(
+        "", FeatureFlags.FRANCHISE_ORGANISATION.value
+    )
+    if is_franchise_organisation_active:
+        organisation = get_organisation(row["registration_number"])
+        if organisation and organisation.is_franchise:
+            franchise_registration_numbers = get_franchise_registration_numbers(
+                organisation
+            )
+
+            if row["registration_number"] in franchise_registration_numbers:
+                row["licence_organisation_id"] = organisation.id
+                row["licence_organisation_name"] = organisation.name
+
+    return row
+
+
 def add_operator_name(row: Series) -> str:
+    """
+    Returns value for 'Organisation Name' column in report.
+
+    Args:
+        row (Series): Row from dataframe
+
+    Returns:
+        str: Organisation name
+    """
     if row["organisation_name"] is None or pd.isna(row["organisation_name"]):
         otc_licence_number = row["otc_licence_number"]
         operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
@@ -1005,7 +1059,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         choicelist=[
             "42 day look ahead is incomplete",
             "Service hasn't been updated within a year",
-            "OTC variation not published",
+            "Latest registration variation not published to BODS",
         ],
         default="Up to date",
     )
@@ -1014,7 +1068,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     if is_cancellation_logic_active:
         df.loc[
             df["published_status"] == "Unpublished", "staleness_status"
-        ] = "OTC variation not published"
+        ] = "Latest registration variation not published to BODS"
 
     return df
 
@@ -1262,7 +1316,7 @@ def add_overall_requires_attention(row: Series) -> str:
         str: Value for the column
     """
     is_fares_require_attention_active = flag_is_active(
-        "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        "", FeatureFlags.FARES_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value
     )
     exempted = row["scope_status"]
     seasonal_service = row["seasonal_status"]
@@ -1433,11 +1487,13 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         )
         fares_df = get_fares_dataset_map(txc_map=txc_service_map)
         logger.info("{} Done preparing Fares dataframe".format(LOG_PREFIX))
-        fares_df["valid_to"] = fares_df["valid_to"].dt.date
-        fares_df["last_updated_date"] = fares_df["last_updated_date"].dt.date
-        fares_df["is_fares_compliant"] = fares_df.apply(
-            lambda row: get_fares_compliance_status(row["is_fares_compliant"]), axis=1
-        )
+        if not fares_df.empty:
+            fares_df["valid_to"] = fares_df["valid_to"].dt.date
+            fares_df["last_updated_date"] = fares_df["last_updated_date"].dt.date
+            fares_df["is_fares_compliant"] = fares_df.apply(
+                lambda row: get_fares_compliance_status(row["is_fares_compliant"]),
+                axis=1,
+            )
         fares_df["fares_effective_stale_date_from_last_modified"] = fares_df[
             "last_updated_date"
         ] + pd.Timedelta(days=365)
@@ -1570,9 +1626,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
                 "OPERATOR_PREFETCH_COMPLIANCE_REPORT: Error occured while saving report in db"
             )
             logger.exception(e)
-            merged["organisation_name"] = merged.apply(
-                lambda x: add_operator_name(x), axis=1
-            )
+
     else:
         merged["organisation_name"] = merged.apply(
             lambda x: add_operator_name(x), axis=1
@@ -1629,9 +1683,7 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
 
     logger.info("{} Merged licence details".format(LOG_PREFIX))
 
-    merged["licence_organisation_name"] = merged["licence_organisation_name"].fillna(
-        "Organisation not yet created"
-    )
+    merged = merged.apply(update_licence_organisation_id_and_name, axis=1)
     merged["organisation_name"] = merged["licence_organisation_name"]
 
     logger.info("{} Renaming columns".format(LOG_PREFIX))

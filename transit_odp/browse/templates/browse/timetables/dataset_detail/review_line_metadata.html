@@ -11,15 +11,29 @@
   {{ block.super }}
   {% if licence_page %}
     {% breadcrumb_url 'Operator Profiles' 'operators' host hosts.data %}
-    {% with name=organisation.name|truncatechars:19 %}
-      {% breadcrumb_url name 'operator-detail' organisation.id host hosts.data %}
-    {% endwith %}
+    {% if organisation %}
+      {% with name=organisation.name|truncatechars:19 %}
+        {% breadcrumb_url name 'operator-detail' organisation.id host hosts.data %}
+      {% endwith %}
+    {% else %}
+    <li class="govuk-breadcrumbs__list-item">
+      <a class="govuk-breadcrumbs__link"
+        href="#">
+        Organisation not yet created
+      </a>
+    </li>
+    {% endif %}
     {% with name=licence_number %}
-      {% breadcrumb_url name 'operator-licence-detail' number=licence_number host hosts.data %}
+      <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link"
+          href="{% url 'operator-licence-detail' number=licence_number host hosts.data %}?org_id={% if organisation %}{{ organisation.id }}{% else %}None{% endif %}">
+          {{ name }}
+        </a>
+      </li>
     {% endwith %}
     <li class="govuk-breadcrumbs__list-item">
       <a class="govuk-breadcrumbs__link"
-         href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?line={{ line_name }}&service={{ service_code }}">
+         href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?org_id={% if organisation %}{{ organisation.id }}{% else %}None{% endif %}&line={{ line_name }}&service={{ service_code }}">
         {{ line_name }}
       </a>
     </li>
@@ -60,6 +74,7 @@
           {% endif %}
         </h1>
         <ul class="govuk-list">
+          {% if organisation %}
           <li>
             <a class="govuk-link" href="{% url 'compliance-report' pk1=organisation.id host hosts.publish %}">
               {% filter force_escape %}
@@ -67,6 +82,7 @@
               {% endfilter %}
             </a>
           </li>
+          {% endif %}
         </ul>
       {% else %}
         <h1 class="govuk-heading-xl app-!-mb-4 dont-break-out">{{ line_name }}</h1>
@@ -78,9 +94,9 @@
       </p>
       <hr class="govuk-section-break govuk-section-break--l govuk-section-break--invisible" />
       <div class="position-relative">
-      {% include "publish/snippets/dataset_map.html" %}
-        <span id="map-updated-timestamp"> - </span>
-    </div>
+        {% include "publish/snippets/dataset_map.html" %}
+        <span id="map-updated-timestamp">-</span>
+      </div>
       <table class="govuk-table dataset-property-table">
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
@@ -270,7 +286,7 @@
         const noc = "{{national_operator_code}}"
         const journey_code = "{{vehicle_journey_codes}}"
         const trimmedNoc = noc.trim();
-        const nocIsEmpty = trimmedNoc === "" || trimmedNoc.split(",").every(value => value.trim() === ""); 
+        const nocIsEmpty = trimmedNoc === "" || trimmedNoc.split(",").every(value => value.trim() === "");
         if (nocIsEmpty) {
           console.log("National Operator Code is empty. Real time data is not fetched");
         } else {

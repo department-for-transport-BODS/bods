@@ -25,7 +25,6 @@ env:
   AWS_ASSUME_ROLE_NAME: ${{ vars.AWS_ASSUME_ROLE_NAME }}
 
 jobs:
-
   cavl_deployment:
     name: 'cavl_deployment'
     runs-on: ubuntu-latest

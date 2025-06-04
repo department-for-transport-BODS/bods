@@ -20,7 +20,6 @@ env:
   PROD_ASSUME_ROLE_ARN: ${{ vars.PROD_ASSUME_ROLE_ARN }}
 
 jobs:
-
   hotfix_deployment:
     if: github.ref_name == 'main'
     name: 'hotfix_deployment'

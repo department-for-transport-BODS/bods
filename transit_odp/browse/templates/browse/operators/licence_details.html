@@ -10,17 +10,31 @@
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'Operator Profiles' 'operators' host hosts.data %}
-  {% with name=organisation.name|truncatechars:19 %}
-    {% breadcrumb_url name 'operator-detail' organisation.id host hosts.data %}
+  {% with name=organisation_name|truncatechars:19 %}
+    {% if organisation_id %}
+      {% breadcrumb_url name 'operator-detail' organisation_id host hosts.data %}
+    {% else %}
+      <li class="govuk-breadcrumbs__list-item">
+        <a class="govuk-breadcrumbs__link"
+          href="#">
+          {{ name }}
+        </a>
+      </li>
+    {% endif %}
   {% endwith %}
   {% with name=licence_number %}
-    {% breadcrumb_url name 'operator-licence-detail' number=licence_number host hosts.data %}
+  <li class="govuk-breadcrumbs__list-item">
+    <a class="govuk-breadcrumbs__link"
+      href="{% url 'operator-licence-detail' number=licence_number host hosts.data %}?org_id={{ organisation_id }}">
+      {{ name }}
+    </a>
+  </li>
   {% endwith %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l app-!-mb-4 dont-break-out">{{ organisation.name }} - {{ licence_number }}</h1>
+      <h1 class="govuk-heading-l app-!-mb-4 dont-break-out">{{ organisation_name }} - {{ licence_number }}</h1>
       <p class="govuk-body app-!-mb-sm-0">
         {% blocktrans %}
           Overview of the available bus open data
@@ -38,7 +52,7 @@
             <th scope="row" class="govuk-table__header">{% trans "Owner" %}</th>
             <td colspan="2" class="govuk-table__cell dont-break-out">
               <div class="stacked">
-                <a class="govuk-link" href="{% url 'search' host host.name %}?organisation={{ organisation.id }}&status=live">{% trans organisation.name %}</a>
+                <a class="govuk-link" href="{% if organisation_id %} {% url 'search' host host.name %}?organisation={{ organisation_id }}&status=live {% else %}  # {% endif %}">{% trans organisation_name %}</a>
                 {% blocktrans %}
                           Access all data uploaded by this publisher
                         {% endblocktrans %}
@@ -54,7 +68,7 @@
             {% for service in licence_services %}
               <p class="govuk-body govuk-!-padding-bottom-2 border-bottom-custom">
                 <a class="govuk-link"
-                   href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?line={{ service.service_number }}&service={{ service.registration_number }}">{{ service.service_number }} - {{ service.registration_number }}</a>
+                   href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?org_id={{ organisation_id }}&line={{ service.service_number }}&service={{ service.registration_number }}">{{ service.service_number }} - {{ service.registration_number }}</a>
                 <span class="govuk-tag govuk-!-margin-left-2 {% if service.is_label_green %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
                   {{ service.label_str }}
                 </span>

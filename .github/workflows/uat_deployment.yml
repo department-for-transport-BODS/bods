@@ -20,11 +20,10 @@ env:
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
   ENVIRONMENT_NAME: uat
   AWS_REGION: ${{ vars.AWS_REGION }}
-  BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN: ${{ secrets.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
-  PROD_ASSUME_ROLE_ARN: ${{ secrets.PROD_ASSUME_ROLE_ARN }}
+  BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN: ${{ vars.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+  PROD_ASSUME_ROLE_ARN: ${{ vars.PROD_ASSUME_ROLE_ARN }}
 
 jobs:
-
   uat_deployment:
     name: 'uat_deployment'
     runs-on: ubuntu-latest
@@ -35,7 +34,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    # Configure AWS credentials against the BODS Shared-Services Account
+    # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -88,7 +87,7 @@ jobs:
       if: always()
       run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
-    # Configure AWS credentials against the BODS Shared-Services Account
+    # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -99,202 +98,12 @@ jobs:
         role-skip-session-tagging: true
         unset-current-credentials: true
 
-    # Now assume a role in the Environemnt Specific Account
+    # Now assume a role in the Environment Specific account
     - name: Configure AWS Credentials in the environment specific account
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ vars.AWS_REGION }}
-        role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
-        role-session-name: testAWSCLISession
-        role-duration-seconds: 3600
-        role-skip-session-tagging: true
-        role-chaining: true
-
-    - name: Update celeryflower Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: celeryflower
-        container: celeryflower
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
-
-    - name: Update celeryworker Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: celeryworker
-        container: celeryworker
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
-
-    - name: Update celerybeat Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: celerybeat
-        container: celerybeat
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
-
-    - name: Update frontend Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: frontend
-        container: frontend
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
-
-    - name: Update api_frontend Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: api_frontend
-        container: frontend
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
-
-    - name: Update api_frontend_internal Task
-      uses: "./.github/workflows/templates/update_task_def"
-      with:
-        service: api_frontend_internal
-        container: frontend
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
-
-    - name: Update pg_migration
-      uses: "./.github/workflows/templates/register_task_def"
-      with:
-        service: pg_migration
-        container: db-migrate
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
-
-    - name: Update pg_superuser
-      uses: "./.github/workflows/templates/register_task_def"
-      with:
-        service: pg_superuser
-        container: pg-superuser
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
-
-    - name: Check for service stability
-      uses: robsteel24/ecs-wait@v2
-      with:
-        aws-region: ${{ env.AWS_REGION }}
-        ecs-cluster: bodds-${{ env.ENVIRONMENT_NAME }}
-        ecs-services: '["celeryflower", "celeryworker", "celerybeat", "frontend", "api_frontend", "api_frontend_internal" ]'
-        retries: 5
-        verbose: true
-
-    - name: Obtain SSM parameters for pg migration
-      id: params
-      shell: bash
-      run: |
-        security_group_ids=`aws ssm get-parameter --name "/bodds/${{ env.ENVIRONMENT_NAME }}/pg-migration-sg-ids" \
-          | jq -r '.Parameter.Value'`
-        subnet_ids=`aws ssm get-parameter --name "/bodds/${{ env.ENVIRONMENT_NAME }}/private-subnets" \
-          | jq -r '.Parameter.Value'`
-
-        echo "SECURITY_GROUPS=${security_group_ids}" >> "$GITHUB_OUTPUT"
-        echo "SUBNETS=${subnet_ids}" >> "$GITHUB_OUTPUT"
-
-    - name: Run pg migration
-      uses: "./.github/workflows/templates/run_pg_migration_task"
-      with:
-        subnets: ${{ steps.params.outputs.SUBNETS }}
-        security_groups: ${{ steps.params.outputs.SECURITY_GROUPS }}
-        environment: ${{ env.ENVIRONMENT_NAME }}
-
-    - name: Update Confluence Page
-      uses: robsteel24/update-confluence@v1
-      with:
-        confluence_base_url: ${{ vars.CONFLUENCE_BASE_URL }}
-        confluence_page_id: ${{ vars.CONFLUENCE_PAGE_ID }}
-        atlassian_username: ${{ secrets.ATLASSIAN_USERNAME }}
-        atlassian_api_token: ${{ secrets.ATLASSIAN_API_TOKEN }}
-        component: 'bods'
-        environment: ${{ env.ENVIRONMENT_NAME }}
-        version: ${{ steps.set-version-number.outputs.version }}
-      continue-on-error: true
-
-  uat2_deployment:
-    name: 'uat2_deployment'
-    runs-on: ubuntu-latest
-    environment: uat2
-    env:
-      ENVIRONMENT_NAME: uat2
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    # Configure AWS credentials against the BODS Shared-Services Account
-    - name: Configure AWS credentials in Shared-Services
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: ${{ env.AWS_REGION }}
-        role-to-assume: ${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
-        role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
-        role-duration-seconds: 3600
-        role-skip-session-tagging: true
-
-    # Assume a role into the BODS-PROD account
-    - name: Configure AWS Credentials in bodds-prod
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: ${{ env.AWS_REGION }}
-        role-to-assume: ${{ env.PROD_ASSUME_ROLE_ARN }}
-        role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
-        role-duration-seconds: 3600
-        role-skip-session-tagging: true
-        role-chaining: true
-
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
-
-    - id: set-version-number
-      run: |
-        TEXT=$(cat ./version.txt)
-        echo "version=${TEXT//'%'/'%25'}" >> $GITHUB_OUTPUT
-
-    - id: echo-version
-      run: |
-        echo ${{ steps.set-version-number.outputs.version }}
-
-    - name: Check if Image exists in Amazon ECR
-      id: check-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
-        IMAGE_TAG: ${{ steps.set-version-number.outputs.version }}
-      run: |
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-        if docker manifest inspect $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG >/dev/null; then
-            echo "The image $IMAGE_TAG exists in the $ECR_REPOSITORY Repository, environment will be updated"
-        else
-            echo "The image $IMAGE_TAG does not exist in the $ECR_REPOSITORY Repository, build and push docker image first."
-            exit 1
-        fi
-
-    - name: Logout of Amazon ECR
-      if: always()
-      run: docker logout ${{ steps.login-ecr.outputs.registry }}
-
-    # Configure AWS credentials against the BODS Shared-Services Account
-    - name: Configure AWS credentials in Shared-Services
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: ${{ env.AWS_REGION }}
-        role-to-assume: ${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
-        role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
-        role-duration-seconds: 3600
-        role-skip-session-tagging: true
-        unset-current-credentials: true
-
-    # Now assume a role in the Environemnt Specific Account
-    - name: Configure AWS Credentials in the environment specific account
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: ${{ vars.AWS_REGION }}
-        role-to-assume: ${{ secrets.ASSUME_ROLE_ARN }}
+        role-to-assume: ${{ vars.ASSUME_ROLE_ARN }}
         role-session-name: testAWSCLISession
         role-duration-seconds: 3600
         role-skip-session-tagging: true
