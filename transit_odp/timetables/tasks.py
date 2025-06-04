@@ -922,8 +922,6 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
             if revision:
                 try:
                     task_id = uuid.uuid4()
-                    # Get the status of the revision before processing so we can re-set it later
-                    revision_before_status = revision.status
 
                     with transaction.atomic():
                         if not revision.status == FeedStatus.pending.value:
@@ -982,7 +980,7 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                         task.to_error("", DatasetETLTaskResult.FAILURE)
                         raise
                     else:
-                        revision.status = revision_before_status
+                        revision.status = revision.status_before_reprocessing
                         revision.save()
 
                     while (
