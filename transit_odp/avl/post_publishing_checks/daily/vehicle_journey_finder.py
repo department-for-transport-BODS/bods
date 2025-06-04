@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple
 from zipfile import ZipFile
-
+from waffle import flag_is_active
 from lxml import etree
 
 from transit_odp.avl.post_publishing_checks.constants import (
@@ -127,11 +127,11 @@ class VehicleJourneyFinder:
                 f"published line name {published_line_name}",
             )
 
-        logger.debug(
+        logger.info(
             f"Found {len(txc_file_attrs)} timetable files matching NOC and LineName"
         )
         for idx, txc_file in enumerate(txc_file_attrs):
-            logger.debug(
+            logger.info(
                 f"{idx + 1}: Dataset id {txc_file.dataset_id} "
                 f"filename {txc_file.filename}"
             )
@@ -267,7 +267,7 @@ class VehicleJourneyFinder:
                                 continue
 
                         end_date_str = "-" if end_date is None else str(end_date)
-                        logger.debug(
+                        logger.info(
                             f"Filtering out timetable {txc_xml[idx].get_file_name()} "
                             f"with OperatingPeriod ({start_date} to {end_date_str})"
                         )
@@ -306,7 +306,7 @@ class VehicleJourneyFinder:
                 )
             except NoElement:
                 vehicle_journeys = []
-            logger.debug(
+            logger.info(
                 f"Timetable {timetable} has {len(vehicle_journeys)} vehicle journeys"
             )
             for vehicle_journey in vehicle_journeys:
@@ -318,7 +318,7 @@ class VehicleJourneyFinder:
                 except (NoElement, TooManyElements):
                     continue
                 if journey_code == vehicle_journey_ref:
-                    logger.debug(
+                    logger.info(
                         f"Found TicketMachine/JourneyCode {journey_code} in timetable "
                         f"{timetable.get_file_name()}"
                     )
@@ -329,7 +329,7 @@ class VehicleJourneyFinder:
         logger.info(
             f"Filtering by JourneyCode gave {len(vehicle_journeys)} matching journeys"
         )
-        logger.debug(
+        logger.info(
             f"In {len(txc_xml)} timetables, found JourneyCode's: {debug_journey_codes}"
         )
 
@@ -434,6 +434,9 @@ class VehicleJourneyFinder:
         in place with inapplicable vehicle journeys removed.
         NOTE: Bank Holidays not yet supported
         """
+        is_special_days_ppc_logic_active = flag_is_active(
+            "", "is_special_days_ppc_logic_active"
+        )
         journey_code_operating_profile = []
         for vj in reversed(vehicle_journeys):
             result.set_transxchange_attribute(
@@ -448,7 +451,7 @@ class VehicleJourneyFinder:
             journey_code_operating_profile.append(operating_profile_xml_string)
 
             if operating_profile is None:
-                logger.debug(
+                logger.info(
                     "Ignoring VehicleJourney with no operating profile: "
                     f"{vj.vehicle_journey}"
                 )
@@ -469,9 +472,9 @@ class VehicleJourneyFinder:
             for day in DayOfWeek:
                 if profile_days_of_week[0].get_element_or_none(day.value) is not None:
                     specified_days.append(day)
-            if (
-                day_of_week not in specified_days
-                and not self.is_vehicle_journey_operational_special_days(
+            if day_of_week not in specified_days and (
+                not is_special_days_ppc_logic_active
+                or not self.is_vehicle_journey_operational_special_days(
                     operating_profile, activity_date, result, vj
                 )
             ):
@@ -480,6 +483,7 @@ class VehicleJourneyFinder:
                     f"{day_of_week}"
                 )
                 vehicle_journeys.remove(vj)
+
         logger.info(
             f"Filtering by OperatingProfile left {len(vehicle_journeys)} matching "
             "journeys"
@@ -1021,6 +1025,9 @@ class VehicleJourneyFinder:
         result: ValidationResult,
     ) -> Optional[TxcVehicleJourney]:
         """Match a SRI-VM VehicleActivity to a TXC VehicleJourney."""
+        is_special_days_ppc_logic_active = flag_is_active(
+            "", "is_special_days_ppc_logic_active"
+        )
         mvj = activity.monitored_vehicle_journey
 
         if not self.check_operator_and_line_present(activity, result):
@@ -1087,10 +1094,11 @@ class VehicleJourneyFinder:
         ):
             return None
 
-        if not self.filter_by_special_days_of_operation(
-            recorded_at_time, vehicle_journeys, result
-        ):
-            return None
+        if is_special_days_ppc_logic_active:
+            if not self.filter_by_special_days_of_operation(
+                recorded_at_time, vehicle_journeys, result
+            ):
+                return None
 
         if len(vehicle_journeys) > 1:
             if not self.filter_by_service_code(
