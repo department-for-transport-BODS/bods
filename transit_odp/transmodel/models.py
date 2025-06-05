@@ -62,6 +62,7 @@ class Tracks(models.Model):
             )
         ]
 
+
 class ServicePattern(models.Model):
     service_pattern_id = models.CharField(max_length=255)
     # TODO - remove FK to DatasetRevision. This shouldn't be here
