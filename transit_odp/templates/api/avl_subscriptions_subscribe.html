@@ -17,16 +17,16 @@
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <div class="component-wrapper">
-          <form method="post" enctype="multipart/form-data" novalidate>
-            {% csrf_token %}
-            {% crispy form %}
-          </form>
-        </div>
+    <div class="govuk-grid-column-two-thirds">
+      <div class="component-wrapper">
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+          {% crispy form %}
+        </form>
       </div>
-      {% block heading.secondary %}
-        {% include "browse/snippets/download_secondary_links.html" %}
-      {% endblock %}
+    </div>
+    {% block heading.secondary %}
+      {% include "browse/snippets/download_secondary_links.html" %}
+    {% endblock %}
   </div>
 {% endblock %}

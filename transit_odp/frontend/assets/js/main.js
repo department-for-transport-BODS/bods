@@ -1,7 +1,6 @@
-import "../sass/project.scss";
+// import "../sass/project.scss";
 
-const GOVUKFrontend = require("govuk-frontend");
-
+import * as GOVUKFrontend from "govuk-frontend";
 import { CrispyFormsGovUK } from "./crispyforms";
 import { APIService } from "./api-service";
 import { AutoCompleteSearch } from "./autocomplete";
@@ -39,8 +38,7 @@ function initAll() {
 
 window.GOVUKFrontend = GOVUKFrontend;
 window.CrispyFormsGovUK = CrispyFormsGovUK;
-
-export {
+window.BODSFrontend = {
   APIService,
   AutoCompleteSearch,
   CounterCharactersInTextBox,

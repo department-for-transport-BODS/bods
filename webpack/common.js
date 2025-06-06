@@ -78,19 +78,34 @@ module.exports = {
     ],
   },
   plugins: [
+    // Copy assets first
+    new CopyPlugin({
+      patterns: [
+        {
+          from: "node_modules/govuk-frontend/dist/govuk/assets/images",
+          to: "transit_odp/frontend/assets/images",
+        },
+        {
+          from: "node_modules/govuk-frontend/dist/govuk/assets/rebrand/images",
+          to: "transit_odp/frontend/assets/images",
+        },
+        {
+          from: "node_modules/govuk-frontend/dist/govuk/assets/fonts",
+          to: "transit_odp/frontend/assets/fonts",
+        },
+        {
+          from: "node_modules/govuk-frontend/dist/govuk/assets/rebrand",
+          to: "transit_odp/frontend/assets/rebrand",
+        },
+        { from: "transit_odp/frontend/assets/images", to: "images" },
+        { from: "transit_odp/frontend/assets/fonts", to: "fonts" },
+      ],
+    }),
+    // Then extract CSS
     new MiniCssExtractPlugin({
       filename: "css/[name].css",
     }),
     new webpack.ProvidePlugin({ Buffer: ["buffer", "Buffer"] }),
-    new CopyPlugin({
-      patterns: [
-        { from: "transit_odp/frontend/assets/images", to: "images" },
-        {
-          from: "node_modules/govuk-frontend/dist/govuk/assets/images",
-          to: "images",
-        },
-      ],
-    }),
     new webpack.ProvidePlugin({ process: "process/browser" }),
   ],
   resolve: {

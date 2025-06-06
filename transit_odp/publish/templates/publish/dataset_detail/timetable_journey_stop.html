@@ -17,11 +17,7 @@
                    id="stop-{{ direction }}-{{ forloop.counter0 }}"
                    onclick="BODSFrontend.showTooltip(event,'jc-{{ direction }}-{{ forloop.counter0 }}', '{{ direction }}', 'observation');">
                 <div class="tooltiptext"
-                {% if key %}   
-                  style="width:550px"
-                {% else %}
-                  style="width:220px"
-                {% endif %}
+                     {% if key %} style="width:550px" {% else %} style="width:220px" {% endif %}
                      id="jc-{{ direction }}-{{ forloop.counter0 }}"
                      onclick="BODSFrontend.disableClick(event);">
                   {% if key %}
@@ -120,7 +116,7 @@
                          id="stop-{{ direction }}-{{ idx }}"
                          onclick="BODSFrontend.showTooltip(event,'{{ idx }}', '{{ direction }}');">
                       {{ cell }}
-                      <p class="tooltiptext" id="tooltip-{{ direction }}-{{ idx }}" onclick="BODSFrontend.disableClick(event);">                        
+                      <p class="tooltiptext" id="tooltip-{{ direction }}-{{ idx }}" onclick="BODSFrontend.disableClick(event);">
                         <span class="govuk-!-font-weight-bold">ATCO Code:&nbsp;</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'atco_code' }}
                         <br />
                         <span class="govuk-!-font-weight-bold">Street:&nbsp;</span>{{ timetable_details.stops|get_value_from_dict:key|get_value_from_dict:'street' }}

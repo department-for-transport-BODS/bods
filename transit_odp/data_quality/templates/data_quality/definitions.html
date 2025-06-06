@@ -28,9 +28,9 @@
             <a class="govuk-tabs__tab" href="#advisory">Advisory observations</a>
           </li>
           {% if is_specific_feedback %}
-          <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-            <a class="govuk-tabs__tab" href="#feedback">Feedback</a>
-          </li>
+            <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+              <a class="govuk-tabs__tab" href="#feedback">Feedback</a>
+            </li>
           {% endif %}
         </ul>
         <div class="govuk-tabs__panel" id="critical">
@@ -62,21 +62,20 @@
           </div>
         </div>
         {% if is_specific_feedback %}
-        <div class="govuk-tabs__panel" id="feedback">
-          <div class="govuk-!-padding-5">
-            <h2 class="govuk-heading-l">Consumer Feedback ({{ feedback_count }})</h2>
-            <p class="govuk-body">
-              {% blocktrans %}
+          <div class="govuk-tabs__panel" id="feedback">
+            <div class="govuk-!-padding-5">
+              <h2 class="govuk-heading-l">Consumer Feedback ({{ feedback_count }})</h2>
+              <p class="govuk-body">
+                {% blocktrans %}
                   {{ feedback_intro }}
-              {% endblocktrans %}
-            </p>
-            {% for category in feedback_observations %}
-              {% include "data_quality/snippets/glossary_accordion.html" with category=category counter=forloop.counter type="feedback" %}
-            {% endfor %}
+                {% endblocktrans %}
+              </p>
+              {% for category in feedback_observations %}
+                {% include "data_quality/snippets/glossary_accordion.html" with category=category counter=forloop.counter type="feedback" %}
+              {% endfor %}
+            </div>
           </div>
-        </div>
         {% endif %}
-
       </div>
     </div>
   </div>

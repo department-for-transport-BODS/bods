@@ -22,9 +22,7 @@
       </div>
       <div class="govuk-!-margin-bottom-6">
         <h3 class="govuk-heading-m">First time API user?</h3>
-        <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">
-          {% trans "Guide me" %}
-        </a>
+        <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">{% trans "Guide me" %}</a>
       </div>
       <div class="govuk-!-margin-bottom-6">
         <h3 class="govuk-heading-m">Try API service?</h3>
@@ -42,17 +40,14 @@
             page and query parameters to your API requests.
           {% endblocktrans %}
         </p>
-        <a class="govuk-link" href="{% url 'api:buslocation-tryapi' host hosts.data %}">
-          {% trans "Try API" %}
-        </a>
+        <a class="govuk-link" href="{% url 'api:buslocation-tryapi' host hosts.data %}">{% trans "Try API" %}</a>
       </div>
       {% if is_avl_consumer_subs_active %}
         <div class="govuk-!-margin-bottom-6">
           <h3 class="govuk-heading-m">Subscribe to the Location data API?</h3>
           <ul class="govuk-list app-list--nav govuk-!-font-size-19">
             <li class="govuk-!-margin-bottom-4">
-              <a class="govuk-link govuk-!-margin-bottom-4"
-                 href="{% url 'api:buslocation-subscribe' host hosts.data %}">
+              <a class="govuk-link govuk-!-margin-bottom-4" href="{% url 'api:buslocation-subscribe' host hosts.data %}">
                 {% trans "Create Location Data Subscription" %}
               </a>
             </li>

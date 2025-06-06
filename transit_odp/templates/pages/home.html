@@ -32,24 +32,24 @@
         <p class="govuk-body">{% trans "This service is for operators of local bus services in England." %}</p>
         <ul class="govuk-list">
           <li class="govuk-!-margin-bottom-4">
-            <a href="{% url 'home' host hosts.publish %}" class="govuk-link-bold">
+            <a href="{% url 'home' host hosts.publish %}" class="govuk-link">
               {% filter force_escape %}
                 {% trans "Publish bus data" %}
               {% endfilter %}
             </a>
           </li>
           <li class="govuk-!-margin-bottom-4">
-            <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}" class="govuk-link-bold">
+            <a href="{% url 'guidance:support-bus_operators' host hosts.publish %}" class="govuk-link">
               {% trans "View bus operator requirements" %}
             </a>
           </li>
           <li class="govuk-!-margin-bottom-4">
-            <a href="{% url 'guidance:support-local_authorities' host hosts.publish %}" class="govuk-link-bold">
+            <a href="{% url 'guidance:support-local_authorities' host hosts.publish %}" class="govuk-link">
               {% trans "View local authority requirements" %}
             </a>
           </li>
           <li>
-            <a href="{% url 'guide-me' host hosts.publish %}" class="govuk-link-bold">
+            <a href="{% url 'guide-me' host hosts.publish %}" class="govuk-link">
               {% filter force_escape %}
                 {% trans "Guide me" %}
               {% endfilter %}
@@ -71,10 +71,10 @@
         </p>
         <ul class="govuk-list">
           <li class="govuk-!-margin-bottom-4">
-            <a href="{% url 'home' host hosts.data %}" class="govuk-link-bold">{% trans "Find bus open data" %}</a>
+            <a href="{% url 'home' host hosts.data %}" class="govuk-link">{% trans "Find bus open data" %}</a>
           </li>
           <li>
-            <a href="{% url 'guidance:support-developer' host hosts.data %}" class="govuk-link-bold">
+            <a href="{% url 'guidance:support-developer' host hosts.data %}" class="govuk-link">
               {% filter force_escape %}
                 {% trans "View developer documentation" %}
               {% endfilter %}

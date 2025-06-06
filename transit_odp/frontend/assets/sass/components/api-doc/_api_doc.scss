@@ -7,11 +7,11 @@
 .api-url-panel {
   display: flex;
   justify-content: space-between;
-  border: 0.15rem solid map-get($govuk-colours, "light-grey");
+  border: 0.15rem solid govuk-colour("light-grey");
   padding: govuk-spacing(5);
 
   &__url {
     @include govuk-font($size: 19);
-    color: map-get($govuk-colours, "dark-grey");
+    color: govuk-colour("dark-grey");
   }
 }

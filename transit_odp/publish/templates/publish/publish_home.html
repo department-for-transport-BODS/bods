@@ -62,7 +62,7 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-8">
     <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
       <h2 class="govuk-heading-s">
-        <a class="govuk-link-bold" href="{% url 'guide-me' host hosts.publish %}">
+        <a class="govuk-link" href="{% url 'guide-me' host hosts.publish %}">
           {% filter force_escape %}
             {% trans "Guide me" %}
           {% endfilter %}
@@ -74,7 +74,7 @@
         {% endfilter %}
       </p>
       <h2 class="govuk-heading-s">
-        <a class="govuk-link-bold" href="{{ review_page }}">
+        <a class="govuk-link" href="{{ review_page }}">
           {% filter force_escape %}
             {% trans "Review my data" %}
           {% endfilter %}
@@ -86,7 +86,7 @@
         {% endfilter %}
       </p>
       <h2 class="govuk-heading-s">
-        <a class="govuk-link-bold" href="{% url 'users:home' host hosts.publish %}">
+        <a class="govuk-link" href="{% url 'users:home' host hosts.publish %}">
           {% filter force_escape %}
             {% trans "Manage your account" %}
           {% endfilter %}
