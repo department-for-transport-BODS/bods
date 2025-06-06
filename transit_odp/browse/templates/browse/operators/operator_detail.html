@@ -49,21 +49,14 @@
         </div>
       </div>
       <div id="feed-stat-list" class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
+        <div class="govuk-grid-column-two-thirds">
           <div class="feed-stat">
-            <span class="feed-stat__value">{{ total_in_scope_in_season_services }}</span>
+            <span class="feed-stat__value csp-inline">{{ total_services_requiring_attention }}</span><span class="csp-total-inscope-inseason">/{{ total_in_scope_in_season_services }}</span>
             <span class="feed-stat__label">
-              {% trans "Total in scope/in season<br />registered services" %}
-            </span>
-          </div>
-        </div>
-        <div class="govuk-grid-column-one-half">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ total_services_requiring_attention }}</span>
-            <span class="feed-stat__label">
-              {% filter force_escape %}
-                {% trans "Overall services requiring attention" %}
-              {% endfilter %}
+              {% trans "Total services that require attention" %}
+              <b class="govuk-!-font-size-16 bods-relative-bottom">
+                {% include "publish/snippets/help_modals/operator_details_overall_require_attention.html" %}
+              </b>
             </span>
           </div>
         </div>
@@ -97,38 +90,43 @@
           </h3>
           <p class="govuk-body">
             {% filter force_escape %}
-              {% trans "The complete service pages here provide a combined view of real time location data, timetables and fares data. Please review the data for each service and supply feedback if any issues exist." %}
+              {% trans "The complete service pages here provide a combined view of real time location data, timetables and fares data." %}
+            {% endfilter %}
+            <br />
+            <br />
+            {% filter force_escape %}
+              {% trans "Please review the data for each service and supply feedback if any issues exist." %}
             {% endfilter %}
           </p>
         </caption>
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">
-              {% filter force_escape %}
-                {% trans "Licence number" %}
-              {% endfilter %}
+              <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
+                <div class="govuk-accordion__section">
+                  <div class="govuk-accordion__section-header">
+                    <h2 class="govuk-accordion__section-heading">
+                      <span class="govuk-accordion__section-button" id="accordion-default-heading-1">
+                        {% filter force_escape %}
+                          {% trans "Licence number" %}
+                        {% endfilter %}
+                      </span>
+                    </h2>
+                  </div>
+                  <div id="accordion-default-content-1" class="govuk-accordion__section-content">
+                    <ul class="govuk-list govuk-!-margin-bottom-1 licence-list">
+                      {% for licence_dict in operator_licences %}
+                        <li class="govuk-!-margin-bottom-1">
+                          {% include 'publish/snippets/help_modals/licence_color_symbol_popup.html' with non_compliant=licence_dict.non_compliant %}
+                          <a class="govuk-link"
+                             href="{% url 'operator-licence-detail' number=licence_dict.licence_number host hosts.data %}?org_id={{ object.id }}">{{ licence_dict.licence_number }}: {{ licence_dict.operator_name }}</a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </th>
-            {% if is_franchise_organisation_active and is_franchise %}
-              <td class="govuk-table__cell" colspan="2">
-                <ul class="govuk-list govuk-!-margin-bottom-2">
-                  {% for licence in franchise_licences %}
-                    <li class="govuk-!-margin-bottom-1">
-                      <a class="govuk-link" href="{% url 'operator-licence-detail' pk=object.id number=licence host hosts.data %}">{{ licence }}</a>
-                    </li>
-                  {% endfor %}
-                </ul>
-              </td>
-            {% else %}
-              <td class="govuk-table__cell" colspan="2">
-                <ul class="govuk-list govuk-!-margin-bottom-2">
-                  {% for licence in organisation.licences.all %}
-                    <li class="govuk-!-margin-bottom-1">
-                      <a class="govuk-link" href="{% url 'operator-licence-detail' pk=object.id number=licence.number host hosts.data %}">{{ licence.number }}</a>
-                    </li>
-                  {% endfor %}
-                </ul>
-              </td>
-            {% endif %}
           </tr>
         </tbody>
       </table>
@@ -150,6 +148,9 @@
               {% filter force_escape %}
                 {% trans "Services requiring attention" %}
               {% endfilter %}
+              <b class="govuk-!-font-size-16 bods-relative-bottom">
+                {% include "publish/snippets/help_modals/operator_details_timetable_require_attention.html" %}
+              </b>
             </span>
           </div>
         </div>
@@ -196,23 +197,6 @@
         {% endif %}
       </h3>
       <div id="feed-stat-list" class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-          <div class="feed-stat">
-            {% if overall_ppc_score is not None %}
-              <span class="feed-stat__value">{{ overall_ppc_score|floatformat:"0" }}%</span>
-            {% else %}
-              <span class="feed-stat__value">{% trans "Pending" %}</span>
-            {% endif %}
-            <span class="feed-stat__label">
-              {% filter force_escape %}
-                {% trans "Weekly overall AVL to timetables matching score" %}
-              {% endfilter %}
-              <b class="govuk-!-font-size-16 bods-relative-bottom">
-                {% include "publish/snippets/help_modals/AVL_to_timetable_matching_report.html" %}
-              </b>
-            </span>
-          </div>
-        </div>
         {% if is_avl_require_attention_active %}
           <div class="govuk-grid-column-one-half">
             <div class="feed-stat">
@@ -221,6 +205,9 @@
                 {% filter force_escape %}
                   {% trans "Services requiring attention" %}
                 {% endfilter %}
+                <b class="govuk-!-font-size-16 bods-relative-bottom">
+                  {% include "publish/snippets/help_modals/operator_details_avl_require_attention.html" %}
+                </b>
               </span>
             </div>
           </div>
@@ -282,6 +269,9 @@
               {% filter force_escape %}
                 {% trans "Services requiring attention" %}
               {% endfilter %}
+              <b class="govuk-!-font-size-16 bods-relative-bottom">
+                {% include "publish/snippets/help_modals/operator_details_fares_require_attention.html" %}
+              </b>
             </span>
           </div>
         </div>

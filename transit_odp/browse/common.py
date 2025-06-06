@@ -5,6 +5,7 @@ import pandas as pd
 from transit_odp.naptan.models import AdminArea
 from transit_odp.organisation.constants import TravelineRegions
 from transit_odp.organisation.models import Organisation
+from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.constants import API_TYPE_EP
 from transit_odp.otc.models import LocalAuthority
 from transit_odp.otc.models import Service
@@ -433,3 +434,94 @@ def get_all_franchise_atco_codes_except_current(organisation_id: int) -> list:
         .filter(is_franchise=True)
         .values_list("admin_areas__atco_code", flat=True)
     )
+
+
+def get_operator_with_licence_number(licence_numbers: List):
+    operator_licences_df = pd.DataFrame(licence_numbers, columns=["licence_number"])
+    operator_licences_df.drop_duplicates(inplace=True)
+
+    # get licences list from otc service with operator name
+    licence_df = pd.DataFrame.from_records(
+        OTCService.objects.filter(licence__number__in=licence_numbers).values(
+            "licence__number", "operator__operator_name"
+        )
+    )
+    if licence_df.empty:
+        licence_df = pd.DataFrame(
+            columns=["licence__number", "operator__operator_name"]
+        )
+
+    licence_df.drop_duplicates(inplace=True)
+    licence_df.rename(
+        columns={
+            "licence__number": "licence_number",
+            "operator__operator_name": "operator_name",
+        },
+        inplace=True,
+    )
+
+    operator_licences_df = operator_licences_df.merge(licence_df, how="inner")
+
+    # get compliance status for each licence
+    compliance_report_df = pd.DataFrame.from_records(
+        ComplianceReport.objects.filter(otc_licence_number__in=licence_numbers).values(
+            "otc_licence_number",
+            "licence_organisation_id",
+            "overall_requires_attention",
+        )
+    )
+
+    if compliance_report_df.empty:
+        compliance_report_df = pd.DataFrame(
+            columns=[
+                "licence_number",
+                "licence_organisation_id",
+                "overall_requires_attention",
+                "non_compliant",
+            ]
+        )
+    else:
+        compliance_report_df.drop_duplicates(inplace=True)
+
+        compliance_report_df.rename(
+            columns={"otc_licence_number": "licence_number"}, inplace=True
+        )
+        compliance_report_df["licence_organisation_id"] = compliance_report_df[
+            "licence_organisation_id"
+        ].astype("Int64")
+
+        compliance_report_df = compliance_report_df.groupby(
+            ["licence_number", "licence_organisation_id"], as_index=False, dropna=False
+        ).agg(
+            {
+                "overall_requires_attention": lambda x: "Yes"
+                if "Yes" in x.values
+                else "No"
+            }
+        )
+
+        compliance_report_df.loc[
+            compliance_report_df["overall_requires_attention"] == "Yes", "non_compliant"
+        ] = True
+
+    # merge the operator licences
+    operator_licences_df = operator_licences_df.merge(compliance_report_df, how="left")
+    operator_licences_df["non_compliant"] = operator_licences_df[
+        "non_compliant"
+    ].fillna(False)
+    operator_licences_df["operator_name"] = operator_licences_df[
+        "operator_name"
+    ].fillna("--")
+
+    # to remove duplicate licence when we have operator name -- for some of the duplicate values
+    counts = operator_licences_df["licence_number"].value_counts()
+
+    operator_filtered = operator_licences_df[
+        (operator_licences_df["licence_number"].map(counts) == 1)
+        | (
+            (operator_licences_df["licence_number"].map(counts) > 1)
+            & (operator_licences_df["operator_name"] != "--")
+        )
+    ]
+
+    return operator_filtered.reset_index().to_dict("records")
