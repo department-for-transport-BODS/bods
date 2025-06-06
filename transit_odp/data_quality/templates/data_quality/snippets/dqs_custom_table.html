@@ -22,7 +22,9 @@
                             class="govuk-button govuk-button--secondary govuk-!-margin-0"
                             id="button-suppress-observation"
                             data-module="govuk-button"
-                            onclick="BODSFrontend.suppressAllObservations({{ table.rows.0.cells.is_feedback|lower }});">Suppress all observations</button>
+                            onclick="BODSFrontend.suppressAllObservations({{ table.rows.0.cells.is_feedback|lower }});">
+                      Suppress all observations
+                    </button>
                   </th>
                 {% endif %}
               </tr>

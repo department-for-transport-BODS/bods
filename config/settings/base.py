@@ -728,6 +728,10 @@ if LOG_LEVEL:
                 "handlers": ["console"],
                 "level": LOG_LEVEL,
             },
+            "django.request": {
+                "handlers": ["console"],
+                "level": LOG_LEVEL,
+            },
             "django.db.backends": {
                 "level": LOG_LEVEL,
                 "handlers": ["console"],

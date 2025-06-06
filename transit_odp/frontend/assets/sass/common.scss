@@ -21,11 +21,6 @@
   }
 }
 
-.sort_container {
-  display: flex;
-  justify-content: flex-start;
-}
-
 .flex-container {
   display: flex;
 }
@@ -52,16 +47,6 @@
   hyphens: auto;
 }
 
-// .operator-heading {
-//   color: $govuk-link-colour;
-// }
-
-.govuk-\!-font-size-24__custom {
-  font-size: 20px !important;
-  line-height: 1.11111 !important;
-  font-weight: bold;
-}
-
 ul.dashed {
   list-style-type: none;
 }
@@ -73,12 +58,6 @@ ul.dashed > li {
 ul.dashed > li:before {
   content: "-";
   text-indent: -5px;
-}
-
-.govuk-grid-row__custom {
-  margin-right: -15px;
-  margin-left: -15px;
-  word-wrap: break-word;
 }
 
 .no-wrap {
@@ -97,15 +76,6 @@ fieldset {
   margin: 0;
 }
 
-.govuk-label--bold {
-  @extend .govuk-label;
-  font-weight: bold;
-}
-
-/* Screen readers sometimes require labels that should otherwise be invisible to the user
-   settings like display: none can't be used because they also affect visibility to screen readers
-   https://webaim.org/techniques/css/invisiblecontent/
-   see data.gov.uk search box for an example */
 .hide-using-position {
   position: absolute;
   overflow: hidden;
@@ -119,9 +89,6 @@ fieldset {
   overflow: hidden;
 }
 
-// .border-bottom-custom {
-//   border-bottom: $govuk-accordion-bottom-border-width solid $govuk-border-colour;
-// }
 
 .govuk-accordion__section-content[hidden] {
   display: none !important;
@@ -129,10 +96,10 @@ fieldset {
 
 .link-dark {
   text-decoration: none;
-  color: #000000 !important;
+  color: govuk-colour("black") !important;
 }
 .bg-light-p-font-lg {
-  background-color: #d8d6d6;
+  background-color: govuk-colour("mid-grey");
   text-align: left;
   vertical-align: middle;
   padding: 1.25em 2.9375em;
@@ -141,9 +108,7 @@ fieldset {
 .last_updated_cell {
   width: 20%;
 }
-.border-blue-2 {
-  border: 2px solid #005ea5;
-}
+
 .table-container {
   padding: 1.25em;
 }
@@ -163,30 +128,28 @@ fieldset {
 .no-underline-l {
   text-decoration: none;
 }
-.bg-blue-light {
-  background-color: #2b8cc4;
-}
+
 .pb3-l {
   padding-bottom: 1rem;
 }
 .progress-bar-outer {
   width: 100%;
-  background-color: #005ea5;
+  background-color: govuk-color("dark-blue");
 }
 .loading-white {
   width: 0%;
   height: 30px;
-  background-color: #ffffff;
+  background-color: govuk-color("white");
   text-align: center;
   line-height: 30px;
-  color: #ffffff;
+  color: govuk-color("white");
 }
 .loading-white-lg {
   width: 4.375em;
   height: 2.625em;
   font-size: 2.25em;
   font-weight: bold;
-  color: #ffffff;
+  color: govuk-color("white");
   align-content: center;
 }
 .w-90-l {
@@ -196,10 +159,10 @@ fieldset {
   text-align: right;
 }
 .b--black {
-  border-color: #000000;
+  border-color: govuk-color("black");
 }
 .white {
-  color: #ffffff;
+  color: govuk-color("white");
 }
 .pb0-l {
   padding-bottom: 0;
@@ -207,9 +170,7 @@ fieldset {
 .invite-error {
   color: #d4351c;
 }
-.app-task-list__items {
-  padding-left: 1.875em;
-}
+
 .ml2-l {
   margin-left: 0.5em;
 }
@@ -228,9 +189,7 @@ fieldset {
 .hover {
   color: #454a4c;
 }
-.flexfill {
-  flex: 1;
-}
+
 .checkbox-filter__annotation {
   color: #505a5f;
 }
@@ -238,7 +197,7 @@ fieldset {
   padding: 0px;
 }
 .app-step-nav-related {
-  color: #000000;
+  color: govuk-color("black");
 }
 .nowrap-l {
   white-space: nowrap;
@@ -299,17 +258,17 @@ fieldset {
 .empty-bar {
   width: 0%;
   height: 30px;
-  background-color: #ffffff;
+  background-color: govuk-color("white");
   text-align: center;
   line-height: 30px;
-  color: #ffffff;
+  color: govuk-color("white");
 }
 .bold-white-text {
   width: 4.375em;
   height: 2.625em;
   font-size: 2.25em;
   font-weight: bold;
-  color: #ffffff;
+  color: govuk-color("white");
   align-content: center;
 }
 .blue-header {
@@ -362,5 +321,5 @@ fieldset {
   background: #aaa;
   color: #000;
   padding: 4px;
-  opacity: 0.6;  
+  opacity: 0.6;
 }

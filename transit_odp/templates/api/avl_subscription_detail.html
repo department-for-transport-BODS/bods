@@ -49,7 +49,9 @@
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{% trans "Heartbeat interval" %}</th>
-            <td class="govuk-table__cell dont-break-out" colspan="2">{{ subscription.heartbeat_interval }} {% trans "seconds" %}</td>
+            <td class="govuk-table__cell dont-break-out" colspan="2">
+              {{ subscription.heartbeat_interval }} {% trans "seconds" %}
+            </td>
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{% trans "Data filters" %}</th>

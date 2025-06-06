@@ -29,7 +29,7 @@ async function copyAssets() {
   }
 }
 
-async function build() {
+async function build({ watch = false } = {}) {
   await copyAssets();
 
   const outdir = path.resolve(
@@ -39,8 +39,9 @@ async function build() {
     "static",
     "frontend"
   );
+  console.log(`Output directory: ${outdir}`);
 
-  await esbuild.build({
+  const buildOptions = {
     entryPoints: [
       path.resolve(
         process.cwd(),
@@ -63,6 +64,7 @@ async function build() {
     outdir,
     splitting: true,
     format: "esm",
+    globalName: undefined,
     minify: true,
     sourcemap: true,
     loader: {
@@ -88,14 +90,26 @@ async function build() {
       "process.env.NODE_ENV": '"production"',
       "Buffer": "buffer",
       "process": JSON.stringify({ browser: true }),
+      "global": "window",
     },
     target: ["es2015"],
     logLevel: "info",
-    entryNames: "[name]",
+    entryNames: "[name].bundle",
     assetNames: "images/[name]-[hash]",
     chunkNames: "chunks/[name]-[hash]",
     metafile: true,
-  });
+  };
+
+  if (watch) {
+    // Use esbuild.context for watch mode
+    const ctx = await esbuild.context(buildOptions);
+    await ctx.watch();
+    console.log("Watching for changes...");
+  } else {
+    await esbuild.build(buildOptions);
+  }
 }
 
-build().catch(() => process.exit(1));
+// Detect --watch flag
+const watch = process.argv.includes("--watch");
+build({ watch }).catch(() => process.exit(1));
