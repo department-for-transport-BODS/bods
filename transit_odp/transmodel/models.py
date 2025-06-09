@@ -81,7 +81,6 @@ class ServicePattern(models.Model):
     service_links = models.ManyToManyField(
         "transmodel.ServiceLink", related_name="service_patterns"
     )
-    tracks = models.ManyToManyField(Tracks, related_name="service_pattern_tracks")
 
     admin_areas = models.ManyToManyField(AdminArea, related_name="service_patterns")
     localities = models.ManyToManyField(Locality, related_name="service_patterns")
@@ -127,6 +126,19 @@ class TracksVehicleJourney(models.Model):
         related_name="vehicle_journey_tracks",
     )
     tracks = models.ForeignKey(Tracks, on_delete=models.CASCADE, related_name="tracks")
+    sequence_number = models.IntegerField(blank=True, null=True)
+
+
+class ServicePatternTracks(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    service_pattern = models.ForeignKey(
+        ServicePattern,
+        on_delete=models.CASCADE,
+        related_name="service_pattern_tracks",
+    )
+    tracks = models.ForeignKey(
+        Tracks, on_delete=models.CASCADE, related_name="transmodel_tracks"
+    )
     sequence_number = models.IntegerField(blank=True, null=True)
 
 
