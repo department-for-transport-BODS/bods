@@ -729,7 +729,13 @@ def test_get_timetable_catalogue_dataframe_with_inactive_org():
         (
             ["S1", "S1", "S1", "S2", "S2"],
             [1, 2, 3, 1, 2],
-            ["01/01/2025", "01/06/2025", "01/09/2025", "01/03/2025", "01/07/2025"],
+            [
+                pd.Timestamp("2025-01-01"),
+                pd.Timestamp("2025-06-01"),
+                pd.Timestamp("2025-09-01"),
+                pd.Timestamp("2025-03-01"),
+                pd.Timestamp("2025-07-01"),
+            ],
             [
                 pd.Timestamp("2025-06-01"),
                 pd.Timestamp("2025-09-01"),
@@ -741,7 +747,13 @@ def test_get_timetable_catalogue_dataframe_with_inactive_org():
         (
             ["S1", "S1", "S2", "S2", "S3"],
             [1, 1, 1, 2, 1],
-            ["01/06/2025", "01/01/2025", "01/02/2025", "01/05/2025", "01/07/2025"],
+            [
+                pd.Timestamp("2025-06-01"),
+                pd.Timestamp("2025-01-01"),
+                pd.Timestamp("2025-02-01"),
+                pd.Timestamp("2025-05-01"),
+                pd.Timestamp("2025-07-01"),
+            ],
             [
                 pd.NaT,  # No higher revision for the duplicate rev 1 entry
                 pd.NaT,  # No higher revision for the duplicate rev 1 entry
