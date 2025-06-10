@@ -1086,7 +1086,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     if is_cancellation_logic_active:
         df.loc[
             df["published_status"] == "Unpublished", "staleness_status"
-        ] = "OTC variation not published"
+        ] = "Latest registration variation not published to BODS"
 
     return df
 
