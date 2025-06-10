@@ -989,10 +989,6 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
 
     df["effective_seasonal_start"] = df["seasonal_start"] - pd.Timedelta(days=42)
 
-    df["operating_period_end_date"] = pd.to_datetime(
-        df["operating_period_end_date"], errors="coerce"
-    )
-
     df["effective_stale_date_from_end_date"] = df[
         "operating_period_end_date"
     ] - pd.Timedelta(days=42)
@@ -1222,11 +1218,6 @@ def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df["derived_termination_date"] = pd.NaT
 
-    # Ensure Start date is a datetime object
-    df["operating_period_start_date"] = pd.to_datetime(
-        df["operating_period_start_date"], dayfirst=True
-    )
-
     for (reg), group in df.groupby(["service_code"]):
         # Sort group by RevisionNumber
         group_sorted = group.sort_values("revision_number")
@@ -1242,9 +1233,9 @@ def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
             if not higher_revision.empty:
                 # Get the one with the next smallest revision
                 next_entry = higher_revision.iloc[0]
-                df.at[idx, "derived_termination_date"] = next_entry[
-                    "operating_period_start_date"
-                ]
+                df.at[idx, "derived_termination_date"] = pd.to_datetime(
+                    next_entry["operating_period_start_date"]
+                )
             else:
                 df.at[idx, "derived_termination_date"] = pd.NaT
 
@@ -1475,6 +1466,7 @@ def _get_timetable_line_level_catalogue_dataframe() -> pd.DataFrame:
 
     merged.sort_values("dataset_id", inplace=True)
     merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
+    merged = add_derived_termination_date(merged)
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
