@@ -90,6 +90,17 @@ class ServicePattern(models.Model):
         return f"{self.id}, {self.origin}, {self.destination}"
 
 
+class ServicePatternDistance(models.Model):
+    service_pattern = models.ForeignKey(
+        ServicePattern,
+        related_name="service_pattern",
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    distance = models.IntegerField(blank=True, null=True)
+    geom = models.LineStringField(null=True, blank=True)
+
+
 class VehicleJourney(models.Model):
     start_time = models.TimeField(null=True)
     line_ref = models.CharField(max_length=255, null=True, blank=True)
