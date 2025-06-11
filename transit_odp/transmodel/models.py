@@ -91,6 +91,7 @@ class ServicePattern(models.Model):
 
 
 class ServicePatternDistance(models.Model):
+    id = models.BigAutoField(primary_key=True)
     service_pattern = models.ForeignKey(
         ServicePattern,
         related_name="service_pattern",
