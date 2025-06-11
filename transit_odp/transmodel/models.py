@@ -54,6 +54,14 @@ class Tracks(models.Model):
     geometry = models.LineStringField(null=True, blank=True)
     distance = models.IntegerField(blank=True, null=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["from_atco_code", "to_atco_code"],
+                name="unique_from_to_atco_code",
+            )
+        ]
+
 
 class ServicePattern(models.Model):
     service_pattern_id = models.CharField(max_length=255)
