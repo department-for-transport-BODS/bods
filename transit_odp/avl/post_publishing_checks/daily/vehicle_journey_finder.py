@@ -478,7 +478,7 @@ class VehicleJourneyFinder:
                     operating_profile, activity_date, result, vj
                 )
             ):
-                logger.debug(
+                logger.info(
                     "Ignoring VehicleJourney with operating profile inapplicable to "
                     f"{day_of_week}"
                 )
@@ -623,7 +623,7 @@ class VehicleJourneyFinder:
         self, org: TransXChangeElement
     ) -> Optional[TransXChangeElement]:
         try:
-            xpath = ["DaysOfOperation", "DateRange"]
+            xpath = ["SpecialDaysOperation", "DaysOfOperation", "DateRange"]
             op_days = org.get_elements(xpath)
         except NoElement:
             return []
@@ -633,7 +633,7 @@ class VehicleJourneyFinder:
         self, org: TransXChangeElement
     ) -> Optional[TransXChangeElement]:
         try:
-            xpath = ["DaysOfNonOperation", "DateRange"]
+            xpath = ["SpecialDaysOperation", "DaysOfNonOperation", "DateRange"]
             non_op_days = org.get_elements(xpath)
         except NoElement:
             return []
@@ -750,6 +750,9 @@ class VehicleJourneyFinder:
         Returns:
             bool: True means recorded_at is between the dates given in service organisation
         """
+        logger.info(
+            f"Checking if vehicle journey is operating based on special days of operation "
+        )
         op_working_days = self.get_op_special_days(operating_profile)
         for date_range in op_working_days:
             start_date = date_range.get_text_or_default("StartDate")
@@ -1134,6 +1137,10 @@ class VehicleJourneyFinder:
         Returns:
             bool:
         """
+        logger.info(
+            f"Filtering by SpecialDaysOperation started for {len(vehicle_journeys)} "
+            "journeys"
+        )
         for vj in reversed(vehicle_journeys):
             operating_profile = self.get_operating_profile_for_journey(vj)
             is_vj_nonoperational_on_recorded_at_time = (
@@ -1144,7 +1151,10 @@ class VehicleJourneyFinder:
 
             if is_vj_nonoperational_on_recorded_at_time:
                 vehicle_journeys.remove(vj)
-
+        logger.info(
+            f"Filtering by SpecialDaysOperation left {len(vehicle_journeys)} matching "
+            "journeys"
+        )
         if len(vehicle_journeys) == 0:
             result.add_error(
                 ErrorCategory.GENERAL,
