@@ -5,7 +5,7 @@
     position: absolute;
     background-color: govuk-colour("light-grey"); // govuk-colour("light-grey") → closest to light-grey
     min-width: 160px;
-    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2); // keep as is, rgba for shadow
+    box-shadow: 0 8px 16px 0 govuk-colour("black"); // keep as is, rgba for shadow
 
     z-index: 1;
 

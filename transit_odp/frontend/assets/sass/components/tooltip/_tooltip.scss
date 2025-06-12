@@ -27,7 +27,7 @@
   border: 2px solid black;
   color: govuk-colour("black");
   width: 300px;
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 5px 5px 5px govuk-colour("black");
 }
 
 // override tooltiptext position for the observations
@@ -46,12 +46,12 @@
   left: 5%;
 
   // margin-left: -5px;
-  // border-bottom: 10px solid #333;
+  // border-bottom: 10px solid govuk-colour("dark-grey");
   border-width: 10px;
   width: 0;
   border-style: solid;
   // border-left: 5px solid transparent;
-  border-color: #555 transparent transparent transparent;
+  border-color: govuk-colour("mid-grey") transparent transparent transparent;
   // height: 0;
 }
 .tooltip .tooltiptext::before {
