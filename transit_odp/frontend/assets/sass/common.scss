@@ -168,7 +168,7 @@ fieldset {
   padding-bottom: 0;
 }
 .invite-error {
-  color: #d4351c;
+  color: govuk-colour("red");
 }
 
 .ml2-l {
@@ -191,7 +191,7 @@ fieldset {
 }
 
 .checkbox-filter__annotation {
-  color: #505a5f;
+  color: govuk-colour("dark-grey");
 }
 .pa0-l {
   padding: 0px;
@@ -319,7 +319,7 @@ fieldset {
   right: 33px;
   font-size: 12px;
   background: #aaa;
-  color: #000;
+  color: govuk-colour("black");
   padding: 4px;
   opacity: 0.6;
 }
@@ -346,15 +346,15 @@ ul.licence-list .compliance-indicator {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background-color: grey;
+  background-color: govuk-colour("grey");
 }
 
 ul.licence-list .compliance-indicator.compliant {
-  background-color: #00703c;
+  background-color: govuk-colour("green");
 }
 
 ul.licence-list .compliance-indicator.non-compliant {
-  background-color: #d4351c;
+  background-color: govuk-colour("red");
 }
 
 ul.licence-list a {

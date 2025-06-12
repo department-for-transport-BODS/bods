@@ -27,7 +27,7 @@
   }
 
   &--unavailable:before {
-    background-color: #f47738;
+    background-color: govuk-colour("orange");
   }
 
   &--inactive:before {
@@ -53,7 +53,7 @@
 }
 
 .user__status-indicator--unactive {
-  color: #f47738;
+  color: govuk-colour("orange");
 }
 
 .user__status-indicator--pending {
