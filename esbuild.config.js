@@ -20,6 +20,10 @@ const assetCopies = [
     src: "node_modules/govuk-frontend/dist/govuk/assets/rebrand",
     dest: "transit_odp/frontend/assets/rebrand",
   },
+  {
+    src: "transit_odp/frontend/assets/images",
+    dest: "transit_odp/frontend/static/frontend/images",
+  },
 ];
 
 async function copyAssets() {
