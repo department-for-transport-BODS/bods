@@ -388,7 +388,7 @@ class Loader:
         ]
 
         try:
-            all_services_bods_db = Service.objects.values()
+            all_services_bods_db = Service.objects.exclude(api_key="EP").values()
             if not all_services_bods_db:
                 logger.warning("No services found in the database.")
                 return
