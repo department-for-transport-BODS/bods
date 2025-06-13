@@ -46,7 +46,7 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <script nonce="{{request.csp_nonce}}" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- <script nonce="{{request.csp_nonce}}" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
   <script nonce="{{request.csp_nonce}}">BODSFrontend.initAPIDocs('#swagger-ui', "{% static 'openapi/cancellations.yml' %}")</script>
   <script nonce="{{request.csp_nonce}}">
         $(document).ready(function () {

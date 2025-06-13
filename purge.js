@@ -1,7 +1,7 @@
 import { PurgeCSS } from "purgecss";
 import fs from "fs";
 import path from "path";
-import sass from "sass";
+import * as sass from 'sass';
 import glob from "glob";
 
 // 1. Find all SCSS files

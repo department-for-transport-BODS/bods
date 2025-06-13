@@ -5,7 +5,7 @@
     },
     "testRunner": {},
     "testEnvironment": [],
-    "timestamp": "2025-06-13T04:17:06.074Z",
+    "timestamp": "2025-06-13T07:42:01.069Z",
     "url": "",
     "toolOptions": {
         "reporter": "v1"
@@ -1054,6 +1054,92 @@
                     "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it's partially obscured by another element"
                 }
             ]
+        },
+        {
+            "id": "th-has-data-cells",
+            "impact": "serious",
+            "tags": [
+                "cat.tables",
+                "wcag2a",
+                "wcag131",
+                "section508",
+                "section508.22.g",
+                "TTv5",
+                "TT14.b",
+                "EN-301-549",
+                "EN-9.1.3.1"
+            ],
+            "description": "Ensure that <th> elements and elements with role=columnheader/rowheader have data cells they describe",
+            "help": "Table headers in a data table must refer to data cells",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/th-has-data-cells?application=axeAPI",
+            "nodes": [
+                {
+                    "any": [],
+                    "all": [
+                        {
+                            "id": "th-has-data-cells",
+                            "data": null,
+                            "relatedNodes": [
+                                {
+                                    "html": "<th class=\"govuk-table__header\">\n          Status\n        </th>",
+                                    "target": [
+                                        "th:nth-child(3)"
+                                    ]
+                                }
+                            ],
+                            "impact": "serious",
+                            "message": "Table data cells are missing or empty"
+                        }
+                    ],
+                    "none": [],
+                    "impact": "serious",
+                    "html": "<table class=\"govuk-table manage-users-table\">",
+                    "target": [
+                        "table"
+                    ],
+                    "failureSummary": "Fix all of the following:\n  Table data cells are missing or empty"
+                }
+            ]
+        },
+        {
+            "id": "color-contrast",
+            "impact": "serious",
+            "tags": [
+                "cat.color",
+                "wcag2aa",
+                "wcag143",
+                "TTv5",
+                "TT13.c",
+                "EN-301-549",
+                "EN-9.1.4.3",
+                "ACT"
+            ],
+            "description": "Ensures the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/color-contrast?application=axeAPI",
+            "nodes": [
+                {
+                    "any": [
+                        {
+                            "id": "color-contrast",
+                            "data": {
+                                "messageKey": "nonBmp"
+                            },
+                            "relatedNodes": [],
+                            "impact": "serious",
+                            "message": "Element content contains only non-text characters"
+                        }
+                    ],
+                    "all": [],
+                    "none": [],
+                    "impact": "serious",
+                    "html": "<li class=\"govuk-pagination__item govuk-pagination__item--ellipses\">\n                \u22ef\n              </li>",
+                    "target": [
+                        ".govuk-pagination__item--ellipses"
+                    ],
+                    "failureSummary": "Fix any of the following:\n  Element content contains only non-text characters"
+                }
+            ]
         }
     ],
     "violations": [
@@ -1171,6 +1257,302 @@
                 }
             ],
             "path": "http://data.bods.localhost:8001/api/fares-openapi/"
+        },
+        {
+            "id": "heading-order",
+            "impact": "moderate",
+            "tags": [
+                "cat.semantics",
+                "best-practice"
+            ],
+            "description": "Ensures the order of headings is semantically correct",
+            "help": "Heading levels should only increase by one",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/heading-order?application=axeAPI",
+            "nodes": [
+                {
+                    "any": [
+                        {
+                            "id": "heading-order",
+                            "data": null,
+                            "relatedNodes": [],
+                            "impact": "moderate",
+                            "message": "Heading order invalid"
+                        }
+                    ],
+                    "all": [],
+                    "none": [],
+                    "impact": "moderate",
+                    "html": "<h3 class=\"govuk-heading-m\">\n        Ready to use the API?\n      </h3>",
+                    "target": [
+                        "h3:nth-child(4)"
+                    ],
+                    "failureSummary": "Fix any of the following:\n  Heading order invalid"
+                }
+            ],
+            "path": "http://data.bods.localhost:8001/api/timetable-openapi/"
+        },
+        {
+            "id": "aria-dialog-name",
+            "impact": "serious",
+            "tags": [
+                "cat.aria",
+                "best-practice"
+            ],
+            "description": "Ensures every ARIA dialog and alertdialog node has an accessible name",
+            "help": "ARIA dialog and alertdialog nodes should have an accessible name",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/aria-dialog-name?application=axeAPI",
+            "nodes": [
+                {
+                    "any": [
+                        {
+                            "id": "aria-label",
+                            "data": null,
+                            "relatedNodes": [],
+                            "impact": "serious",
+                            "message": "aria-label attribute does not exist or is empty"
+                        },
+                        {
+                            "id": "aria-labelledby",
+                            "data": null,
+                            "relatedNodes": [],
+                            "impact": "serious",
+                            "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty"
+                        },
+                        {
+                            "id": "non-empty-title",
+                            "data": {
+                                "messageKey": "noAttr"
+                            },
+                            "relatedNodes": [],
+                            "impact": "serious",
+                            "message": "Element has no title attribute"
+                        }
+                    ],
+                    "all": [],
+                    "none": [],
+                    "impact": "serious",
+                    "html": "<div class=\"govuk-timeout-warning dialog\" data-module=\"timeout-warning\" data-timeout=\"1314000\" data-timeout-window=\"30\" role=\"dialog\" aria-live=\"polite\">",
+                    "target": [
+                        ".govuk-timeout-warning"
+                    ],
+                    "failureSummary": "Fix any of the following:\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute"
+                }
+            ],
+            "path": "http://data.bods.localhost:8001/api/timetable-openapi/#"
+        },
+        {
+            "id": "heading-order",
+            "impact": "moderate",
+            "tags": [
+                "cat.semantics",
+                "best-practice"
+            ],
+            "description": "Ensures the order of headings is semantically correct",
+            "help": "Heading levels should only increase by one",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/heading-order?application=axeAPI",
+            "nodes": [
+                {
+                    "any": [
+                        {
+                            "id": "heading-order",
+                            "data": null,
+                            "relatedNodes": [],
+                            "impact": "moderate",
+                            "message": "Heading order invalid"
+                        }
+                    ],
+                    "all": [],
+                    "none": [],
+                    "impact": "moderate",
+                    "html": "<h3 class=\"govuk-heading-m\">\n        Ready to use the API?\n      </h3>",
+                    "target": [
+                        "h3:nth-child(4)"
+                    ],
+                    "failureSummary": "Fix any of the following:\n  Heading order invalid"
+                }
+            ],
+            "path": "http://data.bods.localhost:8001/api/timetable-openapi/#"
+        },
+        {
+            "id": "heading-order",
+            "impact": "moderate",
+            "tags": [
+                "cat.semantics",
+                "best-practice"
+            ],
+            "description": "Ensures the order of headings is semantically correct",
+            "help": "Heading levels should only increase by one",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/heading-order?application=axeAPI",
+            "nodes": [
+                {
+                    "any": [
+                        {
+                            "id": "heading-order",
+                            "data": null,
+                            "relatedNodes": [],
+                            "impact": "moderate",
+                            "message": "Heading order invalid"
+                        }
+                    ],
+                    "all": [],
+                    "none": [],
+                    "impact": "moderate",
+                    "html": "<h3 class=\"govuk-heading-m\">\n        Ready to use the API?\n      </h3>",
+                    "target": [
+                        "h3:nth-child(4)"
+                    ],
+                    "failureSummary": "Fix any of the following:\n  Heading order invalid"
+                }
+            ],
+            "path": "http://data.bods.localhost:8001/api/timetable-openapi/#/timetables"
+        },
+        {
+            "id": "aria-dialog-name",
+            "impact": "serious",
+            "tags": [
+                "cat.aria",
+                "best-practice"
+            ],
+            "description": "Ensures every ARIA dialog and alertdialog node has an accessible name",
+            "help": "ARIA dialog and alertdialog nodes should have an accessible name",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/aria-dialog-name?application=axeAPI",
+            "nodes": [
+                {
+                    "any": [
+                        {
+                            "id": "aria-label",
+                            "data": null,
+                            "relatedNodes": [],
+                            "impact": "serious",
+                            "message": "aria-label attribute does not exist or is empty"
+                        },
+                        {
+                            "id": "aria-labelledby",
+                            "data": null,
+                            "relatedNodes": [],
+                            "impact": "serious",
+                            "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty"
+                        },
+                        {
+                            "id": "non-empty-title",
+                            "data": {
+                                "messageKey": "noAttr"
+                            },
+                            "relatedNodes": [],
+                            "impact": "serious",
+                            "message": "Element has no title attribute"
+                        }
+                    ],
+                    "all": [],
+                    "none": [],
+                    "impact": "serious",
+                    "html": "<div class=\"govuk-timeout-warning dialog\" data-module=\"timeout-warning\" data-timeout=\"1314000\" data-timeout-window=\"30\" role=\"dialog\" aria-live=\"polite\">",
+                    "target": [
+                        ".govuk-timeout-warning"
+                    ],
+                    "failureSummary": "Fix any of the following:\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute"
+                }
+            ],
+            "path": "http://data.bods.localhost:8001/api/timetable-openapi/#/timetables"
+        },
+        {
+            "id": "heading-order",
+            "impact": "moderate",
+            "tags": [
+                "cat.semantics",
+                "best-practice"
+            ],
+            "description": "Ensures the order of headings is semantically correct",
+            "help": "Heading levels should only increase by one",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/heading-order?application=axeAPI",
+            "nodes": [
+                {
+                    "any": [
+                        {
+                            "id": "heading-order",
+                            "data": null,
+                            "relatedNodes": [],
+                            "impact": "moderate",
+                            "message": "Heading order invalid"
+                        }
+                    ],
+                    "all": [],
+                    "none": [],
+                    "impact": "moderate",
+                    "html": "<h3 class=\"govuk-heading-m\">\n        Ready to use the API?\n      </h3>",
+                    "target": [
+                        "h3:nth-child(4)"
+                    ],
+                    "failureSummary": "Fix any of the following:\n  Heading order invalid"
+                }
+            ],
+            "path": "http://data.bods.localhost:8001/api/timetable-openapi/#/timetables/get_api_v1_dataset"
+        },
+        {
+            "id": "heading-order",
+            "impact": "moderate",
+            "tags": [
+                "cat.semantics",
+                "best-practice"
+            ],
+            "description": "Ensures the order of headings is semantically correct",
+            "help": "Heading levels should only increase by one",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/heading-order?application=axeAPI",
+            "nodes": [
+                {
+                    "any": [
+                        {
+                            "id": "heading-order",
+                            "data": null,
+                            "relatedNodes": [],
+                            "impact": "moderate",
+                            "message": "Heading order invalid"
+                        }
+                    ],
+                    "all": [],
+                    "none": [],
+                    "impact": "moderate",
+                    "html": "<h3 class=\"govuk-heading-m\">\n        Ready to use the API?\n      </h3>",
+                    "target": [
+                        "h3:nth-child(4)"
+                    ],
+                    "failureSummary": "Fix any of the following:\n  Heading order invalid"
+                }
+            ],
+            "path": "http://data.bods.localhost:8001/api/timetable-openapi/#/timetables/get_api_v1_dataset__datasetID_"
+        },
+        {
+            "id": "heading-order",
+            "impact": "moderate",
+            "tags": [
+                "cat.semantics",
+                "best-practice"
+            ],
+            "description": "Ensures the order of headings is semantically correct",
+            "help": "Heading levels should only increase by one",
+            "helpUrl": "https://dequeuniversity.com/rules/axe/4.9/heading-order?application=axeAPI",
+            "nodes": [
+                {
+                    "any": [
+                        {
+                            "id": "heading-order",
+                            "data": null,
+                            "relatedNodes": [],
+                            "impact": "moderate",
+                            "message": "Heading order invalid"
+                        }
+                    ],
+                    "all": [],
+                    "none": [],
+                    "impact": "moderate",
+                    "html": "<h3 class=\"govuk-heading-m\">\n          Ready to use the API?\n        </h3>",
+                    "target": [
+                        ".govuk-\\!-margin-bottom-6:nth-child(2) > h3"
+                    ],
+                    "failureSummary": "Fix any of the following:\n  Heading order invalid"
+                }
+            ],
+            "path": "http://data.bods.localhost:8001/api/buslocation-api/"
         }
     ],
     "rules": [

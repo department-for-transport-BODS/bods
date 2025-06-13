@@ -1118,7 +1118,7 @@
 }
 
 .swagger-ui .b--washed-yellow {
-  border-color: govuk-colour("white")ceb;
+  border-color: govuk-colour("white");
 }
 
 .swagger-ui .b--washed-red {
@@ -9278,7 +9278,7 @@
 }
 
 .swagger-ui .opblock-tag:hover {
-  background:  govuk-colour("black");
+  background:  govuk-colour("light-grey");
 }
 
 .swagger-ui .opblock-tag {
@@ -9397,7 +9397,7 @@
   content: "";
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
-  background: grey;
+  background: govuk-colour('light-blue');
 }
 
 .swagger-ui .opblock.is-open .opblock-summary {
@@ -10040,7 +10040,7 @@
   border: 2px solid grey;
   border-radius: 4px;
   background: transparent;
-  box-shadow: 0 1px 2px govuk-colour("black");
+  // box-shadow: 0 1px 2px govuk-colour("black");
   font-family: sans-serif;
   color: govuk-colour("black");
 }
@@ -10056,17 +10056,16 @@
 }
 
 .swagger-ui .btn:hover {
-  box-shadow: 0 0 5px govuk-colour("black");
+  box-shadow: 0 0 5px govuk-colour("light-grey");
 }
 
 .swagger-ui .btn.cancel {
   border-color: govuk-colour("red");
   background-color: govuk-colour("red");
-  color: white;
+  color: govuk-colour("white");
   font-size: 16px;
   font-family: "nta", Arial, sans-serif;
   text-align: center;
-  /*text-decoration-color: govuk-colour("black");*/
 }
 
 .swagger-ui .btn.authorize {
@@ -10592,7 +10591,7 @@
 }
 
 .swagger-ui section.models h4:hover {
-  background:  govuk-colour("black");
+  background:  govuk-colour("light-grey");
 }
 
 .swagger-ui section.models h5 {
@@ -10612,7 +10611,7 @@
   position: relative;
   transition: all 0.5s;
   border-radius: 4px;
-  background: govuk-colour("black");
+  background: govuk-colour("light-grey");
 }
 
 .swagger-ui section.models .model-container:hover {
@@ -11027,7 +11026,7 @@
   padding: 2px 4px;
   vertical-align: super;
   border-radius: 57px;
-  background: govuk-colour("mid-grey");
+  background: govuk-colour("dark-grey");
 }
 
 .swagger-ui .info .title small pre {
@@ -11204,4 +11203,6 @@
   display: block;
 }
 
-/*# sourceMappingURL=swagger-ui.css.map*/
+.swagger-ui .info .title small.version-stamp {
+    background-color: govuk-colour("blue");
+}

@@ -132,22 +132,22 @@ fieldset {
 }
 .progress-bar-outer {
   width: 100%;
-  background-color: govuk-color("dark-blue");
+  background-color: govuk-colour("dark-blue");
 }
 .loading-white {
   width: 0%;
   height: 30px;
-  background-color: govuk-color("white");
+  background-color: govuk-colour("white");
   text-align: center;
   line-height: 30px;
-  color: govuk-color("white");
+  color: govuk-colour("white");
 }
 .loading-white-lg {
   width: 4.375em;
   height: 2.625em;
   font-size: 2.25em;
   font-weight: bold;
-  color: govuk-color("white");
+  color: govuk-colour("white");
   align-content: center;
 }
 .w-90-l {
@@ -157,10 +157,10 @@ fieldset {
   text-align: right;
 }
 .b--black {
-  border-color: govuk-color("black");
+  border-color: govuk-colour("black");
 }
 .white {
-  color: govuk-color("white");
+  color: govuk-colour("white");
 }
 .pb0-l {
   padding-bottom: 0;
@@ -195,7 +195,7 @@ fieldset {
   padding: 0px;
 }
 .app-step-nav-related {
-  color: govuk-color("black");
+  color: govuk-colour("black");
 }
 .nowrap-l {
   white-space: nowrap;
@@ -256,17 +256,17 @@ fieldset {
 .empty-bar {
   width: 0%;
   height: 30px;
-  background-color: govuk-color("white");
+  background-color: govuk-colour("white");
   text-align: center;
   line-height: 30px;
-  color: govuk-color("white");
+  color: govuk-colour("white");
 }
 .bold-white-text {
   width: 4.375em;
   height: 2.625em;
   font-size: 2.25em;
   font-weight: bold;
-  color: govuk-color("white");
+  color: govuk-colour("white");
   align-content: center;
 }
 .blue-header {
