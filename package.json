@@ -49,9 +49,7 @@
     "webpack-visualizer-plugin": "^0.1.11"
   },
   "scripts": {
-    "start": "webpack --config webpack/dev.js",
-    "build": "webpack --config webpack/prod.js",
-    "esbuild": "node esbuild.config.js",
-    "dev": "node esbuild.config.js --watch"
+    "start": "node esbuild.config.js --watch",
+    "build": "node esbuild.config.js"
   }
 }

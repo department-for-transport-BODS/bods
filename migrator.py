@@ -1,6 +1,6 @@
+import logging
 import os
 import re
-import logging
 
 GOVUK_SCSS_ROOT = "node_modules/govuk-frontend/dist/govuk"
 CUSTOM_SCSS_ROOT = "transit_odp/frontend/assets/sass"
@@ -131,7 +131,7 @@ def replace_colors_in_file(filepath, color_map):
     original_content = content
     for pattern, replacement in color_map.items():
         content = re.sub(pattern, replacement, content, flags=re.IGNORECASE)
-        content= content.replace(pattern.lower()+"000", replacement)
+        content = content.replace(pattern.lower() + "000", replacement)
     if content != original_content:
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(content)
