@@ -78,7 +78,7 @@ $govuk-table-border: 1px solid $govuk-border-colour;
   }
 
   .disabled {
-    color: #000000;
+    color: govuk-colour("black");
     opacity: 0.5;
   }
 

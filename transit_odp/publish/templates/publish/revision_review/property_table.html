@@ -60,7 +60,9 @@
       {% endfilter %}
     </th>
     <td class="govuk-table__cell">
-      <div class="flex-between">{% include "organisation/snippets/status_indicator.html" with status=object.status %}</div>
+      <div class="flex-between">
+        {% include "organisation/snippets/status_indicator.html" with status=object.status %}
+      </div>
     </td>
   </tr>
   <tr class="govuk-table__row">
@@ -166,7 +168,7 @@
             {% endfilter %}
           {% endif %}
         </span>
-        {#        <span class="right-justify" >#}
+        {#        <span class="right-justify">#}
         {#          {% block inner.last_updated.changelog_link %}#}
         {#            <a class="govuk-link"#}
         {#               href="{% url 'feed-changelog' pk=object.dataset_id host host.name %}">{% filter force_escape %}{% trans "View change log" %}{% endfilter %}</a>#}

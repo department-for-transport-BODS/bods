@@ -6,7 +6,9 @@
        tabindex="-1"
        data-module="govuk-error-summary">
     {% if form_error_title %}
-      <h2 class="govuk-error-summary__title" id="error-summary-title">{{ form_error_title }}</h2>
+      <h2 class="govuk-error-summary__title" id="error-summary-title">
+        {{ form_error_title }}
+      </h2>
     {% endif %}
     <div class="govuk-error-summary__body">
       <ul class="govuk-list govuk-error-summary__list">

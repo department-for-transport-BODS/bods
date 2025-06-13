@@ -25,7 +25,7 @@
 }
 
 .service-code-widget:focus-within {
-  outline: 3px solid #ffdd00;
+  outline: 3px solid govuk-colour("yellow");
   outline-offset: 0;
   box-shadow: inset 0 0 0 2px;
 }

@@ -20,8 +20,8 @@
   .app-button--inverted:visited {
     color: govuk-colour("blue");
     background-color: govuk-colour("white");
-    -webkit-box-shadow: 0 2px 0 #144e81;
-    box-shadow: 0 2px 0 #144e81;
+    -webkit-box-shadow: 0 2px 0 govuk-colour("blue");
+    box-shadow: 0 2px 0 govuk-colour("blue");
   }
 
   .app-masthead__title {

@@ -8,7 +8,9 @@
            type="search"
            value="{{ q|default_if_none:'' }}"
            placeholder="Enter an operator name"
-           {% if hint %}aria-describedby="searchbar-hint"{% endif %} />
+           {% if hint %}
+             aria-describedby="searchbar-hint"
+           {% endif %} />
     <button class="searchbox__button" type="submit" aria-label="submit search">
       <svg width="21" height="22" viewBox="0 0 21 22" xmlns="http://www.w3.org/2000/svg">
         <defs>

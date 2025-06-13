@@ -1,5 +1,7 @@
 <div>
-  <h2 class="govuk-heading-l">Review Service Numbers</h2>
+  <h2 class="govuk-heading-l">
+    Review Service Numbers
+  </h2>
   <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
     {% for licence_number, nocs_dict in distinct_attributes.items %}
       <div class="govuk-accordion__section">
@@ -26,7 +28,8 @@
                 {% for line_name, service_codes in line_names_dict.items %}
                   {% for service_code in service_codes %}
                     <p class="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom">
-                      <a class="govuk-link" href="{% url 'feed-line-detail' pk=pk host hosts.data %}?line={{ line_name }}&service={{ service_code }}">{{ line_name }} - {{ service_code }}</a>
+                      <a class="govuk-link"
+                         href="{% url 'feed-line-detail' pk=pk host hosts.data %}?line={{ line_name }}&service={{ service_code }}">{{ line_name }} - {{ service_code }}</a>
                     </p>
                   {% endfor %}
                 {% endfor %}

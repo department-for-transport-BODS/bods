@@ -14,7 +14,9 @@
     <div class="govuk-width-container">
       <div class="govuk-grid-row govuk-!-margin-top-5">
         <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-          <h1 class="govuk-heading-xl app-masthead__title">{% trans "Publish bus open data" %}</h1>
+          <h1 class="govuk-heading-xl app-masthead__title">
+            {% trans "Publish bus open data" %}
+          </h1>
           <p class="govuk-body">
             {% filter force_escape %}
               {% trans "Use this service to publish the following data:" %}
@@ -62,7 +64,7 @@
   <div class="govuk-grid-row govuk-!-margin-bottom-8">
     <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
       <h2 class="govuk-heading-s">
-        <a class="govuk-link-bold" href="{% url 'guide-me' host hosts.publish %}">
+        <a class="govuk-link" href="{% url 'guide-me' host hosts.publish %}">
           {% filter force_escape %}
             {% trans "Guide me" %}
           {% endfilter %}
@@ -74,7 +76,7 @@
         {% endfilter %}
       </p>
       <h2 class="govuk-heading-s">
-        <a class="govuk-link-bold" href="{{ review_page }}">
+        <a class="govuk-link" href="{{ review_page }}">
           {% filter force_escape %}
             {% trans "Review my data" %}
           {% endfilter %}
@@ -86,7 +88,7 @@
         {% endfilter %}
       </p>
       <h2 class="govuk-heading-s">
-        <a class="govuk-link-bold" href="{% url 'users:home' host hosts.publish %}">
+        <a class="govuk-link" href="{% url 'users:home' host hosts.publish %}">
           {% filter force_escape %}
             {% trans "Manage your account" %}
           {% endfilter %}
@@ -99,7 +101,9 @@
       </p>
     </div>
     <div class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-m">{% trans "Need further help?" %}</h2>
+      <h2 class="govuk-heading-m">
+        {% trans "Need further help?" %}
+      </h2>
       <ul class="govuk-list app-list--nav govuk-!-font-size-19">
         <li>
           <a class="govuk-link" href="{% url 'changelog' host hosts.root %}">

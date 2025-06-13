@@ -15,26 +15,25 @@
       {% breadcrumb_url name 'operator-detail' organisation_id host hosts.data %}
     {% else %}
       <li class="govuk-breadcrumbs__list-item">
-        <a class="govuk-breadcrumbs__link"
-          href="#">
-          {{ name }}
-        </a>
+        <a class="govuk-breadcrumbs__link" href="#">{{ name }}</a>
       </li>
     {% endif %}
   {% endwith %}
   {% with name=licence_number %}
-  <li class="govuk-breadcrumbs__list-item">
-    <a class="govuk-breadcrumbs__link"
-      href="{% url 'operator-licence-detail' number=licence_number host hosts.data %}?org_id={{ organisation_id }}">
-      {{ name }}
-    </a>
-  </li>
+    <li class="govuk-breadcrumbs__list-item">
+      <a class="govuk-breadcrumbs__link"
+         href="{% url 'operator-licence-detail' number=licence_number host hosts.data %}?org_id={{ organisation_id }}">
+        {{ name }}
+      </a>
+    </li>
   {% endwith %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l app-!-mb-4 dont-break-out">{{ organisation_name }} - {{ licence_number }}</h1>
+      <h1 class="govuk-heading-l app-!-mb-4 dont-break-out">
+        {{ organisation_name }} - {{ licence_number }}
+      </h1>
       <p class="govuk-body app-!-mb-sm-0">
         {% blocktrans %}
           Overview of the available bus open data
@@ -45,14 +44,18 @@
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <div id="map" class="disruptions-width"></div>
+      <div id="map" class="disruptions-width">
+      </div>
       <table class="govuk-table consumer-property-table">
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{% trans "Owner" %}</th>
+            <th scope="row" class="govuk-table__header">
+              {% trans "Owner" %}
+            </th>
             <td colspan="2" class="govuk-table__cell dont-break-out">
               <div class="stacked">
-                <a class="govuk-link" href="{% if organisation_id %} {% url 'search' host host.name %}?organisation={{ organisation_id }}&status=live {% else %}  # {% endif %}">{% trans organisation_name %}</a>
+                <a class="govuk-link"
+                   href="{% if organisation_id %} {% url 'search' host host.name %}?organisation={{ organisation_id }}&status=live {% else %}  # {% endif %}">{% trans organisation_name %}</a>
                 {% blocktrans %}
                           Access all data uploaded by this publisher
                         {% endblocktrans %}
@@ -62,14 +65,22 @@
         </tbody>
       </table>
       <div class="govuk-!-margin-top-5">
-        <h2 class="govuk-heading-l">Review Service Numbers</h2>
+        <h2 class="govuk-heading-l">
+          Review Service Numbers
+        </h2>
         <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
           {% if licence_services %}
             {% for service in licence_services %}
               <p class="govuk-body govuk-!-padding-bottom-2 border-bottom-custom">
                 <a class="govuk-link"
                    href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?org_id={{ organisation_id }}&line={{ service.service_number }}&service={{ service.registration_number }}">{{ service.service_number }} - {{ service.registration_number }}</a>
-                <span class="govuk-tag govuk-!-margin-left-2 {% if service.is_label_green %} govuk-tag--green {% else %} govuk-tag--red {% endif %} govuk-!-font-size-16 govuk-!-text-align-centre">
+                <span class="govuk-tag govuk-!-margin-left-2
+                             {% if service.is_label_green %}
+                               govuk-tag--green
+                             {% else %}
+                               govuk-tag--red
+                             {% endif %}
+                             govuk-!-font-size-16 govuk-!-text-align-centre">
                   {{ service.label_str }}
                 </span>
               </p>
@@ -81,7 +92,9 @@
       </div>
     </div>
     <div class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-m">{% trans "What you need to know" %}</h2>
+      <h2 class="govuk-heading-m">
+        {% trans "What you need to know" %}
+      </h2>
       <ul class="govuk-list app-list--nav govuk-!-font-size-19">
         <li>
           <a class="govuk-link" href="{% url 'guidance:support-developer' host hosts.data %}">

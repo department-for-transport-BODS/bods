@@ -12,45 +12,51 @@
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl dont-break-out" aria-label="Heading Title">Cancellations data API</h1>
-        <div class="govuk-!-margin-bottom-6">
-          <h3 class="govuk-heading-m">Ready to use the API?</h3>
-          <a class="govuk-link " href="{% url 'guidance:support-developer' host hosts.data %}">
-            {% trans "View developer documentation" %}
-          </a>
-        </div>
-        <div class="govuk-!-margin-bottom-6">
-          <h3 class="govuk-heading-m">First time API user?</h3>
-          <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">
-            {% trans "Guide me" %}
-          </a>
-        </div>
-        <div class="govuk-!-margin-bottom-6">
-          <h3 class="govuk-heading-m">Try API service?</h3>
-          <p class="govuk-body">
-            {% blocktrans %}
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl dont-break-out" aria-label="Heading Title">
+        Cancellations data API
+      </h1>
+      <div class="govuk-!-margin-bottom-6">
+        <h3 class="govuk-heading-m">
+          Ready to use the API?
+        </h3>
+        <a class="govuk-link " href="{% url 'guidance:support-developer' host hosts.data %}">
+          {% trans "View developer documentation" %}
+        </a>
+      </div>
+      <div class="govuk-!-margin-bottom-6">
+        <h3 class="govuk-heading-m">
+          First time API user?
+        </h3>
+        <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">{% trans "Guide me" %}</a>
+      </div>
+      <div class="govuk-!-margin-bottom-6">
+        <h3 class="govuk-heading-m">
+          Try API service?
+        </h3>
+        <p class="govuk-body">
+          {% blocktrans %}
               You can experiment with our interactive API services, to familiarise yourself
               with the data supplied. Please append your API_Key from your
             {% endblocktrans %}
-            <a href="{% url 'users:settings' host hosts.data %}">{% trans "Account Settings" %}</a>
-            {% blocktrans %}
+          <a href="{% url 'users:settings' host hosts.data %}">{% trans "Account Settings" %}</a>
+          {% blocktrans %}
               page and query parameters to your API requests.
             {% endblocktrans %}
-          </p>
-          <p class="govuk-body">
-            {% blocktrans %}
+        </p>
+        <p class="govuk-body">
+          {% blocktrans %}
               Cancellations data is available in SIRI-SX. Cancellations data is
               created by operators and represents specific vehicle journey cancellations.
             {% endblocktrans %}
-          </p>
-          <a class="govuk-link" href="{% url 'api:cancellationsopenapi' host hosts.data %}">
-            {% trans "Try the cancellations data API" %}
-          </a>
-        </div>
+        </p>
+        <a class="govuk-link" href="{% url 'api:cancellationsopenapi' host hosts.data %}">
+          {% trans "Try the cancellations data API" %}
+        </a>
       </div>
-      {% block heading.secondary %}
-        {% include "browse/snippets/download_secondary_links.html" %}
-      {% endblock %}
+    </div>
+    {% block heading.secondary %}
+      {% include "browse/snippets/download_secondary_links.html" %}
+    {% endblock %}
   </div>
 {% endblock %}

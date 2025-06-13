@@ -1,3 +1,9 @@
+
+import jQuery from "jquery";
+window.jQuery = jQuery;
+window.$ = jQuery;
+import { Buffer } from 'buffer';
+window.buffer = Buffer;
 const SwaggerUI = require("swagger-ui");
 
 const initAPIDocs = (domId, schemaUrl) => {

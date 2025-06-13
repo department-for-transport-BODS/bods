@@ -21,7 +21,9 @@
           {% trans "Data set ID" %}
         {% endfilter %}
       </th>
-      <td class="govuk-table__cell dont-break-out">{{ object.id }}</td>
+      <td class="govuk-table__cell dont-break-out">
+        {{ object.id }}
+      </td>
     </tr>
     <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">
@@ -142,7 +144,9 @@
       </th>
       <td class="govuk-table__cell">
         {% if is_schema_violation or is_post_schema_violation or is_pti_violation %}
-          <p class="govuk-body govuk-!-font-weight-bold">3a Validation check – Passed with issues</p>
+          <p class="govuk-body govuk-!-font-weight-bold">
+            3a Validation check – Passed with issues
+          </p>
           <p class="govuk-body">
             <a class="govuk-link" href="{% url 'revision-pti-csv' pk=view.kwargs.pk pk1=view.kwargs.pk1 host hosts.publish %}">
               Download validation report
@@ -157,8 +161,12 @@
                             {% endblocktrans %}
           </p>
         {% else %}
-          <p class="govuk-body govuk-!-font-weight-bold">Successfully passed validation</p>
-          <p class="govuk-body">Your data is BODS compliant.</p>
+          <p class="govuk-body govuk-!-font-weight-bold">
+            Successfully passed validation
+          </p>
+          <p class="govuk-body">
+            Your data is BODS compliant.
+          </p>
         {% endif %}
       </td>
     </tr>
@@ -181,7 +189,9 @@
         {% trans "TransXChange version" %}
       {% endfilter %}
     </th>
-    <td class="govuk-table__cell">{{ object.transxchange_version }}</td>
+    <td class="govuk-table__cell">
+      {{ object.transxchange_version }}
+    </td>
   </tr>
   <tr class="govuk-table__row">
     <th scope="row" class="govuk-table__header">

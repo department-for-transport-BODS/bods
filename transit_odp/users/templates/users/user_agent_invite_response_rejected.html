@@ -13,7 +13,9 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters">
-      <h1 class="govuk-heading-xl">You rejected the offer to act as an agent on behalf of {{ object.organisation.name }}</h1>
+      <h1 class="govuk-heading-xl">
+        You rejected the offer to act as an agent on behalf of {{ object.organisation.name }}
+      </h1>
       <a href="{% url 'users:home' host host.name %}"
          role="button"
          draggable="false"

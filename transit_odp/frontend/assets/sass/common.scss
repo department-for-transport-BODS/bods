@@ -1,7 +1,6 @@
 .key-value-list {
   list-style: none;
   padding: 0;
-  // font-family: "nta", Arial, sans-serif;
   font-size: 1.125rem;
   margin: govuk-spacing(3) 0 0 0;
 
@@ -21,11 +20,6 @@
   }
 }
 
-.sort_container {
-  display: flex;
-  justify-content: flex-start;
-}
-
 .flex-container {
   display: flex;
 }
@@ -38,8 +32,6 @@
   flex: 1;
 }
 
-/* Used to prevent long words, such as urls and api_key for overflowing */
-/* see https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/ */
 .dont-break-out {
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -50,16 +42,6 @@
   -moz-hyphens: auto;
   -webkit-hyphens: auto;
   hyphens: auto;
-}
-
-// .operator-heading {
-//   color: $govuk-link-colour;
-// }
-
-.govuk-\!-font-size-24__custom {
-  font-size: 20px !important;
-  line-height: 1.11111 !important;
-  font-weight: bold;
 }
 
 ul.dashed {
@@ -73,12 +55,6 @@ ul.dashed > li {
 ul.dashed > li:before {
   content: "-";
   text-indent: -5px;
-}
-
-.govuk-grid-row__custom {
-  margin-right: -15px;
-  margin-left: -15px;
-  word-wrap: break-word;
 }
 
 .no-wrap {
@@ -97,15 +73,6 @@ fieldset {
   margin: 0;
 }
 
-.govuk-label--bold {
-  @extend .govuk-label;
-  font-weight: bold;
-}
-
-/* Screen readers sometimes require labels that should otherwise be invisible to the user
-   settings like display: none can't be used because they also affect visibility to screen readers
-   https://webaim.org/techniques/css/invisiblecontent/
-   see data.gov.uk search box for an example */
 .hide-using-position {
   position: absolute;
   overflow: hidden;
@@ -119,37 +86,33 @@ fieldset {
   overflow: hidden;
 }
 
-// .border-bottom-custom {
-//   border-bottom: $govuk-accordion-bottom-border-width solid $govuk-border-colour;
-// }
-
 .govuk-accordion__section-content[hidden] {
   display: none !important;
 }
 
 .link-dark {
   text-decoration: none;
-  color: #000000 !important;
+  color: govuk-colour("black") !important;
 }
+
 .bg-light-p-font-lg {
-  background-color: #d8d6d6;
+  background-color: govuk-colour("light-grey");
   text-align: left;
   vertical-align: middle;
   padding: 1.25em 2.9375em;
   font-size: 1.03rem;
 }
+
+
 .last_updated_cell {
   width: 20%;
 }
-.border-blue-2 {
-  border: 2px solid #005ea5;
-}
+
 .table-container {
   padding: 1.25em;
 }
 .font-arial-lg {
   font-size: 1.185rem;
-  font-family: nta, Arial, sans-serif;
 }
 .w-40-l {
   width: 40%;
@@ -163,30 +126,28 @@ fieldset {
 .no-underline-l {
   text-decoration: none;
 }
-.bg-blue-light {
-  background-color: #2b8cc4;
-}
+
 .pb3-l {
   padding-bottom: 1rem;
 }
 .progress-bar-outer {
   width: 100%;
-  background-color: #005ea5;
+  background-color: govuk-colour("dark-blue");
 }
 .loading-white {
   width: 0%;
   height: 30px;
-  background-color: #ffffff;
+  background-color: govuk-colour("white");
   text-align: center;
   line-height: 30px;
-  color: #ffffff;
+  color: govuk-colour("white");
 }
 .loading-white-lg {
   width: 4.375em;
   height: 2.625em;
   font-size: 2.25em;
   font-weight: bold;
-  color: #ffffff;
+  color: govuk-colour("white");
   align-content: center;
 }
 .w-90-l {
@@ -196,20 +157,18 @@ fieldset {
   text-align: right;
 }
 .b--black {
-  border-color: #000000;
+  border-color: govuk-colour("black");
 }
 .white {
-  color: #ffffff;
+  color: govuk-colour("white");
 }
 .pb0-l {
   padding-bottom: 0;
 }
 .invite-error {
-  color: #d4351c;
+  color: govuk-colour("red");
 }
-.app-task-list__items {
-  padding-left: 1.875em;
-}
+
 .ml2-l {
   margin-left: 0.5em;
 }
@@ -228,17 +187,15 @@ fieldset {
 .hover {
   color: #454a4c;
 }
-.flexfill {
-  flex: 1;
-}
+
 .checkbox-filter__annotation {
-  color: #505a5f;
+  color: govuk-colour("dark-grey");
 }
 .pa0-l {
   padding: 0px;
 }
 .app-step-nav-related {
-  color: #000000;
+  color: govuk-colour("black");
 }
 .nowrap-l {
   white-space: nowrap;
@@ -299,17 +256,17 @@ fieldset {
 .empty-bar {
   width: 0%;
   height: 30px;
-  background-color: #ffffff;
+  background-color: govuk-colour("white");
   text-align: center;
   line-height: 30px;
-  color: #ffffff;
+  color: govuk-colour("white");
 }
 .bold-white-text {
   width: 4.375em;
   height: 2.625em;
   font-size: 2.25em;
   font-weight: bold;
-  color: #ffffff;
+  color: govuk-colour("white");
   align-content: center;
 }
 .blue-header {
@@ -359,8 +316,8 @@ fieldset {
   bottom: 0px;
   right: 33px;
   font-size: 12px;
-  background: #aaa;
-  color: #000;
+  background: govuk-colour("light-grey");
+  color: govuk-colour("black");
   padding: 4px;
   opacity: 0.6;
 }
@@ -387,15 +344,15 @@ ul.licence-list .compliance-indicator {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background-color: grey;
+  background-color: govuk-colour("light-grey");
 }
 
 ul.licence-list .compliance-indicator.compliant {
-  background-color: #00703c;
+  background-color: govuk-colour("green");
 }
 
 ul.licence-list .compliance-indicator.non-compliant {
-  background-color: #d4351c;
+  background-color: govuk-colour("red");
 }
 
 ul.licence-list a {
