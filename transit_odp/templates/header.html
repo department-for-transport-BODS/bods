@@ -42,7 +42,7 @@
             {% trans "Menu" %}
           </button>
           {% block menu %}
-            <ul id="navigation" class="govuk-header__navigation-list flex-container">
+            <ul id="navigation" class="govuk-header__navigation-list flex-container govuk-!-width-full">
               {% if host.name == hosts.data %}
                 {% include "snippets/navlinks_data.html" %}
               {% elif host.name == hosts.publish %}
