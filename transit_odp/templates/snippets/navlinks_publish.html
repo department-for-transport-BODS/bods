@@ -9,11 +9,13 @@
     <a class="govuk-header__link {% active_url 'guide-me' css_class='govuk-link--active' host=hosts.publish exact=True %}"
        href="{% url 'guide-me' host hosts.publish %}">{% trans "Guide me" %}</a>
   </li>
-  <li class="flexfill"></li>
+  <li class="flexfill">
+  </li>
   {% if request.user.is_authenticated %}
     <li class="govuk-header__navigation-item dropdown bods-dropdown">
       <a href="#" class="govuk-header__link {% active_url 'users:home' css_class='govuk-link--active' host='publish' %}">
-        <div class="account_menu__icon"></div>
+        <div class="account_menu__icon">
+        </div>
         {% trans "My account" %}
       </a>
       <div class="dropdown-content">
@@ -38,7 +40,8 @@
     <li class="govuk-header__navigation-item govuk-header__navigation--end">
       <a class="govuk-header__link {% active_url 'account_login' css_class='govuk-link--active' host='publish' %}"
          href="{% url 'account_login' host hosts.publish %}">
-        <div class="account_menu__icon"></div>
+        <div class="account_menu__icon">
+        </div>
         {% trans "Sign in" %}
       </a>
     </li>

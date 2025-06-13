@@ -1,13 +1,19 @@
 {% load i18n %}
 {% load static %}
 {% if object.avl_compliance == "Awaiting publisher review" %}
-  <p class="govuk-body">{{ object.avl_compliance }}</p>
+  <p class="govuk-body">
+    {{ object.avl_compliance }}
+  </p>
   <a href="{{ report_url }}" class="govuk-link">Download validation report</a>
 {% elif object.avl_compliance == "Partially compliant" %}
-  <p class="govuk-body govuk-!-margin-bottom-1">{{ object.avl_compliance }}</p>
+  <p class="govuk-body govuk-!-margin-bottom-1">
+    {{ object.avl_compliance }}
+  </p>
   <a href="{{ report_url }}" class="govuk-link">Download validation report</a>
 {% elif object.avl_compliance == "Non-compliant" %}
-  <p class="govuk-body">{{ object.avl_compliance }}</p>
+  <p class="govuk-body">
+    {{ object.avl_compliance }}
+  </p>
   <a href="{{ report_url }}" class="govuk-link">Download validation report</a>
 {% else %}
   {{ object.avl_compliance }}

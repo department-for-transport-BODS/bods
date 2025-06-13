@@ -13,8 +13,12 @@
           {% if table.show_header %}
             <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:"" }}">
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Service ({{ table.paginated_rows|length }})</th>
-                <th scope="col" class="govuk-table__header">Details</th>
+                <th scope="col" class="govuk-table__header">
+                  Service ({{ table.paginated_rows|length }})
+                </th>
+                <th scope="col" class="govuk-table__header">
+                  Details
+                </th>
                 {% if table.rows|length > 0 and table.rows.0.cells.show_suppressed_button is True %}
                   <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">
                     <button type="submit"
@@ -66,7 +70,10 @@
                                      id="checkbox-suppress-{{ forloop.counter }}"
                                      name="suppress"
                                      type="checkbox"
-                                     {% if row.cells.is_suppressed is True %} checked {% else %}  {% endif %}
+                                     {% if row.cells.is_suppressed is True %}
+                                       checked
+                                     {% else %}
+                                     {% endif %}
                                      onclick="BODSFrontend.suppressObservation('{{ row.cells.service_code }}','{{ row.cells.line_name }}', '{{ row.cells.observation }}', '{{ forloop.counter }}', {{ row.cells.is_feedback|lower }} );" />
                               <label class="govuk-label govuk-checkboxes__label"
                                      for="checkbox-suppress-{{ forloop.counter }}"
@@ -97,7 +104,9 @@
               {% if table.empty_text %}
                 {% block table.tbody.empty_text %}
                   <tr class="govuk-table__row !govuk-padding-0">
-                    <td class="govuk-table__cell" colspan="{{ table.columns|length }}">{{ table.empty_text }}</td>
+                    <td class="govuk-table__cell" colspan="{{ table.columns|length }}">
+                      {{ table.empty_text }}
+                    </td>
                   </tr>
                 {% endblock table.tbody.empty_text %}
               {% endif %}
@@ -109,7 +118,9 @@
             <tfoot {{ table.attrs.tfoot.as_html }}>
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
-                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:'' }}">{{ column.footer }}</td>
+                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:'' }}">
+                    {{ column.footer }}
+                  </td>
                 {% endfor %}
               </tr>
             </tfoot>

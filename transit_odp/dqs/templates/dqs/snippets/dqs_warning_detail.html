@@ -14,7 +14,9 @@
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
                   {% if not column.attrs.is_hidden %}
-                    <th aria-sort="none" role="columnheader" scope="col" class="govuk-table__header">{{ column.header }}</th>
+                    <th aria-sort="none" role="columnheader" scope="col" class="govuk-table__header">
+                      {{ column.header }}
+                    </th>
                   {% endif %}
                 {% endfor %}
                 {% if table.paginated_rows|length > 0 and table.paginated_rows.0|get_value_from_dict:'show_suppressed_button' %}
@@ -56,7 +58,9 @@
                               <button type="submit"
                                       class="govuk-button govuk-button--secondary govuk-!-margin-top-2 govuk-!-margin-bottom-1"
                                       onclick="BODSFrontend.hideTooltip(event);"
-                                      data-module="govuk-button">Close</button>
+                                      data-module="govuk-button">
+                                Close
+                              </button>
                             </p>
                           </div>
                         {% else %}
@@ -75,7 +79,10 @@
                                      id="checkbox-suppress-{{ forloop.counter }}"
                                      name="suppress"
                                      type="checkbox"
-                                     {% if row|get_value_from_dict:'is_suppressed' %} checked {% else %}  {% endif %}
+                                     {% if row|get_value_from_dict:'is_suppressed' %}
+                                       checked
+                                     {% else %}
+                                     {% endif %}
                                      onclick="BODSFrontend.suppressObservation('{{ request.GET|get_value_from_dict:'service' }}','{{ request.GET|get_value_from_dict:'line' }}', '{{ row|get_value_from_dict:'observation' }}', '{{ forloop.counter }}', {{ row|get_value_from_dict:'is_feedback'|lower }}, true, '{{ row|get_value_from_dict:'row_id' }}' );" />
                               <label class="govuk-label govuk-checkboxes__label"
                                      for="checkbox-suppress-{{ forloop.counter }}"
@@ -106,7 +113,9 @@
               {% if table.empty_text %}
                 {% block table.tbody.empty_text %}
                   <tr class="govuk-table__row">
-                    <td class="govuk-table__cell" colspan="{{ table.columns|length }}">{{ table.empty_text }}</td>
+                    <td class="govuk-table__cell" colspan="{{ table.columns|length }}">
+                      {{ table.empty_text }}
+                    </td>
                   </tr>
                 {% endblock table.tbody.empty_text %}
               {% endif %}
@@ -118,7 +127,9 @@
             <tfoot {{ table.attrs.tfoot.as_html }}>
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
-                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">{{ column.footer }}</td>
+                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
+                    {{ column.footer }}
+                  </td>
                 {% endfor %}
               </tr>
             </tfoot>

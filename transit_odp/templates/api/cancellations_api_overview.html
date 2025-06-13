@@ -13,19 +13,27 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl dont-break-out" aria-label="Heading Title">Cancellations data API</h1>
+      <h1 class="govuk-heading-xl dont-break-out" aria-label="Heading Title">
+        Cancellations data API
+      </h1>
       <div class="govuk-!-margin-bottom-6">
-        <h3 class="govuk-heading-m">Ready to use the API?</h3>
+        <h3 class="govuk-heading-m">
+          Ready to use the API?
+        </h3>
         <a class="govuk-link " href="{% url 'guidance:support-developer' host hosts.data %}">
           {% trans "View developer documentation" %}
         </a>
       </div>
       <div class="govuk-!-margin-bottom-6">
-        <h3 class="govuk-heading-m">First time API user?</h3>
+        <h3 class="govuk-heading-m">
+          First time API user?
+        </h3>
         <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">{% trans "Guide me" %}</a>
       </div>
       <div class="govuk-!-margin-bottom-6">
-        <h3 class="govuk-heading-m">Try API service?</h3>
+        <h3 class="govuk-heading-m">
+          Try API service?
+        </h3>
         <p class="govuk-body">
           {% blocktrans %}
               You can experiment with our interactive API services, to familiarise yourself

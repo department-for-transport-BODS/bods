@@ -26,10 +26,13 @@
       <link href="{% static 'frontend/main.bundle.css' %}" rel="stylesheet" />
     {% endblock %}
     <meta property="og:image" content="{% static 'frontend/images/govuk-opengraph-image.png' %}" />
-    {% block extra_head %}{% endblock %}
+    {% block extra_head %}
+    {% endblock %}
   </head>
   {% block body %}
-    <body class="govuk-template__body app-body-class govuk-body" data-test="{% trans 'Bus Open Data Service' %}" data-other="report:details">
+    <body class="govuk-template__body app-body-class govuk-body"
+          data-test="{% trans 'Bus Open Data Service' %}"
+          data-other="report:details">
       {% cookielaw_banner %}
       {% csrf_token %}
       <script nonce="{{request.csp_nonce}}">
@@ -38,7 +41,8 @@
       {% block skiplink %}
         <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link" role="button">Skip to main content</a>
       {% endblock %}
-      {% block page %}{% endblock %}
+      {% block page %}
+      {% endblock %}
       {% block scripts %}
         {{ GOOGLE_ANALYTICS_KEY | json_script:"ga-data" }}
         <script nonce="{{request.csp_nonce}}">var mapboxKey = '{{MAPBOX_KEY}}'</script>
