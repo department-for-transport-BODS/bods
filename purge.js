@@ -78,31 +78,29 @@ function findClassLineNumbers(scssPath, classNames) {
   return results;
 }
 
-// 5. Print unused classes with line numbers for each SCSS file, unless ignored
+// 5. Delete unused classes from each SCSS file, unless ignored
 purgeResults.forEach(({ resArr, scssPath, file }) => {
   if (ignoreList.includes(file) || ignoreList.includes(scssPath)) {
     return;
   }
   resArr.forEach((output) => {
     const unused = output.rejected || [];
-    if (unused.length) {
-      const unusedWithLines = findClassLineNumbers(scssPath, unused);
+    if (!unused.length) return;
 
-      if (unusedWithLines.length) {
-        console.log(`\nUnused classes in ${scssPath}:`);
-        unusedWithLines.forEach(({ className, line }) => {
-          console.log(`\nUnused classes in ${line}`);
-          console.log(`  ${className} (line ${line})`);
-        });
-      } else {
-        console.log(`\nUnused classes in ${scssPath}:`);
-        unused.forEach((cls) => console.log(`  ${cls} (not found in file)`));
-      }
-      console.log(`Total unused classes: ${unused.length}`);
-    } else {
-      console.log(`\nUnused classes in ${scssPath}:`);
-      console.log("No unused classes found.");
-    }
+    let scssContent = fs.readFileSync(scssPath, "utf-8");
+
+    unused.forEach((className) => {
+      // Match .classname { ... } including newlines (non-greedy)
+      const regex = new RegExp(
+        `\\.${className}\\b[^{]*\\{[\\s\\S]*?\\}`,
+        "g"
+      );
+      scssContent = scssContent.replace(regex, "");
+    });
+
+    // Write the cleaned content back to the file
+    fs.writeFileSync(scssPath, scssContent, "utf-8");
+    console.log(`Removed ${unused.length} unused classes from ${scssPath}`);
   });
 });
 

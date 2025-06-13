@@ -12,13 +12,14 @@
             <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:'' }}">
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
-                  <th aria-sort="{% if 'asc ' in column.attrs.th.class %}
+                {% spaceless %}
+                  <th aria-sort="{% spaceless %}{% if 'asc ' in column.attrs.th.class %}
                                    ascending
                                  {% elif 'desc ' in column.attrs.th.class %}
                                    descending
                                  {% else %}
                                    none
-                                 {% endif %}"
+                                 {% endif %}{% endspaceless %}"
                       role="columnheader"
                       scope="col"
                       {{ column.attrs.th.as_html |default_if_none:"" }}>
@@ -38,6 +39,7 @@
                       {{ column.attrs.annotation }}
                     {% endif %}
                   </th>
+                  {% endspaceless %}
                 {% endfor %}
               </tr>
             </thead>
