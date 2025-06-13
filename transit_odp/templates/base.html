@@ -28,7 +28,6 @@
     <meta property="og:image" content="{% static 'frontend/images/govuk-opengraph-image.png' %}" />
     <script nonce="{{request.csp_nonce}}" src="{% static 'frontend/main.bundle.js' %}"></script>
     {% block extra_head %}
-
     {% endblock %}
   </head>
   {% block body %}
@@ -48,7 +47,6 @@
       {% block scripts %}
         {{ GOOGLE_ANALYTICS_KEY | json_script:"ga-data" }}
         <script nonce="{{request.csp_nonce}}">var mapboxKey = '{{MAPBOX_KEY}}'</script>
-
         <script nonce="{{request.csp_nonce}}">
           new BODSFrontend.MyAccountMenu();
           BODSFrontend.initAll();
