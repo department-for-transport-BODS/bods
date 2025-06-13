@@ -29,7 +29,7 @@
     {% block extra_head %}{% endblock %}
   </head>
   {% block body %}
-    <body class="govuk-template__body app-body-class" data-test="{% trans 'Bus Open Data Service' %}" data-other="report:details">
+    <body class="govuk-template__body app-body-class govuk-body" data-test="{% trans 'Bus Open Data Service' %}" data-other="report:details">
       {% cookielaw_banner %}
       {% csrf_token %}
       <script nonce="{{request.csp_nonce}}">

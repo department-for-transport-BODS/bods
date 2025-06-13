@@ -1,6 +1,6 @@
 .swagger-ui {
   /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
-  font-family: sans-serif;
+  font-family: "GDS Transport", Arial, sans-serif;
   color: govuk-colour("black");
 }
 
@@ -2023,10 +2023,6 @@
   clear: both;
 }
 
-.swagger-ui .cf {
-  *zoom: 1;
-}
-
 .swagger-ui .cl {
   clear: left;
 }
@@ -3112,12 +3108,11 @@
 }
 
 .swagger-ui .sans-serif {
-  font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica,
-    helvetica neue, ubuntu, roboto, noto, segoe ui, arial, sans-serif;
+  font-family: "GDS Transport", Arial, sans-serif;
 }
 
 .swagger-ui .serif {
-  font-family: georgia, serif;
+  font-family: "GDS Transport", Arial, sans-serif;
 }
 
 .swagger-ui .system-sans-serif {
@@ -9436,7 +9431,7 @@
   font-size: 1.2em;
   flex: 1;
   margin: 0;
-  font-family: "nta", Arial, sans-serif;
+  font-family: "GDS Transport", Arial, sans-serif;
   color: govuk-colour("black");
 }
 
@@ -10789,20 +10784,13 @@
 
 .swagger-ui table thead tr td,
 .swagger-ui table thead tr th {
-  /*font-size: 12px;*/
-  /*font-weight: 700;*/
-  /*padding: 12px 0;*/
-  /*text-align: left;*/
-  /*border-bottom: 1px solid rgba(59, 65, 81, .2);*/
-  /*font-family: sans-serif;*/
-  /*color: govuk-colour("black")*/
   font-size: 1em;
   font-weight: bold;
   padding: 12px 0;
   text-align: left;
   border-bottom: 1px solid govuk-colour("dark-grey");
   color: govuk-colour("black");
-  font-family: "nta", Arial, sans-serif;
+  font-family: "GDS Transport", Arial, sans-serif;
 }
 
 .swagger-ui .parameters-col_description {

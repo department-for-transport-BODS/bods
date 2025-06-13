@@ -23,6 +23,9 @@
               data-module="govuk-button"
               onclick="BODSFrontend.createCookie('CookielawBanner', '{{ parent_host }}')">
         {% trans "Accept cookies" %}
+        <button value="no" type="submit" name="cookies[analytics]" class="govuk-button" data-module="govuk-button">
+            Reject analytics cookies
+          </button>
       </button>
       <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">{% trans "Cookie settings" %}</a>
     </div>
