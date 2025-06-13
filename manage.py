@@ -2,16 +2,19 @@
 
 import os
 import sys
+
 import environ
+
 env = environ.Env()
 
 if env.bool("DD_TRACE_ENABLED", False):
     from ddtrace import patch_all
+
     patch_all()
 
 
 if env.bool("DD_PROFILING_ENABLED", False):
-    import ddtrace.profiling.auto # noqa: E402
+    import ddtrace.profiling.auto  # noqa
 
 
 if __name__ == "__main__":
