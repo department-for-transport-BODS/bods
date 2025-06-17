@@ -8,7 +8,7 @@
   font-family: "GDS Transport", Arial, sans-serif;
   font-size: 1.125rem;
 
-  >li {
+  > li {
     margin: 0;
     padding: 0;
 
@@ -16,7 +16,7 @@
       content: "|";
       margin: auto;
       padding: 0 2rem;
-      color: $govuk-green-colour;
+      color: govuk-color("green");
     }
   }
 }

@@ -19,10 +19,10 @@
   @include govuk-responsive-padding(4);
   @include govuk-responsive-margin(6, "bottom");
   text-align: left;
-  border: $govuk-border-width solid $govuk-confirm-colour;
+  border: $govuk-border-width solid govuk-colour("green");
 
   .govuk-panel__title {
-    color: $govuk-confirm-colour;
+    color: govuk-colour("green");
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
   }
