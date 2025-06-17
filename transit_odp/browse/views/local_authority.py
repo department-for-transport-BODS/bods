@@ -763,9 +763,9 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
             str: pipe "|" seprated string of UI LTA's
         """
         if ui_ltas_dict_key not in self.otc_service_traveline_region:
-            self.otc_service_traveline_region[ui_ltas_dict_key] = (
-                get_service_traveline_regions(ui_ltas)
-            )
+            self.otc_service_traveline_region[
+                ui_ltas_dict_key
+            ] = get_service_traveline_regions(ui_ltas)
         return self.otc_service_traveline_region[ui_ltas_dict_key]
 
     def get_otc_ui_lta(
@@ -805,17 +805,16 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if ui_ltas_dict_key not in self.otc_traveline_region_status:
-            self.otc_traveline_region_status[ui_ltas_dict_key] = (
-                not naptan_adminarea_df.empty
-                and any(
-                    (
-                        naptan_adminarea_df[
-                            naptan_adminarea_df["ui_lta_id"].isin(
-                                [ui_lta.id for ui_lta in ui_ltas]
-                            )
-                        ]
-                    )["is_english_region"]
-                )
+            self.otc_traveline_region_status[
+                ui_ltas_dict_key
+            ] = not naptan_adminarea_df.empty and any(
+                (
+                    naptan_adminarea_df[
+                        naptan_adminarea_df["ui_lta_id"].isin(
+                            [ui_lta.id for ui_lta in ui_ltas]
+                        )
+                    ]
+                )["is_english_region"]
             )
         return self.otc_traveline_region_status[ui_ltas_dict_key]
 
@@ -835,15 +834,12 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if atco_code not in self.weca_traveline_region_status:
-            self.weca_traveline_region_status[atco_code] = (
-                not naptan_adminarea_df.empty
-                and any(
-                    (
-                        naptan_adminarea_df[
-                            naptan_adminarea_df["atco_code"] == atco_code
-                        ]
-                    )["is_english_region"]
-                )
+            self.weca_traveline_region_status[
+                atco_code
+            ] = not naptan_adminarea_df.empty and any(
+                (naptan_adminarea_df[naptan_adminarea_df["atco_code"] == atco_code])[
+                    "is_english_region"
+                ]
             )
         return self.weca_traveline_region_status[atco_code]
 
@@ -956,9 +952,11 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
             fares_compliance_status = "No"
             fares_requires_attention = "No"
             fares_timeliness_status = "Not Stale"
-            fares_dataset_id = fares_filename = fares_last_modified = (
-                fares_one_year_date
-            ) = fares_operating_period_end = ""
+            fares_dataset_id = (
+                fares_filename
+            ) = (
+                fares_last_modified
+            ) = fares_one_year_date = fares_operating_period_end = ""
 
             if file_attribute is not None:
                 avl_published_status = self.get_avl_published_status(
@@ -1045,9 +1043,17 @@ class LTAComplianceReportCSV(CSVBuilder, LTACSVHelper):
                 dq_require_attention = UNDER_MAINTENANCE
 
             if not fares_require_attention_active:
-                fares_requires_attention = fares_published_status = (
+                fares_requires_attention = (
+                    fares_published_status
+                ) = (
                     fares_compliance_status
-                ) = fares_timeliness_status = fares_dataset_id = fares_filename = (
+                ) = (
+                    fares_timeliness_status
+                ) = (
+                    fares_dataset_id
+                ) = (
+                    fares_filename
+                ) = (
                     fares_last_modified
                 ) = fares_one_year_date = fares_operating_period_end = UNDER_MAINTENANCE
 
@@ -1268,9 +1274,9 @@ class LTACSV(CSVBuilder, LTACSVHelper):
             str: pipe "|" seprated string of UI LTA's
         """
         if ui_ltas_dict_key not in self.otc_service_traveline_region:
-            self.otc_service_traveline_region[ui_ltas_dict_key] = (
-                get_service_traveline_regions(ui_ltas)
-            )
+            self.otc_service_traveline_region[
+                ui_ltas_dict_key
+            ] = get_service_traveline_regions(ui_ltas)
         return self.otc_service_traveline_region[ui_ltas_dict_key]
 
     def get_otc_ui_lta(
@@ -1309,17 +1315,16 @@ class LTACSV(CSVBuilder, LTACSVHelper):
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if ui_ltas_dict_key not in self.otc_traveline_region_status:
-            self.otc_traveline_region_status[ui_ltas_dict_key] = (
-                not naptan_adminarea_df.empty
-                and any(
-                    (
-                        naptan_adminarea_df[
-                            naptan_adminarea_df["ui_lta_id"].isin(
-                                [ui_lta.id for ui_lta in ui_ltas]
-                            )
-                        ]
-                    )["is_english_region"]
-                )
+            self.otc_traveline_region_status[
+                ui_ltas_dict_key
+            ] = not naptan_adminarea_df.empty and any(
+                (
+                    naptan_adminarea_df[
+                        naptan_adminarea_df["ui_lta_id"].isin(
+                            [ui_lta.id for ui_lta in ui_ltas]
+                        )
+                    ]
+                )["is_english_region"]
             )
         return self.otc_traveline_region_status[ui_ltas_dict_key]
 
@@ -1339,15 +1344,12 @@ class LTACSV(CSVBuilder, LTACSVHelper):
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if atco_code not in self.weca_traveline_region_status:
-            self.weca_traveline_region_status[atco_code] = (
-                not naptan_adminarea_df.empty
-                and any(
-                    (
-                        naptan_adminarea_df[
-                            naptan_adminarea_df["atco_code"] == atco_code
-                        ]
-                    )["is_english_region"]
-                )
+            self.weca_traveline_region_status[
+                atco_code
+            ] = not naptan_adminarea_df.empty and any(
+                (naptan_adminarea_df[naptan_adminarea_df["atco_code"] == atco_code])[
+                    "is_english_region"
+                ]
             )
         return self.weca_traveline_region_status[atco_code]
 
@@ -1532,9 +1534,9 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
             str: pipe "|" seprated string of UI LTA's
         """
         if ui_ltas_dict_key not in self.otc_service_traveline_region:
-            self.otc_service_traveline_region[ui_ltas_dict_key] = (
-                get_service_traveline_regions(ui_ltas)
-            )
+            self.otc_service_traveline_region[
+                ui_ltas_dict_key
+            ] = get_service_traveline_regions(ui_ltas)
         return self.otc_service_traveline_region[ui_ltas_dict_key]
 
     def get_otc_ui_lta(
@@ -1573,17 +1575,16 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if ui_ltas_dict_key not in self.otc_traveline_region_status:
-            self.otc_traveline_region_status[ui_ltas_dict_key] = (
-                not naptan_adminarea_df.empty
-                and any(
-                    (
-                        naptan_adminarea_df[
-                            naptan_adminarea_df["ui_lta_id"].isin(
-                                [ui_lta.id for ui_lta in ui_ltas]
-                            )
-                        ]
-                    )["is_english_region"]
-                )
+            self.otc_traveline_region_status[
+                ui_ltas_dict_key
+            ] = not naptan_adminarea_df.empty and any(
+                (
+                    naptan_adminarea_df[
+                        naptan_adminarea_df["ui_lta_id"].isin(
+                            [ui_lta.id for ui_lta in ui_ltas]
+                        )
+                    ]
+                )["is_english_region"]
             )
         return self.otc_traveline_region_status[ui_ltas_dict_key]
 
@@ -1603,15 +1604,12 @@ class LTALineLevelCSV(CSVBuilder, LTACSVHelper):
             bool: Returns True is the atco code passed belongs to an enlish region
         """
         if atco_code not in self.weca_traveline_region_status:
-            self.weca_traveline_region_status[atco_code] = (
-                not naptan_adminarea_df.empty
-                and any(
-                    (
-                        naptan_adminarea_df[
-                            naptan_adminarea_df["atco_code"] == atco_code
-                        ]
-                    )["is_english_region"]
-                )
+            self.weca_traveline_region_status[
+                atco_code
+            ] = not naptan_adminarea_df.empty and any(
+                (naptan_adminarea_df[naptan_adminarea_df["atco_code"] == atco_code])[
+                    "is_english_region"
+                ]
             )
         return self.weca_traveline_region_status[atco_code]
 
