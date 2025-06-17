@@ -615,4 +615,12 @@ header_accessor_data_db_compliance_report = [
         "Local Transport Authority",
         lambda otc_service: otc_service.get("ui_lta_name"),
     ),
+    (
+        "TXC: Revision Number",
+        lambda otc_service: otc_service.get("revision_number"),
+    ),
+    (
+        "TXC: Derived Termination Date",
+        lambda otc_service: otc_service.get("derived_termination_date"),
+    ),
 ]

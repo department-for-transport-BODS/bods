@@ -728,10 +728,10 @@ TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP = OrderedDict(
             "The Local Transport Authority element as extracted from the OTC database.",
         ),
         "revision_number": Column(
-            "TXC: Revision number", "The revision number within the file"
+            "TXC: Revision Number", "The revision number within the file"
         ),
         "derived_termination_date": Column(
-            "TXC: Derived termination date",
+            "TXC: Derived Termination Date",
             "Earliest start date of selected TXC file belonging to the "
             " service number with the next highest revision number that belongs to the same registration",
         ),
@@ -1035,7 +1035,10 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
             & pd.notna(df["least_timeliness_date"])
             & (
                 (df["operating_period_end_date"] < df["least_timeliness_date"])
-                | (df["derived_termination_date"] < df["least_timeliness_date"])
+                | (
+                    pd.notna(df["derived_termination_date"])
+                    & (df["derived_termination_date"] < df["least_timeliness_date"])
+                )
             )
         )
     else:
@@ -1050,7 +1053,10 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
             & pd.notna(df["operating_period_end_date"])
             & (
                 (df["operating_period_end_date"] < forty_two_days_from_today)
-                | (df["derived_termination_date"] < forty_two_days_from_today)
+                | (
+                    pd.notna(df["derived_termination_date"])
+                    & (df["derived_termination_date"] < forty_two_days_from_today)
+                )
             )
         )
 
@@ -1080,9 +1086,9 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     df["date_42_day_look_ahead"] = today + 42
 
     if is_cancellation_logic_active:
-        df.loc[
-            df["published_status"] == "Unpublished", "staleness_status"
-        ] = "Latest registration variation not published to BODS"
+        df.loc[df["published_status"] == "Unpublished", "staleness_status"] = (
+            "Latest registration variation not published to BODS"
+        )
 
     return df
 
@@ -1212,33 +1218,21 @@ def add_under_maintenance_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
     """
-    TXC: Derived termination date = earliest start date of selected TXC file belonging to the
-    service number with the next highest revision number that belongs to the same registration.
+    For each group of service_code, assign 'derived_termination_date' as the
+    start date of the next highest revision number within that group.
     """
     df = df.copy()
     df["derived_termination_date"] = pd.NaT
 
-    for (reg), group in df.groupby(["service_code"]):
-        # Sort group by RevisionNumber
-        group_sorted = group.sort_values("revision_number")
+    def process_group(group):
+        group = group.sort_values("revision_number").copy()
+        group["derived_termination_date"] = group["operating_period_start_date"].shift(
+            -1
+        )
+        return group
 
-        for idx, row in group_sorted.iterrows():
-            current_revision = row["revision_number"]
-
-            # Get next higher revision
-            higher_revision = group_sorted[
-                group_sorted["revision_number"] > current_revision
-            ]
-
-            if not higher_revision.empty:
-                # Get the one with the next smallest revision
-                next_entry = higher_revision.iloc[0]
-                df.at[idx, "derived_termination_date"] = pd.to_datetime(
-                    next_entry["operating_period_start_date"]
-                )
-            else:
-                df.at[idx, "derived_termination_date"] = pd.NaT
-
+    df = df.groupby("service_code", group_keys=False).apply(process_group)
+    df["derived_termination_date"] = pd.to_datetime(df["derived_termination_date"])
     return df
 
 
