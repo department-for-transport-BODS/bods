@@ -4,7 +4,7 @@
 .app-step-nav-header {
   @include govuk-text-colour;
   position: relative;
-  padding: 10px;
+  padding: govuk-spacing(2);
   background: govuk-colour("light-grey");
   border-top: solid 1px govuk-colour("mid-grey");
   border-bottom: solid 1px govuk-colour("mid-grey");

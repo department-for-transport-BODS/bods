@@ -3,9 +3,9 @@
   .dropdown-content {
     display: none;
     position: absolute;
-    background-color: govuk-colour("light-grey"); // govuk-colour("light-grey") → closest to light-grey
+    background-color: govuk-colour("light-grey");
     min-width: 160px;
-    box-shadow: 0 8px 16px 0 govuk-colour("black"); // keep as is, rgba for shadow
+    box-shadow: 0 8px 16px 0 govuk-colour("black");
 
     z-index: 1;
 
@@ -16,7 +16,7 @@
       text-align: left;
 
       &:hover {
-        background-color: govuk-colour("light-grey"); // govuk-colour("light-grey") → closest to light-grey
+        background-color: govuk-colour("light-grey");
       }
     }
   }
