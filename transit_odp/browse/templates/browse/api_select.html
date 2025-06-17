@@ -26,28 +26,28 @@
     </p>
     <ul class="govuk-list app-list--nav govuk-!-font-size-19">
       <li class="govuk-!-margin-bottom-4">
-        <a class="govuk-link" href="{% url 'api:timetableopenapi' host hosts.data %}">{% trans "Timetables data API" %}</a>
+        <a class="govuk-link-bold" href="{% url 'api:timetableopenapi' host hosts.data %}">{% trans "Timetables data API" %}</a>
       </li>
       <li class="govuk-!-margin-bottom-4">
-        <a class="govuk-link" href="{% url 'api:buslocation-api' host hosts.data %}">{% trans "Location data API" %}</a>
+        <a class="govuk-link-bold" href="{% url 'api:buslocation-api' host hosts.data %}">{% trans "Location data API" %}</a>
       </li>
       <li class="govuk-!-margin-bottom-4">
-        <a class="govuk-link" href="{% url 'api:faresopenapi' host hosts.data %}">{% trans "Fares data API" %}</a>
+        <a class="govuk-link-bold" href="{% url 'api:faresopenapi' host hosts.data %}">{% trans "Fares data API" %}</a>
       </li>
       {% if is_cancellations_live %}
         <li class="govuk-!-margin-bottom-4">
-          <a class="govuk-link" href="{% url 'api:disruptionsapioverview' host hosts.data %}">
+          <a class="govuk-link-bold" href="{% url 'api:disruptionsapioverview' host hosts.data %}">
             {% trans "Disruptions data API" %}
           </a>
         </li>
         <li class="govuk-!-margin-bottom-4">
-          <a class="govuk-link" href="{% url 'api:cancellationsapioverview' host hosts.data %}">
+          <a class="govuk-link-bold" href="{% url 'api:cancellationsapioverview' host hosts.data %}">
             {% trans "Cancellations data API" %}
           </a>
         </li>
       {% else %}
         <li class="govuk-!-margin-bottom-4">
-          <a class="govuk-link" href="{% url 'api:disruptionsopenapi' host hosts.data %}">{% trans "Disruptions data API" %}</a>
+          <a class="govuk-link-bold" href="{% url 'api:disruptionsopenapi' host hosts.data %}">{% trans "Disruptions data API" %}</a>
         </li>
       {% endif %}
     </ul>
