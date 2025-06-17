@@ -28,7 +28,7 @@
   @include govuk-font($size: 19);
   @include govuk-responsive-margin(9, "bottom");
   list-style: none;
-  padding-left: 0;
+  padding-left: govuk-spacing(4); // 1.875em → govuk-spacing(4)
   @include govuk-media-query($from: tablet) {
     padding-left: govuk-spacing(6);
   }
