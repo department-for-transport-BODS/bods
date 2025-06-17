@@ -1222,17 +1222,39 @@ def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
     start date of the next highest revision number within that group.
     """
     df = df.copy()
+    df["operating_period_start_date"] = pd.to_datetime(
+        df["operating_period_start_date"]
+    )
     df["derived_termination_date"] = pd.NaT
 
-    def process_group(group):
-        group = group.sort_values("revision_number").copy()
-        group["derived_termination_date"] = group["operating_period_start_date"].shift(
-            -1
-        )
-        return group
+    # Sort entire DataFrame by service_code and revision_number
+    df.sort_values(by=["service_code", "revision_number"], inplace=True)
 
-    df = df.groupby("service_code", group_keys=False).apply(process_group)
-    df["derived_termination_date"] = pd.to_datetime(df["derived_termination_date"])
+    # Group by service_code
+    grouped = df.groupby("service_code", sort=False)
+
+    derived_dates = []
+
+    for _, group in grouped:
+        revs = group["revision_number"].values
+        starts = group["operating_period_start_date"].values
+
+        max_rev = revs.max()
+        next_start = {}
+
+        _, idxs = np.unique(revs, return_index=True)
+        unique_revs = revs[np.sort(idxs)]
+
+        for i in range(len(unique_revs) - 1):
+            current_rev = unique_revs[i]
+            next_rev = unique_revs[i + 1]
+            # Assign earliest start date for the next revision
+            next_start[current_rev] = starts[revs == next_rev].min()
+
+        derived = [next_start.get(rev, pd.NaT) for rev in revs]
+        derived_dates.extend(derived)
+
+    df["derived_termination_date"] = pd.to_datetime(derived_dates)
     return df
 
 
