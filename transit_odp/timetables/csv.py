@@ -1222,9 +1222,7 @@ def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
     start date of the next highest revision number within that group.
     """
     df = df.copy()
-    df["operating_period_start_date"] = pd.to_datetime(
-        df["operating_period_start_date"]
-    )
+    df["operating_period_start_date"] = pd.to_datetime(df["operating_period_start_date"])
     df["derived_termination_date"] = pd.NaT
 
     # Sort entire DataFrame by service_code and revision_number
@@ -1236,19 +1234,16 @@ def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
     derived_dates = []
 
     for _, group in grouped:
-        revs = group["revision_number"].values
-        starts = group["operating_period_start_date"].values
+        revs = group["revision_number"]
+        starts = group["operating_period_start_date"]
 
-        max_rev = revs.max()
+        unique_revs = revs.drop_duplicates().sort_values().values
         next_start = {}
-
-        _, idxs = np.unique(revs, return_index=True)
-        unique_revs = revs[np.sort(idxs)]
 
         for i in range(len(unique_revs) - 1):
             current_rev = unique_revs[i]
             next_rev = unique_revs[i + 1]
-            # Assign earliest start date for the next revision
+            # Safely get the min start date of the next revision
             next_start[current_rev] = starts[revs == next_rev].min()
 
         derived = [next_start.get(rev, pd.NaT) for rev in revs]
