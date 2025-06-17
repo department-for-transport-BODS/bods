@@ -727,6 +727,14 @@ TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP = OrderedDict(
             "Local Transport Authority",
             "The Local Transport Authority element as extracted from the OTC database.",
         ),
+        "revision_number": Column(
+            "TXC: Revision Number", "The revision number within the file"
+        ),
+        "derived_termination_date": Column(
+            "TXC: Derived Termination Date",
+            "Earliest start date of selected TXC file belonging to the "
+            " service number with the next highest revision number that belongs to the same registration",
+        ),
     }
 )
 
@@ -1025,7 +1033,13 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
             (staleness_otc == False)
             & pd.notna(df["operating_period_end_date"])
             & pd.notna(df["least_timeliness_date"])
-            & (df["operating_period_end_date"] < df["least_timeliness_date"])
+            & (
+                (df["operating_period_end_date"] < df["least_timeliness_date"])
+                | (
+                    pd.notna(df["derived_termination_date"])
+                    & (df["derived_termination_date"] < df["least_timeliness_date"])
+                )
+            )
         )
     else:
         not_stale_otc = (
@@ -1037,7 +1051,13 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         staleness_42_day_look_ahead = (
             (staleness_otc == False)
             & pd.notna(df["operating_period_end_date"])
-            & (df["operating_period_end_date"] < forty_two_days_from_today)
+            & (
+                (df["operating_period_end_date"] < forty_two_days_from_today)
+                | (
+                    pd.notna(df["derived_termination_date"])
+                    & (df["derived_termination_date"] < forty_two_days_from_today)
+                )
+            )
         )
 
     """
@@ -1193,6 +1213,48 @@ def add_under_maintenance_columns(df: pd.DataFrame) -> pd.DataFrame:
     df["fares_effective_stale_date_from_last_modified"] = "Under maintenance"
     df["fares_operating_period_end_date"] = "Under maintenance"
 
+    return df
+
+
+def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    For each group of service_code, assign 'derived_termination_date' as the
+    start date of the next highest revision number within that group.
+    """
+    df = df.copy()
+    df["operating_period_start_date"] = pd.to_datetime(
+        df["operating_period_start_date"]
+    )
+    df["derived_termination_date"] = pd.NaT
+
+    # Sort entire DataFrame by service_code and revision_number
+    df.sort_values(by=["service_code", "revision_number"], inplace=True)
+
+    # Group by service_code
+    grouped = df.groupby("service_code", sort=False)
+
+    derived_dates = []
+
+    for _, group in grouped:
+        revs = group["revision_number"].values
+        starts = group["operating_period_start_date"].values
+
+        max_rev = revs.max()
+        next_start = {}
+
+        _, idxs = np.unique(revs, return_index=True)
+        unique_revs = revs[np.sort(idxs)]
+
+        for i in range(len(unique_revs) - 1):
+            current_rev = unique_revs[i]
+            next_rev = unique_revs[i + 1]
+            # Assign earliest start date for the next revision
+            next_start[current_rev] = starts[revs == next_rev].min()
+
+        derived = [next_start.get(rev, pd.NaT) for rev in revs]
+        derived_dates.extend(derived)
+
+    df["derived_termination_date"] = pd.to_datetime(derived_dates)
     return df
 
 
@@ -1367,6 +1429,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
 
     merged.sort_values("dataset_id", inplace=True)
     merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
+    merged = add_derived_termination_date(merged)
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
@@ -1419,6 +1482,7 @@ def _get_timetable_line_level_catalogue_dataframe() -> pd.DataFrame:
 
     merged.sort_values("dataset_id", inplace=True)
     merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
+    merged = add_derived_termination_date(merged)
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
@@ -1539,6 +1603,8 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         merged["cancelled_date"] = np.where(condition, merged["effective_date"], "")
         logger.info("{} Added cancelled date in the new column".format(LOG_PREFIX))
 
+    logger.info("{} Adding derived termination date".format(LOG_PREFIX))
+    merged = add_derived_termination_date(merged)
     logger.info("{} Adding Status Column".format(LOG_PREFIX))
     merged = add_status_columns(merged)
     logger.info("{} Adding Seasonal Status".format(LOG_PREFIX))

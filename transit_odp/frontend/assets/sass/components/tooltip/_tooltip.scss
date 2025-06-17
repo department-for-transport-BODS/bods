@@ -1,13 +1,13 @@
 /* Tooltip container */
 .tooltip {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-    color: #1d70b8;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  color: govuk-colour("blue");
 }
 
 .tooltip:hover {
-  color: #1d70b8;
+  color: govuk-colour("blue");
 }
 /* Tooltip text */
 .tooltip .tooltiptext {
@@ -25,14 +25,14 @@
   opacity: 0;
   transition: opacity 0.3s;
   border: 2px solid black;
-  color: #0b0c0c;
+  color: govuk-colour("black");
   width: 300px;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
 }
 
 // override tooltiptext position for the observations
-.tooltip div.tooltiptext{
-    bottom: 130%;
+.tooltip div.tooltiptext {
+  bottom: 130%;
 }
 
 /* Tooltip arrow */
@@ -46,12 +46,12 @@
   left: 5%;
 
   // margin-left: -5px;
-  // border-bottom: 10px solid #333;
+  // border-bottom: 10px solid govuk-colour("dark-grey");
   border-width: 10px;
   width: 0;
   border-style: solid;
   // border-left: 5px solid transparent;
-  border-color: #555 transparent transparent transparent;
+  border-color: govuk-colour("mid-grey") transparent transparent transparent;
   // height: 0;
 }
 .tooltip .tooltiptext::before {
@@ -79,6 +79,6 @@
   padding-bottom: 0px;
 }
 
-span.text-color-red{
-  color: #d4351c;
+span.text-color-red {
+  color: govuk-colour("red");
 }
