@@ -19,7 +19,9 @@
   {% flag "is_complete_service_pages_active" %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">{{ object.short_name }}</h1>
+      <h1 class="govuk-heading-l">
+        {{ object.short_name }}
+      </h1>
       <ul class="govuk-list">
         <li class="govuk-!-margin-bottom-5">
           <a class="govuk-link" href={{ data_activity_url }}>
@@ -172,7 +174,9 @@
         </p>
         <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
           <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="timetable-feed-url">{{ timetable_feed_url }}</p>
+            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="timetable-feed-url">
+              {{ timetable_feed_url }}
+            </p>
           </div>
           <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
             <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
@@ -237,7 +241,9 @@
         </p>
         <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
           <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="avl-feed-url">{{ avl_feed_url }}</p>
+            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="avl-feed-url">
+              {{ avl_feed_url }}
+            </p>
           </div>
           <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
             <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
@@ -293,7 +299,9 @@
         </p>
         <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
           <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="fares-feed-url">{{ fares_feed_url }}</p>
+            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="fares-feed-url">
+              {{ fares_feed_url }}
+            </p>
           </div>
           <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
             <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
@@ -337,7 +345,9 @@
 {% else %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">{{ object.short_name }}</h1>
+      <h1 class="govuk-heading-l">
+        {{ object.short_name }}
+      </h1>
       <ul class="govuk-list">
         <li class="govuk-!-margin-bottom-3">
           <a class="govuk-link" href="{% url 'contact-operator' object.id host hosts.data %}">
@@ -378,7 +388,9 @@
                 {% trans "Long name" %}
               {% endfilter %}
             </th>
-            <td class="govuk-table__cell" colspan="2">{{ object.name }}</td>
+            <td class="govuk-table__cell" colspan="2">
+              {{ object.name }}
+            </td>
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">
@@ -386,7 +398,9 @@
                 {% trans "Date registered" %}
               {% endfilter %}
             </th>
-            <td class="govuk-table__cell" colspan="2">{{ object.created|date:"j F Y" }}</td>
+            <td class="govuk-table__cell" colspan="2">
+              {{ object.created|date:"j F Y" }}
+            </td>
           </tr>
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">
@@ -397,7 +411,9 @@
             <td class="govuk-table__cell" colspan="2">
               <ul class="govuk-list govuk-!-margin-bottom-0">
                 {% for licence in organisation.licences.all %}
-                  <li class="govuk-!-margin-bottom-1">{{ licence.number }}</li>
+                  <li class="govuk-!-margin-bottom-1">
+                    {{ licence.number }}
+                  </li>
                 {% endfor %}
               </ul>
             </td>
@@ -410,7 +426,11 @@
             </th>
             <td class="govuk-table__cell" colspan="2">
               <ul class="govuk-list govuk-!-margin-bottom-0">
-                {% for noc in object.nocs.all %}<li class="govuk-!-margin-bottom-1">{{ noc.noc }}</li>{% endfor %}
+                {% for noc in object.nocs.all %}
+                  <li class="govuk-!-margin-bottom-1">
+                    {{ noc.noc }}
+                  </li>
+                {% endfor %}
               </ul>
             </td>
           </tr>
@@ -495,7 +515,9 @@
         </p>
         <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
           <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="timetable-feed-url">{{ timetable_feed_url }}</p>
+            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="timetable-feed-url">
+              {{ timetable_feed_url }}
+            </p>
           </div>
           <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
             <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
@@ -564,7 +586,9 @@
               <div>
                 <span class="feed-stat__value">{% trans "Pending" %}</span>
               </div>
-              <p class="feed-stat__label">{% trans "Weekly overall AVL to timetables matching score" %}</p>
+              <p class="feed-stat__label">
+                {% trans "Weekly overall AVL to timetables matching score" %}
+              </p>
             </div>
           {% endif %}
         </div>
@@ -614,7 +638,9 @@
         </p>
         <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
           <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="avl-feed-url">{{ avl_feed_url }}</p>
+            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="avl-feed-url">
+              {{ avl_feed_url }}
+            </p>
           </div>
           <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
             <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
@@ -722,7 +748,9 @@
         </p>
         <div class="govuk-grid-row govuk-!-margin-0 api-url-panel">
           <div class="govuk-grid-column-three-quarters govuk-!-padding-0">
-            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="fares-feed-url">{{ fares_feed_url }}</p>
+            <p class="api-url-panel__url govuk-!-margin-3 dont-break-out" id="fares-feed-url">
+              {{ fares_feed_url }}
+            </p>
           </div>
           <div class="govuk-grid-column-one-quarter govuk-!-padding-2">
             <button class="govuk-button govuk-button--link govuk-!-margin-left-9"
