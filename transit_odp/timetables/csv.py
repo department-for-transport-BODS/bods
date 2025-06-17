@@ -1222,7 +1222,9 @@ def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
     start date of the next highest revision number within that group.
     """
     df = df.copy()
-    df["operating_period_start_date"] = pd.to_datetime(df["operating_period_start_date"])
+    df["operating_period_start_date"] = pd.to_datetime(
+        df["operating_period_start_date"]
+    )
     df["derived_termination_date"] = pd.NaT
 
     # Sort entire DataFrame by service_code and revision_number
