@@ -1,9 +1,9 @@
 /* Tooltip container */
 .tooltip {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-    color: govuk-colour("blue");
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  color: govuk-colour("blue");
 }
 
 .tooltip:hover {
@@ -27,12 +27,12 @@
   border: 2px solid black;
   color: govuk-colour("black");
   width: 300px;
-  box-shadow: 5px 5px 5px govuk-colour("black");
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
 }
 
 // override tooltiptext position for the observations
-.tooltip div.tooltiptext{
-    bottom: 130%;
+.tooltip div.tooltiptext {
+  bottom: 130%;
 }
 
 /* Tooltip arrow */
@@ -79,6 +79,6 @@
   padding-bottom: 0px;
 }
 
-span.text-color-red{
+span.text-color-red {
   color: govuk-colour("red");
 }
