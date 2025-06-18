@@ -8,8 +8,7 @@
   {% endif %}
   {% trans "Resend agent user invitation" %}
 {% endblock %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% url 'users:manage' pk=object.organisation.id host host.name as backlink %}
   {% include "snippets/backlink.html" with url=backlink %}
@@ -24,5 +23,4 @@
 {% block inner %}
   {% crispy form %}
 {% endblock %}
-{% block inner_secondary %}
-{% endblock %}
+{% block inner_secondary %}{% endblock %}

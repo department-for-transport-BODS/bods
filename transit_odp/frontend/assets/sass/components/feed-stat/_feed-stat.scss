@@ -4,7 +4,7 @@
   min-width: 8rem;
   /*font-family: nta, Arial, sans-serif;*/
   font-weight: bold;
-  font-family: "GDS Transport", Arial, sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 .feed-stat__list {
@@ -14,12 +14,12 @@
 
 .feed-stat__label {
   display: block;
-  color: govuk-colour("black");
+  color: #000000;
 }
 
 .feed-stat__value {
   display: block;
-  color: govuk-colour("black");
+  color: #000000;
   font-size: 3rem;
 }
 

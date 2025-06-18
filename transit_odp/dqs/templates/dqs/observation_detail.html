@@ -11,12 +11,8 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <span id="observation-title" class="govuk-caption-xl govuk-!-margin-bottom-6">{{ title }}</span>
-      <h1 class="govuk-heading-xl">
-        {{ subtitle }}
-      </h1>
-      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
-        {% trans subtitle_description %}
-      </h1>
+      <h1 class="govuk-heading-xl">{{ subtitle }}</h1>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{% trans subtitle_description %}</h1>
       <div class="total_vehicles">
         <span class="govuk-heading-xl govuk-!-margin-0">{{ num_of_journeys }}</span>
         <span class="govuk-body-s">{{ total_journey_description }}
@@ -26,9 +22,7 @@
           {% else %}
             affected
           {% endif %}
-          {% if start_date %}
-            from {{ start_date|date:"d/m/Y" }}
-          {% endif %}
+          {% if start_date %}from {{ start_date|date:"d/m/Y" }}{% endif %}
         </span>
       </div>
       <p class="govuk-body">

@@ -4,9 +4,7 @@
     {% if item.status != "success" %}
       <a class="govuk-link" href="{% url 'avl-feed-detail' pk=item.id host hosts.data %}">{{ item.name }}</a>
     {% else %}
-      <p class="govuk-body">
-        {{ item.name }}
-      </p>
+      <p class="govuk-body">{{ item.name }}</p>
     {% endif %}
     {% include "organisation/snippets/status_indicator.html" with status=item.status record=item %}
   </div>
@@ -24,7 +22,5 @@
       {% endif %}
     </li>
   </ul>
-  <p class="govuk-body dont-break-out">
-    {{ item.description }}
-  </p>
+  <p class="govuk-body dont-break-out">{{ item.description }}</p>
 </div>

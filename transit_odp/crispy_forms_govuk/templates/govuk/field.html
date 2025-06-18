@@ -38,9 +38,7 @@
           {% include "govuk/widget.html" %}
         {% endif %}
         {# Close fieldset tag #}
-        {% if field|is_checkbox or field|is_checkboxselectmultiple or field|is_radioselect %}
-        </fieldset>
-      {% endif %}
+        {% if field|is_checkbox or field|is_checkboxselectmultiple or field|is_radioselect %}</fieldset>{% endif %}
     {% endif %}
   </div>
 {% endif %}

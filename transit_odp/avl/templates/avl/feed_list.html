@@ -5,9 +5,7 @@
     <div>
       <span class="review-stat__top">{{ organisation.stats.weekly_downloads|add:organisation.stats.weekly_api_hits|add:organisation.total_subscriptions }}</span>
     </div>
-    <p class="review-stat__description">
-      {% trans "Total consumer interactions with your data" %}
-    </p>
+    <p class="review-stat__description">{% trans "Total consumer interactions with your data" %}</p>
     <i class="fas fa-play govuk-!-margin-right-1"></i>
     <a class="review-stat__link" href={{ data_activity_url }}>
       {% trans "More details" %}
@@ -22,9 +20,7 @@
           </b>
         </span>
       </div>
-      <p class="review-stat__description">
-        {% trans "Weekly overall AVL to Timetables matching score" %}
-      </p>
+      <p class="review-stat__description">{% trans "Weekly overall AVL to Timetables matching score" %}</p>
       <i class="fas fa-play govuk-!-margin-right-1"></i>
       <a class="review-stat__link" href={% url 'ppc-archive' pk1=pk1 host hosts.publish %}>
         {% trans "Download all archived matching reports" %}
@@ -40,9 +36,7 @@
           </b>
         </span>
       </div>
-      <p class="review-stat__description">
-        {% trans "Weekly overall AVL to Timetables matching score" %}
-      </p>
+      <p class="review-stat__description">{% trans "Weekly overall AVL to Timetables matching score" %}</p>
     </div>
   {% endif %}
   {% if is_avl_require_attention_active %}
@@ -51,9 +45,7 @@
         <span class="review-stat__top">{{ services_requiring_attention }}</span>
         <span class="review-stat__bottom">/{{ total_in_scope_in_season_services }}</span>
       </div>
-      <p class="review-stat__description">
-        {% trans "Total service codes that require attention" %}
-      </p>
+      <p class="review-stat__description">{% trans "Total service codes that require attention" %}</p>
       <i class="fas fa-play govuk-!-margin-right-1"></i>
       <a class="review-stat__link" href={% url 'avl:requires-attention' pk1=pk1 host hosts.publish %}>
         {% trans "More details" %}

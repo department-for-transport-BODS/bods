@@ -7,7 +7,7 @@
 
   .mapboxgl-popup-content h2 {
     background: #005EA5;
-    color: govuk-colour("white");
+    color: #fff;
     margin: 0;
     padding: 10px;
     border-radius: 6px 6px 0 0;
@@ -16,16 +16,16 @@
   }
 
   .mapboxgl-popup-content a:link {
-    color: govuk-colour("blue");
+    color: #1d70b8;
   }
 
   .mapboxgl-popup-content a:visited {
-    color: govuk-colour("purple");
+    color: #4c2c92;
   }
 
   .mapboxgl-popup-content h3 {
     background: #005EA5;
-    color: govuk-colour("white");
+    color: #fff;
     margin: 0;
     padding: 10px;
     border-radius: 6px 6px 0 0;
@@ -37,7 +37,7 @@
     padding: 10px;
     border-radius: 0 0 6px 6px;
     font-weight: 700;
-    background: govuk-colour("white");
+    background: #ffffff;
     border: 2px solid #005EA5;
   }
 

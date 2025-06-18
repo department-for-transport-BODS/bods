@@ -13,9 +13,7 @@
   {% trans "Signed out" %}
 {% endblock %}
 {% block inner %}
-  <p class="govuk-body-l">
-    {% trans "You have successfully signed out from your account" %}
-  </p>
+  <p class="govuk-body-l">{% trans "You have successfully signed out from your account" %}</p>
   <p class="govuk-body-l">
     <a class="govuk-link" href="{% url 'home' host host.name %}">{% trans "Return to the homepage" %}</a>
   </p>
@@ -30,5 +28,4 @@
   sessionStorage.clear();
   </script>
 {% endblock %}
-{% block inner_secondary %}
-{% endblock %}
+{% block inner_secondary %}{% endblock %}

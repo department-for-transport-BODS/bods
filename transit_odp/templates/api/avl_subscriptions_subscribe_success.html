@@ -17,21 +17,19 @@
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">
-        Location Data Subscription Created
-      </h1>
-      <p>
-        You have successfully subscribed to the Location data API.
-      </p>
-      <a href="{% url 'api:buslocation-manage-subscriptions' host hosts.data %}"
-         role="button"
-         draggable="false"
-         class="govuk-button govuk-!-margin-bottom-0"
-         data-module="govuk-button">{% trans "Manage subscriptions" %}</a>
-    </div>
-    {% block heading.secondary %}
-      {% include "browse/snippets/download_secondary_links.html" %}
-    {% endblock %}
+      <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Location Data Subscription Created</h1>
+        <p>You have successfully subscribed to the Location data API.</p>
+        <a href="{% url 'api:buslocation-manage-subscriptions' host hosts.data %}"
+             role="button"
+             draggable="false"
+             class="govuk-button govuk-!-margin-bottom-0"
+             data-module="govuk-button">
+            {% trans "Manage subscriptions" %}
+          </a>
+      </div>
+      {% block heading.secondary %}
+        {% include "browse/snippets/download_secondary_links.html" %}
+      {% endblock %}
   </div>
 {% endblock %}

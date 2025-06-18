@@ -11,9 +11,7 @@
       {% trans "Manage data sets" %}
     </a>
   </li>
-  <li class="govuk-breadcrumbs__list-item" aria-current="page">
-    {% trans "Mute notifications" %}
-  </li>
+  <li class="govuk-breadcrumbs__list-item" aria-current="page">{% trans "Mute notifications" %}</li>
 {% endblock %}
 {% block backlink %}
   {% url 'users:feeds-manage' host hosts.data as backlink %}
@@ -21,9 +19,7 @@
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-    <h1 class="govuk-heading-l">
-      {% trans "Notifications for data sets" %}
-    </h1>
+    <h1 class="govuk-heading-l">{% trans "Notifications for data sets" %}</h1>
     <div class="govuk-panel app-panel--confirmation-nofill">
       <h1 class="govuk-panel__title">
         Notifications successfully

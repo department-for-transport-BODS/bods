@@ -3,9 +3,7 @@
 {% load i18n %}
 {# This template is used for the feed detail and changelog templates #}
 {# TODO - remove the inheritance and use snippets instead #}
-{% block heading.title.text %}
-  {{ object.name }}
-{% endblock %}
+{% block heading.title.text %}{{ object.name }}{% endblock %}
 {% block heading.subtitle.text %}
   {% blocktrans %}
     Overview of the available bus open data
