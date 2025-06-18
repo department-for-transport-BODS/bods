@@ -8,7 +8,6 @@ WORKDIR /app
 COPY ./package.json ./yarn.lock ./
 COPY ./transit_odp/frontend/assets ./transit_odp/frontend/assets
 COPY ./webpack ./webpack
-COPY ./esbuild.config ./esbuild.config
 
 RUN yarn install && yarn build
 
