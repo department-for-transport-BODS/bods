@@ -1,11 +1,6 @@
 {% load i18n %}
 {% if form_tag %}
-  <form {{ flat_attrs|safe }}
-        method="{{ form_method }}"
-        {% if form.is_multipart %}
-          enctype="multipart/form-data"
-        {% endif %}
-        novalidate>
+  <form {{ flat_attrs|safe }} method="{{ form_method }}" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} novalidate>
   {% endif %}
   {% if form_method|lower == 'post' and not disable_csrf %}
     {% csrf_token %}
@@ -19,6 +14,4 @@
   {% if redirect_field_value %}
     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
-  {% if form_tag %}
-  </form>
-{% endif %}
+  {% if form_tag %}</form>{% endif %}

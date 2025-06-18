@@ -6,8 +6,7 @@
 {% block title_tag %}
   {% trans "Revoke data consumer" %}
 {% endblock %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% url 'users:consumer-detail' pk=user.id host host.name as backlink %}
   {% include "snippets/backlink.html" with url=backlink %}

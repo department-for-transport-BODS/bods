@@ -1,20 +1,14 @@
 {% load crispy_forms_tags %}
-{% block error_message %}
-{% endblock %}
+{% block error_message %}{% endblock %}
 <div class="govuk-form-group{% if formset.has_error %} govuk-form-group--error{% endif %}">
   <table class="govuk-table">
     <caption class="govuk-table__caption app-noc-table__caption">
-      {% block caption %}
-      {% endblock %}
+      {% block caption %}{% endblock %}
     </caption>
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="js-hidden govuk-table__header">
-          NOC
-        </th>
-        <th scope="col" class="js-hidden govuk-table__header">
-          Action
-        </th>
+        <th scope="col" class="js-hidden govuk-table__header">NOC</th>
+        <th scope="col" class="js-hidden govuk-table__header">Action</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body" id="id_{{ formset.prefix }}-formset">
@@ -33,8 +27,7 @@
     <tfoot>
       <tr>
         <td colspan="2" class="govuk-!-padding-top-2">
-          {% block add_button %}
-          {% endblock %}
+          {% block add_button %}{% endblock %}
         </td>
       </tr>
     </tfoot>

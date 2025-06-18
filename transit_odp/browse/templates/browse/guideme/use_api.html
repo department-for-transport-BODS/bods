@@ -7,7 +7,9 @@
     We recommend checking the developer document to find out the parameters available.
   {% endblocktrans %}
 </p>
-<a class="govuk-link govuk-!-font-size-19" href="{% url 'api-select' host hosts.data %}">{% trans "API services" %}</a>
+<a class="govuk-link govuk-!-font-size-19" href="{% url 'api-select' host hosts.data %}">
+  {% trans "API services" %}
+</a>
 <p class="govuk-body">
   {% blocktrans %}
     You can investigate the different API parameters present on BODS.

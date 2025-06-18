@@ -2,7 +2,7 @@
   &:link,
   &:hover,
   &:visited {
-    color: govuk-colour("blue");
+    color: $govuk-header-link-active;
   }
 
   // When focussed, the text colour needs to be darker to ensure that colour

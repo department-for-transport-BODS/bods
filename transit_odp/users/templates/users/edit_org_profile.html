@@ -3,8 +3,7 @@
 {% load i18n %}
 {% load breadcrumbs %}
 {% load crispy_forms_tags %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% url 'users:organisation-profile' host hosts.publish as backlink %}
   {% include "snippets/backlink.html" with url=backlink %}

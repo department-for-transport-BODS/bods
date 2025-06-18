@@ -9,13 +9,9 @@
   {% breadcrumb_url 'User management' 'users:manage' pk=user.organisation_id %}
   {% breadcrumb_url 'User detail' 'users:manage-user-detail' pk=user.organisation_id %}
 {% endblock %}
-{% block title_text %}
-  {{ object.email }}
-{% endblock %}
+{% block title_text %}{{ object.email }}{% endblock %}
 {% block inner %}
-  <h2 class="govuk-heading-m">
-    {% trans "User detail" %}
-  </h2>
+  <h2 class="govuk-heading-m">{% trans "User detail" %}</h2>
   <table class="govuk-table manage-users-table">
     <tbody class="govuk-table__body govuk-body-m">
       <tr class="top-border govuk-table__row govuk-body-m">
@@ -31,8 +27,7 @@
             Inactive
           {% endif %}
         </td>
-        <td class="govuk-table__cell">
-        </td>
+        <td class="govuk-table__cell"></td>
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell govuk-!-width-one-quarter">
@@ -40,11 +35,8 @@
             {% trans "Username" %}
           </b>
         </td>
-        <td class="govuk-table__cell">
-          {{ object.username }}
-        </td>
-        <td class="govuk-table__cell">
-        </td>
+        <td class="govuk-table__cell">{{ object.username }}</td>
+        <td class="govuk-table__cell"></td>
       </tr>
       <tr class="govuk-table__row">
         <td class="govuk-table__cell govuk-!-width-one-quarter">
@@ -55,8 +47,7 @@
         <td class="govuk-table__cell">
           <span class="dont-break-out">{% trans object.pretty_account_name %}</span>
         </td>
-        <td class="govuk-table__cell">
-        </td>
+        <td class="govuk-table__cell"></td>
       </tr>
     </tbody>
   </table>
@@ -83,9 +74,7 @@
          href="{% url 'users:agent-remove' pk=invite.id host host.name %}"
          role="button">{% trans "Remove" %}</a>
     {% else %}
-      <p class="govuk-body">
-        {% trans "No invitation found" %}
-      </p>
+      <p class="govuk-body">{% trans "No invitation found" %}</p>
     {% endif %}
   {% endif %}
 {% endblock %}

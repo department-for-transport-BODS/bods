@@ -2,23 +2,23 @@
 {% if is_new_data_quality_service_active %}
   {% if is_specific_feedback %}
     {% if warning_data.data.Critical.count == 0 and warning_data.data.Feedback.count == 0 %}
-      <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
-        NO CRITICAL ISSUES
-      </span>
+    <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+      NO CRITICAL ISSUES
+    </span>
     {% else %}
-      <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
-        CRITICAL ISSUES
-      </span>
+    <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+      CRITICAL ISSUES
+    </span>
     {% endif %}
   {% else %}
     {% if warning_data.data.Critical.count == 0 %}
-      <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
-        NO CRITICAL ISSUES
-      </span>
+    <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+      NO CRITICAL ISSUES
+    </span>
     {% else %}
-      <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
-        CRITICAL ISSUES
-      </span>
+    <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+      CRITICAL ISSUES
+    </span>
     {% endif %}
   {% endif %}
 {% else %}

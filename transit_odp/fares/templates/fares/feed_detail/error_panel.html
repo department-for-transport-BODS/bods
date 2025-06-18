@@ -1,8 +1,6 @@
 {% load i18n %}
 <div class="govuk-panel app-panel--error govuk-!-padding-top-9 govuk-!-padding-bottom-9 govuk-!-margin-bottom-7">
-  <h2 class="govuk-heading-xl govuk-panel__title govuk-!-font-size-36">
-    {% trans "Data set not available" %}
-  </h2>
+  <h2 class="govuk-heading-xl govuk-panel__title govuk-!-font-size-36">{% trans "Data set not available" %}</h2>
 </div>
 <div class="govuk-error-summary govuk-!-margin-bottom-0"
      aria-labelledby="error-summary-title"
@@ -15,9 +13,7 @@
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list govuk-!-margin-bottom-6">
       {% for error in properties.severe_errors %}
-        <li class="app-error-summary__item">
-          {{ error.description }}
-        </li>
+        <li class="app-error-summary__item">{{ error.description }}</li>
       {% endfor %}
     </ul>
     <a role="button"
@@ -30,25 +26,15 @@
 <table class="govuk-table dataset-property-table">
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Name" %}
-      </th>
-      <td class="govuk-table__cell dont-break-out">
-        {% trans object.name %}
-      </td>
+      <th scope="row" class="govuk-table__header">{% trans "Name" %}</th>
+      <td class="govuk-table__cell dont-break-out">{% trans object.name %}</td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Owner" %}
-      </th>
-      <td class="govuk-table__cell">
-        {% trans object.organisation.name %}
-      </td>
+      <th scope="row" class="govuk-table__header">{% trans "Owner" %}</th>
+      <td class="govuk-table__cell">{% trans object.organisation.name %}</td>
     </tr>
     <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">
-        {% trans "Last updated" %}
-      </th>
+      <th scope="row" class="govuk-table__header">{% trans "Last updated" %}</th>
       <td class="govuk-table__cell">
         <div class="flex-between">
           <span>
@@ -72,9 +58,7 @@
     </tr>
   </tbody>
 </table>
-<h3 class="govuk-heading-m">
-  {% trans "What should I do next?" %}
-</h3>
+<h3 class="govuk-heading-m">{% trans "What should I do next?" %}</h3>
 <p class="govuk-body govuk-!-font-size-16">
   {% blocktrans %}
     You can re-upload a different data set file again. Please ensure that your provided data format is correct and

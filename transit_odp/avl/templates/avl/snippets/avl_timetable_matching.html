@@ -1,9 +1,7 @@
 {% load i18n %}
 {% load static %}
 <p class="govuk-body govuk-!-margin-bottom-0">
-  {% if properties.avl_timetables_matching != '100%' %}
-    <i class="fas fa-exclamation-circle fa"></i>
-  {% endif %}
+  {% if properties.avl_timetables_matching != '100%' %}<i class="fas fa-exclamation-circle fa"></i>{% endif %}
   {% if not properties.avl_timetables_matching %}
     {% trans "Pending" %}
   {% else %}

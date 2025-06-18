@@ -16,15 +16,11 @@
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">
-          Edit notes
-        </h1>
+        <h1 class="govuk-heading-xl">Edit notes</h1>
         <form method="post">
           {% csrf_token %}
           {{ form | crispy }}
-          <button class="govuk-button govuk-!-margin-right-1" type="submit">
-            Save and continue
-          </button>
+          <button class="govuk-button govuk-!-margin-right-1" type="submit">Save and continue</button>
           <a href="{% url 'users:consumer-detail' pk=user.id host hosts.admin %}" class="govuk-button govuk-button--secondary">Cancel</a>
         </form>
       </div>

@@ -13,18 +13,13 @@
   {% trans "Sign out" %}
 {% endblock %}
 {% block inner %}
-  <p class="govuk-body">
-    {% trans "Are you sure you want to sign out?" %}
-  </p>
+  <p class="govuk-body">{% trans "Are you sure you want to sign out?" %}</p>
   <form method="post" action="{% url 'account_logout' host host.name %}">
     {% csrf_token %}
     {% if redirect_field_value %}
       <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
     {% endif %}
-    <button class="govuk-button" type="submit">
-      {% trans "Sign out" %}
-    </button>
+    <button class="govuk-button" type="submit">{% trans "Sign out" %}</button>
   </form>
 {% endblock %}
-{% block inner_secondary %}
-{% endblock %}
+{% block inner_secondary %}{% endblock %}

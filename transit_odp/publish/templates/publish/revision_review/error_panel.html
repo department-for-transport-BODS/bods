@@ -1,7 +1,5 @@
 {% load i18n %}
-<h2 class="govuk-heading-l govuk-!-padding-top-5">
-  {{ object.name }}
-</h2>
+<h2 class="govuk-heading-l govuk-!-padding-top-5">{{ object.name }}</h2>
 <div class="govuk-error-summary govuk-!-margin-bottom-0"
      aria-labelledby="error-summary-title"
      role="alert"
@@ -12,9 +10,7 @@
   </h2>
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list ">
-      <li class="app-error-summary__item no-underline-l">
-        {{ severe_error.description }}
-      </li>
+      <li class="app-error-summary__item no-underline-l">{{ severe_error.description }}</li>
     </ul>
   </div>
 </div>

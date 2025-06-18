@@ -13,36 +13,26 @@
   {% endif %}
 {% endblock %}
 {% block breadcrumb.content %}
-  {% with user_base_no_link=True %}
-    {{ block.super }}
-  {% endwith %}
+  {% with user_base_no_link=True %}{{ block.super }}{% endwith %}
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds govuk-body">
-      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
-        {% trans "My account" %}
-      </h1>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{% trans "My account" %}</h1>
       {% if user.is_developer %}
         <a class="govuk-link app-nav-bold" href="{% url 'users:feeds-manage' host hosts.data %}">
           {% trans "Manage subscriptions" %}
         </a>
-        <p class="govuk-body">
-          {% trans "Manage subscribed data sets and notification preferences." %}
-        </p>
+        <p class="govuk-body">{% trans "Manage subscribed data sets and notification preferences." %}</p>
         <a class="govuk-link app-nav-bold" href="{% url 'users:settings' host host.name %}">{% trans "Account settings" %}</a>
-        <p class="govuk-body">
-          {% trans "Edit your account settings and notification preferences." %}
-        </p>
+        <p class="govuk-body">{% trans "Edit your account settings and notification preferences." %}</p>
       {% elif user.is_single_org_user %}
         {% include "users/org_user_table.html" %}
       {% elif user.is_agent_user %}
         {% include "users/agent_user_table.html" %}
       {% else %}
         <a class="govuk-link app-nav-bold" href="{% url 'users:settings' host host.name %}">{% trans "Account settings" %}</a>
-        <p class="govuk-body">
-          {% trans "Edit your account settings and notification preferences." %}
-        </p>
+        <p class="govuk-body">{% trans "Edit your account settings and notification preferences." %}</p>
       {% endif %}
     </div>
   </div>

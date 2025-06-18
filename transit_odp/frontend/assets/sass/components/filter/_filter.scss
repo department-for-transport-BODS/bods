@@ -5,10 +5,10 @@
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
-  font-family: "GDS Transport", Arial, sans-serif;
+  font-family: "nta", Arial, sans-serif;
   font-size: 1.125rem;
 
-  > li {
+  >li {
     margin: 0;
     padding: 0;
 
@@ -16,7 +16,7 @@
       content: "|";
       margin: auto;
       padding: 0 2rem;
-      color: govuk-color("green");
+      color: $govuk-green-colour;
     }
   }
 }

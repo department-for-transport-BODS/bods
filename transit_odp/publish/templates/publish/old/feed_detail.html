@@ -10,9 +10,7 @@
 {% block inner.status %}
   {% if object.status != 'error' and object.status != 'indexing' %}
     <li>
-      <h4 class="info-item__title">
-        {% trans "Status" %}
-      </h4>
+      <h4 class="info-item__title">{% trans "Status" %}</h4>
       <div class="info-item__description">
         <div class="flex-between">
           {% block inner.status.indicator %}
@@ -29,9 +27,7 @@
 {% block inner.extra %}
   {% if object.status == 'error' and object.is_published == False %}
     <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
-    <h2 class="govuk-heading-m">
-      {% trans "What happens next?" %}
-    </h2>
+    <h2 class="govuk-heading-m">{% trans "What happens next?" %}</h2>
     <p class="govuk-body">
       {% blocktrans %}
             You can re-upload a different data set file again. Please ensure <br />
@@ -64,9 +60,7 @@
     <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
   {% elif object.status == 'indexing' %}
     <hr class="govuk-section-break govuk-section-break--xl govuk-section-break" />
-    <h2 class="govuk-heading-m">
-      {% trans "What happens next?" %}
-    </h2>
+    <h2 class="govuk-heading-m">{% trans "What happens next?" %}</h2>
     <p class="govuk-body">
       {% blocktrans %}
             We are now processing the data you've uploaded. You can view the <br />
@@ -97,9 +91,7 @@
 {% endblock %}
 {% block inner.secondary %}
   <div class="govuk-!-margin-top-6">
-    <h2 class="govuk-heading-m">
-      {% trans "Need help with operator data requirements?" %}
-    </h2>
+    <h2 class="govuk-heading-m">{% trans "Need help with operator data requirements?" %}</h2>
     <ul class="govuk-list app-list--nav govuk-!-font-size-19">
       <li>
         <a class="govuk-link" href="{% url 'guidance:support-bus_operators' host hosts.publish %}">

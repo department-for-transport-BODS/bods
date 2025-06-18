@@ -22,7 +22,7 @@
 }
 
 .pie-progress .progress-text {
-  color: govuk-colour("black"); /* color of progress text */
+  color: #000000; /* color of progress text */
   font-size: 18px; /* font size of progress text */
   left: 50%;
   //position: absolute;
@@ -39,12 +39,12 @@
   height: 30px;
   background: repeating-linear-gradient(
     45deg,
-    govuk-colour("black"),
-    govuk-colour("black") 10px,
-    govuk-colour("white") 10px,
-    govuk-colour("white") 20px
+    #000000,
+    #000000 10px,
+    #ffffff 10px,
+    #ffffff 20px
   );
-  background-color: govuk-colour("white");
+  background-color: #ffffff;
   text-align: center;
   line-height: 30px;
   color: white;
@@ -55,6 +55,6 @@
   height: 2.56rem;
   font-size: 2.23rem;
   font-weight: bold;
-  color: govuk-colour("white");
+  color: #ffffff;
   align-content: center;
 }

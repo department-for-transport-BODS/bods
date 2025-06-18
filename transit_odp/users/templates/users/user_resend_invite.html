@@ -8,8 +8,7 @@
   {% endif %}
   {% trans "Resend invitation" %}
 {% endblock %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% if is_site_admin %}
     {% url 'users:org-user-manage' pk=organisation.id host hosts.admin as backlink %}
@@ -29,5 +28,4 @@
 {% block inner %}
   {% crispy form %}
 {% endblock %}
-{% block inner_secondary %}
-{% endblock %}
+{% block inner_secondary %}{% endblock %}

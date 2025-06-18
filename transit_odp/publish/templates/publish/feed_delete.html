@@ -5,8 +5,7 @@
 {% block title_tag %}
   {% trans "Delete data set" %}
 {% endblock %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block backlink %}
   {% include "snippets/backlink.html" with url=cancel_url %}
 {% endblock %}
@@ -44,6 +43,5 @@
   {% block inner %}
     {% crispy form %}
   {% endblock %}
-  {% block inner_secondary %}
-  {% endblock %}
+  {% block inner_secondary %}{% endblock %}
 {% endblock %}

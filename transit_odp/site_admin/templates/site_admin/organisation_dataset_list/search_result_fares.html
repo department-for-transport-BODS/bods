@@ -4,9 +4,7 @@
     {% if item.status != "success" %}
       <a class="govuk-link" href="{% url 'fares-feed-detail' pk=item.id host hosts.data %}">{{ item.name }}</a>
     {% else %}
-      <p class="govuk-body">
-        {{ item.name }}
-      </p>
+      <p class="govuk-body">{{ item.name }}</p>
     {% endif %}
     {% include "organisation/snippets/status_indicator.html" with status=item.status record=item %}
   </div>
@@ -20,7 +18,5 @@
       <span class="item__value">{{ item.last_updated|date:"j M Y" }}  {{ item.last_updated|time:"h:i A" }}</span>
     </li>
   </ul>
-  <p class="govuk-body">
-    {{ item.description }}
-  </p>
+  <p class="govuk-body">{{ item.description }}</p>
 </div>

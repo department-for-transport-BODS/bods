@@ -1,12 +1,8 @@
 {% extends "guidance/local_authorities/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 data-qa="help-header" class="govuk-heading-l">
-    {% trans "How to get help" %}
-  </h1>
-  <h2 data-qa="naptan-header" class="govuk-heading-l">
-    {% trans "NaPTAN stop data support" %}
-  </h2>
+  <h1 data-qa="help-header" class="govuk-heading-l">{% trans "How to get help" %}</h1>
+  <h2 data-qa="naptan-header" class="govuk-heading-l">{% trans "NaPTAN stop data support" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
             The DfT is offering a free service whereby local authorities can get in contact with

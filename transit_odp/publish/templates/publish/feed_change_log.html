@@ -8,5 +8,4 @@
   {% url 'feed-detail' pk=object.id pk1=pk1 host host.name as backlink_url %}
   {% include "snippets/backlink.html" with url=backlink_url %}
 {% endblock %}
-{% block subtitle_text %}
-{% endblock %}
+{% block subtitle_text %}{% endblock %}

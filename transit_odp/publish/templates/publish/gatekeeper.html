@@ -13,13 +13,11 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">
-        {% trans "Publish your data" %}
-      </h1>
+      <h1 class="govuk-heading-l">{% trans "Publish your data" %}</h1>
       <p class="govuk-body-l">
         {% blocktrans %}
-          Only bus operators and local authorities are able to provide their data.
-        {% endblocktrans %}
+                    Only bus operators and local authorities are able to provide their data.
+                {% endblocktrans %}
       </p>
       <p class="govuk-body-l">
         {% if not user.is_authenticated %}

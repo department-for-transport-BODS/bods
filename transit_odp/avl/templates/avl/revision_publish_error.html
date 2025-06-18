@@ -4,8 +4,7 @@
 {% block title_tag %}
   {% trans "Could not publish changes" %}
 {% endblock %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -20,9 +19,7 @@
         </h2>
         <div class="govuk-error-summary__body">
           <ul class="govuk-list govuk-error-summary__list ">
-            <li class="no-underline-l app-error-summary__item">
-              Something went wrong. Please try again later.
-            </li>
+            <li class="no-underline-l app-error-summary__item">Something went wrong. Please try again later.</li>
           </ul>
         </div>
       </div>
@@ -32,7 +29,6 @@
         </a>
       </div>
     </div>
-    <div class="govuk-!-width-one-third">
-    </div>
+    <div class="govuk-!-width-one-third"></div>
   </div>
 {% endblock %}
