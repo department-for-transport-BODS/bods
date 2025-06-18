@@ -1,23 +1,20 @@
 {% load static %}
 {% load i18n %}
 <tr class="govuk-table__row">
-  <th scope="row" class="govuk-table__header">
-    {% trans header_text %}
-  </th>
-  <td class="govuk-table__cell dont-break-out" colspan="2">
-    {% if files %}
-      {% for file_details in files %}
-        <div class="stacked">
+     <th scope="row" class="govuk-table__header">{% trans header_text %}</th>
+     <td class="govuk-table__cell dont-break-out" colspan="2">
+      {% if files %}
+       {% for file_details in files %}
+       <div class="stacked">        
           {{ file_details.start_date|default:'No Start Date' }} - {{ file_details.end_date|default:'No End Date' }}
           <br />
           {{ file_details.filename }}
         </div>
-        {% if not forloop.last %}
-          <br />
-        {% endif %}
-      {% endfor %}
-    {% else %}
-      {% trans "N/A" %}
-    {% endif %}
-  </td>
-</tr>
+        {% if not forloop.last %}<br />{% endif %}
+       {% endfor %}
+      {% else %}
+        {% trans "N/A" %}
+      {% endif %}
+     </td>
+</tr>  
+

@@ -5,9 +5,7 @@
 {% load render_table from django_tables2 %}
 {% load breadcrumbs %}
 {% load query_transform %}
-{% block title_tag %}
-  {{ title }}
-{% endblock %}
+{% block title_tag %}{{ title }}{% endblock %}
 {% block breadcrumb.content %}
   {{ block.super }}
   {% breadcrumb_url 'Organisation management' 'users:organisation-manage' host hosts.admin %}
@@ -36,17 +34,13 @@
   {% endif %}
 {% endblock %}
 {% block content %}
-  <h1 class="govuk-heading-xl">
-    {{ title }}
-  </h1>
+  <h1 class="govuk-heading-xl">{{ title }}</h1>
   {# There are multiple forms on this page, the search box and the filter controls, need to submit #}
   {# both together so both form data persist when either form is submitted #}
   <form method="get">
     <div class="govuk-grid-row govuk-!-margin-top-8">
       <div class="govuk-grid-column-one-third">
-        <h2 class="govuk-heading-m">
-          {% trans "Filter by" %}
-        </h2>
+        <h2 class="govuk-heading-m">{% trans "Filter by" %}</h2>
         {% crispy filter.form filter.form.helper %}
       </div>
       <div class="govuk-grid-column-two-thirds">
@@ -84,19 +78,11 @@
           </div>
           <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible pillbox-break" />
           <div class="govuk-form-group">
-            <label class="govuk-label" for="ordering">
-              Sort by
-            </label>
+            <label class="govuk-label" for="ordering">Sort by</label>
             <select class="govuk-select" id="ordering" name="ordering" aria-label="Sort by" onchange="this.form.submit()">
-              <option value="-modified" {% if ordering == "-modified" %}selected{% endif %}>
-                {% trans "Recently updated" %}
-              </option>
-              <option value="name" {% if ordering == "name" %}selected{% endif %}>
-                {% trans "Data set name A-Z" %}
-              </option>
-              <option value="-name" {% if ordering == "-name" %}selected{% endif %}>
-                {% trans "Data set name Z-A" %}
-              </option>
+              <option value="-modified" {% if ordering == "-modified" %}selected{% endif %}>{% trans "Recently updated" %}</option>
+              <option value="name" {% if ordering == "name" %}selected{% endif %}>{% trans "Data set name A-Z" %}</option>
+              <option value="-name" {% if ordering == "-name" %}selected{% endif %}>{% trans "Data set name Z-A" %}</option>
             </select>
           </div>
           <div class="search-result__list govuk-body">

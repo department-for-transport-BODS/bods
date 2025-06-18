@@ -1,9 +1,10 @@
 {% extends "snippets/help_modal_base.html" %}
 {% load i18n %}
 {% block help_icon %}
-  <span class="help-icon compliance-indicator-help-icon">
-    <span class="compliance-indicator {% if non_compliant == True %}non-compliant{% else %}compliant{% endif %}"></span>
+<span class="help-icon compliance-indicator-help-icon">
+  <span class="compliance-indicator {% if non_compliant == True %}non-compliant{% else %}compliant{% endif %}">
   </span>
+</span>
 {% endblock %}
 {% block help_heading %}
   {% trans "Licence colour indicates compliance" %}

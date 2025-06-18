@@ -1,9 +1,7 @@
 {% load i18n %}
 {% load filters %}
 <div class="govuk-tabs" data-module="govuk-tabs">
-  <h2 class="govuk-tabs__title">
-    Contents
-  </h2>
+  <h2 class="govuk-tabs__title">Contents</h2>
   <ul class="govuk-tabs__list">
     {% for level, data in warning_data.items %}
       <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
@@ -13,24 +11,15 @@
   </ul>
   {% for level_title, level_data in warning_data.items %}
     <div class="govuk-tabs__panel" id={{ level_title }}>
-      <h2 class="govuk-heading-l">
-        {{ level_title }} observations ({{ level_data.count }})
-      </h2>
-      <p class="govuk-body">
-        {{ level_data.intro }}
-      </p>
+      <h2 class="govuk-heading-l">{{ level_title }} observations ({{ level_data.count }})</h2>
+      <p class="govuk-body">{{ level_data.intro }}</p>
       {% for category, df in level_data.df.items %}
         <table class="govuk-table">
           <caption class="govuk-table__caption govuk-table__caption--s govuk-!-font-weight-bold govuk-!-font-size-24">{{ category }} ({{ df.number_of_services_affected.sum | subtract:df.number_of_suppressed_observation.sum }})</caption>
           <thead class="govuk-table__head govuk-!-font-weight-regular">
             <tr class="govuk-table__row">
               <th scope="col"
-                  class="govuk-table__header govuk-!-font-weight-bold
-                         {% if level_title == "Advisory" or level_title == "Feedback" %}
-                           govuk-!-width-one-quarter
-                         {% else %}
-                           govuk-!-width-one-half
-                         {% endif %}">
+                  class="govuk-table__header govuk-!-font-weight-bold {% if level_title == "Advisory" or level_title == "Feedback" %} govuk-!-width-one-quarter {% else %} govuk-!-width-one-half {% endif %}">
                 {% trans "Number of observation" %}{{ df.number_of_services_affected.sum | subtract:df.number_of_suppressed_observation.sum |pluralize:"s" }}
               </th>
               {% if level_title == "Advisory" or level_title == "Feedback" %}
@@ -38,9 +27,7 @@
                   {% trans "Number of suppressed observation" %}{{ df.number_of_suppressed_observation.sum|pluralize:"s" }}
                 </th>
               {% endif %}
-              <th scope="col" class="govuk-table__header govuk-!-font-weight-bold">
-                {% trans "Observation category" %}
-              </th>
+              <th scope="col" class="govuk-table__header govuk-!-font-weight-bold">{% trans "Observation category" %}</th>
             </tr>
           </thead>
           <tbody class="govuk-table__body">
@@ -50,9 +37,7 @@
                   {{ row.number_of_services_affected | subtract:row.number_of_suppressed_observation }}
                 </th>
                 {% if level_title == "Advisory" or level_title == "Feedback" %}
-                  <td scope="row" class="govuk-table__header govuk-!-font-weight-regular">
-                    {{ row.number_of_suppressed_observation }}
-                  </td>
+                  <td scope="row" class="govuk-table__header govuk-!-font-weight-regular">{{ row.number_of_suppressed_observation }}</td>
                 {% endif %}
                 <td class="govuk-table__cell">
                   {% if row.url != 'no-url' %}
@@ -78,20 +63,14 @@
             </caption>
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header govuk-!-width-one-half">
-                  {% trans "Number of observations" %}
-                </th>
-                <th scope="col" class="govuk-table__header">
-                  {% trans "Observation category" %}
-                </th>
+                <th scope="col" class="govuk-table__header govuk-!-width-one-half">{% trans "Number of observations" %}</th>
+                <th scope="col" class="govuk-table__header">{% trans "Observation category" %}</th>
               </tr>
             </thead>
             <tbody class="govuk-table__body">
               {% for item in category_data.warnings %}
                 <tr class="govuk-table__row">
-                  <td class="govuk-table__cell govuk-table__cell">
-                    {{ item.count }}
-                  </td>
+                  <td class="govuk-table__cell govuk-table__cell">{{ item.count }}</td>
                   <td class="govuk-table__cell govuk-table__cell">
                     <a class="govuk-link"
                        href="{% url item.warning.list_url_name pk=view.kwargs.pk pk1=view.kwargs.pk1 report_id=view.kwargs.report_id host hosts.publish %}">

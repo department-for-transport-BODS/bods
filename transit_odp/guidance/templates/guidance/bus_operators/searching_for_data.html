@@ -1,18 +1,14 @@
 {% extends "guidance/bus_operators/base.html" %}
 {% load i18n %}
 {% block extra_content %}
-  <h1 class="govuk-heading-xl">
-    {% trans "Searching for Data" %}
-  </h1>
+  <h1 class="govuk-heading-xl">{% trans "Searching for Data" %}</h1>
   <p class="govuk-body">
     {% blocktrans %}
       There are two ways to search for data.
     {% endblocktrans %}
   </p>
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
-  <h2 class="govuk-heading-m">
-    {% trans "Search Bar" %}
-  </h2>
+  <h2 class="govuk-heading-m">{% trans "Search Bar" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
       You can use the <b> search bar </b> on the Bus Open Data digital platform homepage.
@@ -25,9 +21,7 @@
     {% endblocktrans %}
   </p>
   <hr class="govuk-section-break govuk-section-break--m govuk-section-break" />
-  <h2 class="govuk-heading-m">
-    {% trans "API Searching" %}
-  </h2>
+  <h2 class="govuk-heading-m">{% trans "API Searching" %}</h2>
   <p class="govuk-body">
     {% blocktrans %}
       Each data set has an <b> API key </b>, which can be copied from the data page.

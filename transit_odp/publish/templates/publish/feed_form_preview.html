@@ -33,12 +33,8 @@
       <ul class="wizard-unordered-list govuk-list dont-break-out">
         <li class="wizard-list-item">
           <div class="wizard-step-div">
-            <h4 class="div__heading">
-              {% trans "1. Describe your data set" %}
-            </h4>
-            <p class="wizard-paragraph">
-              {{ form.description.value }}
-            </p>
+            <h4 class="div__heading">{% trans "1. Describe your data set" %}</h4>
+            <p class="wizard-paragraph">{{ form.description.value }}</p>
           </div>
           <div class="wizard-change-div">
             <button type="submit"
@@ -51,9 +47,7 @@
         </li>
         <li class="wizard-list-item">
           <div class="wizard-step-div">
-            <h4 class="div__heading">
-              {% trans "2. Choose how you want to publish your data" %}
-            </h4>
+            <h4 class="div__heading">{% trans "2. Choose how you want to publish your data" %}</h4>
             <p class="wizard-paragraph">
               {% if form.instance.url_link %}
                 {% trans "Upload data to Bus Open Data service:<br />" %}
@@ -79,9 +73,7 @@
       <hr class="govuk-section-break govuk-section-break--s govuk-section-break" />
       <div class="govuk-grid-column-one-third">
         {% if data_updated %}
-          <button type="submit" name="wizard_goto_step" value="final" class="govuk-button">
-            {% trans "Next step" %}
-          </button>
+          <button type="submit" name="wizard_goto_step" value="final" class="govuk-button">{% trans "Next step" %}</button>
           {{ wizard.form }}
         {% endif %}
         {% if object.status != "expired" %}
@@ -94,6 +86,5 @@
       <a class="govuk-button govuk-button--link" href="{% url 'feed-archive' pk=object.dataset.id host hosts.publish %}"></a>
     </div>
   </form>
-  {% block inner_secondary %}
-  {% endblock %}
+  {% block inner_secondary %}{% endblock %}
 {% endblock %}

@@ -16,9 +16,7 @@
   {% if is_complete_service_pages_active %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-three-quarters">
-        <h1 class="govuk-heading-xl">
-          {% trans "Agent Dashboard" %}
-        </h1>
+        <h1 class="govuk-heading-xl">{% trans "Agent Dashboard" %}</h1>
         <p class="govuk-body-m">
           {% filter force_escape %}
             {% blocktrans %}
@@ -45,12 +43,8 @@
             </b>
           </p>
           <ul class="govuk-list govuk-list--bullet">
-            <li>
-              Check your spelling and try again
-            </li>
-            <li>
-              Use another search term
-            </li>
+            <li>Check your spelling and try again</li>
+            <li>Use another search term</li>
           </ul>
         {% else %}
           <p class="govuk-body-l">
@@ -80,22 +74,20 @@
   {% else %}
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-three-quarters">
-        <h1 class="govuk-heading-xl">
-          {% trans "Agent Dashboard" %}
-        </h1>
+        <h1 class="govuk-heading-xl">{% trans "Agent Dashboard" %}</h1>
         {% if table.rows.data %}
           <p class="govuk-body-l">
             {% blocktrans %}
-              You can choose an operator to view or publish data by clicking the operator name below
-            {% endblocktrans %}
+                          You can choose an operator to view or publish data by clicking the operator name below
+                      {% endblocktrans %}
           </p>
           {% render_table table %}
         {% else %}
           <p class="govuk-body-l">
             {% blocktrans %}
-              You don’t have any operators yet to act as an agent on behalf of.
-              Please go to My Account section to set-up an operator
-            {% endblocktrans %}
+                          You don’t have any operators yet to act as an agent on behalf of.
+                          Please go to My Account section to set-up an operator
+                      {% endblocktrans %}
           </p>
           <a href="{% url 'users:home' host hosts.publish %}"
              role="button"

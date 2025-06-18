@@ -14,14 +14,12 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-      <h1 class="govuk-heading-xl">
-        {{ page_title }}
-      </h1>
+      <h1 class="govuk-heading-xl">{{ page_title }}</h1>
       {% if organisations %}
         <p class="govuk-body-l">
           {% blocktrans %}
-            Choose an operator to view or publish data
-          {% endblocktrans %}
+                        Choose an operator to view or publish data
+                    {% endblocktrans %}
         </p>
         <ul class="govuk-list">
           {% for org in organisations %}
@@ -34,9 +32,9 @@
       {% else %}
         <p class="govuk-body-l">
           {% blocktrans %}
-            You don’t have any operators yet to act as an agent on behalf of.
-            Please go to My Account section to set-up an operator
-          {% endblocktrans %}
+                        You don’t have any operators yet to act as an agent on behalf of.
+                        Please go to My Account section to set-up an operator
+                    {% endblocktrans %}
         </p>
         <a href="{% url 'users:home' host hosts.publish %}"
            role="button"

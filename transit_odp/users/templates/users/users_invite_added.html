@@ -2,8 +2,7 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load breadcrumbs %}
-{% block breadcrumb.content %}
-{% endblock %}
+{% block breadcrumb.content %}{% endblock %}
 {% block title_tag %}
   {% trans "Invitation has been sent" %}
 {% endblock %}
@@ -34,9 +33,7 @@
    {% endblocktrans %}
   </p>
 {% endblock %}
-{% block button_href %}
-  {{ button_link }}
-{% endblock %}
+{% block button_href %}{{ button_link }}{% endblock %}
 {% block button_text %}
   {% trans "Go back to user management" %}
 {% endblock %}

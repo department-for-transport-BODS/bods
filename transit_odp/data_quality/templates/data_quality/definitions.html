@@ -12,12 +12,8 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-xl">
-        {% trans "Observation definitions" %}
-      </h1>
-      <p class="govuk-body-m">
-        {% trans "Please find the definitions for the observations below." %}
-      </p>
+      <h1 class="govuk-heading-xl">{% trans "Observation definitions" %}</h1>
+      <p class="govuk-body-m">{% trans "Please find the definitions for the observations below." %}</p>
       <p class="govuk-body-m govuk-!-margin-bottom-6">
         <a class="govuk-link" href="https://www.gov.uk/government/collections/transxchange" target="_blank">
           {% trans "View Department for Transport's TransXChange Schema Guide" %}
@@ -32,16 +28,14 @@
             <a class="govuk-tabs__tab" href="#advisory">Advisory observations</a>
           </li>
           {% if is_specific_feedback %}
-            <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-              <a class="govuk-tabs__tab" href="#feedback">Feedback</a>
-            </li>
+          <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+            <a class="govuk-tabs__tab" href="#feedback">Feedback</a>
+          </li>
           {% endif %}
         </ul>
         <div class="govuk-tabs__panel" id="critical">
           <div class="govuk-!-padding-5">
-            <h2 class="govuk-heading-l">
-              Critical observations ({{ critical_count }})
-            </h2>
+            <h2 class="govuk-heading-l">Critical observations ({{ critical_count }})</h2>
             <p class="govuk-body">
               {% blocktrans %}
                   These observations are considered critical in terms of data quality.
@@ -55,9 +49,7 @@
         </div>
         <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="advisory">
           <div class="govuk-!-padding-5">
-            <h2 class="govuk-heading-l">
-              Advisory observations ({{ advisory_count }})
-            </h2>
+            <h2 class="govuk-heading-l">Advisory observations ({{ advisory_count }})</h2>
             <p class="govuk-body">
               {% blocktrans %}
                 These observations are considered advisory in terms of data quality and suggest there may be an issue in
@@ -70,22 +62,21 @@
           </div>
         </div>
         {% if is_specific_feedback %}
-          <div class="govuk-tabs__panel" id="feedback">
-            <div class="govuk-!-padding-5">
-              <h2 class="govuk-heading-l">
-                Consumer Feedback ({{ feedback_count }})
-              </h2>
-              <p class="govuk-body">
-                {% blocktrans %}
+        <div class="govuk-tabs__panel" id="feedback">
+          <div class="govuk-!-padding-5">
+            <h2 class="govuk-heading-l">Consumer Feedback ({{ feedback_count }})</h2>
+            <p class="govuk-body">
+              {% blocktrans %}
                   {{ feedback_intro }}
-                {% endblocktrans %}
-              </p>
-              {% for category in feedback_observations %}
-                {% include "data_quality/snippets/glossary_accordion.html" with category=category counter=forloop.counter type="feedback" %}
-              {% endfor %}
-            </div>
+              {% endblocktrans %}
+            </p>
+            {% for category in feedback_observations %}
+              {% include "data_quality/snippets/glossary_accordion.html" with category=category counter=forloop.counter type="feedback" %}
+            {% endfor %}
           </div>
+        </div>
         {% endif %}
+
       </div>
     </div>
   </div>

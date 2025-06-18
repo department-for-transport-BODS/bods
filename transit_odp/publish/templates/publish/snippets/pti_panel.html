@@ -4,9 +4,7 @@
     <div class="app-dqs-panel__body">
       <div class="app-dqs-panel__success">
         {% if has_pti_observations or object.error_code == "SCHEMA_ERROR" %}
-          <h2 class="govuk-heading-m">
-            3a Validation check - Failed
-          </h2>
+          <h2 class="govuk-heading-m">3a Validation check - Failed</h2>
           <p class="govuk-body">
             {% blocktrans %}
               The validation report checks for compliance against the mandated
@@ -48,9 +46,7 @@
             </p>
           {% endif %}
         {% else %}
-          <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
-            3a Validation check - Passed
-          </h2>
+          <h2 class="govuk-heading-m govuk-!-margin-bottom-0">3a Validation check - Passed</h2>
         {% endif %}
       </div>
     </div>

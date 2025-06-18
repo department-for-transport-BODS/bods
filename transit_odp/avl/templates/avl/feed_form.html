@@ -44,9 +44,7 @@
     {% if not edit_mode %}
       <div class="govuk-grid-column-one-third">
         {% block inner_secondary %}
-          <h2 class="govuk-heading-m">
-            {% trans "Need help with operator data requirements?" %}
-          </h2>
+          <h2 class="govuk-heading-m">{% trans "Need help with operator data requirements?" %}</h2>
           <p class="govuk-body">
             <a class="large-font govuk-link"  href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{{ _("View our guidelines here") }}</a>
           </p>
@@ -57,6 +55,5 @@
       </div>
     {% endif %}
   </div>
-  {% block extra_content %}
-  {% endblock %}
+  {% block extra_content %}{% endblock %}
 {% endblock %}

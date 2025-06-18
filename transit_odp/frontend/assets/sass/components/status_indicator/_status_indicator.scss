@@ -1,5 +1,5 @@
 .status-indicator {
-  font-family: "GDS Transport", Arial, sans-serif;
+  font-family: "nta", Arial, sans-serif;
   /*font-size: 1.125rem;*/
   font-size: inherit;
   //vertical-align: middle;
@@ -27,7 +27,7 @@
   }
 
   &--unavailable:before {
-    background-color: govuk-colour("orange");
+    background-color: #f47738;
   }
 
   &--inactive:before {
@@ -53,7 +53,7 @@
 }
 
 .user__status-indicator--unactive {
-  color: govuk-colour("orange");
+  color: #f47738;
 }
 
 .user__status-indicator--pending {

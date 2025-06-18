@@ -6,16 +6,12 @@
   {% endblock %}
   <div class="overlay">
     <div class="window">
-      <button type="button" class="close-button govuk-link">
-        {% trans "Close" %}
-      </button>
+      <button type="button" class="close-button govuk-link">{% trans "Close" %}</button>
       <div class="content">
         <h1 class="govuk-heading-m">
-          {% block help_heading %}
-          {% endblock %}
+          {% block help_heading %}{% endblock %}
         </h1>
-        {% block help_content %}
-        {% endblock %}
+        {% block help_content %}{% endblock %}
       </div>
     </div>
   </div>

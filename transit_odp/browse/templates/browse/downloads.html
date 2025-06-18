@@ -30,9 +30,7 @@
 {% endblock %}
 {% block heading.secondary %}
   <div class="govuk-grid-column-one-third">
-    <h3 class="govuk-heading-m">
-      {% trans "Need further help?" %}
-    </h3>
+    <h3 class="govuk-heading-m">{% trans "Need further help?" %}</h3>
     <ul class="govuk-list">
       <li class="govuk-!-margin-bottom-3">
         <a class="govuk-link" href="{% url 'guide-me' host hosts.data %}">{% trans "Guide me" %}</a>
