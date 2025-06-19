@@ -24,6 +24,7 @@ class DatasetPayloadMixin(models.Model):
         null=True,
         blank=True,
         validators=[validate_file_extension],
+        max_length=256,
     )
 
     status = FSMField(
