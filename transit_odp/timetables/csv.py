@@ -1251,7 +1251,9 @@ def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
         derived = [next_start.get(rev, pd.NaT) for rev in revs]
         derived_dates.extend(derived)
 
-    df["derived_termination_date"] = pd.to_datetime(derived_dates)
+    df["derived_termination_date"] = [
+        d.date() if pd.notna(d) else None for d in derived_dates
+    ]
     return df
 
 
