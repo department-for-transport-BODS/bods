@@ -444,11 +444,11 @@ COMPLIANCE_REPORT_COLUMN_DB = [
         header="Local Transport Authority",
         accessor=lambda otc_service: otc_service.get("ui_lta_name"),
     ),
-    (
+    CSVColumn(
         "TXC: Revision Number",
         lambda otc_service: otc_service.get("revision_number"),
     ),
-    (
+    CSVColumn(
         "TXC: Derived Termination Date",
         lambda otc_service: otc_service.get("derived_termination_date"),
     ),
