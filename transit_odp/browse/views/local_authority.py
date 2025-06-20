@@ -25,8 +25,8 @@ from transit_odp.browse.common import (
 from transit_odp.browse.lta_column_headers import (
     header_accessor_data,
     header_accessor_data_compliance_report,
-    header_accessor_data_line_level,
     header_accessor_data_db_compliance_report,
+    header_accessor_data_line_level,
 )
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.constants import FeatureFlags
@@ -1143,6 +1143,8 @@ class LTAComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
                 "fares_last_modified": service.fares_last_modified_date,
                 "fares_one_year_date": service.fares_effective_stale_date_from_last_modified,
                 "fares_operating_period_end": service.fares_operating_period_end_date,
+                "revision_number": service.revision_number,
+                "derived_termination_date": service.derived_termination_date,
             }
         )
 

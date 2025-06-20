@@ -444,6 +444,14 @@ COMPLIANCE_REPORT_COLUMN_DB = [
         header="Local Transport Authority",
         accessor=lambda otc_service: otc_service.get("ui_lta_name"),
     ),
+    CSVColumn(
+        "TXC: Revision Number",
+        lambda otc_service: otc_service.get("revision_number"),
+    ),
+    CSVColumn(
+        "TXC: Derived Termination Date",
+        lambda otc_service: otc_service.get("derived_termination_date"),
+    ),
 ]
 
 
@@ -1378,6 +1386,8 @@ class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
                 "fares_operating_period_end_date": service_report.fares_operating_period_end_date,
                 "overall_requires_attention": service_report.overall_requires_attention,
                 "dq_require_attention": service_report.critical_dq_issues,
+                "revision_number": service_report.revision_number,
+                "derived_termination_date": service_report.derived_termination_date,
             }
         )
 
