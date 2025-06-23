@@ -89,8 +89,8 @@ def test_csv_output_order():
     assert columns[40] == "Registration:Received Date"
     assert columns[41] == "Traveline Region"
     assert columns[42] == "Local Transport Authority"
-    assert columns[43] == "TXC: Revision number"
-    assert columns[44] == "TXC: Derived termination date"
+    assert columns[43] == "TXC: Revision Number"
+    assert columns[44] == "TXC: Derived Termination Date"
 
 
 def test_service_in_bods_but_not_in_otc():
