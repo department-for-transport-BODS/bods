@@ -4,7 +4,7 @@
 {% load parse_dictionary %}
 {% load django_axe %}
 <!DOCTYPE html>
-<html lang="en" class="govuk-template">
+<html lang="en" class="govuk-template govuk-template--rebranded">
   <head>
     <link rel="shortcut icon" sizes="16x16 32x32 48x48" type="image/x-icon" href="{% static 'frontend/images/favicon.ico' %}" />
     <meta charset="utf-8" />
@@ -31,7 +31,7 @@
     {% endblock %}
   </head>
   {% block body %}
-    <body class="govuk-template__body app-body-class govuk-body"
+    <body class="govuk-template__body js-enabled govuk-frontend-supported"
           data-test="{% trans 'Bus Open Data Service' %}"
           data-other="report:details">
       {% cookielaw_banner %}
