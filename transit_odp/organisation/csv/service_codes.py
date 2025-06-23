@@ -379,6 +379,12 @@ COMPLIANCE_REPORT_COLUMN_DB = [
         ),
     ),
     CSVColumn(
+        header="NETEX:Operating Period Start Date",
+        accessor=lambda otc_service: (
+            otc_service.get("fares_operating_period_start_date")
+        ),
+    ),
+    CSVColumn(
         header="NETEX:Operating Period End Date",
         accessor=lambda otc_service: (
             otc_service.get("fares_operating_period_end_date")
@@ -1352,6 +1358,7 @@ class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
                 "otc_registration_number": service_report.registration_number,
                 "otc_service_number": service_report.service_number,
                 "last_modified_date": service_report.last_modified_date,
+                "operating_period_start_date": service_report.operating_period_start_date,
                 "operating_period_end_date": service_report.operating_period_end_date,
                 "xml_filename": service_report.filename,
                 "dataset_id": service_report.dataset_id,

@@ -643,6 +643,11 @@ TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP = OrderedDict(
             "Date when timetable data is over 1 year old",
             "'XML:Last Modified date' from timetable data catalogue plus 12 months.",
         ),
+        "operating_period_start_date": Column(
+            "TXC:Operating Period Start Date",
+            "The operating period start date as extracted from the files "
+            "provided by the operator/publisher to BODS.",
+        ),
         "operating_period_end_date": Column(
             "TXC:Operating Period End Date",
             "The operating period end date as extracted from the files "
