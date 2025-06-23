@@ -14,7 +14,9 @@
 {% endblock %}
 {% block breadcrumb %}
   <div class="govuk-breadcrumbs">
-    <div class="govuk-breadcrumbs">{% stepper %}</div>
+    <div class="govuk-breadcrumbs">
+      {% stepper %}
+    </div>
   </div>
 {% endblock %}
 {% block content %}
@@ -40,7 +42,9 @@
     {% if not edit_mode %}
       <div class="govuk-grid-column-one-third">
         {% block inner_secondary %}
-          <h2 class="govuk-heading-m">{% trans "Need help with operator data requirements?" %}</h2>
+          <h2 class="govuk-heading-m">
+            {% trans "Need help with operator data requirements?" %}
+          </h2>
           <ul class="govuk-list app-list--nav govuk-!-font-size-19">
             <li>
               <a class="govuk-link large-font"  href="{% url 'guidance:support-bus_operators' host hosts.publish %}">{{ _("View our guidelines here") }}</a>
@@ -53,5 +57,6 @@
       </div>
     {% endif %}
   </div>
-  {% block extra_content %}{% endblock %}
+  {% block extra_content %}
+  {% endblock %}
 {% endblock %}

@@ -18,84 +18,114 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div>
-      <h1 class="govuk-heading-xl">Manage subscriptions</h1>
+      <h1 class="govuk-heading-xl">
+        Manage subscriptions
+      </h1>
       <div class="govuk-tabs" data-module="govuk-tabs">
         <h2 class="govuk-tabs__title">
           Location data subscriptions
         </h2>
         <ul class="govuk-tabs__list">
           <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-            <a class="govuk-tabs__tab" href="#active">
-              Active
-            </a>
+            <a class="govuk-tabs__tab" href="#active">Active</a>
           </li>
           <li class="govuk-tabs__list-item">
-            <a class="govuk-tabs__tab" href="#inactive">
-              Inactive
-            </a>
+            <a class="govuk-tabs__tab" href="#inactive">Inactive</a>
           </li>
         </ul>
         <div class="govuk-tabs__panel" id="active">
           <table class="govuk-table" id="active-subscriptions-table">
             <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header">Status</th>
-              <th scope="col" class="govuk-table__header">Subscription name</th>
-              <th scope="col" class="govuk-table__header">Data filters</th>
-              <th scope="col" class="govuk-table__header">Setup date</th>
-            </tr>
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">
+                  Status
+                </th>
+                <th scope="col" class="govuk-table__header">
+                  Subscription name
+                </th>
+                <th scope="col" class="govuk-table__header">
+                  Data filters
+                </th>
+                <th scope="col" class="govuk-table__header">
+                  Setup date
+                </th>
+              </tr>
             </thead>
             <tbody>
-            {% for subscription in active_subscriptions %}
-              <tr class="govuk-table__row">
-                <td class="govuk-table__cell">{{ subscription.status }}</td>
-                <td class="govuk-table__cell">
-                  <a class="govuk-link"
-                    href="{% url 'api:buslocation-manage-subscription' subscription_id=subscription.id host hosts.data %}">
-                    {{ subscription.name }}
-                  </a>
-                </td>
-                <td class="govuk-table__cell">{{ subscription.data_filters|linebreaksbr }}</td>
-                <td class="govuk-table__cell">{{ subscription.set_up_date }}</td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td class="govuk-!-padding-top-2" colspan="4">No subscriptions found.</td>
-              </tr>
-            {% endfor %}
+              {% for subscription in active_subscriptions %}
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">
+                    {{ subscription.status }}
+                  </td>
+                  <td class="govuk-table__cell">
+                    <a class="govuk-link"
+                       href="{% url 'api:buslocation-manage-subscription' subscription_id=subscription.id host hosts.data %}">
+                      {{ subscription.name }}
+                    </a>
+                  </td>
+                  <td class="govuk-table__cell">
+                    {{ subscription.data_filters|linebreaksbr }}
+                  </td>
+                  <td class="govuk-table__cell">
+                    {{ subscription.set_up_date }}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td class="govuk-!-padding-top-2" colspan="4">
+                    No subscriptions found.
+                  </td>
+                </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
         <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="inactive">
           <table class="govuk-table" id="inactive-subscriptions-table">
             <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header">Status</th>
-              <th scope="col" class="govuk-table__header">Subscription name</th>
-              <th scope="col" class="govuk-table__header">Data filters</th>
-              <th scope="col" class="govuk-table__header">Setup date</th>
-            </tr>
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">
+                  Status
+                </th>
+                <th scope="col" class="govuk-table__header">
+                  Subscription name
+                </th>
+                <th scope="col" class="govuk-table__header">
+                  Data filters
+                </th>
+                <th scope="col" class="govuk-table__header">
+                  Setup date
+                </th>
+              </tr>
             </thead>
             <tbody>
-            {% for subscription in inactive_subscriptions %}
-              <tr class="govuk-table__row">
-                <td class="govuk-table__cell">{{ subscription.status }}</td>
-                <td class="govuk-table__cell">{{ subscription.name }}</td>
-                <td class="govuk-table__cell">{{ subscription.data_filters|linebreaksbr }}</td>
-                <td class="govuk-table__cell">{{ subscription.set_up_date }}</td>
-              </tr>
-            {% empty %}
-              <tr>
-                <td class="govuk-!-padding-top-2" colspan="4">No subscriptions found.</td>
-              </tr>
-            {% endfor %}
+              {% for subscription in inactive_subscriptions %}
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">
+                    {{ subscription.status }}
+                  </td>
+                  <td class="govuk-table__cell">
+                    {{ subscription.name }}
+                  </td>
+                  <td class="govuk-table__cell">
+                    {{ subscription.data_filters|linebreaksbr }}
+                  </td>
+                  <td class="govuk-table__cell">
+                    {{ subscription.set_up_date }}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td class="govuk-!-padding-top-2" colspan="4">
+                    No subscriptions found.
+                  </td>
+                </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
       </div>
-      <a role="button"
-        class="govuk-button govuk-button--primary"
-        href="{% url 'api:buslocation-subscribe' host hosts.data %}">
+      <a role="button" class="govuk-button govuk-button--primary" href="{% url 'api:buslocation-subscribe' host hosts.data %}">
         {% trans "Create a new subscription" %}
       </a>
     </div>
