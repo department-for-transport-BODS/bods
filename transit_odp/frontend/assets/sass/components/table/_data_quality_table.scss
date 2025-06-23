@@ -1,9 +1,9 @@
 tr.effected {
-  color: map-get($govuk-colours, "red");
+  color: govuk-colour("red");
 }
 
 .timing_pattern_boxed {
-  border: govuk-spacing(1) solid black;
+  border: govuk-spacing(1) solid govuk-colour("black");
   margin-bottom: govuk-spacing(5);
 
   &__group {
