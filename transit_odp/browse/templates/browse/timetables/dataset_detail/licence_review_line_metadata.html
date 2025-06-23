@@ -70,7 +70,7 @@
         </ul>
       {% else %}
         <h1 class="govuk-heading-xl app-!-mb-4 dont-break-out">{% if organisation %}{{ organisation.name }}{% else %}Organisation not yet created{% endif %} : {{ line_name }}</h1>
-        {% if is_timetable_info_available %} - {{timetable.outbound.start_and_end }} {% endif %}
+        {% if is_timetable_info_available %} - {{ timetable.outbound.start_and_end }} {% endif %}
       {% endif %}
       <p class="govuk-body app-!-mb-sm-0">
         {% blocktrans %}
