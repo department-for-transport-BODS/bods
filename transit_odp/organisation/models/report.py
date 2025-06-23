@@ -45,6 +45,9 @@ class ComplianceReport(TimeStampedModel):
     effective_stale_date_from_last_modified = models.DateField(
         _("Date when timetable data is over 1 year old"), null=True, blank=True
     )
+    operating_period_start_date = models.DateField(
+        _("TXC:Operating Period Start Date"), null=True, blank=True
+    )
     operating_period_end_date = models.DateField(
         _("TXC:Operating Period End Date"), null=True, blank=True
     )
