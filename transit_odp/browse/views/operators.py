@@ -799,11 +799,13 @@ class LicenceLineMetadataDetailView(DetailView):
         kwargs["licence_number"] = licence_number
         line = self.request.GET.get("line")
         service_code = self.request.GET.get("service")
-        pessenger_facing = self.request.GET.get("pf", 0)
+        pessenger_page = bool(self.request.GET.get("pf", 0))
+
         kwargs["line_name"] = line
         kwargs["service_code"] = service_code
-        kwargs["pessenger_facing"] = pessenger_facing
-        if pessenger_facing:
+        kwargs["pessenger_facing"] = pessenger_page
+        kwargs["licence_page"] = True
+        if pessenger_page:
             kwargs["licence_page"] = False
         kwargs = super().get_context_data(**kwargs)
 
@@ -1526,6 +1528,7 @@ class LicenceLineMetadataDetailView(DetailView):
                 "observations": direction_details.get("observations", {}),
                 "page_param": direction + "Page",
                 "show_all_param": "showAll" + direction.capitalize(),
+                "start_and_end": direction_details["description"]
             }
         return {
             "curr_date": date,
