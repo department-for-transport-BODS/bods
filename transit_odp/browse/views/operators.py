@@ -738,7 +738,7 @@ class LicenceDetailView(BaseDetailView):
 class LicenceLineMetadataDetailView(DetailView):
     slug_url_kwarg = "number"
     slug_field = "number"
-    template_name = "browse/timetables/dataset_detail/review_line_metadata.html"
+    template_name = "browse/timetables/dataset_detail/licence_review_line_metadata.html"
     model = Dataset
 
     def __init__(self, **kwargs):
@@ -797,12 +797,14 @@ class LicenceLineMetadataDetailView(DetailView):
         licence_number = self.kwargs.get("number", "-")
         org_id = self.kwargs.get("org_id", None)
         kwargs["licence_number"] = licence_number
-        kwargs["licence_page"] = True
         line = self.request.GET.get("line")
         service_code = self.request.GET.get("service")
+        pessenger_facing = self.request.GET.get("pf", 0)
         kwargs["line_name"] = line
         kwargs["service_code"] = service_code
-
+        kwargs["pessenger_facing"] = pessenger_facing
+        if pessenger_facing:
+            kwargs["licence_page"] = False
         kwargs = super().get_context_data(**kwargs)
 
         is_franchise_organisation_active = flag_is_active(
