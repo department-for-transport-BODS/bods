@@ -347,6 +347,10 @@ COMPLIANCE_REPORT_COLUMN_DB = [
         ),
     ),
     CSVColumn(
+        header="TXC:Operating Period Start Date",
+        accessor=lambda otc_service: otc_service.get("operating_period_start_date"),
+    ),
+    CSVColumn(
         header="TXC:Operating Period End Date",
         accessor=lambda otc_service: otc_service.get("operating_period_end_date"),
     ),
@@ -376,12 +380,6 @@ COMPLIANCE_REPORT_COLUMN_DB = [
             otc_service.get("fares_data_over_one_year")
             if otc_service.get("fares_filename") != UNDER_MAINTENANCE
             else UNDER_MAINTENANCE
-        ),
-    ),
-    CSVColumn(
-        header="NETEX:Operating Period Start Date",
-        accessor=lambda otc_service: (
-            otc_service.get("fares_operating_period_start_date")
         ),
     ),
     CSVColumn(
