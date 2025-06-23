@@ -1528,7 +1528,7 @@ class LicenceLineMetadataDetailView(DetailView):
                 "observations": direction_details.get("observations", {}),
                 "page_param": direction + "Page",
                 "show_all_param": "showAll" + direction.capitalize(),
-                "start_and_end": direction_details["description"]
+                "start_and_end": direction_details["description"],
             }
         return {
             "curr_date": date,
