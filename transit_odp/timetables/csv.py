@@ -643,6 +643,11 @@ TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP = OrderedDict(
             "Date when timetable data is over 1 year old",
             "'XML:Last Modified date' from timetable data catalogue plus 12 months.",
         ),
+        "operating_period_start_date": Column(
+            "TXC:Operating Period Start Date",
+            "The operating period start date as extracted from the files "
+            "provided by the operator/publisher to BODS.",
+        ),
         "operating_period_end_date": Column(
             "TXC:Operating Period End Date",
             "The operating period end date as extracted from the files "
@@ -1031,10 +1036,12 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         df["least_timeliness_date"] = df.apply(find_minimum_timeliness_date, axis=1)
         staleness_42_day_look_ahead = (
             (staleness_otc == False)
-            & pd.notna(df["operating_period_end_date"])
             & pd.notna(df["least_timeliness_date"])
             & (
-                (df["operating_period_end_date"] < df["least_timeliness_date"])
+                (
+                    pd.notna(df["operating_period_end_date"])
+                    & (df["operating_period_end_date"] < df["least_timeliness_date"])
+                )
                 | (
                     pd.notna(df["derived_termination_date"])
                     & (df["derived_termination_date"] < df["least_timeliness_date"])
@@ -1048,15 +1055,14 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         staleness_otc = ~not_stale_otc
 
         forty_two_days_from_today = today + np.timedelta64(42, "D")
-        staleness_42_day_look_ahead = (
-            (staleness_otc == False)
-            & pd.notna(df["operating_period_end_date"])
-            & (
-                (df["operating_period_end_date"] < forty_two_days_from_today)
-                | (
-                    pd.notna(df["derived_termination_date"])
-                    & (df["derived_termination_date"] < forty_two_days_from_today)
-                )
+        staleness_42_day_look_ahead = (staleness_otc == False) & (
+            (
+                pd.notna(df["operating_period_end_date"])
+                & (df["operating_period_end_date"] < forty_two_days_from_today)
+            )
+            | (
+                pd.notna(df["derived_termination_date"])
+                & (df["derived_termination_date"] < forty_two_days_from_today)
             )
         )
 
@@ -1222,9 +1228,6 @@ def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
     start date of the next highest revision number within that group.
     """
     df = df.copy()
-    df["operating_period_start_date"] = pd.to_datetime(
-        df["operating_period_start_date"]
-    )
     df["derived_termination_date"] = pd.NaT
 
     # Sort entire DataFrame by service_code and revision_number
@@ -1237,7 +1240,7 @@ def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
 
     for _, group in grouped:
         revs = group["revision_number"]
-        starts = group["operating_period_start_date"]
+        starts = pd.to_datetime(group["operating_period_start_date"])
 
         unique_revs = revs.drop_duplicates().sort_values().values
         next_start = {}
