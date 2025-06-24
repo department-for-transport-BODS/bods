@@ -22,6 +22,11 @@
       <div class="dropdown-content">
         <a href="{% url 'users:home' host hosts.data %}"
            class="govuk-link {% active_url 'users:home' host='data' css_class='govuk-link--active' exact=True %}">
+          <img alt="person-icon"
+               class="account-menu__icon"
+               src="/assets/frontend/images/np-person-781585-ffffff.a9472bb89c43.png"
+               height="auto"
+               width="auto" />
           {% trans "My account" %}
         </a>
         <a class="govuk-link {% active_url 'users:feeds-manage' host='data' css_class='govuk-link--active' %}"
