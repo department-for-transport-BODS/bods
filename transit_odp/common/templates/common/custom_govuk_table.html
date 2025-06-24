@@ -13,7 +13,18 @@
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
                   {% spaceless %}
-                    <th aria-sort="{% spaceless %} {% if 'asc ' in column.attrs.th.class %} ascending {% elif 'desc ' in column.attrs.th.class %} descending {% else %} none {% endif %} {% endspaceless %}" role="columnheader" scope="col" {{ column.attrs.th.as_html |default_if_none:"" }}>
+                    <th aria-sort="{% spaceless %}
+                                     {% if 'asc ' in column.attrs.th.class %}
+                                       ascending
+                                     {% elif 'desc ' in column.attrs.th.class %}
+                                       descending
+                                     {% else %}
+                                       none
+                                     {% endif %}
+                                   {% endspaceless %}"
+                        role="columnheader"
+                        scope="col"
+                        {{ column.attrs.th.as_html |default_if_none:"" }}>
                       {% if column.orderable %}
                         <a class="column-header-link"
                            role="button"
