@@ -377,3 +377,138 @@ def test_get_service_org_ref_and_days_of_non_operation():
     )
 
     assert service_org_ref is None
+
+
+def test_multiple_service_codes_check_for_single_service():
+    result = ValidationResult()
+    noc = "NOC1"
+    line_name = "L1"
+
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+    )
+
+    vj_finder = VehicleJourneyFinder()
+    txc_files = vj_finder.get_txc_file_metadata(noc, line_name, result)
+
+    check_multiple_service_codes = vj_finder.multiple_service_codes_check(
+        txc_files, result
+    )
+    assert check_multiple_service_codes is True
+
+
+def test_multiple_service_codes_check_for_single_service_samedataset():
+    result = ValidationResult()
+    noc = "NOC1"
+    line_name = "L1"
+
+    revision = DatasetRevisionFactory()
+
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+        revision=revision,
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+        revision=revision,
+    )
+
+    vj_finder = VehicleJourneyFinder()
+    txc_files = vj_finder.get_txc_file_metadata(noc, line_name, result)
+
+    check_multiple_service_codes = vj_finder.multiple_service_codes_check(
+        txc_files, result
+    )
+    assert check_multiple_service_codes is True
+
+
+def test_multiple_service_codes_check_for_different_services_different_dataset():
+    result = ValidationResult()
+    noc = "NOC1"
+    line_name = "L1"
+
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:124",
+    )
+
+    vj_finder = VehicleJourneyFinder()
+    txc_files = vj_finder.get_txc_file_metadata(noc, line_name, result)
+
+    check_multiple_service_codes = vj_finder.multiple_service_codes_check(
+        txc_files, result
+    )
+    assert check_multiple_service_codes is False
+
+
+def test_multiple_service_codes_check_for_different_services_same_dataset():
+    result = ValidationResult()
+    noc = "NOC1"
+    line_name = "L1"
+
+    dataset_revision = DatasetRevisionFactory()
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+        revision=dataset_revision,
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:124",
+        revision=dataset_revision,
+    )
+
+    vj_finder = VehicleJourneyFinder()
+    txc_files = vj_finder.get_txc_file_metadata(noc, line_name, result)
+
+    check_multiple_service_codes = vj_finder.multiple_service_codes_check(
+        txc_files, result
+    )
+    assert check_multiple_service_codes is False
+
+
+def test_multiple_service_codes_check_for_different_noc_services_same_dataset():
+    result = ValidationResult()
+    noc = "NOC1"
+    line_name = "L1"
+
+    dataset_revision = DatasetRevisionFactory()
+    TXCFileAttributesFactory(
+        national_operator_code="NOC2",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+        revision=dataset_revision,
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:124",
+        revision=dataset_revision,
+    )
+
+    vj_finder = VehicleJourneyFinder()
+    txc_files = vj_finder.get_txc_file_metadata(noc, line_name, result)
+
+    check_multiple_service_codes = vj_finder.multiple_service_codes_check(
+        txc_files, result
+    )
+    assert check_multiple_service_codes is True
