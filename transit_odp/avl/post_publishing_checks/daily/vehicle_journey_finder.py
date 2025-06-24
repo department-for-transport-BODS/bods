@@ -1184,13 +1184,15 @@ class VehicleJourneyFinder:
             bool: Does the txc files list has multiple services or a single service for operator and line name
         """
         service_code_list = []
-
         for txc_file in matching_txc_file_attrs:
             service_code_list.append(txc_file.service_code)
 
         service_code_set = set(service_code_list)
 
         if len(service_code_set) > 1:
+            logger.info(
+                f"Vehicle activity belongs to different service codes {service_code_set}, So this activity will be ignored"
+            )
             result.errors = None
             return False
         return True
