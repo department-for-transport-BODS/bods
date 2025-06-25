@@ -22,6 +22,7 @@ from transit_odp.avl.post_publishing_checks.models import (
     MonitoredVehicleJourney,
     VehicleActivity,
 )
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.utils.choice_enum import ChoiceEnum
 from transit_odp.common.xmlelements.exceptions import (
     NoElement,
@@ -1044,7 +1045,16 @@ class VehicleJourneyFinder:
         if not matching_txc_file_attrs:
             return None
 
-        if not self.multiple_service_codes_check(matching_txc_file_attrs, mvj, result):
+        is_split_registrations_logic_active = flag_is_active(
+            "", FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value
+        )
+
+        if (
+            is_split_registrations_logic_active
+            and not self.multiple_service_codes_check(
+                matching_txc_file_attrs, mvj, result
+            )
+        ):
             return None
 
         self.set_dataset_attributes(matching_txc_file_attrs, mvj, result)
@@ -1183,6 +1193,7 @@ class VehicleJourneyFinder:
         Returns:
             bool: Does the txc files list has multiple services or a single service for operator and line name
         """
+        logger.info("Executing the check for split registration logic.")
         service_code_list = []
         for txc_file in matching_txc_file_attrs:
             service_code_list.append(txc_file.service_code)
