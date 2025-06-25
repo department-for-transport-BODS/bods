@@ -1,9 +1,4 @@
-$govuk-assets-path: "/assets/frontend/";
-$govuk-green-colour: govuk-colour("green");
-$govuk-blue-colour: govuk-colour("blue");
-$govuk-confirm-colour: govuk-colour("green"); // this colour is also used in GovUK assets, e.g. $govuk-button-colour
-$govuk-warning-colour:govuk-colour("yellow");// #ffbf47;
-$govuk-header-link-active: #1d8feb;
+$govuk-new-organisation-colours: true;
 $fa-font-path: "./fonts";
 $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 $govuk-fonts-path: "../fonts/";

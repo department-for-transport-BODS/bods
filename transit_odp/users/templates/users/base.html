@@ -12,11 +12,13 @@
 {% endblock %}
 {% block content %}
   <div class="govuk-grid-row">
-    {% block above_heading %}{% endblock %}
+    {% block above_heading %}
+    {% endblock %}
     <div class="govuk-grid-column-two-thirds">
       {% block content_heading %}
         <h1 class="govuk-heading-xl">
-          {% block title_text %}{% endblock %}
+          {% block title_text %}
+          {% endblock %}
         </h1>
       {% endblock %}
       {% block subtitle %}
@@ -29,11 +31,14 @@
   </div>
   <div class="govuk-grid-row govuk-!-margin-top-4">
     <div class="govuk-grid-column-two-thirds">
-      {% block inner %}{% endblock %}
+      {% block inner %}
+      {% endblock %}
     </div>
     <div class="govuk-grid-column-one-third">
-      {% block inner_secondary %}{% endblock %}
+      {% block inner_secondary %}
+      {% endblock %}
     </div>
   </div>
-  {% block extra_content %}{% endblock %}
+  {% block extra_content %}
+  {% endblock %}
 {% endblock %}

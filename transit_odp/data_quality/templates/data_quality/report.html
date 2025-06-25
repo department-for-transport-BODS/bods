@@ -20,35 +20,41 @@
           <div class="content-center">
             {% if is_specific_feedback %}
               {% if warning_data.Critical.count == 0 and warning_data.Feedback.count == 0 %}
-              <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
-                NO CRITICAL ISSUES
-              </span>
+                <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+                  NO CRITICAL ISSUES
+                </span>
               {% else %}
-              <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
-                CRITICAL ISSUES
-              </span>
+                <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+                  CRITICAL ISSUES
+                </span>
               {% endif %}
             {% else %}
               {% if warning_data.Critical.count == 0 %}
-              <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
-                NO CRITICAL ISSUES
-              </span>
+                <span class="govuk-tag govuk-tag--green govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+                  NO CRITICAL ISSUES
+                </span>
               {% else %}
-              <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
-                CRITICAL ISSUES
-              </span>
+                <span class="govuk-tag govuk-tag--red govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre">
+                  CRITICAL ISSUES
+                </span>
               {% endif %}
             {% endif %}
           </div>
         {% endif %}
       </div>
       {% if is_dqs_new_report %}
-        <h2 class="govuk-list govuk-!-font-size-24">{{ title }}</h2>
+        <h2 class="govuk-list govuk-!-font-size-24">
+          {{ title }}
+        </h2>
       {% else %}
-        <h1 class="govuk-heading-xl">{{ title }}</h1>
+        <h1 class="govuk-heading-xl">
+          {{ title }}
+        </h1>
       {% endif %}
       <ul class="govuk-list">
-        <li>{% trans "Please find your data quality observations below." %}</li>
+        <li>
+          {% trans "Please find your data quality observations below." %}
+        </li>
         <li>
           <a class="govuk-link" href="{% url 'guidance:dq-definitions' host hosts.publish %}" target="_blank">
             {% trans "What are the different type of observations?" %}
@@ -80,13 +86,17 @@
                   affected
                 </p>
               {% else %}
-                <p class="govuk-body-s govuk-!-font-weight-bold">Bus line{{ object.no_of_lines|pluralize:"s" }}</p>
+                <p class="govuk-body-s govuk-!-font-weight-bold">
+                  Bus line{{ object.no_of_lines|pluralize:"s" }}
+                </p>
               {% endif %}
             </div>
             {% if not is_dqs_new_report %}
               {% if dq_score %}
                 <div class="govuk-grid-column-one-quarter-from-desktop">
-                  <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ dq_score.score | percentage:"0" }}</p>
+                  <p class="govuk-heading-xl govuk-!-margin-bottom-0">
+                    {{ dq_score.score | percentage:"0" }}
+                  </p>
                   <p class="govuk-body-s govuk-!-font-weight-bold">
                     <span class="status-indicator status-indicator--{{ dq_score.css_indicator }}">{{ dq_score.rag_level | upper }}</span>
                     <br />
@@ -95,26 +105,31 @@
                 </div>
               {% endif %}
             {% endif %}
-            
             <div class="govuk-grid-column-one-quarter-from-desktop">
-              <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Critical.count }}</p>
+              <p class="govuk-heading-xl govuk-!-margin-bottom-0">
+                {{ warning_data.Critical.count }}
+              </p>
               <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
                 Critical observation{{ warning_data.Critical.count |pluralize:"s" }}
               </p>
             </div>
             <div class="govuk-grid-column-one-quarter-from-desktop">
-              <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Advisory.count }}</p>
+              <p class="govuk-heading-xl govuk-!-margin-bottom-0">
+                {{ warning_data.Advisory.count }}
+              </p>
               <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
                 Advisory observation{{ warning_data.Advisory.count|pluralize:"s" }}
               </p>
             </div>
             {% if warning_data|is_value_in_dict:'Feedback' %}
-            <div class="govuk-grid-column-one-quarter-from-desktop">
-              <p class="govuk-heading-xl govuk-!-margin-bottom-0">{{ warning_data.Feedback.count }}</p>
-              <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
-                Feedback observation{{ warning_data.Feedback.count |pluralize:"s" }}
-              </p>
-            </div>
+              <div class="govuk-grid-column-one-quarter-from-desktop">
+                <p class="govuk-heading-xl govuk-!-margin-bottom-0">
+                  {{ warning_data.Feedback.count }}
+                </p>
+                <p class="govuk-body-s govuk-!-font-weight-bold govuk-!-padding-1">
+                  Feedback observation{{ warning_data.Feedback.count |pluralize:"s" }}
+                </p>
+              </div>
             {% endif %}
           </div>
         </div>

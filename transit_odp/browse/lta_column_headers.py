@@ -532,6 +532,10 @@ header_accessor_data_db_compliance_report = [
         lambda otc_service: otc_service.get("effective_stale_date_last_modified_date"),
     ),
     (
+        "TXC:Operating Period Start Date",
+        lambda otc_service: otc_service.get("operating_period_start_date"),
+    ),
+    (
         "TXC:Operating Period End Date",
         lambda otc_service: otc_service.get("operating_period_end_date"),
     ),

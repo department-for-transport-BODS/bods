@@ -12,21 +12,36 @@
             <thead class="govuk-table__head {{ table.attrs.thead.class |default_if_none:'' }}">
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
-                  <th aria-sort="{% if 'asc ' in column.attrs.th.class %}ascending{% elif 'desc ' in column.attrs.th.class %}descending{% else %}none{% endif %}" role="columnheader" scope="col" {{ column.attrs.th.as_html |default_if_none:"" }}>
-                    {% if column.orderable %}
-                      <a class="column-header-link"
-                         role="button"
-                         href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next 'page'=1 %}">
+                  {% spaceless %}
+                    <th aria-sort="{% spaceless %}
+                                     {% if 'asc ' in column.attrs.th.class %}
+                                       ascending
+                                     {% elif 'desc ' in column.attrs.th.class %}
+                                       descending
+                                     {% else %}
+                                       none
+                                     {% endif %}
+                                   {% endspaceless %}"
+                        role="columnheader"
+                        scope="col"
+                        {{ column.attrs.th.as_html |default_if_none:"" }}>
+                      {% if column.orderable %}
+                        <a class="column-header-link"
+                           role="button"
+                           href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next 'page'=1 %}">
+                          {{ column.header }}
+                          <span class="hide-using-position">Sort your data by {{ column.header }}</span>
+                        </a>
+                      {% else %}
                         {{ column.header }}
-                        <span class="hide-using-position">Sort your data by {{ column.header }}</span>
-                      </a>
-                    {% else %}
-                      {{ column.header }}
-                    {% endif %}
-                    <span class="order-up fas fa-caret-up"></span>
-                    <span class="order-down fas fa-caret-down"></span>
-                    {% if column.attrs.annotation %}{{ column.attrs.annotation }}{% endif %}
-                  </th>
+                      {% endif %}
+                      <span class="order-up fas fa-caret-up"></span>
+                      <span class="order-down fas fa-caret-down"></span>
+                      {% if column.attrs.annotation %}
+                        {{ column.attrs.annotation }}
+                      {% endif %}
+                    </th>
+                  {% endspaceless %}
                 {% endfor %}
               </tr>
             </thead>
@@ -70,7 +85,9 @@
               {% if table.empty_text %}
                 {% block table.tbody.empty_text %}
                   <tr class="govuk-table__row">
-                    <td class="govuk-table__cell" colspan="{{ table.columns|length }}">{{ table.empty_text }}</td>
+                    <td class="govuk-table__cell" colspan="{{ table.columns|length }}">
+                      {{ table.empty_text }}
+                    </td>
                   </tr>
                 {% endblock table.tbody.empty_text %}
               {% endif %}
@@ -82,7 +99,9 @@
             <tfoot {{ table.attrs.tfoot.as_html }}>
               <tr class="govuk-table__row">
                 {% for column in table.columns %}
-                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">{{ column.footer }}</td>
+                  <td class="govuk-table__cell {{ column.attrs.td.class |default_if_none:"" }}">
+                    {{ column.footer }}
+                  </td>
                 {% endfor %}
               </tr>
             </tfoot>
