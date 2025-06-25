@@ -207,4 +207,8 @@ class CeleryAppConfig(AppConfig):
                 "task": OTC_TASKS + "task_precalculate_ui_lta_sra",
                 "schedule": crontab(minute=0, hour="*"),
             },
+            "task_refresh_otc_updates_in_service_number": {
+                "task": OTC_TASKS + "task_refresh_otc_updates_in_service_number",
+                "schedule": crontab(minute=30, hour=23, day_of_week="6"),
+            },
         }
