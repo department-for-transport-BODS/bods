@@ -1,5 +1,30 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "June 2025 (1.49.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      A refresh of the Front End code pack to align with GDS branding standards.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    A bug fix in the compliance reports for Derived termination date logic.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    A new column within the compliance reports (Operating Period Start Date).
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "June 2025 (1.48.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
@@ -26,11 +51,6 @@
   <li>
     {% blocktrans %}
       A new column within the compliance reports (Derived termination date) to identify where look ahead when data is made invalid due to the revision number.
-    {% endblocktrans %}
-  </li>
-  <li>
-    {% blocktrans %}
-      A refresh of the Front End code pack to align with GDS branding standards.
     {% endblocktrans %}
   </li>
 </ul>
