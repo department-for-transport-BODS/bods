@@ -14,6 +14,7 @@ from transit_odp.avl.post_publishing_checks.daily.vehicle_journey_finder import 
     VehicleJourneyFinder,
 )
 from transit_odp.avl.post_publishing_checks.models.siri import MonitoredVehicleJourney
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
     DatasetFactory,
@@ -22,6 +23,7 @@ from transit_odp.organisation.factories import (
 )
 from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.timetables.transxchange import TransXChangeDocument
+from waffle.testutils import override_flag
 
 pytestmark = pytest.mark.django_db
 
@@ -378,7 +380,7 @@ def test_get_service_org_ref_and_days_of_non_operation():
 
     assert service_org_ref is None
 
-
+@override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
 def test_multiple_service_codes_check_for_single_service():
     result = ValidationResult()
     noc = "NOC1"
@@ -403,7 +405,7 @@ def test_multiple_service_codes_check_for_single_service():
     )
     assert check_multiple_service_codes is True
 
-
+@override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
 def test_multiple_service_codes_check_for_single_service_samedataset():
     result = ValidationResult()
     noc = "NOC1"
@@ -432,7 +434,7 @@ def test_multiple_service_codes_check_for_single_service_samedataset():
     )
     assert check_multiple_service_codes is True
 
-
+@override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
 def test_multiple_service_codes_check_for_different_services_different_dataset():
     result = ValidationResult()
     noc = "NOC1"
@@ -457,7 +459,7 @@ def test_multiple_service_codes_check_for_different_services_different_dataset()
     )
     assert check_multiple_service_codes is False
 
-
+@override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
 def test_multiple_service_codes_check_for_different_services_same_dataset():
     result = ValidationResult()
     noc = "NOC1"
@@ -485,7 +487,7 @@ def test_multiple_service_codes_check_for_different_services_same_dataset():
     )
     assert check_multiple_service_codes is False
 
-
+@override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
 def test_multiple_service_codes_check_for_different_noc_services_same_dataset():
     result = ValidationResult()
     noc = "NOC1"
