@@ -380,6 +380,7 @@ def test_get_service_org_ref_and_days_of_non_operation():
 
     assert service_org_ref is None
 
+
 @override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
 def test_multiple_service_codes_check_for_single_service():
     result = ValidationResult()
@@ -404,6 +405,7 @@ def test_multiple_service_codes_check_for_single_service():
         txc_files, result
     )
     assert check_multiple_service_codes is True
+
 
 @override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
 def test_multiple_service_codes_check_for_single_service_samedataset():
@@ -434,6 +436,7 @@ def test_multiple_service_codes_check_for_single_service_samedataset():
     )
     assert check_multiple_service_codes is True
 
+
 @override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
 def test_multiple_service_codes_check_for_different_services_different_dataset():
     result = ValidationResult()
@@ -458,6 +461,7 @@ def test_multiple_service_codes_check_for_different_services_different_dataset()
         txc_files, result
     )
     assert check_multiple_service_codes is False
+
 
 @override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
 def test_multiple_service_codes_check_for_different_services_same_dataset():
@@ -486,6 +490,7 @@ def test_multiple_service_codes_check_for_different_services_same_dataset():
         txc_files, result
     )
     assert check_multiple_service_codes is False
+
 
 @override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
 def test_multiple_service_codes_check_for_different_noc_services_same_dataset():
