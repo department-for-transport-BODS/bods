@@ -1114,6 +1114,7 @@ class LTAComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
                 "otc_effective_date": service.effective_date,
                 "otc_received_date": service.received_date,
                 "operator_name": service.organisation_name,
+                "operating_period_start_date": service.operating_period_start_date,
                 "operating_period_end_date": service.operating_period_end_date,
                 "last_modified_date": service.last_modified_date,
                 "dataset_id": service.dataset_id,

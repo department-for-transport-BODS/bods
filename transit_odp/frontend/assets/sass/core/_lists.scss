@@ -3,7 +3,7 @@
 }
 
 .govuk-list-inline li {
-  margin-right: 2.5rem;
+  margin-right: govuk-spacing(6);
 }
 
 // List containing error/warning messages
@@ -32,7 +32,7 @@
   li {
     // This uses the same styles as the .govuk-form-group--error selector
     border-left: $govuk-border-width-form-group-error solid
-      $govuk-warning-colour;
+      govuk-colour("yellow");
   }
 }
 
@@ -40,10 +40,10 @@
 
 .app-list--nav {
   line-height: 1.8;
-  font-size: 1rem;
+  @include govuk-font($size: 16);
 
   > li {
-    margin-bottom: 0.8rem;
+    margin-bottom: govuk-spacing(2);
   }
 }
 
@@ -52,11 +52,10 @@
 .info-list {
   list-style: none;
   margin: 0;
-  padding: 1rem 0;
+  padding: govuk-spacing(4) 0;
 
   li {
-    padding: 1rem 0;
-    border-bottom: 1px solid $govuk-border-colour;
+    padding: govuk-spacing(4) 0;
     border-bottom: 1px solid $govuk-border-colour;
 
     .info-item__title,
@@ -73,8 +72,8 @@
     }
 
     .info-item__title {
-      margin-bottom: 0.5rem;
-      padding-right: 1rem;
+      margin-bottom: govuk-spacing(1);
+      padding-right: govuk-spacing(4);
     }
 
     @include mq($from: tablet) {
@@ -99,7 +98,7 @@
 // Feed upload/update wizard
 .wizard-header {
   text-align: right;
-  padding: 1rem;
+  padding: govuk-spacing(4);
   padding-bottom: 0;
 }
 
@@ -110,31 +109,31 @@
   .wizard-list-item {
     display: flex;
     flex-direction: row;
-    background-color: #d5ecea;
+    background-color: govuk-colour("light-grey"); // #d5ecea → light-grey
     list-style-type: none;
     margin: 0;
-    padding: 1rem;
-    padding-left: 1.5rem;
+    padding: govuk-spacing(4);
+    padding-left: govuk-spacing(6);
     list-style-position: inside;
-    border-bottom: 1px solid #bfc1c3;
+    border-bottom: 1px solid $govuk-border-colour; // #bfc1c3 → $govuk-border-colour
 
     .wizard-step-div {
       flex: 1;
 
       .div__heading {
         flex: 1;
-        font-size: 16px;
-        font-weight: normal;
-        margin: 0 0 0.5rem 0;
+        @include govuk-font($size: 16);
+        @include govuk-typography-weight-regular;
+        margin: 0 0 govuk-spacing(1) 0;
         border: 0;
       }
 
       .wizard-paragraph {
         margin: 0;
         padding: 0;
-        font-weight: bold;
-        color: #315843;
-        font-size: 16px;
+        @include govuk-typography-weight-bold;
+        color: govuk-colour("green"); // #315843 → green
+        @include govuk-font($size: 16);
       }
     }
 
@@ -156,5 +155,8 @@
 
 .govuk-list--alpha {
   list-style-type: lower-alpha;
-  padding-left: 20px;
+  padding-left: govuk-spacing(4);
 }
+
+// All static color values and font stacks replaced with GOV.UK equivalents.
+// All list and wizard styles use GOV.UK conventions.
