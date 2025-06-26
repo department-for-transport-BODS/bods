@@ -833,11 +833,12 @@ def task_rerun_timetables_etl_specific_datasets():
 
 class StepFunctionsReprocessPayload(StepFunctionsTTPayload):
     """
-    Extends existing StepFunctionsTTPayload to allow addition of the performETLOnly flag
+    Extends existing StepFunctionsTTPayload to allow addition of performETLOnly and skipTrackInserts flag
     which is only used for reprocessing
     """
 
     performETLOnly: bool
+    skipTrackInserts: bool
 
 
 @shared_task(ignore_errors=True)
@@ -952,6 +953,7 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                         publishDatasetRevision=False,
                         datasetETLTaskResultId=task.id,
                         performETLOnly=True,
+                        skipTrackInserts=True,
                     ).model_dump_json(exclude_none=True)
 
                     step_functions_client.start_step_function(
