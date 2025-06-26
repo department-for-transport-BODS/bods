@@ -16,19 +16,21 @@
     Date
   </label>
   <span id="timetable_date_hint" class="govuk-hint">For example: 21/11/2014</span>
-  <input type="text"
-         id="timetable_date"
-         name="start"
-         class="w-90-l govuk-input"
-         aria-describedby="timetable_date_hint"
-         value="{{ curr_date }}"
-         data-gtm-form-interact-field-id="0" />
-  <img id="timetable_date_calendar"
-       class="govuk-!-margin-right-1 shifted-text"
-       width="20"
-       height="20"
-       src="{% static 'frontend/images/calendar-icon.png' %}"
-       alt="calendar-icon" />
+  <div class="flex-container flexfill">
+    <input type="text"
+           id="timetable_date"
+           name="start"
+           class="w-90-l govuk-input"
+           aria-describedby="timetable_date_hint"
+           value="{{ curr_date }}"
+           data-gtm-form-interact-field-id="0" />
+    <img id="timetable_date_calendar"
+         class="govuk-!-margin-right-1 shifted-text"
+         width="20"
+         height="20"
+         src="{% static 'frontend/images/calendar-icon.png' %}"
+         alt="calendar-icon" />
+  </div>
   <button type="submit"
           class="govuk-button govuk-!-margin-top-2"
           data-module="govuk-button"
