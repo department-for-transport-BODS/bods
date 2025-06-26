@@ -1052,7 +1052,7 @@ class VehicleJourneyFinder:
         if (
             is_split_registrations_logic_active
             and not self.multiple_service_codes_check(
-                matching_txc_file_attrs, mvj, result
+                matching_txc_file_attrs, result
             )
         ):
             return None
