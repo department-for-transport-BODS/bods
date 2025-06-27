@@ -22,6 +22,7 @@ from transit_odp.avl.post_publishing_checks.models import (
     MonitoredVehicleJourney,
     VehicleActivity,
 )
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.utils.choice_enum import ChoiceEnum
 from transit_odp.common.xmlelements.exceptions import (
     NoElement,
@@ -1044,6 +1045,16 @@ class VehicleJourneyFinder:
         if not matching_txc_file_attrs:
             return None
 
+        is_split_registrations_logic_active = flag_is_active(
+            "", FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value
+        )
+
+        if (
+            is_split_registrations_logic_active
+            and not self.multiple_service_codes_check(matching_txc_file_attrs, result)
+        ):
+            return None
+
         self.set_dataset_attributes(matching_txc_file_attrs, mvj, result)
 
         txc_xml = self.get_corresponding_timetable_xml_files(matching_txc_file_attrs)
@@ -1163,4 +1174,34 @@ class VehicleJourneyFinder:
             )
             return False
 
+        return True
+
+    def multiple_service_codes_check(
+        self, matching_txc_file_attrs: List[TXCFileAttributes], result: ValidationResult
+    ) -> bool:
+        """Method to check if the txc files found for the given operator and line name belongs to a single service
+        or multiple service.
+         - If belongs to multiple service, then ignore the vehicle activity
+         - If belongs to single service, then consider the vehicle activity and move forward
+
+        Args:
+            matching_txc_file_attrs (List[TXCFileAttributes]): list of txc files found
+            result (ValidationResult): Result object
+
+        Returns:
+            bool: Does the txc files list has multiple services or a single service for operator and line name
+        """
+        logger.info("Executing the check for split registration logic.")
+        service_code_list = []
+        for txc_file in matching_txc_file_attrs:
+            service_code_list.append(txc_file.service_code)
+
+        service_code_set = set(service_code_list)
+
+        if len(service_code_set) > 1:
+            logger.info(
+                f"Vehicle activity belongs to different service codes {service_code_set}, So this activity will be ignored"
+            )
+            result.errors = None
+            return False
         return True
