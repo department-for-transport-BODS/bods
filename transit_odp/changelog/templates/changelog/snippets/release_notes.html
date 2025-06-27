@@ -1,5 +1,25 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "June 2025 (1.50.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      An improvement to exclude the AVL to timetable matching logic for routes across split registrations.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    A passenger facing version of the complete service page for operators and local authorities to embed within their websites.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "June 2025 (1.49.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
