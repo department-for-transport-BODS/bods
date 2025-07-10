@@ -728,6 +728,10 @@ if LOG_LEVEL:
                 "handlers": ["console"],
                 "level": LOG_LEVEL,
             },
+            "django.request": {
+                "handlers": ["console"],
+                "level": LOG_LEVEL,
+            },
             "django.db.backends": {
                 "level": LOG_LEVEL,
                 "handlers": ["console"],
@@ -791,3 +795,4 @@ CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER = env(
 SSM_PARAMETER_AWS_REGION = env("SSM_PARAMETER_AWS_REGION", default="eu-west-2")
 S3_PRESIGNED_URL_TTL = env("S3_PRESIGNED_URL_TTL", default=300)
 CLOUDFRONT_CUSTOM_DOMAIN = env("CLOUDFRONT_CUSTOM_DOMAIN", default="")
+DATA_UPLOAD_MAX_NUMBER_FIELDS = env("DATA_UPLOAD_MAX_NUMBER_FIELDS", default=2000)

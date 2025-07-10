@@ -6,7 +6,7 @@
 
 .red_warning_text {
   @extend .govuk-body-l;
-  color: map-get($govuk-colours, "red");
+  color: govuk-colour("red");
   margin-bottom: govuk-spacing(2);
 }
 

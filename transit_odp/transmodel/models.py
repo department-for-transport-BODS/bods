@@ -48,6 +48,13 @@ class Service(models.Model):
         return f"{self.id}, {self.name}, {self.service_code}"
 
 
+class Tracks(models.Model):
+    from_atco_code = models.CharField(max_length=255)
+    to_atco_code = models.CharField(max_length=255)
+    geometry = models.LineStringField(null=True, blank=True)
+    distance = models.IntegerField(blank=True, null=True)
+
+
 class ServicePattern(models.Model):
     service_pattern_id = models.CharField(max_length=255)
     # TODO - remove FK to DatasetRevision. This shouldn't be here
@@ -83,6 +90,18 @@ class ServicePattern(models.Model):
         return f"{self.id}, {self.origin}, {self.destination}"
 
 
+class ServicePatternDistance(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    service_pattern = models.ForeignKey(
+        ServicePattern,
+        related_name="service_pattern",
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    distance = models.IntegerField(blank=True, null=True)
+    geom = models.LineStringField(null=True, blank=True)
+
+
 class VehicleJourney(models.Model):
     start_time = models.TimeField(null=True)
     line_ref = models.CharField(max_length=255, null=True, blank=True)
@@ -103,28 +122,27 @@ class VehicleJourney(models.Model):
         return f"{self.id}, timing_pattern: {self.id}, {start_time_str}"
 
 
-class Tracks(models.Model):
-    from_atco_code = models.CharField(max_length=255)
-    to_atco_code = models.CharField(max_length=255)
-    geometry = models.LineStringField(null=True, blank=True)
-    distance = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["from_atco_code", "to_atco_code"],
-                name="unique_from_to_atco_code",
-            )
-        ]
-
-
 class TracksVehicleJourney(models.Model):
+    id = models.BigAutoField(primary_key=True)
     vehicle_journey = models.ForeignKey(
         VehicleJourney,
         on_delete=models.CASCADE,
         related_name="vehicle_journey_tracks",
     )
     tracks = models.ForeignKey(Tracks, on_delete=models.CASCADE, related_name="tracks")
+    sequence_number = models.IntegerField(blank=True, null=True)
+
+
+class ServicePatternTracks(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    service_pattern = models.ForeignKey(
+        ServicePattern,
+        on_delete=models.CASCADE,
+        related_name="service_pattern_tracks",
+    )
+    tracks = models.ForeignKey(
+        Tracks, on_delete=models.CASCADE, related_name="transmodel_tracks"
+    )
     sequence_number = models.IntegerField(blank=True, null=True)
 
 
@@ -288,6 +306,7 @@ class OperatingProfile(models.Model):
 
 
 class NonOperatingDatesExceptions(models.Model):
+    id = models.BigAutoField(primary_key=True)
     vehicle_journey = models.ForeignKey(
         VehicleJourney,
         on_delete=models.CASCADE,

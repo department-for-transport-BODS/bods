@@ -668,7 +668,20 @@ class DatasetQuerySet(models.QuerySet):
         """Filter queryset to datasets which have a published revision in a
         non-expired state"""
         exclude_status = [FeedStatus.expired.value, FeedStatus.inactive.value]
-        qs = self.get_published().exclude(live_revision__status__in=exclude_status)
+        qs = (
+            self.get_published()
+            .annotate(
+                effective_status=Case(
+                    When(
+                        ~Q(live_revision__status_before_reprocessing=""),
+                        then=F("live_revision__status_before_reprocessing"),
+                    ),
+                    default=F("live_revision__status"),
+                    output_field=CharField(),
+                )
+            )
+            .exclude(effective_status__in=exclude_status)
+        )
         if dataset_type is not None:
             qs = qs.filter(dataset_type=dataset_type)
 
@@ -676,35 +689,14 @@ class DatasetQuerySet(models.QuerySet):
 
     def search(self, keywords):
         """Searches the dataset and live_revision using keywords"""
-        from transit_odp.organisation.models import DatasetRevision
-
         # The important part is to ensure no duplicate datasets are returned due
         # to search over this many-to-many
         # TODO - add expression indexes to AdminArea name for efficient icontains
         # search, e.g. `CREATE INDEX admin_area_lower_email ON admin_area(upper(name));`
-        fares_icontains = Q(
-            metadata__faresmetadata__stops__admin_area__name__icontains=keywords
-        )
-        timetables_icontains = Q(admin_areas__name__icontains=keywords)
-        revisions = (
-            DatasetRevision.objects.get_live_revisions()
-            .filter(timetables_icontains | fares_icontains)
-            .order_by("id")
-            .distinct("id")
-            .values("id")
-        )
-
-        location_contains_keywords = Q(live_revision__in=revisions)
-        desc_contains_keywords = Q(live_revision__description__icontains=keywords)
         org_name_contains_keywords = Q(organisation__name__icontains=keywords)
         noc_contains_keywords = Q(organisation__nocs__noc__icontains=keywords)
 
-        qs = self.filter(
-            location_contains_keywords
-            | desc_contains_keywords
-            | org_name_contains_keywords
-            | noc_contains_keywords
-        ).distinct()
+        qs = self.filter(org_name_contains_keywords | noc_contains_keywords).distinct()
 
         return qs
 

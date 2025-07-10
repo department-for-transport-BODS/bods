@@ -57,7 +57,6 @@ urlpatterns = [
         "operators/",
         include(
             [
-                path("", view=OperatorsView.as_view(), name="operators"),
                 path(
                     "licence/<slug:number>/",
                     include(
@@ -75,6 +74,7 @@ urlpatterns = [
                         ]
                     ),
                 ),
+                path("", view=OperatorsView.as_view(), name="operators"),
                 path(
                     "<int:pk>/",
                     include(
@@ -187,6 +187,12 @@ urlpatterns = [
     path("version/", VersionView.as_view(), name="version"),
     path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
     path("django_axe/", include("django_axe.urls")),
+    path(
+        "robots.txt",
+        TemplateView.as_view(
+            template_name="pages/robots.txt", content_type="text/plain"
+        ),
+    ),
 ]
 
 

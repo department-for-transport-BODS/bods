@@ -10,6 +10,7 @@ from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.avl.tables import AVLDataFeedTable
 from transit_odp.browse.common import get_in_scope_in_season_services_line_level
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.organisation.constants import AVLType
 from transit_odp.publish.requires_attention import (
     get_avl_requires_attention_line_level_data,
@@ -56,6 +57,17 @@ class ListView(BasePublishListView):
             "", "is_avl_require_attention_active"
         )
 
+        is_operator_prefetch_sra_active = flag_is_active(
+            "", FeatureFlags.OPERATOR_PREFETCH_SRA.value
+        )
+
+        if is_operator_prefetch_sra_active:
+            total_inscope = context["organisation"].total_inscope
+            avl_sra = context["organisation"].avl_sra
+        else:
+            total_inscope = len(get_in_scope_in_season_services_line_level(org_id))
+            avl_sra = len(get_avl_requires_attention_line_level_data(org_id))
+
         context.update(
             {
                 "overall_ppc_score": (
@@ -67,12 +79,8 @@ class ListView(BasePublishListView):
                     host=PUBLISH_HOST,
                 )
                 + "?prev=avl-feed-list",
-                "services_requiring_attention": len(
-                    get_avl_requires_attention_line_level_data(org_id)
-                ),
-                "total_in_scope_in_season_services": len(
-                    get_in_scope_in_season_services_line_level(org_id)
-                ),
+                "services_requiring_attention": avl_sra,
+                "total_in_scope_in_season_services": total_inscope,
                 "is_avl_require_attention_active": is_avl_require_attention_active,
             }
         )

@@ -40,7 +40,7 @@ from transit_odp.data_quality.tasks import update_dqs_task_status, upload_datase
 from transit_odp.dqs.models import Checks, Report, TaskResults
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
-from transit_odp.organisation.constants import TimetableType
+from transit_odp.organisation.constants import TimetableType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, TXCFileAttributes
 from transit_odp.organisation.updaters import update_dataset
 from transit_odp.pipelines.exceptions import NoValidFileToProcess, PipelineException
@@ -833,11 +833,12 @@ def task_rerun_timetables_etl_specific_datasets():
 
 class StepFunctionsReprocessPayload(StepFunctionsTTPayload):
     """
-    Extends existing StepFunctionsTTPayload to allow addition of the performETLOnly flag
+    Extends existing StepFunctionsTTPayload to allow addition of performETLOnly and skipTrackInserts flag
     which is only used for reprocessing
     """
 
     performETLOnly: bool
+    skipTrackInserts: bool
 
 
 @shared_task(ignore_errors=True)
@@ -902,6 +903,10 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                 revision = DatasetRevision.objects.get(
                     pk=revision_id, dataset__dataset_type=TimetableType
                 )
+
+                if revision.prepare_for_reprocessing():
+                    logger.info(f"Revision {revision_id} prepared for reprocessing.")
+
                 if _s3_file_names_ids_map:
                     s3_file_name = get_file_name_by_id(
                         revision_id, _s3_file_names_ids_map
@@ -916,16 +921,18 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                 raise PipelineException(message) from exc
 
             if revision:
-                task_id = uuid.uuid4()
-                # Get the status of the revision before processing so we can re-set it later
-                revision_before_status = revision.status
-
-                task = DatasetETLTaskResult.objects.create(
-                    revision=revision,
-                    status=DatasetETLTaskResult.STARTED,
-                    task_id=task_id,
-                )
                 try:
+                    task_id = uuid.uuid4()
+
+                    with transaction.atomic():
+                        if not revision.status == FeedStatus.pending.value:
+                            revision.to_pending()
+                            revision.save()
+                        task = DatasetETLTaskResult.objects.create(
+                            revision=revision,
+                            status=DatasetETLTaskResult.STARTED,
+                            task_id=task_id,
+                        )
                     step_functions_client = StepFunctionsClientWrapper()
                     step_function_arn = settings.TIMETABLES_STATE_MACHINE_ARN
 
@@ -935,6 +942,7 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                     revision.localities.clear()
                     revision.services.all().delete()
                     revision.service_patterns.all().delete()
+                    revision.to_indexing()
                     revision.save()
 
                     payload = StepFunctionsReprocessPayload(
@@ -945,6 +953,7 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                         publishDatasetRevision=False,
                         datasetETLTaskResultId=task.id,
                         performETLOnly=True,
+                        skipTrackInserts=True,
                     ).model_dump_json(exclude_none=True)
 
                     step_functions_client.start_step_function(
@@ -973,7 +982,7 @@ def task_rerun_timetables_serverless_etl_specific_datasets():
                         task.to_error("", DatasetETLTaskResult.FAILURE)
                         raise
                     else:
-                        revision.status = revision_before_status
+                        revision.status = revision.status_before_reprocessing
                         revision.save()
 
                     while (

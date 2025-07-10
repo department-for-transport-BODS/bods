@@ -69,26 +69,29 @@ def test_csv_output_order():
     assert columns[20] == "TXC:NOC"
     assert columns[21] == "TXC:Last Modified Date"
     assert columns[22] == "Date when timetable data is over 1 year old"
-    assert columns[23] == "TXC:Operating Period End Date"
-    assert columns[24] == "Fares Data set ID"
-    assert columns[25] == "NETEX:Filename"
-    assert columns[26] == "NETEX:Last Modified Date"
-    assert columns[27] == "Date when fares data is over 1 year old"
-    assert columns[28] == "NETEX:Operating Period End Date"
-    assert columns[29] == "Date Registration variation needs to be published"
-    assert columns[30] == "Date for complete 42 day look ahead"
-    assert columns[31] == "Date seasonal service should be published"
-    assert columns[32] == "Seasonal Start Date"
-    assert columns[33] == "Seasonal End Date"
-    assert columns[34] == "Registration:Operator Name"
-    assert columns[35] == "Registration:Licence Number"
-    assert columns[36] == "Registration:Service Type Description"
-    assert columns[37] == "Registration:Variation Number"
-    assert columns[38] == "Registration:Expiry Date"
-    assert columns[39] == "Registration:Effective Date"
-    assert columns[40] == "Registration:Received Date"
-    assert columns[41] == "Traveline Region"
-    assert columns[42] == "Local Transport Authority"
+    assert columns[23] == "TXC:Operating Period Start Date"
+    assert columns[24] == "TXC:Operating Period End Date"
+    assert columns[25] == "Fares Data set ID"
+    assert columns[26] == "NETEX:Filename"
+    assert columns[27] == "NETEX:Last Modified Date"
+    assert columns[28] == "Date when fares data is over 1 year old"
+    assert columns[29] == "NETEX:Operating Period End Date"
+    assert columns[30] == "Date Registration variation needs to be published"
+    assert columns[31] == "Date for complete 42 day look ahead"
+    assert columns[32] == "Date seasonal service should be published"
+    assert columns[33] == "Seasonal Start Date"
+    assert columns[34] == "Seasonal End Date"
+    assert columns[35] == "Registration:Operator Name"
+    assert columns[36] == "Registration:Licence Number"
+    assert columns[37] == "Registration:Service Type Description"
+    assert columns[38] == "Registration:Variation Number"
+    assert columns[39] == "Registration:Expiry Date"
+    assert columns[40] == "Registration:Effective Date"
+    assert columns[41] == "Registration:Received Date"
+    assert columns[42] == "Traveline Region"
+    assert columns[43] == "Local Transport Authority"
+    assert columns[44] == "TXC: Revision Number"
+    assert columns[45] == "TXC: Derived Termination Date"
 
 
 def test_service_in_bods_but_not_in_otc():
@@ -158,7 +161,10 @@ def test_service_in_bods_and_otc():
         assert row["Registration Status"] == "Registered"
         assert row["Scope Status"] == "In Scope"
         assert row["Seasonal Status"] == "Not Seasonal"
-        assert row["Timetables Timeliness Status"] == "OTC variation not published"
+        assert (
+            row["Timetables Timeliness Status"]
+            == "Latest registration variation not published to BODS"
+        )
         assert row["Timetables Data set ID"] == dataset.id
         assert (
             row["Date Registration variation needs to be published"]
@@ -529,7 +535,8 @@ def test_stale_otc_variation(effective, modified, period_end, period_start, is_s
 
     df = _get_timetable_compliance_report_dataframe()
     assert (
-        df["Timetables Timeliness Status"][0] == "OTC variation not published"
+        df["Timetables Timeliness Status"][0]
+        == "Latest registration variation not published to BODS"
     ) == is_stale
     assert df["Timetables requires attention"][0] == "Yes" if is_stale else "No"
 

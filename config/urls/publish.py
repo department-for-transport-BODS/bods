@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.urls import include, path
 from django.views import defaults as default_views
+from django.views.generic import TemplateView
 
 from transit_odp.avl.views.archive import PPCArchiveView
 from transit_odp.common.utils.custom_error_handlers import (
@@ -10,7 +11,10 @@ from transit_odp.common.utils.custom_error_handlers import (
 from transit_odp.common.views import ComingSoonView, VersionView
 from transit_odp.publish.views.api import ProgressAPIView
 from transit_odp.publish.views.base import DataActivityView
-from transit_odp.publish.views.gatekeeper import PublishGateKeeperView
+from transit_odp.publish.views.gatekeeper import (
+    PublishAbodsGateKeeperView,
+    PublishGateKeeperView,
+)
 from transit_odp.publish.views.guide_me import (
     PublishGuideMeView,
     RedirectDashBoardView,
@@ -67,6 +71,11 @@ urlpatterns = [
     path("agent-dashboard/", view=AgentDashboardView.as_view(), name="agent-dashboard"),
     path("api/dq/", include("transit_odp.data_quality.api.urls")),
     path("gatekeeper", view=PublishGateKeeperView.as_view(), name="gatekeeper"),
+    path(
+        "abods-gatekeeper",
+        view=PublishAbodsGateKeeperView.as_view(),
+        name="abods-gatekeeper",
+    ),
     path(
         "dataset/<int:pk>/progress/",
         view=ProgressAPIView.as_view(),
@@ -139,6 +148,12 @@ urlpatterns = [
     path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
     path("version/", VersionView.as_view(), name="version"),
     path("django_axe/", include("django_axe.urls")),
+    path(
+        "robots.txt",
+        TemplateView.as_view(
+            template_name="pages/robots.txt", content_type="text/plain"
+        ),
+    ),
 ]
 
 if settings.DEBUG:

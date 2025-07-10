@@ -24,7 +24,6 @@ env:
   AWS_ASSUME_ROLE_NAME: ${{ vars.AWS_ASSUME_ROLE_NAME }}
 
 jobs:
-
   prod_deployment:
     name: 'prod_deployment'
     runs-on: ubuntu-latest
@@ -149,19 +148,24 @@ jobs:
         retries: 5
         verbose: true
 
+    - name: Obtain SSM parameters for pg migration
+      id: params
+      shell: bash
+      run: |
+        security_group_ids=`aws ssm get-parameter --name "/bodds/${{ env.ENVIRONMENT_NAME }}/pg-migration-sg-ids" \
+          | jq -r '.Parameter.Value'`
+        subnet_ids=`aws ssm get-parameter --name "/bodds/${{ env.ENVIRONMENT_NAME }}/private-subnets" \
+          | jq -r '.Parameter.Value'`
+
+        echo "SECURITY_GROUPS=${security_group_ids}" >> "$GITHUB_OUTPUT"
+        echo "SUBNETS=${subnet_ids}" >> "$GITHUB_OUTPUT"
+
     - name: Run pg migration
       uses: "./.github/workflows/templates/run_pg_migration_task"
       with:
-        subnets: ${{ secrets.SUBNETS }}
-        security_groups: ${{ secrets.SECURITY_GROUPS }}
+        subnets: ${{ steps.params.outputs.SUBNETS }}
+        security_groups: ${{ steps.params.outputs.SECURITY_GROUPS }}
         environment: ${{ env.ENVIRONMENT_NAME }}
-
-    - name: Invoke Lambda Function
-      shell: bash
-      run: |
-        aws lambda invoke \
-        --function-name bodds_pg_mutate_lambda_${{ env.ENVIRONMENT_NAME }} \
-        response.json
 
     - name: Update Confluence Page
       uses: robsteel24/update-confluence@v1

@@ -1,18 +1,18 @@
 import datetime
 import logging
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple
 from zipfile import ZipFile
-import os
-
+from waffle import flag_is_active
 from lxml import etree
 
 from transit_odp.avl.post_publishing_checks.constants import (
     ErrorCategory,
+    ErrorCode,
     SirivmField,
     TransXChangeField,
-    ErrorCode,
 )
 from transit_odp.avl.post_publishing_checks.daily.results import (
     MiscFieldPPC,
@@ -22,6 +22,7 @@ from transit_odp.avl.post_publishing_checks.models import (
     MonitoredVehicleJourney,
     VehicleActivity,
 )
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.common.utils.choice_enum import ChoiceEnum
 from transit_odp.common.xmlelements.exceptions import (
     NoElement,
@@ -33,7 +34,6 @@ from transit_odp.timetables.transxchange import (
     TransXChangeDocument,
     TransXChangeElement,
 )
-from transit_odp.common.xmlelements.exceptions import XMLAttributeError
 
 logger = logging.getLogger(__name__)
 
@@ -128,18 +128,18 @@ class VehicleJourneyFinder:
                 f"published line name {published_line_name}",
             )
 
-        logger.debug(
+        logger.info(
             f"Found {len(txc_file_attrs)} timetable files matching NOC and LineName"
         )
         for idx, txc_file in enumerate(txc_file_attrs):
-            logger.debug(
+            logger.info(
                 f"{idx + 1}: Dataset id {txc_file.dataset_id} "
                 f"filename {txc_file.filename}"
             )
 
         return txc_file_attrs
 
-    def check_same_dataset(
+    def set_dataset_attributes(
         self,
         txc_file_attrs: List[TXCFileAttributes],
         mvj: MonitoredVehicleJourney,
@@ -148,55 +148,43 @@ class VehicleJourneyFinder:
         """
         Checks if the matched TXC files belong to the same dataset. If they do, sets various attributes in the result object.
         If they don't, logs an error and adds an error to the result object.
-
         Args:
             txc_file_attrs (List[TXCFileAttributes]): List of TXC file attributes.
             mvj (MonitoredVehicleJourney): The monitored vehicle journey.
             result (ValidationResult): The result object to be updated.
-
         Returns:
             bool: True if the matched TXC files belong to the same dataset, False otherwise.
         """
         dataset_ids = {txc.dataset_id for txc in txc_file_attrs}
-        consistent_data = len(dataset_ids) == 1
-        if consistent_data:
-            dataset_id = dataset_ids.pop()
-            result.set_misc_value(MiscFieldPPC.BODS_DATASET_ID, dataset_id)
-            result.set_txc_value(SirivmField.OPERATOR_REF, mvj.operator_ref)
-            result.set_matches(SirivmField.OPERATOR_REF)
-            result.set_txc_value(SirivmField.LINE_REF, mvj.line_ref)
-            result.set_txc_value(
-                SirivmField.PUBLISHED_LINE_NAME, mvj.published_line_name
-            )
-            result.set_transxchange_attribute(TransXChangeField.DATASET_ID, dataset_id)
-            result.set_transxchange_attribute(
-                TransXChangeField.MODIFICATION_DATE,
-                txc_file_attrs[0].modification_datetime,
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.FILENAME, txc_file_attrs[0].filename
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.OPERATING_PERIOD_END_DATE,
-                txc_file_attrs[0].operating_period_end_date,
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.OPERATING_PERIOD_START_DATE,
-                txc_file_attrs[0].operating_period_start_date,
-            )
-            result.set_transxchange_attribute(
-                TransXChangeField.SERVICE_CODE, txc_file_attrs[0].service_code
-            )
-            result.set_transxchange_attribute(TransXChangeField.LINE_REF, mvj.line_ref)
-            result.set_matches(SirivmField.LINE_REF)
-        else:
-            logger.error("Matching TXC files belong to different datasets!\n")
-            result.add_error(
-                ErrorCategory.GENERAL,
-                "Matched OperatorRef and PublishedLineName in more than one dataset",
-            )
+        dataset_id = dataset_ids.pop()
+        result.set_misc_value(MiscFieldPPC.BODS_DATASET_ID, dataset_id)
+        result.set_txc_value(SirivmField.OPERATOR_REF, mvj.operator_ref)
+        result.set_matches(SirivmField.OPERATOR_REF)
+        result.set_txc_value(SirivmField.LINE_REF, mvj.line_ref)
+        result.set_txc_value(SirivmField.PUBLISHED_LINE_NAME, mvj.published_line_name)
+        result.set_transxchange_attribute(TransXChangeField.DATASET_ID, dataset_id)
+        result.set_transxchange_attribute(
+            TransXChangeField.MODIFICATION_DATE,
+            txc_file_attrs[0].modification_datetime,
+        )
+        result.set_transxchange_attribute(
+            TransXChangeField.FILENAME, txc_file_attrs[0].filename
+        )
+        result.set_transxchange_attribute(
+            TransXChangeField.OPERATING_PERIOD_END_DATE,
+            txc_file_attrs[0].operating_period_end_date,
+        )
+        result.set_transxchange_attribute(
+            TransXChangeField.OPERATING_PERIOD_START_DATE,
+            txc_file_attrs[0].operating_period_start_date,
+        )
+        result.set_transxchange_attribute(
+            TransXChangeField.SERVICE_CODE, txc_file_attrs[0].service_code
+        )
+        result.set_transxchange_attribute(TransXChangeField.LINE_REF, mvj.line_ref)
+        result.set_matches(SirivmField.LINE_REF)
 
-        return consistent_data
+        return True
 
     def get_corresponding_timetable_xml_files(
         self, txc_file_attrs: List[TXCFileAttributes]
@@ -280,7 +268,7 @@ class VehicleJourneyFinder:
                                 continue
 
                         end_date_str = "-" if end_date is None else str(end_date)
-                        logger.debug(
+                        logger.info(
                             f"Filtering out timetable {txc_xml[idx].get_file_name()} "
                             f"with OperatingPeriod ({start_date} to {end_date_str})"
                         )
@@ -319,7 +307,7 @@ class VehicleJourneyFinder:
                 )
             except NoElement:
                 vehicle_journeys = []
-            logger.debug(
+            logger.info(
                 f"Timetable {timetable} has {len(vehicle_journeys)} vehicle journeys"
             )
             for vehicle_journey in vehicle_journeys:
@@ -331,7 +319,7 @@ class VehicleJourneyFinder:
                 except (NoElement, TooManyElements):
                     continue
                 if journey_code == vehicle_journey_ref:
-                    logger.debug(
+                    logger.info(
                         f"Found TicketMachine/JourneyCode {journey_code} in timetable "
                         f"{timetable.get_file_name()}"
                     )
@@ -342,7 +330,7 @@ class VehicleJourneyFinder:
         logger.info(
             f"Filtering by JourneyCode gave {len(vehicle_journeys)} matching journeys"
         )
-        logger.debug(
+        logger.info(
             f"In {len(txc_xml)} timetables, found JourneyCode's: {debug_journey_codes}"
         )
 
@@ -447,6 +435,9 @@ class VehicleJourneyFinder:
         in place with inapplicable vehicle journeys removed.
         NOTE: Bank Holidays not yet supported
         """
+        is_special_days_ppc_logic_active = flag_is_active(
+            "", "is_special_days_ppc_logic_active"
+        )
         journey_code_operating_profile = []
         for vj in reversed(vehicle_journeys):
             result.set_transxchange_attribute(
@@ -461,7 +452,7 @@ class VehicleJourneyFinder:
             journey_code_operating_profile.append(operating_profile_xml_string)
 
             if operating_profile is None:
-                logger.debug(
+                logger.info(
                     "Ignoring VehicleJourney with no operating profile: "
                     f"{vj.vehicle_journey}"
                 )
@@ -482,12 +473,18 @@ class VehicleJourneyFinder:
             for day in DayOfWeek:
                 if profile_days_of_week[0].get_element_or_none(day.value) is not None:
                     specified_days.append(day)
-            if day_of_week not in specified_days:
-                logger.debug(
+            if day_of_week not in specified_days and (
+                not is_special_days_ppc_logic_active
+                or not self.is_vehicle_journey_operational_special_days(
+                    operating_profile, activity_date, result, vj
+                )
+            ):
+                logger.info(
                     "Ignoring VehicleJourney with operating profile inapplicable to "
                     f"{day_of_week}"
                 )
                 vehicle_journeys.remove(vj)
+
         logger.info(
             f"Filtering by OperatingProfile left {len(vehicle_journeys)} matching "
             "journeys"
@@ -623,6 +620,26 @@ class VehicleJourneyFinder:
             return []
         return working_days
 
+    def get_op_special_days(
+        self, org: TransXChangeElement
+    ) -> Optional[TransXChangeElement]:
+        try:
+            xpath = ["SpecialDaysOperation", "DaysOfOperation", "DateRange"]
+            op_days = org.get_elements(xpath)
+        except NoElement:
+            return []
+        return op_days
+
+    def get_nonop_special_days(
+        self, org: TransXChangeElement
+    ) -> Optional[TransXChangeElement]:
+        try:
+            xpath = ["SpecialDaysOperation", "DaysOfNonOperation", "DateRange"]
+            non_op_days = org.get_elements(xpath)
+        except NoElement:
+            return []
+        return non_op_days
+
     def get_service_org_ref_and_days_of_operation(
         self, vehicle_journey: TxcVehicleJourney
     ) -> Tuple[Optional[str], Optional[TransXChangeElement]]:
@@ -662,8 +679,6 @@ class VehicleJourneyFinder:
 
         return (
             service_org_ref,
-            days_of_non_operation,
-            days_of_operation,
             service_org_ref_dict,
         )
 
@@ -718,6 +733,109 @@ class VehicleJourneyFinder:
                 return True
         return False
 
+    def is_vehicle_journey_operational_special_days(
+        self,
+        operating_profile: TransXChangeElement,
+        recorded_at: datetime.date,
+        result: ValidationResult,
+        vj: TxcVehicleJourney,
+    ) -> bool:
+        """Method to find out the recorded_at_time is present in the start date or end date
+        provided in the SepecialDaysOperation DaysOfOperation date range
+
+        Args:
+            org (TransXChangeElement): _description_
+            result (ValidationResult): validation results class for error collection
+            recorded_at (datetime.date): date on which vehicle activity was recorded
+
+        Returns:
+            bool: True means recorded_at is between the dates given in service organisation
+        """
+        logger.info(
+            f"Checking if vehicle journey is operating based on special days of operation "
+        )
+        op_working_days = self.get_op_special_days(operating_profile)
+        for date_range in op_working_days:
+            start_date = date_range.get_text_or_default("StartDate")
+            if not start_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as DaysOfOperation has no Start date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                break
+
+            end_date = date_range.get_text_or_default("EndDate")
+            if not end_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as DaysOfOperation has no End date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                break
+
+            start_date_formatted = datetime.datetime.strptime(
+                start_date, "%Y-%m-%d"
+            ).date()
+            end_date_formatted = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
+            if start_date_formatted <= recorded_at <= end_date_formatted:
+                return True
+        return False
+
+    def is_vehicle_journey_nonoperational_special_days(
+        self,
+        operating_profile: TransXChangeElement,
+        recorded_at: datetime.date,
+        result: ValidationResult,
+        vj: TxcVehicleJourney,
+    ) -> bool:
+        """Method to find out the recorded_at_time is present in the start date or end date
+        Provided in the service organisation of TXC file
+
+        Args:
+            org (TransXChangeElement): _description_
+            result (ValidationResult): validation results class for error collection
+            recorded_at (datetime.date): date on which vehicle activity was recorded
+
+        Returns:
+            bool: True means recorded_at is between the dates given in service organisation
+        """
+        non_op_working_days = self.get_nonop_special_days(operating_profile)
+        for date_range in non_op_working_days:
+            start_date = date_range.get_text_or_default("StartDate")
+            if not start_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as DaysOfNonOperation has no Start date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                break
+
+            end_date = date_range.get_text_or_default("EndDate")
+            if not end_date:
+                vehicle_journey_seq_no = vj.vehicle_journey["SequenceNumber"]
+                error_msg = (
+                    f"Ignoring vehicle journey with sequence number "
+                    f"{vehicle_journey_seq_no}, as DaysOfNonOperation has no End date"
+                )
+                result.add_error(ErrorCategory.GENERAL, error_msg)
+                logger.info(error_msg)
+                break
+
+            start_date_formatted = datetime.datetime.strptime(
+                start_date, "%Y-%m-%d"
+            ).date()
+            end_date_formatted = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
+            if start_date_formatted <= recorded_at <= end_date_formatted:
+                return True
+        return False
+
     def filter_by_days_of_operation(
         self,
         recorded_at_time: datetime.date,
@@ -745,8 +863,6 @@ class VehicleJourneyFinder:
 
             (
                 service_org_ref,
-                days_of_non_operation,
-                days_of_operation,
                 service_org_ref_dict,
             ) = self.get_service_org_ref_and_days_of_operation(vj)
             service_orgs = self.get_serviced_organisations(vj)
@@ -807,9 +923,7 @@ class VehicleJourneyFinder:
             result.set_transxchange_attribute(
                 TransXChangeField.FILENAME, vj.txc_xml.get_file_name()
             )
-            service_org_ref, _, _, _ = self.get_service_org_ref_and_days_of_operation(
-                vj
-            )
+            service_org_ref, _ = self.get_service_org_ref_and_days_of_operation(vj)
             operating_profile_xml_string = (
                 self.get_operating_profile_xml_tag_for_journey(vj)
             )
@@ -915,6 +1029,9 @@ class VehicleJourneyFinder:
         result: ValidationResult,
     ) -> Optional[TxcVehicleJourney]:
         """Match a SRI-VM VehicleActivity to a TXC VehicleJourney."""
+        is_special_days_ppc_logic_active = flag_is_active(
+            "", "is_special_days_ppc_logic_active"
+        )
         mvj = activity.monitored_vehicle_journey
 
         if not self.check_operator_and_line_present(activity, result):
@@ -928,8 +1045,17 @@ class VehicleJourneyFinder:
         if not matching_txc_file_attrs:
             return None
 
-        if not self.check_same_dataset(matching_txc_file_attrs, mvj, result):
+        is_split_registrations_logic_active = flag_is_active(
+            "", FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value
+        )
+
+        if (
+            is_split_registrations_logic_active
+            and not self.multiple_service_codes_check(matching_txc_file_attrs, result)
+        ):
             return None
+
+        self.set_dataset_attributes(matching_txc_file_attrs, mvj, result)
 
         txc_xml = self.get_corresponding_timetable_xml_files(matching_txc_file_attrs)
 
@@ -982,6 +1108,12 @@ class VehicleJourneyFinder:
         ):
             return None
 
+        if is_special_days_ppc_logic_active:
+            if not self.filter_by_special_days_of_operation(
+                recorded_at_time, vehicle_journeys, result
+            ):
+                return None
+
         if len(vehicle_journeys) > 1:
             if not self.filter_by_service_code(
                 vehicle_journeys, result, vehicle_journey_ref
@@ -993,3 +1125,83 @@ class VehicleJourneyFinder:
         txc_vehicle_journey = vehicle_journeys[0]
         self.record_journey_match(result, vehicle_journey_ref, txc_vehicle_journey)
         return txc_vehicle_journey
+
+    def filter_by_special_days_of_operation(
+        self,
+        recorded_at_time: datetime.date,
+        vehicle_journeys: List[TxcVehicleJourney],
+        result: ValidationResult,
+    ) -> bool:
+        """Filter vehicle journeys based on days of SpecialDaysOperation DaysOfNonOperations
+        date range.
+        if DaysOfNonOperation is present and recorded_at_time is BETWEEN start date and end date,
+        VehicleJourney will be removed from the list
+
+        if DaysOfOperation is present and recorded_at_time is OUTSIDE start date and end date for
+        ServicedOrganisation, VehicleJourney will be removed from the list
+
+        Args:
+            recorded_at_time (datetime.date): vehicle movement recorded date
+            vehicle_journeys (List[TxcVehicleJourney]): list of vehicle journeys
+            result (ValidationResult): result class for recording errors
+
+        Returns:
+            bool:
+        """
+        logger.info(
+            f"Filtering by SpecialDaysOperation started for {len(vehicle_journeys)} "
+            "journeys"
+        )
+        for vj in reversed(vehicle_journeys):
+            operating_profile = self.get_operating_profile_for_journey(vj)
+            is_vj_nonoperational_on_recorded_at_time = (
+                self.is_vehicle_journey_nonoperational_special_days(
+                    operating_profile, recorded_at_time, result, vj
+                )
+            )
+
+            if is_vj_nonoperational_on_recorded_at_time:
+                vehicle_journeys.remove(vj)
+        logger.info(
+            f"Filtering by SpecialDaysOperation left {len(vehicle_journeys)} matching "
+            "journeys"
+        )
+        if len(vehicle_journeys) == 0:
+            result.add_error(
+                ErrorCategory.GENERAL,
+                "Journeys can be found for the operating profile, but they belong to "
+                "the SpecialDaysOperation DaysOfNonOperation date range",
+            )
+            return False
+
+        return True
+
+    def multiple_service_codes_check(
+        self, matching_txc_file_attrs: List[TXCFileAttributes], result: ValidationResult
+    ) -> bool:
+        """Method to check if the txc files found for the given operator and line name belongs to a single service
+        or multiple service.
+         - If belongs to multiple service, then ignore the vehicle activity
+         - If belongs to single service, then consider the vehicle activity and move forward
+
+        Args:
+            matching_txc_file_attrs (List[TXCFileAttributes]): list of txc files found
+            result (ValidationResult): Result object
+
+        Returns:
+            bool: Does the txc files list has multiple services or a single service for operator and line name
+        """
+        logger.info("Executing the check for split registration logic.")
+        service_code_list = []
+        for txc_file in matching_txc_file_attrs:
+            service_code_list.append(txc_file.service_code)
+
+        service_code_set = set(service_code_list)
+
+        if len(service_code_set) > 1:
+            logger.info(
+                f"Vehicle activity belongs to different service codes {service_code_set}, So this activity will be ignored"
+            )
+            result.errors = None
+            return False
+        return True

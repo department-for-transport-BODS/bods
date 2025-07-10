@@ -451,7 +451,9 @@ header_accessor_data_db_compliance_report = [
     ),
     (
         "Registration Status",
-        lambda otc_service: otc_service.get("otc_licence_number"),
+        lambda otc_service: (
+            "Registered" if otc_service.get("otc_licence_number") else "Unregistered"
+        ),
     ),
     (
         "Scope Status",
@@ -528,6 +530,10 @@ header_accessor_data_db_compliance_report = [
     (
         "Date when timetable data is over 1 year old",
         lambda otc_service: otc_service.get("effective_stale_date_last_modified_date"),
+    ),
+    (
+        "TXC:Operating Period Start Date",
+        lambda otc_service: otc_service.get("operating_period_start_date"),
     ),
     (
         "TXC:Operating Period End Date",
@@ -612,5 +618,13 @@ header_accessor_data_db_compliance_report = [
     (
         "Local Transport Authority",
         lambda otc_service: otc_service.get("ui_lta_name"),
+    ),
+    (
+        "TXC: Revision Number",
+        lambda otc_service: otc_service.get("revision_number"),
+    ),
+    (
+        "TXC: Derived Termination Date",
+        lambda otc_service: otc_service.get("derived_termination_date"),
     ),
 ]

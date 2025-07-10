@@ -1,9 +1,9 @@
 .govuk-section-break--s {
-  margin-top: 7px;
-  margin-bottom: 7px;
+  margin-top: govuk-spacing(2);
+  margin-bottom: govuk-spacing(2);
 }
 
 .govuk-section-break--xs {
-  margin-top: 3px;
-  margin-bottom: 3px;
+  margin-top: govuk-spacing(1);
+  margin-bottom: govuk-spacing(1);
 }

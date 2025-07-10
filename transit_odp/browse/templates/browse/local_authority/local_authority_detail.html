@@ -21,7 +21,9 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">{{ object.ui_lta_name }}</h1>
+      <h1 class="govuk-heading-l">
+        {{ object.ui_lta_name }}
+      </h1>
       {% if not is_complete_service_pages_active %}
         <h2 class="govuk-heading-m govuk-!-margin-top-3">
           {% filter force_escape %}
@@ -45,15 +47,15 @@
         {% endfilter %}
       </p>
       <div id="feed-stat-list" class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-          <div class="feed-stat">
-            <span class="feed-stat__value">{{ total_in_scope_in_season_services }}</span>
-            <span class="feed-stat__label">
-              {% trans "Registered in scope/<br />in season services" %}
-            </span>
-          </div>
-        </div>
         {% if not is_complete_service_pages_active %}
+          <div class="govuk-grid-column-one-half">
+            <div class="feed-stat">
+              <span class="feed-stat__value">{{ total_in_scope_in_season_services }}</span>
+              <span class="feed-stat__label">
+                {% trans "Registered in scope/<br />in season services" %}
+              </span>
+            </div>
+          </div>
           <div class="govuk-grid-column-one-half">
             <div class="feed-stat">
               <span class="feed-stat__value">{{ services_require_attention_percentage }}%</span>
@@ -63,10 +65,15 @@
             </div>
           </div>
         {% else %}
-          <div class="govuk-grid-column-one-half">
+          <div class="govuk-grid-column-two-thirds">
             <div class="feed-stat">
-              <span class="feed-stat__value">{{ total_services_requiring_attention }}</span>
-              <span class="feed-stat__label">{% trans "Overall services requiring attention" %}</span>
+              <span class="feed-stat__value csp-inline">{{ total_services_requiring_attention }}</span><span class="csp-total-inscope-inseason">/{{ total_in_scope_in_season_services }}</span>
+              <span class="feed-stat__label">
+                {% trans "Total services that require attention" %}
+                <b class="govuk-!-font-size-16 bods-relative-bottom">
+                  {% include "publish/snippets/help_modals/operator_details_overall_require_attention.html" %}
+                </b>
+              </span>
             </div>
           </div>
         {% endif %}
@@ -118,22 +125,30 @@
           {% endfilter %}
         </p>
         <div id="feed-stat-list" class="govuk-grid-row">
-          <div class="govuk-grid-column-one-third">
-            <div class="feed-stat">
-              <span class="feed-stat__label">{% trans "Licence number" %}</span>
-            </div>
-          </div>
-          <div class="govuk-grid-column-two-thirds">
-            <div class="feed-stat">
-              <ul class="govuk-list">
-                {% for licence_number, organisation_name in licence_organisation_map.items %}
-                  <li class="govuk-grid-row">
-                    <span class="govuk-grid-column-two-thirds text-wrap">{{ organisation_name }}</span>
-                    <a class="govuk-grid-column-one-third govuk-link"
-                       href="{% url 'operator-licence-detail' number=licence_number host hosts.data %}">{{ licence_number }}</a>
-                  </li>
-                {% endfor %}
-              </ul>
+          <div class="govuk-grid-column-full">
+            <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
+              <div class="govuk-accordion__section">
+                <div class="govuk-accordion__section-header">
+                  <h2 class="govuk-accordion__section-heading">
+                    <span class="govuk-accordion__section-button" id="accordion-default-heading-1">
+                      {% filter force_escape %}
+                        {% trans "Licence number" %}
+                      {% endfilter %}
+                    </span>
+                  </h2>
+                </div>
+                <div id="accordion-default-content-1" class="govuk-accordion__section-content">
+                  <ul class="govuk-list govuk-!-margin-bottom-1 licence-list">
+                    {% for licence_dict in licence_organisation_map %}
+                      <li class="govuk-!-margin-bottom-3">
+                        {% include 'publish/snippets/help_modals/licence_color_symbol_popup.html' with non_compliant=licence_dict.non_compliant %}
+                        <a class="govuk-link"
+                           href="{% url 'operator-licence-detail' number=licence_dict.licence_number host hosts.data %}?org_id={{ licence_dict.licence_organisation_id }}">{{ licence_dict.licence_number }}: {{ licence_dict.operator_name }}</a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -147,7 +162,12 @@
           <div class="govuk-grid-column-one-half">
             <div class="feed-stat">
               <span class="feed-stat__value">{{ total_timetable_records_requiring_attention }}</span>
-              <span class="feed-stat__label">{% trans "Services requiring attention" %}</span>
+              <span class="feed-stat__label">
+                {% trans "Services requiring attention" %}
+                <b class="govuk-!-font-size-16 bods-relative-bottom">
+                  {% include "publish/snippets/help_modals/operator_details_timetable_require_attention.html" %}
+                </b>
+              </span>
             </div>
           </div>
         </div>
@@ -162,7 +182,12 @@
             <div class="govuk-grid-column-one-half">
               <div class="feed-stat">
                 <span class="feed-stat__value">{{ total_location_records_requiring_attention }}</span>
-                <span class="feed-stat__label">{% trans "Services requiring attention" %}</span>
+                <span class="feed-stat__label">
+                  {% trans "Services requiring attention" %}
+                  <b class="govuk-!-font-size-16 bods-relative-bottom">
+                    {% include "publish/snippets/help_modals/operator_details_avl_require_attention.html" %}
+                  </b>
+                </span>
               </div>
             </div>
           </div>
@@ -178,7 +203,12 @@
             <div class="govuk-grid-column-one-half">
               <div class="feed-stat">
                 <span class="feed-stat__value">{{ total_fares_records_requiring_attention }}</span>
-                <span class="feed-stat__label">{% trans "Services requiring attention" %}</span>
+                <span class="feed-stat__label">
+                  {% trans "Services requiring attention" %}
+                  <b class="govuk-!-font-size-16 bods-relative-bottom">
+                    {% include "publish/snippets/help_modals/operator_details_fares_require_attention.html" %}
+                  </b>
+                </span>
               </div>
             </div>
           </div>
@@ -187,7 +217,9 @@
       {% endif %}
     </div>
     <div class="govuk-grid-column-one-third">
-      <h3 class="govuk-heading-m">{% trans "Need further help?" %}</h3>
+      <h3 class="govuk-heading-m">
+        {% trans "Need further help?" %}
+      </h3>
       <ul class="govuk-list">
         <li class="govuk-!-margin-bottom-3">
           <a class="govuk-link" href="{% url 'contact' host hosts.root %}">{% trans "Contact the service desk" %}</a>

@@ -1,3 +1,4 @@
+import pandas as pd
 from datetime import date, datetime, timedelta
 from functools import cached_property
 from itertools import chain
@@ -17,6 +18,7 @@ from transit_odp.otc.models import (
 )
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.registry import Registry
+from transit_odp.otc.utils import get_dataframe, find_differing_registration_numbers
 
 logger = getLogger(__name__)
 
@@ -372,3 +374,97 @@ class Loader:
             self.delete_bad_data()
             self.inactivate_bad_services()
             self.refresh_lta(_registrations)
+
+    def load_services_with_updated_service_numbers(self):
+        """
+        Loads all services where service numbers have been updated with enhanced error handling.
+        """
+        logger.info("Starting celery task to check for updates on otc...")
+        columns = [
+            "registration_number",
+            "variation_number",
+            "service_number",
+            "registration_status",
+        ]
+
+        try:
+            all_services_bods_db = Service.objects.exclude(api_key="EP").values()
+            if not all_services_bods_db:
+                logger.warning("No services found in the database.")
+                return
+
+            all_services_bods_df = pd.DataFrame.from_records(all_services_bods_db)
+            if all_services_bods_df.empty:
+                logger.warning("Empty DataFrame created from database services.")
+                return
+
+            all_services_bods_df = all_services_bods_df[columns]
+            new_otc_objects = []
+
+            logger.info("Running sync with otc_registry...")
+            try:
+                self.registry.sync_with_otc_registry()
+            except Exception as e:
+                logger.error(f"Failed to sync with otc_registry: {str(e)}")
+                raise Exception(f"OTC registry sync failed: {str(e)}") from e
+
+            for service in self.registry.services:
+                new_otc_objects.append(service)
+
+            if not new_otc_objects:
+                logger.warning("No services retrieved from otc_registry.")
+                return
+
+            logger.info("Completed sync with otc_registry.")
+
+            otc_objects_df = get_dataframe(new_otc_objects, columns)
+            if otc_objects_df.empty:
+                logger.warning("Empty DataFrame created from OTC registry services.")
+                return
+
+            registration_numbers = find_differing_registration_numbers(
+                all_services_bods_df, otc_objects_df
+            )
+            if not registration_numbers:
+                logger.info("No differing registration numbers found.")
+                return
+
+            registration_numbers_to_update = ",".join(registration_numbers)
+            if not registration_numbers_to_update:
+                logger.warning(
+                    "No registration numbers to update after join operation."
+                )
+                return
+
+            logger.info("Running refresh job for list of services...")
+
+            try:
+                registry = Registry()
+                loader = Loader(registry)
+                loader.load_given_services(registration_numbers_to_update)
+            except ValueError as ve:
+                logger.error(f"Invalid input for service loader: {str(ve)}")
+                raise Exception(
+                    f"Invalid input error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(ve)}"
+                ) from ve
+            except ConnectionError as ce:
+                logger.error(f"Connection error during service loading: {str(ce)}")
+                raise Exception(
+                    f"Connection error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(ce)}"
+                ) from ce
+            except Exception as e:
+                logger.error(f"Unexpected error during service loading: {str(e)}")
+                raise Exception(
+                    f"Unexpected error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(e)}"
+                ) from e
+
+            logger.info("Finished refresh job for list of services.")
+
+        except Exception as e:
+
+            logger.error(
+                f"Critical error in load_services_with_updated_service_numbers: {str(e)}"
+            )
+            raise Exception(
+                f"Critical error in service update process: {str(e)}"
+            ) from e

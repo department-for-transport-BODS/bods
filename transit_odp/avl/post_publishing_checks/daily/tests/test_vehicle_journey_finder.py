@@ -13,15 +13,17 @@ from transit_odp.avl.post_publishing_checks.daily.vehicle_journey_finder import 
     TxcVehicleJourney,
     VehicleJourneyFinder,
 )
-from transit_odp.avl.post_publishing_checks.models import MonitoredVehicleJourney
+from transit_odp.avl.post_publishing_checks.models.siri import MonitoredVehicleJourney
+from transit_odp.common.constants import FeatureFlags
+from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.factories import (
     DatasetFactory,
-    TXCFileAttributesFactory,
     DatasetRevisionFactory,
+    TXCFileAttributesFactory,
 )
-from transit_odp.organisation.models import TXCFileAttributes
+from transit_odp.organisation.models.data import TXCFileAttributes
 from transit_odp.timetables.transxchange import TransXChangeDocument
-from transit_odp.organisation.constants import FeedStatus
+from waffle.testutils import override_flag
 
 pytestmark = pytest.mark.django_db
 
@@ -57,7 +59,7 @@ def test_check_same_dataset_succeeds():
     txc_file_attrs = list(TXCFileAttributes.objects.add_revision_details())
     mvj = MonitoredVehicleJourney(operator_ref="Itoworld", vehicle_ref="Bertha")
     vehicle_journey_finder = VehicleJourneyFinder()
-    consistent = vehicle_journey_finder.check_same_dataset(
+    consistent = vehicle_journey_finder.set_dataset_attributes(
         txc_file_attrs, mvj, ValidationResult()
     )
     assert consistent
@@ -70,10 +72,11 @@ def test_check_same_dataset_fails():
     txc_file_attrs = list(TXCFileAttributes.objects.add_revision_details())
     mvj = MonitoredVehicleJourney(operator_ref="Itoworld", vehicle_ref="Bertha")
     vehicle_journey_finder = VehicleJourneyFinder()
-    consistent = vehicle_journey_finder.check_same_dataset(
+    consistent = vehicle_journey_finder.set_dataset_attributes(
         txc_file_attrs, mvj, ValidationResult()
     )
-    assert not consistent
+    # Started allowing different dataset as part of change for BODS-8568
+    assert consistent
 
 
 def test_append_txc_revision_number():
@@ -353,16 +356,12 @@ def test_get_service_org_ref_and_days_of_operation():
     vehicle_journey_finder = VehicleJourneyFinder()
     (
         service_org_ref,
-        days_of_non_operation,
-        days_of_operation,
         service_org_ref_dict,
     ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
         txc_vehicle_journeys[0]
     )
 
     assert service_org_ref == "KPMG"
-    assert days_of_non_operation is None
-    assert days_of_operation is not None
     assert "KPMG" in service_org_ref_dict["days_of_operation"]
 
 
@@ -374,13 +373,149 @@ def test_get_service_org_ref_and_days_of_non_operation():
     vehicle_journey_finder = VehicleJourneyFinder()
     (
         service_org_ref,
-        days_of_non_operation,
-        days_of_operation,
         service_org_ref_dict,
     ) = vehicle_journey_finder.get_service_org_ref_and_days_of_operation(
         txc_vehicle_journeys[0]
     )
 
     assert service_org_ref is None
-    assert days_of_non_operation is None
-    assert days_of_operation is None
+
+
+@override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
+def test_multiple_service_codes_check_for_single_service():
+    result = ValidationResult()
+    noc = "NOC1"
+    line_name = "L1"
+
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+    )
+
+    vj_finder = VehicleJourneyFinder()
+    txc_files = vj_finder.get_txc_file_metadata(noc, line_name, result)
+
+    check_multiple_service_codes = vj_finder.multiple_service_codes_check(
+        txc_files, result
+    )
+    assert check_multiple_service_codes is True
+
+
+@override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
+def test_multiple_service_codes_check_for_single_service_samedataset():
+    result = ValidationResult()
+    noc = "NOC1"
+    line_name = "L1"
+
+    revision = DatasetRevisionFactory()
+
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+        revision=revision,
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+        revision=revision,
+    )
+
+    vj_finder = VehicleJourneyFinder()
+    txc_files = vj_finder.get_txc_file_metadata(noc, line_name, result)
+
+    check_multiple_service_codes = vj_finder.multiple_service_codes_check(
+        txc_files, result
+    )
+    assert check_multiple_service_codes is True
+
+
+@override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
+def test_multiple_service_codes_check_for_different_services_different_dataset():
+    result = ValidationResult()
+    noc = "NOC1"
+    line_name = "L1"
+
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:124",
+    )
+
+    vj_finder = VehicleJourneyFinder()
+    txc_files = vj_finder.get_txc_file_metadata(noc, line_name, result)
+
+    check_multiple_service_codes = vj_finder.multiple_service_codes_check(
+        txc_files, result
+    )
+    assert check_multiple_service_codes is False
+
+
+@override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
+def test_multiple_service_codes_check_for_different_services_same_dataset():
+    result = ValidationResult()
+    noc = "NOC1"
+    line_name = "L1"
+
+    dataset_revision = DatasetRevisionFactory()
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+        revision=dataset_revision,
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:124",
+        revision=dataset_revision,
+    )
+
+    vj_finder = VehicleJourneyFinder()
+    txc_files = vj_finder.get_txc_file_metadata(noc, line_name, result)
+
+    check_multiple_service_codes = vj_finder.multiple_service_codes_check(
+        txc_files, result
+    )
+    assert check_multiple_service_codes is False
+
+
+@override_flag(FeatureFlags.SPLIT_REGISTRATIONS_LOGIC.value, active=True)
+def test_multiple_service_codes_check_for_different_noc_services_same_dataset():
+    result = ValidationResult()
+    noc = "NOC1"
+    line_name = "L1"
+
+    dataset_revision = DatasetRevisionFactory()
+    TXCFileAttributesFactory(
+        national_operator_code="NOC2",
+        line_names=["L1", "L2"],
+        service_code="PH000010:123",
+        revision=dataset_revision,
+    )
+    TXCFileAttributesFactory(
+        national_operator_code="NOC1",
+        line_names=["L1", "L2"],
+        service_code="PH000010:124",
+        revision=dataset_revision,
+    )
+
+    vj_finder = VehicleJourneyFinder()
+    txc_files = vj_finder.get_txc_file_metadata(noc, line_name, result)
+
+    check_multiple_service_codes = vj_finder.multiple_service_codes_check(
+        txc_files, result
+    )
+    assert check_multiple_service_codes is True

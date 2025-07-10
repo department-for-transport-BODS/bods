@@ -1,7 +1,7 @@
-from django_extensions.db.models import TimeStampedModel
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.fields import ArrayField
+from django_extensions.db.models import TimeStampedModel
 
 
 class ComplianceReport(TimeStampedModel):
@@ -44,6 +44,9 @@ class ComplianceReport(TimeStampedModel):
     )
     effective_stale_date_from_last_modified = models.DateField(
         _("Date when timetable data is over 1 year old"), null=True, blank=True
+    )
+    operating_period_start_date = models.DateField(
+        _("TXC:Operating Period Start Date"), null=True, blank=True
     )
     operating_period_end_date = models.DateField(
         _("TXC:Operating Period End Date"), null=True, blank=True
@@ -115,6 +118,12 @@ class ComplianceReport(TimeStampedModel):
     )
     local_authority_ui_lta = models.CharField(
         _("Local Transport Authority"), max_length=1024, null=True, blank=True
+    )
+    revision_number = models.CharField(
+        _("TXC:Revision Number"), max_length=64, null=True
+    )
+    derived_termination_date = models.DateField(
+        _("TXC:Derived Termination Date"), null=True, blank=True
     )
 
     # Publishing organisation and actual organisation can be differentt

@@ -1,6 +1,6 @@
 import datetime
-from logging import getLogger
 from collections import OrderedDict
+from logging import getLogger
 from typing import List, Optional
 
 import numpy as np
@@ -12,6 +12,7 @@ from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
 from transit_odp.avl.require_attention.weekly_ppc_zip_loader import (
     get_vehicle_activity_operatorref_linename,
 )
+from transit_odp.browse.common import get_franchise_registration_numbers
 from transit_odp.common.collections import Column
 from transit_odp.common.constants import FeatureFlags
 from transit_odp.organisation.constants import (
@@ -19,6 +20,7 @@ from transit_odp.organisation.constants import (
     TravelineRegions,
 )
 from transit_odp.organisation.csv import EmptyDataFrame
+from transit_odp.organisation.models import Licence as BODSLicence
 from transit_odp.organisation.models import (
     Organisation,
     SeasonalService,
@@ -42,8 +44,6 @@ from transit_odp.publish.requires_attention import (
     get_fares_requires_attention,
     get_fares_timeliness_status,
 )
-
-from transit_odp.organisation.models import Licence as BODSLicence
 
 logger = getLogger(__name__)
 
@@ -643,6 +643,11 @@ TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP = OrderedDict(
             "Date when timetable data is over 1 year old",
             "'XML:Last Modified date' from timetable data catalogue plus 12 months.",
         ),
+        "operating_period_start_date": Column(
+            "TXC:Operating Period Start Date",
+            "The operating period start date as extracted from the files "
+            "provided by the operator/publisher to BODS.",
+        ),
         "operating_period_end_date": Column(
             "TXC:Operating Period End Date",
             "The operating period end date as extracted from the files "
@@ -727,6 +732,14 @@ TIMETABLE_COMPLIANCE_REPORT_COLUMN_MAP = OrderedDict(
             "Local Transport Authority",
             "The Local Transport Authority element as extracted from the OTC database.",
         ),
+        "revision_number": Column(
+            "TXC: Revision Number", "The revision number within the file"
+        ),
+        "derived_termination_date": Column(
+            "TXC: Derived Termination Date",
+            "Earliest start date of selected TXC file belonging to the "
+            " service number with the next highest revision number that belongs to the same registration",
+        ),
     }
 )
 
@@ -741,7 +754,61 @@ TIMETABLE_COMPLIANCE_REPORT_WITH_CANCELLATION_COLUMN_MAP["cancelled_date"] = Col
 LOG_PREFIX = "OVERALL-COMPLIANCE-REPORT : "
 
 
+def get_organisation(reg_number: str) -> Organisation:
+    """
+    Returns the organisation object based on registration number from the report dataframe.
+
+    Args:
+        reg_number (str): Registration number
+
+    Returns:
+        Organisation: Organisation object
+    """
+    otc_atco_code = OTCService.objects.filter(
+        registration_number=reg_number
+    ).values_list("atco_code", flat=True)
+    return Organisation.objects.filter(admin_areas__atco_code__in=otc_atco_code).first()
+
+
+def update_licence_organisation_id_and_name(row: Series) -> Series:
+    """
+    Updates the licence_organisation_id and licence_organisation_name fields for
+    each row in the compliance report dataframe. This is done by retrieving the
+    organisation object based on the service code (registration number).
+
+    Args:
+        row (Series): Row from dataframe
+
+    Returns:
+        Series: Row with updated fields
+    """
+    is_franchise_organisation_active = flag_is_active(
+        "", FeatureFlags.FRANCHISE_ORGANISATION.value
+    )
+    if is_franchise_organisation_active:
+        organisation = get_organisation(row["registration_number"])
+        if organisation and organisation.is_franchise:
+            franchise_registration_numbers = get_franchise_registration_numbers(
+                organisation
+            )
+
+            if row["registration_number"] in franchise_registration_numbers:
+                row["licence_organisation_id"] = organisation.id
+                row["licence_organisation_name"] = organisation.name
+
+    return row
+
+
 def add_operator_name(row: Series) -> str:
+    """
+    Returns value for 'Organisation Name' column in report.
+
+    Args:
+        row (Series): Row from dataframe
+
+    Returns:
+        str: Organisation name
+    """
     if row["organisation_name"] is None or pd.isna(row["organisation_name"]):
         otc_licence_number = row["otc_licence_number"]
         operator_name = Organisation.objects.get_organisation_name(otc_licence_number)
@@ -902,18 +969,18 @@ def find_minimum_timeliness_date(row: Series) -> datetime.date:
                 and row["expiry_date"] > row["effective_date"]
             )
         ):
-            return row["effective_date"]
+            return row["effective_date"] - pd.Timedelta(days=1)
         elif (
             pd.notna(row["expiry_date"])
             and forty_two_days_from_today > row["expiry_date"]
         ):
-            return row["expiry_date"]
+            return row["expiry_date"] - pd.Timedelta(days=1)
     else:
         if (
             pd.notna(row["expiry_date"])
             and forty_two_days_from_today > row["expiry_date"]
         ):
-            return row["expiry_date"]
+            return row["expiry_date"] - pd.Timedelta(days=1)
     return forty_two_days_from_today
 
 
@@ -969,9 +1036,17 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         df["least_timeliness_date"] = df.apply(find_minimum_timeliness_date, axis=1)
         staleness_42_day_look_ahead = (
             (staleness_otc == False)
-            & pd.notna(df["operating_period_end_date"])
             & pd.notna(df["least_timeliness_date"])
-            & (df["operating_period_end_date"] < df["least_timeliness_date"])
+            & (
+                (
+                    pd.notna(df["operating_period_end_date"])
+                    & (df["operating_period_end_date"] < df["least_timeliness_date"])
+                )
+                | (
+                    pd.notna(df["derived_termination_date"])
+                    & (df["derived_termination_date"] < df["least_timeliness_date"])
+                )
+            )
         )
     else:
         not_stale_otc = (
@@ -980,10 +1055,15 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         staleness_otc = ~not_stale_otc
 
         forty_two_days_from_today = today + np.timedelta64(42, "D")
-        staleness_42_day_look_ahead = (
-            (staleness_otc == False)
-            & pd.notna(df["operating_period_end_date"])
-            & (df["operating_period_end_date"] < forty_two_days_from_today)
+        staleness_42_day_look_ahead = (staleness_otc == False) & (
+            (
+                pd.notna(df["operating_period_end_date"])
+                & (df["operating_period_end_date"] < forty_two_days_from_today)
+            )
+            | (
+                pd.notna(df["derived_termination_date"])
+                & (df["derived_termination_date"] < forty_two_days_from_today)
+            )
         )
 
     """
@@ -1005,7 +1085,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
         choicelist=[
             "42 day look ahead is incomplete",
             "Service hasn't been updated within a year",
-            "OTC variation not published",
+            "Latest registration variation not published to BODS",
         ],
         default="Up to date",
     )
@@ -1014,7 +1094,7 @@ def add_staleness_metrics(df: pd.DataFrame, today: datetime.date) -> pd.DataFram
     if is_cancellation_logic_active:
         df.loc[
             df["published_status"] == "Unpublished", "staleness_status"
-        ] = "OTC variation not published"
+        ] = "Latest registration variation not published to BODS"
 
     return df
 
@@ -1142,6 +1222,44 @@ def add_under_maintenance_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def add_derived_termination_date(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    For each group of service_code, assign 'derived_termination_date' as the
+    start date of the next highest revision number within that group.
+    """
+    df = df.copy()
+    df["derived_termination_date"] = pd.NaT
+
+    # Sort entire DataFrame by service_code and revision_number
+    df.sort_values(by=["service_code", "revision_number"], inplace=True)
+
+    # Group by service_code
+    grouped = df.groupby("service_code", sort=False)
+
+    derived_dates = []
+
+    for _, group in grouped:
+        revs = group["revision_number"]
+        starts = pd.to_datetime(group["operating_period_start_date"])
+
+        unique_revs = revs.drop_duplicates().sort_values().values
+        next_start = {}
+
+        for i in range(len(unique_revs) - 1):
+            current_rev = unique_revs[i]
+            next_rev = unique_revs[i + 1]
+            # Safely get the min start date of the next revision
+            next_start[current_rev] = starts[revs == next_rev].min()
+
+        derived = [next_start.get(rev, pd.NaT) for rev in revs]
+        derived_dates.extend(derived)
+
+    df["derived_termination_date"] = [
+        d.date() if pd.notna(d) else None for d in derived_dates
+    ]
+    return df
+
+
 def add_avl_published_status(row: Series, synced_in_last_month) -> str:
     """
     Returns value for 'AVL Published Status' column.
@@ -1262,7 +1380,7 @@ def add_overall_requires_attention(row: Series) -> str:
         str: Value for the column
     """
     is_fares_require_attention_active = flag_is_active(
-        "", FeatureFlags.FARES_REQUIRE_ATTENTION.value
+        "", FeatureFlags.FARES_REQUIRE_ATTENTION_COMPLIANCE_REPORT.value
     )
     exempted = row["scope_status"]
     seasonal_service = row["seasonal_status"]
@@ -1313,6 +1431,7 @@ def _get_timetable_catalogue_dataframe() -> pd.DataFrame:
 
     merged.sort_values("dataset_id", inplace=True)
     merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
+    merged = add_derived_termination_date(merged)
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
@@ -1365,6 +1484,7 @@ def _get_timetable_line_level_catalogue_dataframe() -> pd.DataFrame:
 
     merged.sort_values("dataset_id", inplace=True)
     merged["organisation_name"] = merged.apply(lambda x: add_operator_name(x), axis=1)
+    merged = add_derived_termination_date(merged)
     merged = add_status_columns(merged)
     merged = add_seasonal_status(merged, today)
     merged = add_staleness_metrics(merged, today)
@@ -1423,7 +1543,9 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
     if is_fares_require_attention_active:
         logger.info("{} Calculating Fares SRA".format(LOG_PREFIX))
         for txc_attribute in txc_attributes:
-            txc_service_map[txc_attribute.service_code] = txc_attribute
+            txc_service_map[
+                (txc_attribute.service_code, txc_attribute.line_name_unnested)
+            ] = txc_attribute
         logger.info(
             "{} Preparing Fares dataframe for total {} txc files".format(
                 LOG_PREFIX, len(list(txc_service_map.values()))
@@ -1431,11 +1553,13 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         )
         fares_df = get_fares_dataset_map(txc_map=txc_service_map)
         logger.info("{} Done preparing Fares dataframe".format(LOG_PREFIX))
-        fares_df["valid_to"] = fares_df["valid_to"].dt.date
-        fares_df["last_updated_date"] = fares_df["last_updated_date"].dt.date
-        fares_df["is_fares_compliant"] = fares_df.apply(
-            lambda row: get_fares_compliance_status(row["is_fares_compliant"]), axis=1
-        )
+        if not fares_df.empty:
+            fares_df["valid_to"] = fares_df["valid_to"].dt.date
+            fares_df["last_updated_date"] = fares_df["last_updated_date"].dt.date
+            fares_df["is_fares_compliant"] = fares_df.apply(
+                lambda row: get_fares_compliance_status(row["is_fares_compliant"]),
+                axis=1,
+            )
         fares_df["fares_effective_stale_date_from_last_modified"] = fares_df[
             "last_updated_date"
         ] + pd.Timedelta(days=365)
@@ -1481,6 +1605,8 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
         merged["cancelled_date"] = np.where(condition, merged["effective_date"], "")
         logger.info("{} Added cancelled date in the new column".format(LOG_PREFIX))
 
+    logger.info("{} Adding derived termination date".format(LOG_PREFIX))
+    merged = add_derived_termination_date(merged)
     logger.info("{} Adding Status Column".format(LOG_PREFIX))
     merged = add_status_columns(merged)
     logger.info("{} Adding Seasonal Status".format(LOG_PREFIX))
@@ -1568,9 +1694,7 @@ def _get_timetable_compliance_report_dataframe() -> pd.DataFrame:
                 "OPERATOR_PREFETCH_COMPLIANCE_REPORT: Error occured while saving report in db"
             )
             logger.exception(e)
-            merged["organisation_name"] = merged.apply(
-                lambda x: add_operator_name(x), axis=1
-            )
+
     else:
         merged["organisation_name"] = merged.apply(
             lambda x: add_operator_name(x), axis=1
@@ -1627,9 +1751,7 @@ def store_compliance_report_in_db(merged: pd.DataFrame) -> pd.DataFrame:
 
     logger.info("{} Merged licence details".format(LOG_PREFIX))
 
-    merged["licence_organisation_name"] = merged["licence_organisation_name"].fillna(
-        "Organisation not yet created"
-    )
+    merged = merged.apply(update_licence_organisation_id_and_name, axis=1)
     merged["organisation_name"] = merged["licence_organisation_name"]
 
     logger.info("{} Renaming columns".format(LOG_PREFIX))

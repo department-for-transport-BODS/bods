@@ -1,0 +1,39 @@
+{% extends "snippets/help_modal_base.html" %}
+{% load i18n %}
+{% block help_icon %}
+  <i class="help-icon fas fa-question-circle">
+  </i>
+{% endblock %}
+{% block help_heading %}
+  {% trans "Compliance of fares data" %}
+{% endblock %}
+{% block help_content %}
+  <p class="govuk-body">
+    {% blocktrans %}
+    The fares data for each service is assessed to review the health and compliance in the following ways:
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    <b>Completeness</b> - is the data published?
+    {% endblocktrans %}
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+    <b>Timeliness</b> - is the data up to date in the following ways:
+    {% endblocktrans %}
+    <ol class="govuk-list govuk-list--number govuk-!-margin-left-5">
+      <li>
+        {% blocktrans %}Has an appropriate validity period for at least the next 42 days?{% endblocktrans %}
+      </li>
+      <li>
+        {% blocktrans %}Has been updated within the last 12 months?{% endblocktrans %}
+      </li>
+    </ol>
+  </p>
+  <p class="govuk-body">
+    {% blocktrans %}
+        <b>Compliance</b> - is the data that has been published compliant with the validation logic?
+    {% endblocktrans %}
+  </p>
+{% endblock %}

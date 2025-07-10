@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 
+import pandas as pd
 import pytest
 from factory import Sequence
 from freezegun import freeze_time
@@ -27,7 +28,10 @@ from transit_odp.otc.factories import (
     UILtaFactory,
 )
 from transit_odp.otc.models import Service
-from transit_odp.timetables.csv import _get_timetable_catalogue_dataframe
+from transit_odp.timetables.csv import (
+    _get_timetable_catalogue_dataframe,
+    add_derived_termination_date,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -168,7 +172,10 @@ def test_service_in_bods_and_otc():
         assert row["OTC Status"] == "Registered"
         assert row["Scope Status"] == "In Scope"
         assert row["Seasonal Status"] == "Not Seasonal"
-        assert row["Timeliness Status"] == "OTC variation not published"
+        assert (
+            row["Timeliness Status"]
+            == "Latest registration variation not published to BODS"
+        )
         assert row["Data set ID"] == dataset.id
         assert (
             row["Date OTC variation needs to be published"]
@@ -471,12 +478,14 @@ def test_stale_42_day_look_ahead(effective, modified, period_end, is_stale):
         licence_number=otc_service.licence.number,
         service_code=otc_service.registration_number.replace("/", ":"),
         modification_datetime=datetime.fromisoformat(modified + "T00:00:00+00:00"),
-        operating_period_start_date=None
-        if period_end is None
-        else date.fromisoformat(period_end) - timedelta(days=100),
-        operating_period_end_date=None
-        if period_end is None
-        else date.fromisoformat(period_end),
+        operating_period_start_date=(
+            None
+            if period_end is None
+            else date.fromisoformat(period_end) - timedelta(days=100)
+        ),
+        operating_period_end_date=(
+            None if period_end is None else date.fromisoformat(period_end)
+        ),
     )
     DataQualityReportFactory(revision=txc.revision)
     PTIValidationResultFactory(revision=txc.revision)
@@ -527,12 +536,14 @@ def test_stale_12_months_old(effective, modified, period_end, period_start, is_s
         licence_number=otc_service.licence.number,
         service_code=otc_service.registration_number.replace("/", ":"),
         modification_datetime=datetime.fromisoformat(modified + "T00:00:00+00:00"),
-        operating_period_start_date=period_start
-        if period_end is None
-        else date.fromisoformat(period_end) - timedelta(days=100),
-        operating_period_end_date=None
-        if period_end is None
-        else date.fromisoformat(period_end),
+        operating_period_start_date=(
+            period_start
+            if period_end is None
+            else date.fromisoformat(period_end) - timedelta(days=100)
+        ),
+        operating_period_end_date=(
+            None if period_end is None else date.fromisoformat(period_end)
+        ),
     )
     DataQualityReportFactory(revision=txc.revision)
     PTIValidationResultFactory(revision=txc.revision)
@@ -590,12 +601,14 @@ def test_stale_otc_variation(effective, modified, period_end, period_start, is_s
         licence_number=otc_service.licence.number,
         service_code=otc_service.registration_number.replace("/", ":"),
         modification_datetime=datetime.fromisoformat(modified + "T00:00:00+00:00"),
-        operating_period_start_date=period_start
-        if period_end is None
-        else date.fromisoformat(period_end) - timedelta(days=100),
-        operating_period_end_date=None
-        if period_end is None
-        else date.fromisoformat(period_end),
+        operating_period_start_date=(
+            period_start
+            if period_end is None
+            else date.fromisoformat(period_end) - timedelta(days=100)
+        ),
+        operating_period_end_date=(
+            None if period_end is None else date.fromisoformat(period_end)
+        ),
     )
     DataQualityReportFactory(revision=txc.revision)
     PTIValidationResultFactory(revision=txc.revision)
@@ -610,7 +623,10 @@ def test_stale_otc_variation(effective, modified, period_end, period_start, is_s
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_catalogue_dataframe()
-    assert (df["Timeliness Status"][0] == "OTC variation not published") == is_stale
+    assert (
+        df["Timeliness Status"][0]
+        == "Latest registration variation not published to BODS"
+    ) == is_stale
     assert df["Requires Attention"][0] == "Yes" if is_stale else "No"
 
 
@@ -628,12 +644,14 @@ def test_not_stale():
         licence_number=otc_service.licence.number,
         service_code=otc_service.registration_number.replace("/", ":"),
         modification_datetime=datetime.fromisoformat(modified + "T00:00:00+00:00"),
-        operating_period_start_date=None
-        if period_end is None
-        else date.fromisoformat(period_end) - timedelta(days=100),
-        operating_period_end_date=None
-        if period_end is None
-        else date.fromisoformat(period_end),
+        operating_period_start_date=(
+            None
+            if period_end is None
+            else date.fromisoformat(period_end) - timedelta(days=100)
+        ),
+        operating_period_end_date=(
+            None if period_end is None else date.fromisoformat(period_end)
+        ),
     )
     DataQualityReportFactory(revision=txc.revision)
     PTIValidationResultFactory(revision=txc.revision)
@@ -660,12 +678,14 @@ def test_stale_service_out_of_season():
         licence_number=otc_service.licence.number,
         service_code=otc_service.registration_number.replace("/", ":"),
         modification_datetime=datetime.fromisoformat(modified + "T00:00:00+00:00"),
-        operating_period_start_date=None
-        if period_end is None
-        else date.fromisoformat(period_end) - timedelta(days=100),
-        operating_period_end_date=None
-        if period_end is None
-        else date.fromisoformat(period_end),
+        operating_period_start_date=(
+            None
+            if period_end is None
+            else date.fromisoformat(period_end) - timedelta(days=100)
+        ),
+        operating_period_end_date=(
+            None if period_end is None else date.fromisoformat(period_end)
+        ),
     )
     DataQualityReportFactory(revision=txc.revision)
     PTIValidationResultFactory(revision=txc.revision)
@@ -701,3 +721,68 @@ def test_get_timetable_catalogue_dataframe_with_inactive_org():
     TXCFileAttributesFactory(revision=dataset_revision_2, service_code=services[4])
     df = _get_timetable_catalogue_dataframe()
     assert inactive_org.name not in df["Organisation Name"].to_list()
+
+
+@pytest.mark.parametrize(
+    "service_code, revision_number, operating_period_start_date, expected_termination_date",
+    [
+        (
+            ["S1", "S1", "S1", "S2", "S2"],
+            [1, 2, 3, 1, 2],
+            [
+                pd.Timestamp("2025-01-01"),
+                pd.Timestamp("2025-06-01"),
+                pd.Timestamp("2025-09-01"),
+                pd.Timestamp("2025-03-01"),
+                pd.Timestamp("2025-07-01"),
+            ],
+            [
+                pd.Timestamp("2025-06-01").date(),
+                pd.Timestamp("2025-09-01").date(),
+                pd.NaT,
+                pd.Timestamp("2025-07-01").date(),
+                pd.NaT,
+            ],
+        ),
+        (
+            ["S1", "S1", "S2", "S2", "S3"],
+            [1, 1, 1, 2, 1],
+            [
+                pd.Timestamp("2025-06-01"),
+                pd.Timestamp("2025-01-01"),
+                pd.Timestamp("2025-02-01"),
+                pd.Timestamp("2025-05-01"),
+                pd.Timestamp("2025-07-01"),
+            ],
+            [
+                pd.NaT,  # No higher revision for the duplicate rev 1 entry
+                pd.NaT,  # No higher revision for the duplicate rev 1 entry
+                pd.Timestamp("2025-05-01").date(),  # S2 - rev 1 → rev 2
+                pd.NaT,  # S2 - rev 2 → no higher
+                pd.NaT,  # S3 has only one entry
+            ],
+        ),
+    ],
+)
+def test_add_derive_termination_date(
+    service_code,
+    revision_number,
+    operating_period_start_date,
+    expected_termination_date,
+):
+    df = pd.DataFrame(
+        {
+            "service_code": service_code,
+            "revision_number": revision_number,
+            "operating_period_start_date": operating_period_start_date,
+        }
+    )
+
+    result_df = add_derived_termination_date(df)
+
+    actual_dates = list(result_df["derived_termination_date"])
+    for actual, expected in zip(actual_dates, expected_termination_date):
+        if pd.isna(expected):
+            assert pd.isna(actual)
+        else:
+            assert actual == expected

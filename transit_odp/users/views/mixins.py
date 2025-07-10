@@ -78,7 +78,9 @@ class OrgUserViewMixin(BaseOrgUserMixin):
         org_id = self.kwargs.get("pk1", False)
         # i'm checking the org_id is truthy here since some org user views don't
         # have `/org/pk1/` for example the initial publish landing page.
-        if org_id and not self.request.user.organisations.filter(id=org_id).exists():
+        if (
+            org_id and not self.request.user.organisations.filter(id=org_id).exists()
+        ) or self.request.user.account_type == AccountType.abods_user.value:
             return False
 
         return super().has_permission() and self.request.user.is_org_user

@@ -16,6 +16,7 @@ from transit_odp.browse.common import (
     LTACSVHelper,
     get_all_naptan_atco_df,
     get_in_scope_in_season_lta_service_numbers,
+    get_operator_with_licence_number,
     get_service_traveline_regions,
     get_weca_services_register_numbers,
     get_weca_traveline_region_map,
@@ -24,8 +25,8 @@ from transit_odp.browse.common import (
 from transit_odp.browse.lta_column_headers import (
     header_accessor_data,
     header_accessor_data_compliance_report,
-    header_accessor_data_line_level,
     header_accessor_data_db_compliance_report,
+    header_accessor_data_line_level,
 )
 from transit_odp.browse.views.base_views import BaseListView
 from transit_odp.common.constants import FeatureFlags
@@ -33,6 +34,7 @@ from transit_odp.common.csv import CSVBuilder, CSVColumn
 from transit_odp.common.views import BaseDetailView
 from transit_odp.organisation.models import TXCFileAttributes
 from transit_odp.organisation.models.data import SeasonalService, ServiceCodeExemption
+from transit_odp.organisation.models.organisations import Licence
 from transit_odp.organisation.models.report import ComplianceReport
 from transit_odp.otc.constants import API_TYPE_EP, API_TYPE_WECA, UNDER_MAINTENANCE
 from transit_odp.otc.models import LocalAuthority
@@ -394,9 +396,10 @@ class LocalAuthorityDetailView(BaseDetailView):
                     for service in lta.registration_numbers.all()
                 ]
             )
-            licence_organisation_map = get_licence_organisation_map(
-                distinct_licence_names
+            licence_organisation_map = get_operator_with_licence_number(
+                list(distinct_licence_names)
             )
+
             context["licence_organisation_map"] = licence_organisation_map
         try:
             context["services_require_attention_percentage"] = round(
@@ -1111,6 +1114,7 @@ class LTAComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
                 "otc_effective_date": service.effective_date,
                 "otc_received_date": service.received_date,
                 "operator_name": service.organisation_name,
+                "operating_period_start_date": service.operating_period_start_date,
                 "operating_period_end_date": service.operating_period_end_date,
                 "last_modified_date": service.last_modified_date,
                 "dataset_id": service.dataset_id,
@@ -1140,6 +1144,8 @@ class LTAComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
                 "fares_last_modified": service.fares_last_modified_date,
                 "fares_one_year_date": service.fares_effective_stale_date_from_last_modified,
                 "fares_operating_period_end": service.fares_operating_period_end_date,
+                "revision_number": service.revision_number,
+                "derived_termination_date": service.derived_termination_date,
             }
         )
 

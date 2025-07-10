@@ -256,7 +256,9 @@ COMPLIANCE_REPORT_COLUMN_DB = [
     ),
     CSVColumn(
         header="Registration Status",
-        accessor=lambda otc_service: otc_service.get("otc_licence_number"),
+        accessor=lambda otc_service: (
+            "Registered" if otc_service.get("otc_licence_number") else "Unregistered"
+        ),
     ),
     CSVColumn(
         header="Scope Status",
@@ -343,6 +345,10 @@ COMPLIANCE_REPORT_COLUMN_DB = [
         accessor=lambda otc_service: otc_service.get(
             "effective_stale_date_last_modified_date"
         ),
+    ),
+    CSVColumn(
+        header="TXC:Operating Period Start Date",
+        accessor=lambda otc_service: otc_service.get("operating_period_start_date"),
     ),
     CSVColumn(
         header="TXC:Operating Period End Date",
@@ -441,6 +447,14 @@ COMPLIANCE_REPORT_COLUMN_DB = [
     CSVColumn(
         header="Local Transport Authority",
         accessor=lambda otc_service: otc_service.get("ui_lta_name"),
+    ),
+    CSVColumn(
+        "TXC: Revision Number",
+        lambda otc_service: otc_service.get("revision_number"),
+    ),
+    CSVColumn(
+        "TXC: Derived Termination Date",
+        lambda otc_service: otc_service.get("derived_termination_date"),
     ),
 ]
 
@@ -1342,6 +1356,7 @@ class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
                 "otc_registration_number": service_report.registration_number,
                 "otc_service_number": service_report.service_number,
                 "last_modified_date": service_report.last_modified_date,
+                "operating_period_start_date": service_report.operating_period_start_date,
                 "operating_period_end_date": service_report.operating_period_end_date,
                 "xml_filename": service_report.filename,
                 "dataset_id": service_report.dataset_id,
@@ -1376,6 +1391,8 @@ class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
                 "fares_operating_period_end_date": service_report.fares_operating_period_end_date,
                 "overall_requires_attention": service_report.overall_requires_attention,
                 "dq_require_attention": service_report.critical_dq_issues,
+                "revision_number": service_report.revision_number,
+                "derived_termination_date": service_report.derived_termination_date,
             }
         )
 
@@ -1393,6 +1410,7 @@ class ComplianceReportDBCSV(CSVBuilder, LTACSVHelper):
         compliance_report = ComplianceReport.objects.filter(
             licence_organisation_id=organisation_id
         ).all()
+
         for service_record in compliance_report:
             self._update_data(service_record)
 
