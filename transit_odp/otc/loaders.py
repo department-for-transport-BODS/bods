@@ -1,5 +1,4 @@
 import pandas as pd
-from constants import API_TYPE_EP
 from datetime import date, datetime, timedelta
 from functools import cached_property
 from itertools import chain
@@ -20,6 +19,7 @@ from transit_odp.otc.models import (
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.registry import Registry
 from transit_odp.otc.utils import get_dataframe, find_differing_registration_numbers
+from transit_odp.otc.constants import API_TYPE_EP
 
 logger = getLogger(__name__)
 
@@ -98,7 +98,9 @@ class Loader:
         Service.objects.bulk_create(services)
 
     def update_services_and_operators(self):
-        all_services = Service.objects.select_related("operator", "licence").filter(api_type__isnull=True)
+        all_services = Service.objects.select_related("operator", "licence").filter(
+            api_type__isnull=True
+        )
         service_map = {
             (s.registration_number, s.service_type_description): s for s in all_services
         }
@@ -217,8 +219,7 @@ class Loader:
             .last()
         )
         service_with_valid_effective_date = Service.objects.filter(
-            effective_date__range=(days_ago, date.today()),
-            api_type__isnull=True
+            effective_date__range=(days_ago, date.today()), api_type__isnull=True
         ).values_list("registration_number", flat=True)
         inactive_service_with_valid_effective_date = InactiveService.objects.filter(
             effective_date__range=(days_ago, date.today())
@@ -390,7 +391,9 @@ class Loader:
         ]
 
         try:
-            all_services_bods_db = Service.objects.exclude(api_type=API_TYPE_EP).values()
+            all_services_bods_db = Service.objects.exclude(
+                api_type=API_TYPE_EP
+            ).values()
             if not all_services_bods_db:
                 logger.warning("No services found in the database.")
                 return
