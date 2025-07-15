@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL(
             sql="""
-            CREATE INDEX CONCURRENTLY idx_transmodel_vehiclejourney_blocknumber 
+            CREATE INDEX idx_transmodel_vehiclejourney_blocknumber 
             ON transmodel_vehiclejourney (block_number);
             """,
             reverse_sql="""
