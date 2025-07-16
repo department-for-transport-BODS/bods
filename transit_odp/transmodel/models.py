@@ -53,6 +53,11 @@ class Tracks(models.Model):
     to_atco_code = models.CharField(max_length=255)
     geometry = models.LineStringField(null=True, blank=True)
     distance = models.IntegerField(blank=True, null=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=["from_atco_code", "to_atco_code"]),
+        ]
 
 
 class ServicePattern(models.Model):
