@@ -49,13 +49,25 @@
   <!-- <script nonce="{{request.csp_nonce}}" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
   <script nonce="{{request.csp_nonce}}">BODSFrontend.initAPIDocs('#swagger-ui', "{% static 'openapi/disruptions.yml' %}")</script>
   <script nonce="{{request.csp_nonce}}">
-        $(document).ready(function () {
-            $(document).on("click", "button.btn.execute", function () {
-                gtag('event', 'Execute API button', {
-                    'event_category': 'button',
-                    'event_label': 'disruptions swagger',
-                    'event_action': 'click'
+        function bindExecuteButtonClickEvent() {
+
+            const executeButton = document.querySelector('button.execute');
+            if(executeButton) {
+                executeButton.addEventListener('click', function () {
+                    gtag('event', 'Execute API button', {
+                        'event_category': 'button',
+                        'event_label': 'disruptions swagger',
+                        'event_action': 'click'
+                    });
                 });
+            }
+
+        }
+
+        $(document).ready(function () {
+            $(document).on("click", "button.btn.try-out__btn", function () {
+                // After "Try it out" is clicked, bind the click event to the "Execute" button
+                bindExecuteButtonClickEvent()
             });
         });
   </script>
