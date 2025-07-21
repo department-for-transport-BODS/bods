@@ -114,34 +114,14 @@ paths:
       responses:
         200:
           description: Success
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/CreateSubscriptionResponse"
         400:
           description: Invalid request
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
         404:
           description: Subscription not found
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
         429:
           description: Too many requests
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
         503:
           description: Service unavailable
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
 
     get:
       tags:
@@ -150,10 +130,6 @@ paths:
       responses:
         200:
           description: Success
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/GetConsumerSubscriptionsResponse"
 
   /api/v1/siri-vm/subscriptions/{subscriptionId}/:
     get:
@@ -170,22 +146,9 @@ paths:
       responses:
         200:
           description: Success
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/GetConsumerSubscriptionResponse"
         400:
-          description: Invalid request
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
         404:
           description: Subscription not found
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
 
     delete:
       tags:
@@ -203,22 +166,10 @@ paths:
           description: Success
         404:
           description: Subscription not found
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
         429:
           description: Too many requests
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
         503:
           description: Service unavailable
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ApiError"
 
   /api/v1/datafeed/{datafeedID}/:
     get:
