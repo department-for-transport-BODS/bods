@@ -156,6 +156,11 @@ class Loader:
             logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
 
     def update_all_services_and_operators(self):
+        """
+        To update all the services which have been found without any conditional check,
+        This method is duplicate of update services and operators method with only difference of conditions, 
+        Kept it seprate in order to isolate the change for the job
+        """
         all_services = Service.objects.select_related("operator", "licence").filter(
             api_type__isnull=True
         )
@@ -178,7 +183,7 @@ class Loader:
             if (
                 db_service
                 and updated_service.variation_number == 0
-                and db_service.last_modified >= updated_service.last_modified
+                and db_service.last_modified > updated_service.last_modified
             ):
                 # This is a new service and wont need to be updated
                 continue
