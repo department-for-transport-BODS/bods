@@ -155,6 +155,60 @@ class Loader:
                 )
             logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
 
+    def update_all_services_and_operators(self):
+        all_services = Service.objects.select_related("operator", "licence").filter(
+            api_type__isnull=True
+        )
+        service_map = {
+            (s.registration_number, s.service_type_description): s for s in all_services
+        }
+        entities_to_update = {
+            "Licence": {"fields": set(), "items": []},
+            "Operator": {"fields": set(), "items": []},
+            "Service": {"fields": set(), "items": []},
+        }
+
+        possible_services_to_update = self.registered_service + self.to_delete_service
+        for updated_service in possible_services_to_update:
+            key = (
+                updated_service.registration_number,
+                updated_service.service_type_description,
+            )
+            db_service = service_map.get(key)
+            if (
+                db_service
+                and updated_service.variation_number == 0
+                and db_service.last_modified >= updated_service.last_modified
+            ):
+                # This is a new service and wont need to be updated
+                continue
+
+            # A change has been detected
+            updated_service_kwargs = updated_service.dict()
+
+            for (db_item, kwargs,) in (
+                (db_service.licence, updated_service_kwargs.pop("licence")),
+                (db_service.operator, updated_service_kwargs.pop("operator")),
+                (db_service, updated_service_kwargs),
+            ):
+                # group the changed entities along with which fields have changed
+                # for use in bulk_update, this is to avoid hitting the database
+                # with every field
+                updated_entity, updated_fields = self._update_item(db_item, kwargs)
+                if updated_fields:
+                    key = updated_entity.__class__.__name__
+                    fields = entities_to_update[key]["fields"]
+                    entities_to_update[key]["fields"] = fields.union(updated_fields)
+                    entities_to_update[key]["items"].append(updated_entity)
+
+        for Model in (Licence, Operator, Service):
+            key = Model.__name__
+            if entities_to_update[key]["items"]:
+                Model.objects.bulk_update(
+                    entities_to_update[key]["items"], entities_to_update[key]["fields"]
+                )
+            logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
+
     def load_inactive_services(self, variation):
         InactiveService.objects.create(
             registration_number=variation.registration_number,
@@ -373,7 +427,7 @@ class Loader:
             self.load_licences()
             self.load_operators()
             self.load_services()
-            self.update_services_and_operators()
+            self.update_all_services_and_operators()
             self.delete_bad_data()
             self.inactivate_bad_services()
             self.refresh_lta(_registrations)
