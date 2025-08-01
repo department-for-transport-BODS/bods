@@ -49,6 +49,8 @@ def task_get_all_otc_data():
     registry = Registry()
     loader = Loader(registry)
     loader.load_into_fresh_database()
+    logger.info("All OTC services are loaded, now triggering the lta task")
+    task_populate_lta_data.delay()
 
 
 @shared_task()
@@ -63,6 +65,8 @@ def task_populate_lta_data():
     populate_lta = PopulateLTA()
     loader = LoaderLTA(populate_lta)
     loader.load_lta_into_fresh_database()
+    logger.info("All LTA's are loaded, now triggering uilta linking")
+    task_populate_ui_lta_data.delay()
 
 
 @shared_task()
