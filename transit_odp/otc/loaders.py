@@ -158,7 +158,7 @@ class Loader:
     def update_all_services_and_operators(self):
         """
         To update all the services which have been found without any conditional check,
-        This method is duplicate of update services and operators method with only difference of conditions, 
+        This method is duplicate of update services and operators method with only difference of conditions,
         Kept it seprate in order to isolate the change for the job
         """
         all_services = Service.objects.select_related("operator", "licence").filter(
