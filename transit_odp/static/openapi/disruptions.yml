@@ -17,17 +17,9 @@ paths:
       description: Returns all disruptions
       responses:
         200:
-          description: Successfully retrieved all disruptions
-          content:
-            text/xml:
-              schema:
-                $ref: "#/components/schemas/Siri"
+          description: Success
         403:
           description: Not authorised
-          content:
-            application/json:
-              schema:
-                  $ref: "#/components/schemas/ErrorResponse"
 
 components:
   schemas:
