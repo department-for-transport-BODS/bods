@@ -187,7 +187,7 @@ class Loader:
             ):
                 # This is a new service and wont need to be updated
                 continue
-            
+
             if not db_service:
                 logger.info("Unable to find the service in database {}".format(key))
                 continue
