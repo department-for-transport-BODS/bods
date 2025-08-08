@@ -193,9 +193,7 @@ class Loader:
 
             if not db_service:
                 logger.info(
-                    "Unable to find the service in database {} --- {}".format(
-                        key, updated_service_kwargs
-                    )
+                    "Unable to find the service in database {}".format(key)
                 )
                 continue
 
