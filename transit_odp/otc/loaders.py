@@ -192,9 +192,7 @@ class Loader:
             updated_service_kwargs = updated_service.dict()
 
             if not db_service:
-                logger.info(
-                    "Unable to find the service in database {}".format(key)
-                )
+                logger.info("Unable to find the service in database {}".format(key))
                 continue
 
             for (db_item, kwargs,) in (
