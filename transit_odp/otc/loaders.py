@@ -188,12 +188,16 @@ class Loader:
                 # This is a new service and wont need to be updated
                 continue
 
-            if not db_service:
-                logger.info("Unable to find the service in database {}".format(key))
-                continue
-
             # A change has been detected
             updated_service_kwargs = updated_service.dict()
+
+            if not db_service:
+                logger.info(
+                    "Unable to find the service in database {} --- {}".format(
+                        key, updated_service_kwargs
+                    )
+                )
+                continue
 
             for (db_item, kwargs,) in (
                 (db_service.licence, updated_service_kwargs.pop("licence")),
