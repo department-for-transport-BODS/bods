@@ -183,7 +183,7 @@ class Loader:
             if (
                 db_service
                 and updated_service.variation_number == 0
-                and db_service.last_modified > updated_service.last_modified
+                and db_service.last_modified >= updated_service.last_modified
             ):
                 # This is a new service and wont need to be updated
                 continue
