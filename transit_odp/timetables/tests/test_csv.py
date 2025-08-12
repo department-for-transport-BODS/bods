@@ -245,7 +245,7 @@ def test_service_in_otc_and_not_in_bods():
     AdminAreaFactory(traveline_region_id="SE", ui_lta=ui_lta)
 
     df = _get_timetable_catalogue_dataframe()
-
+    df.sort_values(by="OTC Status", ascending=False, inplace=True)
     for _, row in df[1:].iterrows():
         service = Service.objects.get(
             registration_number=row["OTC:Registration Number"]
@@ -281,6 +281,7 @@ def test_service_in_otc_and_not_in_bods_no_organisation_name_created():
     TXCFileAttributesFactory.create_batch(5)
 
     df = _get_timetable_catalogue_dataframe()
+    df.sort_values(by="OTC Status", ascending=False, inplace=True)
 
     for _, row in df[5:].iterrows():
         assert row["Published Status"] == "Unpublished"
@@ -297,6 +298,7 @@ def test_unregistered_services_in_bods():
     ServiceModelFactory.create_batch(5)
 
     df = _get_timetable_catalogue_dataframe()
+    df.sort_values(by="OTC Status", ascending=False, inplace=True)
     for index, row in df[:5].iterrows():
         dataset = Dataset.objects.get(id=row["Data set ID"])
         txc_file_attributes = dataset.live_revision.txc_file_attributes.first()
