@@ -183,13 +183,17 @@ class Loader:
             if (
                 db_service
                 and updated_service.variation_number == 0
-                and db_service.last_modified > updated_service.last_modified
+                and db_service.last_modified >= updated_service.last_modified
             ):
                 # This is a new service and wont need to be updated
                 continue
 
             # A change has been detected
             updated_service_kwargs = updated_service.dict()
+
+            if not db_service:
+                logger.info("Unable to find the service in database {}".format(key))
+                continue
 
             for (db_item, kwargs,) in (
                 (db_service.licence, updated_service_kwargs.pop("licence")),
