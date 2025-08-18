@@ -29,6 +29,12 @@
       :</b>
       {% trans "SIRI-SX" %}
       {% include "browse/snippets/help_modals/sirisx.html" %}
+      {% if is_gtfs_service_alerts_live %}
+        {% filter force_escape %}
+          {% trans "GTFS-RT" %}
+        {% endfilter %}
+        {% include "browse/snippets/help_modals/gtfsrt.html" %}
+      {% endif %}
     </li>
     <li>
       <b>
@@ -59,9 +65,22 @@
 {% block heading.subtitle %}
   <p class="govuk-body govuk-!-margin-bottom-0">
     {% if show_bulk_archive_url %}
-      <a class="govuk-link" href="{% url 'downloads-disruptions-bulk' host hosts.data %}" onClick="addGATagEvent()">
-        {% trans "Download all disruption data " %}
-      </a>
+      <ul class="govuk-list">
+        <li>
+          <a class="govuk-link" href="{% url 'downloads-disruptions-bulk' host hosts.data %}" onClick="addGATagEvent()">
+            {% trans "Download all disruption data in SIRI-SX format" %}
+          </a>
+        </li>
+        {% if is_gtfs_service_alerts_live %}
+          <li>
+            <a class="govuk-link"
+               href="{% url 'downloads-gtfs-rt-service-alerts-bulk' host hosts.data %}"
+               onClick="addGAGTFSRTDownloadEvent()">
+              {% trans "Download all disruption data in GTFS-RT format" %}
+            </a>
+          </li>
+        {% endif %}
+      </ul>
     {% else %}
       {% blocktrans %}
         Bulk download is not yet available. Please check back later.
@@ -85,6 +104,14 @@
             'event_label': 'bulk download disruptions',
             'event_action': 'download'
         });
+    }
+    function addGAGTFSRTDownloadEvent() {
+        var clickEvent = {
+            'event_category': 'link',
+            'event_label': 'bulk download disruptionsgtfsrt',
+            'event_action': 'download'
+        }
+        gtag('event', 'Download gtfsrt all event', clickEvent);
     }
   </script>
 {% endblock %}
