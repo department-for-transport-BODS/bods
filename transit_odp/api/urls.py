@@ -28,7 +28,10 @@ from transit_odp.api.views.avl import (
     AVLSubscriptionsSubscribeView,
     AVLSubscriptionsSubscribeSuccessView,
 )
-from transit_odp.api.views.disruptions import DisruptionsApiView
+from transit_odp.api.views.disruptions import (
+    DisruptionsApiView,
+    DisruptionsGtfsRtServiceAlertsApiView,
+)
 from transit_odp.api.views.cancellations import CancellationsApiView
 
 app_name = "api"
@@ -136,6 +139,11 @@ urlpatterns = [
         "v1/siri-sx/cancellations/",
         CancellationsApiView.as_view(),
         name="cancellationsapi",
+    ),
+    path(
+        "v1/gtfs-rt/service-alerts",
+        DisruptionsGtfsRtServiceAlertsApiView.as_view(),
+        name="gtfsrtservicealertsapi",
     ),
     path(
         "v1/datafeed/<int:pk>/", AVLDetailApiView.as_view(), name="avldetaildatafeedapi"

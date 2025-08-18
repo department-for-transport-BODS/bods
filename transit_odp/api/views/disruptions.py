@@ -10,10 +10,12 @@ from requests import RequestException
 from django.http import HttpResponse
 from waffle import flag_is_active
 
-from transit_odp.api.renders import XMLRender
+from transit_odp.api.renders import BinRenderer, ProtoBufRenderer, XMLRender
 from transit_odp.api.utils.response_utils import create_xml_error_response
 
 logger = logging.getLogger(__name__)
+
+BODS_USER_API_KEY_PROPERTY = "api_key"
 
 
 class DisruptionsOverview(LoginRequiredMixin, TemplateView):
@@ -34,6 +36,13 @@ class DisruptionsOpenApiView(LoginRequiredMixin, TemplateView):
 
     template_name = "swagger_ui/disruptions.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_gtfs_service_alerts_live"] = flag_is_active(
+            "", "is_gtfs_service_alerts_live"
+        )
+        return context
+
 
 class DisruptionsApiView(views.APIView):
     """APIView for returning SIRI-SX XML from the consumer API."""
@@ -47,6 +56,21 @@ class DisruptionsApiView(views.APIView):
         headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
         content, status_code = _get_consumer_api_response(url, headers)
         return Response(content, status=status_code, content_type="text/xml")
+
+
+class DisruptionsGtfsRtServiceAlertsApiView(views.APIView):
+    """APIView for returning GTFS RT from the consumer API."""
+
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (BinRenderer, ProtoBufRenderer)
+
+    def get(self, request, format=None):
+        """Get GTFS RT response from consumer API."""
+
+        url = f"{settings.GTFS_API_BASE_URL}/gtfs-rt/service-alerts"
+        content, status_code = _get_gtfs_rt_response(url)
+
+        return Response(content, status=status_code)
 
 
 def _get_consumer_api_response(url: str, headers: object):
@@ -73,6 +97,35 @@ def _get_consumer_api_response(url: str, headers: object):
         f"Request to SIRI Consumer API took {elapsed_time}s "
         f"- status {response.status_code}"
     )
+    if response.status_code == 200:
+        content = response.content
+        response_status = status.HTTP_200_OK
+
+    return content, response_status
+
+
+def _get_gtfs_rt_response(url: str):
+    """Gets GTFS RT response from CAVL consumer api.
+
+    Args:
+        url (str): URL to send request to.
+
+
+    Returns
+        content (str): String representing the body of a response.
+        response_status (int): The response status code.
+    """
+    error_msg = "Unable to process request at this time."
+    response_status = status.HTTP_400_BAD_REQUEST
+    content = f"{response_status}: {error_msg}."
+
+    params = BODS_USER_API_KEY_PROPERTY if BODS_USER_API_KEY_PROPERTY else None
+
+    try:
+        response = requests.get(url, params=params, timeout=60)
+    except RequestException:
+        return content, response_status
+
     if response.status_code == 200:
         content = response.content
         response_status = status.HTTP_200_OK
