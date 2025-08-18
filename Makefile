@@ -37,9 +37,12 @@ all-tests:
 
 lint:
 	docker exec -it bods-django-1 black --check --config .black.toml .
+	docker exec -it bods-django-1 djlint . --lint
 
 lint-fix:
 	docker exec -it bods-django-1 black --config .black.toml .
+	docker exec -it bods-django-1 djlint . --reformat
+
 
 local-db-backup:
 	docker exec -t bods-postgres-1 pg_dump -U transit_odp -d transit_odp > db_backup.sql
