@@ -51,6 +51,9 @@ class DownloadsView(BaseTemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["pti_pdf_url"] = settings.PTI_PDF_URL
+        context["is_gtfs_service_alerts_live"] = flag_is_active(
+            "", "is_gtfs_service_alerts_live"
+        )
         return context
 
 

@@ -168,16 +168,30 @@
           {% trans "Disruptions data" %}
         </a>
       </p>
-      <p class="govuk-body">
-        {% blocktrans %}
+      {% if is_gtfs_service_alerts_live %}
+        <p class="govuk-body">
+          {% blocktrans %}
+          Download disruptions data for selected regions in SIRI-SX and GTFS-RT formats.
+        {% endblocktrans %}
+        </p>
+      {% else %}
+        <p class="govuk-body">
+          {% blocktrans %}
           Download disruptions data for selected regions in SIRI-SX format.
         {% endblocktrans %}
-      </p>
+        </p>
+      {% endif %}
       <ul class="govuk-list">
         <li>
           <b>{% trans "Format" %}:</b>
           {% trans "SIRI-SX" %}
           {% include "browse/snippets/help_modals/sirisx.html" %}
+          {% if is_gtfs_service_alerts_live %}
+            {% filter force_escape %}
+              {% trans "GTFS-RT" %}
+            {% endfilter %}
+            {% include "browse/snippets/help_modals/gtfsrt.html" %}
+          {% endif %}
         </li>
         <li>
           <b>{% trans "Mode" %}:</b> {% trans "Bus, Ferry, Light Rail" %}
