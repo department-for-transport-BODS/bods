@@ -46,8 +46,11 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  <!-- <script nonce="{{request.csp_nonce}}" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-  <script nonce="{{request.csp_nonce}}">BODSFrontend.initAPIDocs('#swagger-ui', "{% static 'openapi/disruptions.yml' %}")</script>
+  {% if is_gtfs_service_alerts_live %}
+    <script nonce="{{request.csp_nonce}}">BODSFrontend.initAPIDocs('#swagger-ui', "{% static 'openapi/disruptions-with-gtfs-service-alerts.yml' %}")</script>
+  {% else %}
+    <script nonce="{{request.csp_nonce}}">BODSFrontend.initAPIDocs('#swagger-ui', "{% static 'openapi/disruptions.yml' %}")</script>
+  {% endif %}
   <script nonce="{{request.csp_nonce}}">
         function bindExecuteButtonClickEvent() {
 

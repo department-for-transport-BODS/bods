@@ -17,10 +17,9 @@ paths:
       description: Returns all cancellations
       responses:
         200:
-          description: Successfully retrieved all cancellations
+          description: Success
         403:
           description: Not authorised
-
 
 components:
   schemas:

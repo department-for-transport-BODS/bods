@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.views.generic.list import ListView
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from waffle import flag_is_active
 
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
 from transit_odp.disruptions.models import DisruptionsDataArchive
@@ -31,12 +32,20 @@ class DownloadDisruptionsView(LoginRequiredMixin, BaseTemplateView):
         context = super().get_context_data(**kwargs)
 
         context["show_bulk_archive_url"] = DisruptionsDataArchive.objects.exists()
+        context["is_gtfs_service_alerts_live"] = flag_is_active(
+            "", "is_gtfs_service_alerts_live"
+        )
         return context
 
 
-class DownloadDisruptionsDataArchiveView(ResourceCounterMixin, DownloadView):
+class DownloadDisruptionsDataArchiveView(DownloadView):
+    data_format = None
+
     def get_object(self, queryset=None):
-        archive = DisruptionsDataArchive.objects.last()
+        print(self.data_format)
+        archive = DisruptionsDataArchive.objects.filter(
+            data_format=self.data_format,
+        ).last()
 
         if archive is None:
             raise Http404(
@@ -47,6 +56,18 @@ class DownloadDisruptionsDataArchiveView(ResourceCounterMixin, DownloadView):
 
     def get_download_file(self):
         return self.object.data
+
+
+class DownloadDisruptionsSIRIVMDataArchiveView(
+    ResourceCounterMixin, DownloadDisruptionsDataArchiveView
+):
+    data_format = DisruptionsDataArchive.SIRISX
+
+
+class DownloadDisruptionsGTFSRTDataArchiveView(
+    ResourceCounterMixin, DownloadDisruptionsDataArchiveView
+):
+    data_format = DisruptionsDataArchive.GTFSRT
 
 
 def _get_disruptions_organisation_data(url: str, headers: object):

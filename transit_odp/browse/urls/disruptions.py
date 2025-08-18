@@ -4,7 +4,8 @@ from transit_odp.browse.views.disruptions_views import (
     DisruptionDetailView,
     DisruptionOrganisationDetailView,
     DisruptionsDataView,
-    DownloadDisruptionsDataArchiveView,
+    DownloadDisruptionsSIRIVMDataArchiveView,
+    DownloadDisruptionsGTFSRTDataArchiveView,
     DownloadDisruptionsView,
 )
 
@@ -20,8 +21,13 @@ urlpatterns = [
                 ),
                 path(
                     "bulk_archive",
-                    view=DownloadDisruptionsDataArchiveView.as_view(),
+                    view=DownloadDisruptionsSIRIVMDataArchiveView.as_view(),
                     name="downloads-disruptions-bulk",
+                ),
+                path(
+                    "gtfsrt_service_alerts",
+                    view=DownloadDisruptionsGTFSRTDataArchiveView.as_view(),
+                    name="downloads-gtfs-rt-service-alerts-bulk",
                 ),
             ]
         ),

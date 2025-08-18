@@ -8,6 +8,9 @@ servers:
 
 tags:
   - name: SIRI-SX Disruptions
+    description: Interact with SIRI-SX data.
+  - name: GTFS-RT Service Alerts
+    description: Interact with GTFS-RT Service Alerts
 
 paths:
   /siri-sx:
@@ -20,6 +23,16 @@ paths:
           description: Success
         403:
           description: Not authorised
+  /gtfs-rt/service-alerts:
+    get:
+      tags:
+        - GTFS-RT Service Alerts
+      description: Returns all service alerts
+      responses:
+        200:
+          description: Success
+        400:
+          description: Bad request
 
 components:
   schemas:
