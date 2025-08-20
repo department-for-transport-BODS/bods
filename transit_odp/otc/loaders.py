@@ -218,7 +218,13 @@ class Loader:
                         )
                     )
 
-                    licence_map = {lic.number: lic for lic in Licence.objects.all()}
+                    relevant_licence_numbers = set(
+                        service.licence.number for service in services_from_registry
+                    )
+                    licence_map = {
+                        lic.number: lic
+                        for lic in Licence.objects.filter(number__in=relevant_licence_numbers)
+                    }
                     operator_map = {op.operator_id: op for op in Operator.objects.all()}
 
                     new_licences = []
