@@ -1,14 +1,15 @@
-import pandas as pd
 from datetime import date, datetime, timedelta
 from functools import cached_property
 from itertools import chain
 from logging import getLogger
 from typing import List, Set, Tuple, Union
 
+import pandas as pd
 from django.conf import settings
 from django.db import transaction
 
 from transit_odp.otc.client.enums import RegistrationStatusEnum
+from transit_odp.otc.constants import API_TYPE_EP
 from transit_odp.otc.models import (
     InactiveService,
     Licence,
@@ -18,8 +19,7 @@ from transit_odp.otc.models import (
 )
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.registry import Registry
-from transit_odp.otc.utils import get_dataframe, find_differing_registration_numbers
-from transit_odp.otc.constants import API_TYPE_EP
+from transit_odp.otc.utils import find_differing_registration_numbers, get_dataframe
 
 logger = getLogger(__name__)
 
@@ -132,7 +132,10 @@ class Loader:
                 # A change has been detected
                 updated_service_kwargs = updated_service.dict()
 
-                for (db_item, kwargs,) in (
+                for (
+                    db_item,
+                    kwargs,
+                ) in (
                     (db_service.licence, updated_service_kwargs.pop("licence")),
                     (db_service.operator, updated_service_kwargs.pop("operator")),
                     (db_service, updated_service_kwargs),
@@ -192,10 +195,99 @@ class Loader:
             updated_service_kwargs = updated_service.dict()
 
             if not db_service:
-                logger.info("Unable to find the service in database {}".format(key))
+                registration_number = key[0]
+                logger.warning(
+                    f"Unable to find service in DB for key={key}. "
+                    f"Deleting all services with registration_number={registration_number} and reloading related data."
+                )
+
+                with transaction.atomic():
+                    # Delete all services and related data for this registration number
+                    count, _ = Service.objects.filter(
+                        registration_number=registration_number
+                    ).delete()
+                    logger.info(
+                        f"{count} Services removed for registration_number={registration_number}"
+                    )
+
+                    count, _ = Licence.objects.filter(services=None).delete()
+                    logger.info(f"{count} Licences removed (orphaned)")
+                    count, _ = Operator.objects.filter(services=None).delete()
+                    logger.info(f"{count} Operators removed (orphaned)")
+
+                    services_from_registry = (
+                        self.registry.get_services_by_registration_number(
+                            registration_number
+                        )
+                    )
+
+                    licence_map = {lic.number: lic for lic in Licence.objects.all()}
+                    operator_map = {op.operator_id: op for op in Operator.objects.all()}
+
+                    new_licences = []
+                    new_operators = []
+                    new_services = []
+
+                    for service in services_from_registry:
+                        licence = licence_map.get(service.licence.number)
+                        if not licence:
+                            licence = Licence.from_registry_licence(service.licence)
+                            new_licences.append(licence)
+                            licence_map[service.licence.number] = licence
+
+                        operator = operator_map.get(service.operator.operator_id)
+                        if not operator:
+                            operator = Operator.from_registry_operator(service.operator)
+                            new_operators.append(operator)
+                            operator_map[service.operator.operator_id] = operator
+
+                    # Bulk create new licences and operators
+                    if new_licences:
+                        Licence.objects.bulk_create(new_licences)
+                        # Refresh licence_map after bulk_create
+                        licence_map.update(
+                            {
+                                lic.number: lic
+                                for lic in Licence.objects.filter(
+                                    number__in=[l.number for l in new_licences]
+                                )
+                            }
+                        )
+
+                    if new_operators:
+                        Operator.objects.bulk_create(new_operators)
+                        # Refresh operator_map after bulk_create
+                        operator_map.update(
+                            {
+                                op.operator_id: op
+                                for op in Operator.objects.filter(
+                                    operator_id__in=[
+                                        o.operator_id for o in new_operators
+                                    ]
+                                )
+                            }
+                        )
+
+                    for service in services_from_registry:
+                        operator = operator_map[service.operator.operator_id]
+                        licence = licence_map[service.licence.number]
+                        new_service = Service.from_registry_service(
+                            service, operator, licence
+                        )
+                        new_services.append(new_service)
+
+                    if new_services:
+                        Service.objects.bulk_create(new_services)
+                        logger.info(
+                            f"Loaded {len(new_services)} new services into database for registration_number={registration_number}"
+                        )
+
                 continue
 
-            for (db_item, kwargs,) in (
+            for (
+                db_item,
+                kwargs,
+            ) in (
                 (db_service.licence, updated_service_kwargs.pop("licence")),
                 (db_service.operator, updated_service_kwargs.pop("operator")),
                 (db_service, updated_service_kwargs),
