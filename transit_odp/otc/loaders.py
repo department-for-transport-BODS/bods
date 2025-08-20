@@ -7,7 +7,7 @@ from typing import List, Set, Tuple, Union
 import pandas as pd
 from django.conf import settings
 from django.db import transaction
-from django.db.models.expressions import Count, Exists, OuterRef
+from django.db.models.expressions import Exists, OuterRef
 
 from transit_odp.otc.client.enums import RegistrationStatusEnum
 from transit_odp.otc.constants import API_TYPE_EP
@@ -212,11 +212,10 @@ class Loader:
                         ~Exists(Service.objects.filter(licence=OuterRef("pk")))
                     ).delete()
                     logger.info(f"{count} Licences removed (orphaned)")
-                    count, _ = (
-                        Operator.objects.annotate(service_count=Count("services"))
-                        .filter(service_count=0)
-                        .delete()
-                    )
+
+                    count, _ = Operator.objects.filter(
+                        ~Exists(Service.objects.filter(operator=OuterRef("pk")))
+                    ).delete()
                     logger.info(f"{count} Operators removed (orphaned)")
 
                     services_from_registry = (
