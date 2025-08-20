@@ -207,7 +207,7 @@ class Loader:
                         f"{count} Services removed for registration_number={registration_number}"
                     )
 
-                    count, _ = Licence.objects.filter(services=None).delete()
+                    count, _ = Licence.objects.filter(services__isnull=True).delete()
                     logger.info(f"{count} Licences removed (orphaned)")
                     count, _ = Operator.objects.filter(services=None).delete()
                     logger.info(f"{count} Operators removed (orphaned)")
