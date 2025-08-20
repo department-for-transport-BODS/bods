@@ -211,7 +211,7 @@ class Loader:
                         ~Exists(Service.objects.filter(licence=OuterRef('pk')))
                     ).delete()
                     logger.info(f"{count} Licences removed (orphaned)")
-                    count, _ = Operator.objects.filter(services__isnull=True).delete()
+                    count, _ = Operator.objects.annotate(service_count=Count('services')).filter(service_count=0).delete()
                     logger.info(f"{count} Operators removed (orphaned)")
 
                     services_from_registry = (
