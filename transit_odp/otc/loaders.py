@@ -193,11 +193,28 @@ class Loader:
                 self._delete_and_reload_service(updated_service.registration_number)
                 continue
 
-            self._collect_updated_entities(
-                db_service, updated_service, entities_to_update
-            )
+            for (db_item, kwargs,) in (
+                (db_service.licence, updated_service_kwargs.pop("licence")),
+                (db_service.operator, updated_service_kwargs.pop("operator")),
+                (db_service, updated_service_kwargs),
+            ):
+                # group the changed entities along with which fields have changed
+                # for use in bulk_update, this is to avoid hitting the database
+                # with every field
+                updated_entity, updated_fields = self._update_item(db_item, kwargs)
+                if updated_fields:
+                    key = updated_entity.__class__.__name__
+                    fields = entities_to_update[key]["fields"]
+                    entities_to_update[key]["fields"] = fields.union(updated_fields)
+                    entities_to_update[key]["items"].append(updated_entity)
 
-        self._bulk_update_entities(entities_to_update)
+        for Model in (Licence, Operator, Service):
+            key = Model.__name__
+            if entities_to_update[key]["items"]:
+                Model.objects.bulk_update(
+                    entities_to_update[key]["items"], entities_to_update[key]["fields"]
+                )
+            logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
 
     def _delete_and_reload_service(self, registration_number: str):
         """
@@ -307,38 +324,6 @@ class Loader:
             logger.info(
                 f"Loaded {len(new_services)} new services into database for registration_number={registration_number}"
             )
-
-    def _collect_updated_entities(
-        self, db_service, updated_service, entities_to_update
-    ):
-        """
-        Collects updated fields and objects for Licence, Operator and Service.
-        """
-        updated_service_kwargs = updated_service.dict()
-
-        for (db_item, kwargs,) in (
-            (db_service.licence, updated_service_kwargs.pop("licence")),
-            (db_service.operator, updated_service_kwargs.pop("operator")),
-            (db_service, updated_service_kwargs),
-        ):
-            updated_entity, updated_fields = self._update_item(db_item, kwargs)
-            if updated_fields:
-                key = updated_entity.__class__.__name__
-                fields = entities_to_update[key]["fields"]
-                entities_to_update[key]["fields"] = fields.union(updated_fields)
-                entities_to_update[key]["items"].append(updated_entity)
-
-    def _bulk_update_entities(self, entities_to_update):
-        """
-        Performs bulk_update for Licence, Operator, and Service.
-        """
-        for Model in (Licence, Operator, Service):
-            key = Model.__name__
-            if entities_to_update[key]["items"]:
-                Model.objects.bulk_update(
-                    entities_to_update[key]["items"], entities_to_update[key]["fields"]
-                )
-            logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
 
     def load_inactive_services(self, variation):
         InactiveService.objects.create(
