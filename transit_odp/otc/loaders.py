@@ -189,6 +189,7 @@ class Loader:
                 # This is a new service and wont need to be updated
                 continue
 
+            updated_service_kwargs = updated_service.dict()
             if not db_service:
                 self._delete_and_reload_service(updated_service.registration_number)
                 continue
