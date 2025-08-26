@@ -172,6 +172,16 @@ class Registry:
             service for service in self.services if service.registration_status in args
         ]
 
+    def get_services_by_registration_number(self, registration_number):
+        """
+        Returns all service objects from the registry with the given registration number.
+        """
+        return [
+            service
+            for service in self.services
+            if service.registration_number == registration_number
+        ]
+
     def get_services_with_past_effective_date(
         self, to_delete_services
     ) -> List[Service]:

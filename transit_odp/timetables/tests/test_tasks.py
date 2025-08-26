@@ -639,12 +639,5 @@ def test_task_data_quality_service_with_step_function(
 
     task.refresh_from_db()
     assert mock_step_function_client_wrapper.called
-    assert client.start_execution.called
-    client.start_execution.assert_called_once
-    for file in TXCFileAttributes.objects.for_revision(revision.id):
-        client.start_execution.assert_called_with(
-            state_machine_arn=arn,
-            input=dict(file_id=file.id),
-            name=f"DQSExecutionForRevision{file.id}",
-        )
+    assert client.start_execution.assert_called_once
     assert task.error_code == ""

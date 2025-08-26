@@ -1,14 +1,16 @@
-import pandas as pd
 from datetime import date, datetime, timedelta
 from functools import cached_property
 from itertools import chain
 from logging import getLogger
 from typing import List, Set, Tuple, Union
 
+import pandas as pd
 from django.conf import settings
 from django.db import transaction
+from django.db.models.expressions import Exists, OuterRef
 
 from transit_odp.otc.client.enums import RegistrationStatusEnum
+from transit_odp.otc.constants import API_TYPE_EP
 from transit_odp.otc.models import (
     InactiveService,
     Licence,
@@ -18,8 +20,7 @@ from transit_odp.otc.models import (
 )
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.registry import Registry
-from transit_odp.otc.utils import get_dataframe, find_differing_registration_numbers
-from transit_odp.otc.constants import API_TYPE_EP
+from transit_odp.otc.utils import find_differing_registration_numbers, get_dataframe
 
 logger = getLogger(__name__)
 
@@ -154,6 +155,176 @@ class Loader:
                     entities_to_update[key]["items"], entities_to_update[key]["fields"]
                 )
             logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
+
+    def update_all_services_and_operators(self):
+        """
+        To updates all services found, without conditional checks.
+        This method is duplicate of update services and operators method with only difference of conditions,
+        Kept it seprate in order to isolate the change for the job
+        """
+        all_services = Service.objects.select_related("operator", "licence").filter(
+            api_type__isnull=True
+        )
+        service_map = {
+            (s.registration_number, s.service_type_description): s for s in all_services
+        }
+        entities_to_update = {
+            "Licence": {"fields": set(), "items": []},
+            "Operator": {"fields": set(), "items": []},
+            "Service": {"fields": set(), "items": []},
+        }
+
+        possible_services_to_update = self.registered_service + self.to_delete_service
+        for updated_service in possible_services_to_update:
+            key = (
+                updated_service.registration_number,
+                updated_service.service_type_description,
+            )
+            db_service = service_map.get(key)
+            if (
+                db_service
+                and updated_service.variation_number == 0
+                and db_service.last_modified >= updated_service.last_modified
+            ):
+                # This is a new service and wont need to be updated
+                continue
+
+            updated_service_kwargs = updated_service.dict()
+            if not db_service:
+                self._delete_and_reload_service(updated_service.registration_number)
+                continue
+
+            for (db_item, kwargs,) in (
+                (db_service.licence, updated_service_kwargs.pop("licence")),
+                (db_service.operator, updated_service_kwargs.pop("operator")),
+                (db_service, updated_service_kwargs),
+            ):
+                # group the changed entities along with which fields have changed
+                # for use in bulk_update, this is to avoid hitting the database
+                # with every field
+                updated_entity, updated_fields = self._update_item(db_item, kwargs)
+                if updated_fields:
+                    key = updated_entity.__class__.__name__
+                    fields = entities_to_update[key]["fields"]
+                    entities_to_update[key]["fields"] = fields.union(updated_fields)
+                    entities_to_update[key]["items"].append(updated_entity)
+
+        for Model in (Licence, Operator, Service):
+            key = Model.__name__
+            if entities_to_update[key]["items"]:
+                Model.objects.bulk_update(
+                    entities_to_update[key]["items"], entities_to_update[key]["fields"]
+                )
+            logger.info(f'Updated {len(entities_to_update[key]["items"])} {key}')
+
+    def _delete_and_reload_service(self, registration_number: str):
+        """
+        Deletes all services and related data for a registration number,
+        then reloads from the registry.
+        """
+        logger.warning(
+            f"Unable to find service in DB for registration_number={registration_number}. "
+            f"Deleting all services with this registration number and reloading related data."
+        )
+
+        with transaction.atomic():
+            # Delete services and related data
+            count, _ = Service.objects.filter(
+                registration_number=registration_number
+            ).delete()
+            logger.info(
+                f"{count} Services removed for registration_number={registration_number}"
+            )
+
+            count, _ = Licence.objects.filter(
+                ~Exists(Service.objects.filter(licence=OuterRef("pk")))
+            ).delete()
+            logger.info(f"{count} Licences removed (orphaned)")
+
+            count, _ = Operator.objects.filter(
+                ~Exists(Service.objects.filter(operator=OuterRef("pk")))
+            ).delete()
+            logger.info(f"{count} Operators removed (orphaned)")
+
+            self._reload_services_from_registry(registration_number)
+
+    def _reload_services_from_registry(self, registration_number: str):
+        """
+        Loads all services, licences, and operators from the registry for a given registration number.
+        """
+        services_from_registry = self.registry.get_services_by_registration_number(
+            registration_number
+        )
+
+        relevant_licence_numbers = set(
+            service.licence.number for service in services_from_registry
+        )
+        licence_map = {
+            lic.number: lic
+            for lic in Licence.objects.filter(number__in=relevant_licence_numbers)
+        }
+        operator_ids_needed = {
+            service.operator.operator_id for service in services_from_registry
+        }
+        operator_map = {
+            op.operator_id: op
+            for op in Operator.objects.filter(operator_id__in=operator_ids_needed)
+        }
+
+        new_licences = []
+        new_operators = []
+        new_services = []
+
+        for service in services_from_registry:
+            # Licences
+            licence = licence_map.get(service.licence.number)
+            if not licence:
+                licence = Licence.from_registry_licence(service.licence)
+                new_licences.append(licence)
+                licence_map[service.licence.number] = licence
+
+            # Operators
+            operator = operator_map.get(service.operator.operator_id)
+            if not operator:
+                operator = Operator.from_registry_operator(service.operator)
+                new_operators.append(operator)
+                operator_map[service.operator.operator_id] = operator
+
+        # Bulk create new licences and operators
+        if new_licences:
+            Licence.objects.bulk_create(new_licences)
+            licence_map.update(
+                {
+                    lic.number: lic
+                    for lic in Licence.objects.filter(
+                        number__in=[l.number for l in new_licences]
+                    )
+                }
+            )
+
+        if new_operators:
+            Operator.objects.bulk_create(new_operators)
+            operator_map.update(
+                {
+                    op.operator_id: op
+                    for op in Operator.objects.filter(
+                        operator_id__in=[o.operator_id for o in new_operators]
+                    )
+                }
+            )
+
+        # Create new services
+        for service in services_from_registry:
+            operator = operator_map[service.operator.operator_id]
+            licence = licence_map[service.licence.number]
+            new_service = Service.from_registry_service(service, operator, licence)
+            new_services.append(new_service)
+
+        if new_services:
+            Service.objects.bulk_create(new_services)
+            logger.info(
+                f"Loaded {len(new_services)} new services into database for registration_number={registration_number}"
+            )
 
     def load_inactive_services(self, variation):
         InactiveService.objects.create(
@@ -373,7 +544,7 @@ class Loader:
             self.load_licences()
             self.load_operators()
             self.load_services()
-            self.update_services_and_operators()
+            self.update_all_services_and_operators()
             self.delete_bad_data()
             self.inactivate_bad_services()
             self.refresh_lta(_registrations)
