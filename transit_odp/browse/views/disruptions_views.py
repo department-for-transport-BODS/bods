@@ -42,7 +42,6 @@ class DownloadDisruptionsDataArchiveView(DownloadView):
     data_format = None
 
     def get_object(self, queryset=None):
-        print(self.data_format)
         archive = DisruptionsDataArchive.objects.filter(
             data_format=self.data_format,
         ).last()
