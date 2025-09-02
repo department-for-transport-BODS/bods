@@ -53,9 +53,4 @@ class Migration(migrations.Migration):
             name="is_deleted",
             field=models.BooleanField(db_index=True, default=False),
         ),
-        migrations.AddField(
-            model_name="txcfileattributes",
-            name="service_mode",
-            field=models.CharField(default="bus", max_length=20, verbose_name="Mode"),
-        ),
     ]
