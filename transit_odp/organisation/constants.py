@@ -1,5 +1,6 @@
 import enum
 
+from django.db.models import deletion
 from django.db.models.enums import TextChoices
 from django.utils.translation import gettext_lazy as _
 
@@ -50,6 +51,21 @@ STATUS_CHOICES = (
     (FeedStatus.deleted.value, "Deleted"),
     (FeedStatus.inactive.value, "Inactive"),
 )
+
+@enum.unique
+class DeletionStatus(ChoiceEnum):
+    "Revision deletion status"
+    PENDING="pending"
+    DELETING="deleting"
+    DELETED="deleted"
+    FAILED="failed"
+
+DELETION_STATUS_CHOISES = [
+    (DeletionStatus.PENDING, "Pending"),
+    (DeletionStatus.DELETING, "Deleting"),
+    (DeletionStatus.DELETED, "Deleted"),
+    (DeletionStatus.FAILED, "Failed"),
+]
 
 SEARCH_STATUS_CHOICES = (
     (LIVE, "Published"),

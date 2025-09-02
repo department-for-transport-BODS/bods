@@ -1061,6 +1061,12 @@ class DatasetQuerySet(models.QuerySet):
 
 
 class DatasetRevisionQuerySet(models.QuerySet):
+    def get_queryset(self):
+        """
+        Getting queryset function for Soft Delete models.
+        """
+        return super().get_queryset().filter(is_deleted=true)
+    
     def get_live_revisions(self):
         # This uses a correlated subquery to select the latest published revision
         # for each dataset. This approach

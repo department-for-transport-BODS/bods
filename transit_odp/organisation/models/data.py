@@ -25,6 +25,7 @@ from transit_odp.organisation import signals
 from transit_odp.organisation.constants import (
     DATASET_TYPE_NAMESPACE_MAP,
     DATASET_TYPE_PRETTY_MAP,
+    DELETION_STATUS_CHOISES,
     DatasetType,
     FeedStatus,
 )
@@ -295,6 +296,17 @@ class DatasetRevision(
     modified_before_reprocessing = models.DateTimeField(
         null=True, help_text="The modified field value before reprocessing"
     )
+    
+    is_deleted = models.BooleanField(default=False, db_index=True)
+
+    deletion_status = models.CharField(
+        max_length=20,
+        choices=DELETION_STATUS_CHOISES,
+        default="pending",
+        db_index=True,
+    )
+    deletion_started_at = models.DateTimeField(null=True, blank=True)
+    deletion_completed_at = models.DateTimeField(null=True, blank=True)
 
     objects = DatasetRevisionManager()
     tracker = FieldTracker()

@@ -1110,3 +1110,20 @@ def task_rerun_timetables_dqs_specific_datasets():
     logger.info(
         f"The task failed to update {len(failed_datasets)} datasets with following ids: {failed_datasets}"
     )
+
+
+@shared_task
+def delete_dataset_revision(revision_id):
+    revision = DatasetRevision.objects.get(id=revision_id)
+    revision.deletion_status = "deleting"
+    revision.deletion_started_at = timezone.now()
+    revision.save(update_fields=["deletion_status", "deletion_started_at"])
+
+    try:
+        revision.delete()  # Hard delete (cascade)
+        # Once gone, nothing left to update
+    except Exception:
+        # If something breaks, you can either log or mark failed
+        revision.deletion_status = "failed"
+        revision.is_deleted = False
+        revision.save(update_fields=["deletion_status", "is_deleted"])

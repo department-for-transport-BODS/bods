@@ -34,6 +34,7 @@ from transit_odp.publish.forms import (
     RevisionPublishForm,
 )
 from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
+from transit_odp.timetables.tasks import delete_dataset_revision
 from transit_odp.users.models import AgentUserInvite
 from transit_odp.users.views.mixins import OrgUserViewMixin
 
@@ -233,16 +234,16 @@ class DeleteRevisionBaseView(OrgUserViewMixin, BaseUpdateView):
         dataset = self.get_object()
         revision = dataset.revisions.order_by("-created").first()
 
-        # Delete revision
         if not revision.is_published or revision.status == ExpiredStatus:
-            try:
-                DatasetRevision.objects.get(id=revision.id).delete()
+            revision.is_deleted = True
+            revision.deletion_status = "pending"
+            revision.save(update_fields=["is_deleted", "deletion_status"])
 
-            except DatasetRevision.DoesNotExist:
-                # This shouldnt happen but we dont want to break the site if it does
-                pass
+            # Kick off async delete
+            delete_dataset_revision.delay(revision.id)
 
         return HttpResponseRedirect(self.get_success_url())
+
 
 
 class FeedArchiveBaseView(OrgUserViewMixin, BaseUpdateView):
