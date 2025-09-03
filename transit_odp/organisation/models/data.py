@@ -25,7 +25,7 @@ from transit_odp.organisation import signals
 from transit_odp.organisation.constants import (
     DATASET_TYPE_NAMESPACE_MAP,
     DATASET_TYPE_PRETTY_MAP,
-    DELETION_STATUS_CHOISES,
+    DELETION_STATUS_CHOICES,
     DatasetType,
     FeedStatus,
 )
@@ -301,7 +301,7 @@ class DatasetRevision(
 
     deletion_status = models.CharField(
         max_length=20,
-        choices=DELETION_STATUS_CHOISES,
+        choices=DELETION_STATUS_CHOICES,
         default="pending",
         db_index=True,
     )
