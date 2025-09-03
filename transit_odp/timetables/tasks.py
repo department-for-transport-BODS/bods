@@ -1117,7 +1117,9 @@ def delete_dataset_revision(revision_id):
     try:
         revision = DatasetRevision.objects.get(id=revision_id)
     except DatasetRevision.DoesNotExist:
-        logger.error(f"DatasetRevision with id {revision_id} does not exist. Cannot delete.")
+        logger.error(
+            f"DatasetRevision with id {revision_id} does not exist. Cannot delete."
+        )
         return
     revision.deletion_status = "deleting"
     revision.deletion_started_at = timezone.now()
@@ -1129,5 +1131,7 @@ def delete_dataset_revision(revision_id):
         revision.deletion_status = "failed"
         revision.is_deleted = False
         revision.save(update_fields=["deletion_status", "is_deleted"])
-        logger.exception(f"Failed to delete DatasetRevision {revision_id}: {exc}", exc_info=True)
+        logger.exception(
+            f"Failed to delete DatasetRevision {revision_id}: {exc}", exc_info=True
+        )
         raise
