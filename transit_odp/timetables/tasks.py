@@ -1114,7 +1114,11 @@ def task_rerun_timetables_dqs_specific_datasets():
 
 @shared_task
 def delete_dataset_revision(revision_id):
-    revision = DatasetRevision.objects.get(id=revision_id)
+    try:
+        revision = DatasetRevision.objects.get(id=revision_id)
+    except DatasetRevision.DoesNotExist:
+        logger.error(f"DatasetRevision with id {revision_id} does not exist. Cannot delete.")
+        return
     revision.deletion_status = "deleting"
     revision.deletion_started_at = timezone.now()
     revision.save(update_fields=["deletion_status", "deletion_started_at"])
