@@ -551,6 +551,7 @@ class DatasetQuerySet(models.QuerySet):
                          and (dataset_id = "organisation_dataset".id)
                          and ("organisation_datasetrevision".status != 'inactive')
                          and ("organisation_datasetrevision".status != 'expired')
+                         and ("organisation_datasetrevision".is_deleted = False)
                         ) b
                     WHERE ("organisation_dataset".dataset_type = %s)
                     GROUP BY "organisation_dataset"."modified", "organisation_dataset"."created", "organisation_dataset".id, b."id", b."status", b.name, b.first_expiring_service, b.num_of_lines, b.short_description, b.published_at
@@ -1061,12 +1062,6 @@ class DatasetQuerySet(models.QuerySet):
 
 
 class DatasetRevisionQuerySet(models.QuerySet):
-    def get_queryset(self):
-        """
-        Getting queryset function for Soft Delete models.
-        """
-        return super().get_queryset().filter(is_deleted=true)
-    
     def get_live_revisions(self):
         # This uses a correlated subquery to select the latest published revision
         # for each dataset. This approach

@@ -1121,9 +1121,7 @@ def delete_dataset_revision(revision_id):
 
     try:
         revision.delete()  # Hard delete (cascade)
-        # Once gone, nothing left to update
     except Exception:
-        # If something breaks, you can either log or mark failed
         revision.deletion_status = "failed"
         revision.is_deleted = False
         revision.save(update_fields=["deletion_status", "is_deleted"])
