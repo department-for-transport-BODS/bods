@@ -62,7 +62,7 @@ class DeletionStatus(ChoiceEnum):
     FAILED = "failed"
 
 
-DELETION_STATUS_CHOISES = [
+DELETION_STATUS_CHOICES = [
     (DeletionStatus.PENDING, "Pending"),
     (DeletionStatus.DELETING, "Deleting"),
     (DeletionStatus.DELETED, "Deleted"),
