@@ -245,7 +245,6 @@ class DeleteRevisionBaseView(OrgUserViewMixin, BaseUpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-
 class FeedArchiveBaseView(OrgUserViewMixin, BaseUpdateView):
     form_class = ConfirmationForm
     model = Dataset

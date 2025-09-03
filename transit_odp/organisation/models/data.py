@@ -296,7 +296,7 @@ class DatasetRevision(
     modified_before_reprocessing = models.DateTimeField(
         null=True, help_text="The modified field value before reprocessing"
     )
-    
+
     is_deleted = models.BooleanField(default=False, db_index=True)
 
     deletion_status = models.CharField(
