@@ -24,7 +24,9 @@ class DatasetManager(models.Manager.from_queryset(DatasetQuerySet)):
 
 
 class DatasetRevisionManager(models.Manager.from_queryset(DatasetRevisionQuerySet)):
-    pass
+    def get_queryset(self):
+        """Default manager: return only non-deleted objects."""
+        return super().get_queryset().filter(is_deleted=False)
 
 
 class ConsumerFeedbackManager(models.Manager.from_queryset(ConsumerFeedbackQuerySet)):
