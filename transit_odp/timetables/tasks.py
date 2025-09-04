@@ -1124,7 +1124,9 @@ def delete_dataset_revision(revision_id):
     revision.is_deleted = True
     revision.deletion_status = DeletionStatus.PENDING.value
     revision.deletion_started_at = timezone.now()
-    revision.save(update_fields=["is_deleted", "deletion_status", "deletion_started_at"])
+    revision.save(
+        update_fields=["is_deleted", "deletion_status", "deletion_started_at"]
+    )
 
     try:
         revision.delete()  # Hard delete (cascade)
