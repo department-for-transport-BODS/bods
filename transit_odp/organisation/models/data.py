@@ -306,7 +306,6 @@ class DatasetRevision(
         db_index=True,
     )
     deletion_started_at = models.DateTimeField(null=True, blank=True)
-    deletion_completed_at = models.DateTimeField(null=True, blank=True)
 
     objects = DatasetRevisionManager()
     tracker = FieldTracker()

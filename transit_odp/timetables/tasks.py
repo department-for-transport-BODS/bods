@@ -1129,8 +1129,7 @@ def delete_dataset_revision(revision_id):
         revision.delete()  # Hard delete (cascade)
     except Exception as exc:
         revision.deletion_status = "failed"
-        revision.is_deleted = False
-        revision.save(update_fields=["deletion_status", "is_deleted"])
+        revision.save(update_fields=["deletion_status"])
         logger.exception(
             f"Failed to delete DatasetRevision {revision_id}: {exc}", exc_info=True
         )
