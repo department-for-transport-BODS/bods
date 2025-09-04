@@ -40,7 +40,7 @@ from transit_odp.data_quality.tasks import update_dqs_task_status, upload_datase
 from transit_odp.dqs.models import Checks, Report, TaskResults
 from transit_odp.fares.tasks import DT_FORMAT
 from transit_odp.fares.utils import get_etl_task_or_pipeline_exception
-from transit_odp.organisation.constants import TimetableType, FeedStatus
+from transit_odp.organisation.constants import TimetableType, DeletionStatus, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, TXCFileAttributes
 from transit_odp.organisation.updaters import update_dataset
 from transit_odp.pipelines.exceptions import NoValidFileToProcess, PipelineException
@@ -1121,14 +1121,15 @@ def delete_dataset_revision(revision_id):
             f"DatasetRevision with id {revision_id} does not exist. Cannot delete."
         )
         return
-    revision.deletion_status = "deleting"
+    revision.is_deleted = True
+    revision.deletion_status = DeletionStatus.PENDING.value
     revision.deletion_started_at = timezone.now()
-    revision.save(update_fields=["deletion_status", "deletion_started_at"])
+    revision.save(update_fields=["is_deleted", "deletion_status", "deletion_started_at"])
 
     try:
         revision.delete()  # Hard delete (cascade)
     except Exception as exc:
-        revision.deletion_status = "failed"
+        revision.deletion_status = DeletionStatus.FAILED.value
         revision.save(update_fields=["deletion_status"])
         logger.exception(
             f"Failed to delete DatasetRevision {revision_id}: {exc}", exc_info=True

@@ -302,7 +302,7 @@ class DatasetRevision(
     deletion_status = models.CharField(
         max_length=20,
         choices=DELETION_STATUS_CHOICES,
-        default="pending",
+        default="",
         db_index=True,
     )
     deletion_started_at = models.DateTimeField(null=True, blank=True)

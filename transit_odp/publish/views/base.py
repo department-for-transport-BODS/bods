@@ -235,10 +235,6 @@ class DeleteRevisionBaseView(OrgUserViewMixin, BaseUpdateView):
         revision = dataset.revisions.order_by("-created").first()
 
         if not revision.is_published or revision.status == ExpiredStatus:
-            revision.is_deleted = True
-            revision.deletion_status = "pending"
-            revision.save(update_fields=["is_deleted", "deletion_status"])
-
             # Kick off async delete
             delete_dataset_revision.delay(revision.id)
 
