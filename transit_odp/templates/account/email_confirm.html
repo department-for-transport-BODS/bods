@@ -4,7 +4,9 @@
 {% load breadcrumbs %}
 {% block breadcrumb.content %}
   {{ block.super }}
-  {% breadcrumb_url 'Confirm your email address' 'account_confirm_email' key=confirmation.key host host.name %}
+  {% if confirmation.key %}
+    {% breadcrumb_url 'Confirm your email address' 'account_confirm_email' key=confirmation.key host host.name %}
+  {% endif %}
 {% endblock %}
 {% block head_title %}
   {% trans "Confirm email address" %}
