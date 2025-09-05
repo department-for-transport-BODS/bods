@@ -6,6 +6,7 @@ from django.db.models import Subquery
 from django.db.models.functions import Trim
 from django.http import HttpResponse
 from django.views import View
+from django.shortcuts import get_object_or_404
 from waffle import flag_is_active
 
 from transit_odp.avl.require_attention.abods.registery import AbodsRegistery
@@ -324,7 +325,7 @@ class LocalAuthorityDetailView(BaseDetailView):
                 int(lta_id.replace("[", "").replace("]", ""))
                 for lta_id in combined_authority_ids.split(",")
             ]
-        qs = self.model.objects.get(id=combined_authority_ids[0])
+        qs = get_object_or_404(self.model, pk=combined_authority_ids[0])
         return qs
 
     def get_context_data(self, **kwargs):
