@@ -51,6 +51,21 @@ STATUS_CHOICES = (
     (FeedStatus.inactive.value, "Inactive"),
 )
 
+
+@enum.unique
+class DeletionStatus(ChoiceEnum):
+    "Revision deletion status"
+    PENDING = "pending"
+    DELETED = "deleted"
+    FAILED = "failed"
+
+
+DELETION_STATUS_CHOICES = [
+    (DeletionStatus.PENDING, "Pending"),
+    (DeletionStatus.DELETED, "Deleted"),
+    (DeletionStatus.FAILED, "Failed"),
+]
+
 SEARCH_STATUS_CHOICES = (
     (LIVE, "Published"),
     (INACTIVE, "Inactive"),
