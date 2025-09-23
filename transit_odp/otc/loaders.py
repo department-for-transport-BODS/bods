@@ -4,6 +4,7 @@ from itertools import chain
 from logging import getLogger
 from typing import List, Set, Tuple, Union
 
+import boto3
 import pandas as pd
 from django.conf import settings
 from django.db import transaction
@@ -21,6 +22,7 @@ from transit_odp.otc.models import (
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.registry import Registry
 from transit_odp.otc.utils import find_differing_registration_numbers, get_dataframe
+from io import StringIO
 
 logger = getLogger(__name__)
 
@@ -578,63 +580,67 @@ class Loader:
             new_otc_objects = []
 
             logger.info("Running sync with otc_registry...")
-            try:
-                self.registry.sync_with_otc_registry()
-            except Exception as e:
-                logger.error(f"Failed to sync with otc_registry: {str(e)}")
-                raise Exception(f"OTC registry sync failed: {str(e)}") from e
 
-            for service in self.registry.services:
-                new_otc_objects.append(service)
+            self.put_file_in_s3(all_services_bods_df)
+            logger.info("Able to put object in s3...")
 
-            if not new_otc_objects:
-                logger.warning("No services retrieved from otc_registry.")
-                return
+        #     try:
+        #         self.registry.sync_with_otc_registry()
+        #     except Exception as e:
+        #         logger.error(f"Failed to sync with otc_registry: {str(e)}")
+        #         raise Exception(f"OTC registry sync failed: {str(e)}") from e
 
-            logger.info("Completed sync with otc_registry.")
+        #     for service in self.registry.services:
+        #         new_otc_objects.append(service)
 
-            otc_objects_df = get_dataframe(new_otc_objects, columns)
-            if otc_objects_df.empty:
-                logger.warning("Empty DataFrame created from OTC registry services.")
-                return
+        #     if not new_otc_objects:
+        #         logger.warning("No services retrieved from otc_registry.")
+        #         return
 
-            registration_numbers = find_differing_registration_numbers(
-                all_services_bods_df, otc_objects_df
-            )
-            if not registration_numbers:
-                logger.info("No differing registration numbers found.")
-                return
+        #     logger.info("Completed sync with otc_registry.")
 
-            registration_numbers_to_update = ",".join(registration_numbers)
-            if not registration_numbers_to_update:
-                logger.warning(
-                    "No registration numbers to update after join operation."
-                )
-                return
+        #     otc_objects_df = get_dataframe(new_otc_objects, columns)
+        #     if otc_objects_df.empty:
+        #         logger.warning("Empty DataFrame created from OTC registry services.")
+        #         return
 
-            logger.info("Running refresh job for list of services...")
+        #     registration_numbers = find_differing_registration_numbers(
+        #         all_services_bods_df, otc_objects_df
+        #     )
+        #     if not registration_numbers:
+        #         logger.info("No differing registration numbers found.")
+        #         return
 
-            try:
-                registry = Registry()
-                loader = Loader(registry)
-                loader.load_given_services(registration_numbers_to_update)
-            except ValueError as ve:
-                logger.error(f"Invalid input for service loader: {str(ve)}")
-                raise Exception(
-                    f"Invalid input error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(ve)}"
-                ) from ve
-            except ConnectionError as ce:
-                logger.error(f"Connection error during service loading: {str(ce)}")
-                raise Exception(
-                    f"Connection error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(ce)}"
-                ) from ce
-            except Exception as e:
-                logger.error(f"Unexpected error during service loading: {str(e)}")
-                raise Exception(
-                    f"Unexpected error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(e)}"
-                ) from e
+        #     registration_numbers_to_update = ",".join(registration_numbers)
+        #     if not registration_numbers_to_update:
+        #         logger.warning(
+        #             "No registration numbers to update after join operation."
+        #         )
+        #         return
 
-            logger.info("Finished refresh job for list of services.")
+        #     logger.info("Running refresh job for list of services...")
+
+        #     try:
+        #         registry = Registry()
+        #         loader = Loader(registry)
+        #         loader.load_given_services(registration_numbers_to_update)
+        #     except ValueError as ve:
+        #         logger.error(f"Invalid input for service loader: {str(ve)}")
+        #         raise Exception(
+        #             f"Invalid input error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(ve)}"
+        #         ) from ve
+        #     except ConnectionError as ce:
+        #         logger.error(f"Connection error during service loading: {str(ce)}")
+        #         raise Exception(
+        #             f"Connection error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(ce)}"
+        #         ) from ce
+        #     except Exception as e:
+        #         logger.error(f"Unexpected error during service loading: {str(e)}")
+        #         raise Exception(
+        #             f"Unexpected error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(e)}"
+        #         ) from e
+
+        #     logger.info("Finished refresh job for list of services.")
 
         except Exception as e:
 
@@ -644,3 +650,26 @@ class Loader:
             raise Exception(
                 f"Critical error in service update process: {str(e)}"
             ) from e
+
+
+    def put_file_in_s3(self, df:pd.DataFrame):
+        logger.info("putting the file in s3")
+        csv_buffer = StringIO()
+        df.to_csv(csv_buffer, index=False)
+
+        s3 = boto3.clint("s3")
+
+        bucket_name = "bodds-dev"
+        file_name = "otc_service_output.csv"
+
+        s3.put_object(
+            Bucket=bucket_name,
+            key=file_name,
+            Body=csv_buffer.getvalue()
+        )
+
+        logger.info("File written successfully.")
+
+
+
+
