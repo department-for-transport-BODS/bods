@@ -581,66 +581,66 @@ class Loader:
 
             logger.info("Running sync with otc_registry...")
 
-            self.put_file_in_s3(all_services_bods_df)
-            logger.info("Able to put object in s3...")
+            try:
+                self.registry.sync_with_otc_registry()
+            except Exception as e:
+                logger.error(f"Failed to sync with otc_registry: {str(e)}")
+                raise Exception(f"OTC registry sync failed: {str(e)}") from e
 
-        #     try:
-        #         self.registry.sync_with_otc_registry()
-        #     except Exception as e:
-        #         logger.error(f"Failed to sync with otc_registry: {str(e)}")
-        #         raise Exception(f"OTC registry sync failed: {str(e)}") from e
+            for service in self.registry.services:
+                new_otc_objects.append(service)
 
-        #     for service in self.registry.services:
-        #         new_otc_objects.append(service)
+            if not new_otc_objects:
+                logger.warning("No services retrieved from otc_registry.")
+                return
 
-        #     if not new_otc_objects:
-        #         logger.warning("No services retrieved from otc_registry.")
-        #         return
+            logger.info("Completed sync with otc_registry.")
 
-        #     logger.info("Completed sync with otc_registry.")
+            otc_objects_df = get_dataframe(new_otc_objects, columns)
+            if otc_objects_df.empty:
+                logger.warning("Empty DataFrame created from OTC registry services.")
+                return
 
-        #     otc_objects_df = get_dataframe(new_otc_objects, columns)
-        #     if otc_objects_df.empty:
-        #         logger.warning("Empty DataFrame created from OTC registry services.")
-        #         return
+            logger.info("putting dataframe in the s3 bucket.")
+            self.put_file_in_s3(otc_objects_df)
 
-        #     registration_numbers = find_differing_registration_numbers(
-        #         all_services_bods_df, otc_objects_df
-        #     )
-        #     if not registration_numbers:
-        #         logger.info("No differing registration numbers found.")
-        #         return
+            registration_numbers = find_differing_registration_numbers(
+                all_services_bods_df, otc_objects_df
+            )
+            if not registration_numbers:
+                logger.info("No differing registration numbers found.")
+                return
 
-        #     registration_numbers_to_update = ",".join(registration_numbers)
-        #     if not registration_numbers_to_update:
-        #         logger.warning(
-        #             "No registration numbers to update after join operation."
-        #         )
-        #         return
+            registration_numbers_to_update = ",".join(registration_numbers)
+            if not registration_numbers_to_update:
+                logger.warning(
+                    "No registration numbers to update after join operation."
+                )
+                return
 
-        #     logger.info("Running refresh job for list of services...")
+            logger.info("Running refresh job for list of services...")
 
-        #     try:
-        #         registry = Registry()
-        #         loader = Loader(registry)
-        #         loader.load_given_services(registration_numbers_to_update)
-        #     except ValueError as ve:
-        #         logger.error(f"Invalid input for service loader: {str(ve)}")
-        #         raise Exception(
-        #             f"Invalid input error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(ve)}"
-        #         ) from ve
-        #     except ConnectionError as ce:
-        #         logger.error(f"Connection error during service loading: {str(ce)}")
-        #         raise Exception(
-        #             f"Connection error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(ce)}"
-        #         ) from ce
-        #     except Exception as e:
-        #         logger.error(f"Unexpected error during service loading: {str(e)}")
-        #         raise Exception(
-        #             f"Unexpected error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(e)}"
-        #         ) from e
+            try:
+                registry = Registry()
+                loader = Loader(registry)
+                loader.load_given_services(registration_numbers_to_update)
+            except ValueError as ve:
+                logger.error(f"Invalid input for service loader: {str(ve)}")
+                raise Exception(
+                    f"Invalid input error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(ve)}"
+                ) from ve
+            except ConnectionError as ce:
+                logger.error(f"Connection error during service loading: {str(ce)}")
+                raise Exception(
+                    f"Connection error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(ce)}"
+                ) from ce
+            except Exception as e:
+                logger.error(f"Unexpected error during service loading: {str(e)}")
+                raise Exception(
+                    f"Unexpected error in task_refresh_otc_services with input: {registration_numbers_to_update}. Error: {str(e)}"
+                ) from e
 
-        #     logger.info("Finished refresh job for list of services.")
+            logger.info("Finished refresh job for list of services.")
 
         except Exception as e:
 
@@ -658,9 +658,13 @@ class Loader:
         df.to_csv(csv_buffer, index=False)
 
         s3 = boto3.client("s3")
+        from datetime import datetime
 
         bucket_name = "bodds-dev"
-        file_name = "otc_service_output.csv"
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_name = f"otc_service_output_{timestamp}.csv"
+
+        logger.info(f"Uploaded file name is {file_name}")
 
         s3.put_object(
             Bucket=bucket_name,
