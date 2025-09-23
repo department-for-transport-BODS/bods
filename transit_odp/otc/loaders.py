@@ -657,14 +657,14 @@ class Loader:
         csv_buffer = StringIO()
         df.to_csv(csv_buffer, index=False)
 
-        s3 = boto3.clint("s3")
+        s3 = boto3.client("s3")
 
         bucket_name = "bodds-dev"
         file_name = "otc_service_output.csv"
 
         s3.put_object(
             Bucket=bucket_name,
-            key=file_name,
+            Key=file_name,
             Body=csv_buffer.getvalue()
         )
 
