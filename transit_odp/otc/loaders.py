@@ -601,9 +601,6 @@ class Loader:
                 logger.warning("Empty DataFrame created from OTC registry services.")
                 return
 
-            logger.info("putting dataframe in the s3 bucket.")
-            self.put_file_in_s3(otc_objects_df)
-
             registration_numbers = find_differing_registration_numbers(
                 all_services_bods_df, otc_objects_df
             )
@@ -650,30 +647,3 @@ class Loader:
             raise Exception(
                 f"Critical error in service update process: {str(e)}"
             ) from e
-
-
-    def put_file_in_s3(self, df:pd.DataFrame):
-        logger.info("putting the file in s3")
-        csv_buffer = StringIO()
-        df.to_csv(csv_buffer, index=False)
-
-        s3 = boto3.client("s3")
-        from datetime import datetime
-
-        bucket_name = "bodds-dev"
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        file_name = f"otc_service_output_{timestamp}.csv"
-
-        logger.info(f"Uploaded file name is {file_name}")
-
-        s3.put_object(
-            Bucket=bucket_name,
-            Key=file_name,
-            Body=csv_buffer.getvalue()
-        )
-
-        logger.info("File written successfully.")
-
-
-
-
