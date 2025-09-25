@@ -75,13 +75,22 @@ class EPClient:
         url = f"{settings.EP_API_URL}?latestOnly=Yes&activeOnly=Yes"
         headers = {
             "Authorization": f"Bearer {self.ep_auth.token}",
+            "Accept": "application/json"
         }
+
+        logger.info(f"URL for the application {url} headers for the application will be:")
+        logger.info(headers)
+
         try:
             response = requests.get(
                 url=url,
                 headers=headers,
                 timeout=timeout,
             )
+
+            logger.info("Response for the application:")
+            logger.info(response)
+
             response.raise_for_status()
         except Timeout as e:
             msg = f"Timeout Error: {e}"

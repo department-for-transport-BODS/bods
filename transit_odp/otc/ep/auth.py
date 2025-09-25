@@ -47,7 +47,6 @@ def _get_token() -> str:
     except requests.exceptions.HTTPError as err:
         msg = f"Couldn't fetch Authorization token. {err}"
         logger.error(msg)
-        logger.info(f"with credentials {body}")
         if response:
             logger.info(f"with content {response.content}")
         raise EPAuthorizationTokenException(msg)
