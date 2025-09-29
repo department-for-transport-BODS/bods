@@ -53,7 +53,7 @@ class Tracks(models.Model):
     to_atco_code = models.CharField(max_length=255)
     geometry = models.LineStringField(null=True, blank=True)
     distance = models.IntegerField(blank=True, null=True)
-    line_distance = models.IntegerField(blank=True, null=True)
+    coord_distance = models.IntegerField(blank=True, null=True)
 
     class Meta:
         indexes = [
@@ -105,7 +105,7 @@ class ServicePatternDistance(models.Model):
         null=True,
     )
     distance = models.IntegerField(blank=True, null=True)
-    line_distance = models.IntegerField(blank=True, null=True)
+    coord_track_distance = models.IntegerField(blank=True, null=True)
     geom = models.LineStringField(null=True, blank=True)
 
 
