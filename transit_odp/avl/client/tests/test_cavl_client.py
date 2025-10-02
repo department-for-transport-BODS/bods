@@ -427,9 +427,15 @@ class TestCAVLService:
 
         assert [rec.message for rec in caplog.records] == expected_message
 
+    @pytest.mark.parametrize("requestor_ref", [None, "dummy_requestor_ref"])
     @pytest.fixture
     def test_validate_feed(
-        self, caplog, cavl_service: CAVLService, mock_datetime_now, **kwargs
+        self,
+        caplog,
+        cavl_service: CAVLService,
+        mock_datetime_now,
+        requestor_ref,
+        **kwargs,
     ) -> None:
         caplog.set_level(logging.WARNING)
         url = DUMMY_AVL_PRODUCER_URL + "/feed/verify"
@@ -446,11 +452,12 @@ class TestCAVLService:
             url="dummy",
             username="dummy",
             password="dummy",
+            requestor_ref=requestor_ref,
             created=datetime(2022, 12, 12, 0, 0, 0),
             version="2.0",
         )
 
-        result = cavl_service.validate_feed("dummy", "dummy", "dummy")
+        result = cavl_service.validate_feed("dummy", "dummy", "dummy", requestor_ref)
 
         assert result == expected_result
         assert [rec.message for rec in caplog.records] == []

@@ -143,7 +143,12 @@ class CAVLService(ICAVLService):
             return [Feed(**j) for j in response.json()]
 
     def validate_feed(
-        self, url: str, username: str, password: str, **kwargs
+        self,
+        url: str,
+        username: str,
+        password: str,
+        requestor_ref: Optional[str] = None,
+        **kwargs,
     ) -> Optional[ValidationTaskResult]:
         api_url = self.AVL_PRODUCER_URL + "/feed/verify"
 
@@ -151,6 +156,7 @@ class CAVLService(ICAVLService):
             "url": url,
             "username": username,
             "password": password,
+            "requestorRef": requestor_ref,
         }
 
         try:

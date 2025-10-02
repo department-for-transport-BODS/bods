@@ -88,6 +88,7 @@ class ICAVLService(Protocol):
         url: str,
         username: str,
         password: str,
+        requestor_ref: str,
     ) -> ValidationTaskResult:
         """
         Creates a task to validate the AVL data feed
@@ -95,6 +96,7 @@ class ICAVLService(Protocol):
             url: The URL to the AVL data feed (required)
             username: The username to authenticate access to the AVL feed (required)
             password: The password to authenticate access to the AVL feed (required)
+            requestor_ref: RequestorRef for the data feed (entered by user)
 
         Returns: A ValidationTaskResult containing the status of the validation
         """
