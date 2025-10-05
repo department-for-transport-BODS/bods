@@ -564,19 +564,7 @@ class Loader:
         ]
 
         try:
-            all_services_bods_db = Service.objects.exclude(
-                api_type=API_TYPE_EP
-            ).values()
-            if not all_services_bods_db:
-                logger.warning("No services found in the database.")
-                return
-
-            all_services_bods_df = pd.DataFrame.from_records(all_services_bods_db)
-            if all_services_bods_df.empty:
-                logger.warning("Empty DataFrame created from database services.")
-                return
-
-            all_services_bods_df = all_services_bods_df[columns]
+            all_services_bods_df = self.fetch_all_db_services()
             new_otc_objects = []
 
             logger.info("Running sync with otc_registry...")
@@ -601,6 +589,28 @@ class Loader:
                 logger.warning("Empty DataFrame created from OTC registry services.")
                 return
 
+            logger.info("putting dataframe in the s3 bucket.")
+            self.put_file_in_s3(otc_objects_df)
+            # import os
+
+            # base_dir = os.path.dirname(os.path.abspath(__file__))
+            # file_path = os.path.join(base_dir, "otc_services_list.csv")
+            # otc_objects_df = pd.read_csv(file_path)
+
+            # logger.info(otc_objects_df.head(5))
+            self.weekly_job_identify_duplicate_services_in_db(all_services_bods_df)
+            self.weekly_job_identify_services_not_in_otc(
+                all_services_bods_df, otc_objects_df
+            )
+            all_services_bods_df = self.fetch_all_db_services()
+
+            services_to_add = self.weekly_job_identify_services_not_in_db(
+                all_services_bods_df, otc_objects_df
+            )
+
+            logger.info("found following services to add in db")
+            logger.info(services_to_add)
+
             registration_numbers = find_differing_registration_numbers(
                 all_services_bods_df, otc_objects_df
             )
@@ -608,7 +618,9 @@ class Loader:
                 logger.info("No differing registration numbers found.")
                 return
 
-            registration_numbers_to_update = ",".join(registration_numbers)
+            registration_numbers_to_update = ",".join(
+                registration_numbers + services_to_add
+            )
             if not registration_numbers_to_update:
                 logger.warning(
                     "No registration numbers to update after join operation."
@@ -647,3 +659,113 @@ class Loader:
             raise Exception(
                 f"Critical error in service update process: {str(e)}"
             ) from e
+
+    def fetch_all_db_services(self) -> pd.DataFrame:
+        columns = [
+            "id",
+            "registration_number",
+            "variation_number",
+            "service_number",
+            "registration_status",
+        ]
+        all_services_bods_db = Service.objects.filter(api_type__isnull=True).values()
+        if not all_services_bods_db:
+            raise ("No services found in the database.")
+
+        all_services_bods_df = pd.DataFrame.from_records(all_services_bods_db)
+
+        if all_services_bods_df.empty:
+            raise ("Empty DataFrame created from database services.")
+
+        all_services_bods_df = all_services_bods_df[columns]
+        return all_services_bods_df
+
+    def weekly_job_identify_services_not_in_otc(
+        self, db_services: pd.DataFrame, otc_services: pd.DataFrame
+    ) -> None:
+        """Weekly job to find and remove the services which are no longer present in OTC database
+
+        Args:
+            db_services (pd.DataFrame): Services present in BODS database
+            otc_services (pd.DataFrame): Services present in OTC
+        """
+        merged_df = db_services.merge(
+            otc_services, on="registration_number", how="left", indicator=True
+        )
+        left_only_df = merged_df[merged_df["_merge"] == "left_only"]
+        if not left_only_df.empty:
+            logger.info(
+                "Found the services which are not present in OTC but are present in our db, cleanup will be done"
+            )
+            logger.info(left_only_df[["registration_number", "id"]])
+            # ids_to_delete = left_only_df['id'].to_list()
+            # Service.objects.filter(id__in=ids_to_delete).delete()
+
+        return
+
+    def weekly_job_identify_services_not_in_db(
+        self, db_services: pd.DataFrame, otc_services: pd.DataFrame
+    ) -> list:
+        merged_df = otc_services.merge(
+            db_services, on="registration_number", how="left", indicator=True
+        )
+        left_only_df = merged_df[merged_df["_merge"] == "left_only"]
+        if not left_only_df.empty:
+            logger.info(
+                "Found the services which are present in OTC but are not present in our db, We will add these services in database"
+            )
+            logger.info(left_only_df[["registration_number"]])
+            registrations_to_add = left_only_df["registration_number"].to_list()
+            return registrations_to_add
+        return []
+
+    def weekly_job_identify_duplicate_services_in_db(
+        self, db_services: pd.DataFrame
+    ) -> None:
+        """Function will find the services which are duplicate in BODS database, and then choose the latest revision
+        and delete all the other revisions
+
+        Args:
+            db_services (pd.DataFrame): dataframe having services from bods db
+            otc_services (pd.DataFrame): dataframe having services from OTC database
+        """
+        logger.info(db_services.columns)
+        df_sorted = db_services.sort_values(
+            by=["registration_number", "variation_number"], ascending=[True, False]
+        )  # dataframe sorted
+
+        df_unique = df_sorted.drop_duplicates(
+            subset=["registration_number"], keep="first"
+        )
+        ids_to_keep = df_unique["id"].to_list()
+        ids_to_delete = db_services.loc[
+            ~db_services["id"].isin(ids_to_keep), "id"
+        ].to_list()
+
+        if ids_to_delete:
+            services_deleted = db_services.loc[
+                db_services["id"].isin(ids_to_delete), ["id", "registration_number"]
+            ]
+            logger.info("Found duplicate services going to delete those: ")
+            logger.info(services_deleted)
+            # Service.objects.filter(id__in=ids_to_delete).delete()
+
+        return
+
+    def put_file_in_s3(self, df: pd.DataFrame):
+        logger.info("putting the file in s3")
+        csv_buffer = StringIO()
+        df.to_csv(csv_buffer, index=False)
+
+        s3 = boto3.client("s3")
+        from datetime import datetime
+
+        bucket_name = "bodds-dev"
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_name = f"otc_service_output_{timestamp}.csv"
+
+        logger.info(f"Uploaded file name is {file_name}")
+
+        s3.put_object(Bucket=bucket_name, Key=file_name, Body=csv_buffer.getvalue())
+
+        logger.info("File written successfully.")
