@@ -714,7 +714,6 @@ class Loader:
             db_services (pd.DataFrame): dataframe having services from bods db
             otc_services (pd.DataFrame): dataframe having services from OTC database
         """
-        logger.info(db_services.columns)
         df_sorted = db_services.sort_values(
             by=["registration_number", "variation_number"], ascending=[True, False]
         )  # dataframe sorted
