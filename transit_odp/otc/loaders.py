@@ -701,8 +701,8 @@ class Loader:
             )
             logger.info(left_only_df[["registration_number", "id"]])
             logger.info(left_only_df['registration_number'].to_list())
-            # ids_to_delete = left_only_df['id'].to_list()
-            # Service.objects.filter(id__in=ids_to_delete).delete()
+            ids_to_delete = left_only_df['id'].to_list()
+            Service.objects.filter(id__in=ids_to_delete).delete()
 
         return
 
@@ -751,10 +751,10 @@ class Loader:
             ]
             logger.info("Found duplicate services going to delete those: ")
             logger.info(services_deleted["registration_number"].to_list())
-            # Service.objects.filter(id__in=ids_to_delete).delete()
+            Service.objects.filter(id__in=ids_to_delete).delete()
 
         return
-
+    
     def read_file_from_s3(self):
         logger.info("putting the file in s3")
 
@@ -768,21 +768,3 @@ class Loader:
         response = s3.get_object(Bucket=bucket_name, Key=file_name)
         csv_content = response['Body'].read().decode('utf-8')
         return pd.read_csv(StringIO(csv_content))
-
-    def put_file_in_s3(self, df: pd.DataFrame):
-        logger.info("putting the file in s3")
-        csv_buffer = StringIO()
-        df.to_csv(csv_buffer, index=False)
-
-        s3 = boto3.client("s3")
-        from datetime import datetime
-
-        bucket_name = "bodds-dev"
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        file_name = f"otc_service_output_{timestamp}.csv"
-
-        logger.info(f"Uploaded file name is {file_name}")
-
-        s3.put_object(Bucket=bucket_name, Key=file_name, Body=csv_buffer.getvalue())
-
-        logger.info("File written successfully.")
