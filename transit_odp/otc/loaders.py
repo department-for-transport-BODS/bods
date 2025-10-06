@@ -177,11 +177,17 @@ class Loader:
         }
 
         possible_services_to_update = self.registered_service + self.to_delete_service
+        logger.info("Following services will be updated")
+        logger.info(possible_services_to_update)
+
         for updated_service in possible_services_to_update:
             key = (
                 updated_service.registration_number,
                 updated_service.service_type_description,
             )
+            logger.info("Working for key")
+            logger.info(key)
+
             db_service = service_map.get(key)
             if (
                 db_service
@@ -700,8 +706,8 @@ class Loader:
                 "Found the services which are not present in OTC but are present in our db, cleanup will be done"
             )
             logger.info(left_only_df[["registration_number", "id"]])
-            logger.info(left_only_df['registration_number'].to_list())
-            ids_to_delete = left_only_df['id'].to_list()
+            logger.info(left_only_df["registration_number"].to_list())
+            ids_to_delete = left_only_df["id"].to_list()
             Service.objects.filter(id__in=ids_to_delete).delete()
 
         return
@@ -754,17 +760,17 @@ class Loader:
             Service.objects.filter(id__in=ids_to_delete).delete()
 
         return
-    
+
     def read_file_from_s3(self):
         logger.info("putting the file in s3")
 
         s3 = boto3.client("s3")
-    
+
         bucket_name = "bodds-dev"
         file_name = "otc_service_output_20251006_020127.csv"
 
         logger.info(f"Uploaded file name is {file_name}")
 
         response = s3.get_object(Bucket=bucket_name, Key=file_name)
-        csv_content = response['Body'].read().decode('utf-8')
+        csv_content = response["Body"].read().decode("utf-8")
         return pd.read_csv(StringIO(csv_content))

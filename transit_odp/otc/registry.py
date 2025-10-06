@@ -149,6 +149,9 @@ class Registry:
                 ):
                     self.update(registration)
 
+        logger.info("Found following variation which will be look up again")
+        logger.info(look_up_again)
+
         for registration_number in look_up_again:
             older_variations = self.get_latest_variations_by_id(registration_number)
             for variation in older_variations:
