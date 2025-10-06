@@ -177,8 +177,6 @@ class Loader:
         }
 
         possible_services_to_update = self.registered_service + self.to_delete_service
-        logger.info("Following services will be updated")
-        logger.info(possible_services_to_update)
 
         for updated_service in possible_services_to_update:
             key = (
@@ -194,11 +192,15 @@ class Loader:
                 and updated_service.variation_number == 0
                 and db_service.last_modified >= updated_service.last_modified
             ):
+                logger.info("Service found is a new service")
                 # This is a new service and wont need to be updated
                 continue
 
             updated_service_kwargs = updated_service.dict()
             if not db_service:
+                logger.info(
+                    "Service not found is db so deleting and will create a new service"
+                )
                 self._delete_and_reload_service(updated_service.registration_number)
                 continue
 
@@ -207,16 +209,20 @@ class Loader:
                 (db_service.operator, updated_service_kwargs.pop("operator")),
                 (db_service, updated_service_kwargs),
             ):
+                logger.info(f"Adding a loop for {db_item}")
                 # group the changed entities along with which fields have changed
                 # for use in bulk_update, this is to avoid hitting the database
                 # with every field
                 updated_entity, updated_fields = self._update_item(db_item, kwargs)
+                logger.info(updated_fields)
                 if updated_fields:
                     key = updated_entity.__class__.__name__
                     fields = entities_to_update[key]["fields"]
                     entities_to_update[key]["fields"] = fields.union(updated_fields)
                     entities_to_update[key]["items"].append(updated_entity)
 
+        logger.info("Entities required to be updated")
+        logger.info(entities_to_update)
         for Model in (Licence, Operator, Service):
             key = Model.__name__
             if entities_to_update[key]["items"]:
