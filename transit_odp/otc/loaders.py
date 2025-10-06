@@ -39,12 +39,9 @@ class Loader:
         changed_fields = []
         for attr, value in new_item.items():
             db_value = getattr(db_item, attr)
-            logger.info(f"Checking for attribute {attr}")
-            logger.info(f"Db value {db_value} == {value}")
             if db_value != value:
                 setattr(db_item, attr, value)
                 changed_fields.append(attr)
-        logger.info(changed_fields)
         return db_item, set(changed_fields)
 
     def get_missing_operators(self) -> Set[int]:
@@ -185,8 +182,6 @@ class Loader:
                 updated_service.registration_number,
                 updated_service.service_type_description,
             )
-            logger.info("Working for key")
-            logger.info(key)
 
             db_service = service_map.get(key)
 
@@ -203,22 +198,15 @@ class Loader:
                 (db_service.operator, updated_service_kwargs.pop("operator")),
                 (db_service, updated_service_kwargs),
             ):
-                logger.info(f"Adding a loop for {db_item}")
-                logger.info(f"Updating kwargs {kwargs}")
                 # group the changed entities along with which fields have changed
                 # for use in bulk_update, this is to avoid hitting the database
                 # with every field
                 updated_entity, updated_fields = self._update_item(db_item, kwargs)
-                logger.info("Updated fields")
-                logger.info(updated_fields)
                 if updated_fields:
                     key = updated_entity.__class__.__name__
                     fields = entities_to_update[key]["fields"]
                     entities_to_update[key]["fields"] = fields.union(updated_fields)
                     entities_to_update[key]["items"].append(updated_entity)
-
-        logger.info("Entities required to be updated")
-        logger.info(entities_to_update)
         for Model in (Licence, Operator, Service):
             key = Model.__name__
             if entities_to_update[key]["items"]:
