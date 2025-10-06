@@ -4,14 +4,12 @@ from itertools import chain
 from logging import getLogger
 from typing import List, Set, Tuple, Union
 
-import boto3
 import pandas as pd
 from django.conf import settings
 from django.db import transaction
 from django.db.models.expressions import Exists, OuterRef
 
 from transit_odp.otc.client.enums import RegistrationStatusEnum
-from transit_odp.otc.constants import API_TYPE_EP
 from transit_odp.otc.models import (
     InactiveService,
     Licence,
@@ -22,7 +20,6 @@ from transit_odp.otc.models import (
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.registry import Registry
 from transit_odp.otc.utils import find_differing_registration_numbers, get_dataframe
-from io import StringIO
 
 logger = getLogger(__name__)
 
@@ -565,37 +562,26 @@ class Loader:
 
             logger.info("Running sync with otc_registry...")
 
-            # try:
-            #     self.registry.sync_with_otc_registry()
-            # except Exception as e:
-            #     logger.error(f"Failed to sync with otc_registry: {str(e)}")
-            #     raise Exception(f"OTC registry sync failed: {str(e)}") from e
+            try:
+                self.registry.sync_with_otc_registry()
+            except Exception as e:
+                logger.error(f"Failed to sync with otc_registry: {str(e)}")
+                raise Exception(f"OTC registry sync failed: {str(e)}") from e
 
-            # for service in self.registry.services:
-            #     new_otc_objects.append(service)
+            for service in self.registry.services:
+                new_otc_objects.append(service)
 
-            # if not new_otc_objects:
-            #     logger.warning("No services retrieved from otc_registry.")
-            #     return
+            if not new_otc_objects:
+                logger.warning("No services retrieved from otc_registry.")
+                return
 
             logger.info("Completed sync with otc_registry.")
 
-            # otc_objects_df = get_dataframe(new_otc_objects, columns)
-            # if otc_objects_df.empty:
-            #     logger.warning("Empty DataFrame created from OTC registry services.")
-            #     return
+            otc_objects_df = get_dataframe(new_otc_objects, columns)
+            if otc_objects_df.empty:
+                logger.warning("Empty DataFrame created from OTC registry services.")
+                return
 
-            otc_objects_df = self.read_file_from_s3()
-
-            logger.info("putting dataframe in the s3 bucket.")
-            # self.put_file_in_s3(otc_objects_df)
-            # import os
-
-            # base_dir = os.path.dirname(os.path.abspath(__file__))
-            # file_path = os.path.join(base_dir, "otc_services_list.csv")
-            # otc_objects_df = pd.read_csv(file_path)
-
-            # logger.info(otc_objects_df.head(5))
             self.weekly_job_identify_duplicate_services_in_db(all_services_bods_df)
             self.weekly_job_identify_services_not_in_otc(
                 all_services_bods_df, otc_objects_df
@@ -750,17 +736,3 @@ class Loader:
             Service.objects.filter(id__in=ids_to_delete).delete()
 
         return
-
-    def read_file_from_s3(self):
-        logger.info("putting the file in s3")
-
-        s3 = boto3.client("s3")
-
-        bucket_name = "bodds-dev"
-        file_name = "otc_service_output_20251006_020127.csv"
-
-        logger.info(f"Uploaded file name is {file_name}")
-
-        response = s3.get_object(Bucket=bucket_name, Key=file_name)
-        csv_content = response["Body"].read().decode("utf-8")
-        return pd.read_csv(StringIO(csv_content))
