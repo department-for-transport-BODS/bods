@@ -39,6 +39,8 @@ class Loader:
         changed_fields = []
         for attr, value in new_item.items():
             db_value = getattr(db_item, attr)
+            logger.info("Checking for attribute {attr}")
+            logger.info("Db value {db_value} == {value}")
             if db_value != value:
                 setattr(db_item, attr, value)
                 changed_fields.append(attr)
@@ -187,14 +189,6 @@ class Loader:
             logger.info(key)
 
             db_service = service_map.get(key)
-            if (
-                db_service
-                and updated_service.variation_number == 0
-                and db_service.last_modified >= updated_service.last_modified
-            ):
-                logger.info("Service found is a new service")
-                # This is a new service and wont need to be updated
-                continue
 
             updated_service_kwargs = updated_service.dict()
             if not db_service:
@@ -210,10 +204,12 @@ class Loader:
                 (db_service, updated_service_kwargs),
             ):
                 logger.info(f"Adding a loop for {db_item}")
+                logger.info(f"Updating kwargs {kwargs}")
                 # group the changed entities along with which fields have changed
                 # for use in bulk_update, this is to avoid hitting the database
                 # with every field
                 updated_entity, updated_fields = self._update_item(db_item, kwargs)
+                logger.info("Updated fields")
                 logger.info(updated_fields)
                 if updated_fields:
                     key = updated_entity.__class__.__name__
