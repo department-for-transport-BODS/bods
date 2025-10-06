@@ -39,12 +39,12 @@ class Loader:
         changed_fields = []
         for attr, value in new_item.items():
             db_value = getattr(db_item, attr)
-            logger.info("Checking for attribute {attr}")
-            logger.info("Db value {db_value} == {value}")
+            logger.info(f"Checking for attribute {attr}")
+            logger.info(f"Db value {db_value} == {value}")
             if db_value != value:
                 setattr(db_item, attr, value)
                 changed_fields.append(attr)
-
+        logger.info(changed_fields)
         return db_item, set(changed_fields)
 
     def get_missing_operators(self) -> Set[int]:
