@@ -569,28 +569,30 @@ class Loader:
 
             logger.info("Running sync with otc_registry...")
 
-            try:
-                self.registry.sync_with_otc_registry()
-            except Exception as e:
-                logger.error(f"Failed to sync with otc_registry: {str(e)}")
-                raise Exception(f"OTC registry sync failed: {str(e)}") from e
+            # try:
+            #     self.registry.sync_with_otc_registry()
+            # except Exception as e:
+            #     logger.error(f"Failed to sync with otc_registry: {str(e)}")
+            #     raise Exception(f"OTC registry sync failed: {str(e)}") from e
 
-            for service in self.registry.services:
-                new_otc_objects.append(service)
+            # for service in self.registry.services:
+            #     new_otc_objects.append(service)
 
-            if not new_otc_objects:
-                logger.warning("No services retrieved from otc_registry.")
-                return
+            # if not new_otc_objects:
+            #     logger.warning("No services retrieved from otc_registry.")
+            #     return
 
             logger.info("Completed sync with otc_registry.")
 
-            otc_objects_df = get_dataframe(new_otc_objects, columns)
-            if otc_objects_df.empty:
-                logger.warning("Empty DataFrame created from OTC registry services.")
-                return
+            # otc_objects_df = get_dataframe(new_otc_objects, columns)
+            # if otc_objects_df.empty:
+            #     logger.warning("Empty DataFrame created from OTC registry services.")
+            #     return
+
+            otc_objects_df = self.read_file_from_s3()
 
             logger.info("putting dataframe in the s3 bucket.")
-            self.put_file_in_s3(otc_objects_df)
+            # self.put_file_in_s3(otc_objects_df)
             # import os
 
             # base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -698,6 +700,7 @@ class Loader:
                 "Found the services which are not present in OTC but are present in our db, cleanup will be done"
             )
             logger.info(left_only_df[["registration_number", "id"]])
+            logger.info(left_only_df['registration_number'].to_list())
             # ids_to_delete = left_only_df['id'].to_list()
             # Service.objects.filter(id__in=ids_to_delete).delete()
 
@@ -714,7 +717,7 @@ class Loader:
             logger.info(
                 "Found the services which are present in OTC but are not present in our db, We will add these services in database"
             )
-            logger.info(left_only_df[["registration_number"]])
+            logger.info(left_only_df["registration_number"].to_list())
             registrations_to_add = left_only_df["registration_number"].to_list()
             return registrations_to_add
         return []
@@ -747,10 +750,24 @@ class Loader:
                 db_services["id"].isin(ids_to_delete), ["id", "registration_number"]
             ]
             logger.info("Found duplicate services going to delete those: ")
-            logger.info(services_deleted)
+            logger.info(services_deleted["registration_number"].to_list())
             # Service.objects.filter(id__in=ids_to_delete).delete()
 
         return
+
+    def read_file_from_s3(self):
+        logger.info("putting the file in s3")
+
+        s3 = boto3.client("s3")
+    
+        bucket_name = "bodds-dev"
+        file_name = "otc_service_output_20251006_020127.csv"
+
+        logger.info(f"Uploaded file name is {file_name}")
+
+        response = s3.get_object(Bucket=bucket_name, Key=file_name)
+        csv_content = response['Body'].read().decode('utf-8')
+        return pd.read_csv(StringIO(csv_content))
 
     def put_file_in_s3(self, df: pd.DataFrame):
         logger.info("putting the file in s3")
