@@ -6,11 +6,21 @@ from transit_odp.disruptions.storage import get_sirisx_storage
 
 
 class DisruptionsDataArchive(models.Model):
+    SIRISX = "SX"
+    GTFSRT = "RT"
+
+    DATA_FORMAT_CHOICES = [
+        (SIRISX, "Siri SX"),
+        (GTFSRT, "GTFS RT"),
+    ]
     created = CreationDateTimeField(_("created"))
     last_updated = ModificationDateTimeField(_("last_updated"))
     data = CallableStorageFileField(
         storage=get_sirisx_storage,
         help_text=_("A zip file containing an up to date SIRI-SX XML."),
+    )
+    data_format = models.CharField(
+        max_length=2, choices=DATA_FORMAT_CHOICES, default=SIRISX
     )
 
     class Meta:

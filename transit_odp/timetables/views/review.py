@@ -21,18 +21,17 @@ from transit_odp.dqs.constants import ReportStatus
 from transit_odp.dqs.models import Report
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.models import Dataset
+from transit_odp.organisation.models.data import DatasetRevision
 from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.views.base import BaseDatasetUploadModify, ReviewBaseView
 from transit_odp.publish.views.utils import (
     get_current_files,
     get_distinct_dataset_txc_attributes,
-    get_revision_details,
     get_service_type,
     get_valid_files,
 )
 from transit_odp.timetables.views.constants import (
     DATA_QUALITY_LABEL,
-    DATA_QUALITY_WITH_VIOLATIONS_LABEL,
     ERROR_CODE_LOOKUP,
 )
 from transit_odp.users.views.mixins import OrgUserViewMixin
@@ -379,21 +378,21 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
         service_code = self.request.GET.get("service")
         context = super().get_context_data(**kwargs)
         dataset = self.object
-        revision = get_revision_details(dataset.id)
+        revision = DatasetRevision.objects.get(id=revision_id)
         context.update(
             {
                 "line_name": line,
                 "pk1": dataset.organisation_id,
                 "pk": dataset.id,
-                "feed_name": revision[1],
+                "feed_name": revision.name,
             }
         )
         context["service_code"] = service_code
         context["service_type"] = get_service_type(
-            revision[0], context["service_code"], context["line_name"]
+            revision.id, context["service_code"], context["line_name"]
         )
         context["current_valid_files"] = get_current_files(
-            revision[0], context["service_code"], context["line_name"]
+            revision.id, context["service_code"], context["line_name"]
         )
 
         context["api_root"] = reverse("api:app:api-root", host=config.hosts.DATA_HOST)
@@ -404,7 +403,7 @@ class LineMetadataRevisionView(OrgUserViewMixin, DetailView):
             or context["service_type"] == "Flexible/Standard"
         ):
             booking_arrangements_info = get_valid_files(
-                revision[0],
+                revision.id,
                 context["current_valid_files"],
                 context["service_code"],
                 context["line_name"],

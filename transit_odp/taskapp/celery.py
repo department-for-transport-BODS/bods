@@ -175,6 +175,11 @@ class CeleryAppConfig(AppConfig):
                 "task": DISRUPTIONS_TASKS + "task_create_sirisx_zipfile",
                 "schedule": 60.0,
             },
+            "create_gtfs_rt_service_alerts_zip": {
+                "task": DISRUPTIONS_TASKS
+                + "task_create_gtfs_rt_service_alerts_zipfile",
+                "schedule": 60.0,
+            },
             "task_avl_validation_all_feeds": {
                 "task": AVL_TASKS + "task_run_avl_validations",
                 "schedule": crontab(minute=0, hour=18),

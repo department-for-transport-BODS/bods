@@ -551,6 +551,7 @@ class DatasetQuerySet(models.QuerySet):
                          and (dataset_id = "organisation_dataset".id)
                          and ("organisation_datasetrevision".status != 'inactive')
                          and ("organisation_datasetrevision".status != 'expired')
+                         and ("organisation_datasetrevision".is_deleted = False)
                         ) b
                     WHERE ("organisation_dataset".dataset_type = %s)
                     GROUP BY "organisation_dataset"."modified", "organisation_dataset"."created", "organisation_dataset".id, b."id", b."status", b.name, b.first_expiring_service, b.num_of_lines, b.short_description, b.published_at
