@@ -1,5 +1,30 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "October 2025 (1.53.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      The re-activation of publish process validation emails.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    An improvement to the way draft datasets are deleted.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    A fix to the way OTC records are represented on the compliance catalogues.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "June 2025 (1.50.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
