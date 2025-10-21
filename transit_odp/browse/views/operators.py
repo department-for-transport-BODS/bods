@@ -794,27 +794,30 @@ class LicenceDetailView(BaseDetailView):
             Organisation.objects.filter(is_franchise=True).values("id", "name")
         )
 
-        frencise_organisations_df.rename(
-            columns={"id": "organisation_id", "name": "organisation_name"},
-            inplace=True,
-        )
-        licence_services_df = licence_services_df.merge(
-            frencise_organisations_df,
-            left_on="licence_organisation_id",
-            right_on="organisation_id",
-            how="left",
-        )
+        frencise_df = pd.DataFrame()
 
-        frencise_df = licence_services_df.dropna(
-            subset=["organisation_id", "organisation_name"]
-        )
+        if not frencise_organisations_df.empty:
+            frencise_organisations_df.rename(
+                columns={"id": "organisation_id", "name": "organisation_name"},
+                inplace=True,
+            )
+            licence_services_df = licence_services_df.merge(
+                frencise_organisations_df,
+                left_on="licence_organisation_id",
+                right_on="organisation_id",
+                how="left",
+            )
 
-        if not frencise_df.empty:
-            frencise_df.reset_index(inplace=True)
-            frencise_df = frencise_df[
-                ["organisation_id", "organisation_name"]
-            ].drop_duplicates()
-            has_frencise = True
+            frencise_df = licence_services_df.dropna(
+                subset=["organisation_id", "organisation_name"]
+            )
+
+            if not frencise_df.empty:
+                frencise_df.reset_index(inplace=True)
+                frencise_df = frencise_df[
+                    ["organisation_id", "organisation_name"]
+                ].drop_duplicates()
+                has_frencise = True
 
         organisation_df = pd.DataFrame.from_records(
             Organisation.objects.filter(licences__number=licence_number).values(
