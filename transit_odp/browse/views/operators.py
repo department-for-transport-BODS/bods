@@ -50,7 +50,7 @@ from transit_odp.organisation.models.data import (
 )
 from transit_odp.organisation.models.organisations import Licence
 from transit_odp.organisation.models.report import ComplianceReport
-from transit_odp.otc.models import Licence as OTCLicence, LocalAuthority
+from transit_odp.otc.models import Licence as OTCLicence, UILta
 from transit_odp.publish.requires_attention import (
     FaresRequiresAttention,
     get_avl_requires_attention_line_level_data,
@@ -838,7 +838,7 @@ class LicenceDetailView(BaseDetailView):
             .tolist()
         )
         local_authorities_df = pd.DataFrame.from_records(
-            LocalAuthority.objects.filter(id__in=local_authorities).values("id", "name")
+            UILta.objects.filter(id__in=local_authorities).values("id", "name")
         )
 
         return local_authorities_df, frencise_df, organisation_df, has_frencise
