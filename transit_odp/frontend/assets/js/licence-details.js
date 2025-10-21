@@ -52,7 +52,6 @@ const getFilterOperator = () => {
     return list
 }
 
-
 export function refreshLicencesList() {
   const filterScopeStatus = getFilterScopeStatus();
   const filterSeasonStatus = getFilterSeasonStatus();
