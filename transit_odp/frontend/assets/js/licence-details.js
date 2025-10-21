@@ -61,8 +61,8 @@ export function refreshLicencesList() {
   const filterOperator = getFilterOperator();
 
   $(".licence-details-service-row").each(function() {
-    const scopeStatus = $(this).data("scope-status");
-    const seasonStatus = $(this).data("season-status");
+    const scopeStatus = $(this).data("scope-status").trim();
+    const seasonStatus = $(this).data("season-status").trim();
     const operator = $(this).data("operator");
     const ltasData = $(this).attr("data-local-authority") || "";
     
