@@ -407,7 +407,11 @@ class LicenceDetailView(BaseDetailView):
                 else ""
             )
 
-            licence_services_df['full_registration_number'] = licence_services_df['service_number'] + ' - ' + licence_services_df['registration_number']
+            licence_services_df["full_registration_number"] = (
+                licence_services_df["service_number"]
+                + " - "
+                + licence_services_df["registration_number"]
+            )
 
             (
                 local_authorities_df,
@@ -415,7 +419,9 @@ class LicenceDetailView(BaseDetailView):
                 organisation_df,
                 has_frencise,
             ) = self.get_filter_dataframes(licence_services_df, licence_number)
-            licence_services_df = licence_services_df.sort_values(by="full_registration_number", ascending=True)
+            licence_services_df = licence_services_df.sort_values(
+                by="full_registration_number", ascending=True
+            )
 
             self.otc_map = licence_services_df.to_dict("records")
             self.prefetch_service_sra()
