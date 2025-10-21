@@ -50,7 +50,7 @@ from transit_odp.organisation.models.data import (
 )
 from transit_odp.organisation.models.organisations import Licence
 from transit_odp.organisation.models.report import ComplianceReport
-from transit_odp.otc.models import Licence as OTCLicence
+from transit_odp.otc.models import Licence as OTCLicence, LocalAuthority
 from transit_odp.publish.requires_attention import (
     FaresRequiresAttention,
     get_avl_requires_attention_line_level_data,
@@ -359,6 +359,7 @@ class LicenceDetailView(BaseDetailView):
             "", FeatureFlags.FRANCHISE_ORGANISATION.value
         )
         franchise_organisation = None
+        has_frencise = False
         if org_id:
             franchise_organisation = get_franchise_organisation(licence_number, org_id)
         context["org_id"] = org_id
@@ -385,18 +386,50 @@ class LicenceDetailView(BaseDetailView):
                     "overall_requires_attention",
                     "scope_status",
                     "seasonal_status",
+                    "requires_attention",
+                    "fares_requires_attention",
+                    "avl_requires_attention",
+                    "local_authorities_ids",
+                    "licence_organisation_id",
+                    "licence_organisation_name",
                 ).order_by("service_number", "registration_number")
             )
+
+            licence_services_df["licence_organisation_id"] = pd.to_numeric(
+                licence_services_df["licence_organisation_id"], errors="coerce"
+            ).astype("Int64")
+
+            licence_services_df["local_authorities_ids_strs"] = licence_services_df[
+                "local_authorities_ids"
+            ].apply(
+                lambda x: ",".join(map(str, x))
+                if isinstance(x, (list, tuple)) and len(x) > 0
+                else ""
+            )
+
+            licence_services_df['full_registration_number'] = licence_services_df['service_number'] + ' - ' + licence_services_df['registration_number']
+
+            (
+                local_authorities_df,
+                frencise_df,
+                organisation_df,
+                has_frencise,
+            ) = self.get_filter_dataframes(licence_services_df, licence_number)
+            licence_services_df = licence_services_df.sort_values(by="full_registration_number", ascending=True)
+
             self.otc_map = licence_services_df.to_dict("records")
             self.prefetch_service_sra()
-
+            context["organisations_list"] = organisation_df.to_dict(orient="records")
+            context["frencise_list"] = frencise_df.to_dict(orient="records")
+            context["local_authorities_list"] = local_authorities_df.to_dict(
+                orient="records"
+            )
         else:
             self.otc_map, self.txc_map = otc_map_txc_map_from_licence(licence_number)
             self.service_code_exemption_map = self.get_service_code_exemption_map(
                 licence_number
             )
             self.seasonal_service_map = self.get_seasonal_service_map(licence_number)
-
             self.calculate_service_sra()
 
         if (
@@ -415,9 +448,13 @@ class LicenceDetailView(BaseDetailView):
                 organisation_id = None
                 organisation_name = "Organisation not yet created"
 
+        context["has_frencise"] = has_frencise
         context["licence_services"] = self.otc_map
         context["organisation_id"] = organisation_id
         context["organisation_name"] = organisation_name
+        context[
+            "is_prefetch_compliance_report_active"
+        ] = is_prefetch_compliance_report_active
         return context
 
     def prefetch_service_sra(self):
@@ -733,6 +770,72 @@ class LicenceDetailView(BaseDetailView):
                 licence__organisation__licences__number__in=licence_number
             )
         }
+
+    def get_filter_dataframes(
+        self, licence_services_df: pd.DataFrame, licence_number: str
+    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, bool]:
+        """Returns dataframes for filters on page
+
+        Args:
+            licence_services_df (pd.DataFrame): licence services list
+            licence_number (str): licence number value
+
+        Returns:
+            tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, bool]: tuple with all the values
+        """
+        has_frencise = False
+        frencise_organisations_df = pd.DataFrame.from_records(
+            Organisation.objects.filter(is_franchise=True).values("id", "name")
+        )
+
+        frencise_organisations_df.rename(
+            columns={"id": "organisation_id", "name": "organisation_name"},
+            inplace=True,
+        )
+        licence_services_df = licence_services_df.merge(
+            frencise_organisations_df,
+            left_on="licence_organisation_id",
+            right_on="organisation_id",
+            how="left",
+        )
+
+        frencise_df = licence_services_df.dropna(
+            subset=["organisation_id", "organisation_name"]
+        )
+
+        if not frencise_df.empty:
+            frencise_df.reset_index(inplace=True)
+            frencise_df = frencise_df[
+                ["organisation_id", "organisation_name"]
+            ].drop_duplicates()
+            has_frencise = True
+
+        organisation_df = pd.DataFrame.from_records(
+            Organisation.objects.filter(licences__number=licence_number).values(
+                "id", "name"
+            )
+        )
+        organisation_df.rename(
+            columns={
+                "id": "licence_organisation_id",
+                "name": "licence_organisation_name",
+            },
+            inplace=True,
+        )
+        organisation_df.drop_duplicates(inplace=True)
+
+        local_authorities = (
+            licence_services_df["local_authorities_ids"]
+            .explode()
+            .dropna()
+            .unique()
+            .tolist()
+        )
+        local_authorities_df = pd.DataFrame.from_records(
+            LocalAuthority.objects.filter(id__in=local_authorities).values("id", "name")
+        )
+
+        return local_authorities_df, frencise_df, organisation_df, has_frencise
 
 
 class LicenceLineMetadataDetailView(DetailView):
