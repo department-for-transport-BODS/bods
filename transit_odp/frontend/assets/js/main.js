@@ -29,6 +29,7 @@ import {
   suppressAllObservations,
   setButtonStatus,
 } from "./suppress-observation";
+import { refreshLicencesList, sortLicenceServicesTable } from "./licence-details";
 
 function initAll() {
   console.log(`Initialising BODSFrontend -   ${new Date().toISOString()}`);
@@ -72,5 +73,7 @@ window.BODSFrontend = {
   suppressObservation,
   suppressAllObservations,
   setButtonStatus,
-  fetchAvlLiveLocation
+  fetchAvlLiveLocation,
+  refreshLicencesList,
+  sortLicenceServicesTable
 };
