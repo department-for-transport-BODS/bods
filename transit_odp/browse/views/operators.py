@@ -427,6 +427,9 @@ class LicenceDetailView(BaseDetailView):
             self.prefetch_service_sra()
             context["organisations_list"] = organisation_df.to_dict(orient="records")
             context["frencise_list"] = frencise_df.to_dict(orient="records")
+            has_null_local_authority = (
+                licence_services_df["local_authorities_ids"].isna().any()
+            )
             context["local_authorities_list"] = local_authorities_df.to_dict(
                 orient="records"
             )
