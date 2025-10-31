@@ -63,7 +63,7 @@ export function refreshLicencesList() {
     const scopeStatus = $(this).data("scope-status").trim();
     const seasonStatus = $(this).data("season-status").trim();
     const operator = $(this).data("operator");
-    const ltasData = $(this).attr("data-local-authority") || "";
+    const ltasData = $(this).attr("data-local-authority").trim() || "";
     
     var ltasList = []
     if (typeof ltasData === 'string' && ltasData.trim() !== '') {

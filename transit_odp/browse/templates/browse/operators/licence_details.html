@@ -103,6 +103,19 @@
                       </label>
                     </div>
                   {% endfor %}
+                  {% if has_null_local_authority %}
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input licence-filter"
+                             checked="checked"
+                             id="lta_blank"
+                             name="lta_details"
+                             type="checkbox"
+                             value="blank" />
+                      <label class="govuk-label govuk-checkboxes__label" for="lta_blank">
+                        Not Assigned
+                      </label>
+                    </div>
+                  {% endif %}
                 </td>
                 <td class="govuk-table__cell">
                   <div class="govuk-checkboxes__item">
@@ -206,7 +219,11 @@
                   {% for service in licence_services %}
                     <tr class="govuk-table__row licence-details-service-row"
                         data-operator="{{ service.licence_organisation_id }}"
-                        data-local-authority="{{ service.local_authorities_ids_strs }}"
+                        data-local-authority="{% if service.local_authorities_ids_strs %}
+                                                {{ service.local_authorities_ids_strs }}
+                                              {% else %}
+                                                blank
+                                              {% endif %}"
                         data-service-code="{{ service.service_number }} - {{ service.registration_number }}"
                         data-scope-status="{% if service.is_in_scope %}
                                              service-in-scope
