@@ -430,6 +430,7 @@ class LicenceDetailView(BaseDetailView):
             context["local_authorities_list"] = local_authorities_df.to_dict(
                 orient="records"
             )
+            context["has_null_local_authority"] = has_null_local_authority
         else:
             self.otc_map, self.txc_map = otc_map_txc_map_from_licence(licence_number)
             self.service_code_exemption_map = self.get_service_code_exemption_map(
