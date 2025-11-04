@@ -303,17 +303,17 @@
     </script>
   {% if is_prefetch_compliance_report_active %}
     <script nonce="{{request.csp_nonce}}">
-      function initializeMap(registrationNumbers) {
+      function refresheMap(registrationNumbers) {
         if (errorInMapBox == "error") {
           return
         }
         BODSFrontend.initMap("{{ api_root }}", undefined, undefined, undefined, licenceNumber, registrationNumbers.join(","));
       }
       $(document).ready(() => {
-        BODSFrontend.refreshLicencesList(initializeMap);
+        BODSFrontend.refreshLicencesList(refresheMap);
 
         $(document).on("change", ".licence-filter", function(e) {
-          BODSFrontend.refreshLicencesList(initializeMap);
+          BODSFrontend.refreshLicencesList(refresheMap);
         });
 
         $(".sort-column").on("click", function() {
