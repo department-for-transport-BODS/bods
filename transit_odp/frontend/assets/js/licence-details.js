@@ -52,13 +52,13 @@ const getFilterOperator = () => {
     return list
 }
 
-export function refreshLicencesList() {
+export function refreshLicencesList(callback) {
   const filterScopeStatus = getFilterScopeStatus();
   const filterSeasonStatus = getFilterSeasonStatus();
   const filterLtaList = getFilterLtas();
   const filterFranchise = getFilterFranchise();
   const filterOperator = getFilterOperator();
-
+    let registrationNumber = []
   $(".licence-details-service-row").each(function() {
     const scopeStatus = $(this).data("scope-status").trim();
     const seasonStatus = $(this).data("season-status").trim();
@@ -69,17 +69,19 @@ export function refreshLicencesList() {
     if (typeof ltasData === 'string' && ltasData.trim() !== '') {
         ltasList = ltasData.split(",").map(lta => lta.trim());
     }
-
+    
     if (filterScopeStatus.includes(scopeStatus) && filterSeasonStatus.includes(seasonStatus) && (filterLtaList.length == 0 || ltasList.some(lta => filterLtaList.includes(lta))) && ((filterOperator.length == 0 && filterFranchise.length == 0) || filterOperator.includes(operator) || filterFranchise.includes(operator))) {
        if($(this).hasClass("js-hidden")) {
             $(this).removeClass("js-hidden");
        }
+        registrationNumber.push(encodeURIComponent($(this).data("service-code")))
     } else {
         if(!$(this).hasClass("js-hidden")) {
             $(this).addClass("js-hidden");
        }
     }
   });
+  callback(registrationNumber);
 }
 
 var sortDirections = {

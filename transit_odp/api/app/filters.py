@@ -16,9 +16,17 @@ class ServicePatternFilterSet(filters.FilterSet):
 
     licence_number = filters.CharFilter(method="filter_by_licence_number")
 
+    registration_number = filters.CharFilter(method="filter_by_registration_number")
+
     class Meta:
         model = ServicePattern
-        fields = ["revision", "line_name", "service_codes", "licence_number"]
+        fields = [
+            "revision",
+            "line_name",
+            "service_codes",
+            "licence_number",
+            "registration_number",
+        ]
 
     def filter_by_service_codes(self, queryset, name, value):
         service_codes_list = value.split(",")
@@ -80,4 +88,26 @@ class ServicePatternFilterSet(filters.FilterSet):
                     line_name=row["service_number"],
                 )
 
+        return queryset.filter(query)
+
+    def filter_by_registration_number(self, queryset, name, value):
+        """Filter by registration number, this filter will be dependent on Licence filter to get
+        timetable files filtered for the service pattern
+
+        Args:
+            queryset: Queryset object for running the query
+            name: name of the variable
+            value: value of the variable
+
+        Returns:
+            Queryset with service code and line name filter
+        """
+        registration_numbers_list = value.split(",")
+        query = Q()
+        for registration_number in registration_numbers_list:
+            line_name, service_code = registration_number.split(" - ")
+            query |= Q(
+                services__service_code=service_code.strip(),
+                line_name=line_name.strip(),
+            )
         return queryset.filter(query)
