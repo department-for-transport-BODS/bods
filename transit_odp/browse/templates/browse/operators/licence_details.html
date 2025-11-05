@@ -307,7 +307,7 @@
         if (errorInMapBox == "error") {
           return
         }
-        BODSFrontend.initMap("{{ api_root }}", undefined, undefined, undefined, licenceNumber, registrationNumbers.join(","));
+        BODSFrontend.refreshOrInitMap("{{ api_root }}", undefined, undefined, undefined, licenceNumber, registrationNumbers.join(","));
       }
       $(document).ready(() => {
         BODSFrontend.refreshLicencesList(refresheMap);
