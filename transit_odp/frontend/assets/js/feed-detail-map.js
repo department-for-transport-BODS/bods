@@ -147,7 +147,7 @@ const initMap = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber, reg
 
       // Populate the popup and set its coordinates
       // based on the feature found.
-      popup.setLngLat(e.lngLat).setHTML(description).addTo(map);
+      popup.setLngLat(e.lngLat).setHTML(description).addTo(feed_map);
     });
 
     feed_map.on("mouseleave", "service-patterns", function () {
