@@ -297,16 +297,23 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  {% if not error %}
-    <script nonce="{{request.csp_nonce}}">BODSFrontend.initMap("{{ api_root }}", undefined, undefined, undefined, "{{licence_number}}");</script>
-  {% endif %}
+    <script nonce="{{request.csp_nonce}}">
+      var licenceNumber = "{{licence_number}}";
+      var errorInMapBox = "{% if not error %}no-error{% else %}error{% endif %}";
+    </script>
   {% if is_prefetch_compliance_report_active %}
     <script nonce="{{request.csp_nonce}}">
+      function refresheMap(registrationNumbers) {
+        if (errorInMapBox == "error") {
+          return
+        }
+        BODSFrontend.refreshOrInitMap("{{ api_root }}", undefined, undefined, undefined, licenceNumber, registrationNumbers.join(","));
+      }
       $(document).ready(() => {
-        BODSFrontend.refreshLicencesList();
+        BODSFrontend.refreshLicencesList(refresheMap);
 
         $(document).on("change", ".licence-filter", function(e) {
-          BODSFrontend.refreshLicencesList();
+          BODSFrontend.refreshLicencesList(refresheMap);
         });
 
         $(".sort-column").on("click", function() {
