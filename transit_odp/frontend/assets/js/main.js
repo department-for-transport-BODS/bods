@@ -15,7 +15,7 @@ import { initAPIDocs } from "./api-docs";
 import { initDatasetListLoaders } from "./feed-list-progress";
 import { initFaresDetailMap } from "./fares-detail-map";
 import { initHelpModals } from "./help-modal";
-import { initMap, fetchAvlLiveLocation } from "./feed-detail-map";
+import { initMap, fetchAvlLiveLocation, refreshOrInitMap } from "./feed-detail-map";
 import { initOrgMap } from "./organisation-detail-map";
 import { initTimeoutWarning } from "./timeout-warning";
 import { initWarningDetailMap } from "./data-quality-detail-map";
@@ -29,6 +29,7 @@ import {
   suppressAllObservations,
   setButtonStatus,
 } from "./suppress-observation";
+import { refreshLicencesList, sortLicenceServicesTable } from "./licence-details";
 
 function initAll() {
   console.log(`Initialising BODSFrontend -   ${new Date().toISOString()}`);
@@ -72,5 +73,8 @@ window.BODSFrontend = {
   suppressObservation,
   suppressAllObservations,
   setButtonStatus,
-  fetchAvlLiveLocation
+  fetchAvlLiveLocation,
+  refreshLicencesList,
+  sortLicenceServicesTable,
+  refreshOrInitMap
 };
