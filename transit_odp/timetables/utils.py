@@ -146,10 +146,12 @@ def get_bank_holiday_obj(division: str, holiday: dict):
     obj_holiday = []
 
     db_holiday = get_holiday_obj(division, date, holiday)
+    print(f"db_holiday if not eve or subs fetched: {db_holiday}")
     if db_holiday:
         obj_holiday.append(db_holiday)
     if is_holiday_eve:
         db_holiday = get_holiday_obj(division, date - timedelta(days=1), holiday)
+        print(f"db_holiday for eve fetched: {db_holiday}")
         if db_holiday:
             obj_holiday.append(db_holiday)
 
@@ -162,6 +164,7 @@ def get_bank_holidays():
 
         df_bank_holidays = []
         parsed_response = APIBankHolidays.model_validate(json_bank_holidays)
+        print(f"Parsed bank holidays response: {parsed_response}")
         for division_name, division_data in parsed_response.model_dump().items():
             division_name = division_data["division"]
             for event in division_data["events"]:

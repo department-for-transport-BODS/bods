@@ -718,6 +718,7 @@ def task_load_bank_holidays():
     """This is a task to load bank holidays from api to BODS database"""
     logger.info("Starting process to load bank holidays from api")
     bank_holidays = get_bank_holidays()
+    print(f"Bank holidays fetched from API: {bank_holidays}")
     logger.info("completed process to load bank holidays from api successfully")
     bank_holidays_to_insert = list(get_holidays_records_to_insert(bank_holidays))
     with transaction.atomic():
