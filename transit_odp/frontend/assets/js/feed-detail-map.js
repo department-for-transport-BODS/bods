@@ -31,7 +31,11 @@ const getLineStringBounds = (coordinates) => {
   }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
 };
 
-const getMapDataUrl = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber) => {
+const getMapDataUrl = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber, registrationNumber) => {
+  /*
+    Refactoring required, Adding param for every new scenario is not good.
+    We can use it with single param as object
+  */
   var servicePatternUrl = apiRoot + "service_pattern/"
   var delimetor = "?"
 
@@ -50,12 +54,17 @@ const getMapDataUrl = (apiRoot, revisionId, lineName, serviceCodes, licenceNumbe
   }
   if (licenceNumber) {
     servicePatternUrl += delimetor + "licence_number=" + licenceNumber.toString()
+    delimetor = "&"
+  }
+  if (registrationNumber) {
+    servicePatternUrl += delimetor += "registration_number="+registrationNumber.toString()
+    delimetor = "&"
   }
   return servicePatternUrl;
 };
 
-const initMap = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber) => {
-  var servicePatternUrl = getMapDataUrl(apiRoot, revisionId, lineName, serviceCodes, licenceNumber);
+const initMap = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber, registrationNumber) => {
+  var servicePatternUrl = getMapDataUrl(apiRoot, revisionId, lineName, serviceCodes, licenceNumber, registrationNumber);
 
   // Initialise Map
   mapboxgl.accessToken = mapboxKey;
@@ -91,97 +100,42 @@ const initMap = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber) => 
 
   // Fetch ServicePattern GeoJSON
   feed_map.on("load", function () {
-    httpGetAsync(servicePatternUrl, function (responseText) {
-      var geojson = JSON.parse(responseText);
+    fetchDataAndUpdateMap(servicePatternUrl);
 
-      feed_map.addSource("service-patterns", { type: "geojson", data: geojson });
+    // Create a popup, but don't add it to the map yet.
+    var popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+    });
 
-      // Add line markers
-      feed_map.addLayer({
-        id: "service-patterns",
-        type: "line",
-        source: "service-patterns",
-        layout: {
-          "line-join": "round",
-          "line-cap": "round",
-        },
-        paint: {
-          "line-color": "#49A39A",
-          "line-width": 2,
-        },
-      });
-
-      // Add hover effect
-      feed_map.addLayer({
-        id: "service-patterns-hover",
-        type: "line",
-        source: "service-patterns",
-        layout: {},
-        paint: {
-          "line-color": "#34746e",
-          "line-width": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            4.5,
-            0,
-          ],
-        },
-      });
-
-      // When the user moves their mouse over the state-fill layer, we'll update the
-      // feature state for the feature under the mouse.
-      feed_map.on("mousemove", "service-patterns", function (e) {
-        if (e.features.length > 0) {
-          if (hoveredStateId) {
-            feed_map.setFeatureState(
-              { source: "service-patterns", id: hoveredStateId },
-              { hover: false }
-            );
-          }
-          hoveredStateId = e.features[0].id;
-          feed_map.setFeatureState(
-            { source: "service-patterns", id: hoveredStateId },
-            { hover: true }
-          );
-        }
-      });
-
-      // When the mouse leaves the state-fill layer, update the feature state of the
-      // previously hovered feature.
-      feed_map.on("mouseleave", "service-patterns", function () {
+    // When the user moves their mouse over the state-fill layer, we'll update the
+    // feature state for the feature under the mouse.
+    feed_map.on("mousemove", "service-patterns", function (e) {
+      if (e.features.length > 0) {
         if (hoveredStateId) {
           feed_map.setFeatureState(
             { source: "service-patterns", id: hoveredStateId },
             { hover: false }
           );
         }
-        hoveredStateId = null;
-      });
-
-      // Fit map to features
-      var bounds = new mapboxgl.LngLatBounds();
-
-      // loop over LineString features and calculate bounds
-      geojson.features.forEach(function (feature) {
-        if (feature.geometry && feature.geometry.coordinates) {
-          bounds.extend(getLineStringBounds(feature.geometry.coordinates));
-        }
-      });
-
-      if (!bounds.isEmpty()) {
-        feed_map.fitBounds(bounds, {
-          padding: 20,
-        });
+        hoveredStateId = e.features[0].id;
+        feed_map.setFeatureState(
+          { source: "service-patterns", id: hoveredStateId },
+          { hover: true }
+        );
       }
-
-      // After initially fitting the map, on pan fetch new data at location
-      // feed_map.on('moveend', onMoveEndHandler)
     });
 
-    // Create a popup, but don't add it to the map yet.
-    var popup = new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false,
+    // When the mouse leaves the state-fill layer, update the feature state of the
+    // previously hovered feature.
+    feed_map.on("mouseleave", "service-patterns", function () {
+      if (hoveredStateId) {
+        feed_map.setFeatureState(
+          { source: "service-patterns", id: hoveredStateId },
+          { hover: false }
+        );
+      }
+      hoveredStateId = null;
     });
 
     feed_map.on("mouseenter", "service-patterns", function (e) {
@@ -193,13 +147,16 @@ const initMap = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber) => 
 
       // Populate the popup and set its coordinates
       // based on the feature found.
-      popup.setLngLat(e.lngLat).setHTML(description).addTo(map);
+      popup.setLngLat(e.lngLat).setHTML(description).addTo(feed_map);
     });
 
     feed_map.on("mouseleave", "service-patterns", function () {
       feed_map.getCanvas().style.cursor = "";
       popup.remove();
     });
+
+    // After initially fitting the map, on pan fetch new data at location
+    // feed_map.on('moveend', onMoveEndHandler)
   });
 };
 
@@ -257,4 +214,73 @@ const fetchAvlLiveLocation = (apiUrl) => {
   setTimeout(fetchAvlLiveLocation, 10000, apiUrl);
 }
 
-export { initMap, fetchAvlLiveLocation };
+const fetchDataAndUpdateMap = (servicePatternUrl) => {
+  httpGetAsync(servicePatternUrl, function (responseText) {
+      var geojson = JSON.parse(responseText);
+      if (feed_map.getSource("service-patterns")) {
+          feed_map.getSource("service-patterns").setData(geojson)
+      } else {
+          feed_map.addSource("service-patterns", { type: "geojson", data: geojson });
+
+          // Add line markers
+          feed_map.addLayer({
+            id: "service-patterns",
+            type: "line",
+            source: "service-patterns",
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
+            paint: {
+              "line-color": "#49A39A",
+              "line-width": 2,
+            },
+          });
+
+          // Add hover effect
+          feed_map.addLayer({
+            id: "service-patterns-hover",
+            type: "line",
+            source: "service-patterns",
+            layout: {},
+            paint: {
+              "line-color": "#34746e",
+              "line-width": [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                4.5,
+                0,
+              ],
+            },
+          });
+      }
+
+      // Fit map to features
+      var bounds = new mapboxgl.LngLatBounds();
+
+      // loop over LineString features and calculate bounds
+      geojson.features.forEach(function (feature) {
+        if (feature.geometry && feature.geometry.coordinates) {
+          bounds.extend(getLineStringBounds(feature.geometry.coordinates));
+        }
+      });
+
+      if (!bounds.isEmpty()) {
+        feed_map.fitBounds(bounds, {
+          padding: 20,
+        });
+      }
+    });
+}
+
+const refreshOrInitMap = (apiRoot, revisionId, lineName, serviceCodes, licenceNumber, registrationNumber) => {
+  if (feed_map) {
+    var servicePatternUrl = getMapDataUrl(apiRoot, revisionId, lineName, serviceCodes, licenceNumber, registrationNumber);
+    fetchDataAndUpdateMap(servicePatternUrl);
+  } else {
+    initMap(apiRoot, revisionId, lineName, serviceCodes, licenceNumber, registrationNumber)
+  }
+  
+}
+
+export { initMap, fetchAvlLiveLocation, refreshOrInitMap };

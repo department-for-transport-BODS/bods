@@ -68,9 +68,191 @@
         <h2 class="govuk-heading-l">
           Review Service Numbers
         </h2>
+        {% if is_prefetch_compliance_report_active %}
+          <table class="govuk-table">
+            <caption class="govuk-table__caption govuk-table__caption--m">Filter services by</caption>
+            <thead class="govuk-table__head">
+              <th scope="col" class="govuk-table__header">
+                Local transport authority
+              </th>
+              <th scope="col" class="govuk-table__header">
+                Scope/Seasonality
+              </th>
+              {% if has_frencise %}
+                <th scope="col" class="govuk-table__header">
+                  Franchise
+                </th>
+                <th scope="col" class="govuk-table__header">
+                  Operator
+                </th>
+              {% endif %}
+            </thead>
+            <tbody class="govuk-table__body">
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  {% for local_authority in local_authorities_list %}
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input licence-filter"
+                             checked="checked"
+                             id="lta_{{ local_authority.id }}"
+                             name="lta_details"
+                             type="checkbox"
+                             value="{{ local_authority.id }}" />
+                      <label class="govuk-label govuk-checkboxes__label" for="lta_{{ local_authority.id }}">
+                        {{ local_authority.name }}
+                      </label>
+                    </div>
+                  {% endfor %}
+                  {% if has_null_local_authority %}
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input licence-filter"
+                             checked="checked"
+                             id="lta_blank"
+                             name="lta_details"
+                             type="checkbox"
+                             value="blank" />
+                      <label class="govuk-label govuk-checkboxes__label" for="lta_blank">
+                        Not Assigned
+                      </label>
+                    </div>
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell">
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input licence-filter"
+                           checked="checked"
+                           id="in_scope_checkbox"
+                           name="scope_details"
+                           type="checkbox"
+                           value="service-in-scope" />
+                    <label class="govuk-label govuk-checkboxes__label" for="in_scope_checkbox">
+                      In Scope
+                    </label>
+                  </div>
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input licence-filter"
+                           id="out_of_scope_checkbox"
+                           name="scope_details"
+                           type="checkbox"
+                           value="service-out-of-scope" />
+                    <label class="govuk-label govuk-checkboxes__label" for="out_of_scope_checkbox">
+                      Out of scope
+                    </label>
+                  </div>
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input licence-filter"
+                           checked="checked"
+                           id="in_season_checkbox"
+                           name="season_details"
+                           type="checkbox"
+                           value="service-in-season" />
+                    <label class="govuk-label govuk-checkboxes__label" for="in_season_checkbox">
+                      In Season
+                    </label>
+                  </div>
+                  <div class="govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input licence-filter"
+                           id="out_of_season_checkbox"
+                           name="season_details"
+                           type="checkbox"
+                           value="service-out-of-season" />
+                    <label class="govuk-label govuk-checkboxes__label" for="out_of_season_checkbox">
+                      Out of season
+                    </label>
+                  </div>
+                </td>
+                {% if has_frencise %}
+                  <td class="govuk-table__cell">
+                    {% for frencise in frencise_list %}
+                      <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input licence-filter"
+                               checked="checked"
+                               id="franchise_{{ frencise.organisation_id }}"
+                               name="franchise_detailse"
+                               type="checkbox"
+                               value="{{ frencise.organisation_id }}" />
+                        <label class="govuk-label govuk-checkboxes__label" for="franchise_{{ frencise.organisation_id }}">
+                          {{ frencise.organisation_name }}
+                        </label>
+                      </div>
+                    {% endfor %}
+                  </td>
+                  <td class="govuk-table__cell">
+                    {% for organisation in organisations_list %}
+                      <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input licence-filter"
+                               checked="checked"
+                               id="operator_{{ organisation.licence_organisation_id }}"
+                               name="operator_details"
+                               type="checkbox"
+                               value="{{ organisation.licence_organisation_id }}" />
+                        <label class="govuk-label govuk-checkboxes__label" for="operator_{{ organisation.licence_organisation_id }}">
+                          {{ organisation.licence_organisation_name }}
+                        </label>
+                      </div>
+                    {% endfor %}
+                  </td>
+                {% endif %}
+              </tr>
+            </tbody>
+          </table>
+        {% endif %}
         <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
           {% if licence_services %}
-            {% for service in licence_services %}
+            {% if is_prefetch_compliance_report_active %}
+              <table class="govuk-table" id="licence-services-table">
+                <thead class="govuk-table__head">
+                  <th scope="col" class="govuk-table__header govuk-link sort-column">
+                    Service Number <i class="sort-icon fa fa-sort-asc"></i>
+                  </th>
+                  <th scope="col" class="govuk-table__header govuk-link sort-column">
+                    Timetable data
+                  </th>
+                  <th scope="col" class="govuk-table__header govuk-link sort-column">
+                    Location data
+                  </th>
+                  <th scope="col" class="govuk-table__header govuk-link sort-column">
+                    Fares data
+                  </th>
+                </thead>
+                <tbody class="govuk-table__body">
+                  {% for service in licence_services %}
+                    <tr class="govuk-table__row licence-details-service-row"
+                        data-operator="{{ service.licence_organisation_id }}"
+                        data-local-authority="{% if service.local_authorities_ids_strs %}
+                                                {{ service.local_authorities_ids_strs }}
+                                              {% else %}
+                                                blank
+                                              {% endif %}"
+                        data-service-code="{{ service.service_number }} - {{ service.registration_number }}"
+                        data-scope-status="{% if service.is_in_scope %}
+                                             service-in-scope
+                                           {% else %}
+                                             service-out-of-scope
+                                           {% endif %}"
+                        data-season-status="{% if service.is_in_season %}
+                                              service-in-season
+                                            {% else %}
+                                              service-out-of-season
+                                            {% endif %}">
+                      <td class="govuk-table__cell">
+                        <a class="govuk-link"
+                           href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?org_id={{ organisation_id }}&line={{ service.service_number }}&service={{ service.registration_number }}">{{ service.full_registration_number }}</a>
+                      </td>
+                      <td class="govuk-table__cell govuk-!-text-align-centre">
+                        <span class="sra-dot {% if service.requires_attention == "Yes" %} sra-dot-red {% else %} sra-dot-green {% endif %}"></span>
+                      </td>
+                      <td class="govuk-table__cell govuk-!-text-align-centre">
+                        <span class="sra-dot {% if service.avl_requires_attention == "Yes" %} sra-dot-red {% else %} sra-dot-green {% endif %}"></span>
+                      </td>
+                      <td class="govuk-table__cell govuk-!-text-align-centre">
+                        <span class="sra-dot {% if service.fares_requires_attention == "Yes" %} sra-dot-red {% else %} sra-dot-green {% endif %}"></span>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
               <p class="govuk-body govuk-!-padding-bottom-2 border-bottom-custom">
                 <a class="govuk-link"
                    href="{% url 'licence-line-detail' number=licence_number host hosts.data %}?org_id={{ organisation_id }}&line={{ service.service_number }}&service={{ service.registration_number }}">{{ service.service_number }} - {{ service.registration_number }}</a>
@@ -84,7 +266,7 @@
                   {{ service.label_str }}
                 </span>
               </p>
-            {% endfor %}
+            {% endif %}
           {% else %}
             <span>No Services Available</span>
           {% endif %}
@@ -115,7 +297,30 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-  {% if not error %}
-    <script nonce="{{request.csp_nonce}}">BODSFrontend.initMap("{{ api_root }}", undefined, undefined, undefined, "{{licence_number}}");</script>
+    <script nonce="{{request.csp_nonce}}">
+      var licenceNumber = "{{licence_number}}";
+      var errorInMapBox = "{% if not error %}no-error{% else %}error{% endif %}";
+    </script>
+  {% if is_prefetch_compliance_report_active %}
+    <script nonce="{{request.csp_nonce}}">
+      function refresheMap(registrationNumbers) {
+        if (errorInMapBox == "error") {
+          return
+        }
+        BODSFrontend.refreshOrInitMap("{{ api_root }}", undefined, undefined, undefined, licenceNumber, registrationNumbers.join(","));
+      }
+      $(document).ready(() => {
+        BODSFrontend.refreshLicencesList(refresheMap);
+
+        $(document).on("change", ".licence-filter", function(e) {
+          BODSFrontend.refreshLicencesList(refresheMap);
+        });
+
+        $(".sort-column").on("click", function() {
+          BODSFrontend.sortLicenceServicesTable($(this))
+        });
+      });
+      
+    </script>
   {% endif %}
 {% endblock %}

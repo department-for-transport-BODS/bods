@@ -369,3 +369,31 @@ ul.licence-list a {
 .csp-inline {
   display: inline !important;
 }
+
+.sra-dot {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.sra-dot-red {
+  background-color: #d4351c;
+}
+
+.sra-dot-green {
+  background-color: #00703c;
+}
+
+.sort-column > .fa-sort-asc {
+  position: relative;
+  top: 6px;
+}
+
+#licence-services-table th {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+  color: #1d70b8;
+}

@@ -1,5 +1,30 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "November 2025 (1.54.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release will deploy the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Infrastructure updates to bring the supporting libraries used by BODS.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    An improvement to the licence level page within Find BODS to enable LTAs and operators and other consumers to easily find services owned by that licence which require attention.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Bug fixes to resolve failures within the admin portal which previously displayed errors to the user.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "October 2025 (1.53.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
