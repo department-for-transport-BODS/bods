@@ -1,5 +1,6 @@
 from typing import Final
 
+from django.conf import settings
 from django.utils.translation import gettext as _
 from django_hosts import reverse
 
@@ -75,7 +76,7 @@ ERROR_CODE_LOOKUP = {
 ERROR_TYPE_PII = "Your TransXchange contains personal identifiable information"
 NEXT_STEPS_PII = "Please download the new transXchange tool here"
 LINK_PII = "https://www.gov.uk/guidance/publish-bus-open-data#publishing-your-bus-data"
-ADDITIONAL_SERVICES_PII = "The Help Desk can be contacted by telephone or email as follows.\n\nTelephone: +44 (0) 800 028 0930\nEmail: bodshelpdesk@kpmg.co.uk"
+ADDITIONAL_SERVICES_PII = f"The Help Desk can be contacted by telephone or email as follows.\n\nTelephone: {settings.SUPPORT_PHONE}\nEmail: {settings.SUPPORT_EMAIL}"
 
 ERROR_TYPE_SERVICE_CHECK = (
     "Attempted to publish for a service that is already in an active dataset"
