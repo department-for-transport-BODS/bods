@@ -7,7 +7,7 @@
   <p data-qa="registring-paragraph" class="govuk-body">
     {% blocktrans %}
             Operators can create an account for the Bus Open Data Digital Service by emailing
-            <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>.
+            <a class="govuk-link" href="mailto:{{ SUPPORT_EMAIL }}">{{ SUPPORT_EMAIL }}</a>.
         {% endblocktrans %}
   </p>
   <h2 data-qa="my-account-header" class="govuk-heading-l">
@@ -43,7 +43,7 @@
   <p data-qa="email-support-paragraph" class="govuk-body">
     {% blocktrans %}
             To change the operator’s long name on BODS, please contact
-            <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>.
+            <a class="govuk-link" href="mailto:{{ SUPPORT_EMAIL }}">{{ SUPPORT_EMAIL }}</a>.
         {% endblocktrans %}
   </p>
   <h2 data-qa="user-management-header" class="govuk-heading-l">
@@ -85,7 +85,7 @@
   <p data-qa="user-management-paragraph-6" class="govuk-body">
     {% blocktrans %}
             If you are having issues inviting a new user to your organisation, please contact
-            <a class="govuk-link" href="mailto:bodshelpdesk@kpmg.co.uk">bodshelpdesk@kpmg.co.uk</a>.
+            <a class="govuk-link" href="mailto:{{ SUPPORT_EMAIL }}">{{ SUPPORT_EMAIL }}</a>.
         {% endblocktrans %}
   </p>
 {% endblock %}

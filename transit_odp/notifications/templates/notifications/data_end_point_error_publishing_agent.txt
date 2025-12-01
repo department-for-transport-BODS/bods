@@ -20,7 +20,7 @@ Action required:
 Important:
 You are legally obliged to supply data according to the standards, and you must resolve all issues listed immediately.
 
-For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
+For support, please contact us on {{ SUPPORT_PHONE }}, or by email at {{ SUPPORT_EMAIL }}.
 
 Kind Regards,
 The Bus Open Data Team
