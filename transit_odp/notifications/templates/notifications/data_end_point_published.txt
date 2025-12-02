@@ -9,7 +9,7 @@ Published: {{ published_time }}
 Comments: {{ comments }}
 Link to dataset: {{ link }}
 
-For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
+For support, please contact us on {{ SUPPORT_PHONE }}, or by email at {{ SUPPORT_EMAIL }}.
 
 Kind Regards,
 The Bus Open Data Team

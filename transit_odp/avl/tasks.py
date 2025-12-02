@@ -88,6 +88,7 @@ def task_validate_avl_feed(task_id: str):
             url=revision.url_link,
             username=revision.username,
             password=revision.password,
+            requestor_ref=revision.requestor_ref,
         )
     except ReadTimeoutError:
         logger.warning("Request to Validation Service timed out.", exc_info=True)

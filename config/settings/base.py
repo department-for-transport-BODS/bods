@@ -748,6 +748,10 @@ if env("GEOS_LIBRARY_PATH", default=None):
 
 MAPBOX_KEY = env("MAPBOX_KEY", default=None)
 
+# Support Contact Details
+SUPPORT_EMAIL = env("SUPPORT_EMAIL")
+SUPPORT_PHONE = env("SUPPORT_PHONE")
+
 DJANGO_AXE_REPORT_PATH = os.path.join(
     str(APPS_DIR.path("static")), "accessibility_report.json"
 )

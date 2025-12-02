@@ -15,7 +15,7 @@ Action required:
 Important:
 If we are unable to access it after multiple attempts, we will send you an expiry notice. You are legally obliged to provide accurate and up-to-date bus data.
 
-For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
+For support, please contact us on {{ SUPPORT_PHONE }}, or by email at {{ SUPPORT_EMAIL }}.
 
 Kind regards,
 Bus Open Data Service
