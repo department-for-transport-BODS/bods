@@ -44,9 +44,12 @@ class GovUKNotifyEmail(NotificationBase):
 
     @property
     def templates(self) -> Dict[str, str]:
-        # This is now effectively a list of all the templates that need to move over
+        ## If in production we will use a different invite template
+        invite_template_id = "f4f5bf7f-aab6-4624-be8c-878d10629ada"
+        if settings.AWS_ENVIRONMENT.lower() == "prod":
+            invite_template_id = "9f4b5fd5-625a-44fb-8b4d-b50e8a7e7fb1"
         return {
-            "INVITE_USER": "9f4b5fd5-625a-44fb-8b4d-b50e8a7e7fb1",
+            "INVITE_USER": invite_template_id,
             "OPERATOR_INVITE_ACCEPTED": "46bf62b7-bd47-449e-bd86-2aa252fceac7",
             "OPERATOR_DATA_DELETED": "1b0c8b4f-e2ec-4004-a1c3-74f16649efba",
             "OPERATOR_DELETER_DATA_DELETED": "f7a1c6bf-9e4c-4896-a106-109f71fe52b6",

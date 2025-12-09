@@ -17,6 +17,10 @@ class DjangoNotifier(NotificationBase):
         self.from_email = getattr(
             settings, "DEFAULT_FROM_EMAIL", "Bus Open Data Service <noreply@bods.com>"
         )
+        self._defaults = {
+            "SUPPORT_EMAIL": settings.SUPPORT_EMAIL,
+            "SUPPORT_PHONE": settings.SUPPORT_PHONE,
+        }
 
     def _send_mail(self, template: str, email: str, subject: str, **kwargs):
         """
@@ -27,7 +31,8 @@ class DjangoNotifier(NotificationBase):
         :return:
         """
         template_path = self.templates[template]
-        body = render_to_string(template_path, kwargs)
+        payload = {**self._defaults, **kwargs}
+        body = render_to_string(template_path, payload)
 
         send_mail(subject, body, self.from_email, [email])
 
