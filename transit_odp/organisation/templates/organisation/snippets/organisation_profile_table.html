@@ -87,7 +87,7 @@
           {% include "publish/snippets/help_modals/service_code_exemption.html" %}
         </th>
         <td class="govuk-summary-list__row--no-border govuk-table__cell">
-          {{ service_code_exemptions.first.registration_number }}
+          <p>{{ service_code_exemptions.first.registration_number }}</p>
         </td>
       </tr>
       {% for service_code_exemption in service_code_exemptions %}
@@ -108,7 +108,7 @@
                        {% else %}
                          govuk-!-padding-0
                        {% endif %}">
-              {{ service_code_exemption.registration_number }}
+              <p>{{ service_code_exemption.registration_number }}</p>
             </td>
           </tr>
         {% endif %}
