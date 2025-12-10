@@ -17,9 +17,14 @@ class GovUKNotifyEmail(NotificationBase):
         api_key = settings.GOV_NOTIFY_API_KEY
         self.generic_template_id = settings.GENERIC_TEMPLATE_ID
         self._notification_client = NotificationsAPIClient(api_key=api_key)
+        self._defaults = {
+            "SUPPORT_EMAIL": settings.SUPPORT_EMAIL,
+            "SUPPORT_PHONE": settings.SUPPORT_PHONE,
+        }
 
     def _send_mail(self, template: str, email: str, subject: str, **kwargs):
         template_id = self.templates.get(template, self.generic_template_id)
+        kwargs = {**self._defaults, **kwargs}
         if template_id == self.generic_template_id:
             # We want to eventually move all emails to the custom template
             # here we only need to define body and subject
