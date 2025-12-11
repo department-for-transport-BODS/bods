@@ -1,6 +1,6 @@
 Congratulations!
 
-Timetable/Fares/AVL dataset has been published successfully to the Bus Open Data Service.
+Timetable/Fares/AVL dataset has been published successfully b to the Bus Open Data Service.
 
 Dataset: {{ feed_name }}
 Dataset ID: {{ feed_id }}

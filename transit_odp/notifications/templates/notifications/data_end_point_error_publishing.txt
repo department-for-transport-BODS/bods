@@ -1,6 +1,6 @@
 Hello,
 
-The following data set has failed to upload on the Bus Open Data Service due to validation errors{% if dataset_type == 1 %} supplied in the Validation report{% endif %}.
+The following data set has failed to upload on the b Bus Open Data Service due to validation errors{% if dataset_type == 1 %} supplied in the Validation report{% endif %}.
 
 Data set: {{ feed_name }}
 Data set ID: {{ feed_id }}
