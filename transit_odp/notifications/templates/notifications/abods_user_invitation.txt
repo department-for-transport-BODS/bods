@@ -9,7 +9,7 @@ Action Required:
 2) You can bookmark the following link which is the homepage of the Analyse Bus Open Data Service:
 https://analyse.bus-data.dft.gov.uk/
 
-For support, please contact us on 0800 028 8531, or by email at bodshelpdesk@kpmg.co.uk.
+For support, please contact us on {{ SUPPORT_PHONE }}, or by email at {{ SUPPORT_EMAIL }}.
 
 We may email you to ask for feedback. If you do not want us to do this, please email “no research” to BusOpenData@dft.gov.uk.
 

@@ -53,7 +53,7 @@
           <ul class="govuk-list">
             {% for metrics_archive in object_list %}
               <li>
-                <a class="govuk-link" href="{% url 'download-metrics-detail' pk=metrics_archive.id %}">
+                <a class="govuk-link" href="{% url 'download-metrics-detail' pk=metrics_archive.id host hosts.admin %}">
                   {% blocktrans %}
                     Download API consumer metrics for
                   {% endblocktrans %}

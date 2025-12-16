@@ -11,6 +11,7 @@ class ValidationTaskResult(BaseModel):
     url: str
     username: str
     password: Optional[str] = None
+    requestor_ref: Optional[str] = None
     status: ValidationTaskResultStatus = ValidationTaskResultStatus.DEPLOYING.value
     created: datetime
     version: Optional[str] = None

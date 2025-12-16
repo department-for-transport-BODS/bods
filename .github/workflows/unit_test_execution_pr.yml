@@ -228,6 +228,8 @@ jobs:
         DJANGO_HOST_PORT: 8000
         DJANGO_HOST_SCHEME: http
         EMAIL_HOST: localhost
+        SUPPORT_EMAIL: __change_me__
+        SUPPORT_PHONE: __change_me__
         REDIS_URL: redis://redis:6379/0
         CELERY_FLOWER_USER: admin
         CELERY_FLOWER_PASSWORD: admin

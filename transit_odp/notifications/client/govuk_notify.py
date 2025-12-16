@@ -17,9 +17,14 @@ class GovUKNotifyEmail(NotificationBase):
         api_key = settings.GOV_NOTIFY_API_KEY
         self.generic_template_id = settings.GENERIC_TEMPLATE_ID
         self._notification_client = NotificationsAPIClient(api_key=api_key)
+        self._defaults = {
+            "SUPPORT_EMAIL": settings.SUPPORT_EMAIL,
+            "SUPPORT_PHONE": settings.SUPPORT_PHONE,
+        }
 
     def _send_mail(self, template: str, email: str, subject: str, **kwargs):
         template_id = self.templates.get(template, self.generic_template_id)
+        kwargs = {**self._defaults, **kwargs}
         if template_id == self.generic_template_id:
             # We want to eventually move all emails to the custom template
             # here we only need to define body and subject
@@ -44,9 +49,12 @@ class GovUKNotifyEmail(NotificationBase):
 
     @property
     def templates(self) -> Dict[str, str]:
-        # This is now effectively a list of all the templates that need to move over
+        ## If in production we will use a different invite template
+        invite_template_id = "f4f5bf7f-aab6-4624-be8c-878d10629ada"
+        if settings.AWS_ENVIRONMENT.lower() == "prod":
+            invite_template_id = "9f4b5fd5-625a-44fb-8b4d-b50e8a7e7fb1"
         return {
-            "INVITE_USER": "9f4b5fd5-625a-44fb-8b4d-b50e8a7e7fb1",
+            "INVITE_USER": invite_template_id,
             "OPERATOR_INVITE_ACCEPTED": "46bf62b7-bd47-449e-bd86-2aa252fceac7",
             "OPERATOR_DATA_DELETED": "1b0c8b4f-e2ec-4004-a1c3-74f16649efba",
             "OPERATOR_DELETER_DATA_DELETED": "f7a1c6bf-9e4c-4896-a106-109f71fe52b6",
