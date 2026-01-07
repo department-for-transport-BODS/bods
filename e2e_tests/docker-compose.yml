@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  e2e-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - TEST_BASE_URL=${TEST_BASE_URL}
+      - TEST_DATA_URL=${TEST_DATA_URL}
+      - TEST_PUBLISH_URL=${TEST_PUBLISH_URL}
+      - TEST_USER_EMAIL=${TEST_USER_EMAIL}
+      - TEST_USER_PASSWORD=${TEST_USER_PASSWORD}
+      - TEST_ORGANISATION_NAME=${TEST_ORGANISATION_NAME}
+      - DEFAULT_TIMEOUT=${DEFAULT_TIMEOUT:-30000}
+      - NAVIGATION_TIMEOUT=${NAVIGATION_TIMEOUT:-30000}
+      - IGNORE_HTTPS_ERRORS=${IGNORE_HTTPS_ERRORS:-false}
+      - CI=true
+    volumes:
+      - ./playwright-report:/app/e2e_tests/playwright-report
+      - ./test-results:/app/e2e_tests/test-results
+    command: npm test
