@@ -1,0 +1,114 @@
+/**
+ * Dataset Filters Styles
+ * 
+ * 
+ * Matches Django SCSS from transit_odp/frontend/assets/sass/components/search/_search.scss
+ */
+
+/* Filter pillbox (active filter tags) */
+.search-pillbox {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: center;
+  background-color: #f8f8f8; /* light-grey-25 */
+  width: initial;
+  min-height: 40px;
+  padding: 15px;
+  border: 0;
+  margin: 0 0 20px 0;
+}
+
+.search-pillbox a {
+  text-decoration: none;
+}
+
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Individual pill/tag */
+.pill-item {
+  border: solid 1px #505a5f; /* dark-grey */
+  background-color: #efefef; /* light-grey-50 */
+  border-radius: 4px;
+  padding: 5px;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pill-item:hover {
+  background-color: #e0e0e0;
+}
+
+.pill-item:focus {
+  outline: 3px solid #ffdd00; /* GDS focus color */
+  outline-offset: 0;
+  background-color: #ffdd00;
+}
+
+.pill-item__label {
+  padding: 5px;
+  color: #0b0c0c; /* black */
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.pill-item__image {
+  padding: 5px;
+  align-self: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* Pillbox separator line */
+.pillbox-break {
+  border-bottom-color: #0b0c0c; /* black */
+  margin-bottom: 15px;
+}
+
+/* Dataset filters form */
+.dataset-filters {
+  padding: 20px 0;
+}
+
+.dataset-filters .govuk-form-group {
+  margin-bottom: 20px;
+}
+
+/* Filter search input (for org dropdown) */
+.dataset-filters input[type="text"] {
+  margin-bottom: 10px;
+}
+
+/* Ensure dropdowns are full width */
+.dataset-filters .govuk-select {
+  width: 100%;
+}
+
+/* Filter buttons */
+.dataset-filters .govuk-button {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.dataset-filters .govuk-button--secondary {
+  background-color: #f3f2f1;
+  color: #0b0c0c;
+  box-shadow: 0 2px 0 #929191;
+}
+
+.dataset-filters .govuk-button--secondary:hover {
+  background-color: #dbdad9;
+}
+
+/* Active filters region */
+.active-filter-tags {
+  margin-bottom: 20px;
+}

@@ -1,0 +1,83 @@
+/**
+ * Global styles for BODS Next.js
+ * 
+ * GDS styles are imported via GDSProvider component.
+ * This file contains BODS-specific styles that extend GDS.
+ * 
+ * DO NOT add styles that conflict with GDS - the site must look
+ * identical to the Django version which uses govuk-frontend.
+ */
+
+/* Reset any browser defaults that might conflict */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Ensure body has no margin */
+body {
+  margin: 0;
+}
+
+/**
+ * BODS Custom Components
+ * These styles match the Django frontend exactly
+ */
+
+/* Masthead / Hero Section */
+.app-masthead {
+  padding-top: 0.1px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #1d70b8; /* govuk-colour("blue") */
+  color: #ffffff;
+  background-color: #1d70b8; /* govuk-colour("blue") */
+  margin-top: 16px;
+}
+
+.app-masthead .govuk-body {
+  color: #ffffff !important;
+}
+
+.app-masthead .govuk-body a {
+  color: #ffffff !important;
+}
+
+.app-masthead__title {
+  color: #ffffff !important;
+  margin-bottom: 20px;
+  white-space: nowrap;
+}
+
+/* Inverted links for masthead */
+.app-a--inverted,
+.app-a--inverted:link,
+.app-a--inverted:visited {
+  color: #ffffff !important;
+}
+
+/* Inverted button for masthead */
+.app-button--inverted,
+.app-button--inverted:link,
+.app-button--inverted:visited {
+  color: #1d70b8;
+  background-color: #ffffff;
+  box-shadow: 0 2px 0 #1d70b8;
+}
+
+/* Bold links */
+.govuk-link-bold {
+  font-weight: 700;
+}
+
+/* Navigation list */
+.app-list--nav {
+  margin-top: 0;
+}
+
+.app-list--nav li {
+  margin-bottom: 10px;
+}
+
+/* Navigation bold link */
+.app-nav-bold {
+  font-weight: 700;
+}
