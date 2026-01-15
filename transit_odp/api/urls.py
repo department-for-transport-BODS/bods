@@ -18,6 +18,7 @@ from transit_odp.api.views import (
     TimetablesViewSet,
     v2,
 )
+from transit_odp.api.views.auth import CurrentUserAPIView
 from transit_odp.api.views.avl import (
     AVLManageSubscriptionsView,
     AVLManageSubscriptionDetailView,
@@ -53,6 +54,9 @@ fares_views = get_swagger_view(title="Fares Data API")
 disruptions_views = get_swagger_view(title="Disruption Data API")
 
 urlpatterns = [
+    # Authentication endpoints for NextJS
+    path("user/", CurrentUserAPIView.as_view(), name="current-user"),
+    
     path("timetable-openapi/", TimetablesApiView.as_view(), name="timetableopenapi"),
     path("buslocation-api/", AVLApiServiceView.as_view(), name="buslocation-api"),
     path(
