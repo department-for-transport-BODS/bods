@@ -458,15 +458,21 @@ class TestDatasetQuerySet:
         reprocessed but subsequently set to inactive"""
         datasets = DatasetFactory.create_batch(3, live_revision=None)
         DatasetRevisionFactory(
-            dataset=datasets[0], is_published=True, status=FeedStatus.live.value,
+            dataset=datasets[0],
+            is_published=True,
+            status=FeedStatus.live.value,
         )
         DatasetRevisionFactory(
-            dataset=datasets[1], is_published=True, status=FeedStatus.inactive.value,
-                status_before_reprocessing=FeedStatus.live.value
+            dataset=datasets[1],
+            is_published=True,
+            status=FeedStatus.inactive.value,
+            status_before_reprocessing=FeedStatus.live.value,
         )
         DatasetRevisionFactory(
-            dataset=datasets[2], is_published=True, status=FeedStatus.inactive.value,
-            status_before_reprocessing=FeedStatus.inactive.value
+            dataset=datasets[2],
+            is_published=True,
+            status=FeedStatus.inactive.value,
+            status_before_reprocessing=FeedStatus.inactive.value,
         )
         qs = Dataset.objects.get_active()
         assert len(qs) == 1
