@@ -682,6 +682,7 @@ class DatasetQuerySet(models.QuerySet):
                 )
             )
             .exclude(effective_status__in=exclude_status)
+            .exclude(live_revision__status__in=exclude_status)
         )
         if dataset_type is not None:
             qs = qs.filter(dataset_type=dataset_type)
