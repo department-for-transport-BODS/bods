@@ -43,7 +43,7 @@ django-waffle = "^4.1.0"
 djangorestframework = "~=3.14.0"
 djangorestframework-gis = "~=1.0"
 djangorestframework-simplejwt = "~=5.3.1"
-dj-rest-auth = { extras = ["with_social"], version = "~=5.0.2" }
+dj-rest-auth = { extras = ["with_social"], version = "~=6.0" }
 flower = "~=2.0.1"
 freezegun = "~=1.4.0"
 geopandas = "~=1.0.1"
