@@ -26,7 +26,7 @@ jobs:
       - name: black
         uses: psf/black@stable
         with:
-          options: "--check --config .black.toml"
+          options: "--check --diff --config .black.toml"
           src: "."
           version: "22.3.0"
 

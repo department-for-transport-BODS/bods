@@ -453,6 +453,31 @@ class TestDatasetQuerySet:
         assert len(qs) == 1
         assert qs[0].id == datasets[0].id
 
+    def test_get_inactive_reprocessed(self):
+        """Tests queryset is filtered to exclude datasets that were live when
+        reprocessed but subsequently set to inactive"""
+        datasets = DatasetFactory.create_batch(3, live_revision=None)
+        DatasetRevisionFactory(
+            dataset=datasets[0],
+            is_published=True,
+            status=FeedStatus.live.value,
+        )
+        DatasetRevisionFactory(
+            dataset=datasets[1],
+            is_published=True,
+            status=FeedStatus.inactive.value,
+            status_before_reprocessing=FeedStatus.live.value,
+        )
+        DatasetRevisionFactory(
+            dataset=datasets[2],
+            is_published=True,
+            status=FeedStatus.inactive.value,
+            status_before_reprocessing=FeedStatus.inactive.value,
+        )
+        qs = Dataset.objects.get_active()
+        assert len(qs) == 1
+        assert qs[0].id == datasets[0].id
+
     def test_get_only_active_datasets_bulk_archive(self):
         """
         Tests queryset is filtered to exclude datasets which have an inactive status
