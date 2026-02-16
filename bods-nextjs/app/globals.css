@@ -30,7 +30,7 @@ body {
   border-bottom: 1px solid #1d70b8; /* govuk-colour("blue") */
   color: #ffffff;
   background-color: #1d70b8; /* govuk-colour("blue") */
-  margin-top: 16px;
+  margin-top: 0;
 }
 
 .app-masthead .govuk-body {
@@ -47,6 +47,15 @@ body {
   white-space: nowrap;
 }
 
+.app-masthead__description {
+  max-width: 40em;
+}
+
+.app-feature-block {
+  margin-bottom: 32px;
+  max-width: 40em;
+}
+
 /* Inverted links for masthead */
 .app-a--inverted,
 .app-a--inverted:link,
@@ -55,12 +64,30 @@ body {
 }
 
 /* Inverted button for masthead */
-.app-button--inverted,
-.app-button--inverted:link,
-.app-button--inverted:visited {
-  color: #1d70b8;
-  background-color: #ffffff;
-  box-shadow: 0 2px 0 #1d70b8;
+.govuk-button.app-button--inverted,
+.govuk-button.app-button--inverted:link,
+.govuk-button.app-button--inverted:visited,
+.govuk-button.app-button--inverted:hover,
+.govuk-button.app-button--inverted:focus,
+.govuk-button.app-button--inverted:active {
+  color: #1d70b8 !important;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 2px 0 #1d70b8 !important;
+  text-decoration: none;
+}
+
+.govuk-button.app-button--inverted:hover {
+  background-color: #f3f2f1 !important;
+}
+
+.govuk-button.app-button--inverted:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+}
+
+.govuk-button.app-button--inverted:active {
+  top: 2px;
 }
 
 /* Bold links */

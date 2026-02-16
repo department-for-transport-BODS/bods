@@ -9,7 +9,7 @@ npx playwright install chromium
 
 # Configure
 cp .env.example .env
-# Edit .env with appropratie details
+# Edit .env with appropriate details
 
 # Run tests
 npm test                    # Headless

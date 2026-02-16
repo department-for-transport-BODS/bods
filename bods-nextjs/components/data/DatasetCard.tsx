@@ -111,14 +111,14 @@ export function DatasetCard({ dataset }: DatasetCardProps) {
             <div className="govuk-summary-list__row">
               <dt className="govuk-summary-list__key">Data quality</dt>
               <dd className="govuk-summary-list__value">
-                <span
-                  className={qualityBadgeClass}
-                 DataQualityBadge
+                <DataQualityBadge
                   score={dataset.dqScore}
                   rag={dataset.dqRag}
                   variant="inline"
                   size="small"
-                /
+                />
+              </dd>
+            </div>
             {dataset.description && (
               <div className="govuk-summary-list__row">
                 <dt className="govuk-summary-list__key">Description</dt>
