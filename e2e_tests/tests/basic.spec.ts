@@ -4,7 +4,7 @@ import { HomePage } from '../pages/HomePage';
 
 test.describe('Basic Functionality', () => {
     /*
-    These are just basic proof of concept tests to prove that the test ssteup is working.
+    These are just basic proof of concept tests to prove that the test setup is working.
     More comprehensive/bespoke tests should be added in their own files.
     */
   test('homepage loads successfully', async ({ page }) => {
