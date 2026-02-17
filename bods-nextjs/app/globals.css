@@ -288,3 +288,109 @@ body {
 .app-mb-sm-0 {
   margin-bottom: 0;
 }
+
+/* Guide me step navigation pattern */
+.app-step-nav__steps {
+  padding: 0;
+  margin: 0;
+}
+
+.app-step-nav__step {
+  position: relative;
+  list-style: none;
+  padding-left: 45px;
+}
+
+.app-step-nav__step::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 12px;
+  width: 0;
+  height: 100%;
+  border-left: 2px solid #b1b4b6;
+  background: #ffffff;
+}
+
+.app-step-nav__step:last-child::before {
+  content: "";
+  position: absolute;
+  z-index: 6;
+  bottom: 0;
+  left: 6px;
+  width: 13px;
+  height: 0;
+  border-bottom: 2px solid #b1b4b6;
+}
+
+.app-step-nav__step:last-child::after {
+  height: calc(100% - 15px);
+}
+
+.app-step-nav__header {
+  padding: 15px 0;
+  border-top: 2px solid #b1b4b6;
+}
+
+.app-step-nav__title {
+  color: #0b0c0c;
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 700;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__circle {
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 5;
+  top: 15px;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  color: #0b0c0c;
+  background: #ffffff;
+  border-radius: 100px;
+  text-align: center;
+}
+
+.app-step-nav__circle--number {
+  border: 2px solid #b1b4b6;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 23px;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__circle-inner {
+  float: right;
+  min-width: 100%;
+}
+
+.app-step-nav__panel {
+  color: #0b0c0c;
+  font-size: 16px;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__paragraph {
+  padding-bottom: 15px;
+  margin: 0;
+}
+
+/* Dashed list style used by guidance section index pages */
+ul.dashed {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul.dashed > li {
+  text-indent: -10px;
+  padding-left: 10px;
+}
+
+ul.dashed > li::before {
+  content: "-";
+  margin-right: 4px;
+}
