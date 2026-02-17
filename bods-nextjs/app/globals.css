@@ -108,3 +108,183 @@ body {
 .app-nav-bold {
   font-weight: 700;
 }
+
+/* Data browser shared styles */
+.app-data-browser__searchbox {
+  width: 100%;
+  display: flex;
+  margin-bottom: 0;
+}
+
+.app-data-browser__searchbox-input {
+  width: 100%;
+  height: 45px;
+  z-index: 1;
+  border-right: 0;
+  padding: 0 10px;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+}
+
+.app-data-browser__searchbox-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0b0c0c;
+  height: 45px;
+  width: 45px;
+  border: 0;
+  cursor: pointer;
+}
+
+.app-data-browser__searchbox-button:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+}
+
+.app-data-browser__search-description {
+  margin-bottom: 10px;
+}
+
+.app-data-browser__result-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.125rem;
+}
+
+.app-data-browser__title-link {
+  margin-right: 1rem;
+}
+
+.app-data-browser__status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.app-data-browser__status-dot--live {
+  background-color: #00703c;
+}
+
+.app-data-browser__status-dot--inactive {
+  background-color: #6f777b;
+}
+
+.app-data-browser__status-dot--error {
+  background-color: #d4351c;
+}
+
+.app-data-browser__status-text {
+  font-size: 16px;
+}
+
+.app-data-browser__key-value-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 8px;
+}
+
+.app-data-browser__key-value-item {
+  display: flex;
+  margin-bottom: 4px;
+}
+
+.app-data-browser__item-key {
+  width: 170px;
+  font-weight: 700;
+}
+
+.app-data-browser__item-value {
+  flex: 1;
+}
+
+.app-data-browser__results-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.app-data-browser__filter-pillbox {
+  display: flex;
+  align-items: center;
+  background-color: #f8f8f8;
+  min-height: 48px;
+  padding: 10px;
+  border: 0;
+  margin-bottom: 12px;
+}
+
+.app-data-browser__filter-pill {
+  border: 1px solid #505a5f;
+  border-radius: 4px;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  background-color: #ffffff;
+  font-size: 16px;
+}
+
+.app-data-browser__pill-remove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  margin-right: 4px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.app-data-browser__sort-control {
+  margin-bottom: 16px;
+  max-width: 240px;
+}
+
+.app-data-browser__result-item {
+  margin-bottom: 24px;
+}
+
+.app-data-browser__result-divider {
+  border: 0;
+  border-bottom: 1px solid #b1b4b6;
+  margin: 20px 0;
+}
+
+/* Dataset detail shared styles */
+.consumer-property-table {
+  margin-bottom: 30px;
+}
+
+.dont-break-out {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.govuk-button-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.app-mb-4 {
+  margin-bottom: 20px;
+}
+
+.app-mb-sm-0 {
+  margin-bottom: 0;
+}
