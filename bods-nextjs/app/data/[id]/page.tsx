@@ -87,10 +87,10 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
       <main className="govuk-main-wrapper" id="main-content" role="main">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-l app-!-mb-4 dont-break-out">
+            <h1 className="govuk-heading-l app-mb-4 dont-break-out">
               {dataset.name}
             </h1>
-            <p className="govuk-body app-!-mb-sm-0">
+            <p className="govuk-body app-mb-sm-0">
               Overview of the available bus open data
             </p>
           </div>

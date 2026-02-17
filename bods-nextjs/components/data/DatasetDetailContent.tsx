@@ -27,7 +27,6 @@ import { DataQualityBadge } from './DataQualityBadge';
 import { DownloadSubscribePanel } from './DownloadSubscribePanel';
 import { ApiUrlPanel } from './ApiUrlPanel';
 import { RouteMap } from './RouteMap';
-import { StopMap } from './StopMap';
 
 interface DatasetDetailContentProps {
   dataset: Dataset;
@@ -235,54 +234,7 @@ export function DatasetDetailContent({ dataset }: DatasetDetailContentProps) {
           setIsSubscribed(subscribed);
           console.log('Subscribe toggle:', subscribed);
         }}
-      /
-            {isSubscribed ? 'Unsubscribe from updates' : 'Subscribe to updates'}
-          </button>
-        </div>
-      </div>
-
-      <style jsx>{`
-        .consumer-property-table {
-          margin-bottom: 30px;
-        }
-
-        .dont-break-out {
-          word-wrap: break-word;
-          overflow-wrap: break-word;
-        }
-
-        .stacked {
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-        }
-
-        .flex-between {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .api-url-panel {
-          background-color: #f3f2f1;
-          padding: 15px;
-          border-radius: 4px;
-          overflow-x: auto;
-        }
-
-        .govuk-button-group {
-          display: flex;
-          gap: 10px;
-          flex-wrap: wrap;
-        }
-
-        .app-!-mb-4 {
-          margin-bottom: 20px;
-        }
-
-        .app-!-mb-4 {
-          margin-bottom: 20px;
-        }
-
-        .app-!-mb-sm-0 {
-          margin-bottom: 0
+      />
+    </div>
+  );
+}
