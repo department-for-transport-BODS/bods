@@ -1,0 +1,135 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'e2e_tests/**'
+      - '.github/workflows/e2e-tests.yml'
+  pull_request:
+    paths:
+      - 'commente2e_tests/**'
+      - 'comment.github/workflows/e2e-tests.yml'
+  workflow_run:
+    workflows: ["dev_deployment"]
+    types:
+      - completed
+    branches:
+      - dev
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    environment: dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Wait for deployment to stabilize
+        if: github.event_name == 'workflow_run'
+        run: |
+          echo "Waiting 2 minutes for deployment to fully stabilize..."
+          sleep 120
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: e2e_tests/package-lock.json
+
+      - name: Install dependencies
+        working-directory: e2e_tests
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: e2e_tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        working-directory: e2e_tests
+        run: npm run test:ci
+        env:
+          TEST_BASE_URL: ${{ secrets.TEST_BASE_URL }}
+          TEST_DATA_URL: ${{ secrets.TEST_DATA_URL }}
+          TEST_PUBLISH_URL: ${{ secrets.TEST_PUBLISH_URL }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          TEST_ORGANISATION_NAME: ${{ secrets.TEST_ORGANISATION_NAME }}
+          DEFAULT_TIMEOUT: 30000
+          NAVIGATION_TIMEOUT: 30000
+          CI: true
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: e2e_tests/playwright-report/
+          retention-days: 2
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: e2e_tests/test-results/
+          retention-days: 2
+
+      - name: Generate test summary
+        if: always()
+        run: |
+          echo "## E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "All E2E tests against dev environment passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Some E2E tests failed. Check the artifacts for details." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** dev" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            echo "**Deployment workflow:** ${{ github.event.workflow_run.name }}" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Comment on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ job.status }}' === 'success' ? '✅' : '❌';
+            const result = '${{ job.status }}' === 'success'
+              ? 'All E2E tests against dev environment passed!'
+              : 'Some E2E tests failed. Check the artifacts for details.';
+
+            const comment = `## ${status} E2E Test Results
+
+            ${result}
+
+            **Environment:** dev
+            **Workflow Run:** [View Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            <details>
+            <summary>📦 Artifacts</summary>
+
+            - Playwright Report
+            - Test Results
+
+            Download from the workflow run link above.
+            </details>`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

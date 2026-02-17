@@ -1,0 +1,396 @@
+/**
+ * Global styles for BODS Next.js
+ * 
+ * GDS styles are imported via GDSProvider component.
+ * This file contains BODS-specific styles that extend GDS.
+ * 
+ * DO NOT add styles that conflict with GDS - the site must look
+ * identical to the Django version which uses govuk-frontend.
+ */
+
+/* Reset any browser defaults that might conflict */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Ensure body has no margin */
+body {
+  margin: 0;
+}
+
+/**
+ * BODS Custom Components
+ * These styles match the Django frontend exactly
+ */
+
+/* Masthead / Hero Section */
+.app-masthead {
+  padding-top: 0.1px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #1d70b8; /* govuk-colour("blue") */
+  color: #ffffff;
+  background-color: #1d70b8; /* govuk-colour("blue") */
+  margin-top: 0;
+}
+
+.app-masthead .govuk-body {
+  color: #ffffff !important;
+}
+
+.app-masthead .govuk-body a {
+  color: #ffffff !important;
+}
+
+.app-masthead__title {
+  color: #ffffff !important;
+  margin-bottom: 20px;
+  white-space: nowrap;
+}
+
+.app-masthead__description {
+  max-width: 40em;
+}
+
+.app-feature-block {
+  margin-bottom: 32px;
+  max-width: 40em;
+}
+
+/* Inverted links for masthead */
+.app-a--inverted,
+.app-a--inverted:link,
+.app-a--inverted:visited {
+  color: #ffffff !important;
+}
+
+/* Inverted button for masthead */
+.govuk-button.app-button--inverted,
+.govuk-button.app-button--inverted:link,
+.govuk-button.app-button--inverted:visited,
+.govuk-button.app-button--inverted:hover,
+.govuk-button.app-button--inverted:focus,
+.govuk-button.app-button--inverted:active {
+  color: #1d70b8 !important;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 2px 0 #1d70b8 !important;
+  text-decoration: none;
+}
+
+.govuk-button.app-button--inverted:hover {
+  background-color: #f3f2f1 !important;
+}
+
+.govuk-button.app-button--inverted:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+}
+
+.govuk-button.app-button--inverted:active {
+  top: 2px;
+}
+
+/* Bold links */
+.govuk-link-bold {
+  font-weight: 700;
+}
+
+/* Navigation list */
+.app-list--nav {
+  margin-top: 0;
+}
+
+.app-list--nav li {
+  margin-bottom: 10px;
+}
+
+/* Navigation bold link */
+.app-nav-bold {
+  font-weight: 700;
+}
+
+/* Data browser shared styles */
+.app-data-browser__searchbox {
+  width: 100%;
+  display: flex;
+  margin-bottom: 0;
+}
+
+.app-data-browser__searchbox-input {
+  width: 100%;
+  height: 45px;
+  z-index: 1;
+  border-right: 0;
+  padding: 0 10px;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+}
+
+.app-data-browser__searchbox-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0b0c0c;
+  height: 45px;
+  width: 45px;
+  border: 0;
+  cursor: pointer;
+}
+
+.app-data-browser__searchbox-button:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+}
+
+.app-data-browser__search-description {
+  margin-bottom: 10px;
+}
+
+.app-data-browser__result-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.125rem;
+}
+
+.app-data-browser__title-link {
+  margin-right: 1rem;
+}
+
+.app-data-browser__status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.app-data-browser__status-dot--live {
+  background-color: #00703c;
+}
+
+.app-data-browser__status-dot--inactive {
+  background-color: #6f777b;
+}
+
+.app-data-browser__status-dot--error {
+  background-color: #d4351c;
+}
+
+.app-data-browser__status-text {
+  font-size: 16px;
+}
+
+.app-data-browser__key-value-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 8px;
+}
+
+.app-data-browser__key-value-item {
+  display: flex;
+  margin-bottom: 4px;
+}
+
+.app-data-browser__item-key {
+  width: 170px;
+  font-weight: 700;
+}
+
+.app-data-browser__item-value {
+  flex: 1;
+}
+
+.app-data-browser__results-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.app-data-browser__filter-pillbox {
+  display: flex;
+  align-items: center;
+  background-color: #f8f8f8;
+  min-height: 48px;
+  padding: 10px;
+  border: 0;
+  margin-bottom: 12px;
+}
+
+.app-data-browser__filter-pill {
+  border: 1px solid #505a5f;
+  border-radius: 4px;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  background-color: #ffffff;
+  font-size: 16px;
+}
+
+.app-data-browser__pill-remove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  margin-right: 4px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.app-data-browser__sort-control {
+  margin-bottom: 16px;
+  max-width: 240px;
+}
+
+.app-data-browser__result-item {
+  margin-bottom: 24px;
+}
+
+.app-data-browser__result-divider {
+  border: 0;
+  border-bottom: 1px solid #b1b4b6;
+  margin: 20px 0;
+}
+
+/* Dataset detail shared styles */
+.consumer-property-table {
+  margin-bottom: 30px;
+}
+
+.dont-break-out {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.govuk-button-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.app-mb-4 {
+  margin-bottom: 20px;
+}
+
+.app-mb-sm-0 {
+  margin-bottom: 0;
+}
+
+/* Guide me step navigation pattern */
+.app-step-nav__steps {
+  padding: 0;
+  margin: 0;
+}
+
+.app-step-nav__step {
+  position: relative;
+  list-style: none;
+  padding-left: 45px;
+}
+
+.app-step-nav__step::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 12px;
+  width: 0;
+  height: 100%;
+  border-left: 2px solid #b1b4b6;
+  background: #ffffff;
+}
+
+.app-step-nav__step:last-child::before {
+  content: "";
+  position: absolute;
+  z-index: 6;
+  bottom: 0;
+  left: 6px;
+  width: 13px;
+  height: 0;
+  border-bottom: 2px solid #b1b4b6;
+}
+
+.app-step-nav__step:last-child::after {
+  height: calc(100% - 15px);
+}
+
+.app-step-nav__header {
+  padding: 15px 0;
+  border-top: 2px solid #b1b4b6;
+}
+
+.app-step-nav__title {
+  color: #0b0c0c;
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 700;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__circle {
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 5;
+  top: 15px;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  color: #0b0c0c;
+  background: #ffffff;
+  border-radius: 100px;
+  text-align: center;
+}
+
+.app-step-nav__circle--number {
+  border: 2px solid #b1b4b6;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 23px;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__circle-inner {
+  float: right;
+  min-width: 100%;
+}
+
+.app-step-nav__panel {
+  color: #0b0c0c;
+  font-size: 16px;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__paragraph {
+  padding-bottom: 15px;
+  margin: 0;
+}
+
+/* Dashed list style used by guidance section index pages */
+ul.dashed {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul.dashed > li {
+  text-indent: -10px;
+  padding-left: 10px;
+}
+
+ul.dashed > li::before {
+  content: "-";
+  margin-right: 4px;
+}

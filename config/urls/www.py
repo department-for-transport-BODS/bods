@@ -22,6 +22,9 @@ from transit_odp.common.views import (
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    # API endpoints for NextJS integration - using dj-rest-auth with JWT
+    path("api/auth/", include("dj_rest_auth.urls")),
+    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
     path(
         "contact/",
         TemplateView.as_view(template_name="pages/contact.html"),
