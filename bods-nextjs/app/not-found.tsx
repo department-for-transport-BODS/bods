@@ -26,41 +26,10 @@ export default function NotFound() {
             <p className="govuk-body">
               If the web address is correct or you selected a link or button,{' '}
               <Link href="/contact" className="govuk-link">
-                contact us
+                contact Bus open data support line
               </Link>{' '}
               if you need to speak to someone about the service.
             </p>
-
-            <div className="govuk-button-group">
-              <Link
-                href="/"
-                className="govuk-button"
-                data-module="govuk-button"
-                aria-label="Return to the homepage"
-              >
-                Go to homepage
-              </Link>
-            </div>
-
-            <h2 className="govuk-heading-m">Looking for something specific?</h2>
-
-            <ul className="govuk-list">
-              <li>
-                <Link href="/data" className="govuk-link">
-                  Browse bus data
-                </Link>
-              </li>
-              <li>
-                <Link href="/publish" className="govuk-link">
-                  Publish bus data
-                </Link>
-              </li>
-              <li>
-                <Link href="/guidance/support/bus-operators" className="govuk-link">
-                  Guidance for bus operators
-                </Link>
-              </li>
-            </ul>
           </div>
         </div>
       </main>
