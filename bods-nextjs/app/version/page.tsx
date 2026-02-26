@@ -4,8 +4,10 @@
  * Displays the current version of the application
  */
 
+import { config } from '@/config';
+
 export default function VersionPage() {
-  const version = process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0';
+  const version = config.appVersion;
 
   return (
     <div className="govuk-width-container">

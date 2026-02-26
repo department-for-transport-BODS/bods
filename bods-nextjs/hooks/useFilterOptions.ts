@@ -9,6 +9,7 @@
 
 import { useState, useEffect } from 'react';
 import type { FilterOption } from '@/components/data/DatasetFilters';
+import { config } from '@/config';
 
 interface FilterOptionsData {
   areas: FilterOption[];
@@ -36,7 +37,7 @@ export function useFilterOptions(): FilterOptionsData {
         setIsLoading(true);
         setError(null);
 
-        const apiUrl = process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000';
+        const apiUrl = config.djangoApiUrl;
 
         const [areasResponse, orgsResponse] = await Promise.all([
           fetch(`${apiUrl}/api/v1/admin-area/`, {

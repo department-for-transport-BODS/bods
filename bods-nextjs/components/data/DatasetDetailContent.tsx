@@ -23,6 +23,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import type { Dataset } from '@/types';
 import { DataQualityBadge } from './DataQualityBadge';
+import { config } from '@/config';
 import { DownloadSubscribePanel } from './DownloadSubscribePanel';
 import { ApiUrlPanel } from './ApiUrlPanel';
 import { RouteMap } from './RouteMap';
@@ -206,13 +207,13 @@ export function DatasetDetailContent({ dataset }: DatasetDetailContentProps) {
       )}
 
       {/* TODO: Add revision_id to Dataset type and fetch from API */}
-      {process.env.NEXT_PUBLIC_MAPBOX_TOKEN && (
+      {config.mapboxToken && (
         <div className="govuk-!-margin-top-6">
           <h2 className="govuk-heading-m">Route map</h2>
           <RouteMap
             revisionId={dataset.id}
-            mapboxToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-            apiRoot={process.env.NEXT_PUBLIC_API_URL}
+            mapboxToken={config.mapboxToken}
+            apiRoot={config.apiUrl}
             ariaLabel={`Interactive map showing routes for ${dataset.name}`}
           />
         </div>

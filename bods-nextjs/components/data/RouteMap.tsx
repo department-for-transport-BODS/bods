@@ -11,6 +11,7 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { config } from '@/config';
 
 export interface RouteMapProps {
   revisionId: number;
@@ -44,7 +45,7 @@ interface ServicePatternCollection {
 
 export function RouteMap({
   revisionId,
-  apiRoot = process.env.NEXT_PUBLIC_API_URL || '',
+  apiRoot = config.apiUrl,
   mapboxToken,
   lineName,
   serviceCodes,

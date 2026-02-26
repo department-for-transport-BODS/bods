@@ -10,6 +10,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import { config } from '@/config';
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -62,7 +63,7 @@ export default function Error({ error, reset }: ErrorProps) {
               </Link>
             </div>
 
-            {process.env.NODE_ENV === 'development' && error.digest && (
+            {config.nodeEnv === 'development' && error.digest && (
               <details className="govuk-details" data-module="govuk-details">
                 <summary className="govuk-details__summary">
                   <span className="govuk-details__summary-text">
