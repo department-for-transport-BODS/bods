@@ -21,6 +21,7 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { config } from '@/config';
 
 export interface StopMapProps {
   revisionId?: number;
@@ -62,7 +63,7 @@ interface StopFeatureCollection {
 export function StopMap({
   revisionId,
   stops,
-  apiRoot = process.env.NEXT_PUBLIC_API_URL || '',
+  apiRoot = config.apiUrl,
   mapboxToken,
   onStopClick,
   ariaLabel = 'Interactive map showing bus stop locations',

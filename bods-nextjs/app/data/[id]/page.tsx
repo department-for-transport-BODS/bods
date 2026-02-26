@@ -12,6 +12,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { DatasetDetailContent } from '@/components/data/DatasetDetailContent';
 import type { Dataset } from '@/types';
+import { config } from '@/config';
 
 interface DatasetDetailPageProps {
   params: Promise<{ id: string }>;
@@ -22,7 +23,7 @@ interface DatasetDetailPageProps {
  */
 async function getDataset(id: string): Promise<Dataset | null> {
   try {
-    const apiUrl = process.env.DJANGO_API_URL || process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000';
+    const apiUrl = config.djangoApiUrl;
     const url = `${apiUrl}/api/v1/dataset/${id}/`;
     
     const response = await fetch(url, {

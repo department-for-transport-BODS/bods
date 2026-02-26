@@ -19,6 +19,7 @@ import { Pagination } from '@/components/shared/Pagination';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { ErrorDisplay } from '@/components/shared/ErrorDisplay';
 import type { DatasetListItem, PaginatedResponse } from '@/types';
+import { config } from '@/config';
 
 interface DatasetListProps {
   /** Initial datasets to display (from server fetch) */
@@ -81,7 +82,7 @@ export function DatasetList({
 
       try {
         const offset = (page - 1) * pageSize;
-        const apiUrl = process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000';
+        const apiUrl = config.djangoApiUrl;
         let url = `${apiUrl}${apiEndpoint}?limit=${pageSize}&offset=${offset}`;
 
         if (search.trim()) {
