@@ -51,7 +51,7 @@
           new BODSFrontend.MyAccountMenu();
           BODSFrontend.initAll();
         </script>
-        {% if not request.COOKIES.keys|is_value_in_dict:'cookie_policy' %}
+        {% if request.COOKIES|get_value_from_dict:'cookie_policy' == 'accept' %}
           <!-- Global site tag (gtag.js) - Google Analytics -->
           <script nonce="{{request.csp_nonce}}" async src="https://www.googletagmanager.com/gtag/js?id={{GOOGLE_ANALYTICS_KEY}}"></script>
           <script nonce="{{request.csp_nonce}}">

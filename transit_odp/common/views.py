@@ -37,8 +37,10 @@ class CookieView(TemplateView):
         context = self.get_context_data(**kwargs)
         is_confirm = FALSE
 
+        cookie_policy_value = request.COOKIES.get("cookie_policy", None)
+
         if (
-            "cookie_policy" in request.COOKIES
+            cookie_policy_value == "accept"
             and not self.request.GET.get("cookie-accept", None) == FALSE
         ):
             is_confirm = TRUE
@@ -50,11 +52,11 @@ class CookieView(TemplateView):
 
         response = render(request, self.template_name, context=context)
 
-        if is_confirm == TRUE and "cookie_policy" not in request.COOKIES.keys():
-            set_cookie(response, key="cookie_policy", value="1", days_expire=None)
-
-        elif is_confirm == FALSE and "cookie_policy" in request.COOKIES.keys():
-            delete_cookie(response, "cookie_policy")
+        if "cookie-accept" in request.GET:
+            if is_confirm == TRUE:
+                set_cookie(response, key="cookie_policy", value="accept", days_expire=None)
+            else:
+                set_cookie(response, key="cookie_policy", value="reject", days_expire=None)
 
         return response
 

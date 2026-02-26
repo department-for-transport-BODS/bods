@@ -1,11 +1,11 @@
 {% load i18n %}
 <div class="govuk-cookie-banner"
-     id="CookielawBanner"
+      id="CookieBannerContainer"
      data-nosnippet
      role="region"
      aria-label="Cookies on BODS"
      data-module="govuk-cookie-banner">
-  <div class="govuk-cookie-banner__message govuk-width-container">
+  <div id="CookielawBanner" class="govuk-cookie-banner__message govuk-width-container">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <h2 class="govuk-cookie-banner__heading govuk-heading-m">
@@ -21,17 +21,76 @@
         </div>
       </div>
     </div>
+
+    <!-- Button group for accepting or rejecting cookies -->
     <div class="govuk-button-group">
       <button type="button"
               class="govuk-button"
               data-module="govuk-button"
-              onclick="BODSFrontend.createCookie('CookielawBanner', '{{ parent_host }}')">
-        {% trans "Accept cookies" %}
-        <button value="no" type="submit" name="cookies[analytics]" class="govuk-button" data-module="govuk-button">
-          Reject analytics cookies
+              onclick="BODSFrontend.acceptCookies('CookielawBanner', '{{ parent_host }}')">
+        {% trans "Accept analytics cookies" %}
         </button>
+        <button value="no"
+                type="button"
+                name="cookies[analytics]"
+                class="govuk-button"
+                data-module="govuk-button"
+                onclick="BODSFrontend.rejectCookies('CookielawBanner', '{{ parent_host }}')">
+          {% trans "Reject analytics cookies" %}
+        </button>
+      <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">{% trans "View cookies" %}</a>
+    </div>
+  </div>
+
+  <!-- Accepted confirmation -->
+  <div id="CookielawBannerAccepted" class="govuk-cookie-banner__message govuk-width-container" style="display: none;" role="alert">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h2 class="govuk-cookie-banner__heading govuk-heading-m">
+          Cookies on Bus Open Data Service
+        </h2>
+        <div class="govuk-cookie-banner__content">
+          <p class="govuk-body">
+            You've accepted analytics cookies. You can
+            <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">change your cookie settings</a>
+            at any time.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-button-group">
+      <button type="button"
+              class="govuk-button"
+              data-module="govuk-button"
+              onclick="BODSFrontend.hideCookieMessage('CookieBannerContainer')">
+        {% trans "Hide cookie message" %}
       </button>
-      <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">{% trans "Cookie settings" %}</a>
+    </div>
+  </div>
+
+  <!-- Rejected confirmation -->
+  <div id="CookielawBannerRejected" class="govuk-cookie-banner__message govuk-width-container" style="display: none;" role="alert">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <h2 class="govuk-cookie-banner__heading govuk-heading-m">
+          Cookies on Bus Open Data Service
+        </h2>
+        <div class="govuk-cookie-banner__content">
+          <p class="govuk-body">
+            You've rejected analytics cookies. You can
+            <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">change your cookie settings</a>
+            at any time.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-button-group">
+      <button type="button"
+              class="govuk-button"
+              data-module="govuk-button"
+              onclick="BODSFrontend.hideCookieMessage('CookieBannerContainer')">
+        {% trans "Hide cookie message" %}
+      </button>
     </div>
   </div>
 </div>
