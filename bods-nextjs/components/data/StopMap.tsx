@@ -4,7 +4,6 @@
  * Stop Map Component
  *
  *
- * MIGRATION NOTE: Extends Django map functionality for stop display
  * Source: transit_odp/frontend/assets/js/feed-detail-map.js (AVL markers)
  * API: /api/v1/stoppoint/?revision={id}
  *

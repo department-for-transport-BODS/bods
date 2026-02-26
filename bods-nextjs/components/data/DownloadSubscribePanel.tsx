@@ -4,7 +4,6 @@
  * Download and Subscribe Panel Component
  *
  *
- * MIGRATION NOTE: Matches Django template
  * Source: transit_odp/browse/templates/browse/base/subscribe_and_download.html
  *
  * Displays download and subscription options for datasets:

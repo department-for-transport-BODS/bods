@@ -1,7 +1,6 @@
 /**
  * Privacy Policy Page
  * 
- * MIGRATION NOTE: Content must match Django template exactly
  * Source: transit_odp/common/templates/common/privacy.html
  */
 

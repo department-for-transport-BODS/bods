@@ -1,7 +1,6 @@
 /**
  * Accessibility Page
  * 
- * MIGRATION NOTE: Content must match Django template exactly
  * Source: transit_odp/templates/pages/accessibility.html
  */
 
