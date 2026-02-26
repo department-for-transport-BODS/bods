@@ -19,7 +19,7 @@
     "@next/swc-darwin-arm64": "^16.1.6",
     "@swc/core": "^1.15.13",
     "@types/mapbox-gl": "^3.5.0",
-    "govuk-frontend": "^6.0.0",
+    "govuk-frontend": "5.14.0",
     "kainossoftwareltd-govuk-react-kainos": "^1.0.9",
     "mapbox-gl": "^3.19.0",
     "next": "16.1.6",
