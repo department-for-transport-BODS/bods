@@ -2,7 +2,6 @@
  * Dataset Detail Page
  * 
  * 
- * MIGRATION NOTE: Content must match Django template exactly
  * Source: transit_odp/browse/templates/browse/timetables/dataset_detail/index.html
  * View: transit_odp/browse/views/timetable_views.py - DatasetDetailView
  * 

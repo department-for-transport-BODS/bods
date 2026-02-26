@@ -4,7 +4,6 @@
  * Dataset Detail Content Component
  *
  *
- * MIGRATION NOTE: Matches Django template structure
  * Source: transit_odp/browse/templates/browse/timetables/dataset_detail/success_content.html
  *        transit_odp/browse/templates/browse/base/property_table.html
  *
