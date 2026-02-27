@@ -5,6 +5,8 @@
      role="region"
      aria-label="Cookies on BODS"
      data-module="govuk-cookie-banner">
+
+  <!-- Cookie banner message -->
   <div id="CookieBannerContainer" class="govuk-cookie-banner__message govuk-width-container">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
@@ -42,45 +44,15 @@
     </div>
   </div>
 
-  <!-- Accepted confirmation -->
-  <div id="CookielawBannerAccepted" class="govuk-cookie-banner__message govuk-width-container" style="display: none;" role="alert">
+  <!-- Confirmation banner -->
+  <div id="CookielawBannerConfirmation" class="govuk-cookie-banner__message govuk-width-container" style="display: none;" role="alert">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <h2 class="govuk-cookie-banner__heading govuk-heading-m">
           Cookies on Bus Open Data Service
         </h2>
         <div class="govuk-cookie-banner__content">
-          <p class="govuk-body">
-            You've accepted analytics cookies. You can
-            <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">change your cookie settings</a>
-            at any time.
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="govuk-button-group">
-      <button type="button"
-              class="govuk-button"
-              data-module="govuk-button"
-              onclick="BODSFrontend.hideCookieMessage('CookielawBanner')">
-        {% trans "Hide cookie message" %}
-      </button>
-    </div>
-  </div>
-
-  <!-- Rejected confirmation -->
-  <div id="CookielawBannerRejected" class="govuk-cookie-banner__message govuk-width-container" style="display: none;" role="alert">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h2 class="govuk-cookie-banner__heading govuk-heading-m">
-          Cookies on Bus Open Data Service
-        </h2>
-        <div class="govuk-cookie-banner__content">
-          <p class="govuk-body">
-            You've rejected analytics cookies. You can
-            <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">change your cookie settings</a>
-            at any time.
-          </p>
+          <p id="CookieConfirmationMessage" class="govuk-body"></p>
         </div>
       </div>
     </div>

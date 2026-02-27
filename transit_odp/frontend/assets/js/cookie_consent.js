@@ -18,7 +18,13 @@ const _hideBanner = (elemId) => {
   document.getElementById(elemId).style.display = "none";
 };
 
-const _showElement = (elemId) => {
+const _showElement = (elemId, action) => {
+  if (action) {
+    const msg = document.getElementById("CookieConfirmationMessage");
+    if (msg) {
+      msg.innerHTML = `You've ${action} analytics cookies. You can <a class="govuk-link" href="/cookies/">change your cookie settings</a> at any time.`;
+    }
+  }
   document.getElementById(elemId).style.display = "block";
 };
 
@@ -26,14 +32,14 @@ const acceptCookies = (bannerId, domain) => {
   _createCookie("cookie_msg_ack", domain, "1", cookieExpiry * 365);
   _createCookie("cookie_policy", domain, "accept", cookieExpiry * 365);
   _hideBanner(bannerId);
-  _showElement("CookielawBannerAccepted");
+  _showElement("CookielawBannerConfirmation", "accepted");
 };
 
 const rejectCookies = (bannerId, domain) => {
   _createCookie("cookie_msg_ack", domain, "1", cookieExpiry * 365);
   _createCookie("cookie_policy", domain, "reject", cookieExpiry * 365);
   _hideBanner(bannerId);
-  _showElement("CookielawBannerRejected");
+  _showElement("CookielawBannerConfirmation", "rejected");
 };
 
 const hideCookieMessage = (elemId) => {
