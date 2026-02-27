@@ -1,11 +1,11 @@
 {% load i18n %}
 <div class="govuk-cookie-banner"
-      id="CookieBannerContainer"
+      id="CookielawBanner"
      data-nosnippet
      role="region"
      aria-label="Cookies on BODS"
      data-module="govuk-cookie-banner">
-  <div id="CookielawBanner" class="govuk-cookie-banner__message govuk-width-container">
+  <div id="CookieBannerContainer" class="govuk-cookie-banner__message govuk-width-container">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <h2 class="govuk-cookie-banner__heading govuk-heading-m">
@@ -27,7 +27,7 @@
       <button type="button"
               class="govuk-button"
               data-module="govuk-button"
-              onclick="BODSFrontend.acceptCookies('CookielawBanner', '{{ parent_host }}')">
+              onclick="BODSFrontend.acceptCookies('CookieBannerContainer', '{{ parent_host }}')">
         {% trans "Accept analytics cookies" %}
         </button>
         <button value="no"
@@ -35,7 +35,7 @@
                 name="cookies[analytics]"
                 class="govuk-button"
                 data-module="govuk-button"
-                onclick="BODSFrontend.rejectCookies('CookielawBanner', '{{ parent_host }}')">
+                onclick="BODSFrontend.rejectCookies('CookieBannerContainer', '{{ parent_host }}')">
           {% trans "Reject analytics cookies" %}
         </button>
       <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">{% trans "View cookies" %}</a>
@@ -62,7 +62,7 @@
       <button type="button"
               class="govuk-button"
               data-module="govuk-button"
-              onclick="BODSFrontend.hideCookieMessage('CookieBannerContainer')">
+              onclick="BODSFrontend.hideCookieMessage('CookielawBanner')">
         {% trans "Hide cookie message" %}
       </button>
     </div>
@@ -88,7 +88,7 @@
       <button type="button"
               class="govuk-button"
               data-module="govuk-button"
-              onclick="BODSFrontend.hideCookieMessage('CookieBannerContainer')">
+              onclick="BODSFrontend.hideCookieMessage('CookielawBanner')">
         {% trans "Hide cookie message" %}
       </button>
     </div>
