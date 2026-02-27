@@ -54,10 +54,9 @@ class CookieView(TemplateView):
 
         if "cookie-accept" in request.GET:
             if is_confirm == TRUE:
-                set_cookie(response, key="cookie_policy", value="accept", days_expire=None)
+                set_cookie(response, key="cookie_policy", value="accept", days_expire=180) # 6 months = 180 days
             else:
-                set_cookie(response, key="cookie_policy", value="reject", days_expire=None)
-
+                set_cookie(response, key="cookie_policy", value="reject", days_expire=180)
         return response
 
 
