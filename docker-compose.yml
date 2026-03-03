@@ -53,11 +53,22 @@ services:
     command: /start-celeryflower
     depends_on: []
 
+  # clamav:
+  #   image: mkodockx/docker-clamav:alpine
+  #   ports:
+  #     - "3310:3310"
+  #   restart: unless-stopped
+  #   volumes:
+  #     - clamav_store:/var/lib/clamav
+  #     - ./docker/local/clamav/clamd.conf:/etc/clamav/clamd.conf
+
   clamav:
-    image: mkodockx/docker-clamav:alpine
+    image: mkodockx/docker-clamav:alpine-idb-amd64
     ports:
       - "3310:3310"
     restart: unless-stopped
+    environment:
+      - FRESHCLAM_CONF_Checks=0
+      - FRESHCLAM_CONF=0
     volumes:
-      - clamav_store:/var/lib/clamav
       - ./docker/local/clamav/clamd.conf:/etc/clamav/clamd.conf
