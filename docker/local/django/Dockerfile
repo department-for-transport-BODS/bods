@@ -38,14 +38,29 @@ RUN apt-get update && apt-get install -y \
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
-COPY ./docker/local/django/kainos-bundle.pem /usr/local/share/ca-certificates/kainos-bundle.crt
-RUN update-ca-certificates
-ENV PIP_CERT=/usr/local/share/ca-certificates/kainos-bundle.crt
-ENV REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/kainos-bundle.crt
-ENV SSL_CERT_FILE=/usr/local/share/ca-certificates/kainos-bundle.crt
-ENV NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/kainos-bundle.crt
 
 COPY ./pyproject.toml ./poetry.lock ./package.json ./yarn.lock ./
+
+# Install CA certificates and update them to fix SSL issues
+RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
+
+# Disable SSL verification for pip and poetry due to corporate proxy/firewall issues
+ENV REQUESTS_CA_BUNDLE=""
+ENV CURL_CA_BUNDLE=""
+ENV SSL_CERT_FILE=""
+ENV PIP_TRUSTED_HOST="pypi.org files.pythonhosted.org pypi.python.org"
+
+RUN npm install -g yarn@v1.22.22 \
+    && yarn install \
+    && pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --trusted-host pypi.python.org poetry==$POETRY_VERSION poetry-plugin-export \
+    && poetry config virtualenvs.create false \
+    && poetry config installer.max-workers 1 \
+    && poetry config certificates.pypi.cert false \
+    && poetry self add poetry-plugin-export || true \
+    && poetry export -f requirements.txt --without-hashes --with dev -o requirements.txt \
+    && pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
+
+    
 
 RUN npm install -g yarn@v1.22.22 \
     && yarn install \
