@@ -20,7 +20,7 @@ const _hideBanner = (elemId) => {
 
 const _showElement = (elemId, action) => {
   if (action) {
-    const msg = document.getElementById("CookieConfirmationMessage");
+    const msg = document.getElementById("cookie-confirmation-message");
     if (msg) {
       msg.innerHTML = `You've ${action} analytics cookies. You can <a class="govuk-link" href="/cookies/">change your cookie settings</a> at any time.`;
     }
@@ -32,7 +32,7 @@ const processCookieChoice = (bannerId, domain, policy, action) => {
   _createCookie("cookie_msg_ack", domain, "1", cookieExpiry * 365);
   _createCookie("cookie_policy", domain, policy, cookieExpiry * 365);
   _hideBanner(bannerId);
-  _showElement("CookielawBannerConfirmation", action);
+  _showElement("cookie-banner-confirmation", action);
 }
 
 const hideCookieMessage = (elemId) => {

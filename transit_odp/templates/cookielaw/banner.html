@@ -7,7 +7,7 @@
      data-module="govuk-cookie-banner">
 
   <!-- Cookie banner message -->
-  <div id="CookieBannerContainer" class="govuk-cookie-banner__message govuk-width-container">
+  <div id="cookie-banner-container" class="govuk-cookie-banner__message govuk-width-container">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <h2 class="govuk-cookie-banner__heading govuk-heading-m">
@@ -29,7 +29,7 @@
       <button type="button"
               class="govuk-button"
               data-module="govuk-button"
-              onclick="BODSFrontend.processCookieChoice('CookieBannerContainer', '{{ parent_host }}', 'accept', 'accepted')">
+              onclick="BODSFrontend.processCookieChoice('cookie-banner-container', '{{ parent_host }}', 'accept', 'accepted')">
         {% trans "Accept analytics cookies" %}
         </button>
         <button value="no"
@@ -37,7 +37,7 @@
                 name="cookies[analytics]"
                 class="govuk-button"
                 data-module="govuk-button"
-                onclick="BODSFrontend.processCookieChoice('CookieBannerContainer', '{{ parent_host }}', 'reject', 'rejected')">
+                onclick="BODSFrontend.processCookieChoice('cookie-banner-container', '{{ parent_host }}', 'reject', 'rejected')">
           {% trans "Reject analytics cookies" %}
         </button>
       <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">{% trans "View cookies" %}</a>
@@ -45,14 +45,14 @@
   </div>
 
   <!-- Confirmation banner -->
-  <div id="CookielawBannerConfirmation" class="govuk-cookie-banner__message govuk-width-container" style="display: none;" role="alert">
+  <div id="cookie-banner-confirmation" class="govuk-cookie-banner__message govuk-width-container" style="display: none;" role="alert">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <h2 class="govuk-cookie-banner__heading govuk-heading-m">
           Cookies on Bus Open Data Service
         </h2>
         <div class="govuk-cookie-banner__content">
-          <p id="CookieConfirmationMessage" class="govuk-body"></p>
+          <p id="cookie-confirmation-message" class="govuk-body"></p>
         </div>
       </div>
     </div>
