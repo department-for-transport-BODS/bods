@@ -52,11 +52,7 @@ class CookieView(TemplateView):
 
         response = render(request, self.template_name, context=context)
 
-        if "cookie-accept" in request.GET:
-            if is_confirm == TRUE:
-                set_cookie(response, key="cookie_policy", value="accept", days_expire=365/2) # 6 months = 365 days / 2
-            else:
-                set_cookie(response, key="cookie_policy", value="reject", days_expire=365/2)
+        set_cookie(response, key="cookie_policy", value="accept" if is_confirm == TRUE else "reject", days_expire=365/2) # 6 months = 365/2 days
         return response
 
 
