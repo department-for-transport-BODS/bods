@@ -29,7 +29,7 @@
       <button type="button"
               class="govuk-button"
               data-module="govuk-button"
-              onclick="BODSFrontend.acceptCookies('CookieBannerContainer', '{{ parent_host }}')">
+              onclick="BODSFrontend.processCookieChoice('CookieBannerContainer', '{{ parent_host }}', 'accept', 'accepted')">
         {% trans "Accept analytics cookies" %}
         </button>
         <button value="no"
@@ -37,7 +37,7 @@
                 name="cookies[analytics]"
                 class="govuk-button"
                 data-module="govuk-button"
-                onclick="BODSFrontend.rejectCookies('CookieBannerContainer', '{{ parent_host }}')">
+                onclick="BODSFrontend.processCookieChoice('CookieBannerContainer', '{{ parent_host }}', 'reject', 'rejected')">
           {% trans "Reject analytics cookies" %}
         </button>
       <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">{% trans "View cookies" %}</a>

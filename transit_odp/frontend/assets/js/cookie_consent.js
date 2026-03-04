@@ -28,19 +28,12 @@ const _showElement = (elemId, action) => {
   document.getElementById(elemId).style.display = "block";
 };
 
-const acceptCookies = (bannerId, domain) => {
+const processCookieChoice = (bannerId, domain, policy, action) => {
   _createCookie("cookie_msg_ack", domain, "1", cookieExpiry * 365);
-  _createCookie("cookie_policy", domain, "accept", cookieExpiry * 365);
+  _createCookie("cookie_policy", domain, policy, cookieExpiry * 365);
   _hideBanner(bannerId);
-  _showElement("CookielawBannerConfirmation", "accepted");
-};
-
-const rejectCookies = (bannerId, domain) => {
-  _createCookie("cookie_msg_ack", domain, "1", cookieExpiry * 365);
-  _createCookie("cookie_policy", domain, "reject", cookieExpiry * 365);
-  _hideBanner(bannerId);
-  _showElement("CookielawBannerConfirmation", "rejected");
-};
+  _showElement("CookielawBannerConfirmation", action);
+}
 
 const hideCookieMessage = (elemId) => {
   _hideBanner(elemId);
@@ -52,4 +45,4 @@ const skipToMain = () => {
   mainContent.focus();
 };
 
-export { skipToMain, acceptCookies, rejectCookies, hideCookieMessage, _createCookie, _hideBanner };
+export { skipToMain, processCookieChoice, hideCookieMessage, _createCookie, _hideBanner };
