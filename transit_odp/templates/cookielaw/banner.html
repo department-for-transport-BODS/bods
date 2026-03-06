@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="govuk-cookie-banner"
-     id="CookielawBanner"
+     id="cookie-law-banner"
      data-nosnippet
      role="region"
      aria-label="Cookies on BODS"
@@ -29,7 +29,7 @@
       <button type="button"
               class="govuk-button"
               data-module="govuk-button"
-              onclick="BODSFrontend.processCookieChoice('cookie-banner-container', '{{ parent_host }}', 'accept', 'accepted')">
+              onclick="BODSFrontend.acceptCookies('cookie-banner-container', '{{ parent_host }}')">
         {% trans "Accept analytics cookies" %}
         </button>
         <button value="no"
@@ -37,7 +37,7 @@
                 name="cookies[analytics]"
                 class="govuk-button"
                 data-module="govuk-button"
-                onclick="BODSFrontend.processCookieChoice('cookie-banner-container', '{{ parent_host }}', 'reject', 'rejected')">
+                onclick="BODSFrontend.rejectCookies('cookie-banner-container', '{{ parent_host }}')">
           {% trans "Reject analytics cookies" %}
         </button>
       <a class="govuk-link" href="{% url 'cookie' host hosts.root %}">{% trans "View cookies" %}</a>
@@ -60,7 +60,7 @@
       <button type="button"
               class="govuk-button"
               data-module="govuk-button"
-              onclick="BODSFrontend.hideCookieMessage('CookielawBanner')">
+              onclick="BODSFrontend.hideCookieMessage('cookie-law-banner')">
         {% trans "Hide cookie message" %}
       </button>
     </div>
