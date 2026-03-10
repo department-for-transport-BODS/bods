@@ -22,7 +22,7 @@ const _showElement = (elemId, action) => {
   if (action) {
     const msg = document.getElementById("cookie-confirmation-message");
     if (msg) {
-      msg.innerHTML = `You've ${action} analytics cookies. You can <a class="govuk-link" href="/cookies/">change your cookie settings</a> at any time.`;
+      msg.innerHTML = `You've ${action} analytics cookies.`;
     }
   }
   document.getElementById(elemId).style.display = "block";

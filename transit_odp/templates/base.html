@@ -57,16 +57,23 @@
           <script nonce="{{request.csp_nonce}}">
             const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
             window.dataLayer = window.dataLayer || [];
-            function gtag() {
-              dataLayer.push(arguments);
-            }
+            function gtag() {dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', gaToken);
           </script>
         {% else %}
           <script nonce="{{request.csp_nonce}}">
             const gaToken = JSON.parse(document.getElementById('ga-data').textContent);
+            // Disable Google Analytics cookies
             window['ga-disable-' + gaToken] = true;
+
+            // Delete existing Google Analytics cookies
+            document.cookie.split(';').forEach(function(c) {
+              var name = c.split('=')[0].trim();
+              if (name.startsWith('_ga')) {
+                document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.' + window.location.hostname;
+              }
+            });
           </script>
         {% endif %}
       {% endblock %}

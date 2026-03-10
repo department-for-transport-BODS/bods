@@ -29,6 +29,9 @@ class CookielawBanner(InclusionTag):
         if context["request"].COOKIES.get("cookie_msg_ack", False):
             return ""
 
+        if context.get("hide_cookie_banner", False):
+            return ""
+
         data = self.get_context(context, **kwargs)
 
         if django.VERSION[:2] < (1, 10):
