@@ -57,10 +57,20 @@ class CookieView(TemplateView):
         response = render(request, self.template_name, context=context)
 
         if "cookie-accept" in request.GET:
-            set_cookie(response, key="cookie_policy", value="accept" if is_confirm == TRUE else "reject", days_expire=365/2) # 6 months = 365/2 days
+            set_cookie(
+                response,
+                key="cookie_policy",
+                value="accept" if is_confirm == TRUE else "reject",
+                days_expire=365/2 # 6 months = 365/2 days
+            )
 
             # Set the cookie_msg_ack cookie to prevent the banner from showing again
-            set_cookie(response, key="cookie_msg_ack", value="1", days_expire=365/2) # 6 months = 365/2 days
+            set_cookie(
+                response,
+                key="cookie_msg_ack",
+                value="1",
+                days_expire=365/2 # 6 months = 365/2 days
+            )
 
         return response
 
