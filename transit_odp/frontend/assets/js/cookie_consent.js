@@ -1,5 +1,3 @@
-const cookieExpiry = 0.5; // half a year, 6 months
-
 const _createCookie = (name, domain, value, days) => {
   let expires = "";
   if (days) {
@@ -29,8 +27,8 @@ const _showElement = (elemId, action) => {
 };
 
 const _processCookieChoice = (bannerId, domain, policy, action) => {
-  _createCookie("cookie_msg_ack", domain, "1", cookieExpiry * 365);
-  _createCookie("cookie_policy", domain, policy, cookieExpiry * 365);
+  _createCookie("cookie_msg_ack", domain, "1", 365/2);  // 6 months = 365 / 2 days
+  _createCookie("cookie_policy", domain, policy, 365/2);
   _hideBanner(bannerId);
   _showElement("cookie-banner-confirmation", action);
 };
