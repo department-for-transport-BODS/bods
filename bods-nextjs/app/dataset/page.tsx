@@ -28,7 +28,7 @@ export default function FilterForm() {
           type="radio"
           name="filter"
           value="timetables"
-          checked={selected === 'atimetablesl'}           // true only when 'selected' equals 'all'
+          checked={selected === 'timetables'}           // true only when 'selected' equals 'all'
           onChange={() => setSelected('timetables')}    // updates state when this radio is clicked
         />
         Timetables
