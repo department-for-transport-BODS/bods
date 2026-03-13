@@ -13,10 +13,19 @@ export default function CreateForm() {
         console.log({ dataSetDesc });
         setStep(step + 1);
     };
+    const activeStep = {fontWeight: 'bold' as const, textDecoration: ' underline', color: 'black'};
+    const inactiveStep = {color: 'gray'};
+    const stepList = {display: 'flex', gap:'20px', listStyle: 'none', padding: 0};
+
     return(   
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
+            <ol style={stepList}>
+                <li style={step === 1 ? activeStep : inactiveStep}> 1. Describe your data set</li>
+                <li style={step === 2 ? activeStep : inactiveStep}> 2. Provide data</li>
+                <li style={step === 3 ? activeStep : inactiveStep}> 3. Set licence</li>
+            </ol>
             {step === 1 && (
             <div className="govuk-grid-column-two-thirds">
                 <h1 className="govuk-heading-xl">Describe your data set</h1>
@@ -104,9 +113,11 @@ export default function CreateForm() {
                 <button type="button" className="govuk-button" onClick={handleNext}> Continue </button>
                 </div>
             )}
-            {/* {step === 3 && (
-
-            )} */}
+            {step === 3 && (
+                <div>
+                    <h1 className="govuk-heading-xl">Review and publish</h1>
+                </div>
+            )}
         </div>
       </div>
     </div>
