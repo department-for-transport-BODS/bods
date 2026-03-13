@@ -26,7 +26,10 @@ class CookielawBanner(InclusionTag):
             )
             return ""
 
-        if context["request"].COOKIES.get("cookielaw_accepted", False):
+        if context["request"].COOKIES.get("cookie_msg_ack", False):
+            return ""
+
+        if context.get("hide_cookie_banner", False):
             return ""
 
         data = self.get_context(context, **kwargs)

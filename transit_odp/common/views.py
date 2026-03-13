@@ -37,8 +37,10 @@ class CookieView(TemplateView):
         context = self.get_context_data(**kwargs)
         is_confirm = FALSE
 
+        cookie_policy_value = request.COOKIES.get("cookie_policy", None)
+
         if (
-            "cookie_policy" in request.COOKIES
+            cookie_policy_value == "accept"
             and not self.request.GET.get("cookie-accept", None) == FALSE
         ):
             is_confirm = TRUE
@@ -48,13 +50,27 @@ class CookieView(TemplateView):
 
         context.update({"is_accept": is_confirm})
 
+        # Prevents banner from rendering on the submission page after user submits a response
+        if "cookie-accept" in request.GET:
+            context["hide_cookie_banner"] = True
+
         response = render(request, self.template_name, context=context)
 
-        if is_confirm == TRUE and "cookie_policy" not in request.COOKIES.keys():
-            set_cookie(response, key="cookie_policy", value="1", days_expire=None)
+        if "cookie-accept" in request.GET:
+            set_cookie(
+                response,
+                key="cookie_policy",
+                value="accept" if is_confirm == TRUE else "reject",
+                days_expire=365 / 2,  # 6 months = 365/2 days
+            )
 
-        elif is_confirm == FALSE and "cookie_policy" in request.COOKIES.keys():
-            delete_cookie(response, "cookie_policy")
+            # Set the cookie_msg_ack cookie to prevent the banner from showing again
+            set_cookie(
+                response,
+                key="cookie_msg_ack",
+                value="1",
+                days_expire=365 / 2,  # 6 months = 365/2 days
+            )
 
         return response
 

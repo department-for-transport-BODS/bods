@@ -10,7 +10,7 @@ import { MyAccountMenu } from "./my-account-menu";
 import { ProgressIndicator } from "./feed-detail-progress";
 import { autoFocusToClass } from "./autofocus";
 import { copyToClipboard } from "./copy_to_clipboard";
-import { createCookie, skipToMain } from "./cookie_consent";
+import { acceptCookies, rejectCookies, hideCookieMessage, skipToMain } from "./cookie_consent";
 import { initAPIDocs } from "./api-docs";
 import { initDatasetListLoaders } from "./feed-list-progress";
 import { initFaresDetailMap } from "./fares-detail-map";
@@ -54,7 +54,9 @@ window.BODSFrontend = {
   ProgressIndicator,
   autoFocusToClass,
   copyToClipboard,
-  createCookie,
+  acceptCookies,
+  rejectCookies,
+  hideCookieMessage,
   skipToMain,
   initAPIDocs,
   initAll,
