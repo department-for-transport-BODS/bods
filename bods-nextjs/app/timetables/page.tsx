@@ -9,21 +9,18 @@ export default function CreateForm() {
     const [selected, setSelected] = useState('');
     const [link, setLink] = useState('')
     const [file,setFile] = useState('')
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleNext = () => {
         console.log({ dataSetDesc });
-        setStep(2);
+        setStep(step + 1);
     };
     return(   
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
-          {/* <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl">Describe your data set</h1> */}
             {step === 1 && (
             <div className="govuk-grid-column-two-thirds">
                 <h1 className="govuk-heading-xl">Describe your data set</h1>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleNext}>
                 <div className="govuk-form-group">
                     <label className="govuk-label" htmlFor="dataSetDesc"> Data Set Discription </label>
                     <div className="govuk-hint ">
@@ -54,7 +51,7 @@ export default function CreateForm() {
                     onChange={(e) => setShortDesc(e.target.value)} />
                     </div>
 
-                <button type="submit" className="govuk-button"> Continue </button>
+                <button type="button" className="govuk-button" onClick={handleNext}> Continue </button>
                 </form>
             </div>
             )}
@@ -104,8 +101,12 @@ export default function CreateForm() {
                         value={file}
                         onChange={(e) => setFile(e.target.value)} />
                     )} 
-            </div>
+                <button type="button" className="govuk-button" onClick={handleNext}> Continue </button>
+                </div>
             )}
+            {/* {step === 3 && (
+
+            )} */}
         </div>
       </div>
     </div>
