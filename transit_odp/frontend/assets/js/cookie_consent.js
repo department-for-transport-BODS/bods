@@ -13,7 +13,7 @@ const _createCookie = (name, domain, value, days) => {
 };
 
 const _hideBanner = (elemId) => {
-  document.getElementById(elemId).style.display = "none";
+  document.getElementById(elemId).hidden = true;
 };
 
 const _showElement = (elemId, action) => {
@@ -23,7 +23,7 @@ const _showElement = (elemId, action) => {
       msg.innerHTML = `You've ${action} analytics cookies.`;
     }
   }
-  document.getElementById(elemId).style.display = "block";
+  document.getElementById(elemId).hidden = false;
 };
 
 const _processCookieChoice = (bannerId, domain, policy, action) => {
