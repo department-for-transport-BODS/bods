@@ -1,5 +1,40 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "March 2026 (1.57.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    Resolved an issue that prevented disruption icons from displaying on the BODS map.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Fixed a defect where ABODS occasionally plotted expected routes incorrectly within Vehicle Journeys.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Added Trackaroo to the list of supported AVL suppliers on BODS.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Introduced the ability for users to reject analytics cookies, improving privacy‑preference control.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Released cancellation functionality, enabling operators to publish cancellation data.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "January 2026 (1.56.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
@@ -10,12 +45,12 @@
 <ul class="govuk-list govuk-list--bullet">
   <li>
     {% blocktrans %}
-    We fixed an issue that was preventing certain operators showing in the Disruptions tool. 
+    We fixed an issue that was preventing certain operators showing in the Disruptions tool.
     {% endblocktrans %}
   </li>
   <li>
     {% blocktrans %}
-    We fixed an issue that shows users the relevant screens when they are locked out of ABODS. 
+    We fixed an issue that shows users the relevant screens when they are locked out of ABODS.
     {% endblocktrans %}
   </li>
   <li>
