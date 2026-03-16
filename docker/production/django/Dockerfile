@@ -27,7 +27,6 @@ RUN apt-get update && \
 RUN wget http://mirrors.kernel.org/ubuntu/pool/main/a/automake-1.16/automake_1.16.1-4ubuntu6_all.deb && \
     apt install -y ./automake_1.16.1-4ubuntu6_all.deb
 
-RUN echo deb http://ftp.uk.debian.org/debian unstable main contrib non-free >> /etc/apt/sources.list
 RUN apt-get install -y \
             libgdal-dev \
             g++ \
