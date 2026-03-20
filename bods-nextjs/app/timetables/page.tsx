@@ -26,6 +26,8 @@ export default function CreateForm() {
                 <li style={step === 2 ? activeStep : inactiveStep}> 2. Provide data</li>
                 <li style={step === 3 ? activeStep : inactiveStep}> 3. Set licence</li>
             </ol>
+
+            {/* part 1: Describe your data set */}
             {step === 1 && (
             <div className="govuk-grid-column-two-thirds">
                 <h1 className="govuk-heading-xl">Describe your data set</h1>
@@ -56,14 +58,18 @@ export default function CreateForm() {
                     className="govuk-input"
                     id="shortDesc"
                     type="text"
+                    maxLength={30}
                     value={shortDesc}
                     onChange={(e) => setShortDesc(e.target.value)} />
+                    <span className='govuk-'>{shortDesc.length}/30</span>
                     </div>
 
                 <button type="button" className="govuk-button" onClick={handleNext}> Continue </button>
                 </form>
             </div>
             )}
+
+            {/* part 2: Provide data */}
             {step === 2 && (
                 <div>
                     <h1 className="govuk-heading-xl">Choose how to provide your data set</h1>
@@ -113,6 +119,8 @@ export default function CreateForm() {
                 <button type="button" className="govuk-button" onClick={handleNext}> Continue </button>
                 </div>
             )}
+
+            {/* part 3: Set licence */}
             {step === 3 && (
                 <div>
                     <h1 className="govuk-heading-xl">Review and publish</h1>
