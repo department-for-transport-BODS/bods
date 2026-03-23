@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Dataset List with Search and Filters Component
  *
@@ -9,6 +7,8 @@
  *
  *
  */
+
+'use client';
 
 import { useSearchParams } from 'next/navigation';
 import { DatasetSearch } from './DatasetSearch';
@@ -54,7 +54,7 @@ export function DatasetListWithSearch({
   const { areas, organisations, isLoading: isLoadingOptions } = useFilterOptions();
 
   return (
-    <div className="dataset-list-with-search" data-testid="dataset-list-with-search">
+    <div className="dataset-list-with-search">
       <div className="govuk-grid-row">
         <div className="govuk-grid-column-full">
           <DatasetSearch />

@@ -1,4 +1,4 @@
-import { SUPPORT_EMAIL } from '@/lib/config';
+import { config } from '@/config';
 
 export function NaptanSection() {
   return (
@@ -26,7 +26,7 @@ export function NaptanSection() {
       <p className="govuk-body">
         In preparation of the statutory requirements that will be coming into action next year,
         the DfT is offering a free service whereby local authorities can get in contact with{' '}
-        <a className="govuk-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>, to request
+        <a className="govuk-link" href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>, to request
         a spreadsheet that contains potential NaPTAN corrections for the areas that you are
         responsible for.
       </p>

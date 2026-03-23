@@ -18,20 +18,36 @@ interface DatasetDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+function formatDatasetTimestamp(dateString: string): string {
+  const formatter = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+
+  const parts = formatter.formatToParts(new Date(dateString));
+  const getPart = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? '';
+
+  return `${getPart('day')} ${getPart('month')} ${getPart('year')} ${getPart('hour')}:${getPart('minute')}`;
+}
+
 /**
  * Fetch dataset from Django API (server-side)
  */
 async function getDataset(id: string): Promise<Dataset | null> {
   try {
-    const apiUrl = config.djangoApiUrl;
-    const url = `${apiUrl}/api/v1/dataset/${id}/`;
+    const url = `${config.djangoApiUrl}/api/v1/dataset/${id}/`;
     
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      next: { revalidate: 300 },
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -58,6 +74,8 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
   if (!dataset) {
     notFound();
   }
+
+  const formattedLastUpdated = formatDatasetTimestamp(dataset.modified);
 
   return (
     <div className="govuk-width-container">
@@ -100,7 +118,7 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <DatasetDetailContent dataset={dataset} />
+            <DatasetDetailContent dataset={dataset} formattedLastUpdated={formattedLastUpdated} />
           </div>
 
           <div className="govuk-grid-column-one-third">

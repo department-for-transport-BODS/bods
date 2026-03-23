@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Dataset Filters Component
  *
@@ -12,6 +10,8 @@
  *
  * Matches Django implementation from transit_odp/browse/forms.py
  */
+
+'use client';
 
 import { useState, useCallback } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
@@ -71,7 +71,7 @@ export function DatasetFilters({
   };
 
   const [filters, setFilters] = useState<FilterValues>(urlFilters);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchOrganisationTerm, setSearchOrganisationTerm] = useState('');
 
   const updateUrl = useCallback((newFilters: FilterValues) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -133,13 +133,13 @@ export function DatasetFilters({
   }, [updateUrl, onFilterChange]);
 
   const filteredOrganisations = organisations.filter(org =>
-    org.label.toLowerCase().includes(searchTerm.toLowerCase())
+    org.label.toLowerCase().includes(searchOrganisationTerm.toLowerCase())
   );
 
   const hasActiveFilters = Object.values(urlFilters).some(value => value && value !== '');
 
   return (
-    <div className={`${styles['dataset-filters']}`} data-testid="dataset-filters">
+    <div className={`${styles['dataset-filters']}`}>
       <h2 className="govuk-heading-m">Filter by</h2>
 
       <form onSubmit={handleSubmit} noValidate>
@@ -179,8 +179,8 @@ export function DatasetFilters({
               type="text"
               className="govuk-input govuk-!-width-full govuk-!-margin-bottom-2"
               placeholder="Search publishers..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchOrganisationTerm}
+              onChange={(e) => setSearchOrganisationTerm(e.target.value)}
               aria-label="Search publishers"
             />
           )}

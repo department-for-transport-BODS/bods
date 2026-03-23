@@ -1,12 +1,58 @@
-'use client';
-
 /**
  * Pagination Component
  * Review this - potentially a better way of doing this!
  */
 
+'use client';
+
 import Link from 'next/link';
 import { useSearchParams, usePathname } from 'next/navigation';
+import { PaginationPrevIcon, PaginationNextIcon } from './PaginationIcons';
+
+function PaginationNavButton({
+  page,
+  direction,
+  isUrlMode,
+  createPageUrl,
+  handlePageClick,
+}: {
+  page: number;
+  direction: 'prev' | 'next';
+  isUrlMode: boolean;
+  createPageUrl: (page: number) => string;
+  handlePageClick: (page: number, e: React.MouseEvent) => void;
+}) {
+  const label = direction === 'prev' ? 'Previous' : 'Next';
+  const ariaLabel = `Go to ${label.toLowerCase()} page`;
+  const rel = direction === 'prev' ? 'prev' : 'next';
+  const icon = direction === 'prev' ? PaginationPrevIcon : PaginationNextIcon;
+
+  const content = direction === 'prev' ? (
+    <>
+      {icon}
+      <span className="govuk-pagination__link-title">
+        {label}<span className="govuk-visually-hidden"> page</span>
+      </span>
+    </>
+  ) : (
+    <>
+      <span className="govuk-pagination__link-title">
+        {label}<span className="govuk-visually-hidden"> page</span>
+      </span>
+      {icon}
+    </>
+  );
+
+  return isUrlMode ? (
+    <Link href={createPageUrl(page)} className="govuk-link govuk-pagination__link" rel={rel} aria-label={ariaLabel}>
+      {content}
+    </Link>
+  ) : (
+    <button type="button" className="govuk-link govuk-pagination__link" onClick={(e) => handlePageClick(page, e)} aria-label={ariaLabel}>
+      {content}
+    </button>
+  );
+}
 
 interface PaginationProps {
   currentPage: number;
@@ -84,37 +130,15 @@ export function Pagination({
       )}
 
       <div className="govuk-pagination__prev">
-        {currentPage > 1 ? (
-          isUrlMode ? (
-            <Link
-              href={createPageUrl(currentPage - 1)}
-              className="govuk-link govuk-pagination__link"
-              rel="prev"
-              aria-label="Go to previous page"
-            >
-              <svg className="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-                <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
-              </svg>
-              <span className="govuk-pagination__link-title">
-                Previous<span className="govuk-visually-hidden"> page</span>
-              </span>
-            </Link>
-          ) : (
-            <button
-              type="button"
-              className="govuk-link govuk-pagination__link"
-              onClick={(e) => handlePageClick(currentPage - 1, e)}
-              aria-label="Go to previous page"
-            >
-              <svg className="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-                <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
-              </svg>
-              <span className="govuk-pagination__link-title">
-                Previous<span className="govuk-visually-hidden"> page</span>
-              </span>
-            </button>
-          )
-        ) : null}
+        {currentPage > 1 && (
+          <PaginationNavButton
+            page={currentPage - 1}
+            direction="prev"
+            isUrlMode={isUrlMode}
+            createPageUrl={createPageUrl}
+            handlePageClick={handlePageClick}
+          />
+        )}
       </div>
 
       <ul className="govuk-pagination__list">
@@ -212,37 +236,15 @@ export function Pagination({
       </ul>
 
       <div className="govuk-pagination__next">
-        {currentPage < totalPages ? (
-          isUrlMode ? (
-            <Link
-              href={createPageUrl(currentPage + 1)}
-              className="govuk-link govuk-pagination__link"
-              rel="next"
-              aria-label="Go to next page"
-            >
-              <span className="govuk-pagination__link-title">
-                Next<span className="govuk-visually-hidden"> page</span>
-              </span>
-              <svg className="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-                <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
-              </svg>
-            </Link>
-          ) : (
-            <button
-              type="button"
-              className="govuk-link govuk-pagination__link"
-              onClick={(e) => handlePageClick(currentPage + 1, e)}
-              aria-label="Go to next page"
-            >
-              <span className="govuk-pagination__link-title">
-                Next<span className="govuk-visually-hidden"> page</span>
-              </span>
-              <svg className="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-                <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
-              </svg>
-            </button>
-          )
-        ) : null}
+        {currentPage < totalPages && (
+          <PaginationNavButton
+            page={currentPage + 1}
+            direction="next"
+            isUrlMode={isUrlMode}
+            createPageUrl={createPageUrl}
+            handlePageClick={handlePageClick}
+          />
+        )}
       </div>
     </nav>
   );

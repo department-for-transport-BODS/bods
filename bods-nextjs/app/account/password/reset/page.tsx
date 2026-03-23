@@ -13,6 +13,7 @@
 import { useState } from 'react';
 import { api } from '@/lib/api-client';
 import Link from 'next/link';
+import { ErrorSummary } from '@/components/shared';
 
 export default function PasswordResetPage() {
   const [email, setEmail] = useState('');
@@ -26,9 +27,9 @@ export default function PasswordResetPage() {
     setIsLoading(true);
 
     try {
-      await api.post('/api/auth/password/reset/', { email }, { requireAuth: false });
+      await api.post('/api/auth/password/reset/', { email });
       setSubmitted(true);
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
@@ -43,7 +44,7 @@ export default function PasswordResetPage() {
             <div className="govuk-grid-column-two-thirds">
               <h1 className="govuk-heading-xl">Check your email</h1>
               <p className="govuk-body">
-                If an account exists with that email address, we've sent you a password reset link.
+                  If an account exists with that email address, we've sent you a password reset link.
               </p>
             </div>
           </div>
@@ -59,45 +60,34 @@ export default function PasswordResetPage() {
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Reset your password</h1>
 
-        {error && (
-          <div className="govuk-error-summary" aria-labelledby="error-summary-title" role="alert">
-            <h2 className="govuk-error-summary__title" id="error-summary-title">
-              There is a problem
-            </h2>
-            <div className="govuk-error-summary__body">
-              <ul className="govuk-list govuk-error-summary__list">
-                <li>{error}</li>
-              </ul>
-            </div>
-          </div>
-        )}
+            {error && <ErrorSummary errors={[error]} />}
 
-        <form onSubmit={handleSubmit}>
-          <div className={`govuk-form-group ${error ? 'govuk-form-group--error' : ''}`}>
-            <label className="govuk-label" htmlFor="email">
-              Email address
-            </label>
-            <input
-              className={`govuk-input ${error ? 'govuk-input--error' : ''}`}
-              id="email"
-              name="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-          </div>
+            <form onSubmit={handleSubmit}>
+              <div className={`govuk-form-group ${error ? 'govuk-form-group--error' : ''}`}>
+                <label className="govuk-label" htmlFor="email">
+                  Email address
+                </label>
+                <input
+                  className={`govuk-input ${error ? 'govuk-input--error' : ''}`}
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                />
+              </div>
 
-          <button
-            type="submit"
-            className="govuk-button"
-            data-module="govuk-button"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Sending...' : 'Send reset link'}
-          </button>
-        </form>
+              <button
+                type="submit"
+                className="govuk-button"
+                data-module="govuk-button"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Sending...' : 'Send reset link'}
+              </button>
+            </form>
 
             <p className="govuk-body">
               <Link href="/account/login" className="govuk-link">

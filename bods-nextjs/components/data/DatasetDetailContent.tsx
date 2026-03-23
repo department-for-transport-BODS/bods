@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Dataset Detail Content Component
  *
@@ -19,6 +17,8 @@
 
  */
 
+'use client';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import type { Dataset } from '@/types';
@@ -30,20 +30,11 @@ import { RouteMap } from './RouteMap';
 
 interface DatasetDetailContentProps {
   dataset: Dataset;
+  formattedLastUpdated: string;
 }
 
-export function DatasetDetailContent({ dataset }: DatasetDetailContentProps) {
+export function DatasetDetailContent({ dataset, formattedLastUpdated }: DatasetDetailContentProps) {
   const [isSubscribed, setIsSubscribed] = useState(false);
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const month = date.toLocaleString('en-GB', { month: 'short' });
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${day} ${month} ${year} ${hours}:${minutes}`;
-  };
 
   return (
     <div className="dataset-detail-content">
@@ -93,7 +84,7 @@ export function DatasetDetailContent({ dataset }: DatasetDetailContentProps) {
             <td colSpan={2} className="govuk-table__cell dont-break-out">
               <div className="stacked">
                 <Link
-                  href={`/data?organisation=${dataset.id}&status=live`}
+                  href={`/data?organisation=${dataset.organisationId}&status=live`}
                   className="govuk-link"
                 >
                   {dataset.operatorName}
@@ -143,13 +134,13 @@ export function DatasetDetailContent({ dataset }: DatasetDetailContentProps) {
                   score={dataset.dqScore}
                   rag={dataset.dqRag}
                   variant="stacked"
-                  reportUrl={`/publish/org/${dataset.id}/data-quality/${dataset.id}`}
+                  reportUrl={`/publish/org/${dataset.organisationId}/data-quality/${dataset.id}`}
                 />
               </td>
               <td className="govuk-table__cell">
                 <a
                   className="govuk-link"
-                  href={`/publish/org/${dataset.id}/data-quality/${dataset.id}`}
+                  href={`/publish/org/${dataset.organisationId}/data-quality/${dataset.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -164,7 +155,7 @@ export function DatasetDetailContent({ dataset }: DatasetDetailContentProps) {
               Last updated
             </th>
             <td className="govuk-table__cell dont-break-out">
-              {formatDate(dataset.modified)}
+              <time dateTime={dataset.modified}>{formattedLastUpdated}</time>
             </td>
             <td className="govuk-table__cell">
               <Link
@@ -206,14 +197,13 @@ export function DatasetDetailContent({ dataset }: DatasetDetailContentProps) {
         </div>
       )}
 
-      {/* TODO: Add revision_id to Dataset type and fetch from API */}
       {config.mapboxToken && (
         <div className="govuk-!-margin-top-6">
           <h2 className="govuk-heading-m">Route map</h2>
           <RouteMap
-            revisionId={dataset.id}
+            revisionId={dataset.revisionId}
             mapboxToken={config.mapboxToken}
-            apiRoot={config.apiUrl}
+            apiRoot={config.djangoApiUrl}
             ariaLabel={`Interactive map showing routes for ${dataset.name}`}
           />
         </div>

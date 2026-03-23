@@ -3,7 +3,7 @@ name: E2E Tests
 on:
   push:
     branches:
-      - develop
+      - develop-commentout
     paths:
       - 'e2e_tests/**'
       - '.github/workflows/e2e-tests.yml'
@@ -106,9 +106,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const status = '${{ job.status }}' === 'success' ? '✅' : '❌';
             const result = '${{ job.status }}' === 'success'
-              ? 'All E2E tests against dev environment passed!'
+              ? 'All E2E tests against dev environment passed'
               : 'Some E2E tests failed. Check the artifacts for details.';
 
             const comment = `## ${status} E2E Test Results
@@ -119,7 +118,7 @@ jobs:
             **Workflow Run:** [View Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
             <details>
-            <summary>📦 Artifacts</summary>
+            <summary>Artifacts</summary>
 
             - Playwright Report
             - Test Results

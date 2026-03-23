@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Active Filter Tags Component
  *
@@ -8,6 +6,8 @@
  * Matches Django template: transit_odp/browse/templates/browse/snippets/search_list.html
  *
  */
+
+'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
@@ -80,14 +80,7 @@ export function ActiveFilterTags({
   }, [pathname, router, searchParams]);
 
   const clearAllFilters = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    const search = params.get('search');
-    params.delete('area');
-    params.delete('organisation');
-    params.delete('status');
-    params.delete('dataType');
-    params.delete('page');
+    const search = searchParams.get('search');
 
     const newParams = new URLSearchParams();
     if (search) {
@@ -105,7 +98,6 @@ export function ActiveFilterTags({
   return (
     <div
       className={`govuk-body-s ${styles['search-pillbox']}`}
-      data-testid="active-filter-tags"
       role="region"
       aria-label="Active filters"
     >

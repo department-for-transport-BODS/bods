@@ -2,7 +2,10 @@
  * Next.js Middleware
  *
  * Handles subdomain routing for the application
- * This will need looking at at the end of the ticket - fine for local now
+ * TODO: Auth + Middleware - and auth in general will need looking at. This very much is a temporary measure to get us up and running. 
+ * Is the Matcher config correct? Do we need to add more exceptions for static files, or other assets?
+ * 404 Page logic?
+ * Is there any weird logic relating to the subdomain routing that will come up at deployment time.
  */
 
 import { NextResponse } from 'next/server';

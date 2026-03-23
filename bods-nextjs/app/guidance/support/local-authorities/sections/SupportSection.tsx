@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { SUPPORT_EMAIL } from '@/lib/config';
+import { config } from '@/config';
 
 export function SupportSection() {
   return (
@@ -27,7 +27,7 @@ export function SupportSection() {
       <p className="govuk-body">
         If you require additional support, DfT can support the creation of TxC using the tool.
         For more information please contact{' '}
-        <a className="govuk-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+        <a className="govuk-link" href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>.
       </p>
       <p className="govuk-body">Please ensure the timetables data provided aligns with TransXChange version 2.4.</p>
 

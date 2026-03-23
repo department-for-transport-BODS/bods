@@ -3,7 +3,6 @@
  * Source: transit_odp/guidance/templates/guidance/bus_operators/register_bus_open_data.html
  */
 
-import { TRAVELINE_NOC_URL } from '@/lib/config';
 import { SupportEmailLink } from './SupportEmailLink';
 
 export function RegisteringSection() {
@@ -31,18 +30,18 @@ export function RegisteringSection() {
       </p>
       <p data-qa="traveline-paragraph" className="govuk-body">
         The noc database can be found on the Traveline website:{' '}
-        <a className="govuk-link" rel="noopener noreferrer" target="_blank" href={TRAVELINE_NOC_URL}>
-          {TRAVELINE_NOC_URL}
+        <a className="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.travelinedata.org.uk/traveline-open-data/transport-operations/about-2/">
+          https://www.travelinedata.org.uk/traveline-open-data/transport-operations/about-2/
         </a>.
       </p>
       <p data-qa="email-support-paragraph" className="govuk-body">
-        To change the operator&apos;s long name on BODS, please contact{' '}
+        To change the operator's long name on BODS, please contact{' '}
         <SupportEmailLink />.
       </p>
 
       <h2 data-qa="user-management-header" className="govuk-heading-l">User management</h2>
       <p data-qa="user-management-paragraph-1" className="govuk-body">
-        Only admin users can add and remove other users from the operator&apos;s organisation.
+        Only admin users can add and remove other users from the operator's organisation.
         All users can publish data for the operator.
       </p>
       <p data-qa="user-management-paragraph-2" className="govuk-body">
@@ -56,8 +55,8 @@ export function RegisteringSection() {
         <strong>Standard</strong> users should be the staff of the operator.
       </p>
       <p data-qa="user-management-paragraph-5" className="govuk-body">
-        <strong>Agents</strong> are external to the operator&apos;s organisation and can publish an
-        operator&apos;s data to the service. Agents must be invited to the service in the first
+        <strong>Agents</strong> are external to the operator's organisation and can publish an
+        operator's data to the service. Agents must be invited to the service in the first
         instance by an operator. Please ensure external contracts are established prior
         to assigning agents.
       </p>

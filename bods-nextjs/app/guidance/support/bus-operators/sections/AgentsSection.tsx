@@ -8,7 +8,7 @@ export function AgentsSection() {
     <>
       <h2 data-qa="agents-header" className="govuk-heading-l">Agents</h2>
       <p className="govuk-body">
-        Agents are defined as people outside the operator&apos;s organisation that can publish
+        Agents are defined as people outside the operator's organisation that can publish
         data on behalf of an operator. Most commonly, these will be local transport
         authorities. It is expected that operators will have contracts establishing the
         services and expectations with agents, prior to allocating them as an agent on
@@ -21,7 +21,7 @@ export function AgentsSection() {
         prior to allocating agent users on this service.
       </p>
       <p className="govuk-body">
-        An operator&apos;s admin user can allocate agents to publish data to the service, by
+        An operator's admin user can allocate agents to publish data to the service, by
         going to my account and selecting user management.
       </p>
 
@@ -34,7 +34,7 @@ export function AgentsSection() {
         IP address.
       </p>
       <p className="govuk-body">
-        An operator&apos;s admin user can allocate agents to publish data to the service,
+        An operator's admin user can allocate agents to publish data to the service,
         by going to my account and selecting user management.
       </p>
 
@@ -48,7 +48,7 @@ export function AgentsSection() {
       <h2 className="govuk-heading-l">Agents cannot</h2>
       <ul className="govuk-list govuk-list--bullet">
         <li>Take over the legal obligation to provide data to BODS; they can only publish data</li>
-        <li>Add users to an operator&apos;s organisation</li>
+        <li>Add users to an operator's organisation</li>
       </ul>
 
       <h2 className="govuk-heading-l">Notification emails</h2>
@@ -57,7 +57,7 @@ export function AgentsSection() {
       </p>
       <ul className="govuk-list govuk-list--bullet">
         <li>Any user publishes data</li>
-        <li>An agent accepts or rejects the invite to the operator&apos;s organisation</li>
+        <li>An agent accepts or rejects the invite to the operator's organisation</li>
         <li>An agent or operator removes the agent at a later date</li>
         <li>National Operator Codes are edited</li>
       </ul>

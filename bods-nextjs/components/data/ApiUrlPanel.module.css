@@ -1,0 +1,44 @@
+.wrapper {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.panel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f3f2f1;
+  border: 1px solid #b1b4b6;
+  border-radius: 0;
+  word-break: break-all;
+}
+
+.url {
+  flex: 1;
+  font-family: monospace;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: #0b0c0c;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.copyButton {
+  flex-shrink: 0;
+  margin: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .copyButton {
+    width: 100%;
+  }
+}

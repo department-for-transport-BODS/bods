@@ -1,9 +1,9 @@
-'use client';
-
 /**
  * Error Display Component
  *
  */
+
+'use client';
 
 import Link from 'next/link';
 

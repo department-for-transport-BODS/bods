@@ -33,6 +33,7 @@ function TimetablePublish() {
       await api.post(`/api/org/${orgId}/dataset/timetable/upload/`, formData);
       router.push(`/publish/org/${orgId}/dataset/timetable/success`);
     } catch (err) {
+      console.error('Upload error:', err);
       setError('Upload failed. Please try again.');
     } finally {
       setIsUploading(false);

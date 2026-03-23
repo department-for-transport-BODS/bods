@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { HOSTS } from '@/lib/config';
+import { HOSTS } from '@/config';
 
 export default function DataBrowsePage() {
   return (

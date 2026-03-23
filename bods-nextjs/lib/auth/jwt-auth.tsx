@@ -11,10 +11,7 @@ import {
 } from 'react';
 import type { User } from '@/types';
 import { config } from '@/config';
-
-const API_BASE_URL = config.djangoApiUrl;
-const ACCESS_TOKEN_STORAGE_KEY = 'bods.auth.access';
-const REFRESH_TOKEN_STORAGE_KEY = 'bods.auth.refresh';
+import { getCsrfToken } from '@/lib/api-client';
 
 interface AuthContextValue {
   user: User | null;
@@ -25,10 +22,6 @@ interface AuthContextValue {
 }
 
 interface LoginResponse {
-  access?: string;
-  refresh?: string;
-  key?: string;
-  token?: string;
   user?: Partial<User>;
   detail?: string;
   non_field_errors?: string[];
@@ -49,29 +42,6 @@ function getErrorMessage(payload: unknown, fallback: string): string {
   return fallback;
 }
 
-function readToken(key: string): string | null {
-  if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem(key);
-}
-
-function writeTokens(accessToken: string | null, refreshToken: string | null): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  if (accessToken) {
-    window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, accessToken);
-  } else {
-    window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
-  }
-
-  if (refreshToken) {
-    window.localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, refreshToken);
-  } else {
-    window.localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
-  }
-}
-
 function normaliseUser(user: Partial<User>): User {
   return {
     id: Number(user.id ?? 0),
@@ -87,26 +57,30 @@ function normaliseUser(user: Partial<User>): User {
 async function apiRequest<T>(
   path: string,
   init?: RequestInit,
-  accessToken?: string
-): Promise<{ ok: boolean; data: T | null }> {
+): Promise<{ ok: boolean; status: number; data: T | null }> {
   const headers = new Headers(init?.headers ?? undefined);
-  if (accessToken) {
-    headers.set('Authorization', `Bearer ${accessToken}`);
+
+  if (init?.method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(init.method) && !headers.has('X-CSRFToken')) {
+    const csrfToken = getCsrfToken();
+    if (csrfToken) {
+      headers.set('X-CSRFToken', csrfToken);
+    }
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${config.djangoApiUrl}${path}`, {
     ...init,
     headers,
+    credentials: 'include',
   });
 
   const data = (await response.json().catch(() => null)) as T | null;
-  return { ok: response.ok, data };
+  return { ok: response.ok, status: response.status, data };
 }
 
-async function fetchCurrentUser(accessToken: string): Promise<User> {
-  const { ok, data } = await apiRequest<Partial<User>>('/api/auth/user/', { method: 'GET' }, accessToken);
+async function fetchCurrentUser(): Promise<User | null> {
+  const { ok, data } = await apiRequest<Partial<User>>('/api/auth/user/', { method: 'GET' });
   if (!ok || !data) {
-    throw new Error('Could not fetch current user');
+    return null;
   }
   return normaliseUser(data);
 }
@@ -116,20 +90,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const signOut = useCallback(async () => {
-    const refreshToken = readToken(REFRESH_TOKEN_STORAGE_KEY);
-
     try {
       await apiRequest('/api/auth/logout/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(refreshToken ? { refresh: refreshToken } : {}),
       });
     } catch {
+      // Sign out locally even if the server call fails
     }
 
-    writeTokens(null, null);
     setUser(null);
   }, []);
 
@@ -148,24 +119,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(getErrorMessage(data, 'Invalid email or password'));
       }
 
-      const accessToken = data.access || data.key || data.token || null;
-      const refreshToken = data.refresh || null;
-
-      if (!accessToken) {
-        throw new Error('Login succeeded but no access token was returned');
-      }
-
-      writeTokens(accessToken, refreshToken);
-
       if (data.user) {
         setUser(normaliseUser(data.user));
         return;
       }
 
-      const currentUser = await fetchCurrentUser(accessToken);
+      const currentUser = await fetchCurrentUser();
+      if (!currentUser) {
+        throw new Error('Login succeeded but could not fetch user');
+      }
       setUser(currentUser);
     } catch (error) {
-      writeTokens(null, null);
       setUser(null);
       throw error;
     } finally {
@@ -177,24 +141,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let isMounted = true;
 
     async function initialiseAuth() {
-      const accessToken = readToken(ACCESS_TOKEN_STORAGE_KEY);
-
-      if (!accessToken) {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-        return;
-      }
-
       try {
-        const currentUser = await fetchCurrentUser(accessToken);
+        const currentUser = await fetchCurrentUser();
 
         if (isMounted) {
           setUser(currentUser);
         }
       } catch {
-        writeTokens(null, null);
-
         if (isMounted) {
           setUser(null);
         }

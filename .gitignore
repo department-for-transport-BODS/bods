@@ -231,6 +231,8 @@ htmlcov/
 jspm_packages/
 lib-cov
 lib/
+!bods-nextjs/lib/
+!bods-nextjs/lib/**
 lib64/
 logs
 node_modules/

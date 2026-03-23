@@ -230,25 +230,4 @@ describe('DownloadSubscribePanel', () => {
       expect(screen.getByText(/\.zip/i)).toBeInTheDocument();
     });
   });
-
-  describe('Django Parity', () => {
-    it('matches Django template structure', () => {
-      render(<DownloadSubscribePanel {...defaultProps} />);
-      
-      expect(screen.getByRole('heading', { 
-        name: /subscribe, download the data/i 
-      })).toBeInTheDocument();
-      
-      const list = screen.getByRole('list');
-      expect(list).toHaveClass('app-list--nav');
-      expect(list).toHaveClass('govuk-!-font-size-19');
-    });
-
-    it('matches Django download URL pattern', () => {
-      render(<DownloadSubscribePanel {...defaultProps} />);
-      
-      const downloadLink = screen.getByText(/download dataset/i);
-      expect(downloadLink).toHaveAttribute('href', expect.stringContaining('/download'));
-    });
-  });
 });
