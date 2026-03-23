@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Dataset List Component
  *
@@ -12,6 +10,8 @@
  *
  */
 
+'use client';
+
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { DatasetCard } from './DatasetCard';
@@ -20,6 +20,7 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { ErrorDisplay } from '@/components/shared/ErrorDisplay';
 import type { DatasetListItem, PaginatedResponse } from '@/types';
 import { config } from '@/config';
+import styles from './DatasetList.module.css';
 
 interface DatasetListProps {
   /** Initial datasets to display (from server fetch) */
@@ -82,8 +83,7 @@ export function DatasetList({
 
       try {
         const offset = (page - 1) * pageSize;
-        const apiUrl = config.djangoApiUrl;
-        let url = `${apiUrl}${apiEndpoint}?limit=${pageSize}&offset=${offset}`;
+        let url = `${config.djangoApiUrl}${apiEndpoint}?limit=${pageSize}&offset=${offset}`;
 
         if (search.trim()) {
           url += `&search=${encodeURIComponent(search.trim())}`;
@@ -207,7 +207,7 @@ export function DatasetList({
 
   if (datasets.length === 0) {
     return (
-      <div className="dataset-list-empty" role="status" data-testid="dataset-list-empty">
+      <div className={styles.empty} role="status">
         <p className="govuk-body-l">No datasets found{currentSearch ? ` for "${currentSearch}"` : ''}.</p>
         <p className="govuk-body">
           {currentSearch
@@ -219,15 +219,15 @@ export function DatasetList({
   }
 
   return (
-    <div className="dataset-list" data-testid="dataset-list">
+    <div className={styles.datasetList}>
       <div className="govuk-body govuk-!-margin-bottom-4" aria-live="polite">
         <span className="govuk-visually-hidden">Search results: </span>
-        {totalCount.toLocaleString()} dataset{totalCount !== 1 ? 's' : ''} found
+        {totalCount} dataset{totalCount !== 1 ? 's' : ''} found
         {currentSearch && <span> for &quot;{currentSearch}&quot;</span>}
       </div>
 
       <div
-        className="dataset-list__items"
+        className={styles.items}
         role="list"
         aria-label="Dataset results"
       >
@@ -248,23 +248,6 @@ export function DatasetList({
           pageParam="page"
         />
       )}
-
-      <style jsx>{`
-        .dataset-list {
-          margin-top: 20px;
-        }
-
-        .dataset-list__items {
-          margin-bottom: 30px;
-        }
-
-        .dataset-list-empty {
-          text-align: center;
-          padding: 40px 20px;
-          background-color: #f3f2f1;
-          border-radius: 4px;
-        }
-      `}</style>
     </div>
   );
 }

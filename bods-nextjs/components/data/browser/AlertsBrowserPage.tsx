@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api-client';
-import { HOSTS } from '@/lib/config';
+import { HOSTS } from '@/config';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
 
@@ -118,7 +118,7 @@ export function AlertsBrowserPage({
       try {
         setIsLoading(true);
         setError('');
-        const data = await api.get<unknown>(`${endpointPath}?limit=500`, { requireAuth: false });
+        const data = await api.get<unknown>(`${endpointPath}?limit=500`);
         const record = asRecord(data);
         const list = Array.isArray(record.results)
           ? record.results

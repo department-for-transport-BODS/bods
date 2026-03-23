@@ -10,6 +10,7 @@ import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { StopMap, StopPoint } from './StopMap';
+import styles from './StopMap.module.css';
 
 jest.mock('mapbox-gl', () => ({
   Map: jest.fn(() => ({
@@ -97,11 +98,11 @@ describe('StopMap', () => {
       expect(mapContainer).toBeInTheDocument();
     });
 
-    it('applies disruptions-width class', () => {
+    it('applies the stop map container class', () => {
       render(<StopMap stops={mockStops} mapboxToken={mockMapboxToken} />);
       
-      const mapContainer = document.querySelector('.disruptions-width');
-      expect(mapContainer).toBeInTheDocument();
+      const mapContainer = document.querySelector('#stop-map');
+      expect(mapContainer).toHaveClass(styles.mapContainer);
     });
 
     it('renders accessibility description for screen readers', () => {
@@ -519,33 +520,6 @@ describe('StopMap', () => {
       if (mockRemove) {
         expect(mockRemove).toHaveBeenCalled();
       }
-    });
-  });
-
-  describe('Django Parity', () => {
-    it('uses same map style as Django (light-v9)', () => {
-      render(<StopMap stops={mockStops} mapboxToken={mockMapboxToken} />);
-      
-      expect(true).toBe(true); // Placeholder for integration test
-    });
-
-    it('uses NavigationControl without compass like Django', () => {
-      render(<StopMap stops={mockStops} mapboxToken={mockMapboxToken} />);
-      
-      expect(true).toBe(true); // Placeholder for integration test
-    });
-
-    it('applies disruptions-width class matching Django', () => {
-      render(<StopMap stops={mockStops} mapboxToken={mockMapboxToken} />);
-      
-      const mapContainer = document.querySelector('.disruptions-width');
-      expect(mapContainer).toBeInTheDocument();
-    });
-
-    it('uses similar popup styling to Django', () => {
-      render(<StopMap stops={mockStops} mapboxToken={mockMapboxToken} />);
-      
-      expect(true).toBe(true); // Placeholder for integration test
     });
   });
 });

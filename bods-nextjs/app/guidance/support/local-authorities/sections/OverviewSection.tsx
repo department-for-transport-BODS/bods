@@ -20,7 +20,7 @@ export function OverviewSection() {
         </Link>
         . Local transport authorities should be{' '}
         <Link className="govuk-link" href="?section=support">supporting operators</Link> and may
-        also act as an operator&apos;s{' '}
+        also act as an operator's{' '}
         <Link className="govuk-link" href="?section=agent">agent</Link>.
       </p>
       <RequirementsTable />

@@ -1,10 +1,11 @@
-'use client';
-
 /**
  * Confirm Email Content Component
  * 
- * Client component that handles the email confirmation logic
+ * NextJS component to run in the browser to handle the user clicking a 
+ * link to trigger an email to be sent to confirm their email address
  */
+
+'use client';
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -24,7 +25,7 @@ export function ConfirmEmailContent() {
       return;
     }
 
-    api.post('/api/auth/confirm-email/', { key }, { requireAuth: false })
+    api.post('/api/auth/confirm-email/', { key })
       .then(() => {
         setStatus('success');
         setMessage('Your email has been confirmed. You can now sign in.');

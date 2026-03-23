@@ -3,12 +3,10 @@
  * 
  * Source: transit_odp/templates/pages/contact.html
  * 
- * Note: SUPPORT_PHONE and SUPPORT_EMAIL should be set via environment variables
- * to match the Django configuration. The defaults here match the current deployed values.
+ * Note: support contact details should be set via environment variables
  */
 
-import Link from 'next/link';
-import { SUPPORT_EMAIL, SUPPORT_PHONE } from '@/lib/config';
+import { config } from '@/config';
 
 export default function ContactPage() {
   return (
@@ -37,10 +35,10 @@ export default function ContactPage() {
               </p>
               <ul className="govuk-list">
                 <li>
-                  Telephone: {SUPPORT_PHONE}
+                  Telephone: {config.supportPhone}
                 </li>
                 <li>
-                  Email: <a className="govuk-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
+                  Email: <a className="govuk-link" href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
                 </li>
               </ul>
             </div>

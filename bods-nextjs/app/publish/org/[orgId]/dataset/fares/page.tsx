@@ -33,6 +33,7 @@ function FaresPublish() {
       await api.post(`/api/org/${orgId}/dataset/fares/upload/`, formData);
       router.push(`/publish/org/${orgId}/dataset/fares/success`);
     } catch (err) {
+      console.error('Upload error:', err);
       setError('Upload failed. Please try again.');
     } finally {
       setIsUploading(false);

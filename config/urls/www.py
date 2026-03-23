@@ -20,11 +20,20 @@ from transit_odp.common.views import (
     VersionView,
 )
 
+from transit_odp.api.views.auth import (
+    CSRFTokenAPIView,
+    CurrentUserAPIView,
+    LoginAPIView,
+    LogoutAPIView,
+)
+
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    # API endpoints for NextJS integration - using dj-rest-auth with JWT
-    path("api/auth/", include("dj_rest_auth.urls")),
-    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
+    # Session-based auth API for the Next.js frontend
+    path("api/auth/login/", LoginAPIView.as_view(), name="api-auth-login"),
+    path("api/auth/logout/", LogoutAPIView.as_view(), name="api-auth-logout"),
+    path("api/auth/user/", CurrentUserAPIView.as_view(), name="api-auth-user"),
+    path("api/auth/csrf/", CSRFTokenAPIView.as_view(), name="api-auth-csrf"),
     path(
         "contact/",
         TemplateView.as_view(template_name="pages/contact.html"),

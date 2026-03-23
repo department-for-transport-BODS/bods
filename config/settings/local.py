@@ -63,6 +63,10 @@ EMAIL_PORT = 1025
 # Set the CORS 'Access-Control-Allow-Origin' header to allow django-debug-toolbar
 # to work on subdomains.
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
+# Allow the Next.js dev server as a trusted CSRF origin
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
 # django-debug-toolbar
 # ------------------------------------------------------------------------------

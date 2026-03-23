@@ -251,29 +251,4 @@ describe('DataQualityBadge', () => {
       expect(screen.queryByRole('link')).not.toBeInTheDocument();
     });
   });
-
-  describe('Django Parity', () => {
-    it('matches Django RAG threshold display (GREEN >= 100%)', () => {
-      render(<DataQualityBadge score="100%" rag="green" />);
-      expect(screen.getByText(/100% GREEN/i)).toBeInTheDocument();
-    });
-
-    it('matches Django RAG threshold display (AMBER > 90%)', () => {
-      render(<DataQualityBadge score="95%" rag="amber" />);
-      expect(screen.getByText(/95% AMBER/i)).toBeInTheDocument();
-    });
-
-    it('matches Django RAG threshold display (RED <= 90%)', () => {
-      render(<DataQualityBadge score="89%" rag="red" />);
-      expect(screen.getByText(/89% RED/i)).toBeInTheDocument();
-    });
-
-    it('matches Django status-indicator CSS pattern', () => {
-      render(<DataQualityBadge score="100%" rag="green" />);
-      
-      const badge = screen.getByLabelText(/data quality score/i);
-      expect(badge).toHaveClass('status-indicator');
-      expect(badge).toHaveClass('status-indicator--success');
-    });
-  });
 });

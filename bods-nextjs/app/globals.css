@@ -1,10 +1,10 @@
 /**
  * Global styles for BODS Next.js
- * 
- * GDS styles are imported via GDSProvider component.
+ *
+ * GOV.UK frontend styles are compiled from the package Sass entrypoint in the root layout.
  * This file contains BODS-specific styles that extend GDS.
- * 
- * DO NOT add styles that conflict with GDS - the site must look
+ * TODO: Remove the below comment
+ * INFO: DO NOT add styles that conflict with GDS - the site must look
  * identical to the Django version which uses govuk-frontend.
  */
 

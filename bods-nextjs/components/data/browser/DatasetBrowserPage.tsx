@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api-client';
-import { HOSTS } from '@/lib/config';
+import { HOSTS } from '@/config';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
@@ -117,9 +117,7 @@ export function DatasetBrowserPage({
       try {
         setIsLoading(true);
         setError('');
-        const data = await api.get<ApiPaginated<BrowserDatasetItem>>(`${endpointPath}?limit=500`, {
-          requireAuth: false,
-        });
+        const data = await api.get<ApiPaginated<BrowserDatasetItem>>(`${endpointPath}?limit=500`);
         setRawDatasets(Array.isArray(data.results) ? data.results : []);
       } catch {
         setError('Failed to load datasets');

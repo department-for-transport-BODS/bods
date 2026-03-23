@@ -1,14 +1,14 @@
 /**
  * Support Email Link Component
- * Renders a linked email address using the configured SUPPORT_EMAIL.
+ * Renders a linked email address using the configured support email.
  */
 
-import { SUPPORT_EMAIL } from '@/lib/config';
+import { config } from '@/config';
 
 export function SupportEmailLink() {
   return (
-    <a className="govuk-link" href={`mailto:${SUPPORT_EMAIL}`}>
-      {SUPPORT_EMAIL}
+    <a className="govuk-link" href={`mailto:${config.supportEmail}`}>
+      {config.supportEmail}
     </a>
   );
 }

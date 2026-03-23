@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "./govuk.scss";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth/jwt-auth";
 import { GDSProvider } from "@/components/gds/GDSProvider";
@@ -19,7 +20,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="govuk-template govuk-template--rebranded">
       <head>
-        <link rel="stylesheet" href="/govuk/govuk-frontend.min.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="theme-color" content="blue" />
       </head>

@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@next/swc-darwin-arm64": "^16.1.6",
     "@swc/core": "^1.15.13",
     "@types/mapbox-gl": "^3.5.0",
     "govuk-frontend": "5.14.0",
@@ -40,6 +39,7 @@
     "eslint-config-next": "16.1.6",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
+    "sass": "^1.98.0",
     "typescript": "^5"
   }
 }

@@ -1,0 +1,86 @@
+.datasetSearch {
+  margin-bottom: 30px;
+}
+
+.inputWrapper {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  position: relative;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
+}
+
+.input:focus {
+  z-index: 1;
+}
+
+.clearButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  background: #fff;
+  border: 2px solid #0b0c0c;
+  border-left: none;
+  border-right: none;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  color: #505a5f;
+  padding: 0;
+}
+
+.clearButton:hover {
+  background: #f3f2f1;
+  color: #0b0c0c;
+}
+
+.clearButton:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+  z-index: 1;
+}
+
+.button {
+  margin-bottom: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .inputWrapper {
+    flex-wrap: wrap;
+  }
+
+  .input {
+    flex: 1 1 100%;
+    border-right: 2px solid #0b0c0c;
+    border-radius: 0;
+    margin-bottom: 10px;
+  }
+
+  .clearButton {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    width: auto;
+    height: auto;
+  }
+
+  .button {
+    width: 100%;
+    border-radius: 0;
+  }
+}

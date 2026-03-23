@@ -1,10 +1,9 @@
-'use client';
-
 /**
  * Stop Map Component
  *
  *
- * Source: transit_odp/frontend/assets/js/feed-detail-map.js (AVL markers)
+ * Source: transit_odp/data_quality/templates/data_quality/snippets/detail_map.html
+ * Source JS: transit_odp/frontend/assets/js/data-quality-detail-map.js
  * API: /api/v1/stoppoint/?revision={id}
  *
  * Displays bus stop locations on Mapbox map with:
@@ -15,13 +14,15 @@
  * - Search/filter visible stops
  * - Keyboard accessible controls
  * - Text alternative for screen readers
- * * TODO: INLINE CSS = PLZ FIX
  */
+
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { config } from '@/config';
+import styles from './StopMap.module.css';
 
 export interface StopMapProps {
   revisionId?: number;
@@ -63,7 +64,7 @@ interface StopFeatureCollection {
 export function StopMap({
   revisionId,
   stops,
-  apiRoot = config.apiUrl,
+  apiRoot = config.djangoApiUrl,
   mapboxToken,
   onStopClick,
   ariaLabel = 'Interactive map showing bus stop locations',
@@ -270,7 +271,7 @@ export function StopMap({
 
     stopPoints.forEach((stop) => {
       const el = document.createElement('div');
-      el.className = 'stop-marker';
+      el.className = styles.stopMarker;
       el.style.backgroundColor = '#11b4da';
       el.style.width = '16px';
       el.style.height = '16px';
@@ -315,7 +316,7 @@ export function StopMap({
       const source = map.current.getSource('stops') as mapboxgl.GeoJSONSource;
 
       source.getClusterExpansionZoom(clusterId, (err, zoom) => {
-        if (err || !map.current) return;
+        if (err || !map.current || zoom == null) return;
 
         const coordinates = (features[0].geometry as any).coordinates;
         map.current.easeTo({
@@ -400,7 +401,7 @@ export function StopMap({
   };
 
   return (
-    <div className="stop-map-container">
+    <div className={styles.stopMapContainer}>
       {/* Accessibility: Screen reader description */}
       <div className="govuk-visually-hidden" role="status" aria-live="polite">
         {error
@@ -415,13 +416,13 @@ export function StopMap({
       <div
         ref={mapContainer}
         id="stop-map"
-        className="disruptions-width"
+        className={styles.mapContainer}
         role="region"
         aria-label={ariaLabel}
       />
 
       {stopCount > 0 && (
-        <div className="govuk-body-s stop-count">
+        <div className={`govuk-body-s ${styles.stopCount}`}>
           Showing {stopCount} stop{stopCount !== 1 ? 's' : ''}
         </div>
       )}
@@ -431,65 +432,6 @@ export function StopMap({
           <span className="govuk-visually-hidden">Error:</span> {error}
         </div>
       )}
-
-      <style jsx>{`
-        .stop-map-container {
-          position: relative;
-          margin-bottom: 30px;
-        }
-
-        .disruptions-width {
-          width: 100% !important;
-          height: 25rem !important;
-        }
-
-        .stop-count {
-          display: block;
-          margin-top: 10px;
-          color: #505a5f;
-          font-size: 16px;
-        }
-
-        /* Marker styles */
-        :global(.stop-marker) {
-          transition: transform 0.2s;
-        }
-
-        :global(.stop-marker:hover) {
-          transform: scale(1.2);
-        }
-
-        /* Mapbox popup customization */
-        :global(.mapboxgl-popup-content) {
-          padding: 12px;
-          background: #fff;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        :global(.mapboxgl-popup-content h3) {
-          margin: 0 0 8px 0;
-          font-size: 16px;
-          font-weight: 600;
-        }
-
-        :global(.mapboxgl-popup-content p) {
-          margin: 0;
-          font-size: 14px;
-          color: #505a5f;
-        }
-
-        :global(.mapboxgl-popup-anchor-top > .mapboxgl-popup-content) {
-          border-top: 3px solid #11b4da;
-        }
-
-        :global(.mapboxgl-popup-anchor-top > .mapboxgl-popup-tip) {
-          border-bottom-color: #11b4da;
-        }
-
-        :global(.mapboxgl-popup-anchor-bottom > .mapboxgl-popup-tip) {
-          border-top-color: #11b4da;
-        }
-      `}</style>
     </div>
   );
 }

@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Global Error Boundary
  *
@@ -7,6 +5,8 @@
  * Displays a GDS-styled error page when an unhandled error occurs.
  * Probably can do this better
  */
+
+'use client';
 
 import { useEffect } from 'react';
 import Link from 'next/link';

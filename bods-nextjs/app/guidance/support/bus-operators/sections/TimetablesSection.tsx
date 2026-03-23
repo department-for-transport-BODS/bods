@@ -3,7 +3,6 @@
  * Source: transit_odp/guidance/templates/guidance/bus_operators/timetables.html
  */
 
-import { PUBLISH_BUS_DATA_URL, TRANSXCHANGE_URL } from '@/lib/config';
 import { SupportEmailLink } from './SupportEmailLink';
 
 export function TimetablesSection() {
@@ -31,8 +30,8 @@ export function TimetablesSection() {
         software or using the free TxC 2.4 tool provided by DfT, from the following website:
       </p>
       <p className="govuk-body">
-        <a className="govuk-link" rel="noopener noreferrer" target="_blank" href={PUBLISH_BUS_DATA_URL}>
-          {PUBLISH_BUS_DATA_URL}
+        <a className="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.gov.uk/guidance/publish-bus-open-data">
+          https://www.gov.uk/guidance/publish-bus-open-data
         </a>
       </p>
       <p className="govuk-body">
@@ -69,8 +68,8 @@ export function TimetablesSection() {
         the integrity rules used in TransXchange.
       </p>
       <p className="govuk-body">
-        <a className="govuk-link" rel="noopener noreferrer" target="_blank" href={TRANSXCHANGE_URL}>
-          {TRANSXCHANGE_URL}
+        <a className="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.gov.uk/government/collections/transxchange">
+          https://www.gov.uk/government/collections/transxchange
         </a>
       </p>
     </>

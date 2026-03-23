@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Dataset Card Component
  *
@@ -13,9 +11,12 @@
  *
  */
 
+'use client';
+
 import Link from 'next/link';
 import type { DatasetListItem, DatasetType } from '@/types';
 import { DataQualityBadge } from './DataQualityBadge';
+import styles from './DatasetCard.module.css';
 
 interface DatasetCardProps {
   dataset: DatasetListItem;
@@ -75,7 +76,7 @@ export function DatasetCard({ dataset }: DatasetCardProps) {
   const formattedDate = formatDate(dataset.modified);
 
   return (
-    <div className="dataset-card" data-testid="dataset-card">
+    <div className={styles.datasetCard}>
       <div className="govuk-summary-card">
         <div className="govuk-summary-card__title-wrapper">
           <h2 className="govuk-summary-card__title">
@@ -132,31 +133,6 @@ export function DatasetCard({ dataset }: DatasetCardProps) {
           </dl>
         </div>
       </div>
-      <style jsx>{`
-        .dataset-card {
-          margin-bottom: 20px;
-        }
-
-        .dataset-card :global(.govuk-summary-card__title) {
-          margin: 0;
-        }
-
-        .dataset-card :global(.govuk-summary-card__actions) {
-          display: flex;
-          gap: 10px;
-          align-items: center;
-        }
-
-        .dataset-card :global(.govuk-summary-list__key) {
-          width: 30%;
-        }
-
-        @media (max-width: 640px) {
-          .dataset-card :global(.govuk-summary-list__key) {
-            width: 100%;
-          }
-        }
-      `}</style>
     </div>
   );
 }

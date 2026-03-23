@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * API URL Panel Component
  *
@@ -12,7 +10,10 @@
  *
  */
 
+'use client';
+
 import { useState } from 'react';
+import styles from './ApiUrlPanel.module.css';
 
 export interface ApiUrlPanelProps {
   /** API endpoint URL */
@@ -47,13 +48,13 @@ export function ApiUrlPanel({
   );
 
   return (
-    <div className="api-url-panel-wrapper">
+    <div className={styles.wrapper}>
       <h2 className="govuk-heading-m">{panelTitle}</h2>
 
-      <div className="api-url-panel">
+      <div className={styles.panel}>
         <span
           id="code-snippet-url"
-          className="api-url-panel__url dont-break-out"
+          className={styles.url}
           role="textbox"
           aria-label="API endpoint URL"
           aria-readonly="true"
@@ -62,7 +63,7 @@ export function ApiUrlPanel({
         </span>
 
         <button
-          className="govuk-button govuk-button--secondary api-url-panel__copy-button"
+          className={`govuk-button govuk-button--secondary ${styles.copyButton}`}
           onClick={handleCopy}
           aria-label="Copy API endpoint URL to clipboard"
           type="button"
@@ -70,56 +71,6 @@ export function ApiUrlPanel({
           {copied ? 'Copied!' : 'Copy'}
         </button>
       </div>
-
-      <style jsx>{`
-        .api-url-panel-wrapper {
-          margin-top: 2rem;
-          margin-bottom: 2rem;
-        }
-
-        .api-url-panel {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 1rem;
-          background-color: #f3f2f1;
-          border: 1px solid #b1b4b6;
-          border-radius: 0;
-          word-break: break-all;
-        }
-
-        .api-url-panel__url {
-          flex: 1;
-          font-family: monospace;
-          font-size: 0.875rem;
-          line-height: 1.4;
-          color: #0b0c0c;
-        }
-
-        .api-url-panel__copy-button {
-          flex-shrink: 0;
-          margin: 0;
-          white-space: nowrap;
-        }
-
-        .dont-break-out {
-          overflow-wrap: break-word;
-          word-wrap: break-word;
-          word-break: break-word;
-          hyphens: auto;
-        }
-
-        @media (max-width: 640px) {
-          .api-url-panel {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .api-url-panel__copy-button {
-            width: 100%;
-          }
-        }
-      `}</style>
     </div>
   );
 }

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import { ErrorSummary } from '@/components/shared';
+import { config } from '@/config';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -34,7 +36,7 @@ export default function LoginPage() {
       <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
         <ol className="govuk-breadcrumbs__list">
           <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href="https://www.bus-data.dft.gov.uk/">
+            <Link className="govuk-breadcrumbs__link" href={`HOSTS.root`}>
               Bus Open Data Service
             </Link>
           </li>
@@ -54,18 +56,7 @@ export default function LoginPage() {
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Sign in</h1>
 
-            {error && (
-              <div className="govuk-error-summary" aria-labelledby="error-summary-title" role="alert">
-                <h2 className="govuk-error-summary__title" id="error-summary-title">
-                  There is a problem
-                </h2>
-                <div className="govuk-error-summary__body">
-                  <ul className="govuk-list govuk-error-summary__list">
-                    <li>{error}</li>
-                  </ul>
-                </div>
-              </div>
-            )}
+            {error && <ErrorSummary errors={[error]} />}
 
             <form onSubmit={handleSubmit}>
               <div className={`govuk-form-group ${error ? 'govuk-form-group--error' : ''}`}>
@@ -124,7 +115,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <h2 className="govuk-heading-m">Don&apos;t have an account?</h2>
+              <h2 className="govuk-heading-m">Don't have an account?</h2>
               <ul className="govuk-list">
                 <li>
                   <Link href="/account/signup" className="govuk-link">

@@ -37,15 +37,15 @@ export function useFilterOptions(): FilterOptionsData {
         setIsLoading(true);
         setError(null);
 
-        const apiUrl = config.djangoApiUrl;
-
         const [areasResponse, orgsResponse] = await Promise.all([
-          fetch(`${apiUrl}/api/v1/admin-area/`, {
+          fetch(`${config.djangoApiUrl}/api/v1/admin-area/`, {
+            credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
             },
           }),
-          fetch(`${apiUrl}/api/v1/organisation/?is_active=true`, {
+          fetch(`${config.djangoApiUrl}/api/v1/organisation/?is_active=true`, {
+            credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
             },

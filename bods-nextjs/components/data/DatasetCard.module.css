@@ -1,0 +1,23 @@
+.datasetCard {
+  margin-bottom: 20px;
+}
+
+.datasetCard :global(.govuk-summary-card__title) {
+  margin: 0;
+}
+
+.datasetCard :global(.govuk-summary-card__actions) {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.datasetCard :global(.govuk-summary-list__key) {
+  width: 30%;
+}
+
+@media (max-width: 640px) {
+  .datasetCard :global(.govuk-summary-list__key) {
+    width: 100%;
+  }
+}

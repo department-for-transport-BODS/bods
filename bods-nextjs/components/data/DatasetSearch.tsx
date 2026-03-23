@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Dataset Search Component
  *
@@ -10,8 +8,11 @@
  *
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+'use client';
+
+import { useState, useCallback, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import styles from './DatasetSearch.module.css';
 
 interface DatasetSearchProps {
   /** Callback when search is submitted */
@@ -24,53 +25,31 @@ interface DatasetSearchProps {
   hint?: string;
 }
 
-export function DatasetSearch({
+interface DatasetSearchFormProps extends DatasetSearchProps {
+  /** Search query from the current URL */
+  initialSearch: string;
+  /** Pushes the updated search query into the URL */
+  updateUrl: (query: string) => void;
+}
+
+function DatasetSearchForm({
+  initialSearch,
+  updateUrl,
   onSearch,
-  placeholder = 'Search by name, operator or description',
-  label = 'Search datasets',
-  hint = 'Enter keywords to search for datasets by name, operator or description',
-}: DatasetSearchProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const initialSearch = searchParams.get('search') || '';
+  placeholder,
+  label,
+  hint,
+}: DatasetSearchFormProps) {
   const [searchValue, setSearchValue] = useState(initialSearch);
-  const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const announcementRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const urlSearch = searchParams.get('search') || '';
-    setSearchValue(urlSearch);
-  }, [searchParams]);
-
-  const updateUrl = useCallback((query: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (query.trim()) {
-      params.set('search', query.trim());
-      params.delete('page');
-    } else {
-      params.delete('search');
-      params.delete('page');
-    }
-
-    const queryString = params.toString();
-    router.push(queryString ? `${pathname}?${queryString}` : pathname);
-  }, [pathname, router, searchParams]);
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
-    setIsSearching(true);
-
     updateUrl(searchValue);
 
     if (onSearch) {
       onSearch(searchValue);
     }
-
-    setTimeout(() => setIsSearching(false), 100);
   }, [searchValue, updateUrl, onSearch]);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,7 +77,7 @@ export function DatasetSearch({
   const hasSearchValue = searchValue.trim().length > 0;
 
   return (
-    <div className="dataset-search" data-testid="dataset-search">
+    <div className={styles.datasetSearch}>
       <form onSubmit={handleSubmit} role="search" aria-label="Search datasets">
         <div className="govuk-form-group">
           <label className="govuk-label govuk-label--m" htmlFor="dataset-search-input">
@@ -108,13 +87,13 @@ export function DatasetSearch({
             {hint}
           </div>
 
-          <div className="dataset-search__input-wrapper">
+          <div className={styles.inputWrapper}>
             <input
               ref={inputRef}
               type="search"
               id="dataset-search-input"
               name="search"
-              className="govuk-input dataset-search__input"
+              className={`govuk-input ${styles.input}`}
               placeholder={placeholder}
               value={searchValue}
               onChange={handleInputChange}
@@ -127,7 +106,7 @@ export function DatasetSearch({
             {hasSearchValue && (
               <button
                 type="button"
-                className="dataset-search__clear"
+                className={styles.clearButton}
                 onClick={handleClear}
                 aria-label="Clear search"
               >
@@ -137,115 +116,63 @@ export function DatasetSearch({
 
             <button
               type="submit"
-              className="govuk-button dataset-search__button"
+              className={`govuk-button ${styles.button}`}
               data-module="govuk-button"
-              disabled={isSearching}
-              aria-label={isSearching ? 'Searching...' : 'Search'}
+              aria-label="Search"
             >
-              {isSearching ? 'Searching...' : 'Search'}
+              Search
             </button>
           </div>
         </div>
       </form>
 
       <div
-        ref={announcementRef}
         className="govuk-visually-hidden"
         role="status"
         aria-live="polite"
         aria-atomic="true"
-      >
-        {isSearching && 'Searching...'}
-      </div>
-
-      <style jsx>{`
-        .dataset-search {
-          margin-bottom: 30px;
-        }
-
-        .dataset-search__input-wrapper {
-          display: flex;
-          gap: 0;
-          align-items: stretch;
-        }
-
-        .dataset-search__input {
-          flex: 1;
-          min-width: 0;
-          border-right: none;
-          border-top-right-radius: 0;
-          border-bottom-right-radius: 0;
-          margin-bottom: 0;
-        }
-
-        .dataset-search__input:focus {
-          z-index: 1;
-        }
-
-        .dataset-search__clear {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px;
-          background: #fff;
-          border: 2px solid #0b0c0c;
-          border-left: none;
-          border-right: none;
-          cursor: pointer;
-          font-size: 24px;
-          line-height: 1;
-          color: #505a5f;
-          padding: 0;
-        }
-
-        .dataset-search__clear:hover {
-          background: #f3f2f1;
-          color: #0b0c0c;
-        }
-
-        .dataset-search__clear:focus {
-          outline: 3px solid #ffdd00;
-          outline-offset: 0;
-          z-index: 1;
-        }
-
-        .dataset-search__button {
-          margin-bottom: 0;
-          border-top-left-radius: 0;
-          border-bottom-left-radius: 0;
-          white-space: nowrap;
-        }
-
-        @media (max-width: 640px) {
-          .dataset-search__input-wrapper {
-            flex-wrap: wrap;
-          }
-
-          .dataset-search__input {
-            flex: 1 1 100%;
-            border-right: 2px solid #0b0c0c;
-            border-radius: 0;
-            margin-bottom: 10px;
-          }
-
-          .dataset-search__clear {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            border: none;
-            background: transparent;
-            width: auto;
-            height: auto;
-          }
-
-          .dataset-search__button {
-            width: 100%;
-            border-radius: 0;
-          }
-        }
-      `}</style>
+      />
     </div>
+  );
+}
+
+export function DatasetSearch({
+  onSearch,
+  placeholder = 'Search by name, operator or description',
+  label = 'Search datasets',
+  hint = 'Enter keywords to search for datasets by name, operator or description',
+}: DatasetSearchProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const currentUrlSearch = searchParams.get('search') || '';
+
+  const updateUrl = useCallback((query: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (query.trim()) {
+      params.set('search', query.trim());
+      params.delete('page');
+    } else {
+      params.delete('search');
+      params.delete('page');
+    }
+
+    const queryString = params.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname);
+  }, [pathname, router, searchParams]);
+
+  return (
+    <DatasetSearchForm
+      key={currentUrlSearch}
+      initialSearch={currentUrlSearch}
+      updateUrl={updateUrl}
+      onSearch={onSearch}
+      placeholder={placeholder}
+      label={label}
+      hint={hint}
+    />
   );
 }
 

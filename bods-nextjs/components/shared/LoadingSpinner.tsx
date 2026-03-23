@@ -1,11 +1,11 @@
-'use client';
-
 /**
  * Loading Spinner Component
  *
  * Replace this if we can use a GDS component in future
  * Move the inline css to be in a file
  */
+
+'use client';
 
 interface LoadingSpinnerProps {
   message?: string;

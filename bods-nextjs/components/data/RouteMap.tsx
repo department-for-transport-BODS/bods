@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Route Map Component
  * Displays bus routes on Mapbox map with:
@@ -8,10 +6,13 @@
  *
 */
 
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { config } from '@/config';
+import styles from './RouteMap.module.css';
 
 export interface RouteMapProps {
   revisionId: number;
@@ -45,7 +46,7 @@ interface ServicePatternCollection {
 
 export function RouteMap({
   revisionId,
-  apiRoot = config.apiUrl,
+  apiRoot = config.djangoApiUrl,
   mapboxToken,
   lineName,
   serviceCodes,
@@ -260,7 +261,7 @@ export function RouteMap({
   };
 
   return (
-    <div className="route-map-container">
+    <div className={styles.routeMapContainer}>
       {/* Accessibility: Screen reader description */}
       <div className="govuk-visually-hidden" role="status" aria-live="polite">
         {error
@@ -272,13 +273,13 @@ export function RouteMap({
       <div
         ref={mapContainer}
         id="map"
-        className="disruptions-width"
+        className={styles.mapContainer}
         role="region"
         aria-label={ariaLabel}
       />
 
       {showTimestamp && lastUpdated && (
-        <span id="map-updated-timestamp" className="govuk-body-s">
+        <span className={`govuk-body-s ${styles.updatedTimestamp}`}>
           Last updated at - {lastUpdated}
         </span>
       )}
@@ -288,51 +289,6 @@ export function RouteMap({
           <span className="govuk-visually-hidden">Error:</span> {error}
         </div>
       )}
-
-      {/* Styles matching Django SCSS */}
-      <style jsx>{`
-        .route-map-container {
-          position: relative;
-          margin-bottom: 30px;
-        }
-
-        .disruptions-width {
-          width: 100% !important;
-          height: 25rem !important;
-        }
-
-        #map-updated-timestamp {
-          display: block;
-          margin-top: 10px;
-          color: #505a5f;
-          font-size: 16px;
-        }
-
-        /* Mapbox popup customization matching Django styles */
-        :global(.mapboxgl-popup-content) {
-          padding: 12px;
-          background: #fff;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        :global(.mapboxgl-popup-content h3) {
-          margin: 0 0 8px 0;
-          font-size: 16px;
-          font-weight: 600;
-        }
-
-        :global(.mapboxgl-popup-anchor-top > .mapboxgl-popup-content) {
-          border-top: 3px solid #49a39a;
-        }
-
-        :global(.mapboxgl-popup-anchor-top > .mapboxgl-popup-tip) {
-          border-bottom-color: #49a39a;
-        }
-
-        :global(.mapboxgl-popup-anchor-bottom > .mapboxgl-popup-tip) {
-          border-top-color: #49a39a;
-        }
-      `}</style>
     </div>
   );
 }

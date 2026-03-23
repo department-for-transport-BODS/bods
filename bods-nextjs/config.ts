@@ -1,6 +1,8 @@
+import { version } from './package.json';
+
 export const config = {
-  // API URLs
-  djangoApiUrl: process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000',
+  // API URLs — must be set in every environment
+  djangoApiUrl: process.env.NEXT_PUBLIC_DJANGO_API_URL!,
   // Mapbox
   mapboxToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '',
 
@@ -9,7 +11,14 @@ export const config = {
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@busopendataservice.atlassian.net',
 
   // App
-  appVersion: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
+  appVersion: version,
+  bodsBaseUrl: process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN || 'bus-data.dft.gov.uk',
   nodeEnv: process.env.NODE_ENV || 'development',
-  cookieDomain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || '',
+} as const;
+
+export const HOSTS = {
+  root: `https://www.${config.bodsBaseUrl}`,
+  data: `https://data.${config.bodsBaseUrl}`,
+  publish: `https://publish.${config.bodsBaseUrl}`,
+  admin: `https://admin.${config.bodsBaseUrl}`,
 } as const;

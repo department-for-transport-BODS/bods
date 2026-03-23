@@ -67,6 +67,8 @@ export type DatasetStatus = 'published' | 'live' | 'inactive' | 'expired' | 'err
  */
 export interface Dataset {
   id: number;
+  organisationId: number;
+  revisionId: number;
   created: string;
   modified: string;
   operatorName: string;

@@ -18,7 +18,12 @@ from transit_odp.api.views import (
     TimetablesViewSet,
     v2,
 )
-from transit_odp.api.views.auth import CurrentUserAPIView
+from transit_odp.api.views.auth import (
+    CSRFTokenAPIView,
+    CurrentUserAPIView,
+    LoginAPIView,
+    LogoutAPIView,
+)
 from transit_odp.api.views.avl import (
     AVLManageSubscriptionsView,
     AVLManageSubscriptionDetailView,

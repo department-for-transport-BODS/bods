@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Download and Subscribe Panel Component
  *
@@ -14,8 +12,11 @@
  *
  */
 
+'use client';
+
 import { useState } from 'react';
 import Link from 'next/link';
+import styles from './DownloadSubscribePanel.module.css';
 
 export interface DownloadSubscribePanelProps {
   datasetId: number;
@@ -70,7 +71,7 @@ export function DownloadSubscribePanel({
   };
 
   return (
-    <div className="download-subscribe-panel">
+    <div className={styles.panel}>
       <h2 className="govuk-heading-m govuk-!-margin-top-5">
         Subscribe, download the data
       </h2>
@@ -81,7 +82,7 @@ export function DownloadSubscribePanel({
             <button
               onClick={handleSubscribeToggle}
               disabled={isToggling}
-              className="govuk-link download-subscribe-panel__link-button"
+              className={`govuk-link ${styles.linkButton}`}
               aria-label={subscribed ? 'Unsubscribe from this data set' : 'Subscribe to this data set'}
             >
               {subscribed ? 'Unsubscribe from this data set' : 'Subscribe to this data set'}
@@ -108,42 +109,6 @@ export function DownloadSubscribePanel({
           </a>
         </li>
       </ul>
-
-      <style jsx>{`
-        .download-subscribe-panel {
-          margin-top: 2rem;
-        }
-
-        .app-list--nav {
-          list-style: none;
-          padding: 0;
-        }
-
-        .app-list--nav li {
-          margin-bottom: 0.75rem;
-        }
-
-        .download-subscribe-panel__link-button {
-          background: none;
-          border: none;
-          padding: 0;
-          cursor: pointer;
-          text-align: left;
-          font-size: inherit;
-          font-family: inherit;
-        }
-
-        .download-subscribe-panel__link-button:hover {
-          text-decoration: underline;
-          text-decoration-thickness: 3px;
-          text-decoration-skip-ink: none;
-        }
-
-        .download-subscribe-panel__link-button:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-      `}</style>
     </div>
   );
 }

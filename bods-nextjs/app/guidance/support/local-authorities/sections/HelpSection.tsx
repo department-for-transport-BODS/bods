@@ -1,4 +1,4 @@
-import { SUPPORT_EMAIL } from '@/lib/config';
+import { config } from '@/config';
 import { HelpSectionTables } from './HelpSectionTables';
 
 export function HelpSection() {
@@ -8,13 +8,13 @@ export function HelpSection() {
       <h2 className="govuk-heading-l">NaPTAN stop data support</h2>
       <p className="govuk-body">
         The DfT is offering a free service whereby local authorities can get in contact with{' '}
-        <a className="govuk-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> to request
+        <a className="govuk-link" href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a> to request
         a spreadsheet that contains potential NaPTAN corrections for the areas that you are
         responsible for.
       </p>
       <HelpSectionTables />
       <p className="govuk-body">
-        Contact <a className="govuk-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>{' '}
+        Contact <a className="govuk-link" href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>{' '}
         for:
       </p>
       <ul className="govuk-list govuk-list--bullet">

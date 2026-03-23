@@ -5,6 +5,7 @@
  */
 
 import Link from 'next/link';
+import { config, HOSTS } from '@/config';
 
 export default function AccessibilityPage() {
   return (
@@ -16,8 +17,8 @@ export default function AccessibilityPage() {
             
             <p className="govuk-body">
               This statement applies to pages on{' '}
-              <a className="govuk-link" rel="noopener noreferrer" target="_blank" href="https://www.bus-data.dft.gov.uk/">
-                bus-data.dft.gov.uk
+              <a className="govuk-link" rel="noopener noreferrer" target="_blank" href={HOSTS.root}>
+                {HOSTS.root}
               </a>.
             </p>
             

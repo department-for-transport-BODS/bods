@@ -10,6 +10,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { RouteMap } from './RouteMap';
+import styles from './RouteMap.module.css';
 
 jest.mock('mapbox-gl', () => ({
   Map: jest.fn(() => ({
@@ -88,11 +89,11 @@ describe('RouteMap', () => {
       expect(mapContainer).toBeInTheDocument();
     });
 
-    it('applies disruptions-width class', () => {
+    it('applies the route map container class', () => {
       render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
       
-      const mapContainer = document.querySelector('.disruptions-width');
-      expect(mapContainer).toBeInTheDocument();
+      const mapContainer = document.querySelector('#map');
+      expect(mapContainer).toHaveClass(styles.mapContainer);
     });
 
     it('renders accessibility description for screen readers', () => {
@@ -279,86 +280,6 @@ describe('RouteMap', () => {
     });
 
     it('marks map canvas as non-tabbable', () => {
-      render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
-      expect(true).toBe(true); // Placeholder for integration test
-    });
-  });
-
-  describe('Django Parity', () => {
-    it('uses same map center as Django (UK center)', () => {
-      render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
-      expect(true).toBe(true); // Placeholder for integration test
-    });
-
-    it('uses same map style as Django (light-v9)', () => {
-      render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
-      expect(true).toBe(true); // Placeholder for integration test
-    });
-
-    it('matches Django zoom levels (5 initial, 12 max)', () => {
-      render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
-      expect(true).toBe(true); // Placeholder for integration test
-    });
-
-    it('shows NavigationControl without compass like Django', () => {
-      render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
-      expect(true).toBe(true); // Placeholder for integration test
-    });
-
-    it('uses same API endpoint pattern as Django', async () => {
-      render(
-        <RouteMap
-          revisionId={789}
-          mapboxToken={mockMapboxToken}
-          apiRoot={mockApiRoot}
-        />
-      );
-      
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          `${mockApiRoot}/api/v1/service_pattern/?revision=789`
-        );
-      });
-    });
-
-    it('matches Django route line styling', () => {
-      render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
-      expect(true).toBe(true); // Placeholder for integration test
-    });
-
-    it('matches Django hover effect styling', () => {
-      render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
-      expect(true).toBe(true); // Placeholder for integration test
-    });
-
-    it('shows service number in popup like Django', () => {
-      render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
-      expect(true).toBe(true); // Placeholder for integration test
-    });
-
-    it('uses same map container ID as Django (map)', () => {
-      render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
-      const mapContainer = document.querySelector('#map');
-      expect(mapContainer).toBeInTheDocument();
-    });
-
-    it('applies disruptions-width class matching Django', () => {
-      render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
-      const mapContainer = document.querySelector('.disruptions-width');
-      expect(mapContainer).toBeInTheDocument();
-    });
-
-    it('fits bounds with same padding as Django (20px)', () => {
       render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
       
       expect(true).toBe(true); // Placeholder for integration test

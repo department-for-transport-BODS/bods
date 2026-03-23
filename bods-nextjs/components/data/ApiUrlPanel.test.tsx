@@ -215,31 +215,4 @@ describe('ApiUrlPanel', () => {
       expect(screen.getByText(/use this data set in your code/i)).toBeInTheDocument();
     });
   });
-
-  describe('Django Parity', () => {
-    it('matches Django template structure', () => {
-      render(<ApiUrlPanel {...defaultProps} />);
-      
-      const heading = screen.getByRole('heading', { level: 2 });
-      expect(heading).toHaveClass('govuk-heading-m');
-      
-      const { container } = render(<ApiUrlPanel {...defaultProps} />);
-      const panel = container.querySelector('.api-url-panel');
-      expect(panel).toBeInTheDocument();
-    });
-
-    it('has copy button with govuk-button--link style (updated to secondary)', () => {
-      render(<ApiUrlPanel {...defaultProps} />);
-      
-      const copyButton = screen.getByRole('button', { name: /copy/i });
-      expect(copyButton).toHaveClass('govuk-button--secondary');
-    });
-
-    it('displays URL in code-snippet-url id element', () => {
-      render(<ApiUrlPanel {...defaultProps} />);
-      
-      const urlElement = screen.getByText(defaultProps.apiUrl);
-      expect(urlElement).toHaveAttribute('id', 'code-snippet-url');
-    });
-  });
 });

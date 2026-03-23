@@ -14,10 +14,10 @@ export default function VersionPage() {
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-        <h1 className="govuk-heading-xl">Version</h1>
-        <p className="govuk-body">
-          Current version: <strong>{version}</strong>
-        </p>
+            <h1 className="govuk-heading-xl">Version</h1>
+            <p className="govuk-body">
+              Current version: <strong>{version}</strong>
+            </p>
           </div>
         </div>
       </div>
