@@ -470,3 +470,39 @@ ul.dashed > li::before {
   color: #505a5f;
   font-weight: 700;
 }
+/* Publish Stepper */
+.publish-stepper {
+  font-size: 19px;
+  color: #0b0c0c;
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid #b1b4b6;
+  list-style: none;
+  display: flex;
+}
+
+.publish-stepper .publish-stepper__item {
+  display: inline-flex;
+  margin-right: 15px;
+  padding-bottom: 10px;
+}
+
+.publish-stepper .publish-stepper__item--previous {
+  color: #1d70b8;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.publish-stepper .publish-stepper__item--next {
+  color: #505a5f;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.publish-stepper .publish-stepper__item--selected {
+  color: #000000;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-weight: bold;
+  font-size: 1.25rem;
+  border-bottom: 5px solid black;
+  padding-bottom: 5px;
+}
