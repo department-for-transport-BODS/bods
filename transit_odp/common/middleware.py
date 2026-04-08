@@ -81,3 +81,26 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
             "Permissions-Policy"
         ] = "geolocation=(self), microphone=(self), camera=(self)"
         return response
+
+class EnsureCSRF:
+    """
+    Middleware to ensure that the CSRF cookie is set on all responses.
+
+    This middleware checks if the CSRF cookie is present in the incoming request.
+    If it is not present, it sets the CSRF cookie in the response. This ensures
+    that clients receive a CSRF token for subsequent requests, which is necessary
+    for protecting against Cross-Site Request Forgery attacks.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        if "csrftoken" not in request.COOKIES:
+            from django.middleware.csrf import get_token
+
+            get_token(request)
+
+        return response
