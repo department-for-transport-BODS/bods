@@ -19,12 +19,32 @@ from transit_odp.common.views import (
     PrivacyPolicyView,
     VersionView,
 )
+from transit_odp.fares.views.api import (
+    create_fares_dataset_api,
+    get_fares_review_status_api,
+    publish_fares_dataset_api,
+)
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     # API endpoints for NextJS integration - using dj-rest-auth with JWT
     path("api/auth/", include("dj_rest_auth.urls")),
     path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
+    path(
+        "api/fares/create/<int:pk1>/",
+        create_fares_dataset_api,
+        name="nextjs-fares-create",
+    ),
+    path(
+        "api/fares/review-status/<int:pk1>/<int:pk>/",
+        get_fares_review_status_api,
+        name="nextjs-fares-review-status",
+    ),
+    path(
+        "api/fares/publish/<int:pk1>/<int:pk>/",
+        publish_fares_dataset_api,
+        name="nextjs-fares-publish",
+    ),
     path(
         "contact/",
         TemplateView.as_view(template_name="pages/contact.html"),

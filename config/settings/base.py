@@ -533,6 +533,7 @@ DQS_WAIT_TIMEOUT = env("DQS_WAIT_TIMEOUT", cast=int, default=2160)  # minutes
 # -----------------------------------------------------------------------------
 CLAMAV_HOST = env("CLAMAV_HOST", default="clamav")
 CLAMAV_PORT = env.int("CLAMAV_PORT", default=3310)
+CLAMAV_SKIP_SCAN = env.bool("CLAMAV_SKIP_SCAN", default=False)
 
 
 # Internal settings

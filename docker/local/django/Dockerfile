@@ -38,6 +38,13 @@ RUN apt-get update && apt-get install -y \
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
+COPY ./docker/local/django/kainos-bundle.pem /usr/local/share/ca-certificates/kainos-bundle.crt
+RUN update-ca-certificates
+ENV PIP_CERT=/usr/local/share/ca-certificates/kainos-bundle.crt
+ENV REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/kainos-bundle.crt
+ENV SSL_CERT_FILE=/usr/local/share/ca-certificates/kainos-bundle.crt
+ENV NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/kainos-bundle.crt
+
 COPY ./pyproject.toml ./poetry.lock ./package.json ./yarn.lock ./
 
 RUN npm install -g yarn@v1.22.22 \
