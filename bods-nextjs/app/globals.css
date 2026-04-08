@@ -394,3 +394,79 @@ ul.dashed > li::before {
   content: "-";
   margin-right: 4px;
 }
+
+/* Legacy publish/review component styles used by fares review */
+.app-dqs-panel {
+  text-align: left;
+  border: 5px solid #0b0c0c;
+  padding: 20px;
+  background: transparent;
+}
+
+.app-dqs-panel__body {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 1.32;
+}
+
+.dataset-property-table .govuk-table__row th,
+.dataset-property-table .govuk-table__row td {
+  padding: 20px 0;
+}
+
+.status-indicator {
+  font-family: "GDS Transport", Arial, sans-serif;
+  font-size: inherit;
+  white-space: nowrap;
+}
+
+.status-indicator::before {
+  content: " ";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin: 0 6px 0 4px;
+}
+
+.status-indicator--success::before {
+  background-color: #006435;
+}
+
+.status-indicator--indexing::before {
+  background-color: #005ea5;
+}
+
+.status-indicator--warning::before {
+  background-color: #ffbf47;
+}
+
+.status-indicator--inactive::before {
+  background-color: #d4351c;
+}
+
+.status-indicator--error::before {
+  background-color: #b10e1e;
+}
+
+.status-indicator--draft::before,
+.status-indicator--pending::before {
+  background-color: #bfc1c3;
+}
+
+.review-map-placeholder {
+  border: 1px solid #b1b4b6;
+  background: linear-gradient(180deg, #e8edef 0%, #dfe5e7 100%);
+  height: 280px;
+  position: relative;
+}
+
+.review-map-placeholder__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #505a5f;
+  font-weight: 700;
+}

@@ -265,3 +265,4 @@ db_backup.sql
 .ruff_cache/
 .yarnrc.yml
 *.rdb
+docker/local/django/kainos-bundle.pem

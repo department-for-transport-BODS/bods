@@ -68,6 +68,13 @@ CORS_ALLOW_CREDENTIALS = True
 # Allow the Next.js dev server as a trusted CSRF origin
 CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
+# Trust local frontend dev servers that post forms to Django publish endpoints.
+CSRF_TRUSTED_ORIGINS = [
+    "http://publish.localhost:3000",
+    "http://publish.localhost:3001",
+    "http://publish.localhost:3002",
+]
+
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#prerequisites
@@ -82,6 +89,11 @@ DEBUG_TOOLBAR_PATCH_SETTINGS = False
 MIDDLEWARE.insert(
     MIDDLEWARE.index("django.middleware.common.CommonMiddleware") + 1,
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+)
+
+MIDDLEWARE.insert(
+    MIDDLEWARE.index("django.middleware.csrf.CsrfViewMiddleware") + 1,
+    "transit_odp.common.middleware.EnsureCSRF",
 )
 #
 # MIDDLEWARE.insert(
@@ -125,8 +137,9 @@ CELERY_TASK_EAGER_PROPAGATES = False
 # Increase age of session cookies to prevent been signed out quickly in development
 SESSION_COOKIE_AGE = 1314000  # set to 1 year
 SESSION_COOKIE_DOMAIN = ""
+CSRF_COOKIE_DOMAIN = ""
+CLAMAV_SKIP_SCAN = True
 
-# Your stuff...
 # ------------------------------------------------------------------------------
 DISABLE_NAPTAN_SCHEMA_VALIDATION = True
 
