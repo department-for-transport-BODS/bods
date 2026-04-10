@@ -9,8 +9,6 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from waffle import flag_is_active
 
 import config.hosts
-from transit_odp.fares.forms import FaresFeedDescriptionForm, FaresFeedUploadForm
-from transit_odp.fares.tasks import task_run_fares_pipeline
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
