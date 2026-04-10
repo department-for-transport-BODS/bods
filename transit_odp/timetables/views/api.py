@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user
 from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
@@ -35,6 +36,18 @@ def _authenticate_jwt(request):
         return None
     user, _token = result
     return user
+
+
+def _authenticate_user(request):
+    """Prefer Django session auth, then fall back to JWT."""
+    session_user = get_user(request)
+    if session_user is not None and session_user.is_authenticated:
+        return session_user
+
+    if hasattr(request, "user") and request.user is not None and request.user.is_authenticated:
+        return request.user
+
+    return _authenticate_jwt(request)
 
 
 def _get_user_org(user, org_id):
@@ -102,7 +115,7 @@ def _iso_or_none(value):
 
 
 def _get_request_context(request, org_id, dataset_id=None):
-    user = _authenticate_jwt(request)
+    user = _authenticate_user(request)
     if user is None or not user.is_authenticated:
         return None, None, None, JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
 
@@ -171,11 +184,7 @@ def create_timetables_dataset_api(request, pk1):
         revision = _upsert_draft_revision(dataset, all_data)
         _trigger_timetables_processing(revision)
 
-    review_url = reverse(
-        "revision-publish",
-        kwargs={"pk": dataset.id, "pk1": organisation.id},
-        host=config.hosts.PUBLISH_HOST,
-    )
+    review_url = f"/publish/org/{organisation.id}/dataset/timetable/{dataset.id}/review"
 
     return JsonResponse({"redirect": review_url}, status=201)
 
