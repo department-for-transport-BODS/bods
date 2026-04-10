@@ -24,12 +24,15 @@ from transit_odp.fares.views.api import (
     get_fares_review_status_api,
     publish_fares_dataset_api,
 )
+from transit_odp.timetables.views.api import ( 
+    get_timetables_review_status_api 
+)
 
 from transit_odp.api.views.auth import (
     CSRFTokenAPIView,
     CurrentUserAPIView,
     LoginAPIView,
-    LogoutAPIView,
+    LogoutAPIView
 )
 
 urlpatterns = [
@@ -48,6 +51,11 @@ urlpatterns = [
         "api/fares/review-status/<int:pk1>/<int:pk>/",
         get_fares_review_status_api,
         name="nextjs-fares-review-status",
+    ),
+    path(
+        "api/timetables/review-status/<int:pk1>/<int:pk>/",
+        get_timetables_review_status_api,
+        name="nextjs-timetables-review-status",
     ),
     path(
         "api/fares/publish/<int:pk1>/<int:pk>/",
