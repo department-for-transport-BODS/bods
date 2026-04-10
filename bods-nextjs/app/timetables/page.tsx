@@ -1,8 +1,23 @@
 "use client"; 
 
 import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { api } from "@/lib/api-client";
+import { ApiError } from "@/lib/api-client";
+import {
+    DATA_QUALITY_LABEL,
+    DATA_QUALITY_WITH_VIOLATIONS_LABEL,
+    ERROR_CODE_LOOKUP,
+    ERROR_TYPE_PII,
+    NEXT_STEPS_PII,
+    ERROR_TYPE_SERVICE_CHECK,
+    NEXT_STEPS_SERVICE_CHECK,
+} from "@/lib/constants/timetables";
 
 export default function CreateForm() {
+    const params = useParams();
+    const router = useRouter();
+    const orgId = params.orgId as string;
     const [dataSetDesc, setDataSetDesc] = useState("");
     const [shortDesc, setShortDesc] = useState("");
     const [step, setStep] = useState(1);
@@ -10,6 +25,9 @@ export default function CreateForm() {
     const [link, setLink] = useState('')
     const [file, setFile] = useState<File | null>(null)
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [consentChecked, setConsentChecked] = useState(false);
+    const [hasViolations, setHasViolations] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const validateStep1 = () => {
         const newErrors: Record<string, string> = {};
@@ -45,6 +63,34 @@ export default function CreateForm() {
         return Object.keys(newErrors).length === 0;
     };
 
+    const validateStep3 = () => {
+        const newErrors: Record<string, string> = {};
+        if (!consentChecked) {
+            newErrors.consent = "You must confirm you have reviewed the data quality report before publishing";
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const getErrorMessage = (err: unknown): string => {
+        if (err instanceof ApiError) {
+            if (err.code && err.code in ERROR_CODE_LOOKUP) {
+                return ERROR_CODE_LOOKUP[err.code].description;
+            }
+            if (err.errorType === ERROR_TYPE_PII) {
+                return `${ERROR_TYPE_PII}. ${NEXT_STEPS_PII}`;
+            }
+            if (err.errorType === ERROR_TYPE_SERVICE_CHECK) {
+                return `${ERROR_TYPE_SERVICE_CHECK}. ${NEXT_STEPS_SERVICE_CHECK}`;
+            }
+            return err.message;
+        }
+        if (err instanceof Error) {
+            return err.message;
+        }
+        return 'Upload failed. Please try again.';
+    };
+
     const handleNext = () => {
         if (step === 1 && !validateStep1()) {
             return;
@@ -54,6 +100,32 @@ export default function CreateForm() {
         }
         setErrors({});
         setStep(step + 1);
+    };
+
+    const handleSubmit = async () => {
+        if (!validateStep3()) return;
+
+        setIsSubmitting(true);
+        setErrors({});
+
+        try {
+            const formData = new FormData();
+            formData.append('description', dataSetDesc);
+            formData.append('short_description', shortDesc);
+
+            if (selected === 'link') {
+                formData.append('url_link', link);
+            } else if (selected === 'file' && file) {
+                formData.append('upload_file', file);
+            }
+
+            await api.post(`/api/org/${orgId}/dataset/timetable/upload/`, formData);
+            router.push(`/publish/org/${orgId}/dataset/timetable/success`);
+        } catch (err) {
+            setErrors({ submit: getErrorMessage(err) });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
     /* assigning classes to each step on progress bar below the header */
     const checkStep = (stepNumber: number) => {
@@ -257,10 +329,82 @@ export default function CreateForm() {
                 </div>
             )}
 
-            {/* part 3: Set licence */}
+            {/* part 3: Review and publish */}
             {step === 3 && (
-                <div>
+                <div className="govuk-grid-column-two-thirds">
+                    {Object.keys(errors).length > 0 && (
+                        <div className="govuk-error-summary" data-module="govuk-error-summary">
+                            <div role="alert">
+                                <h2 className="govuk-error-summary__title">
+                                    There is a problem
+                                </h2>
+                                <div className="govuk-error-summary__body">
+                                    <ul className="govuk-list govuk-error-summary__list">
+                                        {errors.consent && (
+                                            <li><a href="#id_consent">{errors.consent}</a></li>
+                                        )}
+                                        {errors.submit && (
+                                            <li>{errors.submit}</li>
+                                        )}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     <h1 className="govuk-heading-xl">Review and publish</h1>
+
+                    <dl className="govuk-summary-list">
+                        <div className="govuk-summary-list__row">
+                            <dt className="govuk-summary-list__key">Data set description</dt>
+                            <dd className="govuk-summary-list__value">{dataSetDesc}</dd>
+                        </div>
+                        <div className="govuk-summary-list__row">
+                            <dt className="govuk-summary-list__key">Short description</dt>
+                            <dd className="govuk-summary-list__value">{shortDesc}</dd>
+                        </div>
+                        <div className="govuk-summary-list__row">
+                            <dt className="govuk-summary-list__key">Data provided via</dt>
+                            <dd className="govuk-summary-list__value">
+                                {selected === 'link' ? link : file?.name}
+                            </dd>
+                        </div>
+                    </dl>
+
+                    <div className={`govuk-form-group ${errors.consent ? 'govuk-form-group--error' : ''}`}>
+                        <fieldset className="govuk-fieldset">
+                            <legend className="govuk-fieldset__legend govuk-fieldset__legend--m">
+                                Data quality confirmation
+                            </legend>
+                            {errors.consent && (
+                                <p id="consent-error" className="govuk-error-message">
+                                    <span className="govuk-visually-hidden">Error:</span> {errors.consent}
+                                </p>
+                            )}
+                            <div className="govuk-checkboxes">
+                                <div className="govuk-checkboxes__item">
+                                    <input
+                                        className="govuk-checkboxes__input"
+                                        id="id_consent"
+                                        type="checkbox"
+                                        checked={consentChecked}
+                                        onChange={(e) => setConsentChecked(e.target.checked)}
+                                    />
+                                    <label className="govuk-label govuk-checkboxes__label" htmlFor="id_consent">
+                                        {hasViolations ? DATA_QUALITY_WITH_VIOLATIONS_LABEL : DATA_QUALITY_LABEL}
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <button
+                        type="button"
+                        className="govuk-button"
+                        disabled={isSubmitting}
+                        onClick={handleSubmit}
+                    >
+                        {isSubmitting ? 'Publishing...' : 'Publish'}
+                    </button>
                 </div>
             )}
         </div>
