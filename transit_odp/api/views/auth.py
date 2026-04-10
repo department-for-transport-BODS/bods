@@ -106,6 +106,32 @@ class CurrentUserAPIView(APIView):
         return Response(_serialize_user(request.user), status=status.HTTP_200_OK)
 
 
+class CurrentUserOrganisationsAPIView(APIView):
+    """Return organisations available to the authenticated user."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        organisations = [
+            {
+                "id": organisation.id,
+                "name": organisation.name,
+                "short_name": organisation.short_name,
+            }
+            for organisation in request.user.organisations.all().order_by("name")
+        ]
+
+        return Response(
+            {
+                "count": len(organisations),
+                "next": None,
+                "previous": None,
+                "results": organisations,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
 class CSRFTokenAPIView(APIView):
     """Return a CSRF token for use in subsequent form submissions."""
 

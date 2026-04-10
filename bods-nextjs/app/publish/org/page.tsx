@@ -9,7 +9,7 @@
 import { useState, useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { getPaginated } from '@/lib/api-client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
 
 interface Organisation {
@@ -22,6 +22,12 @@ function SelectOrg() {
   const [orgs, setOrgs] = useState<Organisation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const selectedDataType = searchParams.get('dataType');
+
+  const isValidDataType =
+    selectedDataType === 'timetable' || selectedDataType === 'avl' || selectedDataType === 'fares';
 
   useEffect(() => {
     loadOrganisations();
@@ -39,7 +45,13 @@ function SelectOrg() {
   };
 
   const handleSelect = (orgId: number) => {
-    router.push(`/publish/org/${orgId}/dataset`);
+    if (isValidDataType) {
+      router.push(`/publish/org/${orgId}/dataset/${selectedDataType}`);
+      return;
+    }
+
+    // Default to timetables when no data type is provided.
+    router.push(`/publish/org/${orgId}/dataset/timetable`);
   };
 
   return (
