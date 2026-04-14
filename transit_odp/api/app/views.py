@@ -122,10 +122,7 @@ class FareStopsViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         revision_id = self.request.GET.get("revision", "")
-        try:
-            return FaresMetadata.objects.get(revision_id=revision_id).stops.all()
-        except FaresMetadata.DoesNotExist:
-            return StopPoint.objects.none()
+        return FaresMetadata.objects.get(revision_id=revision_id).stops.all()
 
 
 class DisruptionsInOrganisationView(viewsets.ViewSet):
