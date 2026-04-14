@@ -7,6 +7,7 @@ import os
 
 import environ
 from dateutil import parser
+from datetime import timedelta
 
 ROOT_DIR = (
     environ.Path(__file__) - 3
@@ -29,11 +30,13 @@ if READ_DOT_ENV_FILE:
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool("DJANGO_DEBUG", False)
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env(
     "DJANGO_SECRET_KEY",
     default="X61BMLHfhL8X8lPce9YuOVZ5N0YPfLqwFGcKJQPdZaOmBQ3MOvQQ6T3yLNvR0vCC",
 )
+
 # Local time zone. Choices are
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
@@ -489,8 +492,6 @@ REST_FRAMEWORK = {
 
 # Django REST Framework SimpleJWT Configuration
 # ------------------------------------------------------------------------------
-from datetime import timedelta
-
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
@@ -533,7 +534,6 @@ DQS_WAIT_TIMEOUT = env("DQS_WAIT_TIMEOUT", cast=int, default=2160)  # minutes
 # -----------------------------------------------------------------------------
 CLAMAV_HOST = env("CLAMAV_HOST", default="clamav")
 CLAMAV_PORT = env.int("CLAMAV_PORT", default=3310)
-CLAMAV_SKIP_SCAN = env.bool("CLAMAV_SKIP_SCAN", default=False)
 
 
 # Internal settings

@@ -15,6 +15,7 @@ os.environ["DJANGO_READ_DOT_ENV_FILE"] = os.environ.get(
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="local-dev-secret-key")
 # Set DD_TRACE_ENABLED to False for local environment
 DD_TRACE_ENABLED = env.bool("DD_TRACE_ENABLED", default=False)
 
