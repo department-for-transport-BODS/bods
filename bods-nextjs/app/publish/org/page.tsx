@@ -1,6 +1,6 @@
 /**
  * Organisation Selection Page
- * 
+ *
  * Allows publishers to select which organisation to work with
  */
 
@@ -11,6 +11,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { getPaginated } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 interface Organisation {
   id: number;
@@ -40,7 +41,7 @@ function SelectOrg() {
           router.push(
             isValidDataType
               ? `/publish/org/${orgId}/dataset/${selectedDataType}`
-              : `/publish/org/${orgId}/dataset/timetable`,
+              : `/publish/org/${orgId}/dataset`,
           );
           return;
         }
@@ -62,33 +63,61 @@ function SelectOrg() {
       return;
     }
 
-    // Default to timetables when no data type is provided.
-    router.push(`/publish/org/${orgId}/dataset/timetable`);
+    // Default to choose data type when no data type is provided.
+    router.push(`/publish/org/${orgId}/dataset`);
+  };
+
+  const renderOrganisations = () => {
+    if (isLoading) {
+      return <p className="govuk-body">Loading organisations...</p>;
+    }
+
+    if (orgs.length === 0) {
+      return <p className="govuk-body">No organisations found for this account.</p>;
+    }
+
+    return (
+      <ul className="govuk-list">
+        {orgs.map((org) => (
+          <li key={org.id}>
+            <button
+              className="govuk-link govuk-link--no-visited-state app-link-button"
+              onClick={() => handleSelect(org.id)}
+            >
+              {org.name}
+            </button>
+          </li>
+        ))}
+      </ul>
+    );
   };
 
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
+        <div className="govuk-breadcrumbs">
+          <ol className="govuk-breadcrumbs__list">
+            <li className="govuk-breadcrumbs__list-item">
+              <Link className="govuk-breadcrumbs__link" href="/data">
+                Bus Open Data Service
+              </Link>
+            </li>
+            <li className="govuk-breadcrumbs__list-item">
+              <Link className="govuk-breadcrumbs__link" href="/publish">
+                Publish Bus Open Data
+              </Link>
+            </li>
+            <li className="govuk-breadcrumbs__list-item" aria-current="page">
+              Select organisation
+            </li>
+          </ol>
+        </div>
+
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Select organisation</h1>
 
-            {isLoading ? (
-              <p className="govuk-body">Loading organisations...</p>
-            ) : (
-              <ul className="govuk-list">
-                {orgs.map((org) => (
-                  <li key={org.id}>
-                    <button
-                      className="govuk-link govuk-link--no-visited-state app-link-button"
-                      onClick={() => handleSelect(org.id)}
-                    >
-                      {org.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
+            {renderOrganisations()}
           </div>
         </div>
       </div>
@@ -103,4 +132,3 @@ export default function SelectOrgPage() {
     </ProtectedRoute>
   );
 }
-

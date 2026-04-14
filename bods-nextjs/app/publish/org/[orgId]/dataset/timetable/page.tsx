@@ -9,6 +9,7 @@
 import { useState } from "react";
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useParams, useRouter } from "next/navigation";
+import Link from 'next/link';
 import { api } from "@/lib/api-client";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { PublishStepper, DatasetDescriptionFields, DataProviderRadioGroup, URL_LINK_ITEM_ID, UPLOAD_FILE_ITEM_ID } from '@/components/publish';
@@ -18,6 +19,7 @@ import {
   validateTimetableStep2,
   validateTimetableStep3,
 } from '@/lib/validation/timetable-publish';
+
 
 function TimetablePublish() {
   const params = useParams();
@@ -116,6 +118,24 @@ function TimetablePublish() {
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
+        <div className="govuk-breadcrumbs">
+          <ol className="govuk-breadcrumbs__list">
+            <li className="govuk-breadcrumbs__list-item">
+              <Link className="govuk-breadcrumbs__link" href="/data">
+                Bus Open Data Service
+              </Link>
+            </li>
+            <li className="govuk-breadcrumbs__list-item">
+              <Link className="govuk-breadcrumbs__link" href="/publish">
+                Publish Open Data Service
+              </Link>
+            </li>
+            <li className="govuk-breadcrumbs__list-item" aria-current="page">
+              Review My Timetables Data
+            </li>
+          </ol>
+        </div>
+
         <div className="govuk-grid-row">
           <PublishStepper steps={steps} />
 

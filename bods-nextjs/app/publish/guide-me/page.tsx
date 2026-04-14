@@ -69,13 +69,13 @@ export default function PublishGuideMePage() {
       <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
         <ol className="govuk-breadcrumbs__list">
           <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href="/">
+            <Link className="govuk-breadcrumbs__link" href="/data">
               Bus Open Data Service
             </Link>
           </li>
           <li className="govuk-breadcrumbs__list-item">
             <Link className="govuk-breadcrumbs__link" href="/publish">
-              Publish Bus Open Data
+              Publish Open Data Service
             </Link>
           </li>
           <li className="govuk-breadcrumbs__list-item" aria-current="page">

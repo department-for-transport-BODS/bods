@@ -21,6 +21,8 @@ from transit_odp.common.views import (
 )
 from transit_odp.fares.views.api import (
     create_fares_dataset_api,
+    delete_fares_dataset_api,
+    get_fares_list_api,
     get_fares_review_status_api,
     publish_fares_dataset_api,
 )
@@ -118,6 +120,11 @@ urlpatterns = [
         name="nextjs-fares-create",
     ),
     path(
+        "api/fares/list/<int:pk1>/",
+        get_fares_list_api,
+        name="nextjs-fares-list",
+    ),
+    path(
         "api/fares/review-status/<int:pk1>/<int:pk>/",
         get_fares_review_status_api,
         name="nextjs-fares-review-status",
@@ -146,6 +153,11 @@ urlpatterns = [
         "api/fares/publish/<int:pk1>/<int:pk>/",
         publish_fares_dataset_api,
         name="nextjs-fares-publish",
+    ),
+    path(
+        "api/fares/delete/<int:pk1>/<int:pk>/",
+        delete_fares_dataset_api,
+        name="nextjs-fares-delete",
     ),
     path(
         "contact/",

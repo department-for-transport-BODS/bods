@@ -1,16 +1,17 @@
 // This file implements the "Review and publish" page for a fares dataset in the BODS Next.js frontend
-// It fetches the processing status of the uploaded dataset from a custom API route, 
-// displays relevant information and metadata about the dataset, 
-// and allows the user to publish it once they have reviewed the details. The page also includes error handling and links to support resources.
+// It fetches the processing status of the uploaded dataset, displays metadata, stop map preview,
+// and allows the user to publish once they have reviewed the details.
 'use client';
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { StopPoint } from '@/components/data/StopMap';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
 import { getCsrfToken } from '@/lib/api-client';
 import { formatDateTime } from '@/lib/utils/date';
+import { config } from '@/config';
 
 type ReviewStatusResponse = {
   datasetId: number;
@@ -37,28 +38,250 @@ type ReviewStatusResponse = {
     validTo?: string | null;
   };
   error?: string | null;
+  errorDescription?: string | null;
 };
 
 const POLL_INTERVAL_MS = 1000;
+
+type FareStopsApiResponse = {
+  features?: Array<{
+    id?: number;
+    geometry?: {
+      type?: string;
+      coordinates?: [number, number];
+    };
+    properties?: {
+      id?: number;
+      atco_code?: string;
+      common_name?: string;
+    };
+  }>;
+  error?: string;
+};
+
+const parseFareStops = (payload: FareStopsApiResponse): StopPoint[] => {
+  const features = Array.isArray(payload.features) ? payload.features : [];
+
+  return features
+    .map((feature, index) => {
+      const coordinates = feature.geometry?.coordinates;
+      const hasValidCoordinates =
+        Array.isArray(coordinates) &&
+        coordinates.length === 2 &&
+        Number.isFinite(coordinates[0]) &&
+        Number.isFinite(coordinates[1]);
+
+      if (!hasValidCoordinates) {
+        return null;
+      }
+
+      const fallbackId = index + 1;
+
+      return {
+        id: feature.properties?.id ?? feature.id ?? fallbackId,
+        atco_code: feature.properties?.atco_code ?? '',
+        common_name: feature.properties?.common_name ?? 'Bus stop',
+        location: {
+          type: 'Point',
+          coordinates: [coordinates[0], coordinates[1]],
+        },
+      };
+    })
+    .filter((item): item is StopPoint => item !== null);
+};
+
+type FaresStopMapPreviewProps = {
+  revisionId?: number;
+  mapboxToken: string;
+};
+
+function FaresStopMapPreview({ revisionId, mapboxToken }: Readonly<FaresStopMapPreviewProps>) {
+  const [fareStops, setFareStops] = useState<StopPoint[]>([]);
+  const [isMapLoading, setIsMapLoading] = useState(false);
+  const [hasLoadedStops, setHasLoadedStops] = useState(false);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<InstanceType<(typeof import('mapbox-gl'))['default']['Map']> | null>(null);
+
+  const getMapUnavailableMessage = () => {
+    if (isMapLoading) {
+      return 'Loading map preview...';
+    }
+
+    if (mapboxToken) {
+      return 'Map preview unavailable';
+    }
+
+    return 'Map preview unavailable: Mapbox token is missing';
+  };
+
+  useEffect(() => {
+    if (!revisionId) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    const loadFareStops = async () => {
+      setIsMapLoading(true);
+      setHasLoadedStops(false);
+      try {
+        const response = await fetch(`/api/app/fare_stops/?revision=${revisionId}`, {
+          credentials: 'include',
+        });
+
+        const payload = (await response.json().catch(() => ({}))) as FareStopsApiResponse;
+        if (!isCancelled) {
+          setFareStops(response.ok ? parseFareStops(payload) : []);
+          setHasLoadedStops(response.ok);
+        }
+      } catch {
+        if (!isCancelled) {
+          setFareStops([]);
+          setHasLoadedStops(false);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsMapLoading(false);
+        }
+      }
+    };
+
+    loadFareStops();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [revisionId]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const initMap = async () => {
+      if (!mapboxToken || !mapContainerRef.current || !hasLoadedStops) {
+        return;
+      }
+
+      mapRef.current?.remove?.();
+      mapRef.current = null;
+
+      const mapboxglModule = await import('mapbox-gl');
+      const mapboxgl = mapboxglModule.default;
+
+      if (isCancelled || !mapContainerRef.current) {
+        return;
+      }
+
+      mapboxgl.accessToken = mapboxToken;
+
+      const map = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        style: 'mapbox://styles/mapbox/light-v9',
+        center: [-1.1743, 52.3555],
+        zoom: 5,
+        maxZoom: 12,
+      });
+
+      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }));
+
+      const stopFeatures = fareStops.map((stop) => ({
+        type: 'Feature' as const,
+        geometry: stop.location,
+        properties: {
+          atco_code: stop.atco_code,
+          common_name: stop.common_name,
+        },
+      }));
+
+      map.on('load', () => {
+        const geojson = {
+          type: 'FeatureCollection' as const,
+          features: stopFeatures,
+        };
+
+        map.addSource('stop-points', {
+          type: 'geojson',
+          data: geojson,
+        });
+
+        map.addLayer({
+          id: 'stop-points',
+          type: 'circle',
+          source: 'stop-points',
+          paint: {
+            'circle-color': '#49A39A',
+            'circle-radius': 5,
+          },
+        });
+
+        const bounds = new mapboxgl.LngLatBounds();
+        for (const stop of fareStops) {
+          bounds.extend(stop.location.coordinates);
+        }
+        if (!bounds.isEmpty()) {
+          map.fitBounds(bounds, { padding: 20 });
+        }
+      });
+
+      mapRef.current = map;
+    };
+
+    initMap();
+
+    return () => {
+      isCancelled = true;
+      mapRef.current?.remove?.();
+      mapRef.current = null;
+    };
+  }, [fareStops, hasLoadedStops, mapboxToken]);
+
+  if (mapboxToken && hasLoadedStops) {
+    return (
+      <section aria-label="Map preview of fare stop points">
+        <div
+          ref={mapContainerRef}
+          id="map"
+          className="disruptions-width govuk-!-margin-bottom-5"
+        />
+        <style jsx>{`
+          .disruptions-width {
+            width: 100% !important;
+            height: 25rem !important;
+          }
+
+          :global(.mapboxgl-popup-content) {
+            padding: 12px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          }
+        `}</style>
+      </section>
+    );
+  }
+
+  return (
+    <div className="review-map-placeholder govuk-!-margin-bottom-5" aria-hidden="true">
+      <div className="review-map-placeholder__inner">{getMapUnavailableMessage()}</div>
+    </div>
+  );
+}
 
 function FaresReviewPageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
-  const djangoApiBaseUrl = process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000';
-  const djangoPublishBaseUrl =
-    process.env.NEXT_PUBLIC_DJANGO_PUBLISH_URL || djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
 
   const faresListUrl = `/publish/org/${orgId}/dataset/fares`;
-  const createFaresUrl = `/publish/org/${orgId}/dataset/fares/create`;
-  const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
-  const contactSupportUrl = `${djangoApiBaseUrl}/contact/`;
+  const supportBusOperatorsUrl = '/publish/guide-me';
+  const contactSupportUrl = '/publish/account';
 
   const [statusData, setStatusData] = useState<ReviewStatusResponse | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const loading = statusData?.loading ?? true;
+  const progress = Math.max(0, Math.min(100, statusData?.progress ?? 0));
+  const validationErrorMessage = statusData?.errorDescription || null;
 
   useEffect(() => {
     let isCancelled = false;
@@ -144,9 +367,6 @@ function FaresReviewPageContent() {
     }
   };
 
-  const loading = statusData?.loading ?? true;
-  const progress = Math.max(0, Math.min(100, statusData?.progress ?? 0));
-
   const statusIndicatorClass = (status?: string) => {
     if (!status) {
       return 'status-indicator--draft';
@@ -219,7 +439,9 @@ function FaresReviewPageContent() {
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-l">Review and publish</h1>
+            <h1 className="govuk-heading-xl app-!-mb-0 dont-break-out govuk-!-padding-top-3 govuk-!-padding-bottom-3">
+              Review and publish
+            </h1>
 
             {isInitialLoading || loading ? (
               <div className="govuk-panel govuk-panel--confirmation bods-bg-blue-light">
@@ -246,15 +468,13 @@ function FaresReviewPageContent() {
               </div>
             ) : (
               <>
-                <div className="app-dqs-panel govuk-!-margin-bottom-7">
-                  <div className="app-dqs-panel__body">
-                    <div className="app-dqs-panel__success">
-                      <h2 className="govuk-heading-m govuk-!-margin-bottom-0">
-                        {statusData?.error ? 'Validation Check - Failed' : 'Validation Check - Passed'}
-                      </h2>
+                {statusData?.error && validationErrorMessage ? (
+                  <div className="app-dqs-panel govuk-!-margin-bottom-7">
+                    <div className="app-dqs-panel__body">
+                      <p className="govuk-body govuk-!-margin-bottom-0">{validationErrorMessage}</p>
                     </div>
                   </div>
-                </div>
+                ) : null}
 
                 <div className="govuk-!-margin-bottom-6">
                   <div className="govuk-checkboxes" data-module="govuk-checkboxes">
@@ -286,9 +506,10 @@ function FaresReviewPageContent() {
 
                 <h2 className="govuk-heading-l dont-break-out">{statusData?.name || 'Unnamed fares dataset'}</h2>
 
-                <div className="review-map-placeholder govuk-!-margin-bottom-5" aria-hidden="true">
-                  <div className="review-map-placeholder__inner">Map preview</div>
-                </div>
+                <FaresStopMapPreview
+                  revisionId={isInitialLoading || loading ? undefined : statusData?.revisionId}
+                  mapboxToken={config.mapboxToken}
+                />
 
                 <table className="govuk-table dataset-property-table">
                   <tbody className="govuk-table__body">
@@ -421,11 +642,11 @@ function FaresReviewPageContent() {
                 </table>
 
                 <div className="govuk-button-group">
-                  <Link className="govuk-link" href={faresListUrl}>
-                    Back to fares data sets
-                  </Link>
-                  <Link className="govuk-link" href={createFaresUrl}>
-                    Upload another fares data set
+                  <Link
+                    className="govuk-button govuk-button--secondary"
+                    href={`/publish/org/${orgId}/dataset/fares/${datasetId}/delete`}
+                  >
+                    Delete data set
                   </Link>
                 </div>
               </>
