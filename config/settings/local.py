@@ -134,7 +134,6 @@ CELERY_TASK_EAGER_PROPAGATES = False
 SESSION_COOKIE_AGE = 1314000  # set to 1 year
 SESSION_COOKIE_DOMAIN = ""
 CSRF_COOKIE_DOMAIN = ""
-CLAMAV_SKIP_SCAN = True
 
 # ------------------------------------------------------------------------------
 DISABLE_NAPTAN_SCHEMA_VALIDATION = True

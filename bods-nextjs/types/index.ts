@@ -10,6 +10,10 @@ export interface User {
   roles?: string[];
   is_staff?: boolean;
   is_superuser?: boolean;
+  account_type?: number;
+  organisation_id?: number | null;
+  is_org_user?: boolean;
+  is_agent_user?: boolean;
 }
 
 export interface AuthToken {

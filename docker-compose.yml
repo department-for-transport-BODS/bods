@@ -54,10 +54,9 @@ services:
     depends_on: []
 
   clamav:
-    image: mkodockx/docker-clamav:alpine
+    image: clamav/clamav-debian:stable
     ports:
       - "3310:3310"
     restart: unless-stopped
     volumes:
-      - clamav_store:/var/lib/clamav
       - ./docker/local/clamav/clamd.conf:/etc/clamav/clamd.conf

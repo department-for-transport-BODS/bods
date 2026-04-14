@@ -63,7 +63,7 @@ interface StopFeatureCollection {
 export function StopMap({
   revisionId,
   stops,
-  apiRoot = config.apiUrl,
+  apiRoot = config.djangoApiUrl,
   mapboxToken,
   onStopClick,
   ariaLabel = 'Interactive map showing bus stop locations',
@@ -315,7 +315,7 @@ export function StopMap({
       const source = map.current.getSource('stops') as mapboxgl.GeoJSONSource;
 
       source.getClusterExpansionZoom(clusterId, (err, zoom) => {
-        if (err || !map.current) return;
+        if (err || !map.current || zoom === null || zoom === undefined) return;
 
         const coordinates = (features[0].geometry as any).coordinates;
         map.current.easeTo({

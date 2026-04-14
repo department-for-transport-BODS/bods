@@ -219,12 +219,9 @@ function FaresCreateStepContent({
 function FaresCreatePageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
-  const djangoApiBaseUrl = process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000';
-  const djangoPublishBaseUrl =
-    process.env.NEXT_PUBLIC_DJANGO_PUBLISH_URL || djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
   const nextListUrl = `/publish/org/${orgId}/dataset/fares`;
-  const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
-  const contactSupportUrl = `${djangoApiBaseUrl}/contact/`;
+  const supportBusOperatorsUrl = '/publish/guide-me';
+  const contactSupportUrl = '/publish/account';
 
   const [step, setStep] = useState<typeof DESCRIPTION_STEP | typeof CANCEL_STEP | typeof UPLOAD_STEP>(DESCRIPTION_STEP);
   const [stepBeforeCancel, setStepBeforeCancel] = useState<typeof DESCRIPTION_STEP | typeof UPLOAD_STEP>(DESCRIPTION_STEP);

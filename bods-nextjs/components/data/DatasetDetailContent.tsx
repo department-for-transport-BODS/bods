@@ -213,7 +213,7 @@ export function DatasetDetailContent({ dataset }: DatasetDetailContentProps) {
           <RouteMap
             revisionId={dataset.id}
             mapboxToken={config.mapboxToken}
-            apiRoot={config.apiUrl}
+            apiRoot={config.djangoApiUrl}
             ariaLabel={`Interactive map showing routes for ${dataset.name}`}
           />
         </div>

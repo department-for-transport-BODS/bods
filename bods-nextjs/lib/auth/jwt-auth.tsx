@@ -81,6 +81,10 @@ function normaliseUser(user: Partial<User>): User {
     roles: user.roles,
     is_staff: user.is_staff,
     is_superuser: user.is_superuser,
+    account_type: user.account_type,
+    organisation_id: user.organisation_id,
+    is_org_user: user.is_org_user,
+    is_agent_user: user.is_agent_user,
   };
 }
 
@@ -104,7 +108,7 @@ async function apiRequest<T>(
 }
 
 async function fetchCurrentUser(accessToken: string): Promise<User> {
-  const { ok, data } = await apiRequest<Partial<User>>('/api/auth/user/', { method: 'GET' }, accessToken);
+  const { ok, data } = await apiRequest<Partial<User>>('/api/user/', { method: 'GET' }, accessToken);
   if (!ok || !data) {
     throw new Error('Could not fetch current user');
   }
@@ -156,11 +160,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       writeTokens(accessToken, refreshToken);
-
-      if (data.user) {
-        setUser(normaliseUser(data.user));
-        return;
-      }
 
       const currentUser = await fetchCurrentUser(accessToken);
       setUser(currentUser);

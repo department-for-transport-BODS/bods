@@ -45,7 +45,7 @@ interface ServicePatternCollection {
 
 export function RouteMap({
   revisionId,
-  apiRoot = config.apiUrl,
+  apiRoot = config.djangoApiUrl,
   mapboxToken,
   lineName,
   serviceCodes,

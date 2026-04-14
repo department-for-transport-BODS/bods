@@ -22,7 +22,8 @@ export function middleware(request: NextRequest) {
   if (subdomain && subdomainRoutes[subdomain]) {
     const pathname = request.nextUrl.pathname;
 
-    if (!pathname.startsWith(subdomainRoutes[subdomain])) {
+    // Don't rewrite API routes or Next.js internal routes
+    if (!pathname.startsWith('/api') && !pathname.startsWith('/_next') && !pathname.startsWith(subdomainRoutes[subdomain])) {
       const newPath = `${subdomainRoutes[subdomain]}${pathname === '/' ? '' : pathname}`;
       return NextResponse.rewrite(new URL(newPath, request.url));
     }

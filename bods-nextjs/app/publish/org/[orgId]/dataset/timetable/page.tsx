@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { api } from '@/lib/api-client';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 function TimetablePublish() {
   const params = useParams();
@@ -32,7 +33,7 @@ function TimetablePublish() {
       
       await api.post(`/api/org/${orgId}/dataset/timetable/upload/`, formData);
       router.push(`/publish/org/${orgId}/dataset/timetable/success`);
-    } catch (err) {
+    } catch {
       setError('Upload failed. Please try again.');
     } finally {
       setIsUploading(false);
@@ -42,6 +43,24 @@ function TimetablePublish() {
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
+        <div className="govuk-breadcrumbs">
+          <ol className="govuk-breadcrumbs__list">
+            <li className="govuk-breadcrumbs__list-item">
+              <Link className="govuk-breadcrumbs__link" href="/data">
+                Bus Open Data Service
+              </Link>
+            </li>
+            <li className="govuk-breadcrumbs__list-item">
+              <Link className="govuk-breadcrumbs__link" href="/publish">
+                Publish Open Data Service
+              </Link>
+            </li>
+            <li className="govuk-breadcrumbs__list-item" aria-current="page">
+              Review My Timetables Data
+            </li>
+          </ol>
+        </div>
+
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Upload timetable</h1>

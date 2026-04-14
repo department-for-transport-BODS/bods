@@ -1,3 +1,5 @@
+import logging
+
 from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
@@ -9,21 +11,34 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.fares.constants import ERROR_CODE_MAP
 from transit_odp.fares.forms import FaresFeedDescriptionForm, FaresFeedUploadForm
 from transit_odp.fares.tasks import task_run_fares_pipeline
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
 from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
+from transit_odp.timetables.tasks import delete_dataset_revision
+from transit_odp.validate.errors import XMLErrorMessageRenderer
 
 
 _jwt_auth = JWTAuthentication()
+logger = logging.getLogger(__name__)
 FIRST_PUBLICATION_COMMENT = "First publication"
 LOADING_STATUSES = {"indexing", "processing", "pending"}
 AUTH_REQUIRED_ERROR = "Authentication required"
 ORG_ACCESS_REQUIRED_ERROR = "Org user access required"
 ORG_NOT_FOUND_ERROR = "Organisation not found"
 REVISION_NOT_FOUND_ERROR = "Dataset revision not found"
+ACTIVE_LIST_SECTION = "active"
+DRAFT_LIST_SECTION = "draft"
+ARCHIVE_LIST_SECTION = "archive"
+LIST_SECTIONS = {
+    ACTIVE_LIST_SECTION,
+    DRAFT_LIST_SECTION,
+    ARCHIVE_LIST_SECTION,
+}
+EXCLUDED_LIVE_STATUSES = [FeedStatus.expired.value, FeedStatus.inactive.value]
 
 
 def _authenticate_jwt(request):
@@ -92,8 +107,75 @@ def _get_revision_progress(revision: DatasetRevision):
     return progress, error_code
 
 
+def _get_error_description(revision: DatasetRevision, error_code):
+    if not error_code:
+        return None
+
+    latest_task = revision.etl_results.order_by("-id").first()
+    if latest_task and latest_task.additional_info:
+        renderer = XMLErrorMessageRenderer(
+            latest_task.additional_info,
+            error_code=latest_task.error_code,
+        )
+        return renderer.get_message()
+
+    mapped_error = ERROR_CODE_MAP.get(error_code)
+    if mapped_error:
+        return mapped_error.get("description")
+
+    return None
+
+
 def _is_loading_status(status: str) -> bool:
     return status in LOADING_STATUSES
+
+
+def _get_fares_list_section(request):
+    section = request.GET.get("tab", ACTIVE_LIST_SECTION)
+    if section not in LIST_SECTIONS:
+        return ACTIVE_LIST_SECTION
+    return section
+
+
+def _get_fares_list_queryset(organisation, section):
+    datasets = (
+        Dataset.objects.filter(
+            organisation=organisation,
+            dataset_type=DatasetType.FARES.value,
+        )
+        .select_related("organisation")
+        .select_related("live_revision")
+        .order_by("id")
+    )
+
+    if section == ACTIVE_LIST_SECTION:
+        return (
+            datasets.add_live_data()
+            .exclude(status__in=EXCLUDED_LIVE_STATUSES)
+            .add_draft_revisions()
+        )
+
+    if section == DRAFT_LIST_SECTION:
+        return datasets.add_draft_revisions().add_draft_revision_data(
+            organisation=organisation,
+            dataset_type=DatasetType.FARES.value,
+        )
+
+    return (
+        datasets.add_live_data()
+        .filter(status__in=EXCLUDED_LIVE_STATUSES)
+        .add_draft_revisions()
+    )
+
+
+def _dataset_row_to_json(dataset):
+    return {
+        "id": dataset.id,
+        "name": getattr(dataset, "name", None),
+        "shortDescription": getattr(dataset, "short_description", None),
+        "status": getattr(dataset, "status", None),
+        "modified": _iso_or_none(getattr(dataset, "modified", None)),
+    }
 
 
 def _iso_or_none(value):
@@ -189,6 +271,7 @@ def get_fares_review_status_api(request, pk1, pk):
         return error_response
 
     progress, error_code = _get_revision_progress(revision)
+    error_description = _get_error_description(revision, error_code)
 
     status = revision.status
     is_loading = _is_loading_status(status)
@@ -254,9 +337,24 @@ def get_fares_review_status_api(request, pk1, pk):
             "lastModifiedUser": last_modified_user,
             "metadata": metadata,
             "error": error_code,
+            "errorDescription": error_description,
         },
         status=200,
     )
+
+
+@csrf_exempt
+@require_GET
+def get_fares_list_api(request, pk1):
+    _, organisation, _, error_response = _get_request_context(request, pk1)
+    if error_response is not None:
+        return error_response
+
+    section = _get_fares_list_section(request)
+    queryset = _get_fares_list_queryset(organisation, section)
+    datasets = [_dataset_row_to_json(dataset) for dataset in queryset]
+
+    return JsonResponse({"tab": section, "results": datasets}, status=200)
 
 
 @csrf_exempt
@@ -270,12 +368,57 @@ def publish_fares_dataset_api(request, pk1, pk):
         return JsonResponse({"error": "Dataset is still processing"}, status=409)
 
     if not revision.is_published:
-        revision.publish(user)
+        try:
+            revision.publish(user)
+        except Exception:
+            # Some post-publish side effects (for example notifications)
+            # can fail after the revision has already been marked published.
+            revision.refresh_from_db()
+            if not revision.is_published:
+                logger.exception(
+                    "Failed to publish fares revision",
+                    extra={"org_id": pk1, "dataset_id": pk, "revision_id": revision.id},
+                )
+                return JsonResponse(
+                    {"error": "Unable to publish this data set right now. Please try again."},
+                    status=500,
+                )
+
+            logger.exception(
+                "Fares revision published but post-publish side effect failed",
+                extra={"org_id": pk1, "dataset_id": pk, "revision_id": revision.id},
+            )
+
+    return JsonResponse(
+        {
+            "redirect": f"/publish/org/{pk1}/dataset/fares/{pk}/publish-success",
+            "published": True,
+        },
+        status=200,
+    )
+
+
+@csrf_exempt
+@require_POST
+def delete_fares_dataset_api(request, pk1, pk):
+    _, _, revision, error_response = _get_request_context(request, pk1, pk)
+    if error_response is not None:
+        return error_response
+
+    if revision.is_published and revision.status != FeedStatus.expired.value:
+        return JsonResponse(
+            {
+                "error": "Only draft or expired fares datasets can be deleted from this flow"
+            },
+            status=400,
+        )
+
+    delete_dataset_revision.delay(revision.id)
 
     return JsonResponse(
         {
             "redirect": f"/publish/org/{pk1}/dataset/fares",
-            "published": True,
+            "deleted": True,
         },
         status=200,
     )
