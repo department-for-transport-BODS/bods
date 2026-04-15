@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const djangoResp = await fetch(`${DJANGO_ORIGIN}/api/fares/delete/${orgId}/${datasetId}/`, {
+    const djangoResp = await fetch(`${DJANGO_ORIGIN}/api/fares/deactivate/${orgId}/${datasetId}/`, {
       method: 'POST',
       headers: { Authorization: authHeader },
     });
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const data = (await djangoResp.json().catch(() => ({}))) as {
       redirect?: string;
       error?: string;
-      deleted?: boolean;
+      deactivated?: boolean;
       dataset_name?: string;
     };
 
@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        redirect: toNextJsPath(data.redirect || ''),
-        deleted: Boolean(data.deleted),
+        redirect: data.redirect || `/publish/org/${orgId}/dataset/fares`,
+        deactivated: true,
         dataset_name: data.dataset_name || '',
       },
       { status: 200 },
@@ -47,25 +47,5 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: `Failed to reach Django: ${message}` }, { status: 502 });
-  }
-}
-
-function toNextJsPath(djangoUrl: string): string {
-  if (!djangoUrl) {
-    return '';
-  }
-
-  try {
-    const url = new URL(djangoUrl, 'http://placeholder');
-    const path = url.pathname;
-    if (path.startsWith('/org/')) {
-      return `/publish${path}`;
-    }
-    return `/publish${path}`;
-  } catch {
-    if (djangoUrl.startsWith('/org/')) {
-      return `/publish${djangoUrl}`;
-    }
-    return djangoUrl;
   }
 }

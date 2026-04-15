@@ -1,6 +1,5 @@
-// implements the "Describe your data set" and "Choose how to provide your data set" steps of the fares dataset creation flow
-// manages form state, handles form submissions to a custom API route, and includes a confirmation step for cancelling the process. 
-// The page also displays error messages and links to support resources.
+// create flow: keeps form state in-page and submits via fetch
+// cancel is handled as an in-page step; successful submit redirects to the next route
 'use client';
 
 import { FormEvent, useState } from 'react';
@@ -13,124 +12,140 @@ const UPLOAD_STEP = 'upload';
 const UPLOAD_FILE_ITEM_ID = 'upload_file-conditional';
 const URL_LINK_ITEM_ID = 'url_link-conditional';
 
-function getHeadingText(step: typeof DESCRIPTION_STEP | typeof CANCEL_STEP | typeof UPLOAD_STEP) {
-  if (step === CANCEL_STEP) {
-    return 'Would you like to cancel publishing this data set?';
-  }
+type UploadItem = typeof UPLOAD_FILE_ITEM_ID | typeof URL_LINK_ITEM_ID;
+type Step = typeof DESCRIPTION_STEP | typeof CANCEL_STEP | typeof UPLOAD_STEP;
 
-  if (step === DESCRIPTION_STEP) {
-    return 'Describe your data set';
-  }
-
-  return 'Choose how to provide your data set';
-}
-
-type FaresCreateStepContentProps = Readonly<{
-  step: typeof DESCRIPTION_STEP | typeof CANCEL_STEP | typeof UPLOAD_STEP;
-  description: string;
-  shortDescription: string;
-  selectedItem: typeof UPLOAD_FILE_ITEM_ID | typeof URL_LINK_ITEM_ID;
-  urlLink: string;
-  isSubmitting: boolean;
-  onDescriptionSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onUploadSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onDescriptionChange: (value: string) => void;
-  onShortDescriptionChange: (value: string) => void;
-  onSelectedItemChange: (value: typeof UPLOAD_FILE_ITEM_ID | typeof URL_LINK_ITEM_ID) => void;
-  onUrlLinkChange: (value: string) => void;
-  onUploadFileChange: (file: File | null) => void;
-  onCancelClick: (step: typeof DESCRIPTION_STEP | typeof UPLOAD_STEP) => void;
-  onCancelConfirm: () => void;
-  onCancelBack: () => void;
-}>;
-
-function FaresCreateStepContent({
-  step,
-  description,
-  shortDescription,
-  selectedItem,
-  urlLink,
-  isSubmitting,
-  onDescriptionSubmit,
-  onUploadSubmit,
-  onDescriptionChange,
-  onShortDescriptionChange,
-  onSelectedItemChange,
-  onUrlLinkChange,
-  onUploadFileChange,
-  onCancelClick,
-  onCancelConfirm,
-  onCancelBack,
-}: FaresCreateStepContentProps) {
-  if (step === DESCRIPTION_STEP) {
-    return (
-      <form method="post" encType="multipart/form-data" onSubmit={onDescriptionSubmit} noValidate>
-        <div className="govuk-form-group">
-          <label className="govuk-label" htmlFor="id_description-description">
-            Data set description
-          </label>
-          <div className="govuk-hint">
-            This information will give context to data set users. Please be descriptive but do not include
-            personally identifiable information. You may wish to include: The original file name, start date
-            of data, description of the fares, products, OpCo, locations/region, routes/service numbers for
-            which the data applies, or any other useful high level information. The description should reflect
-            the data included at a high level.
-          </div>
-          <textarea
-            id="id_description-description"
-            name="description-description"
-            className="govuk-textarea govuk-!-width-three-quarters"
-            rows={3}
-            value={description}
-            onChange={(event) => onDescriptionChange(event.target.value)}
-          />
-        </div>
-
-        <div className="govuk-form-group">
-          <label className="govuk-label" htmlFor="id_description-short_description">
-            Data set short description
-          </label>
-          <div className="govuk-hint">
-            This info will be displayed on your published data set dashboard to identify this data set and will
-            not be visible to data set users. The maximum number of characters (with spaces) is 30 characters.
-          </div>
-          <input
-            id="id_description-short_description"
-            name="description-short_description"
-            className="govuk-input govuk-!-width-three-quarters"
-            maxLength={30}
-            value={shortDescription}
-            onChange={(event) => onShortDescriptionChange(event.target.value)}
-          />
-        </div>
-
-        <div className="govuk-button-group">
-          <button className="govuk-button" type="submit">
-            Continue
-          </button>
-          <button className="govuk-button govuk-button--secondary" type="button" onClick={() => onCancelClick(DESCRIPTION_STEP)}>
-            Cancel
-          </button>
-        </div>
-      </form>
-    );
-  }
-
-  if (step === CANCEL_STEP) {
-    return (
-      <div className="govuk-button-group">
-        <button className="govuk-button app-!-mr-sm-4" type="button" onClick={onCancelConfirm}>
-          Confirm
-        </button>
-        <button className="govuk-button govuk-button--secondary" type="button" onClick={onCancelBack}>
-          Cancel
-        </button>
-      </div>
-    );
+function StepErrorSummary({ message, titleId }: Readonly<{ message: string; titleId: string }>) {
+  if (!message) {
+    return null;
   }
 
   return (
-    <form onSubmit={onUploadSubmit} noValidate>
+    <div className="govuk-error-summary" role="alert" aria-labelledby={titleId}>
+      <h2 className="govuk-error-summary__title" id={titleId}>
+        There is a problem
+      </h2>
+      <div className="govuk-error-summary__body">
+        <ul className="govuk-list govuk-error-summary__list">
+          <li>{message}</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function CancelStepView({ onConfirm, onBack }: Readonly<{ onConfirm: () => void; onBack: () => void }>) {
+  return (
+    <>
+      <h1 className="govuk-heading-l">Would you like to cancel publishing this data set?</h1>
+      <p className="govuk-body">Any changes you have made so far will not be saved.</p>
+      <div className="govuk-button-group">
+        <button className="govuk-button app-!-mr-sm-4" type="button" onClick={onConfirm}>
+          Confirm
+        </button>
+        <button className="govuk-button govuk-button--secondary" type="button" onClick={onBack}>
+          Cancel
+        </button>
+      </div>
+    </>
+  );
+}
+
+function DescriptionStepView({
+  description,
+  shortDescription,
+  errorMessage,
+  onDescriptionChange,
+  onShortDescriptionChange,
+  onSubmit,
+  onCancel,
+}: Readonly<{
+  description: string;
+  shortDescription: string;
+  errorMessage: string;
+  onDescriptionChange: (value: string) => void;
+  onShortDescriptionChange: (value: string) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onCancel: () => void;
+}>) {
+  return (
+    <form method="post" encType="multipart/form-data" onSubmit={onSubmit} noValidate>
+      <h1 className="govuk-heading-l">Describe your data set</h1>
+      <StepErrorSummary message={errorMessage} titleId="fares-description-error-title" />
+      <div className="govuk-form-group">
+        <label className="govuk-label" htmlFor="id_description-description">
+          Data set description
+        </label>
+        <div className="govuk-hint">
+          This information will give context to data set users. Please be descriptive but do not include
+          personally identifiable information. You may wish to include: The original file name, start date
+          of data, description of the fares, products, OpCo, locations/region, routes/service numbers for
+          which the data applies, or any other useful high level information. The description should reflect
+          the data included at a high level.
+        </div>
+        <textarea
+          id="id_description-description"
+          name="description-description"
+          className="govuk-textarea govuk-!-width-three-quarters"
+          rows={3}
+          value={description}
+          onChange={(event) => onDescriptionChange(event.target.value)}
+        />
+      </div>
+      <div className="govuk-form-group">
+        <label className="govuk-label" htmlFor="id_description-short_description">
+          Data set short description
+        </label>
+        <div className="govuk-hint">
+          This info will be displayed on your published data set dashboard to identify this data set and will
+          not be visible to data set users. The maximum number of characters (with spaces) is 30 characters.
+        </div>
+        <input
+          id="id_description-short_description"
+          name="description-short_description"
+          className="govuk-input govuk-!-width-three-quarters"
+          maxLength={30}
+          value={shortDescription}
+          onChange={(event) => onShortDescriptionChange(event.target.value)}
+        />
+      </div>
+      <div className="govuk-button-group">
+        <button className="govuk-button" type="submit">
+          Continue
+        </button>
+        <button className="govuk-button govuk-button--secondary" type="button" onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function UploadStepView({
+  selectedItem,
+  urlLink,
+  isSubmitting,
+  errorMessage,
+  onSelectedItemChange,
+  onUrlLinkChange,
+  onUploadFileChange,
+  onSubmit,
+  onCancel,
+}: Readonly<{
+  selectedItem: UploadItem | null;
+  urlLink: string;
+  isSubmitting: boolean;
+  errorMessage: string;
+  onSelectedItemChange: (value: UploadItem) => void;
+  onUrlLinkChange: (value: string) => void;
+  onUploadFileChange: (file: File | null) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onCancel: () => void;
+}>) {
+  return (
+    <form onSubmit={onSubmit} noValidate>
+      <h1 className="govuk-heading-l">Choose how to provide your data set</h1>
+      <StepErrorSummary message={errorMessage} titleId="fares-upload-error-title" />
       <div className="govuk-form-group">
         <fieldset className="govuk-fieldset">
           <legend className="govuk-fieldset__legend govuk-visually-hidden">Choose how to provide your data set</legend>
@@ -185,7 +200,8 @@ function FaresCreateStepContent({
             onChange={(event) => onUrlLinkChange(event.target.value)}
           />
         </div>
-      ) : (
+      ) : null}
+      {selectedItem === UPLOAD_FILE_ITEM_ID ? (
         <div className="govuk-form-group">
           <label className="govuk-label" htmlFor="id_upload_file">
             Upload File
@@ -202,13 +218,13 @@ function FaresCreateStepContent({
             onChange={(event) => onUploadFileChange(event.target.files?.[0] || null)}
           />
         </div>
-      )}
+      ) : null}
 
       <div className="govuk-button-group">
         <button className="govuk-button" type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Submitting...' : 'Continue'}
         </button>
-        <button className="govuk-button govuk-button--secondary" type="button" onClick={() => onCancelClick(UPLOAD_STEP)}>
+        <button className="govuk-button govuk-button--secondary" type="button" onClick={onCancel}>
           Cancel
         </button>
       </div>
@@ -223,20 +239,15 @@ function FaresCreatePageContent() {
   const supportBusOperatorsUrl = '/publish/guide-me';
   const contactSupportUrl = '/publish/account';
 
-  const [step, setStep] = useState<typeof DESCRIPTION_STEP | typeof CANCEL_STEP | typeof UPLOAD_STEP>(DESCRIPTION_STEP);
+  const [step, setStep] = useState<Step>(DESCRIPTION_STEP);
   const [stepBeforeCancel, setStepBeforeCancel] = useState<typeof DESCRIPTION_STEP | typeof UPLOAD_STEP>(DESCRIPTION_STEP);
   const [description, setDescription] = useState('');
   const [shortDescription, setShortDescription] = useState('');
-  const [selectedItem, setSelectedItem] = useState<typeof UPLOAD_FILE_ITEM_ID | typeof URL_LINK_ITEM_ID>(
-    UPLOAD_FILE_ITEM_ID,
-  );
+  const [selectedItem, setSelectedItem] = useState<UploadItem | null>(null);
   const [urlLink, setUrlLink] = useState('');
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-
-  const isCancelStep = step === CANCEL_STEP;
-  const headingText = getHeadingText(step);
 
   const handleDescriptionSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -266,6 +277,11 @@ function FaresCreatePageContent() {
   const handleUploadSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage('');
+
+    if (!selectedItem) {
+      setErrorMessage('Select how to provide your data set.');
+      return;
+    }
 
     if (selectedItem === URL_LINK_ITEM_ID && !urlLink.trim()) {
       setErrorMessage('Enter a URL link for your fares data.');
@@ -326,7 +342,7 @@ function FaresCreatePageContent() {
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        {isCancelStep ? null : (
+        {step === CANCEL_STEP ? null : (
           <div className="govuk-breadcrumbs">
             <div className="govuk-breadcrumbs">
               <ol className="publish-stepper govuk-breadcrumbs__list" aria-label="Progress">
@@ -348,48 +364,37 @@ function FaresCreatePageContent() {
               </ol>
             </div>
           </div>
-        )}
+          )}
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds indented-text">
-            <h1 className="govuk-heading-l">{headingText}</h1>
-
-            {isCancelStep && (
-              <p className="govuk-body">Any changes you have made so far will not be saved.</p>
-            )}
-
-            {errorMessage ? (
-              <div className="govuk-error-summary" role="alert" aria-labelledby="fares-submit-error-title">
-                <h2 className="govuk-error-summary__title" id="fares-submit-error-title">
-                  There is a problem
-                </h2>
-                <div className="govuk-error-summary__body">
-                  <ul className="govuk-list govuk-error-summary__list">
-                    <li>{errorMessage}</li>
-                  </ul>
-                </div>
-              </div>
+            {step === CANCEL_STEP ? (
+              <CancelStepView onConfirm={handleCancelConfirm} onBack={handleCancelBack} />
             ) : null}
-
-            <FaresCreateStepContent
-              step={step}
-              description={description}
-              shortDescription={shortDescription}
-              selectedItem={selectedItem}
-              urlLink={urlLink}
-              isSubmitting={isSubmitting}
-              onDescriptionSubmit={handleDescriptionSubmit}
-              onUploadSubmit={handleUploadSubmit}
-              onDescriptionChange={setDescription}
-              onShortDescriptionChange={setShortDescription}
-              onSelectedItemChange={setSelectedItem}
-              onUrlLinkChange={setUrlLink}
-              onUploadFileChange={setUploadFile}
-              onCancelClick={handleClickCancel}
-              onCancelConfirm={handleCancelConfirm}
-              onCancelBack={handleCancelBack}
-            />
-
+            {step === DESCRIPTION_STEP ? (
+              <DescriptionStepView
+                description={description}
+                shortDescription={shortDescription}
+                errorMessage={errorMessage}
+                onDescriptionChange={setDescription}
+                onShortDescriptionChange={setShortDescription}
+                onSubmit={handleDescriptionSubmit}
+                onCancel={() => handleClickCancel(DESCRIPTION_STEP)}
+              />
+            ) : null}
+            {step === UPLOAD_STEP ? (
+              <UploadStepView
+                selectedItem={selectedItem}
+                urlLink={urlLink}
+                isSubmitting={isSubmitting}
+                errorMessage={errorMessage}
+                onSelectedItemChange={setSelectedItem}
+                onUrlLinkChange={setUrlLink}
+                onUploadFileChange={setUploadFile}
+                onSubmit={handleUploadSubmit}
+                onCancel={() => handleClickCancel(UPLOAD_STEP)}
+              />
+            ) : null}
             <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />
           </div>
 

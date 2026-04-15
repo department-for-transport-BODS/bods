@@ -104,7 +104,7 @@ body {
 }
 
 .govuk-button.app-button--inverted:focus {
-  outline: 3px solid #ffdd00;
+  outline: 3px solid transparent;
   outline-offset: 0;
 }
 
@@ -129,8 +129,48 @@ body {
 }
 
 .govuk-button.app-button--green:focus {
-  outline: 3px solid #ffdd00;
+  outline: 3px solid transparent;
   outline-offset: 0;
+}
+
+/* Keep button focus states non-yellow across Next.js pages */
+.govuk-button:focus,
+.govuk-button:focus:not(:active):not(:hover),
+.govuk-button:focus-visible {
+  outline: 3px solid transparent;
+  outline-offset: 0;
+}
+
+.govuk-button:focus:not(.govuk-button--secondary):not(.govuk-button--warning):not(.govuk-button--inverse),
+.govuk-button:focus-visible:not(.govuk-button--secondary):not(.govuk-button--warning):not(.govuk-button--inverse) {
+  color: #ffffff;
+  background-color: #00703c;
+  border-color: transparent;
+  box-shadow: 0 2px 0 #002d18;
+}
+
+.govuk-button.govuk-button--secondary:focus,
+.govuk-button.govuk-button--secondary:focus-visible {
+  color: #0b0c0c;
+  background-color: #f3f2f1;
+  border-color: transparent;
+  box-shadow: 0 2px 0 #929191;
+}
+
+.govuk-button.govuk-button--warning:focus,
+.govuk-button.govuk-button--warning:focus-visible {
+  color: #ffffff;
+  background-color: #d4351c;
+  border-color: transparent;
+  box-shadow: 0 2px 0 #55150b;
+}
+
+.govuk-button.govuk-button--inverse:focus,
+.govuk-button.govuk-button--inverse:focus-visible {
+  color: #0b0c0c;
+  background-color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 2px 0 #0b0c0c;
 }
 
 /* Bold links */

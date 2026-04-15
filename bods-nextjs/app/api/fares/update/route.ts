@@ -16,56 +16,40 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Not authenticated. Please sign in and retry.' }, { status: 401 });
   }
 
+  const incoming = await request.formData();
+  const outgoing = new FormData();
+  for (const [key, value] of incoming.entries()) {
+    if (value instanceof File) {
+      outgoing.set(key, value, value.name);
+    } else {
+      outgoing.set(key, value);
+    }
+  }
+
   try {
-    const djangoResp = await fetch(`${DJANGO_ORIGIN}/api/fares/delete/${orgId}/${datasetId}/`, {
+    const djangoResp = await fetch(`${DJANGO_ORIGIN}/api/fares/update/${orgId}/${datasetId}/`, {
       method: 'POST',
+      body: outgoing,
       headers: { Authorization: authHeader },
+      redirect: 'manual',
     });
 
     const data = (await djangoResp.json().catch(() => ({}))) as {
       redirect?: string;
       error?: string;
-      deleted?: boolean;
-      dataset_name?: string;
+      field_errors?: Record<string, string[]>;
     };
 
     if (!djangoResp.ok) {
       return NextResponse.json(
-        { error: data.error || `Django responded with status ${djangoResp.status}` },
+        { error: data.error || `Django responded with status ${djangoResp.status}`, fieldErrors: data.field_errors },
         { status: djangoResp.status },
       );
     }
 
-    return NextResponse.json(
-      {
-        redirect: toNextJsPath(data.redirect || ''),
-        deleted: Boolean(data.deleted),
-        dataset_name: data.dataset_name || '',
-      },
-      { status: 200 },
-    );
+    return NextResponse.json({ redirect: data.redirect || `/publish/org/${orgId}/dataset/fares/${datasetId}/review` }, { status: 200 });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: `Failed to reach Django: ${message}` }, { status: 502 });
-  }
-}
-
-function toNextJsPath(djangoUrl: string): string {
-  if (!djangoUrl) {
-    return '';
-  }
-
-  try {
-    const url = new URL(djangoUrl, 'http://placeholder');
-    const path = url.pathname;
-    if (path.startsWith('/org/')) {
-      return `/publish${path}`;
-    }
-    return `/publish${path}`;
-  } catch {
-    if (djangoUrl.startsWith('/org/')) {
-      return `/publish${djangoUrl}`;
-    }
-    return djangoUrl;
   }
 }

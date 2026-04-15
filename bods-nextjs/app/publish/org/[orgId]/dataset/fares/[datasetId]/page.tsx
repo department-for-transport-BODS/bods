@@ -15,6 +15,17 @@ type FaresDetailResponse = {
   schemaVersion?: string;
   lastModified?: string;
   lastModifiedUser?: string;
+  urlLink?: string;
+  downloadUrl?: string;
+  metadata?: {
+    numOfFareZones?: number | null;
+    numOfLines?: number | null;
+    numOfSalesOfferPackages?: number | null;
+    numOfFareProducts?: number | null;
+    numOfUserProfiles?: number | null;
+    validFrom?: string | null;
+    validTo?: string | null;
+  };
   error?: string | null;
 };
 
@@ -74,6 +85,8 @@ function FaresDatasetDetailContent() {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
+  const updateDatasetUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/update`;
+  const deactivateDatasetUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/deactivate`;
 
   const [data, setData] = useState<FaresDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -216,14 +229,85 @@ function FaresDatasetDetailContent() {
                       <td className="govuk-table__cell">{data.schemaVersion || '-'}</td>
                     </tr>
                     <tr className="govuk-table__row">
+                      <th scope="row" className="govuk-table__header">URL link</th>
+                      <td className="govuk-table__cell">
+                        {data.urlLink ? (
+                          <Link className="govuk-link" href={data.urlLink}>
+                            Publisher URL
+                          </Link>
+                        ) : (
+                          '-'
+                        )}
+                      </td>
+                    </tr>
+                    <tr className="govuk-table__row">
+                      <th scope="row" className="govuk-table__header">Download NeTEx</th>
+                      <td className="govuk-table__cell">
+                        {data.downloadUrl ? (
+                          <Link className="govuk-link" href={data.downloadUrl}>
+                            Download .xml
+                          </Link>
+                        ) : (
+                          '-'
+                        )}
+                      </td>
+                    </tr>
+                    <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Last updated</th>
                       <td className="govuk-table__cell">
                         {formatDateTime(data.lastModified)}
                         {data.lastModifiedUser ? ` by ${data.lastModifiedUser}` : ''}
                       </td>
                     </tr>
+                    <tr className="govuk-table__row">
+                      <th scope="row" className="govuk-table__header">Number of fare zones</th>
+                      <td className="govuk-table__cell">{data.metadata?.numOfFareZones ?? '-'}</td>
+                    </tr>
+                    <tr className="govuk-table__row">
+                      <th scope="row" className="govuk-table__header">Number of lines</th>
+                      <td className="govuk-table__cell">{data.metadata?.numOfLines ?? '-'}</td>
+                    </tr>
+                    <tr className="govuk-table__row">
+                      <th scope="row" className="govuk-table__header">Number of sales offer packages</th>
+                      <td className="govuk-table__cell">{data.metadata?.numOfSalesOfferPackages ?? '-'}</td>
+                    </tr>
+                    <tr className="govuk-table__row">
+                      <th scope="row" className="govuk-table__header">Number of fare products</th>
+                      <td className="govuk-table__cell">{data.metadata?.numOfFareProducts ?? '-'}</td>
+                    </tr>
+                    <tr className="govuk-table__row">
+                      <th scope="row" className="govuk-table__header">Number of user profiles</th>
+                      <td className="govuk-table__cell">{data.metadata?.numOfUserProfiles ?? '-'}</td>
+                    </tr>
+                    <tr className="govuk-table__row">
+                      <th scope="row" className="govuk-table__header">Earliest start date</th>
+                      <td className="govuk-table__cell">{formatDateTime(data.metadata?.validFrom) || '-'}</td>
+                    </tr>
+                    <tr className="govuk-table__row">
+                      <th scope="row" className="govuk-table__header">Earliest end date</th>
+                      <td className="govuk-table__cell">{formatDateTime(data.metadata?.validTo) || '-'}</td>
+                    </tr>
                   </tbody>
                 </table>
+
+                <div className="govuk-!-margin-top-9">
+                  {data.status === 'inactive' ? null : (
+                    <Link
+                      className="govuk-button govuk-!-margin-right-3"
+                      href={updateDatasetUrl}
+                    >
+                      Update data set
+                    </Link>
+                  )}
+                  {data.status === 'expired' || data.status === 'inactive' ? null : (
+                    <Link
+                      className="govuk-button govuk-button--secondary"
+                      href={deactivateDatasetUrl}
+                    >
+                      Deactivate data set
+                    </Link>
+                  )}
+                </div>
               </div>
 
               <div className="govuk-grid-column-one-third govuk-!-padding-top-5">

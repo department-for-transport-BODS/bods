@@ -73,7 +73,7 @@ function FaresPublish() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orgId = params.orgId as string;
-  const djangoApiBaseUrl = process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000';
+  const djangoApiBaseUrl = process.env.NEXT_PUBLIC_DJANGO_API_URL || '';
   const nextCreateUrl = `/publish/org/${orgId}/dataset/fares/create`;
   const reviewDetailsUrl = '/publish/review';
   const operatorRequirementsUrl = '/publish/guide-me';
@@ -271,13 +271,17 @@ function FaresPublish() {
                       </tr>
                     </thead>
                     <tbody className="govuk-table__body">
-                      {datasets.map((dataset) => (
+                      {datasets.map((dataset) => {
+                        const datasetUrl = tab === 'draft'
+                          ? `/publish/org/${orgId}/dataset/fares/${dataset.id}/review`
+                          : `/publish/org/${orgId}/dataset/fares/${dataset.id}`;
+                        return (
                         <tr key={dataset.id} className="govuk-table__row">
                           <td className="govuk-table__cell">
                             <span className="status-indicator status-indicator--success">{statusLabel(dataset.status)}</span>
                           </td>
                           <td className="govuk-table__cell">
-                            <a className="govuk-link" href={`/publish/org/${orgId}/dataset/fares/${dataset.id}/review`}>
+                            <a className="govuk-link" href={datasetUrl}>
                               {dataset.name || '-'}
                             </a>
                           </td>
@@ -285,7 +289,8 @@ function FaresPublish() {
                           <td className="govuk-table__cell">{formatDate(dataset.modified)}</td>
                           <td className="govuk-table__cell">{dataset.shortDescription || '-'}</td>
                         </tr>
-                      ))}
+                        );
+                      })}
                     </tbody>
                   </table>
                 )}
