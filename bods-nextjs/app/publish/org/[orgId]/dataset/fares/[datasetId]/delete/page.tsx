@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { getCsrfToken } from '@/lib/api-client';
@@ -10,11 +10,33 @@ function FaresDeletePageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
 
   const reviewUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/review`;
-  const faresListUrl = `/publish/org/${orgId}/dataset/fares`;
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [datasetName, setDatasetName] = useState('');
+  const [hasLiveRevision, setHasLiveRevision] = useState(false);
+
+  useEffect(() => {
+    fetch(`/api/fares/review-status/${orgId}/${datasetId}/`, {
+      credentials: 'include',
+    })
+      .then((r) => r.json())
+      .then((data: { name?: string; hasLiveRevision?: boolean }) => {
+        setDatasetName(data.name || '');
+        setHasLiveRevision(Boolean(data.hasLiveRevision));
+      })
+      .catch(() => {});
+  }, [orgId, datasetId]);
+
+  const heading = hasLiveRevision
+    ? 'Would you like to cancel updating this data set'
+    : 'Would you like to delete this data set?';
+
+  const bodyText = hasLiveRevision
+    ? `Please confirm that you would like to cancel updating data set "${datasetName}". Any changes you have made so far will not be saved.`
+    : `Please confirm that you would like to delete data set "${datasetName}". Any changes you have made so far will not be saved.`;
 
   const handleDelete = async () => {
     setErrorMessage('');
@@ -28,7 +50,12 @@ function FaresDeletePageContent() {
         headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
       });
 
-      const data = (await response.json().catch(() => ({}))) as { error?: string; redirect?: string };
+      const data = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        redirect?: string;
+        deleted?: boolean;
+        dataset_name?: string;
+      };
 
       if (!response.ok) {
         setErrorMessage(data.error || `Delete failed (${response.status}).`);
@@ -36,7 +63,8 @@ function FaresDeletePageContent() {
         return;
       }
 
-      globalThis.location.href = data.redirect || faresListUrl;
+      const successUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/delete/success?name=${encodeURIComponent(data.dataset_name || datasetName)}`;
+      globalThis.location.href = successUrl;
     } catch {
       setErrorMessage('Unable to delete data set. Please try again.');
       setIsDeleting(false);
@@ -46,35 +74,16 @@ function FaresDeletePageContent() {
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <ol className="govuk-breadcrumbs__list">
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/data">
-                Bus Open Data Service
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/publish">
-                Publish Open Data Service
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href={`/publish/org/${orgId}/dataset/fares`}>
-                Fares Data Sets
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item" aria-current="page">
-              Delete data set
-            </li>
-          </ol>
+        <div className="govuk-back-link-wrapper">
+          <Link className="govuk-back-link" href={reviewUrl}>
+            Back
+          </Link>
         </div>
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-full">
-            <h1 className="govuk-heading-xl">Would you like to delete this data set?</h1>
-            <p className="govuk-body-l">
-              Please confirm that you would like to delete this data set. Any changes you have made so far will not be saved.
-            </p>
+            <h1 className="govuk-heading-xl">{heading}</h1>
+            <p className="govuk-body-l">{bodyText}</p>
 
             {errorMessage ? (
               <div className="govuk-error-summary" role="alert" aria-labelledby="delete-error-title">
@@ -92,14 +101,13 @@ function FaresDeletePageContent() {
             <div className="govuk-button-group">
               <button
                 type="button"
-                className="govuk-button"
+                className="govuk-button app-!-mr-sm-4"
                 onClick={handleDelete}
                 disabled={isDeleting}
-                aria-disabled={isDeleting}
               >
                 {isDeleting ? 'Deleting...' : 'Delete'}
               </button>
-              <Link className="govuk-button govuk-button--secondary" href={reviewUrl}>
+              <Link className="govuk-link" href={reviewUrl}>
                 Cancel
               </Link>
             </div>
@@ -117,3 +125,4 @@ export default function FaresDeletePage() {
     </ProtectedRoute>
   );
 }
+

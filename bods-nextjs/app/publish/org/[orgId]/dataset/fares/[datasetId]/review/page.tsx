@@ -41,6 +41,8 @@ type ReviewStatusResponse = {
   errorDescription?: string | null;
 };
 
+const PUBLISHED_STATUSES = new Set(['live', 'expiring', 'warning']);
+
 const POLL_INTERVAL_MS = 1000;
 
 type FareStopsApiResponse = {
@@ -642,12 +644,14 @@ function FaresReviewPageContent() {
                 </table>
 
                 <div className="govuk-button-group">
-                  <Link
-                    className="govuk-button govuk-button--secondary"
-                    href={`/publish/org/${orgId}/dataset/fares/${datasetId}/delete`}
-                  >
-                    Delete data set
-                  </Link>
+                  {PUBLISHED_STATUSES.has(statusData?.status ?? '') ? null : (
+                    <Link
+                      className="govuk-button govuk-button--secondary"
+                      href={`/publish/org/${orgId}/dataset/fares/${datasetId}/delete`}
+                    >
+                      Delete data set
+                    </Link>
+                  )}
                 </div>
               </>
             )}

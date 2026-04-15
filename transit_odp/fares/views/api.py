@@ -44,16 +44,15 @@ def _get_user_org(user, org_id):
         return None
 
 
-def _get_revision_for_dataset(org_id, dataset_id):
-    return (
-        DatasetRevision.objects.filter(
-            dataset_id=dataset_id,
-            dataset__organisation_id=org_id,
-            is_published=False,
-        )
-        .order_by("-id")
-        .first()
+def _get_revision_for_dataset(org_id, dataset_id, include_published=False):
+    queryset = DatasetRevision.objects.filter(
+        dataset_id=dataset_id,
+        dataset__organisation_id=org_id,
     )
+    draft_revision = queryset.filter(is_published=False).order_by("-id").first()
+    if draft_revision is not None or not include_published:
+        return draft_revision
+    return queryset.filter(is_published=True).order_by("-id").first()
 
 
 def _upsert_draft_revision(dataset: Dataset, all_data: dict) -> DatasetRevision:
@@ -168,7 +167,9 @@ def _iso_or_none(value):
     return value.isoformat()
 
 
-def _get_request_context(request, org_id, dataset_id=None):
+def _get_request_context(
+    request, org_id, dataset_id=None, include_published_revision=False
+):
     user = get_user(request)
     if user is None or not user.is_authenticated:
         return (
@@ -200,7 +201,11 @@ def _get_request_context(request, org_id, dataset_id=None):
 
     revision = None
     if dataset_id is not None:
-        revision = _get_revision_for_dataset(org_id, dataset_id)
+        revision = _get_revision_for_dataset(
+            org_id,
+            dataset_id,
+            include_published=include_published_revision,
+        )
         if revision is None:
             return (
                 None,
@@ -264,7 +269,10 @@ def create_fares_dataset_api(request, pk1):
 
 @require_GET
 def get_fares_review_status_api(request, pk1, pk):
-    _, _, revision, error_response = _get_request_context(request, pk1, pk)
+    _, _, revision, error_response = _get_request_context(
+        request, pk1, pk,
+        include_published_revision=True,
+    )
     if error_response is not None:
         return error_response
 
@@ -317,6 +325,11 @@ def get_fares_review_status_api(request, pk1, pk):
     if revision.last_modified_user is not None:
         last_modified_user = revision.last_modified_user.username
 
+    has_live_revision = DatasetRevision.objects.filter(
+        dataset_id=revision.dataset_id,
+        is_published=True,
+    ).exists()
+
     return JsonResponse(
         {
             "datasetId": revision.dataset_id,
@@ -336,6 +349,7 @@ def get_fares_review_status_api(request, pk1, pk):
             "metadata": metadata,
             "error": error_code,
             "errorDescription": error_description,
+            "hasLiveRevision": has_live_revision,
         },
         status=200,
     )
@@ -397,16 +411,102 @@ def publish_fares_dataset_api(request, pk1, pk):
 
 
 @require_POST
-def delete_fares_dataset_api(request, pk1, pk):
-    _, _, revision, error_response = _get_request_context(request, pk1, pk)
+def update_fares_dataset_api(request, pk1, pk):
+    user, organisation, _, error_response = _get_request_context(request, pk1)
     if error_response is not None:
         return error_response
 
-    if revision.is_published and revision.status != FeedStatus.expired.value:
+    try:
+        dataset = Dataset.objects.get(
+            id=pk,
+            organisation_id=organisation.id,
+            dataset_type=DatasetType.FARES.value,
+        )
+    except Dataset.DoesNotExist:
+        return JsonResponse({"error": "Dataset not found"}, status=404)
+
+    upload_form = FaresFeedUploadForm(data=request.POST, files=request.FILES)
+    if not upload_form.is_valid():
         return JsonResponse(
             {
-                "error": "Only draft or expired fares datasets can be deleted from this flow"
+                "error": "Upload validation failed",
+                "field_errors": upload_form.errors,
             },
+            status=400,
+        )
+
+    all_data = {}
+    all_data.update(upload_form.cleaned_data)
+    all_data["last_modified_user"] = user
+    comment = request.POST.get("comment", "").strip()
+    all_data["comment"] = comment if comment else "Dataset update"
+
+    with transaction.atomic():
+        revision = _upsert_draft_revision(dataset, all_data)
+        _trigger_fares_processing(revision)
+
+    return JsonResponse(
+        {"redirect": f"/publish/org/{pk1}/dataset/fares/{pk}/review"},
+        status=201,
+    )
+
+
+@require_POST
+def deactivate_fares_dataset_api(request, pk1, pk):
+    user, _, revision, error_response = _get_request_context(
+        request, pk1, pk, include_published_revision=True
+    )
+    if error_response is not None:
+        return error_response
+
+    if not revision.is_published or revision.status in (
+        FeedStatus.inactive.value,
+        FeedStatus.expired.value,
+    ):
+        return JsonResponse(
+            {"error": "Only active published datasets can be deactivated"},
+            status=400,
+        )
+
+    try:
+        with transaction.atomic():
+            revision.to_inactive()
+            revision.last_modified_user = user
+            revision.save()
+    except Exception:
+        logger.exception(
+            "Failed to deactivate fares revision",
+            extra={"org_id": pk1, "dataset_id": pk, "revision_id": revision.id},
+        )
+        return JsonResponse(
+            {"error": "Unable to deactivate this data set right now. Please try again."},
+            status=500,
+        )
+
+    return JsonResponse(
+        {
+            "redirect": f"/publish/org/{pk1}/dataset/fares",
+            "deactivated": True,
+            "dataset_name": revision.name,
+        },
+        status=200,
+    )
+
+
+@require_POST
+def delete_fares_dataset_api(request, pk1, pk):
+    _, _, revision, error_response = _get_request_context(
+        request, pk1, pk, include_published_revision=True
+    )
+    if error_response is not None:
+        return error_response
+
+    if revision.is_published and revision.status not in (
+        FeedStatus.inactive.value,
+        FeedStatus.expired.value,
+    ):
+        return JsonResponse(
+            {"error": "Active published data sets cannot be deleted. Please deactivate first."},
             status=400,
         )
 
@@ -416,6 +516,7 @@ def delete_fares_dataset_api(request, pk1, pk):
         {
             "redirect": f"/publish/org/{pk1}/dataset/fares",
             "deleted": True,
+            "dataset_name": revision.name,
         },
         status=200,
     )

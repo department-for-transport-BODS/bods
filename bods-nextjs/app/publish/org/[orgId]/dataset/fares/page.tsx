@@ -252,7 +252,11 @@ function FaresPublish() {
                       </tr>
                     </thead>
                     <tbody className="govuk-table__body">
-                      {datasets.map((dataset) => (
+                      {datasets.map((dataset) => {
+                        const datasetUrl = tab === 'draft'
+                          ? `/publish/org/${orgId}/dataset/fares/${dataset.id}/review`
+                          : `/publish/org/${orgId}/dataset/fares/${dataset.id}`;
+                        return (
                         <tr key={dataset.id} className="govuk-table__row">
                           <td className="govuk-table__cell">
                             <span className="status-indicator status-indicator--success">
@@ -260,10 +264,7 @@ function FaresPublish() {
                             </span>
                           </td>
                           <td className="govuk-table__cell">
-                            <Link
-                              className="govuk-link"
-                              href={`/publish/org/${orgId}/dataset/fares/${dataset.id}/review`}
-                            >
+                            <Link className="govuk-link" href={datasetUrl}>
                               {dataset.name || '-'}
                             </Link>
                           </td>
@@ -271,7 +272,8 @@ function FaresPublish() {
                           <td className="govuk-table__cell">{formatDate(dataset.modified)}</td>
                           <td className="govuk-table__cell">{dataset.shortDescription || '-'}</td>
                         </tr>
-                      ))}
+                        );
+                      })}
                     </tbody>
                   </table>
                 )}

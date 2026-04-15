@@ -1,7 +1,7 @@
 /**
  * Footer Component
  *
- * Mirrors transit_odp/templates/footer.html for layout parity.
+ * same as transit_odp/templates/footer.html for layout parity.
  */
 
 'use client';

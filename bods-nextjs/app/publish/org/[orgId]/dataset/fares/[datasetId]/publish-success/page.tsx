@@ -11,45 +11,19 @@ function FaresPublishSuccessContent() {
 
   const faresListUrl = `/publish/org/${orgId}/dataset/fares`;
   const datasetDetailUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}`;
-
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <ol className="govuk-breadcrumbs__list">
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/data">
-                Bus Open Data Service
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/publish">
-                Publish Open Data Service
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href={`/publish/org/${orgId}/dataset`}>
-                Choose data type
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href={faresListUrl}>
-                Fares Data Sets
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item" aria-current="page">
-              Publish success
-            </li>
-          </ol>
-        </div>
-
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <span className="govuk-caption-l">Fares data set successfully published</span>
-            <h1 className="govuk-heading-xl">Changes to data set now live</h1>
+            <div className="govuk-panel govuk-panel--confirmation govuk-!-margin-top-9">
+              <h1 className="govuk-panel__title">
+                Your data set has been successfully published
+              </h1>
+            </div>
 
             <p className="govuk-body-m">
-              You have successfully published your fares data set and this information is now live.
+              We have sent you a confirmation email.
             </p>
 
             <h2 className="govuk-heading-m">What happens next?</h2>
