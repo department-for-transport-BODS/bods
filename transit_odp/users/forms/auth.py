@@ -42,8 +42,8 @@ from transit_odp.users.forms.admin import (
     PASSWORD_LABEL,
     PASSWORD_MISSING,
     PASSWORD_NO_ASTERISK_LABEL,
-    PRIVACY_TEXT,
     SHARE_APP_USAGE,
+    get_privacy_text,
 )
 from transit_odp.users.models import AgentUserInvite, IntendedUse
 
@@ -321,7 +321,7 @@ class DeveloperSignupForm(BaseBODSSignupForm):
             "email",
             "password1",
             "password2",
-            HTML(PRIVACY_TEXT),
+            HTML(get_privacy_text()),
             ButtonSubmit("submit", "submit", content=_("Create account")),
         )
 
@@ -386,7 +386,7 @@ class OperatorSignupForm(BaseBODSSignupForm):
             "email",
             "password1",
             "password2",
-            HTML(PRIVACY_TEXT),
+            HTML(get_privacy_text()),
             CheckboxField("opt_in_user_research"),
             ButtonSubmit("submit", "submit", content=_("Create account")),
         )
@@ -432,7 +432,7 @@ class AgentSignupForm(OperatorSignupForm):
             "agent_organisation",
             "password1",
             "password2",
-            HTML(PRIVACY_TEXT),
+            HTML(get_privacy_text()),
             CheckboxField("opt_in_user_research"),
             ButtonSubmit("submit", "submit", content=_("Create account")),
         )

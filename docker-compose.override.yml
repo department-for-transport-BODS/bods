@@ -26,7 +26,6 @@ services:
         # However, this may cause problems as described here: https://stackoverflow.com/a/32785014/5221078
     ports:
       - "8000:8000"
-      - "3000:3000"
 
   postgres:
     build:
