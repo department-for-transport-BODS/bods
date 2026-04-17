@@ -506,3 +506,29 @@ ul.dashed > li::before {
   border-bottom: 5px solid black;
   padding-bottom: 5px;
 }
+
+/* Utility: unstyled button that looks like a link */
+.app-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.app-link-button:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-skip-ink: none;
+}
+
+/* Table column widths */
+.app-table-col--20 {
+  width: 20%;
+}
+
+.app-table-col--25 {
+  width: 25%;
+}

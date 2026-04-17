@@ -232,16 +232,16 @@ function FaresPublish() {
                       <th className="govuk-table__header" scope="col">
                         Status
                       </th>
-                      <th className="govuk-table__header" scope="col" style={{ width: '20%' }}>
+                      <th className="govuk-table__header app-table-col--20" scope="col">
                         Data set name
                       </th>
                       <th className="govuk-table__header" scope="col">
                         Data set ID
                       </th>
-                      <th className="govuk-table__header" scope="col" style={{ width: '25%' }}>
+                      <th className="govuk-table__header app-table-col--25" scope="col">
                         Last updated
                       </th>
-                      <th className="govuk-table__header" scope="col" style={{ width: '20%' }}>
+                      <th className="govuk-table__header app-table-col--20" scope="col">
                         Short description
                       </th>
                     </tr>

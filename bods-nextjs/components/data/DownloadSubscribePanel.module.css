@@ -2,22 +2,6 @@
   margin-top: 2rem;
 }
 
-.linkButton {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  text-align: left;
-  font-size: inherit;
-  font-family: inherit;
-}
-
-.linkButton:hover {
-  text-decoration: underline;
-  text-decoration-thickness: 3px;
-  text-decoration-skip-ink: none;
-}
-
 .linkButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
