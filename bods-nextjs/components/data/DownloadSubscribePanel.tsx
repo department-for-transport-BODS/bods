@@ -82,7 +82,7 @@ export function DownloadSubscribePanel({
             <button
               onClick={handleSubscribeToggle}
               disabled={isToggling}
-              className={`govuk-link ${styles.linkButton}`}
+              className="govuk-link app-link-button"
               aria-label={subscribed ? 'Unsubscribe from this data set' : 'Subscribe to this data set'}
             >
               {subscribed ? 'Unsubscribe from this data set' : 'Subscribe to this data set'}

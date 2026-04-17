@@ -10,7 +10,6 @@ import { useState, useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { getPaginated } from '@/lib/api-client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import styles from './page.module.css';
 
 interface Organisation {
   id: number;
@@ -68,7 +67,7 @@ function SelectOrg() {
                 {orgs.map((org) => (
                   <li key={org.id}>
                     <button
-                      className={`govuk-link govuk-link--no-visited-state ${styles.linkButton}`}
+                      className="govuk-link govuk-link--no-visited-state app-link-button"
                       onClick={() => handleSelect(org.id)}
                     >
                       {org.name}
