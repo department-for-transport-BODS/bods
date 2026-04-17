@@ -10,6 +10,7 @@ import { useState } from "react";
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api-client";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 function TimetablePublish() {
   const params = useParams();
@@ -24,7 +25,7 @@ function TimetablePublish() {
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [consentChecked, setConsentChecked] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, submitError, handleSubmit: onSubmit, clearError } = useFormSubmit();
 
   const URL_LINK_ITEM_ID = 'url_link-conditional';
   const UPLOAD_FILE_ITEM_ID = 'upload_file-conditional';
@@ -82,10 +83,10 @@ function TimetablePublish() {
       return;
     }
 
-    setIsSubmitting(true);
     setErrors({});
+    clearError();
 
-    try {
+    await onSubmit(async () => {
       const formData = new FormData();
       formData.append('description', dataSetDesc);
       formData.append('short_description', shortDesc);
@@ -115,12 +116,7 @@ function TimetablePublish() {
       }
 
       router.push(`/publish/org/${orgId}/dataset/timetable/success`);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Upload failed. Please try again.';
-      setErrors({ submit: message });
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
   };
 
   const checkStep = (stepNumber: number) => {
@@ -194,7 +190,7 @@ function TimetablePublish() {
           {step === 3 && (
             <div className="govuk-grid-column-two-thirds">
               <h1 className="govuk-heading-xl">Review and publish</h1>
-              {errors.submit && <p className="govuk-error-message">{errors.submit}</p>}
+              {submitError && <p className="govuk-error-message">{submitError}</p>}
               <dl className="govuk-summary-list">
                 <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Data set description</dt><dd className="govuk-summary-list__value">{dataSetDesc}</dd></div>
                 <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Short description</dt><dd className="govuk-summary-list__value">{shortDesc}</dd></div>
