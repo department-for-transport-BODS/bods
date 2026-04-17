@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { PublishStepper } from '@/components/publish';
 
 type ReviewStatusResponse = {
   datasetId: number;
@@ -231,11 +232,13 @@ function FaresReviewPageContent() {
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <div className="govuk-breadcrumbs">
-          <ol className="publish-stepper govuk-breadcrumbs__list" aria-label="Progress">
-            <li className="publish-stepper__item publish-stepper__item--previous">1. Describe data</li>
-            <li className="publish-stepper__item publish-stepper__item--previous">2. Provide data</li>
-            <li className="publish-stepper__item publish-stepper__item--selected">3. Review and publish</li>
-          </ol>
+          <PublishStepper
+            steps={[
+              { label: '1. Describe data', state: 'previous' },
+              { label: '2. Provide data', state: 'previous' },
+              { label: '3. Review and publish', state: 'selected' },
+            ]}
+          />
         </div>
 
         {errorMessage ? (

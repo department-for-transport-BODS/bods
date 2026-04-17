@@ -11,6 +11,8 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api-client";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
+import { PublishStepper, DatasetDescriptionFields, DataProviderRadioGroup, URL_LINK_ITEM_ID, UPLOAD_FILE_ITEM_ID } from '@/components/publish';
+import type { StepState } from '@/components/publish';
 
 function TimetablePublish() {
   const params = useParams();
@@ -20,15 +22,12 @@ function TimetablePublish() {
   const [dataSetDesc, setDataSetDesc] = useState('');
   const [shortDesc, setShortDesc] = useState('');
   const [step, setStep] = useState(1);
-  const [selectedMethod, setSelectedMethod] = useState('');
+  const [selectedMethod, setSelectedMethod] = useState<'link' | 'file' | ''>('');
   const [link, setLink] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [consentChecked, setConsentChecked] = useState(false);
   const { isSubmitting, submitError, handleSubmit: onSubmit, clearError } = useFormSubmit();
-
-  const URL_LINK_ITEM_ID = 'url_link-conditional';
-  const UPLOAD_FILE_ITEM_ID = 'upload_file-conditional';
 
   const validateStep1 = () => {
     const newErrors: Record<string, string> = {};
@@ -119,38 +118,33 @@ function TimetablePublish() {
     });
   };
 
-  const checkStep = (stepNumber: number) => {
-    if (stepNumber < step) return 'publish-stepper__item publish-stepper__item--previous';
-    if (stepNumber === step) return 'publish-stepper__item publish-stepper__item--selected';
-    return 'publish-stepper__item publish-stepper__item--next';
-  };
+  const stepLabels = ['1. Describe your data set', '2. Provide data', '3. Set licence'];
+  const steps = stepLabels.map((label, i) => {
+    const stepNum = i + 1;
+    let state: StepState = 'next';
+    if (stepNum < step) state = 'previous';
+    else if (stepNum === step) state = 'selected';
+    return { label, state };
+  });
 
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
-          <ol className="publish-stepper govuk-breadcrumbs__list">
-            <li className={checkStep(1)}>1. Describe your data set</li>
-            <li className={checkStep(2)}>2. Provide data</li>
-            <li className={checkStep(3)}>3. Set licence</li>
-          </ol>
+          <PublishStepper steps={steps} />
 
           <hr className="govuk-section-break govuk-section-break--visible" />
 
           {step === 1 && (
             <div className="govuk-grid-column-two-thirds">
               <h1 className="govuk-heading-xl">Describe your data set</h1>
-              <div className={`govuk-form-group ${errors.dataSetDesc ? 'govuk-form-group--error' : ''}`}>
-                <label className="govuk-label" htmlFor="id_description">Data set description</label>
-                {errors.dataSetDesc && <p className="govuk-error-message">{errors.dataSetDesc}</p>}
-                <textarea className="govuk-textarea" id="id_description" rows={3} maxLength={300} value={dataSetDesc} onChange={(e) => setDataSetDesc(e.target.value)} />
-              </div>
-              <div className={`govuk-form-group ${errors.shortDesc ? 'govuk-form-group--error' : ''}`}>
-                <label className="govuk-label" htmlFor="id_short_description">Dataset short description</label>
-                {errors.shortDesc && <p className="govuk-error-message">{errors.shortDesc}</p>}
-                <input className="govuk-input" id="id_short_description" type="text" maxLength={30} value={shortDesc} onChange={(e) => setShortDesc(e.target.value)} />
-                <span className="govuk-hint">You have {30 - shortDesc.length} characters remaining.</span>
-              </div>
+              <DatasetDescriptionFields
+                description={dataSetDesc}
+                shortDescription={shortDesc}
+                errors={{ description: errors.dataSetDesc, shortDescription: errors.shortDesc }}
+                onDescriptionChange={setDataSetDesc}
+                onShortDescriptionChange={setShortDesc}
+              />
               <button type="button" className="govuk-button" onClick={handleNext}>Continue</button>
             </div>
           )}
@@ -158,31 +152,14 @@ function TimetablePublish() {
           {step === 2 && (
             <div className="govuk-grid-column-two-thirds">
               <h1 className="govuk-heading-xl">Choose how to provide your data set</h1>
-              {errors.method && <p className="govuk-error-message">{errors.method}</p>}
-              <div className="govuk-radios" data-module="govuk-radios">
-                <div className="govuk-radios__item">
-                  <input className="govuk-radios__input" id="method-link" type="radio" name="method" checked={selectedMethod === 'link'} onChange={() => setSelectedMethod('link')} />
-                  <label className="govuk-label govuk-radios__label" htmlFor="method-link">Provide a link to your data set</label>
-                </div>
-                {selectedMethod === 'link' && (
-                  <div className="govuk-form-group">
-                    <label className="govuk-label" htmlFor="id_url_link">URL link</label>
-                    {errors.link && <p className="govuk-error-message">{errors.link}</p>}
-                    <input className="govuk-input" id="id_url_link" type="url" value={link} onChange={(e) => setLink(e.target.value)} />
-                  </div>
-                )}
-                <div className="govuk-radios__item">
-                  <input className="govuk-radios__input" id="method-file" type="radio" name="method" checked={selectedMethod === 'file'} onChange={() => setSelectedMethod('file')} />
-                  <label className="govuk-label govuk-radios__label" htmlFor="method-file">Upload data set to Bus Open Data Service</label>
-                </div>
-                {selectedMethod === 'file' && (
-                  <div className="govuk-form-group">
-                    <label className="govuk-label" htmlFor="id_upload_file">Upload file</label>
-                    {errors.file && <p className="govuk-error-message">{errors.file}</p>}
-                    <input className="govuk-file-upload" id="id_upload_file" type="file" accept=".xml,.zip" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-                  </div>
-                )}
-              </div>
+              <DataProviderRadioGroup
+                selectedMethod={selectedMethod}
+                link={link}
+                errors={{ method: errors.method, link: errors.link, file: errors.file }}
+                onMethodChange={setSelectedMethod}
+                onLinkChange={setLink}
+                onFileChange={setFile}
+              />
               <button type="button" className="govuk-button" onClick={handleNext}>Continue</button>
             </div>
           )}
