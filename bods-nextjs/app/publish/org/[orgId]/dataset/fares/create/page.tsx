@@ -6,12 +6,11 @@
 import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { PublishStepper, DatasetDescriptionFields, DataProviderRadioGroup, URL_LINK_ITEM_ID, UPLOAD_FILE_ITEM_ID } from '@/components/publish';
 
 const DESCRIPTION_STEP = 'description';
 const CANCEL_STEP = 'cancel';
 const UPLOAD_STEP = 'upload';
-const UPLOAD_FILE_ITEM_ID = 'upload_file-conditional';
-const URL_LINK_ITEM_ID = 'url_link-conditional';
 
 function getHeadingText(step: typeof DESCRIPTION_STEP | typeof CANCEL_STEP | typeof UPLOAD_STEP) {
   if (step === CANCEL_STEP) {
@@ -65,44 +64,14 @@ function FaresCreateStepContent({
   if (step === DESCRIPTION_STEP) {
     return (
       <form method="post" encType="multipart/form-data" onSubmit={onDescriptionSubmit} noValidate>
-        <div className="govuk-form-group">
-          <label className="govuk-label" htmlFor="id_description-description">
-            Data set description
-          </label>
-          <div className="govuk-hint">
-            This information will give context to data set users. Please be descriptive but do not include
-            personally identifiable information. You may wish to include: The original file name, start date
-            of data, description of the fares, products, OpCo, locations/region, routes/service numbers for
-            which the data applies, or any other useful high level information. The description should reflect
-            the data included at a high level.
-          </div>
-          <textarea
-            id="id_description-description"
-            name="description-description"
-            className="govuk-textarea govuk-!-width-three-quarters"
-            rows={3}
-            value={description}
-            onChange={(event) => onDescriptionChange(event.target.value)}
-          />
-        </div>
-
-        <div className="govuk-form-group">
-          <label className="govuk-label" htmlFor="id_description-short_description">
-            Data set short description
-          </label>
-          <div className="govuk-hint">
-            This info will be displayed on your published data set dashboard to identify this data set and will
-            not be visible to data set users. The maximum number of characters (with spaces) is 30 characters.
-          </div>
-          <input
-            id="id_description-short_description"
-            name="description-short_description"
-            className="govuk-input govuk-!-width-three-quarters"
-            maxLength={30}
-            value={shortDescription}
-            onChange={(event) => onShortDescriptionChange(event.target.value)}
-          />
-        </div>
+        <DatasetDescriptionFields
+          description={description}
+          shortDescription={shortDescription}
+          descriptionHint="This information will give context to data set users. Please be descriptive but do not include personally identifiable information. You may wish to include: The original file name, start date of data, description of the fares, products, OpCo, locations/region, routes/service numbers for which the data applies, or any other useful high level information. The description should reflect the data included at a high level."
+          shortDescriptionHint="This info will be displayed on your published data set dashboard to identify this data set and will not be visible to data set users. The maximum number of characters (with spaces) is 30 characters."
+          onDescriptionChange={onDescriptionChange}
+          onShortDescriptionChange={onShortDescriptionChange}
+        />
 
         <div className="govuk-button-group">
           <button className="govuk-button" type="submit">
@@ -134,75 +103,17 @@ function FaresCreateStepContent({
       <div className="govuk-form-group">
         <fieldset className="govuk-fieldset">
           <legend className="govuk-fieldset__legend govuk-visually-hidden">Choose how to provide your data set</legend>
-          <div className="govuk-radios">
-            <div className="govuk-radios__item">
-              <input
-                className="govuk-radios__input"
-                id={URL_LINK_ITEM_ID}
-                name="selected_item"
-                type="radio"
-                value={URL_LINK_ITEM_ID}
-                checked={selectedItem === URL_LINK_ITEM_ID}
-                onChange={() => onSelectedItemChange(URL_LINK_ITEM_ID)}
-              />
-              <label className="govuk-label govuk-radios__label" htmlFor={URL_LINK_ITEM_ID}>
-                Provide a link to your data set
-              </label>
-            </div>
-            <div className="govuk-radios__item">
-              <input
-                className="govuk-radios__input"
-                id={UPLOAD_FILE_ITEM_ID}
-                name="selected_item"
-                type="radio"
-                value={UPLOAD_FILE_ITEM_ID}
-                checked={selectedItem === UPLOAD_FILE_ITEM_ID}
-                onChange={() => onSelectedItemChange(UPLOAD_FILE_ITEM_ID)}
-              />
-              <label className="govuk-label govuk-radios__label" htmlFor={UPLOAD_FILE_ITEM_ID}>
-                Upload data set to Bus Open Data Service
-              </label>
-            </div>
-          </div>
+          <DataProviderRadioGroup
+            selectedMethod={selectedItem}
+            link={urlLink}
+            urlHint="Please provide a URL link where your NeTEX files are hosted. Example address: mybuscompany.com/fares.xml."
+            fileHint="This must be either NeTEX (see description in guidance) or a zip consisting only of NeTEX files"
+            onMethodChange={(method) => onSelectedItemChange(method === 'link' ? URL_LINK_ITEM_ID : UPLOAD_FILE_ITEM_ID)}
+            onLinkChange={onUrlLinkChange}
+            onFileChange={onUploadFileChange}
+          />
         </fieldset>
       </div>
-
-      {selectedItem === URL_LINK_ITEM_ID ? (
-        <div className="govuk-form-group">
-          <label className="govuk-label" htmlFor="id_url_link">
-            URL Link
-          </label>
-          <div className="govuk-hint">
-            Please provide a URL link where your NeTEX files are hosted. Example address: mybuscompany.com/fares.xml.
-          </div>
-          <input
-            id="id_url_link"
-            name="url_link"
-            className="govuk-input govuk-!-width-three-quarters"
-            type="url"
-            aria-label="url link"
-            value={urlLink}
-            onChange={(event) => onUrlLinkChange(event.target.value)}
-          />
-        </div>
-      ) : (
-        <div className="govuk-form-group">
-          <label className="govuk-label" htmlFor="id_upload_file">
-            Upload File
-          </label>
-          <div className="govuk-hint">
-            This must be either NeTEX (see description in guidance) or a zip consisting only of NeTEX files
-          </div>
-          <input
-            id="id_upload_file"
-            name="upload_file"
-            className="govuk-file-upload"
-            type="file"
-            aria-label="Choose file"
-            onChange={(event) => onUploadFileChange(event.target.files?.[0] || null)}
-          />
-        </div>
-      )}
 
       <div className="govuk-button-group">
         <button className="govuk-button" type="submit" disabled={isSubmitting}>
@@ -332,23 +243,13 @@ function FaresCreatePageContent() {
         {isCancelStep ? null : (
           <div className="govuk-breadcrumbs">
             <div className="govuk-breadcrumbs">
-              <ol className="publish-stepper govuk-breadcrumbs__list" aria-label="Progress">
-                <li
-                  className={`publish-stepper__item ${
-                    step === DESCRIPTION_STEP ? 'publish-stepper__item--selected' : 'publish-stepper__item--previous'
-                  }`}
-                >
-                  1. Describe data
-                </li>
-                <li
-                  className={`publish-stepper__item ${
-                    step === UPLOAD_STEP ? 'publish-stepper__item--selected' : 'publish-stepper__item--next'
-                  }`}
-                >
-                  2. Provide data
-                </li>
-                <li className="publish-stepper__item publish-stepper__item--next">3. Review and publish</li>
-              </ol>
+              <PublishStepper
+                steps={[
+                  { label: '1. Describe data', state: step === DESCRIPTION_STEP ? 'selected' : 'previous' },
+                  { label: '2. Provide data', state: step === UPLOAD_STEP ? 'selected' : 'next' },
+                  { label: '3. Review and publish', state: 'next' },
+                ]}
+              />
             </div>
           </div>
         )}

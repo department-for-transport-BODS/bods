@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { api } from '@/lib/api-client';
+import { PublishStepper } from '@/components/publish';
 
 type TimetableMetadata = {
   filename?: string;
@@ -143,11 +144,13 @@ function TimetableReviewPageContent() {
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <div className="govuk-breadcrumbs">
-          <ol className="publish-stepper govuk-breadcrumbs__list" aria-label="Progress">
-            <li className="publish-stepper__item publish-stepper__item--previous">1. Describe data</li>
-            <li className="publish-stepper__item publish-stepper__item--previous">2. Provide data</li>
-            <li className="publish-stepper__item publish-stepper__item--selected">3. Review and publish</li>
-          </ol>
+          <PublishStepper
+            steps={[
+              { label: '1. Describe data', state: 'previous' },
+              { label: '2. Provide data', state: 'previous' },
+              { label: '3. Review and publish', state: 'selected' },
+            ]}
+          />
         </div>
 
         {errorMessage ? (
