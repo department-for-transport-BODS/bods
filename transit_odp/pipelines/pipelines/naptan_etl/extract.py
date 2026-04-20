@@ -16,7 +16,7 @@ from transit_odp.naptan.dataclasses.nptg import NationalPublicTransportGazetteer
 ns = "http://www.naptan.org.uk/"
 namespace = {"naptan": ns}
 
-CHUNK_SIZE = 8 * 1024 * 1024
+CHUNK_SIZE = 2000
 
 DISK_PATH_FOR_NAPTAN_ZIP = "/tmp/NaptanStops.zip"
 
@@ -222,80 +222,3 @@ def cleanup():
     if os.path.exists(DISK_PATH_FOR_NPTG_FOLDER):
         logger.info(f"Removing {DISK_PATH_FOR_NPTG_FOLDER}.")
         shutil.rmtree(DISK_PATH_FOR_NPTG_FOLDER)
-
-
-def get_latest_naptan_to_s3():
-    """
-    Download the latest NaPTAN XML (streamed) and upload it to S3 at
-    `raw/naptan/latest.xml`. If an object already exists at that key it will
-    be copied to an archive key with a timestamp prefix.
-
-    Returns the S3 key of the uploaded file (i.e. `raw/naptan/latest.xml`).
-    """
-    import boto3
-    from botocore.exceptions import BotoCoreError, ClientError
-    from datetime import datetime
-
-    naptan_url = settings.NAPTAN_IMPORT_URL
-    # Use getattr with fallback to support both Django settings and env vars.
-    # Local testing may have settings not fully loaded; env fallback ensures compatibility.
-    bucket_name = getattr(settings, "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME", None) or os.getenv(
-        "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME"
-    )
-
-    if not bucket_name:
-        raise ValueError("AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME is not configured")
-
-    logger.info(f"Downloading latest NaPTAN XML from {naptan_url} (streamed)")
-    try:
-        # Use getattr with True default to support all environments.
-        # Local: Set NAPTAN_SSL_VERIFY=True with custom CA bundle mount (see .env.naptan-test).
-        # Prod Lambda: Uses NAPTAN_SSL_VERIFY=True with AWS-provided CA bundle (no custom setup needed).
-        ssl_verify = getattr(settings, "NAPTAN_SSL_VERIFY", True)
-        response = requests.get(naptan_url, stream=True, timeout=(30, 600), verify=ssl_verify)
-        response.raise_for_status()
-    except Exception as exc:  # pragma: no cover - network/credentials dependent
-        logger.error("Failed to download NaPTAN XML", exc_info=exc)
-        raise
-
-    # Ensure folder exists
-    dir_path = Path(DISK_PATH_FOR_NAPTAN_FOLDER)
-    dir_path.mkdir(parents=True, exist_ok=True)
-    filepath = dir_path / "Naptan.xml"
-
-    logger.info(f"Writing streamed NaPTAN to {filepath}")
-    with filepath.open("wb") as f:
-        for chunk in response.iter_content(CHUNK_SIZE):
-            if chunk:
-                f.write(chunk)
-
-    s3_client = boto3.client("s3")
-    latest_key = "raw/naptan/latest.xml"
-
-    # If there is an existing latest object, archive it by copying
-    try:
-        head = s3_client.head_object(Bucket=bucket_name, Key=latest_key)
-        if head:
-            ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
-            archive_key = f"raw/naptan/archives/{ts}-latest.xml"
-            logger.info(f"Archiving existing latest object to {archive_key}")
-            s3_client.copy_object(
-                Bucket=bucket_name,
-                CopySource={"Bucket": bucket_name, "Key": latest_key},
-                Key=archive_key,
-            )
-    except ClientError as e:
-        # If not found (404) there is no existing latest object - ignore
-        if e.response.get("Error", {}).get("Code") not in ("404", "NoSuchKey"):
-            logger.warning("Error checking existing latest object", exc_info=e)
-
-    # Upload new latest
-    try:
-        logger.info(f"Uploading new latest to s3://{bucket_name}/{latest_key}")
-        s3_client.upload_file(str(filepath), bucket_name, latest_key)
-    except (BotoCoreError, ClientError) as exc:  # pragma: no cover - network/credentials dependent
-        logger.error("Failed to upload NaPTAN XML to S3", exc_info=exc)
-        raise
-
-    logger.info("Successfully uploaded NaPTAN latest to S3")
-    return latest_key
