@@ -145,6 +145,7 @@ $RECYCLE.BIN/
 .env-prod
 .envrc
 .envs/*
+.env.naptan-test
 .eslintcache
 .exrc
 .fseventsd
