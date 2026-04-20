@@ -515,14 +515,6 @@ NPTG_IMPORT_URL = env(
     "NPTG_IMPORT_URL", default="https://naptan.api.dft.gov.uk/v1/nptg"
 )
 
-# Keep TLS verification enabled by default. Set False only for local debugging.
-NAPTAN_SSL_VERIFY = env.bool("NAPTAN_SSL_VERIFY", default=True)
-
-# S3 bucket for raw NaPTAN archive (used by the naptan-archive Lambda / Celery task)
-AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME = env(
-    "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME", default=""
-)
-
 BANK_HOLIDAY_API_URL = env(
     "BANK_HOLIDAY_API_URL", default="https://www.gov.uk/bank-holidays.json"
 )
