@@ -13,10 +13,15 @@ from transit_odp.common.loggers import LoaderAdapter
 from transit_odp.naptan.dataclasses import StopPoint
 from transit_odp.naptan.dataclasses.nptg import NationalPublicTransportGazetteer
 
+from datetime import datetime
+from io import BytesIO
+from django.core.files.storage import default_storage
+from storages.backends.s3boto3 import S3Boto3Storage
+
 ns = "http://www.naptan.org.uk/"
 namespace = {"naptan": ns}
 
-CHUNK_SIZE = 2000
+CHUNK_SIZE = 8 * 1024 * 1024  # 8MB chunks
 
 DISK_PATH_FOR_NAPTAN_ZIP = "/tmp/NaptanStops.zip"
 
@@ -28,38 +33,109 @@ logger = get_task_logger(__name__)
 logger = LoaderAdapter("NaPTANLoader", logger)
 
 
-def get_latest_naptan_xml():
+def get_naptan_s3_storage():
+    #Get S3 storage for NaPTAN data, or default storage if bucket name is not set
+    bucket_name = getattr(settings, "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME", None) or os.getenv(
+        "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME"
+    )
+    print(f"[naptan]   AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME = {repr(bucket_name)}", flush=True)
+    if bucket_name:
+        logger.info(f"Using S3 bucket {bucket_name} for NaPTAN data storage.")
+        return S3Boto3Storage(bucket_name=bucket_name)
+    else:
+        logger.warning("AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME is not set. Using default storage.")
+        return default_storage 
+
+
+def archive_existing_s3_file(storage, current_key: str, data_type: str):
+    # Move current latest file to an archive folder
+    try:
+        if storage.exists(current_key):
+            #read the current file
+            with storage.open(current_key, 'rb') as f:
+                existing_data = f.read()
+
+            try:
+                obj = storage.bucket.Object(current_key)
+                modified_time = obj.last_modified
+                timestamp = modified_time.strftime("%Y-%m-%d_%H-%M-%S")
+            except:
+                timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+            archive_key = f"raw/{data_type}/archive/{timestamp}.xml"
+
+            archive_file = BytesIO(existing_data)
+            storage.save(archive_key, archive_file)
+            file_size_mb = len(existing_data) / (1024*1024)
+            logger.info(f"Archived existing {data_type} file to S3 at {archive_key} (size: {file_size_mb:.2f} MB).")
+        else:
+            logger.info(f"No existing {data_type} file found in S3 at {current_key}")
+    except Exception as exc:
+        logger.warning(f"Error archiving existing {data_type} file in S3. Proceeding without archiving.", exc_info=exc)
+
+
+def get_latest_naptan_to_s3():
     naptan_url = settings.NAPTAN_IMPORT_URL
-    logger.info(f"Loading NaPTAN file from {naptan_url}.")
-    xml_file_path = None
+    verify_ssl = getattr(settings, "NAPTAN_SSL_VERIFY", True)
+    logger.info(f"Loading NaPTAN file from {naptan_url} and saving to S3.")
+    print(f"[naptan] Step 1: Connecting to DfT API at {naptan_url}...", flush=True)
 
     try:
-        response = requests.get(naptan_url)
+        response = requests.get(naptan_url, timeout=(30, 600), verify=verify_ssl, stream=True)
+        if response.status_code != 200:
+            logger.error(f"Failed to fetch NaPTAN data from {naptan_url}. Status code: {response.status_code}")
+            raise Exception(f"Failed to fetch NaPTAN data. Status code: {response.status_code}")
+        
+        print("[naptan] Step 2: Downloading NaPTAN data...", flush=True)
+        raw_data = b""
+        downloaded_mb = 0
+        for chunk in response.iter_content(CHUNK_SIZE):
+            raw_data += chunk
+            downloaded_mb += len(chunk) / (1024*1024)
+            print(f"[naptan]   Downloaded {downloaded_mb:.2f} MB...", flush=True)
+
+        storage = get_naptan_s3_storage()
+        latest_key = f"raw/naptan/latest.xml"
+        print(f"[naptan]   Storage backend: {storage.__class__.__name__}", flush=True)
+        latest_key = "raw/naptan/latest.xml"
+        archive_existing_s3_file(storage, latest_key, "naptan")
+        file_obj = BytesIO(raw_data)
+        saved_path = storage.save(latest_key, file_obj)
+        print(f"[naptan] Step 4: S3 write complete at {saved_path}", flush=True)
+        logger.info(f"NaPTAN data uploaded to S3 at {saved_path} (size: {file_size:.2f} MB.")
+
+        return saved_path
     except RequestException as exc:
         logger.error(f"Unable to fetch NaPTAN data from {naptan_url}.", exc_info=exc)
-        return xml_file_path
-
-    try:
-        logger.info("Writing NaPTAN response data to a file on disk.")
-        if response.status_code == 200:
-            dir_path = Path(DISK_PATH_FOR_NAPTAN_FOLDER)
-            if not dir_path.exists():
-                dir_path.mkdir(parents=True, exist_ok=True)
-
-            filepath = dir_path / "Naptan.xml"
-            with filepath.open("wb") as f:
-                for chunk in response.iter_content(CHUNK_SIZE):
-                    f.write(chunk)
-
-            logger.info("Finished NaPTAN writing to file on disk.")
-            for filename in os.listdir(DISK_PATH_FOR_NAPTAN_FOLDER):
-                if filename.endswith(".xml"):
-                    xml_file_path = os.path.join(DISK_PATH_FOR_NAPTAN_FOLDER, filename)
+        raise
     except Exception as exc:
-        logger.error("Exception while getting NaPTAN data.", exc_info=exc)
+        logger.error("Exception while uploading NaPTAN data to S3.", exc_info=exc)
+        raise
 
-    logger.info("NaPTAN file successfully extracted to disk.")
-    return xml_file_path
+
+def upload_naptan_to_s3(data: bytes, data_type: str) -> str:
+    # Uploads raw NaPTAN data to S3 & returns where it was saved
+    storage = get_naptan_s3_storage()
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    s3_key = f"raw/{data_type}/{timestamp}.xml" #Check this!
+
+    file_obj = BytesIO(data)
+    saved_path = storage.save(s3_key, file_obj)
+    file_size = len(data) / (1024*1024)
+    logger.info(f"Uploaded NaPTAN {data_type} data to S3 at {saved_path} (size: {file_size:.2f} MB).")
+    return saved_path
+
+
+def get_raw_data_from_s3(s3_key: str) -> bytes:
+    # Gets raw data from S3 using the provided key
+    storage = get_naptan_s3_storage()
+    
+    with storage.open(s3_key, 'rb') as f:
+        data = f.read()
+        
+    file_size = len(data) / (1024*1024)
+    logger.info(f"Downloaded data from S3 key {s3_key} (size: {file_size:.2f} MB).")
+    return data
 
 
 def get_latest_nptg():

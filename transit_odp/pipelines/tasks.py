@@ -23,6 +23,17 @@ def task_dqs_monitor():
 
 
 @shared_task(ignore_result=True)
+def task_archive_naptan_to_s3():
+    from transit_odp.pipelines.pipelines.naptan_etl.extract import get_latest_naptan_to_s3
+    try:
+        naptan_key = get_latest_naptan_to_s3()
+        logger.info(f"Archived NaPTAN data to S3: {naptan_key}")
+    except Exception as e:
+        logger.error(f"Failed to archive NaPTAN data to S3: {e}")
+        raise
+
+
+@shared_task(ignore_result=True)
 def task_run_naptan_etl():
     main.run()
 
