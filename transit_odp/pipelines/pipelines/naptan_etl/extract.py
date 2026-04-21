@@ -113,6 +113,43 @@ def get_latest_naptan_to_s3():
         raise
 
 
+def get_latest_naptan_xml():
+
+    storage = get_naptan_s3_storage()
+    s3_key = "raw/naptan/latest.xml"
+    xml_file_path = None
+
+    try:
+        logger.info(f"Attempting to retrieve latest NaPTAN data from S3 at {s3_key}.")
+        if not storage.exists(s3_key):
+            logger.warning(f"No NaPTAN data found in S3 at {s3_key}")
+            return None
+
+        with storage.open(s3_key, "rb") as f:
+            s3_data = f.read()
+        
+        filesize = len(s3_data) / (1024*1024)
+        logger.info(f"Read NaPTAN data from S3 (size: {filesize:.2f} MB). Writing to disk for processing.")
+        dir_path = Path(DISK_PATH_FOR_NAPTAN_FOLDER)
+        if not dir_path.exists():
+            dir_path.mkdir(parents=True, exist_ok=True)
+
+        filepath = dir_path / "Naptan.xml"
+        with open(filepath, "wb") as f:
+            f.write(s3_data)
+
+        logger.info("Finished writing NaPTAN data to file on disk.")
+        for filename in os.listdir(DISK_PATH_FOR_NAPTAN_FOLDER):
+            if filename.endswith(".xml"):
+                xml_file_path = os.path.join(DISK_PATH_FOR_NAPTAN_FOLDER, filename)
+
+    except Exception as exc:
+        logger.error("Exception while getting NaPTAN data.", exc_info=exc)
+
+    logger.info("NaPTAN file successfully extracted to disk.")
+    return xml_file_path
+
+
 def upload_naptan_to_s3(data: bytes, data_type: str) -> str:
     # Uploads raw NaPTAN data to S3 & returns where it was saved
     storage = get_naptan_s3_storage()
@@ -136,6 +173,43 @@ def get_raw_data_from_s3(s3_key: str) -> bytes:
     file_size = len(data) / (1024*1024)
     logger.info(f"Downloaded data from S3 key {s3_key} (size: {file_size:.2f} MB).")
     return data
+
+
+def get_latest_naptan_xml():
+
+    storage = get_naptan_s3_storage()
+    s3_key = "raw/naptan/latest.xml"
+    xml_file_path = None
+
+    try:
+        logger.info(f"Attempting to retrieve latest NaPTAN data from S3 at {s3_key}.")
+        if not storage.exists(s3_key):
+            logger.warning(f"No NaPTAN data found in S3 at {s3_key}")
+            return None
+
+        with storage.open(s3_key, "rb") as f:
+            s3_data = f.read()
+        
+        filesize = len(s3_data) / (1024*1024)
+        logger.info(f"Read NaPTAN data from S3 (size: {filesize:.2f} MB). Writing to disk for processing.")
+        dir_path = Path(DISK_PATH_FOR_NAPTAN_FOLDER)
+        if not dir_path.exists():
+            dir_path.mkdir(parents=True, exist_ok=True)
+
+        filepath = dir_path / "Naptan.xml"
+        with open(filepath, "wb") as f:
+            f.write(s3_data)
+
+        logger.info("Finished writing NaPTAN data to file on disk.")
+        for filename in os.listdir(DISK_PATH_FOR_NAPTAN_FOLDER):
+            if filename.endswith(".xml"):
+                xml_file_path = os.path.join(DISK_PATH_FOR_NAPTAN_FOLDER, filename)
+
+    except Exception as exc:
+        logger.error("Exception while getting NaPTAN data.", exc_info=exc)
+
+    logger.info("NaPTAN file successfully extracted to disk.")
+    return xml_file_path
 
 
 def get_latest_nptg():
