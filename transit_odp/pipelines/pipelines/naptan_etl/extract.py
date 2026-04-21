@@ -38,7 +38,7 @@ def get_naptan_s3_storage():
     bucket_name = getattr(settings, "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME", None) or os.getenv(
         "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME"
     )
-    print(f"[naptan]   AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME = {repr(bucket_name)}", flush=True)
+    #print(f"[naptan]   AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME = {repr(bucket_name)}", flush=True)
     if bucket_name:
         logger.info(f"Using S3 bucket {bucket_name} for NaPTAN data storage.")
         return S3Boto3Storage(bucket_name=bucket_name)
@@ -47,38 +47,12 @@ def get_naptan_s3_storage():
         return default_storage 
 
 
-def archive_existing_s3_file(storage, current_key: str, data_type: str):
-    # Move current latest file to an archive folder
-    try:
-        if storage.exists(current_key):
-            #read the current file
-            with storage.open(current_key, 'rb') as f:
-                existing_data = f.read()
-
-            try:
-                obj = storage.bucket.Object(current_key)
-                modified_time = obj.last_modified
-                timestamp = modified_time.strftime("%Y-%m-%d_%H-%M-%S")
-            except:
-                timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
-            archive_key = f"raw/{data_type}/archive/{timestamp}.xml"
-
-            archive_file = BytesIO(existing_data)
-            storage.save(archive_key, archive_file)
-            file_size_mb = len(existing_data) / (1024*1024)
-            logger.info(f"Archived existing {data_type} file to S3 at {archive_key} (size: {file_size_mb:.2f} MB).")
-        else:
-            logger.info(f"No existing {data_type} file found in S3 at {current_key}")
-    except Exception as exc:
-        logger.warning(f"Error archiving existing {data_type} file in S3. Proceeding without archiving.", exc_info=exc)
-
-
 def get_latest_naptan_to_s3():
     naptan_url = settings.NAPTAN_IMPORT_URL
     verify_ssl = getattr(settings, "NAPTAN_SSL_VERIFY", True)
+    
     logger.info(f"Loading NaPTAN file from {naptan_url} and saving to S3.")
-    print(f"[naptan] Step 1: Connecting to DfT API at {naptan_url}...", flush=True)
+    #print(f"[naptan] Step 1: Connecting to DfT API at {naptan_url}...", flush=True)
 
     try:
         response = requests.get(naptan_url, timeout=(30, 600), verify=verify_ssl, stream=True)
@@ -86,22 +60,23 @@ def get_latest_naptan_to_s3():
             logger.error(f"Failed to fetch NaPTAN data from {naptan_url}. Status code: {response.status_code}")
             raise Exception(f"Failed to fetch NaPTAN data. Status code: {response.status_code}")
         
-        print("[naptan] Step 2: Downloading NaPTAN data...", flush=True)
+        #print("[naptan] Step 2: Downloading NaPTAN data...", flush=True)
         raw_data = b""
         downloaded_mb = 0
         for chunk in response.iter_content(CHUNK_SIZE):
             raw_data += chunk
             downloaded_mb += len(chunk) / (1024*1024)
-            print(f"[naptan]   Downloaded {downloaded_mb:.2f} MB...", flush=True)
+            #print(f"[naptan]   Downloaded {downloaded_mb:.2f} MB...", flush=True)
 
         storage = get_naptan_s3_storage()
-        latest_key = f"raw/naptan/latest.xml"
-        print(f"[naptan]   Storage backend: {storage.__class__.__name__}", flush=True)
-        latest_key = "raw/naptan/latest.xml"
-        archive_existing_s3_file(storage, latest_key, "naptan")
+        #print(f"[naptan]   Storage backend: {storage.__class__.__name__}", flush=True)
+        file_size = len(raw_data) / (1024 * 1024)
+        #print(f"[naptan] Step 3: Download complete ({file_size:.1f} MB). Writing to S3...", flush=True)
+        
+        latest_key = "raw/naptan/naptan_latest.xml"
         file_obj = BytesIO(raw_data)
         saved_path = storage.save(latest_key, file_obj)
-        print(f"[naptan] Step 4: S3 write complete at {saved_path}", flush=True)
+        #print(f"[naptan] Step 4: S3 write complete at {saved_path}", flush=True)
         logger.info(f"NaPTAN data uploaded to S3 at {saved_path} (size: {file_size:.2f} MB.")
 
         return saved_path
