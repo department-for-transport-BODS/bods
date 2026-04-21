@@ -61,7 +61,6 @@ disruptions_views = get_swagger_view(title="Disruption Data API")
 urlpatterns = [
     # Authentication endpoints for NextJS
     path("user/", CurrentUserAPIView.as_view(), name="current-user"),
-    
     path("timetable-openapi/", TimetablesApiView.as_view(), name="timetableopenapi"),
     path("buslocation-api/", AVLApiServiceView.as_view(), name="buslocation-api"),
     path(

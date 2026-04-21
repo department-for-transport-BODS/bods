@@ -43,6 +43,7 @@ def get_privacy_text():
         )
     )
 
+
 OPT_IN_USER_RESEARCH_OPERATOR = mark_safe(
     _(
         "If you are willing to be contacted as part of user research, "

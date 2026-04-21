@@ -25,7 +25,7 @@ from transit_odp.fares.views.api import (
     get_fares_review_status_api,
     publish_fares_dataset_api,
 )
-from transit_odp.timetables.views.api import ( 
+from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
     get_timetables_review_status_api,
     publish_timetables_dataset_api,
