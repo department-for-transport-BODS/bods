@@ -44,7 +44,11 @@ def _authenticate_user(request):
     if session_user is not None and session_user.is_authenticated:
         return session_user
 
-    if hasattr(request, "user") and request.user is not None and request.user.is_authenticated:
+    if (
+        hasattr(request, "user")
+        and request.user is not None
+        and request.user.is_authenticated
+    ):
         return request.user
 
     return _authenticate_jwt(request)
@@ -117,25 +121,45 @@ def _iso_or_none(value):
 def _get_request_context(request, org_id, dataset_id=None):
     user = _authenticate_user(request)
     if user is None or not user.is_authenticated:
-        return None, None, None, JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+        return (
+            None,
+            None,
+            None,
+            JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401),
+        )
 
     if not user.is_org_user:
-        return None, None, None, JsonResponse(
-            {"error": ORG_ACCESS_REQUIRED_ERROR},
-            status=403,
+        return (
+            None,
+            None,
+            None,
+            JsonResponse(
+                {"error": ORG_ACCESS_REQUIRED_ERROR},
+                status=403,
+            ),
         )
 
     organisation = _get_user_org(user, org_id)
     if organisation is None:
-        return None, None, None, JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404)
+        return (
+            None,
+            None,
+            None,
+            JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404),
+        )
 
     revision = None
     if dataset_id is not None:
         revision = _get_revision_for_dataset(org_id, dataset_id)
         if revision is None:
-            return None, None, None, JsonResponse(
-                {"error": REVISION_NOT_FOUND_ERROR},
-                status=404,
+            return (
+                None,
+                None,
+                None,
+                JsonResponse(
+                    {"error": REVISION_NOT_FOUND_ERROR},
+                    status=404,
+                ),
             )
 
     return user, organisation, revision, None
@@ -345,9 +369,8 @@ def publish_timetables_dataset_api(request, pk1, pk):
 #     return user, organisation, revision, None
 
 
-
 # def get_timetables_review_status_api(request, pk1, pk):
-    
+
 #     _, _, revision, error_response = True
 #     if error_response == True:
 #         print("true")
@@ -355,87 +378,75 @@ def publish_timetables_dataset_api(request, pk1, pk):
 #         print("false")
 
 
+# _, _, revision, error_response = _get_request_context(request, pk1, pk)
+#     if error_response is not None:
+#         return error_response
+# progress, error_code = _get_revision_progress(revision)
 
+# status = revision.status
+# is_loading = _is_loading_status(status)
 
+# schema_version = None
+# metadata = {
+#     "numOfFareZones": None,
+#     "numOfLines": None,
+#     "numOfSalesOfferPackages": None,
+#     "numOfFareProducts": None,
+#     "numOfUserProfiles": None,
+#     "validFrom": None,
+#     "validTo": None,
+# }
 
+# try:
+#     revision_metadata = revision.metadata
+#     schema_version = revision_metadata.schema_version
+#     fares_metadata = getattr(revision_metadata, "faresmetadata", None)
+#     if fares_metadata is not None:
+#         metadata = {
+#             "numOfFareZones": fares_metadata.num_of_fare_zones,
+#             "numOfLines": fares_metadata.num_of_lines,
+#             "numOfSalesOfferPackages": fares_metadata.num_of_sales_offer_packages,
+#             "numOfFareProducts": fares_metadata.num_of_fare_products,
+#             "numOfUserProfiles": fares_metadata.num_of_user_profiles,
+#             "validFrom": _iso_or_none(fares_metadata.valid_from),
+#             "validTo": _iso_or_none(fares_metadata.valid_to),
+#         }
+# except DatasetRevision.metadata.RelatedObjectDoesNotExist:
+#     pass
 
+# download_url = revision.url_link
+# if not download_url:
+#     download_url = (
+#         reverse(
+#             "fares:feed-download",
+#             kwargs={"pk1": pk1, "pk": pk},
+#             host=config.hosts.PUBLISH_HOST,
+#         )
+#         + "?is_review=true"
+#     )
 
+# last_modified_user = None
+# if revision.last_modified_user is not None:
+#     last_modified_user = revision.last_modified_user.username
 
-
-
-
-
-
-
-    # _, _, revision, error_response = _get_request_context(request, pk1, pk)
-    #     if error_response is not None:
-    #         return error_response
-    # progress, error_code = _get_revision_progress(revision)
-
-    # status = revision.status
-    # is_loading = _is_loading_status(status)
-
-    # schema_version = None
-    # metadata = {
-    #     "numOfFareZones": None,
-    #     "numOfLines": None,
-    #     "numOfSalesOfferPackages": None,
-    #     "numOfFareProducts": None,
-    #     "numOfUserProfiles": None,
-    #     "validFrom": None,
-    #     "validTo": None,
-    # }
-
-    # try:
-    #     revision_metadata = revision.metadata
-    #     schema_version = revision_metadata.schema_version
-    #     fares_metadata = getattr(revision_metadata, "faresmetadata", None)
-    #     if fares_metadata is not None:
-    #         metadata = {
-    #             "numOfFareZones": fares_metadata.num_of_fare_zones,
-    #             "numOfLines": fares_metadata.num_of_lines,
-    #             "numOfSalesOfferPackages": fares_metadata.num_of_sales_offer_packages,
-    #             "numOfFareProducts": fares_metadata.num_of_fare_products,
-    #             "numOfUserProfiles": fares_metadata.num_of_user_profiles,
-    #             "validFrom": _iso_or_none(fares_metadata.valid_from),
-    #             "validTo": _iso_or_none(fares_metadata.valid_to),
-    #         }
-    # except DatasetRevision.metadata.RelatedObjectDoesNotExist:
-    #     pass
-
-    # download_url = revision.url_link
-    # if not download_url:
-    #     download_url = (
-    #         reverse(
-    #             "fares:feed-download",
-    #             kwargs={"pk1": pk1, "pk": pk},
-    #             host=config.hosts.PUBLISH_HOST,
-    #         )
-    #         + "?is_review=true"
-    #     )
-
-    # last_modified_user = None
-    # if revision.last_modified_user is not None:
-    #     last_modified_user = revision.last_modified_user.username
-
-    # return JsonResponse(
-    #     {
-    #         "datasetId": revision.dataset_id,
-    #         "revisionId": revision.id,
-    #         "status": status,
-    #         "progress": progress,
-    #         "loading": is_loading,
-    #         "name": revision.name,
-    #         "description": revision.description,
-    #         "shortDescription": revision.short_description,
-    #         "urlLink": revision.url_link,
-    #         "ownerName": revision.dataset.organisation.name,
-    #         "schemaVersion": schema_version,
-    #         "downloadUrl": download_url,
-    #         "lastModified": _iso_or_none(revision.modified),
-    #         "lastModifiedUser": last_modified_user,
-    #         "metadata": metadata,
-    #         "error": error_code,
-    #     },
-    #     status=200,
-    # )
+# return JsonResponse(
+#     {
+#         "datasetId": revision.dataset_id,
+#         "revisionId": revision.id,
+#         "status": status,
+#         "progress": progress,
+#         "loading": is_loading,
+#         "name": revision.name,
+#         "description": revision.description,
+#         "shortDescription": revision.short_description,
+#         "urlLink": revision.url_link,
+#         "ownerName": revision.dataset.organisation.name,
+#         "schemaVersion": schema_version,
+#         "downloadUrl": download_url,
+#         "lastModified": _iso_or_none(revision.modified),
+#         "lastModifiedUser": last_modified_user,
+#         "metadata": metadata,
+#         "error": error_code,
+#     },
+#     status=200,
+# )

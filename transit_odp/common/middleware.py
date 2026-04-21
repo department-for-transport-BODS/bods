@@ -82,6 +82,7 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
         ] = "geolocation=(self), microphone=(self), camera=(self)"
         return response
 
+
 class EnsureCSRF:
     """
     Middleware to ensure that the CSRF cookie is set on all responses.

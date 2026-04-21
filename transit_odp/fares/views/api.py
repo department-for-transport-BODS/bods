@@ -103,25 +103,45 @@ def _iso_or_none(value):
 def _get_request_context(request, org_id, dataset_id=None):
     user = _authenticate_jwt(request)
     if user is None or not user.is_authenticated:
-        return None, None, None, JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+        return (
+            None,
+            None,
+            None,
+            JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401),
+        )
 
     if not user.is_org_user:
-        return None, None, None, JsonResponse(
-            {"error": ORG_ACCESS_REQUIRED_ERROR},
-            status=403,
+        return (
+            None,
+            None,
+            None,
+            JsonResponse(
+                {"error": ORG_ACCESS_REQUIRED_ERROR},
+                status=403,
+            ),
         )
 
     organisation = _get_user_org(user, org_id)
     if organisation is None:
-        return None, None, None, JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404)
+        return (
+            None,
+            None,
+            None,
+            JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404),
+        )
 
     revision = None
     if dataset_id is not None:
         revision = _get_revision_for_dataset(org_id, dataset_id)
         if revision is None:
-            return None, None, None, JsonResponse(
-                {"error": REVISION_NOT_FOUND_ERROR},
-                status=404,
+            return (
+                None,
+                None,
+                None,
+                JsonResponse(
+                    {"error": REVISION_NOT_FOUND_ERROR},
+                    status=404,
+                ),
             )
 
     return user, organisation, revision, None
