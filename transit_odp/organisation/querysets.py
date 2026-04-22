@@ -556,7 +556,7 @@ class DatasetQuerySet(models.QuerySet):
                     GROUP BY "organisation_dataset"."modified", "organisation_dataset"."created", "organisation_dataset".id, b."id", b."status", b.name, b.first_expiring_service, b.num_of_lines, b.short_description, b.published_at
                     ORDER BY "organisation_dataset"."modified" DESC, "organisation_dataset"."created" DESC
 
-                """,  # noqa: E501
+                """,  # noqa: E501 
             [organisation.id, dataset_type],
         )
 
