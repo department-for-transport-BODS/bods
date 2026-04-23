@@ -6,6 +6,7 @@ The session cookie is set/cleared by Django and sent automatically by the browse
 Allauth's email verification and adapter hooks are respected.
 """
 
+import os
 import re
 
 from allauth.account import app_settings as allauth_settings
@@ -118,32 +119,6 @@ class CurrentUserAPIView(APIView):
 
     def get(self, request):
         return Response(_serialize_user(request.user), status=status.HTTP_200_OK)
-
-
-class CurrentUserOrganisationsAPIView(APIView):
-    """Return organisations available to the authenticated user."""
-
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        organisations = [
-            {
-                "id": organisation.id,
-                "name": organisation.name,
-                "short_name": organisation.short_name,
-            }
-            for organisation in request.user.organisations.all().order_by("name")
-        ]
-
-        return Response(
-            {
-                "count": len(organisations),
-                "next": None,
-                "previous": None,
-                "results": organisations,
-            },
-            status=status.HTTP_200_OK,
-        )
 
 
 class CSRFTokenAPIView(APIView):

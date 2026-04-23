@@ -1,5 +1,5 @@
 """
-Lambda handler for NaPTAN archiving to S3
+Lambda handler for NaPTAN upload to S3
 """
 import json
 import os
@@ -16,10 +16,10 @@ if not settings.configured:
 
 def handler(event, context):
     """
-    AWS Lambda handler for NaPTAN archiving.
+    AWS Lambda handler for NaPTAN file download.
     
-    Downloads latest NaPTAN XML from DfT API, archives the previous copy in S3,
-    and saves new file at raw/naptan/latest.xml for ETL to consume.
+    Downloads latest NaPTAN XML from DfT API, 
+    and saves new file at raw/naptan/naptan_latest.xml for ETL to consume.
     
     Args:
         event: Lambda event (unused for this function)
@@ -39,7 +39,7 @@ def handler(event, context):
             "statusCode": 200,
             "body": json.dumps(
                 {
-                    "message": "NaPTAN archived successfully",
+                    "message": "Latest NaPTAN downloaded successfully",
                     "s3_key": naptan_key,
                 }
             ),
