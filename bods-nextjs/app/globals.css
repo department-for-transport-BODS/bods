@@ -532,3 +532,31 @@ ul.dashed > li::before {
 .app-table-col--25 {
   width: 25%;
 }
+
+/* Dataset "Choose data type" page */
+.app-dataset-form {
+  font-family: sans-serif;
+  max-width: 400px;
+  margin: 60px auto;
+}
+
+.app-dataset-form__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.app-dataset-form__button {
+  margin-top: 16px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.app-dataset-form__selected {
+  margin-top: 16px;
+  color: #555;
+}
