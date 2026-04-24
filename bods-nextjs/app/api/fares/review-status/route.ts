@@ -1,8 +1,7 @@
 // API route serves as a bridge to fetch the review status of a fares dataset from the Django backend.
 // It handles authentication, forwards the request to Django, and processes the response to work with Next.js routing.
 import { NextRequest, NextResponse } from 'next/server';
-
-const DJANGO_ORIGIN = process.env.DJANGO_INTERNAL_ORIGIN || 'http://localhost:8000';
+import { config } from '@/config';
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -20,7 +19,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const djangoResp = await fetch(
-      `${DJANGO_ORIGIN}/api/fares/review-status/${orgId}/${datasetId}/`,
+      `${config.djangoOrigin}/api/fares/review-status/${orgId}/${datasetId}/`,
       {
         method: 'GET',
         headers: { Authorization: authHeader },

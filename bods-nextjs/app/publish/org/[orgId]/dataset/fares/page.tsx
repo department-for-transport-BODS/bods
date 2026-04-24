@@ -8,6 +8,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { getPaginated } from '@/lib/api-client';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { config } from '@/config';
 
 type FaresTab = 'active' | 'draft' | 'archive';
 
@@ -68,9 +69,8 @@ function FaresPublish() {
   const params = useParams();
   const searchParams = useSearchParams();
   const orgId = params.orgId as string;
-  const djangoApiBaseUrl = process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000';
-  const djangoPublishBaseUrl =
-    process.env.NEXT_PUBLIC_DJANGO_PUBLISH_URL || djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
+  const djangoApiBaseUrl = config.djangoApiBaseUrl
+  const djangoPublishBaseUrl = `${djangoApiBaseUrl}.replace('://localhost', '://publish.localhost')`;
   const nextListUrl = `/publish/org/${orgId}/dataset/fares`;
   const nextCreateUrl = `/publish/org/${orgId}/dataset/fares/create`;
   const djangoAttentionUrl = `${djangoPublishBaseUrl}/org/${orgId}/dataset/fares/attention/`;

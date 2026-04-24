@@ -52,18 +52,6 @@ ENV PIP_TRUSTED_HOST="pypi.org files.pythonhosted.org pypi.python.org"
 
 RUN npm install -g yarn@v1.22.22 \
     && yarn install \
-    && pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --trusted-host pypi.python.org poetry==$POETRY_VERSION poetry-plugin-export \
-    && poetry config virtualenvs.create false \
-    && poetry config installer.max-workers 1 \
-    && poetry config certificates.pypi.cert false \
-    && poetry self add poetry-plugin-export || true \
-    && poetry export -f requirements.txt --without-hashes --with dev -o requirements.txt \
-    && pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
-
-    
-
-RUN npm install -g yarn@v1.22.22 \
-    && yarn install \
     && pip install poetry==$POETRY_VERSION \
     && poetry config virtualenvs.create false \
     && poetry install --no-root --no-interaction --no-cache --no-ansi -vvv
