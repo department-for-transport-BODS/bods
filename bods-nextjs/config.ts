@@ -3,6 +3,9 @@ import { version } from './package.json';
 export const config = {
   // API URLs — must be set in every environment
   djangoApiUrl: process.env.NEXT_PUBLIC_DJANGO_API_URL!,
+  djangoOrigin: process.env.DJANGO_INTERNAL_ORIGIN || 'http://localhost:8000',
+  djangoApiBaseUrl: process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000',
+
   // Mapbox
   mapboxToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '',
 

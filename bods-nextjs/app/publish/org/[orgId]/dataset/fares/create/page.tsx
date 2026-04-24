@@ -7,6 +7,7 @@ import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper, DatasetDescriptionFields, DataProviderRadioGroup, URL_LINK_ITEM_ID, UPLOAD_FILE_ITEM_ID } from '@/components/publish';
+import { config } from '@/config';
 
 const DESCRIPTION_STEP = 'description';
 const CANCEL_STEP = 'cancel';
@@ -130,9 +131,8 @@ function FaresCreateStepContent({
 function FaresCreatePageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
-  const djangoApiBaseUrl = process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000';
-  const djangoPublishBaseUrl =
-    process.env.NEXT_PUBLIC_DJANGO_PUBLISH_URL || djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
+  const djangoApiBaseUrl = config.djangoApiBaseUrl
+  const djangoPublishBaseUrl = `${djangoApiBaseUrl}.replace('://localhost', '://publish.localhost')`;
   const nextListUrl = `/publish/org/${orgId}/dataset/fares`;
   const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
   const contactSupportUrl = `${djangoApiBaseUrl}/contact/`;

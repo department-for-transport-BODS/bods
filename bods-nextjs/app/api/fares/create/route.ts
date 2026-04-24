@@ -2,8 +2,7 @@
 // and handles authentication via Bearer tokens
 // The route also processes Django's response, returning any errors or redirect URLs back to the frontend in a Next.js-friendly format.
 import { NextRequest, NextResponse } from 'next/server';
-
-const DJANGO_ORIGIN = process.env.DJANGO_INTERNAL_ORIGIN || 'http://localhost:8000';
+import { config } from '@/config';
 
 export async function POST(request: NextRequest) {
   const orgId = new URL(request.url).searchParams.get('orgId');
@@ -16,7 +15,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Not authenticated. Please sign in and retry.' }, { status: 401 });
   }
 
-  const createUrl = `${DJANGO_ORIGIN}/api/fares/create/${orgId}/`;
+  const createUrl = `${config.djangoOrigin}/api/fares/create/${orgId}/`;
   const incoming = await request.formData();
 
   const outgoing = new FormData();
