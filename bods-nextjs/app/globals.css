@@ -19,6 +19,27 @@ body {
 }
 
 /**
+ * GOV.UK colour palette exposed as CSS custom properties.
+ * Values mirror the Sass colours in govuk-frontend/settings/_colours-palette.scss
+ * so we can reference them from plain CSS. Keep in sync with GDS.
+ */
+:root {
+  --govuk-colour-red: #d4351c;
+  --govuk-colour-yellow: #ffdd00;
+  --govuk-colour-green: #00703c;
+  --govuk-colour-blue: #1d70b8;
+  --govuk-colour-dark-blue: #003078;
+  --govuk-colour-light-blue: #5694ca;
+  --govuk-colour-black: #0b0c0c;
+  --govuk-colour-dark-grey: #505a5f;
+  --govuk-colour-mid-grey: #b1b4b6;
+  --govuk-colour-light-grey: #f3f2f1;
+  --govuk-colour-white: #ffffff;
+  --govuk-colour-light-green: #85994b;
+  --govuk-error-colour: #d4351c;
+}
+
+/**
  * BODS Custom Components
  * These styles match the Django frontend exactly
  */
@@ -430,28 +451,28 @@ ul.dashed > li::before {
 }
 
 .status-indicator--success::before {
-  background-color: #006435;
+  background-color: var(--govuk-colour-green);
 }
 
 .status-indicator--indexing::before {
-  background-color: #005ea5;
+  background-color: var(--govuk-colour-blue);
 }
 
 .status-indicator--warning::before {
-  background-color: #ffbf47;
+  background-color: var(--govuk-colour-yellow);
 }
 
 .status-indicator--inactive::before {
-  background-color: #d4351c;
+  background-color: var(--govuk-colour-red);
 }
 
 .status-indicator--error::before {
-  background-color: #b10e1e;
+  background-color: var(--govuk-error-colour);
 }
 
 .status-indicator--draft::before,
 .status-indicator--pending::before {
-  background-color: #bfc1c3;
+  background-color: var(--govuk-colour-mid-grey);
 }
 
 .review-map-placeholder {

@@ -13,6 +13,11 @@ import { api } from "@/lib/api-client";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { PublishStepper, DatasetDescriptionFields, DataProviderRadioGroup, URL_LINK_ITEM_ID, UPLOAD_FILE_ITEM_ID } from '@/components/publish';
 import type { StepState } from '@/components/publish';
+import {
+  validateTimetableStep1,
+  validateTimetableStep2,
+  validateTimetableStep3,
+} from '@/lib/validation/timetable-publish';
 
 function TimetablePublish() {
   const params = useParams();
@@ -30,42 +35,23 @@ function TimetablePublish() {
   const { isSubmitting, submitError, handleSubmit: onSubmit, clearError } = useFormSubmit();
 
   const validateStep1 = () => {
-    const newErrors: Record<string, string> = {};
-    if (!dataSetDesc.trim()) {
-      newErrors.dataSetDesc = 'Enter a description in the data set description box below';
-    }
-    if (!shortDesc.trim()) {
-      newErrors.shortDesc = 'Enter a short description in the data set short description box below';
-    }
+    const newErrors = validateTimetableStep1({ dataSetDesc, shortDesc });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validateStep2 = () => {
-    const newErrors: Record<string, string> = {};
-    if (!selectedMethod) {
-      newErrors.method = 'Select how you want to provide your data set';
-    } else if (selectedMethod === 'link' && !link.trim()) {
-      newErrors.link = 'Please provide a URL link';
-    } else if (selectedMethod === 'file') {
-      if (!file) {
-        newErrors.file = 'Please provide a file';
-      } else {
-        const fileName = file.name.toLowerCase();
-        if (!fileName.endsWith('.xml') && !fileName.endsWith('.zip')) {
-          newErrors.file = 'The selected file must be a TransXChange XML file or a zip file containing only TransXChange files';
-        }
-      }
-    }
+    const newErrors = validateTimetableStep2({ selectedMethod, link, file });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validateStep3 = () => {
-    if (consentChecked) {
+    const newErrors = validateTimetableStep3(consentChecked);
+    if (Object.keys(newErrors).length === 0) {
       return true;
     }
-    setErrors({ consent: 'You must confirm you have reviewed the data quality report before publishing' });
+    setErrors(newErrors);
     return false;
   };
 

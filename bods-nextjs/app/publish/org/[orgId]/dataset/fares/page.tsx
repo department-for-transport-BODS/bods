@@ -6,6 +6,7 @@
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { getPaginated } from '@/lib/api-client';
+import { formatDate } from '@/lib/utils/date';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { config } from '@/config';
@@ -26,23 +27,6 @@ function getTabFromSearchParams(value: string | null): FaresTab {
   }
 
   return 'active';
-}
-
-function formatDate(value?: string): string {
-  if (!value) {
-    return '-';
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return '-';
-  }
-
-  return new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
 }
 
 function statusLabel(status?: string): string {

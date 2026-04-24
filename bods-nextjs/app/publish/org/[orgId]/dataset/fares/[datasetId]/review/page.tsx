@@ -9,6 +9,7 @@ import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
+import { formatDateTime } from '@/lib/utils/date';
 
 type ReviewStatusResponse = {
   datasetId: number;
@@ -163,26 +164,6 @@ function FaresReviewPageContent() {
 
   const loading = statusData?.loading ?? true;
   const progress = Math.max(0, Math.min(100, statusData?.progress ?? 0));
-
-  const formatDateTime = (value?: string | null) => {
-    if (!value) {
-      return '-';
-    }
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return '-';
-    }
-
-    return new Intl.DateTimeFormat('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }).format(date);
-  };
 
   const statusIndicatorClass = (status?: string) => {
     if (!status) {
