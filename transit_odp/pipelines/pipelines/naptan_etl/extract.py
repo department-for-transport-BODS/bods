@@ -22,8 +22,18 @@ ns = "http://www.naptan.org.uk/"
 namespace = {"naptan": ns}
 
 CHUNK_SIZE = 8 * 1024 * 1024  # 8MB chunks
-HTTP_CONNECT_TIMEOUT = int(getattr(settings, "NAPTAN_HTTP_CONNECT_TIMEOUT", os.getenv("NAPTAN_HTTP_CONNECT_TIMEOUT", 30)))
-HTTP_READ_TIMEOUT = int(getattr(settings, "NAPTAN_HTTP_READ_TIMEOUT", os.getenv("NAPTAN_HTTP_READ_TIMEOUT", 600)))
+HTTP_CONNECT_TIMEOUT = int(
+    getattr(
+        settings,
+        "NAPTAN_HTTP_CONNECT_TIMEOUT",
+        os.getenv("NAPTAN_HTTP_CONNECT_TIMEOUT", 30),
+    )
+)
+HTTP_READ_TIMEOUT = int(
+    getattr(
+        settings, "NAPTAN_HTTP_READ_TIMEOUT", os.getenv("NAPTAN_HTTP_READ_TIMEOUT", 600)
+    )
+)
 
 DISK_PATH_FOR_NAPTAN_ZIP = "/tmp/NaptanStops.zip"
 
@@ -36,43 +46,56 @@ logger = LoaderAdapter("NaPTANLoader", logger)
 
 
 def get_naptan_s3_storage():
-    #Get S3 storage for NaPTAN data, or default storage if bucket name is not set
-    bucket_name = getattr(settings, "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME", None) or os.getenv(
-        "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME"
-    )
+    # Get S3 storage for NaPTAN data, or default storage if bucket name is not set
+    bucket_name = getattr(
+        settings, "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME", None
+    ) or os.getenv("AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME")
     if bucket_name:
         logger.info(f"Using S3 bucket {bucket_name} for NaPTAN data storage.")
         return S3Boto3Storage(bucket_name=bucket_name)
     else:
-        logger.warning("AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME is not set. Using default storage.")
-        return default_storage 
+        logger.warning(
+            "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME is not set. Using default storage."
+        )
+        return default_storage
 
 
 def get_latest_naptan_to_s3():
     naptan_url = settings.NAPTAN_IMPORT_URL
     verify_ssl = getattr(settings, "NAPTAN_SSL_VERIFY", True)
-    
+
     logger.info(f"Loading NaPTAN file from {naptan_url} and saving to S3.")
 
     try:
-        response = requests.get(naptan_url, timeout=(HTTP_CONNECT_TIMEOUT, HTTP_READ_TIMEOUT), verify=verify_ssl, stream=True)
+        response = requests.get(
+            naptan_url,
+            timeout=(HTTP_CONNECT_TIMEOUT, HTTP_READ_TIMEOUT),
+            verify=verify_ssl,
+            stream=True,
+        )
         if response.status_code != 200:
-            logger.error(f"Failed to fetch NaPTAN data from {naptan_url}. Status code: {response.status_code}")
-            raise Exception(f"Failed to fetch NaPTAN data. Status code: {response.status_code}")
-        
+            logger.error(
+                f"Failed to fetch NaPTAN data from {naptan_url}. Status code: {response.status_code}"
+            )
+            raise Exception(
+                f"Failed to fetch NaPTAN data. Status code: {response.status_code}"
+            )
+
         raw_data = b""
         downloaded_mb = 0
         for chunk in response.iter_content(CHUNK_SIZE):
             raw_data += chunk
-            downloaded_mb += len(chunk) / (1024*1024)
+            downloaded_mb += len(chunk) / (1024 * 1024)
 
         storage = get_naptan_s3_storage()
         file_size = len(raw_data) / (1024 * 1024)
-        
+
         latest_key = "raw/naptan/naptan_latest.xml"
         file_obj = BytesIO(raw_data)
         saved_path = storage.save(latest_key, file_obj)
-        logger.info(f"NaPTAN data uploaded to S3 at {saved_path} (size: {file_size:.2f} MB).")
+        logger.info(
+            f"NaPTAN data uploaded to S3 at {saved_path} (size: {file_size:.2f} MB)."
+        )
 
         return saved_path
     except RequestException as exc:
@@ -97,9 +120,11 @@ def get_latest_naptan_xml():
 
         with storage.open(s3_key, "rb") as f:
             s3_data = f.read()
-        
-        filesize = len(s3_data) / (1024*1024)
-        logger.info(f"Read NaPTAN data from S3 (size: {filesize:.2f} MB). Writing to disk for processing.")
+
+        filesize = len(s3_data) / (1024 * 1024)
+        logger.info(
+            f"Read NaPTAN data from S3 (size: {filesize:.2f} MB). Writing to disk for processing."
+        )
         dir_path = Path(DISK_PATH_FOR_NAPTAN_FOLDER)
         if not dir_path.exists():
             dir_path.mkdir(parents=True, exist_ok=True)
@@ -124,12 +149,14 @@ def upload_naptan_to_s3(data: bytes, data_type: str) -> str:
     # Uploads raw NaPTAN data to S3 & returns where it was saved
     storage = get_naptan_s3_storage()
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    s3_key = f"raw/{data_type}/{timestamp}.xml" #Check this!
+    s3_key = f"raw/{data_type}/{timestamp}.xml"  # Check this!
 
     file_obj = BytesIO(data)
     saved_path = storage.save(s3_key, file_obj)
-    file_size = len(data) / (1024*1024)
-    logger.info(f"Uploaded NaPTAN {data_type} data to S3 at {saved_path} (size: {file_size:.2f} MB).")
+    file_size = len(data) / (1024 * 1024)
+    logger.info(
+        f"Uploaded NaPTAN {data_type} data to S3 at {saved_path} (size: {file_size:.2f} MB)."
+    )
     return saved_path
 
 
