@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { api } from '@/lib/api-client';
 import { PublishStepper } from '@/components/publish';
+import { formatDateTime } from '@/lib/utils/date';
 
 type TimetableMetadata = {
   filename?: string;
@@ -119,26 +120,6 @@ function TimetableReviewPageContent() {
 
   const loading = statusData?.loading ?? true;
   const progress = Math.max(0, Math.min(100, statusData?.progress ?? 0));
-
-  const formatDateTime = (value?: string | null) => {
-    if (!value) {
-      return '-';
-    }
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return '-';
-    }
-
-    return new Intl.DateTimeFormat('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }).format(date);
-  };
 
   return (
     <div className="govuk-width-container">
