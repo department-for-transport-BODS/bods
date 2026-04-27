@@ -116,7 +116,9 @@ def get_ppc_weekly_average_by_organisation():
         .filter(dataset__dataset_type=AVLType)
         .filter(dataset__live_revision__isnull=False)
         .exclude(dataset__live_revision__status__in=[EXPIRED, INACTIVE])
-        .exclude(dataset__live_revision__status_before_reprocessing__in=[EXPIRED, INACTIVE])
+        .exclude(
+            dataset__live_revision__status_before_reprocessing__in=[EXPIRED, INACTIVE]
+        )
         .exclude(dataset__avl_compliance_cached__status=MORE_DATA_NEEDED)
         .order_by("dataset_id", "-created")
         .distinct("dataset_id")
