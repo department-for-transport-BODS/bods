@@ -61,48 +61,58 @@ def get_naptan_s3_storage():
 
 
 def get_latest_naptan_to_s3():
-    naptan_url = settings.NAPTAN_IMPORT_URL
+    xml_url = settings.NAPTAN_XML_IMPORT_URL
+    csv_url = settings.NAPTAN_CSV_IMPORT_URL
     verify_ssl = getattr(settings, "NAPTAN_SSL_VERIFY", True)
+    storage = get_naptan_s3_storage()
 
-    logger.info(f"Loading NaPTAN file from {naptan_url} and saving to S3.")
+    uploads = [
+        (xml_url, "raw/naptan/naptan_latest_xml.xml"),
+        (csv_url, "raw/naptan/naptan_latest_csv.csv"),
+    ]
+    uploaded_files = []
 
-    try:
-        response = requests.get(
-            naptan_url,
-            timeout=(HTTP_CONNECT_TIMEOUT, HTTP_READ_TIMEOUT),
-            verify=verify_ssl,
-            stream=True,
-        )
-        response.raise_for_status()
-
-        storage = get_naptan_s3_storage()
-        latest_key = "raw/naptan/naptan_latest.xml"
-
-        total_bytes = 0
-        with storage.open(latest_key, "wb") as dst:
-            for chunk in response.iter_content(CHUNK_SIZE):
-                if chunk:
-                    dst.write(chunk)
-                    total_bytes += len(chunk)
-
-        file_size_mb = total_bytes / (1024 * 1024)
+    for naptan_url, latest_key in uploads:
         logger.info(
-            f"NaPTAN data uploaded to S3 at {latest_key} (size: {file_size_mb:.2f} MB)."
+            f"Loading NaPTAN file from {naptan_url} and saving to S3 at {latest_key}."
         )
-        return latest_key
 
-    except RequestException as exc:
-        logger.error(f"Unable to fetch NaPTAN data from {naptan_url}.", exc_info=exc)
-        raise
-    except Exception as exc:
-        logger.error("Exception while uploading NaPTAN data to S3.", exc_info=exc)
-        raise
+        try:
+            response = requests.get(
+                naptan_url,
+                timeout=(HTTP_CONNECT_TIMEOUT, HTTP_READ_TIMEOUT),
+                verify=verify_ssl,
+                stream=True,
+            )
+            response.raise_for_status()
+
+            total_bytes = 0
+            with storage.open(latest_key, "wb") as dst:
+                for chunk in response.iter_content(CHUNK_SIZE):
+                    if chunk:
+                        dst.write(chunk)
+                        total_bytes += len(chunk)
+
+            file_size_mb = total_bytes / (1024 * 1024)
+            logger.info(
+                f"NaPTAN data uploaded to S3 at {latest_key} (size: {file_size_mb:.2f} MB)."
+            )
+            uploaded_files.append({latest_key: naptan_url})
+
+        except RequestException as exc:
+            logger.error(f"Unable to fetch NaPTAN data from {naptan_url}.", exc_info=exc)
+            raise
+        except Exception as exc:
+            logger.error("Exception while uploading NaPTAN data to S3.", exc_info=exc)
+            raise
+    
+    return uploaded_files
 
 
 def get_latest_naptan_xml():
 
     storage = get_naptan_s3_storage()
-    s3_key = "raw/naptan/naptan_latest.xml"
+    s3_key = "raw/naptan/naptan_latest_xml.xml"
     xml_file_path = None
 
     try:
