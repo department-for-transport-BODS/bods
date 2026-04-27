@@ -10,7 +10,18 @@ from zipfile import ZIP_DEFLATED
 
 from django.contrib.auth import get_user_model
 from django.core.files.base import File
-from django.db.models import Avg, Case, CharField, OuterRef, Q, Subquery, Value, When
+from django.db.models import (
+    Avg,
+    Case,
+    CharField,
+    ExpressionWrapper,
+    FloatField,
+    OuterRef,
+    Q,
+    Subquery,
+    Value,
+    When,
+)
 from django.db.models.expressions import F
 from django.db.models.functions import Concat
 from django_hosts.resolvers import reverse
@@ -19,8 +30,8 @@ from waffle import flag_is_active
 import config.hosts
 from transit_odp.avl.constants import MORE_DATA_NEEDED, UNDERGOING
 from transit_odp.avl.csv.catalogue import get_avl_data_catalogue_csv
+from transit_odp.avl.models import PPCReportType, PostPublishingCheckReport
 from transit_odp.avl.post_publishing_checks.constants import NO_PPC_DATA
-from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.exports import (
     FARES_FILENAME,
     LOCATION_FILENAME,
@@ -99,18 +110,41 @@ def get_ppc_weekly_per_feed_download_report(
     )
 
 
-def get_ppc_weekly_average_subquery():
-    return Subquery(
-        AVLDataset.objects.get_active()
-        .add_avl_compliance_status_cached()
-        .exclude(avl_compliance_status_cached__in=[MORE_DATA_NEEDED])
-        .filter(organisation_id=OuterRef("organisation_id"))
-        .add_post_publishing_check_stats()
-        .values("organisation_id")
+def get_ppc_weekly_average_by_organisation():
+    latest_weekly_reports = (
+        PostPublishingCheckReport.objects.filter(granularity=PPCReportType.WEEKLY.value)
+        .filter(dataset__dataset_type=AVLType)
+        .filter(dataset__live_revision__isnull=False)
+        .exclude(dataset__live_revision__status__in=[EXPIRED, INACTIVE])
+        .exclude(dataset__live_revision__status_before_reprocessing__in=[EXPIRED, INACTIVE])
+        .exclude(dataset__avl_compliance_cached__status=MORE_DATA_NEEDED)
+        .order_by("dataset_id", "-created")
+        .distinct("dataset_id")
+        .annotate(
+            percent_matching=Case(
+                When(
+                    vehicle_activities_analysed__gt=0,
+                    then=ExpressionWrapper(
+                        F("vehicle_activities_completely_matching")
+                        * 100.0
+                        / F("vehicle_activities_analysed"),
+                        output_field=FloatField(),
+                    ),
+                ),
+                default=float(NO_PPC_DATA),
+                output_field=FloatField(),
+            )
+        )
         .exclude(percent_matching=float(NO_PPC_DATA))
-        .annotate(average_percent_matching=Avg("percent_matching"))
-        .values("average_percent_matching")
     )
+
+    organisation_averages = (
+        latest_weekly_reports.values("dataset__organisation_id")
+        .annotate(average_percent_matching=Avg("percent_matching"))
+        .values_list("dataset__organisation_id", "average_percent_matching")
+    )
+
+    return dict(organisation_averages)
 
 
 def get_ppc_weekly_overall_url(organisation_id: int) -> str:
@@ -258,7 +292,7 @@ class DatasetPublishingCSV(CSVBuilder):
     ]
 
     def get_queryset(self):
-        return (
+        datasets = list(
             Dataset.objects.get_published()
             .select_related("avl_compliance_cached", "live_revision")
             .add_live_data()
@@ -266,12 +300,19 @@ class DatasetPublishingCSV(CSVBuilder):
             .add_last_published_by_email()
             .annotate(
                 account_type=F("live_revision__published_by__account_type"),
-                average_percent_matching=get_ppc_weekly_average_subquery(),
             )
             .exclude(live_revision__status=EXPIRED)
             .add_post_publishing_check_stats()
             .order_by("id")
         )
+
+        average_percent_matching_by_org = get_ppc_weekly_average_by_organisation()
+        for dataset in datasets:
+            dataset.average_percent_matching = average_percent_matching_by_org.get(
+                dataset.organisation_id
+            )
+
+        return datasets
 
 
 class OperationalStatsCSV(CSVBuilder):
