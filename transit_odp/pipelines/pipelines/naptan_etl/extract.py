@@ -115,33 +115,24 @@ def get_latest_naptan_xml():
         dir_path.mkdir(parents=True, exist_ok=True)
         filepath = dir_path / "Naptan.xml"
 
+        total_bytes = 0
         with storage.open(s3_key, "rb") as src, open(filepath, "wb") as dst:
-            shutil.copyfileobj(src, dst, length=CHUNK_SIZE)
+            while True:
+                chunk = src.read(CHUNK_SIZE)
+                if not chunk:
+                    break
+                dst.write(chunk)
+                total_bytes += len(chunk)
 
+        file_size_mb = total_bytes / (1024 * 1024)
         logger.info(
-            f"Read NaPTAN data from S3. Writing to disk for processing at {filepath}."
+            f"Read NaPTAN data from S3. Writing to disk for processing at {filepath}, size {file_size_mb} MB."
         )
         return str(filepath)
 
     except Exception as exc:
         logger.error("Exception while getting NaPTAN data.", exc_info=exc)
         return None
-
-
-
-def upload_naptan_to_s3(data: bytes, data_type: str) -> str:
-    # Uploads raw NaPTAN data to S3 & returns where it was saved
-    storage = get_naptan_s3_storage()
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    s3_key = f"raw/{data_type}/{timestamp}.xml"  # Check this!
-
-    file_obj = BytesIO(data)
-    saved_path = storage.save(s3_key, file_obj)
-    file_size = len(data) / (1024 * 1024)
-    logger.info(
-        f"Uploaded NaPTAN {data_type} data to S3 at {saved_path} (size: {file_size:.2f} MB)."
-    )
-    return saved_path
 
 
 def get_latest_nptg():

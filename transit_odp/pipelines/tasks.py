@@ -23,7 +23,7 @@ def task_dqs_monitor():
 
 
 @shared_task(ignore_result=True)
-def task_archive_naptan_to_s3():
+def task_get_naptan_to_s3():
     from transit_odp.pipelines.pipelines.naptan_etl.extract import (
         get_latest_naptan_to_s3,
     )
