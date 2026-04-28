@@ -342,6 +342,80 @@ class TestDatasetPublishingCSV:
         assert fifth_row[10] == url_overall
 
         assert sixth_row[7] == UNDERGOING
+        assert sixth_row[8] == ""
+        assert sixth_row[9] == TOTAL_PERCENTAGE
+        assert sixth_row[10] == url_overall
+
+    def test_active_publisher_to_string_handles_null_ppc_values_in_org_average(
+        self, client_factory
+    ):
+        host = config.hosts.PUBLISH_HOST
+        organisation = OrganisationFactory()
+        user = OrgStaffFactory(organisations=(organisation,))
+        today = date.today()
+
+        valid_dataset = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+        )
+        null_numerator_dataset = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+        )
+        null_denominator_dataset = DatasetFactory(
+            organisation=organisation,
+            dataset_type=AVLType,
+        )
+
+        PostPublishingCheckReportFactory(
+            dataset=valid_dataset,
+            vehicle_activities_analysed=10,
+            vehicle_activities_completely_matching=1,
+            granularity=PPCReportType.WEEKLY,
+            created=today,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=null_numerator_dataset,
+            vehicle_activities_analysed=10,
+            vehicle_activities_completely_matching=None,
+            granularity=PPCReportType.WEEKLY,
+            created=today,
+        )
+        PostPublishingCheckReportFactory(
+            dataset=null_denominator_dataset,
+            vehicle_activities_analysed=None,
+            vehicle_activities_completely_matching=5,
+            granularity=PPCReportType.WEEKLY,
+            created=today,
+        )
+
+        dataset_publishing_csv = DatasetPublishingCSV()
+        actual = dataset_publishing_csv.to_string()
+        csvfile = io.StringIO(actual)
+        reader = csv.reader(csvfile.getvalue().splitlines())
+
+        headers, first_row, second_row, third_row = list(reader)
+        assert headers[9] == "% Operator overall AVL to Timetables matching"
+
+        client = client_factory(host=host)
+        client.force_login(user=user)
+        url_overall = reverse(
+            "ppc-archive",
+            args=(organisation.id,),
+            host=host,
+        )
+
+        assert first_row[7] == "10%"
+        assert first_row[9] == "0%"
+        assert first_row[10] == url_overall
+
+        assert second_row[7] == UNDERGOING
+        assert second_row[9] == "0%"
+        assert second_row[10] == url_overall
+
+        assert third_row[7] == UNDERGOING
+        assert third_row[9] == "0%"
+        assert third_row[10] == url_overall
 
 
 class TestConsumerCSV:

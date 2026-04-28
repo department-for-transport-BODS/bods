@@ -23,7 +23,7 @@ from django.db.models import (
     When,
 )
 from django.db.models.expressions import F
-from django.db.models.functions import Concat
+from django.db.models.functions import Coalesce, Concat
 from django_hosts.resolvers import reverse
 from waffle import flag_is_active
 
@@ -111,7 +111,7 @@ def get_ppc_weekly_per_feed_download_report(
 
 
 def get_ppc_weekly_average_by_organisation():
-    latest_weekly_reports = (
+    latest_weekly_report_ids = (
         PostPublishingCheckReport.objects.filter(granularity=PPCReportType.WEEKLY.value)
         .filter(dataset__dataset_type=AVLType)
         .filter(dataset__live_revision__isnull=False)
@@ -122,26 +122,39 @@ def get_ppc_weekly_average_by_organisation():
         .exclude(dataset__avl_compliance_cached__status=MORE_DATA_NEEDED)
         .order_by("dataset_id", "-created")
         .distinct("dataset_id")
-        .annotate(
+        .values("id")
+    )
+
+    latest_weekly_reports = PostPublishingCheckReport.objects.filter(
+        id__in=Subquery(latest_weekly_report_ids)
+    )
+
+    organisation_averages = (
+        latest_weekly_reports.annotate(
+            vehicles_completely_matching=Coalesce(
+                F("vehicle_activities_completely_matching"),
+                Value(NO_PPC_DATA),
+            ),
+            vehicles_analysed=Coalesce(
+                F("vehicle_activities_analysed"),
+                Value(NO_PPC_DATA),
+            ),
             percent_matching=Case(
                 When(
-                    vehicle_activities_analysed__gt=0,
+                    vehicles_analysed__gt=0,
                     then=ExpressionWrapper(
-                        F("vehicle_activities_completely_matching")
+                        F("vehicles_completely_matching")
                         * 100.0
-                        / F("vehicle_activities_analysed"),
+                        / F("vehicles_analysed"),
                         output_field=FloatField(),
                     ),
                 ),
                 default=float(NO_PPC_DATA),
                 output_field=FloatField(),
-            )
+            ),
         )
         .exclude(percent_matching=float(NO_PPC_DATA))
-    )
-
-    organisation_averages = (
-        latest_weekly_reports.values("dataset__organisation_id")
+        .values("dataset__organisation_id")
         .annotate(average_percent_matching=Avg("percent_matching"))
         .values_list("dataset__organisation_id", "average_percent_matching")
     )
