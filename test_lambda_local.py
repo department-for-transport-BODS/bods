@@ -15,7 +15,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.base")
 django.setup()
 
 # Import Lambda handler
-from transit_odp.pipelines.pipelines.naptan_etl.lambda_handler import handler
+from transit_odp.pipelines.pipelines.naptan_extract_etl.lambda_handler import handler
 
 
 if __name__ == "__main__":
