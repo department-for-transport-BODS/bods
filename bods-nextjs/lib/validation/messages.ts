@@ -1,9 +1,4 @@
-/**
- * Centralised error messages for form validation.
- *
- * Keep user-facing copy here so it can be reused across pages and updated in
- * one place. Group by feature / flow.
- */
+
 
 export const TIMETABLE_PUBLISH_ERRORS = {
   dataSetDesc: 'Enter a description in the data set description box below',
