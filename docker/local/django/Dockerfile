@@ -38,7 +38,17 @@ RUN apt-get update && apt-get install -y \
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
+
 COPY ./pyproject.toml ./poetry.lock ./package.json ./yarn.lock ./
+
+# Install CA certificates and update them to fix SSL issues
+RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
+
+# Disable SSL verification for pip and poetry due to corporate proxy/firewall issues
+ENV REQUESTS_CA_BUNDLE=""
+ENV CURL_CA_BUNDLE=""
+ENV SSL_CERT_FILE=""
+ENV PIP_TRUSTED_HOST="pypi.org files.pythonhosted.org pypi.python.org"
 
 RUN npm install -g yarn@v1.22.22 \
     && yarn install \

@@ -19,9 +19,20 @@ from transit_odp.common.views import (
     PrivacyPolicyView,
     VersionView,
 )
+from transit_odp.fares.views.api import (
+    create_fares_dataset_api,
+    get_fares_review_status_api,
+    publish_fares_dataset_api,
+)
+from transit_odp.timetables.views.api import (
+    create_timetables_dataset_api,
+    get_timetables_review_status_api,
+    publish_timetables_dataset_api,
+)
 
 from transit_odp.api.views.auth import (
     CSRFTokenAPIView,
+    CurrentUserOrganisationsAPIView,
     CurrentUserAPIView,
     LoginAPIView,
     LogoutAPIView,
@@ -34,6 +45,46 @@ urlpatterns = [
     path("api/auth/logout/", LogoutAPIView.as_view(), name="api-auth-logout"),
     path("api/auth/user/", CurrentUserAPIView.as_view(), name="api-auth-user"),
     path("api/auth/csrf/", CSRFTokenAPIView.as_view(), name="api-auth-csrf"),
+    path(
+        "api/organisations/",
+        CurrentUserOrganisationsAPIView.as_view(),
+        name="api-user-organisations",
+    ),
+    path(
+        "api/fares/create/<int:pk1>/",
+        create_fares_dataset_api,
+        name="nextjs-fares-create",
+    ),
+    path(
+        "api/fares/review-status/<int:pk1>/<int:pk>/",
+        get_fares_review_status_api,
+        name="nextjs-fares-review-status",
+    ),
+    path(
+        "api/timetables/review-status/<int:pk1>/<int:pk>/",
+        get_timetables_review_status_api,
+        name="nextjs-timetables-review-status",
+    ),
+    path(
+        "api/timetables/create/<int:pk1>/",
+        create_timetables_dataset_api,
+        name="nextjs-timetables-create",
+    ),
+    path(
+        "api/timetables/publish/<int:pk1>/<int:pk>/",
+        publish_timetables_dataset_api,
+        name="nextjs-timetables-publish",
+    ),
+    path(
+        "api/org/<int:pk1>/dataset/timetable/upload/",
+        create_timetables_dataset_api,
+        name="nextjs-timetables-upload-compat",
+    ),
+    path(
+        "api/fares/publish/<int:pk1>/<int:pk>/",
+        publish_fares_dataset_api,
+        name="nextjs-fares-publish",
+    ),
     path(
         "contact/",
         TemplateView.as_view(template_name="pages/contact.html"),

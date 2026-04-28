@@ -6,6 +6,8 @@ The session cookie is set/cleared by Django and sent automatically by the browse
 Allauth's email verification and adapter hooks are respected.
 """
 
+import re
+
 from allauth.account import app_settings as allauth_settings
 from allauth.account.models import EmailAddress
 from allauth.account.utils import send_email_confirmation
@@ -26,6 +28,18 @@ class LoginRateThrottle(AnonRateThrottle):
         limit = getattr(settings, "ACCOUNT_LOGIN_ATTEMPTS_LIMIT", 5)
         timeout = getattr(settings, "ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT", 900)
         return f"{limit}/{timeout}s"
+
+    def parse_rate(self, rate):
+        num_requests, period = rate.split("/")
+        match = re.fullmatch(r"(?:(\d+))?([smhd])", period)
+
+        if match is None:
+            return super().parse_rate(rate)
+
+        multiplier, unit = match.groups()
+        duration = {"s": 1, "m": 60, "h": 3600, "d": 86400}[unit]
+        duration *= int(multiplier or 1)
+        return int(num_requests), duration
 
 
 class LoginSerializer(serializers.Serializer):
@@ -104,6 +118,32 @@ class CurrentUserAPIView(APIView):
 
     def get(self, request):
         return Response(_serialize_user(request.user), status=status.HTTP_200_OK)
+
+
+class CurrentUserOrganisationsAPIView(APIView):
+    """Return organisations available to the authenticated user."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        organisations = [
+            {
+                "id": organisation.id,
+                "name": organisation.name,
+                "short_name": organisation.short_name,
+            }
+            for organisation in request.user.organisations.all().order_by("name")
+        ]
+
+        return Response(
+            {
+                "count": len(organisations),
+                "next": None,
+                "previous": None,
+                "results": organisations,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class CSRFTokenAPIView(APIView):

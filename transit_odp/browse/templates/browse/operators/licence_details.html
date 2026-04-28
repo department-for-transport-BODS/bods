@@ -297,10 +297,10 @@
 {% endblock %}
 {% block scripts %}
   {{ block.super }}
-    <script nonce="{{request.csp_nonce}}">
+  <script nonce="{{request.csp_nonce}}">
       var licenceNumber = "{{licence_number}}";
       var errorInMapBox = "{% if not error %}no-error{% else %}error{% endif %}";
-    </script>
+  </script>
   {% if is_prefetch_compliance_report_active %}
     <script nonce="{{request.csp_nonce}}">
       function refresheMap(registrationNumbers) {

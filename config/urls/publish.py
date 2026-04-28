@@ -3,12 +3,19 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 
+from transit_odp.api.views.auth import CurrentUserOrganisationsAPIView
+
 from transit_odp.avl.views.archive import PPCArchiveView
 from transit_odp.common.utils.custom_error_handlers import (
     page_not_found,
     permission_denied,
 )
 from transit_odp.common.views import ComingSoonView, VersionView
+from transit_odp.timetables.views.api import (
+    create_timetables_dataset_api,
+    get_timetables_review_status_api,
+    publish_timetables_dataset_api,
+)
 from transit_odp.publish.views.api import ProgressAPIView
 from transit_odp.publish.views.base import DataActivityView
 from transit_odp.publish.views.gatekeeper import (
@@ -39,6 +46,31 @@ handler403 = "transit_odp.common.utils.custom_error_handlers.permission_denied"
 
 urlpatterns = [
     path("", view=PublishHomeView.as_view(), name="home"),
+    path(
+        "api/timetables/create/<int:pk1>/",
+        create_timetables_dataset_api,
+        name="nextjs-timetables-create",
+    ),
+    path(
+        "api/timetables/review-status/<int:pk1>/<int:pk>/",
+        get_timetables_review_status_api,
+        name="nextjs-timetables-review-status",
+    ),
+    path(
+        "api/timetables/publish/<int:pk1>/<int:pk>/",
+        publish_timetables_dataset_api,
+        name="nextjs-timetables-publish",
+    ),
+    path(
+        "api/org/<int:pk1>/dataset/timetable/upload/",
+        create_timetables_dataset_api,
+        name="nextjs-timetables-upload-compat",
+    ),
+    path(
+        "api/organisations/",
+        CurrentUserOrganisationsAPIView.as_view(),
+        name="api-user-organisations",
+    ),
     path(
         "guide-me/",
         include(

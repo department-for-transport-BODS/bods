@@ -19,6 +19,27 @@ body {
 }
 
 /**
+ * GOV.UK colour palette exposed as CSS custom properties.
+ * Values mirror the Sass colours in govuk-frontend/settings/_colours-palette.scss
+ * so we can reference them from plain CSS. Keep in sync with GDS.
+ */
+:root {
+  --govuk-colour-red: #d4351c;
+  --govuk-colour-yellow: #ffdd00;
+  --govuk-colour-green: #00703c;
+  --govuk-colour-blue: #1d70b8;
+  --govuk-colour-dark-blue: #003078;
+  --govuk-colour-light-blue: #5694ca;
+  --govuk-colour-black: #0b0c0c;
+  --govuk-colour-dark-grey: #505a5f;
+  --govuk-colour-mid-grey: #b1b4b6;
+  --govuk-colour-light-grey: #f3f2f1;
+  --govuk-colour-white: #ffffff;
+  --govuk-colour-light-green: #85994b;
+  --govuk-error-colour: #d4351c;
+}
+
+/**
  * BODS Custom Components
  * These styles match the Django frontend exactly
  */
@@ -393,4 +414,170 @@ ul.dashed > li {
 ul.dashed > li::before {
   content: "-";
   margin-right: 4px;
+}
+
+/* Legacy publish/review component styles used by fares review */
+.app-dqs-panel {
+  text-align: left;
+  border: 5px solid #0b0c0c;
+  padding: 20px;
+  background: transparent;
+}
+
+.app-dqs-panel__body {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 1.32;
+}
+
+.dataset-property-table .govuk-table__row th,
+.dataset-property-table .govuk-table__row td {
+  padding: 20px 0;
+}
+
+.status-indicator {
+  font-family: "GDS Transport", Arial, sans-serif;
+  font-size: inherit;
+  white-space: nowrap;
+}
+
+.status-indicator::before {
+  content: " ";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin: 0 6px 0 4px;
+}
+
+.status-indicator--success::before {
+  background-color: var(--govuk-colour-green);
+}
+
+.status-indicator--indexing::before {
+  background-color: var(--govuk-colour-blue);
+}
+
+.status-indicator--warning::before {
+  background-color: var(--govuk-colour-yellow);
+}
+
+.status-indicator--inactive::before {
+  background-color: var(--govuk-colour-red);
+}
+
+.status-indicator--error::before {
+  background-color: var(--govuk-error-colour);
+}
+
+.status-indicator--draft::before,
+.status-indicator--pending::before {
+  background-color: var(--govuk-colour-mid-grey);
+}
+
+.review-map-placeholder {
+  border: 1px solid #b1b4b6;
+  background: linear-gradient(180deg, #e8edef 0%, #dfe5e7 100%);
+  height: 280px;
+  position: relative;
+}
+
+.review-map-placeholder__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #505a5f;
+  font-weight: 700;
+}
+/* Publish Stepper */
+.publish-stepper {
+  font-size: 19px;
+  color: #0b0c0c;
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid #b1b4b6;
+  list-style: none;
+  display: flex;
+}
+
+.publish-stepper .publish-stepper__item {
+  display: inline-flex;
+  margin-right: 15px;
+  padding-bottom: 10px;
+}
+
+.publish-stepper .publish-stepper__item--previous {
+  color: #1d70b8;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.publish-stepper .publish-stepper__item--next {
+  color: #505a5f;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.publish-stepper .publish-stepper__item--selected {
+  color: #000000;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-weight: bold;
+  font-size: 1.25rem;
+  border-bottom: 5px solid black;
+  padding-bottom: 5px;
+}
+
+/* Utility: unstyled button that looks like a link */
+.app-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.app-link-button:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-skip-ink: none;
+}
+
+/* Table column widths */
+.app-table-col--20 {
+  width: 20%;
+}
+
+.app-table-col--25 {
+  width: 25%;
+}
+
+/* Dataset "Choose data type" page */
+.app-dataset-form {
+  font-family: sans-serif;
+  max-width: 400px;
+  margin: 60px auto;
+}
+
+.app-dataset-form__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.app-dataset-form__button {
+  margin-top: 16px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.app-dataset-form__selected {
+  margin-top: 16px;
+  color: #555;
 }

@@ -9,8 +9,7 @@
 import { useState, useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { getPaginated } from '@/lib/api-client';
-import { useRouter } from 'next/navigation';
-import styles from './page.module.css';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Organisation {
   id: number;
@@ -22,6 +21,12 @@ function SelectOrg() {
   const [orgs, setOrgs] = useState<Organisation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const selectedDataType = searchParams.get('dataType');
+
+  const isValidDataType =
+    selectedDataType === 'timetable' || selectedDataType === 'avl' || selectedDataType === 'fares';
 
   useEffect(() => {
     loadOrganisations();
@@ -39,7 +44,13 @@ function SelectOrg() {
   };
 
   const handleSelect = (orgId: number) => {
-    router.push(`/publish/org/${orgId}/dataset`);
+    if (isValidDataType) {
+      router.push(`/publish/org/${orgId}/dataset/${selectedDataType}`);
+      return;
+    }
+
+    // Default to timetables when no data type is provided.
+    router.push(`/publish/org/${orgId}/dataset/timetable`);
   };
 
   return (
@@ -56,7 +67,7 @@ function SelectOrg() {
                 {orgs.map((org) => (
                   <li key={org.id}>
                     <button
-                      className={`govuk-link govuk-link--no-visited-state ${styles.linkButton}`}
+                      className="govuk-link govuk-link--no-visited-state app-link-button"
                       onClick={() => handleSelect(org.id)}
                     >
                       {org.name}
