@@ -25,6 +25,7 @@ CHUNK_SIZE = 8 * 1024 * 1024  # 8MB chunks
 
 DISK_PATH_FOR_NAPTAN_ZIP = "/tmp/NaptanStops.zip"
 
+DISK_PATH_FOR_NAPTAN_FOLDER = "/tmp/Naptan/"
 DISK_PATH_FOR_NPTG_FOLDER = "/tmp/NPTG/"
 DISK_PATH_FOR_NPTG = "/tmp/NPTG.xml"
 
@@ -51,28 +52,35 @@ def get_latest_naptan_xml():
     storage = get_naptan_s3_storage()
     s3_key = "raw/naptan/naptan_latest_xml.xml"
 
+    if os.path.exists(DISK_PATH_FOR_NAPTAN_FOLDER):
+        for filename in os.listdir(DISK_PATH_FOR_NAPTAN_FOLDER):
+            if filename.endswith(".xml"):
+                xml_file_path = os.path.join(DISK_PATH_FOR_NAPTAN_FOLDER, filename)
+                logger.info(f"NaPTAN XML already exists at {xml_file_path}, using existing file.")
+                return xml_file_path
+            
     try:
         logger.info(f"Attempting to retrieve latest NaPTAN data from S3 at {s3_key}.")
         if not storage.exists(s3_key):
             logger.warning(f"No NaPTAN data found in S3 at {s3_key}")
             return None
-
-        buffer = io.BytesIO()
+        
+        os.makedirs(DISK_PATH_FOR_NAPTAN_FOLDER, exist_ok=True)
+        xml_file_path = os.path.join(DISK_PATH_FOR_NAPTAN_FOLDER, "naptan_latest_xml.xml")
         total_bytes = 0
-        with storage.open(s3_key, "rb") as src:
+        with storage.open(s3_key, "rb") as src, open(xml_file_path, "wb") as dst:
             while True:
                 chunk = src.read(CHUNK_SIZE)
                 if not chunk:
                     break
-                buffer.write(chunk)
+                dst.write(chunk)
                 total_bytes += len(chunk)
 
-        buffer.seek(0)
         file_size_mb = total_bytes / (1024 * 1024)
         logger.info(
             f"Read NaPTAN data from S3, size {file_size_mb} MB."
         )
-        return buffer
+        return xml_file_path
 
     except Exception as exc:
         logger.error("Exception while getting NaPTAN data.", exc_info=exc)
