@@ -124,11 +124,6 @@ def task_run_antivirus_check(task_id: int, adapter):
     revision = task.revision
     file_ = revision.upload_file
 
-    if settings.CLAMAV_SKIP_SCAN:
-        adapter.info("Skipping antivirus scan (CLAMAV_SKIP_SCAN=True).")
-        task.update_progress(30)
-        return
-
     try:
         scanner = FileScanner(settings.CLAMAV_HOST, settings.CLAMAV_PORT)
         adapter.info("Virus scanning fares file.")
