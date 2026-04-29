@@ -639,6 +639,13 @@ AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
     default="bodds-dataset-dev-maintenance",
 )
 
+# S3 bucket name for NaPTAN data
+# ------------------------------------------------------------------------------
+AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME = env(
+    "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME",
+    default=None,
+)
+
 # S3 bucket name for DQS Report download
 # ------------------------------------------------------------------------------
 S3_BUCKET_DQS_CSV_REPORT = env(
