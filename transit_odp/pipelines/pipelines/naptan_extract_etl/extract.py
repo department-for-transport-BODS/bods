@@ -25,6 +25,7 @@ HTTP_READ_TIMEOUT = int(
     )
 )
 
+
 def get_naptan_s3_storage():
     # Get S3 storage for NaPTAN data, or default storage if bucket name is not set
     bucket_name = getattr(
@@ -80,10 +81,12 @@ def get_latest_naptan_to_s3():
             uploaded_files.append({latest_key: naptan_url})
 
         except RequestException as exc:
-            logger.error(f"Unable to fetch NaPTAN data from {naptan_url}.", exc_info=exc)
+            logger.error(
+                f"Unable to fetch NaPTAN data from {naptan_url}.", exc_info=exc
+            )
             raise
         except Exception as exc:
             logger.error("Exception while uploading NaPTAN data to S3.", exc_info=exc)
             raise
-    
+
     return uploaded_files

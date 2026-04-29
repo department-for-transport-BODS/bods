@@ -17,14 +17,14 @@ if not settings.configured:
 def handler(event, context):
     """
     AWS Lambda handler for NaPTAN file download.
-    
-    Downloads latest NaPTAN XML from DfT API, 
+
+    Downloads latest NaPTAN XML from DfT API,
     and saves new file at raw/naptan/naptan_latest.xml for ETL to consume.
-    
+
     Args:
         event: Lambda event (unused for this function)
         context: Lambda context (unused for this function)
-    
+
     Returns:
         dict: Response with statusCode and body containing result or error
     """
@@ -34,7 +34,7 @@ def handler(event, context):
         )
 
         naptan_key = get_latest_naptan_to_s3()
-        
+
         return {
             "statusCode": 200,
             "body": json.dumps(
@@ -46,10 +46,10 @@ def handler(event, context):
         }
     except Exception as e:
         import traceback
-        
+
         error_msg = str(e)
         error_trace = traceback.format_exc()
-        
+
         return {
             "statusCode": 500,
             "body": json.dumps(
