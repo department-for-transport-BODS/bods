@@ -1,6 +1,7 @@
 import os
 import shutil
 from pathlib import Path
+import io
 
 import pandas as pd
 import requests
@@ -13,8 +14,7 @@ from transit_odp.common.loggers import LoaderAdapter
 from transit_odp.naptan.dataclasses import StopPoint
 from transit_odp.naptan.dataclasses.nptg import NationalPublicTransportGazetteer
 
-from datetime import datetime
-from io import BytesIO
+
 from django.core.files.storage import default_storage
 from storages.backends.s3boto3 import S3Boto3Storage
 
@@ -22,22 +22,10 @@ ns = "http://www.naptan.org.uk/"
 namespace = {"naptan": ns}
 
 CHUNK_SIZE = 8 * 1024 * 1024  # 8MB chunks
-HTTP_CONNECT_TIMEOUT = int(
-    getattr(
-        settings,
-        "NAPTAN_HTTP_CONNECT_TIMEOUT",
-        os.getenv("NAPTAN_HTTP_CONNECT_TIMEOUT", 30),
-    )
-)
-HTTP_READ_TIMEOUT = int(
-    getattr(
-        settings, "NAPTAN_HTTP_READ_TIMEOUT", os.getenv("NAPTAN_HTTP_READ_TIMEOUT", 600)
-    )
-)
 
 DISK_PATH_FOR_NAPTAN_ZIP = "/tmp/NaptanStops.zip"
 
-DISK_PATH_FOR_NAPTAN_FOLDER = "/tmp/NaptanStops/"
+DISK_PATH_FOR_NAPTAN_FOLDER = "/tmp/Naptan/"
 DISK_PATH_FOR_NPTG_FOLDER = "/tmp/NPTG/"
 DISK_PATH_FOR_NPTG = "/tmp/NPTG.xml"
 
@@ -60,50 +48,9 @@ def get_naptan_s3_storage():
         return default_storage
 
 
-def get_latest_naptan_to_s3():
-    naptan_url = settings.NAPTAN_IMPORT_URL
-    verify_ssl = getattr(settings, "NAPTAN_SSL_VERIFY", True)
-
-    logger.info(f"Loading NaPTAN file from {naptan_url} and saving to S3.")
-
-    try:
-        response = requests.get(
-            naptan_url,
-            timeout=(HTTP_CONNECT_TIMEOUT, HTTP_READ_TIMEOUT),
-            verify=verify_ssl,
-            stream=True,
-        )
-        response.raise_for_status()
-
-        storage = get_naptan_s3_storage()
-        latest_key = "raw/naptan/naptan_latest.xml"
-
-        total_bytes = 0
-        with storage.open(latest_key, "wb") as dst:
-            for chunk in response.iter_content(CHUNK_SIZE):
-                if chunk:
-                    dst.write(chunk)
-                    total_bytes += len(chunk)
-
-        file_size_mb = total_bytes / (1024 * 1024)
-        logger.info(
-            f"NaPTAN data uploaded to S3 at {latest_key} (size: {file_size_mb:.2f} MB)."
-        )
-        return latest_key
-
-    except RequestException as exc:
-        logger.error(f"Unable to fetch NaPTAN data from {naptan_url}.", exc_info=exc)
-        raise
-    except Exception as exc:
-        logger.error("Exception while uploading NaPTAN data to S3.", exc_info=exc)
-        raise
-
-
 def get_latest_naptan_xml():
-
     storage = get_naptan_s3_storage()
-    s3_key = "raw/naptan/naptan_latest.xml"
-    xml_file_path = None
+    s3_key = "raw/naptan/naptan_latest_xml.xml"
 
     try:
         logger.info(f"Attempting to retrieve latest NaPTAN data from S3 at {s3_key}.")
@@ -111,36 +58,12 @@ def get_latest_naptan_xml():
             logger.warning(f"No NaPTAN data found in S3 at {s3_key}")
             return None
 
-        dir_path = Path(DISK_PATH_FOR_NAPTAN_FOLDER)
-        dir_path.mkdir(parents=True, exist_ok=True)
-        filepath = dir_path / "Naptan.xml"
-
-        with storage.open(s3_key, "rb") as src, open(filepath, "wb") as dst:
-            shutil.copyfileobj(src, dst, length=CHUNK_SIZE)
-
-        logger.info(
-            f"Read NaPTAN data from S3. Writing to disk for processing at {filepath}."
-        )
-        return str(filepath)
+        logger.info(f"NaPTAN XML found in S3 at {s3_key}.")
+        return storage.open(s3_key, "rb")
 
     except Exception as exc:
         logger.error("Exception while getting NaPTAN data.", exc_info=exc)
         return None
-
-
-def upload_naptan_to_s3(data: bytes, data_type: str) -> str:
-    # Uploads raw NaPTAN data to S3 & returns where it was saved
-    storage = get_naptan_s3_storage()
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    s3_key = f"raw/{data_type}/{timestamp}.xml"  # Check this!
-
-    file_obj = BytesIO(data)
-    saved_path = storage.save(s3_key, file_obj)
-    file_size = len(data) / (1024 * 1024)
-    logger.info(
-        f"Uploaded NaPTAN {data_type} data to S3 at {saved_path} (size: {file_size:.2f} MB)."
-    )
-    return saved_path
 
 
 def get_latest_nptg():
@@ -294,9 +217,6 @@ def cleanup():
     if os.path.exists(DISK_PATH_FOR_NAPTAN_ZIP):
         logger.info(f"Removing {DISK_PATH_FOR_NAPTAN_ZIP}.")
         os.remove(DISK_PATH_FOR_NAPTAN_ZIP)
-    if os.path.exists(DISK_PATH_FOR_NAPTAN_FOLDER):
-        logger.info(f"Removing {DISK_PATH_FOR_NAPTAN_FOLDER}.")
-        shutil.rmtree(DISK_PATH_FOR_NAPTAN_FOLDER)
     if os.path.exists(DISK_PATH_FOR_NPTG):
         logger.info(f"Removing {DISK_PATH_FOR_NPTG}.")
         os.remove(DISK_PATH_FOR_NPTG)

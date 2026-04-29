@@ -15,7 +15,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.base")
 django.setup()
 
 # Import Lambda handler
-from transit_odp.pipelines.pipelines.naptan_etl.lambda_handler import handler
+from transit_odp.pipelines.pipelines.naptan_extract_etl.lambda_handler import handler
 
 
 if __name__ == "__main__":
@@ -27,17 +27,17 @@ if __name__ == "__main__":
     # Test the handler
     print("Invoking handler(event={}, context={})...")
     print()
-    
+
     try:
         result = handler({}, {})
-        
+
         status_code = result.get("statusCode")
         body = json.loads(result.get("body", "{}"))
-        
+
         print(f"Status Code: {status_code}")
         print(f"Response Body:")
         print(json.dumps(body, indent=2))
-        
+
         if status_code == 200:
             print()
             print("✅ SUCCESS: NaPTAN archived to S3")
@@ -46,15 +46,16 @@ if __name__ == "__main__":
             print()
             print("❌ FAILED: Lambda returned error")
             print(f"   Error: {body.get('error')}")
-            if 'trace' in body:
+            if "trace" in body:
                 print(f"   Traceback:\n{body.get('trace')}")
             sys.exit(1)
-            
+
     except Exception as e:
         print(f"❌ EXCEPTION: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
-    
+
     print()
     print("=" * 70)

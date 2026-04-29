@@ -29,7 +29,7 @@ def handler(event, context):
         dict: Response with statusCode and body containing result or error
     """
     try:
-        from transit_odp.pipelines.pipelines.naptan_etl.extract import (
+        from transit_odp.pipelines.pipelines.naptan_extract_etl.extract import (
             get_latest_naptan_to_s3,
         )
 
