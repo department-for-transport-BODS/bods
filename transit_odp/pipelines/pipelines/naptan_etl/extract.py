@@ -128,7 +128,6 @@ def get_latest_naptan_xml():
         return None
 
 
-
 def upload_naptan_to_s3(data: bytes, data_type: str) -> str:
     # Uploads raw NaPTAN data to S3 & returns where it was saved
     storage = get_naptan_s3_storage()
