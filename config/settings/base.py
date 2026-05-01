@@ -650,12 +650,20 @@ AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME = env(
     default=None,
 )
 
+# S3 bucket name for OTC data
+# ------------------------------------------------------------------------------
+AWS_OTC_RAW_STORAGE_BUCKET_NAME = env(
+    "AWS_OTC_RAW_STORAGE_BUCKET_NAME",
+    default=None,
+)
+
 # S3 bucket name for DQS Report download
 # ------------------------------------------------------------------------------
 S3_BUCKET_DQS_CSV_REPORT = env(
     "S3_BUCKET_DQS_CSV_REPORT",
     default="bodds-dev-dqs-reports",
 )
+
 # DQS STEP FUNCTION PARAMETERS
 DQS_STATE_MACHINE_ARN = env("DQS_STATE_MACHINE_ARN", default="")
 
