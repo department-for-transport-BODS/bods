@@ -34,8 +34,8 @@ def task_run_naptan_extract_etl():
 @shared_task(ignore_result=True)
 def task_run_naptan_etl():
     naptan_etl_main.run()
-    
-    
+
+
 @shared_task(ignore_result=True)
 def task_run_otc_etl():
     otc_etl_main.run()
