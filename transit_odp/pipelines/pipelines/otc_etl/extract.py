@@ -21,9 +21,7 @@ HTTP_CONNECT_TIMEOUT = int(
     )
 )
 HTTP_READ_TIMEOUT = int(
-    getattr(
-        settings, "OTC_HTTP_READ_TIMEOUT", os.getenv("OTC_HTTP_READ_TIMEOUT", 600)
-    )
+    getattr(settings, "OTC_HTTP_READ_TIMEOUT", os.getenv("OTC_HTTP_READ_TIMEOUT", 600))
 )
 
 
@@ -82,9 +80,7 @@ def get_latest_otc_to_s3():
             uploaded_files.append({latest_key: otc_url})
 
         except RequestException as exc:
-            logger.error(
-                f"Unable to fetch OTC data from {otc_url}.", exc_info=exc
-            )
+            logger.error(f"Unable to fetch OTC data from {otc_url}.", exc_info=exc)
             raise
         except Exception as exc:
             logger.error("Exception while uploading OTC data to S3.", exc_info=exc)

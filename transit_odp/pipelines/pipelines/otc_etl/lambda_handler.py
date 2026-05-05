@@ -1,6 +1,7 @@
 """
 Lambda handler for OTC upload to S3
 """
+
 import json
 import os
 import django

@@ -5,7 +5,6 @@ from transit_odp.pipelines.pipelines.otc_etl.extract import (
 from celery.utils.log import get_task_logger
 from transit_odp.common.loggers import LoaderAdapter
 
-
 logger = get_task_logger(__name__)
 logger = LoaderAdapter("OTCLoader", logger)
 
