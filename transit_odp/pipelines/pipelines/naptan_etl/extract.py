@@ -1,6 +1,7 @@
 import os
 import shutil
 from pathlib import Path
+import io
 
 import pandas as pd
 import requests
@@ -13,14 +14,18 @@ from transit_odp.common.loggers import LoaderAdapter
 from transit_odp.naptan.dataclasses import StopPoint
 from transit_odp.naptan.dataclasses.nptg import NationalPublicTransportGazetteer
 
+
+from django.core.files.storage import default_storage
+from storages.backends.s3boto3 import S3Boto3Storage
+
 ns = "http://www.naptan.org.uk/"
 namespace = {"naptan": ns}
 
-CHUNK_SIZE = 2000
+CHUNK_SIZE = 8 * 1024 * 1024  # 8MB chunks
 
 DISK_PATH_FOR_NAPTAN_ZIP = "/tmp/NaptanStops.zip"
 
-DISK_PATH_FOR_NAPTAN_FOLDER = "/tmp/NaptanStops/"
+DISK_PATH_FOR_NAPTAN_FOLDER = "/tmp/Naptan/"
 DISK_PATH_FOR_NPTG_FOLDER = "/tmp/NPTG/"
 DISK_PATH_FOR_NPTG = "/tmp/NPTG.xml"
 
@@ -28,38 +33,37 @@ logger = get_task_logger(__name__)
 logger = LoaderAdapter("NaPTANLoader", logger)
 
 
+def get_naptan_s3_storage():
+    # Get S3 storage for NaPTAN data, or default storage if bucket name is not set
+    bucket_name = getattr(
+        settings, "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME", None
+    ) or os.getenv("AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME")
+    if bucket_name:
+        logger.info(f"Using S3 bucket {bucket_name} for NaPTAN data storage.")
+        return S3Boto3Storage(bucket_name=bucket_name)
+    else:
+        logger.warning(
+            "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME is not set. Using default storage."
+        )
+        return default_storage
+
+
 def get_latest_naptan_xml():
-    naptan_url = settings.NAPTAN_IMPORT_URL
-    logger.info(f"Loading NaPTAN file from {naptan_url}.")
-    xml_file_path = None
+    storage = get_naptan_s3_storage()
+    s3_key = "raw/naptan/naptan_latest_xml.xml"
 
     try:
-        response = requests.get(naptan_url)
-    except RequestException as exc:
-        logger.error(f"Unable to fetch NaPTAN data from {naptan_url}.", exc_info=exc)
-        return xml_file_path
+        logger.info(f"Attempting to retrieve latest NaPTAN data from S3 at {s3_key}.")
+        if not storage.exists(s3_key):
+            logger.warning(f"No NaPTAN data found in S3 at {s3_key}")
+            return None
 
-    try:
-        logger.info("Writing NaPTAN response data to a file on disk.")
-        if response.status_code == 200:
-            dir_path = Path(DISK_PATH_FOR_NAPTAN_FOLDER)
-            if not dir_path.exists():
-                dir_path.mkdir(parents=True, exist_ok=True)
+        logger.info(f"NaPTAN XML found in S3 at {s3_key}.")
+        return storage.open(s3_key, "rb")
 
-            filepath = dir_path / "Naptan.xml"
-            with filepath.open("wb") as f:
-                for chunk in response.iter_content(CHUNK_SIZE):
-                    f.write(chunk)
-
-            logger.info("Finished NaPTAN writing to file on disk.")
-            for filename in os.listdir(DISK_PATH_FOR_NAPTAN_FOLDER):
-                if filename.endswith(".xml"):
-                    xml_file_path = os.path.join(DISK_PATH_FOR_NAPTAN_FOLDER, filename)
     except Exception as exc:
         logger.error("Exception while getting NaPTAN data.", exc_info=exc)
-
-    logger.info("NaPTAN file successfully extracted to disk.")
-    return xml_file_path
+        return None
 
 
 def get_latest_nptg():
@@ -213,9 +217,6 @@ def cleanup():
     if os.path.exists(DISK_PATH_FOR_NAPTAN_ZIP):
         logger.info(f"Removing {DISK_PATH_FOR_NAPTAN_ZIP}.")
         os.remove(DISK_PATH_FOR_NAPTAN_ZIP)
-    if os.path.exists(DISK_PATH_FOR_NAPTAN_FOLDER):
-        logger.info(f"Removing {DISK_PATH_FOR_NAPTAN_FOLDER}.")
-        shutil.rmtree(DISK_PATH_FOR_NAPTAN_FOLDER)
     if os.path.exists(DISK_PATH_FOR_NPTG):
         logger.info(f"Removing {DISK_PATH_FOR_NPTG}.")
         os.remove(DISK_PATH_FOR_NPTG)
