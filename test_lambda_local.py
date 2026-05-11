@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Local test script for NaPTAN Lambda handler.
+Local test script for NaPTAN/NPTG Lambda handler.
 
 Usage (from repo root, with docker-compose services running):
     docker-compose run --rm $(grep -v '^#\|^$' .env.naptan-test | sed 's/^/-e /') django python test_lambda_local.py
@@ -40,8 +40,9 @@ if __name__ == "__main__":
 
         if status_code == 200:
             print()
-            print("✅ SUCCESS: NaPTAN archived to S3")
-            print(f"   Location: {body.get('s3_key')}")
+            print("✅ SUCCESS: NaPTAN/NPTG archived to S3")
+            print(f"   NaPTAN: {body.get('naptan')}")
+            print(f"   NPTG: {body.get('nptg')}")
         else:
             print()
             print("❌ FAILED: Lambda returned error")

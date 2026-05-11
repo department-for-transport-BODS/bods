@@ -90,3 +90,52 @@ def get_latest_naptan_to_s3():
             raise
 
     return uploaded_files
+
+
+def get_latest_nptg_to_s3():
+    nptg_url = settings.NPTG_IMPORT_URL
+    latest_key = "raw/nptg/nptg_latest.xml"
+    verify_ssl = getattr(settings, "NAPTAN_SSL_VERIFY", True)
+    storage = get_naptan_s3_storage()
+
+    try:
+        logger.info(
+            f"Loading NPTG file from {nptg_url} and saving to S3 at {latest_key}."
+        )
+
+        response = requests.get(
+            nptg_url,
+            timeout=(HTTP_CONNECT_TIMEOUT, HTTP_READ_TIMEOUT),
+            verify=verify_ssl,
+            stream=True,
+        )
+        response.raise_for_status()
+
+        total_bytes = 0
+        validation_count = 0
+        with storage.open(latest_key, "wb") as dst:
+            for chunk in response.iter_content(CHUNK_SIZE):
+                if chunk:
+                    dst.write(chunk)
+                    total_bytes += len(chunk)
+                    validation_count += chunk.count(b"<NptgLocality")
+
+        file_size_mb = total_bytes / (1024 * 1024)
+        logger.info(
+            f"NPTG data uploaded to S3 at {latest_key} "
+            f"(size: {file_size_mb:.2f} MB, validation_count: {validation_count})."
+        )
+
+        return {
+            latest_key: {
+                "source": nptg_url,
+                "size_mb": round(file_size_mb, 2),
+                "validation_count": validation_count,
+            }
+        }
+    except RequestException as exc:
+        logger.error(f"Unable to fetch NPTG data from {nptg_url}.", exc_info=exc)
+        raise
+    except Exception as exc:
+        logger.error("Exception while uploading NPTG data to S3.", exc_info=exc)
+        raise
