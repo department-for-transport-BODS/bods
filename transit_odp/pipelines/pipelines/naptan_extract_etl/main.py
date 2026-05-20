@@ -2,6 +2,7 @@ from transit_odp.pipelines.pipelines.naptan_extract_etl.lambda_handler import ha
 from transit_odp.pipelines.pipelines.naptan_extract_etl.extract import (
     get_latest_naptan_to_s3,
     get_latest_nptg_to_s3,
+    get_latest_noc_to_s3,
 )
 from celery.utils.log import get_task_logger
 from transit_odp.common.loggers import LoaderAdapter
@@ -19,5 +20,8 @@ def run():
 
     nptg_key = get_latest_nptg_to_s3()
     logger.info(f"Archived NPTG data to S3: {nptg_key}")
+
+    noc_key = get_latest_noc_to_s3()
+    logger.info(f"Archived NOC data to S3: {noc_key}")
 
     logger.info("[run] finished")
