@@ -140,6 +140,7 @@ def get_latest_nptg_to_s3():
         logger.error("Exception while uploading NPTG data to S3.", exc_info=exc)
         raise
 
+
 def get_latest_noc_to_s3():
     noc_url = settings.NOC_IMPORT_URL
     latest_key = "raw/noc/noc_latest.xml"
