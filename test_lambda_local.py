@@ -40,9 +40,10 @@ if __name__ == "__main__":
 
         if status_code == 200:
             print()
-            print("✅ SUCCESS: NaPTAN/NPTG archived to S3")
+            print("✅ SUCCESS: NaPTAN/NPTG/NOC archived to S3")
             print(f"   NaPTAN: {body.get('naptan')}")
             print(f"   NPTG: {body.get('nptg')}")
+            print(f"   NOC: {body.get('noc')}")
         else:
             print()
             print("❌ FAILED: Lambda returned error")
