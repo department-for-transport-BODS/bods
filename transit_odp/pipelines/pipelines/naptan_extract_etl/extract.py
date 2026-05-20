@@ -139,3 +139,51 @@ def get_latest_nptg_to_s3():
     except Exception as exc:
         logger.error("Exception while uploading NPTG data to S3.", exc_info=exc)
         raise
+
+def get_latest_noc_to_s3():
+    noc_url = settings.NOC_IMPORT_URL
+    latest_key = "raw/noc/noc_latest.xml"
+    verify_ssl = getattr(settings, "NAPTAN_SSL_VERIFY", True)
+    storage = get_naptan_s3_storage()
+
+    try:
+        logger.info(
+            f"Loading NOC file from {noc_url} and saving to S3 at {latest_key}."
+        )
+
+        response = requests.get(
+            noc_url,
+            timeout=(HTTP_CONNECT_TIMEOUT, HTTP_READ_TIMEOUT),
+            verify=verify_ssl,
+            stream=True,
+        )
+        response.raise_for_status()
+
+        total_bytes = 0
+        validation_count = 0
+        with storage.open(latest_key, "wb") as dst:
+            for chunk in response.iter_content(CHUNK_SIZE):
+                if chunk:
+                    dst.write(chunk)
+                    total_bytes += len(chunk)
+                    validation_count += chunk.count(b"<NocEntry")
+
+        file_size_mb = total_bytes / (1024 * 1024)
+        logger.info(
+            f"NOC data uploaded to S3 at {latest_key} "
+            f"(size: {file_size_mb:.2f} MB, validation_count: {validation_count})."
+        )
+
+        return {
+            latest_key: {
+                "source": noc_url,
+                "size_mb": round(file_size_mb, 2),
+                "validation_count": validation_count,
+            }
+        }
+    except RequestException as exc:
+        logger.error(f"Unable to fetch NOC data from {noc_url}.", exc_info=exc)
+        raise
+    except Exception as exc:
+        logger.error("Exception while uploading NOC data to S3.", exc_info=exc)
+        raise
