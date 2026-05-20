@@ -16,10 +16,10 @@ if not settings.configured:
 
 def handler(event, context):
     """
-    AWS Lambda handler for NaPTAN/NPTG file download.
+    AWS Lambda handler for NaPTAN/NPTG/NOC file download.
 
-    Downloads latest NaPTAN/NPTG files from DfT API,
-    and saves them under raw/naptan and raw/nptg for ETL to consume.
+    Downloads latest NaPTAN/NPTG/NOC files from DfT API,
+    and saves them under raw/naptan, raw/nptg, and raw/noc for ETL to consume.
 
     Args:
         event: Lambda event (unused for this function)
@@ -32,18 +32,21 @@ def handler(event, context):
         from transit_odp.pipelines.pipelines.naptan_extract_etl.extract import (
             get_latest_naptan_to_s3,
             get_latest_nptg_to_s3,
+            get_latest_noc_to_s3,
         )
 
         naptan_key = get_latest_naptan_to_s3()
         nptg_key = get_latest_nptg_to_s3()
+        noc_key = get_latest_noc_to_s3()
 
         return {
             "statusCode": 200,
             "body": json.dumps(
                 {
-                    "message": "Latest NaPTAN/NPTG downloaded successfully",
+                    "message": "Latest NaPTAN/NPTG/NOC downloaded successfully",
                     "naptan": naptan_key,
                     "nptg": nptg_key,
+                    "noc": noc_key,
                 }
             ),
         }
