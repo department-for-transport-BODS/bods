@@ -5,11 +5,6 @@ Local test script for NaPTAN/NPTG/NOC Lambda handler.
 Usage (from repo root, with docker-compose services running):
     docker-compose run --rm $(grep -v '^#\|^$' .env.naptan-test | sed 's/^/-e /') django python test_lambda_local.py
 """
-Local test script for NaPTAN/NPTG/NOC Lambda handler.
-
-Usage (from repo root, with docker-compose services running):
-    docker-compose run --rm $(grep -v '^#\|^$' .env.naptan-test | sed 's/^/-e /') django python test_lambda_local.py
-"""
 import os
 import sys
 import django
