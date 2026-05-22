@@ -22,9 +22,10 @@ namespace = {"naptan": ns}
 
 CHUNK_SIZE = 8 * 1024 * 1024  # 8MB chunks
 
-BUCKET_NAME = os.getenv("BUCKET_NAME")
+NAPTAN_BUCKET_NAME = os.getenv("NAPTAN_BUCKET_NAME")
 BUCKET_REGION = os.getenv("BUCKET_REGION")
 NAPTAN_S3_KEY = os.getenv("NAPTAN_S3_KEY")
+NPTG_BUCKET_NAME = os.getenv("NPTG_BUCKET_NAME")
 NPTG_S3_KEY = os.getenv("NPTG_S3_KEY")
 
 DISK_PATH_FOR_NAPTAN_ZIP = "/tmp/NaptanStops.zip"
@@ -40,15 +41,28 @@ nptg_logger = LoaderAdapter("NPTGLoader", get_task_logger(__name__))
 
 def get_naptan_s3_storage():
     # Get S3 storage for NaPTAN data, or default storage if bucket name is not set
-    if BUCKET_NAME:
-        logger.info(f"Using S3 bucket {BUCKET_NAME} for NaPTAN data storage.")
-        storage_kwargs = {"bucket_name": BUCKET_NAME}
+    if NAPTAN_BUCKET_NAME:
+        logger.info(f"Using S3 bucket {NAPTAN_BUCKET_NAME} for NaPTAN data storage.")
+        storage_kwargs = {"bucket_name": NAPTAN_BUCKET_NAME}
         if BUCKET_REGION:
             storage_kwargs["region_name"] = BUCKET_REGION
         return S3Boto3Storage(**storage_kwargs)
     else:
-        logger.warning("BUCKET_NAME is not set. Using default storage.")
+        logger.warning("NAPTAN_BUCKET_NAME is not set. Using default storage.")
         return default_storage
+
+
+def get_nptg_s3_storage():
+    if not NPTG_BUCKET_NAME:
+        nptg_logger.warning("NPTG_BUCKET_NAME is not set. Using default storage.")
+        return default_storage
+
+    storage_kwargs = {"bucket_name": NPTG_BUCKET_NAME}
+    if BUCKET_REGION:
+        storage_kwargs["region_name"] = BUCKET_REGION
+
+    nptg_logger.info(f"Using S3 bucket {NPTG_BUCKET_NAME} for NPTG data storage.")
+    return S3Boto3Storage(**storage_kwargs)
 
 
 def get_latest_naptan_xml():
@@ -73,7 +87,7 @@ def get_latest_naptan_xml():
 
 
 def get_latest_nptg():
-    storage = get_naptan_s3_storage()
+    storage = get_nptg_s3_storage()
     s3_key = NPTG_S3_KEY
     if not s3_key:
         nptg_logger.warning("NPTG_S3_KEY is not set.")
