@@ -41,49 +41,51 @@ def get_noc_s3_storage():
 
 
 def get_latest_noc_to_s3():
-    noc_url = settings.NOC_IMPORT_URL
-    latest_key = "raw/noc/noc_latest.xml"
+    xml_url = settings.NOC_XML_IMPORT_URL
+    csv_url = settings.NOC_CSV_IMPORT_URL
     verify_ssl = getattr(settings, "NOC_SSL_VERIFY", True)
     storage = get_noc_s3_storage()
 
-    try:
+    uploads = [
+        (xml_url, "raw/noc/noc_latest_xml.xml"),
+        (csv_url, "raw/noc/noc_latest_csv.csv"),
+    ]
+    uploaded_files = []
+
+    for noc_url, latest_key in uploads:
         logger.info(
             f"Loading NOC file from {noc_url} and saving to S3 at {latest_key}."
         )
 
-        response = requests.get(
-            noc_url,
-            timeout=(HTTP_CONNECT_TIMEOUT, HTTP_READ_TIMEOUT),
-            verify=verify_ssl,
-            stream=True,
-        )
-        response.raise_for_status()
+        try:
+            response = requests.get(
+                noc_url,
+                timeout=(HTTP_CONNECT_TIMEOUT, HTTP_READ_TIMEOUT),
+                verify=verify_ssl,
+                stream=True,
+            )
+            response.raise_for_status()
 
-        total_bytes = 0
-        validation_count = 0
-        with storage.open(latest_key, "wb") as dst:
-            for chunk in response.iter_content(CHUNK_SIZE):
-                if chunk:
-                    dst.write(chunk)
-                    total_bytes += len(chunk)
-                    validation_count += chunk.count(b"<NocEntry")
+            total_bytes = 0
+            with storage.open(latest_key, "wb") as dst:
+                for chunk in response.iter_content(CHUNK_SIZE):
+                    if chunk:
+                        dst.write(chunk)
+                        total_bytes += len(chunk)
 
-        file_size_mb = total_bytes / (1024 * 1024)
-        logger.info(
-            f"NOC data uploaded to S3 at {latest_key} "
-            f"(size: {file_size_mb:.2f} MB, validation_count: {validation_count})."
-        )
+            file_size_mb = total_bytes / (1024 * 1024)
+            logger.info(
+                f"NOC data uploaded to S3 at {latest_key} (size: {file_size_mb:.2f} MB)."
+            )
+            uploaded_files.append({latest_key: noc_url})
 
-        return {
-            latest_key: {
-                "source": noc_url,
-                "size_mb": round(file_size_mb, 2),
-                "validation_count": validation_count,
-            }
-        }
-    except RequestException as exc:
-        logger.error(f"Unable to fetch NOC data from {noc_url}.", exc_info=exc)
-        raise
-    except Exception as exc:
-        logger.error("Exception while uploading NOC data to S3.", exc_info=exc)
-        raise
+        except RequestException as exc:
+            logger.error(
+                f"Unable to fetch NOC data from {noc_url}.", exc_info=exc
+            )
+            raise
+        except Exception as exc:
+            logger.error("Exception while uploading NOC data to S3.", exc_info=exc)
+            raise
+
+    return uploaded_files
