@@ -20,10 +20,9 @@ HTTP_CONNECT_TIMEOUT = int(
     )
 )
 HTTP_READ_TIMEOUT = int(
-    getattr(
-        settings, "NOC_HTTP_READ_TIMEOUT", os.getenv("NOC_HTTP_READ_TIMEOUT", 600)
-    )
+    getattr(settings, "NOC_HTTP_READ_TIMEOUT", os.getenv("NOC_HTTP_READ_TIMEOUT", 600))
 )
+
 
 def get_noc_s3_storage():
     # Get S3 storage for NOC data, or default storage if bucket name is not set
@@ -80,9 +79,7 @@ def get_latest_noc_to_s3():
             uploaded_files.append({latest_key: noc_url})
 
         except RequestException as exc:
-            logger.error(
-                f"Unable to fetch NOC data from {noc_url}.", exc_info=exc
-            )
+            logger.error(f"Unable to fetch NOC data from {noc_url}.", exc_info=exc)
             raise
         except Exception as exc:
             logger.error("Exception while uploading NOC data to S3.", exc_info=exc)
