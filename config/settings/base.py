@@ -526,7 +526,7 @@ BANK_HOLIDAY_API_URL = env(
 # NOC import URL
 NOC_XML_IMPORT_URL = env(
     "NOC_XML_IMPORT_URL",
-    default="https://www.travelinedata.org.uk/noc/api/1.0/nocrecords.xml"
+    default="https://www.travelinedata.org.uk/noc/api/1.0/nocrecords.xml",
 )
 NOC_CSV_IMPORT_URL = env(
     "NOC_CSV_IMPORT_URL",
