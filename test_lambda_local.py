@@ -62,17 +62,19 @@ if __name__ == "__main__":
     print("=" * 70)
 
 # Import Lambda handler
-from transit_odp.pipelines.pipelines.noc_extract_etl.lambda_handler import handler as NOC_handler
+from transit_odp.pipelines.pipelines.noc_extract_etl.lambda_handler import (
+    handler as NOC_handler,
+)
 
 
-if __name__ == "__main__":
+if __name__ == "__main_noc__":
     print("=" * 70)
-    print("Testing NOC Lambda Handler Locally")
+    print("Testing NOC Lambda Handler Locally (Standalone)")
     print("=" * 70)
     print()
 
     # Test the handler
-    print("Invoking handler(event={}, context={})...")
+    print("Invoking NOC_handler(event={}, context={})...")
     print()
 
     try:
