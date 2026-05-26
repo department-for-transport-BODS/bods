@@ -529,10 +529,6 @@ NOC_XML_IMPORT_URL = env(
     "NOC_XML_IMPORT_URL",
     default="https://www.travelinedata.org.uk/noc/api/1.0/nocrecords.xml",
 )
-# NOC_CSV_IMPORT_URL = env(
-#     "NOC_CSV_IMPORT_URL",
-#     default="https://www.travelinedata.org.uk/wp-content/themes/desktop/nocadvanced_download.php?reportFormat=csvFlatFile&submit=Submit&allTable%5B%5D=table_data_owner&allTable%5B%5D=table_groups&allTable%5B%5D=table_licence&allTable%5B%5D=table_management_divisions&allTable%5B%5D=table_noclines&allTable%5B%5D=table_noc_table&allTable%5B%5D=table_operators&allTable%5B%5D=table_public_name",
-# )
 
 domain = "https://www.travelinedata.org.uk"
 endpoint = "/wp-content/themes/desktop/nocadvanced_download.php"
