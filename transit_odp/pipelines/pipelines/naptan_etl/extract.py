@@ -13,8 +13,6 @@ from transit_odp.common.loggers import LoaderAdapter
 from transit_odp.naptan.dataclasses import StopPoint
 from transit_odp.naptan.dataclasses.nptg import NationalPublicTransportGazetteer
 
-
-from django.core.files.storage import default_storage
 from storages.backends.s3boto3 import S3Boto3Storage
 
 ns = "http://www.naptan.org.uk/"
@@ -40,22 +38,24 @@ nptg_logger = LoaderAdapter("NPTGLoader", get_task_logger(__name__))
 
 
 def get_naptan_s3_storage():
-    # Get S3 storage for NaPTAN data, or default storage if bucket name is not set
+    # NaPTAN reads must use the configured S3 bucket.
     if NAPTAN_BUCKET_NAME:
         logger.info(f"Using S3 bucket {NAPTAN_BUCKET_NAME} for NaPTAN data storage.")
         storage_kwargs = {"bucket_name": NAPTAN_BUCKET_NAME}
         if BUCKET_REGION:
             storage_kwargs["region_name"] = BUCKET_REGION
         return S3Boto3Storage(**storage_kwargs)
-    else:
-        logger.warning("NAPTAN_BUCKET_NAME is not set. Using default storage.")
-        return default_storage
+
+    message = "NAPTAN_BUCKET_NAME is not set. Cannot read NaPTAN data from S3."
+    logger.error(message)
+    raise RuntimeError(message)
 
 
 def get_nptg_s3_storage():
     if not NPTG_BUCKET_NAME:
-        nptg_logger.warning("NPTG_BUCKET_NAME is not set. Using default storage.")
-        return default_storage
+        message = "NPTG_BUCKET_NAME is not set. Cannot read NPTG data from S3."
+        nptg_logger.error(message)
+        raise RuntimeError(message)
 
     storage_kwargs = {"bucket_name": NPTG_BUCKET_NAME}
     if BUCKET_REGION:
