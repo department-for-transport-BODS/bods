@@ -1,4 +1,6 @@
 import os
+import tempfile
+import zipfile
 import requests
 from requests.exceptions import RequestException
 
@@ -22,6 +24,63 @@ HTTP_CONNECT_TIMEOUT = int(
 HTTP_READ_TIMEOUT = int(
     getattr(settings, "NOC_HTTP_READ_TIMEOUT", os.getenv("NOC_HTTP_READ_TIMEOUT", 600))
 )
+ZIP_ALLOWED_EXTENSIONS = [".zip"]
+CSV_ALLOWED_EXTENSIONS = [".csv"]
+
+
+def _download_to_temp_file(response):
+    temp_file = tempfile.NamedTemporaryFile(mode="w+b", delete=False)
+    temp_path = temp_file.name
+    total_bytes = 0
+
+    try:
+        for chunk in response.iter_content(CHUNK_SIZE):
+            if chunk:
+                temp_file.write(chunk)
+                total_bytes += len(chunk)
+        temp_file.flush()
+    finally:
+        temp_file.close()
+
+    return temp_path, total_bytes
+
+
+def _upload_file_to_storage(storage, source_path, destination_key):
+    with open(source_path, "rb") as src, storage.open(destination_key, "wb") as dst:
+        for chunk in iter(lambda: src.read(CHUNK_SIZE), b""):
+            if chunk:
+                dst.write(chunk)
+
+
+def _extract_and_upload_noc_csv(storage, zip_file_path, latest_key):
+    extracted_keys = []
+    destination_prefix = "raw/noc"
+
+    with zipfile.ZipFile(zip_file_path, "r") as archive:
+        csv_members = [
+            member
+            for member in archive.namelist()
+            if not member.endswith("/")
+            and os.path.splitext(member)[1].lower() in CSV_ALLOWED_EXTENSIONS
+        ]
+
+        if not csv_members:
+            raise ValueError("NOC ZIP archive did not contain any CSV files.")
+
+        for member in csv_members:
+            filename = os.path.basename(member)
+            if not filename:
+                continue
+
+            table_name = os.path.splitext(filename)[0]
+            destination_key = f"{destination_prefix}/{table_name}_latest_csv.csv"
+            with archive.open(member) as src, storage.open(destination_key, "wb") as dst:
+                for chunk in iter(lambda: src.read(CHUNK_SIZE), b""):
+                    if chunk:
+                        dst.write(chunk)
+            extracted_keys.append(destination_key)
+
+    return extracted_keys
 
 
 def get_noc_s3_storage():
@@ -56,6 +115,7 @@ def get_latest_noc_to_s3():
             f"Loading NOC file from {noc_url} and saving to S3 at {latest_key}."
         )
 
+        temp_file_path = None
         try:
             response = requests.get(
                 noc_url,
@@ -65,18 +125,27 @@ def get_latest_noc_to_s3():
             )
             response.raise_for_status()
 
-            total_bytes = 0
-            with storage.open(latest_key, "wb") as dst:
-                for chunk in response.iter_content(CHUNK_SIZE):
-                    if chunk:
-                        dst.write(chunk)
-                        total_bytes += len(chunk)
+            temp_file_path, total_bytes = _download_to_temp_file(response)
+
+            if latest_key.endswith(".csv") and zipfile.is_zipfile(temp_file_path):
+                logger.info(
+                    "Downloaded CSV payload as ZIP; "
+                    f"accepted archive extensions {ZIP_ALLOWED_EXTENSIONS}, "
+                    f"extracting files with extensions {CSV_ALLOWED_EXTENSIONS}."
+                )
+                uploaded_keys = _extract_and_upload_noc_csv(
+                    storage, temp_file_path, latest_key
+                )
+                for uploaded_key in uploaded_keys:
+                    uploaded_files.append({uploaded_key: noc_url})
+            else:
+                _upload_file_to_storage(storage, temp_file_path, latest_key)
+                uploaded_files.append({latest_key: noc_url})
 
             file_size_mb = total_bytes / (1024 * 1024)
             logger.info(
                 f"NOC data uploaded to S3 at {latest_key} (size: {file_size_mb:.2f} MB)."
             )
-            uploaded_files.append({latest_key: noc_url})
 
         except RequestException as exc:
             logger.error(f"Unable to fetch NOC data from {noc_url}.", exc_info=exc)
@@ -84,5 +153,8 @@ def get_latest_noc_to_s3():
         except Exception as exc:
             logger.error("Exception while uploading NOC data to S3.", exc_info=exc)
             raise
+        finally:
+            if temp_file_path and os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
 
     return uploaded_files
