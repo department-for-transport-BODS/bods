@@ -4,6 +4,7 @@ Base settings to build other settings data upon.
 
 # flake8: noqa
 import os
+from urllib.parse import urlencode
 
 import environ
 from dateutil import parser
@@ -528,9 +529,33 @@ NOC_XML_IMPORT_URL = env(
     "NOC_XML_IMPORT_URL",
     default="https://www.travelinedata.org.uk/noc/api/1.0/nocrecords.xml",
 )
+# NOC_CSV_IMPORT_URL = env(
+#     "NOC_CSV_IMPORT_URL",
+#     default="https://www.travelinedata.org.uk/wp-content/themes/desktop/nocadvanced_download.php?reportFormat=csvFlatFile&submit=Submit&allTable%5B%5D=table_data_owner&allTable%5B%5D=table_groups&allTable%5B%5D=table_licence&allTable%5B%5D=table_management_divisions&allTable%5B%5D=table_noclines&allTable%5B%5D=table_noc_table&allTable%5B%5D=table_operators&allTable%5B%5D=table_public_name",
+# )
+
+domain = "https://www.travelinedata.org.uk"
+endpoint = "/wp-content/themes/desktop/nocadvanced_download.php"
+
+params = {
+    "reportFormat": "csvFlatFile",
+    "allTable[]": [
+        "table_data_owner",
+        "table_groups",
+        "table_licence",
+        "table_management_divisions",
+        "table_noclines",
+        "table_noc_table",
+        "table_operators",
+        "table_public_name",
+    ],
+    "submit": "Submit",
+}
+
+NOC_URL = f"{domain}{endpoint}?{urlencode(params, doseq=True)}"
+
 NOC_CSV_IMPORT_URL = env(
-    "NOC_CSV_IMPORT_URL",
-    default="https://www.travelinedata.org.uk/wp-content/themes/desktop/nocadvanced_download.php?reportFormat=csvFlatFile&submit=Submit&allTable%5B%5D=table_data_owner&allTable%5B%5D=table_groups&allTable%5B%5D=table_licence&allTable%5B%5D=table_management_divisions&allTable%5B%5D=table_noclines&allTable%5B%5D=table_noc_table&allTable%5B%5D=table_operators&allTable%5B%5D=table_public_name",
+    "NOC_CSV_IMPORT_URL", default= NOC_URL,
 )
 
 # Google Analytics Key
