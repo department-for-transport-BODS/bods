@@ -26,6 +26,9 @@ HTTP_READ_TIMEOUT = int(
 )
 ZIP_ALLOWED_EXTENSIONS = [".zip"]
 CSV_ALLOWED_EXTENSIONS = [".csv"]
+NOC_CSV_TABLE_NAMES = {
+    table_name.lower() for table_name in getattr(settings, "NOC_CSV_TABLE_NAMES", ())
+}
 
 
 def _download_to_temp_file(response):
@@ -72,8 +75,14 @@ def _extract_and_upload_noc_csv(storage, zip_file_path, latest_key):
             if not filename:
                 continue
 
-            table_name = os.path.splitext(filename)[0]
-            destination_key = f"{destination_prefix}/{table_name}_latest_csv.csv"
+            source_table_name = os.path.splitext(filename)[0].lower()
+            if source_table_name not in NOC_CSV_TABLE_NAMES:
+                logger.warning(
+                    f"Skipping NOC archive member {filename}: no table mapping configured."
+                )
+                continue
+
+            destination_key = f"{destination_prefix}/{source_table_name}_latest_csv.csv"
             with archive.open(member) as src, storage.open(
                 destination_key, "wb"
             ) as dst:

@@ -548,6 +548,8 @@ noc_params = {
     "submit": "Submit",
 }
 
+NOC_CSV_TABLE_NAMES = tuple(noc_params["allTable[]"])
+
 NOC_URL = f"{noc_domain}{noc_endpoint}?{urlencode(noc_params, doseq=True)}"
 
 NOC_CSV_IMPORT_URL = env(
