@@ -530,10 +530,10 @@ NOC_XML_IMPORT_URL = env(
     default="https://www.travelinedata.org.uk/noc/api/1.0/nocrecords.xml",
 )
 
-domain = "https://www.travelinedata.org.uk"
-endpoint = "/wp-content/themes/desktop/nocadvanced_download.php"
+noc_domain = "https://www.travelinedata.org.uk"
+noc_endpoint = "/wp-content/themes/desktop/nocadvanced_download.php"
 
-params = {
+noc_params = {
     "reportFormat": "csvFlatFile",
     "allTable[]": [
         "table_data_owner",
@@ -548,7 +548,7 @@ params = {
     "submit": "Submit",
 }
 
-NOC_URL = f"{domain}{endpoint}?{urlencode(params, doseq=True)}"
+NOC_URL = f"{noc_domain}{noc_endpoint}?{urlencode(noc_params, doseq=True)}"
 
 NOC_CSV_IMPORT_URL = env(
     "NOC_CSV_IMPORT_URL",
