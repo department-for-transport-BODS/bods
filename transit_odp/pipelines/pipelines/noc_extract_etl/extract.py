@@ -74,7 +74,9 @@ def _extract_and_upload_noc_csv(storage, zip_file_path, latest_key):
 
             table_name = os.path.splitext(filename)[0]
             destination_key = f"{destination_prefix}/{table_name}_latest_csv.csv"
-            with archive.open(member) as src, storage.open(destination_key, "wb") as dst:
+            with archive.open(member) as src, storage.open(
+                destination_key, "wb"
+            ) as dst:
                 for chunk in iter(lambda: src.read(CHUNK_SIZE), b""):
                     if chunk:
                         dst.write(chunk)
