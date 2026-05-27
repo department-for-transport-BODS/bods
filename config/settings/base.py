@@ -551,7 +551,8 @@ params = {
 NOC_URL = f"{domain}{endpoint}?{urlencode(params, doseq=True)}"
 
 NOC_CSV_IMPORT_URL = env(
-    "NOC_CSV_IMPORT_URL", default= NOC_URL,
+    "NOC_CSV_IMPORT_URL",
+    default=NOC_URL,
 )
 
 # Google Analytics Key
