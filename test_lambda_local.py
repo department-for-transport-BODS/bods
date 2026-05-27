@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Local test script for NaPTAN/NPTG Lambda handler.
+Local test script for NaPTAN/NPTG/NOC Lambda handler.
 
 Usage (from repo root, with docker-compose services running):
     docker-compose run --rm $(grep -v '^#\|^$' .env.naptan-test | sed 's/^/-e /') django python test_lambda_local.py
@@ -43,6 +43,54 @@ if __name__ == "__main__":
             print("✅ SUCCESS: NaPTAN/NPTG archived to S3")
             print(f"   NaPTAN: {body.get('naptan')}")
             print(f"   NPTG: {body.get('nptg')}")
+        else:
+            print()
+            print("❌ FAILED: Lambda returned error")
+            print(f"   Error: {body.get('error')}")
+            if "trace" in body:
+                print(f"   Traceback:\n{body.get('trace')}")
+            sys.exit(1)
+
+    except Exception as e:
+        print(f"❌ EXCEPTION: {e}")
+        import traceback
+
+        traceback.print_exc()
+        sys.exit(1)
+
+    print()
+    print("=" * 70)
+
+# Import Lambda handler
+from transit_odp.pipelines.pipelines.noc_extract_etl.lambda_handler import (
+    handler as NOC_handler,
+)
+
+
+if __name__ == "__main_noc__":
+    print("=" * 70)
+    print("Testing NOC Lambda Handler Locally (Standalone)")
+    print("=" * 70)
+    print()
+
+    # Test the handler
+    print("Invoking NOC_handler(event={}, context={})...")
+    print()
+
+    try:
+        result = NOC_handler({}, {})
+
+        status_code = result.get("statusCode")
+        body = json.loads(result.get("body", "{}"))
+
+        print(f"Status Code: {status_code}")
+        print(f"Response Body:")
+        print(json.dumps(body, indent=2))
+
+        if status_code == 200:
+            print()
+            print("✅ SUCCESS: NOC archived to S3")
+            print(f"   NOC: {body.get('noc')}")
         else:
             print()
             print("❌ FAILED: Lambda returned error")
