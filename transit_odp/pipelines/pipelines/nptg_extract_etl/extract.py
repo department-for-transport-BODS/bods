@@ -52,11 +52,15 @@ def get_latest_nptg_to_s3():
     latest_key = getattr(settings, "NPTG_S3_KEY", None) or os.getenv(
         "NPTG_S3_KEY", "raw/nptg/nptg_latest.xml"
     )
-    verify_ssl = getattr(settings, "NPTG_SSL_VERIFY", _env_bool("NPTG_SSL_VERIFY", True))
+    verify_ssl = getattr(
+        settings, "NPTG_SSL_VERIFY", _env_bool("NPTG_SSL_VERIFY", True)
+    )
     storage = get_nptg_s3_storage()
 
     try:
-        logger.info(f"Loading NPTG file from {nptg_url} and saving to S3 at {latest_key}.")
+        logger.info(
+            f"Loading NPTG file from {nptg_url} and saving to S3 at {latest_key}."
+        )
 
         response = requests.get(
             nptg_url,
