@@ -543,8 +543,6 @@ class DatasetQuerySet(models.QuerySet):
                     b."short_description" as short_description,
                     b."published_at" as published_at
                         FROM "organisation_dataset"
-                    JOIN "organisation_organisation"
-                        ON ("organisation_dataset"."organisation_id" = %s)
                     CROSS JOIN LATERAL (SELECT *
                        FROM "organisation_datasetrevision"
                         WHERE ("organisation_datasetrevision".is_published = False)
@@ -553,7 +551,8 @@ class DatasetQuerySet(models.QuerySet):
                          and ("organisation_datasetrevision".status != 'expired')
                          and ("organisation_datasetrevision".is_deleted = False)
                         ) b
-                    WHERE ("organisation_dataset".dataset_type = %s)
+                    WHERE ("organisation_dataset"."organisation_id" = %s)
+                    AND ("organisation_dataset".dataset_type = %s)
                     GROUP BY "organisation_dataset"."modified", "organisation_dataset"."created", "organisation_dataset".id, b."id", b."status", b.name, b.first_expiring_service, b.num_of_lines, b.short_description, b.published_at
                     ORDER BY "organisation_dataset"."modified" DESC, "organisation_dataset"."created" DESC
 
