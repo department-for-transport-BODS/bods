@@ -1,8 +1,10 @@
 """
-Lambda handler for NaPTAN upload to S3
+Lambda handler for NPTG upload to S3.
 """
+
 import json
 import os
+
 import django
 from django.conf import settings
 
@@ -16,10 +18,9 @@ if not settings.configured:
 
 def handler(event, context):
     """
-    AWS Lambda handler for NaPTAN file download.
+    AWS Lambda handler for NPTG file download.
 
-    Downloads latest NaPTAN files from DfT API,
-    and saves them under raw/naptan for ETL to consume.
+    Downloads latest NPTG file from DfT API and saves it under raw/nptg for ETL to consume.
 
     Args:
         event: Lambda event (unused for this function)
@@ -29,23 +30,25 @@ def handler(event, context):
         dict: Response with statusCode and body containing result or error
     """
     try:
-        from transit_odp.pipelines.pipelines.naptan_extract_etl.extract import get_latest_naptan_to_s3
+        from transit_odp.pipelines.pipelines.nptg_extract_etl.extract import (
+            get_latest_nptg_to_s3,
+        )
 
-        naptan_key = get_latest_naptan_to_s3()
+        nptg_key = get_latest_nptg_to_s3()
 
         return {
             "statusCode": 200,
             "body": json.dumps(
                 {
-                    "message": "Latest NaPTAN downloaded successfully",
-                    "naptan": naptan_key,
+                    "message": "Latest NPTG downloaded successfully",
+                    "nptg": nptg_key,
                 }
             ),
         }
-    except Exception as e:
+    except Exception as exc:
         import traceback
 
-        error_msg = str(e)
+        error_msg = str(exc)
         error_trace = traceback.format_exc()
 
         return {
