@@ -12,13 +12,6 @@ logger = get_task_logger(__name__)
 logger = LoaderAdapter("NaPTANLoader", logger)
 
 
-def _env_bool(name: str, default: bool = True) -> bool:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "yes", "on"}
-
-
 CHUNK_SIZE = 8 * 1024 * 1024  # 8MB chunks
 HTTP_CONNECT_TIMEOUT = int(
     getattr(
@@ -52,7 +45,7 @@ def get_naptan_s3_storage():
 def get_latest_naptan_to_s3():
     xml_url = settings.NAPTAN_XML_IMPORT_URL
     csv_url = settings.NAPTAN_CSV_IMPORT_URL
-    verify_ssl = getattr(settings, "NAPTAN_SSL_VERIFY", _env_bool("NAPTAN_SSL_VERIFY", True))
+    verify_ssl = getattr(settings, "NAPTAN_SSL_VERIFY", True)
     storage = get_naptan_s3_storage()
 
     uploads = [
