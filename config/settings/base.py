@@ -505,9 +505,13 @@ FEED_MONITOR_MAX_RETRY_ATTEMPTS = env(
 )
 
 # NAPTAN import URL
-NAPTAN_IMPORT_URL = env(
-    "NAPTAN_IMPORT_URL",
+NAPTAN_XML_IMPORT_URL = env(
+    "NAPTAN_XML_IMPORT_URL",
     default="https://naptan.api.dft.gov.uk/v1/access-nodes?dataFormat=XML",
+)
+NAPTAN_CSV_IMPORT_URL = env(
+    "NAPTAN_CSV_IMPORT_URL",
+    default="https://naptan.api.dft.gov.uk/v1/access-nodes?dataFormat=csv",
 )
 
 # NPTG import URL
@@ -637,6 +641,13 @@ AVL_IP_ADDRESS_LIST = env("AVL_IP_ADDRESS_LIST", default="")
 AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
     "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME",
     default="bodds-dataset-dev-maintenance",
+)
+
+# S3 bucket name for NaPTAN data
+# ------------------------------------------------------------------------------
+AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME = env(
+    "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME",
+    default=None,
 )
 
 # S3 bucket name for DQS Report download

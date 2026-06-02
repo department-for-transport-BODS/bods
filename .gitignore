@@ -143,6 +143,7 @@ $RECYCLE.BIN/
 .eggs/
 .env
 .env-prod
+.env.naptan-test
 .envrc
 .envs/*
 .eslintcache
