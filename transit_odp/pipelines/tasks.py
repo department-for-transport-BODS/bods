@@ -41,7 +41,6 @@ def task_run_naptan_etl():
 def task_run_noc_extract_etl():
     noc_extract_etl_main.run()
 
-
 @shared_task
 def task_update_xsd_zip_cache():
     details = (
