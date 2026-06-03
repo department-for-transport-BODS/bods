@@ -32,14 +32,14 @@ def handler(event, context):
     try:
         from transit_odp.pipelines.pipelines.weca_extract_etl.extract import get_latest_data
 
-        weca_key = get_latest_data()
+        weca_meta = get_latest_data()
 
         return {
             "statusCode": 200,
             "body": json.dumps(
                 {
                     "message": "Latest WECA downloaded successfully",
-                    "weca": weca_key,
+                    "weca": weca_meta,
                 }
             ),
         }

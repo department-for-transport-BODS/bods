@@ -1,9 +1,10 @@
 import json
 import os
-import datetime
 import hashlib
+import datetime
 from tempfile import mkstemp
 from typing import TypedDict
+from pathlib import Path
 
 from django.conf import settings
 from django.core.files.storage import Storage, default_storage
@@ -68,6 +69,10 @@ def store_s3_data(
     """
 
     try:
+        # Ensure the default storage location exists if not using S3
+        if not isinstance(storage, S3Boto3Storage):
+            Path(os.path.join(storage.location, os.path.dirname(key))).mkdir(parents=True, exist_ok=True)
+
         with storage.open(key, "w") as f:
             data = response.model_dump_json()
             f.write(data)
@@ -117,7 +122,7 @@ def get_metadata(storage: Storage, key: str) -> dict[str, MetaData]:
 
     try:
         if storage.exists(key):
-            return storage.open(key, "r").read()
+            return json.loads(storage.open(key, "r").read())
         else:
             logger.warning(f"No previous WECA metadata found. Returning empty metadata.")
             return {}
@@ -213,7 +218,9 @@ def get_latest_data() -> dict[str, str | MetaData]:
     registrations_data = validate_and_store(registrations, previous_metadata, registrations_key, storage, client.url)
 
     # Update metadata in S3
-    weca_metadata = {"last_checked": datetime.now(datetime.UTC).isoformat()} | services_data | registrations_data
+    weca_metadata = (
+        {"last_checked": datetime.datetime.now(datetime.UTC).isoformat()} | services_data | registrations_data
+    )
     with storage.open(metadata_key, "w") as f:
         data = json.dumps(weca_metadata, indent=4)
         f.write(data)

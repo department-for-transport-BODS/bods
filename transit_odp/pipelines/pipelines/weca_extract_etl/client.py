@@ -8,7 +8,7 @@ from requests import HTTPError, Timeout
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from celery.utils.log import get_task_logger
-from pydantic import Field, validator
+from pydantic import Field, field_validator
 from pydantic.main import BaseModel
 
 from transit_odp.common.loggers import LoaderAdapter
@@ -40,11 +40,12 @@ class ServicesModel(BaseModel):
     api_type: str = Field(default=API_TYPE_WECA)
     atco_code: Optional[str] = Field(alias="fullserialnumbe_trationrations")
 
-    @validator("effective_date", pre=True)
+    @field_validator("effective_date", mode="before")
     def parse_effective_date(cls, value):
+        value = value.replace("Sept", "Sep")
         return datetime.strptime(value, "%d %b %Y")
 
-    @validator("registration_number")
+    @field_validator("registration_number")
     def trim_registration_number(cls, value):
         # Split the registration number by slashes and take the first two parts
         parts = value.split("/")
@@ -53,7 +54,7 @@ class ServicesModel(BaseModel):
         else:
             return value
 
-    @validator("variation_number")
+    @field_validator("variation_number")
     def trim_variation_number(cls, value):
         # Split the variation number by slashes and take the third part
         parts = value.split("/")
@@ -62,7 +63,7 @@ class ServicesModel(BaseModel):
         else:
             return "0"
 
-    @validator("licence")
+    @field_validator("licence")
     def extract_licence(cls, value):
         # Split the registration number by slashes and take the first parts
         parts = value.split("/")
@@ -71,7 +72,7 @@ class ServicesModel(BaseModel):
         else:
             return value
 
-    @validator("atco_code", pre=True)
+    @field_validator("atco_code", mode="before")
     def extract_atco_code(cls, value):
         # Extract the first three digits after the first slash of registration_number
         reg_number_parts = value.split("/")
@@ -125,7 +126,7 @@ class RegistrationsModel(BaseModel):
     )
     other_details: Optional[str] = Field(None, json_schema_extra="", alias="otherDetails")
 
-    @validator(
+    @field_validator(
         "route_description",
         "subsidy_detail",
         "other_details",
@@ -144,8 +145,10 @@ class RegistrationsModel(BaseModel):
             return v.strip()
         return v
 
-    @validator("received_date", "granted_date", "effective_date", "end_date", mode="before")
+    @field_validator("received_date", "granted_date", "effective_date", "end_date", mode="before")
     def parse_date(cls, v):
+        v = v.replace("Sept", "Sep")
+
         # if date in "02 Sep 2023" format change it to "02/09/2023"
         if re.match(r"\d{2} \w{3} \d{4}", v):
             v = datetime.strptime(v, "%d %b %Y").strftime("%d/%m/%Y")
@@ -153,7 +156,7 @@ class RegistrationsModel(BaseModel):
             return datetime.strptime("01/01/2100", "%d/%m/%Y")
         return datetime.strptime(v, "%d/%m/%Y")
 
-    @validator("registration_number")
+    @field_validator("registration_number")
     def validate_registration_number(cls, v):
         """Validate the registration number format"""
         if not re.match(r"[a-zA-Z0-9]+/[a-zA-Z0-9]+", v):
@@ -195,8 +198,12 @@ class WecaClient:
             **kwargs,
         }
         files = []
-        headers = {"Authorization": settings.WECA_AUTH_TOKEN}
-
+        headers = {
+            "Authorization": settings.WECA_AUTH_TOKEN_SERVICES
+            if dataset == "services"
+            else settings.WECA_AUTH_TOKEN_REGISTRATIONS
+        }
+        logger.debug(f"Making request to WECA API with params: {params}")
         try:
             response = requests.post(
                 url=self.url,
@@ -216,6 +223,7 @@ class WecaClient:
             logger.exception(msg)
             raise
 
+        logger.debug(f"API Response: {response.status_code}")
         if response.status_code == HTTPStatus.NO_CONTENT:
             logger.warning(f"Empty Response, API return {HTTPStatus.NO_CONTENT}, " f"for params {params}")
             return self.default_response(dataset)
@@ -225,11 +233,11 @@ class WecaClient:
             return APIRegistrationsResponse(**response.json())
         except ValidationError as exc:
             logger.error("Validation error in WECA API response")
-            logger.error(f"Response JSON: {response.text}")
+            # logger.error(f"Response JSON: {response.text}")
             logger.error(f"Validation Error: {exc}")
         except ValueError as exc:
             logger.error("Validation error in WECA API response")
-            logger.error(f"Response JSON: {response.text}")
+            # # logger.error(f"Response JSON: {response.text}")
             logger.error(f"Validation Error: {exc}")
         return self.default_response(dataset)
 
@@ -249,7 +257,9 @@ class WecaClient:
         Returns:
             APIServiceResponse: Latest services data.
         """
+        logger.info("Making request to WECA API for services data")
         response = self._make_request(
+            dataset="services",
             param_c=settings.WECA_PARAM_C_SERVICES,
             param_t=settings.WECA_PARAM_T_SERVICES,
             param_r=settings.WECA_PARAM_R_SERVICES,
@@ -262,8 +272,9 @@ class WecaClient:
         Returns:
             APIRegistrationsResponse: Latest registrations data.
         """
-
+        logger.info("Making request to WECA API for registrations data")
         response = self._make_request(
+            dataset="register",
             param_c=settings.WECA_PARAM_C_REGISTRATIONS,
             param_t=settings.WECA_PARAM_T_REGISTRATIONS,
             param_r=settings.WECA_PARAM_R_REGISTRATIONS,
