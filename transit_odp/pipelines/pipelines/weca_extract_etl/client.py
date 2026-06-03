@@ -1,26 +1,22 @@
-import logging
 import requests
+import re
 from http import HTTPStatus
 from datetime import datetime, date
-from typing import Optional, List
-from requests import HTTPError, RequestException, Timeout
+from typing import Literal, Optional, List
+from requests import HTTPError, Timeout
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-
+from celery.utils.log import get_task_logger
 from pydantic import Field, validator
 from pydantic.main import BaseModel
+
+from transit_odp.common.loggers import LoaderAdapter
 from transit_odp.otc.constants import API_TYPE_WECA
 
 
-logger = logging.getLogger(__name__)
-
-
-class EmptyResponseException(Exception):
-    pass
-
-
-retry_exceptions = (RequestException, EmptyResponseException)
+logger = get_task_logger(__name__)
+logger = LoaderAdapter("WECAIngest", logger)
 
 
 class FieldModel(BaseModel):
@@ -28,9 +24,10 @@ class FieldModel(BaseModel):
     name: str
     desc: str
     datatype: str
+    category: str
 
 
-class DataModel(BaseModel):
+class ServicesModel(BaseModel):
     id: int
     registration_number: str = Field(alias="fullserialnumbe_trationrations")
     variation_number: str = Field(alias="fullserialnumbe_trationrations")
@@ -87,22 +84,112 @@ class DataModel(BaseModel):
             return value
 
 
-class APIResponse(BaseModel):
+class RegistrationsModel(BaseModel):
+    licence_number: str = Field(
+        ...,
+        min_length=1,
+        json_schema_extra="PC7654321",
+        alias="operatorlicence_istervices",
+    )
+    registration_number: str = Field(json_schema_extra="PD7654321/87654321", alias="serialnum_ervi")
+    route_number: str = Field(..., json_schema_extra="2", alias="servicenumbers_icespt7a")
+    route_description: str = Field(
+        "",
+        json_schema_extra="City Center - Suburb - Main Street",
+        alias="routedescriptio_istervices",
+    )
+    variation_number: int = Field(..., json_schema_extra=1, alias="variation_ervi")
+    start_point: str = Field(..., json_schema_extra="City Center", alias="startpoint_espt")
+    finish_point: str = Field(..., json_schema_extra="Suburb", alias="endpoint_sp")
+    via: str = Field(..., json_schema_extra="Main Street", alias="via_services_pt7atfu9e78z39yqc")
+    subsidised: str = Field(..., json_schema_extra="Fully", alias="subsidised_tervic")
+    subsidy_detail: str = Field(
+        ...,
+        json_schema_extra="Transport for Local Authority (LA)",
+        alias="subsidisedby_stervice",
+    )
+    is_short_notice: bool = Field(..., json_schema_extra=False, alias="shortnotice_tervic")
+    received_date: date = Field(..., json_schema_extra="01/01/2000", alias="receiveddate_stervice")
+    granted_date: date = Field(..., json_schema_extra="01/02/2000", alias="granteddate_tervic")
+    effective_date: date = Field(..., json_schema_extra="01/03/2000", alias="proposedstartda_istervices")
+    end_date: date = Field(..., json_schema_extra="01/04/2000", alias="enddate_sp")
+    operator_name: str = Field(..., json_schema_extra="Blue Sky Buses", alias="tenantid_sp")
+    bus_service_type_id: str = Field(..., json_schema_extra="Standard", alias="servicetype_tervic")
+    bus_service_type_description: str = Field(..., json_schema_extra="Normal Stopping", alias="typeofservice_stervice")
+    traffic_area_id: str = Field(default="WECA", json_schema_extra="C")
+    application_type: str = Field(..., json_schema_extra="New", alias="applicationtype_istervices")
+    publication_text: Optional[str] = Field(
+        None,
+        json_schema_extra="Revised timetable to improve reliability",
+        alias="publicationText",
+    )
+    other_details: Optional[str] = Field(None, json_schema_extra="", alias="otherDetails")
+
+    @validator(
+        "route_description",
+        "subsidy_detail",
+        "other_details",
+        "publication_text",
+        "finish_point",
+        "start_point",
+        "via",
+        "operator_name",
+        "application_type",
+        "bus_service_type_description",
+        mode="before",
+    )
+    def validate_route_description(cls, v):
+        # Add cutation marks to the route description
+        if isinstance(v, str) and len(v) > 0:
+            return v.strip()
+        return v
+
+    @validator("received_date", "granted_date", "effective_date", "end_date", mode="before")
+    def parse_date(cls, v):
+        # if date in "02 Sep 2023" format change it to "02/09/2023"
+        if re.match(r"\d{2} \w{3} \d{4}", v):
+            v = datetime.strptime(v, "%d %b %Y").strftime("%d/%m/%Y")
+        if v == "":
+            return datetime.strptime("01/01/2100", "%d/%m/%Y")
+        return datetime.strptime(v, "%d/%m/%Y")
+
+    @validator("registration_number")
+    def validate_registration_number(cls, v):
+        """Validate the registration number format"""
+        if not re.match(r"[a-zA-Z0-9]+/[a-zA-Z0-9]+", v):
+            raise ValueError("Invalid registration number format")
+        return v
+
+
+class APIServiceResponse(BaseModel):
     fields: List[FieldModel]
-    data: List[DataModel]
+    data: List[ServicesModel]
+
+
+class APIRegistrationsResponse(BaseModel):
+    fields: List[FieldModel]
+    data: List[RegistrationsModel]
 
 
 class WecaClient:
-    def _make_request(self, timeout: int = 30, **kwargs) -> APIResponse:
+    def _make_request(
+        self,
+        dataset: Literal["services", "register"],
+        param_c: str,
+        param_t: str,
+        param_r: str,
+        timeout: int = 30,
+        **kwargs,
+    ) -> APIServiceResponse | APIRegistrationsResponse:
         """
         Send Request to WECA API Endpoint
         Response will be returned in the JSON format
         """
 
         params = {
-            "c": settings.WECA_PARAM_C,
-            "t": settings.WECA_PARAM_T,
-            "r": settings.WECA_PARAM_R,
+            "c": param_c,
+            "t": param_t,
+            "r": param_r,
             "get_report_json": "true",
             "json_format": "json",
             **kwargs,
@@ -131,9 +218,11 @@ class WecaClient:
 
         if response.status_code == HTTPStatus.NO_CONTENT:
             logger.warning(f"Empty Response, API return {HTTPStatus.NO_CONTENT}, " f"for params {params}")
-            return self.default_response()
+            return self.default_response(dataset)
         try:
-            return APIResponse(**response.json())
+            if dataset == "services":
+                return APIServiceResponse(**response.json())
+            return APIRegistrationsResponse(**response.json())
         except ValidationError as exc:
             logger.error("Validation error in WECA API response")
             logger.error(f"Response JSON: {response.text}")
@@ -142,21 +231,43 @@ class WecaClient:
             logger.error("Validation error in WECA API response")
             logger.error(f"Response JSON: {response.text}")
             logger.error(f"Validation Error: {exc}")
-        return self.default_response()
+        return self.default_response(dataset)
 
-    def default_response(self):
+    def default_response(self, dataset: Literal["services", "register"]):
         """
         Create default return response for placeholder purpose
         """
-        response = {"fields": [], "data": []}
-        return APIResponse(**response)
 
-    def fetch_weca_services(self) -> APIResponse:
+        response = {"fields": [], "data": []}
+        if dataset == "services":
+            return APIServiceResponse(**response)
+        return APIRegistrationsResponse(**response)
+
+    def fetch_weca_services(self) -> APIServiceResponse:
+        """Fetch services data from the WECA API.
+
+        Returns:
+            APIServiceResponse: Latest services data.
         """
-        Fetch method for sending request to WECA
-        Return Pydentic model response
+        response = self._make_request(
+            param_c=settings.WECA_PARAM_C_SERVICES,
+            param_t=settings.WECA_PARAM_T_SERVICES,
+            param_r=settings.WECA_PARAM_R_SERVICES,
+        )
+        return response
+
+    def fetch_weca_registrations(self) -> APIRegistrationsResponse:
+        """Fetch registrations data from the WECA API.
+
+        Returns:
+            APIRegistrationsResponse: Latest registrations data.
         """
-        response = self._make_request()
+
+        response = self._make_request(
+            param_c=settings.WECA_PARAM_C_REGISTRATIONS,
+            param_t=settings.WECA_PARAM_T_REGISTRATIONS,
+            param_r=settings.WECA_PARAM_R_REGISTRATIONS,
+        )
         return response
 
     def __init__(self):
