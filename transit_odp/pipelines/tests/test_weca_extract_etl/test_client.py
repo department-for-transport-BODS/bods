@@ -11,7 +11,9 @@ from transit_odp.pipelines.pipelines.weca_extract_etl.client import WecaClient
 
 @pytest.fixture(autouse=True)
 def mock_api_type_weca():
-    with patch("transit_odp.pipelines.pipelines.weca_extract_etl.client.API_TYPE_WECA", "WECA"):
+    with patch(
+        "transit_odp.pipelines.pipelines.weca_extract_etl.client.API_TYPE_WECA", "WECA"
+    ):
         yield
 
 
