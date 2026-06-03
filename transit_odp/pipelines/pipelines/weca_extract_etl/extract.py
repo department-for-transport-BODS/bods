@@ -40,20 +40,26 @@ def get_s3_storage() -> Storage:
         Storage: Django Storage instance for WECA data
     """
 
-    bucket_name = getattr(settings, "AWS_WECA_RAW_STORAGE_BUCKET_NAME", None) or os.getenv(
-        "AWS_WECA_RAW_STORAGE_BUCKET_NAME"
-    )
+    bucket_name = getattr(
+        settings, "AWS_WECA_RAW_STORAGE_BUCKET_NAME", None
+    ) or os.getenv("AWS_WECA_RAW_STORAGE_BUCKET_NAME")
 
     if bucket_name:
         logger.info(f"Using S3 bucket for WECA data storage.")
         return S3Boto3Storage(bucket_name=bucket_name)
     else:
-        logger.warning("WECA raw data storage location is not set. Using default storage.")
+        logger.warning(
+            "WECA raw data storage location is not set. Using default storage."
+        )
         return default_storage
 
 
 def store_s3_data(
-    response: APIServiceResponse | APIRegistrationsResponse, storage: Storage, key: str, client_url: str, checksum: str
+    response: APIServiceResponse | APIRegistrationsResponse,
+    storage: Storage,
+    key: str,
+    client_url: str,
+    checksum: str,
 ) -> dict[str, MetaData]:
     """Store JSON data in S3.
 
@@ -71,7 +77,9 @@ def store_s3_data(
     try:
         # Ensure the default storage location exists if not using S3
         if not isinstance(storage, S3Boto3Storage):
-            Path(os.path.join(storage.location, os.path.dirname(key))).mkdir(parents=True, exist_ok=True)
+            Path(os.path.join(storage.location, os.path.dirname(key))).mkdir(
+                parents=True, exist_ok=True
+            )
 
         with storage.open(key, "w") as f:
             data = response.model_dump_json()
@@ -92,7 +100,9 @@ def store_s3_data(
         raise
 
 
-def store_temp_data(response: APIServiceResponse | APIRegistrationsResponse, prefix: str) -> str:
+def store_temp_data(
+    response: APIServiceResponse | APIRegistrationsResponse, prefix: str
+) -> str:
     """Write WECA data to a temporary file for comparison with previous data.
 
     Args:
@@ -124,10 +134,14 @@ def get_metadata(storage: Storage, key: str) -> dict[str, MetaData]:
         if storage.exists(key):
             return json.loads(storage.open(key, "r").read())
         else:
-            logger.warning(f"No previous WECA metadata found. Returning empty metadata.")
+            logger.warning(
+                f"No previous WECA metadata found. Returning empty metadata."
+            )
             return {}
     except Exception as e:
-        logger.error("Exception while fetching previous WECA metadata from S3.", exc_info=e)
+        logger.error(
+            "Exception while fetching previous WECA metadata from S3.", exc_info=e
+        )
         raise
 
 
@@ -149,7 +163,9 @@ def create_sha256_checksum(temp_file_path: str) -> str:
 
 
 def has_changed(
-    response: APIServiceResponse | APIRegistrationsResponse, previous_metadata: dict[str, str | MetaData], key: str
+    response: APIServiceResponse | APIRegistrationsResponse,
+    previous_metadata: dict[str, str | MetaData],
+    key: str,
 ) -> tuple[bool, str]:
     # Write to temp & get checksums
     temp_file_path = store_temp_data(response, "data")
@@ -194,32 +210,48 @@ def get_latest_data() -> dict[str, str | MetaData]:
 
     client = WecaClient()
     storage = get_s3_storage()
-    metadata_key = os.getenv("WECA_S3_KEY_METADATA", "raw/weca/weca_metadata_latest.json")
-    services_key = os.getenv("WECA_S3_KEY_SERVICES", "raw/weca/weca_services_latest.json")
-    registrations_key = os.getenv("WECA_S3_KEY_REGISTRATIONS", "raw/weca/weca_registrations_latest.json")
+    metadata_key = os.getenv(
+        "WECA_S3_KEY_METADATA", "raw/weca/weca_metadata_latest.json"
+    )
+    services_key = os.getenv(
+        "WECA_S3_KEY_SERVICES", "raw/weca/weca_services_latest.json"
+    )
+    registrations_key = os.getenv(
+        "WECA_S3_KEY_REGISTRATIONS", "raw/weca/weca_registrations_latest.json"
+    )
 
     # Get the latest services and registrations data
     try:
         services = client.fetch_weca_services()
     except Exception as e:
-        logger.error(f"Unable to fetch WECA Services data from {client.url}.", exc_info=e)
+        logger.error(
+            f"Unable to fetch WECA Services data from {client.url}.", exc_info=e
+        )
         raise
 
     try:
         registrations = client.fetch_weca_registrations()
     except Exception as e:
-        logger.error(f"Unable to fetch WECA Registrations data from {client.url}.", exc_info=e)
+        logger.error(
+            f"Unable to fetch WECA Registrations data from {client.url}.", exc_info=e
+        )
         raise
 
     previous_metadata = get_metadata(storage, metadata_key)
 
     # Compare with previous version and upload if changed
-    services_data = validate_and_store(services, previous_metadata, services_key, storage, client.url)
-    registrations_data = validate_and_store(registrations, previous_metadata, registrations_key, storage, client.url)
+    services_data = validate_and_store(
+        services, previous_metadata, services_key, storage, client.url
+    )
+    registrations_data = validate_and_store(
+        registrations, previous_metadata, registrations_key, storage, client.url
+    )
 
     # Update metadata in S3
     weca_metadata = (
-        {"last_checked": datetime.datetime.now(datetime.UTC).isoformat()} | services_data | registrations_data
+        {"last_checked": datetime.datetime.now(datetime.UTC).isoformat()}
+        | services_data
+        | registrations_data
     )
     with storage.open(metadata_key, "w") as f:
         data = json.dumps(weca_metadata, indent=4)

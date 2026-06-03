@@ -30,7 +30,9 @@ def handler(event, context):
         dict: Response with statusCode and body containing result or error
     """
     try:
-        from transit_odp.pipelines.pipelines.weca_extract_etl.extract import get_latest_data
+        from transit_odp.pipelines.pipelines.weca_extract_etl.extract import (
+            get_latest_data,
+        )
 
         weca_meta = get_latest_data()
 
