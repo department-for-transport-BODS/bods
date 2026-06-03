@@ -11,6 +11,9 @@ from transit_odp.pipelines.pipelines.naptan_etl import main as naptan_etl_main
 from transit_odp.pipelines.pipelines.naptan_extract_etl import (
     main as naptan_extract_etl_main,
 )
+from transit_odp.pipelines.pipelines.noc_extract_etl import (
+    main as noc_extract_etl_main,
+)
 from transit_odp.pipelines.pipelines.xml_schema import SchemaUpdater
 from transit_odp.timetables.constants import TXC_SCHEMA_ZIP_URL
 
@@ -33,6 +36,10 @@ def task_run_naptan_extract_etl():
 @shared_task(ignore_result=True)
 def task_run_naptan_etl():
     naptan_etl_main.run()
+
+@shared_task(ignore_result=True)
+def task_run_noc_extract_etl():
+    noc_extract_etl_main.run()
 
 
 @shared_task
