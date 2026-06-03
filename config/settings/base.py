@@ -4,6 +4,7 @@ Base settings to build other settings data upon.
 
 # flake8: noqa
 import os
+from urllib.parse import urlencode
 
 import environ
 from dateutil import parser
@@ -521,6 +522,39 @@ NPTG_IMPORT_URL = env(
 
 BANK_HOLIDAY_API_URL = env(
     "BANK_HOLIDAY_API_URL", default="https://www.gov.uk/bank-holidays.json"
+)
+
+# NOC import URL
+NOC_XML_IMPORT_URL = env(
+    "NOC_XML_IMPORT_URL",
+    default="https://www.travelinedata.org.uk/noc/api/1.0/nocrecords.xml",
+)
+
+noc_domain = "https://www.travelinedata.org.uk"
+noc_endpoint = "/wp-content/themes/desktop/nocadvanced_download.php"
+
+noc_params = {
+    "reportFormat": "csvFlatFile",
+    "allTable[]": [
+        "table_data_owner",
+        "table_groups",
+        "table_licence",
+        "table_management_divisions",
+        "table_noclines",
+        "table_noc_table",
+        "table_operators",
+        "table_public_name",
+    ],
+    "submit": "Submit",
+}
+
+NOC_CSV_TABLE_NAMES = tuple(noc_params["allTable[]"])
+
+NOC_URL = f"{noc_domain}{noc_endpoint}?{urlencode(noc_params, doseq=True)}"
+
+NOC_CSV_IMPORT_URL = env(
+    "NOC_CSV_IMPORT_URL",
+    default=NOC_URL,
 )
 
 # Google Analytics Key
