@@ -90,6 +90,10 @@ class CeleryAppConfig(AppConfig):
                 "task": PIPELINE_TASKS + "task_run_naptan_etl",
                 "schedule": crontab(minute=0, hour=1),
             },
+            "run_noc_etl": {
+                "task": PIPELINE_TASKS + "task_run_noc_extract_etl",
+                "schedule": crontab(minute=0, hour=1),
+            },
             "update_bods_xsd_zip_files": {
                 "task": PIPELINE_TASKS + "task_update_xsd_zip_cache",
                 "schedule": crontab(
