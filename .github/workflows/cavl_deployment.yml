@@ -34,10 +34,10 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v6
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@v6
       with:
         aws-region: ${{ env.AWS_REGION }}
         role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.AWS_ASSUME_ROLE_NAME }}
@@ -74,7 +74,7 @@ jobs:
         fi
 
     - name: Base Image Changes
-      uses: dorny/paths-filter@v2
+      uses: dorny/paths-filter@v4
       id: base-image-changes
       with:
         filters: |
