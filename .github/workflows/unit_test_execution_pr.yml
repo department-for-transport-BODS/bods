@@ -37,7 +37,7 @@ jobs:
           echo ${{ format('github.event.pull_request.head.ref = {0}', github.event.pull_request.head.ref) }}
 
       - name: Checkout HEAD of working branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
@@ -65,7 +65,7 @@ jobs:
           echo "changed=${changed}" >> $GITHUB_OUTPUT
 
       - name: Checkout PR Merge HEAD
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -93,7 +93,7 @@ jobs:
 
       - name: Configure AWS credentials
         id: login_aws
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.AWS_ASSUME_ROLE_NAME }}
@@ -154,7 +154,7 @@ jobs:
             )
           ) ||
           steps.check_for_head_change.outputs.changed =='true'
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: "Create repository if it doesn't exist"
         if: |
@@ -189,7 +189,7 @@ jobs:
             )
           )  ||
           steps.check_for_head_change.outputs.changed =='true'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           push: true
           tags: ${{ format( '{0}/{1}:{2}', steps.login_ecr.outputs.registry, env.ECR_PYTHON_DEPENDENCIES_REPO, steps.sanitise_branch_name.outputs.branch ) }}
@@ -275,7 +275,7 @@ jobs:
           apt install -y git
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: "Add dependencies"
         id: add_dependencies

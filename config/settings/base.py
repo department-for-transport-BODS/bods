@@ -684,6 +684,9 @@ AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME = env(
     default=None,
 )
 
+# NPTG bucket name, configured separately from NaPTAN.
+NPTG_BUCKET_NAME = env("NPTG_BUCKET_NAME", default=None)
+
 # S3 bucket name for DQS Report download
 # ------------------------------------------------------------------------------
 S3_BUCKET_DQS_CSV_REPORT = env(
