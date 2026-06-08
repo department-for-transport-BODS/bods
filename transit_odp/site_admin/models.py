@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from django.contrib.auth import get_user_model
-from django.db import models
+from django.db import connection, models, transaction
 from django.db.models import F, Q, UniqueConstraint
 from django.http import HttpRequest
 from django.http.response import FileResponse
@@ -19,6 +19,7 @@ from transit_odp.site_admin.querysets import (
 User = get_user_model()
 CHAR_LEN = 512
 
+logger = logging.getLogger(__name__)
 
 class OperationalStats(models.Model):
     date = models.DateField(unique=True)
@@ -95,18 +96,54 @@ class ResourceRequestCounter(models.Model):
         return nice_repr(self)
 
     @classmethod
+    def _upsert_counter_for_request_key(
+        cls, *, day, requestor_id: Optional[int], path_info: str
+    ) -> None:
+        if connection.vendor != "postgresql":
+            resource_counter, _ = cls.objects.get_or_create(
+                requestor_id=requestor_id,
+                path_info=path_info,
+                date=day,
+                defaults={"counter": 0},
+            )
+            cls.objects.filter(id=resource_counter.id).update(counter=F("counter") + 1)
+            return
+
+        table = connection.ops.quote_name(cls._meta.db_table)
+        if requestor_id is None:
+            query = f"""
+                INSERT INTO {table} (date, requestor_id, path_info, counter)
+                VALUES (%s, %s, %s, 1)
+                ON CONFLICT (date, path_info) WHERE requestor_id IS NULL
+                DO UPDATE SET counter = {table}.counter + 1
+            """
+        else:
+            query = f"""
+                INSERT INTO {table} (date, requestor_id, path_info, counter)
+                VALUES (%s, %s, %s, 1)
+                ON CONFLICT (date, requestor_id, path_info)
+                DO UPDATE SET counter = {table}.counter + 1
+            """
+        with connection.cursor() as cursor:
+            cursor.execute(query, [day, requestor_id, path_info])
+    
+    @classmethod
     def from_request(cls, request: HttpRequest):
-        user = request.user if not request.user.is_anonymous else None
-        today = datetime.now().date()
-        resource_counter, _ = cls.objects.get_or_create(
-            requestor=user,
-            path_info=request.path,
-            date=today,
-            defaults={"counter": 0},
-        )
-        resource_counter.counter = F("counter") + 1
-        resource_counter.save()
-        return resource_counter
+        requestor_id = request.user.id if request.user.is_authenticated else None
+        path_info = request.path
+        day = datetime.now().date()
+
+        def write_counter_after_response_commit():
+            try:
+                cls._upsert_counter_for_request_key(
+                    day=day, requestor_id=requestor_id, path_info=path_info
+                )
+            except Exception:
+                logger.exception(
+                    "Failed to increment resource request counter", extra={"path": path_info}
+                )
+
+        transaction.on_commit(write_counter_after_response_commit)
 
 
 class MetricsArchive(models.Model):
