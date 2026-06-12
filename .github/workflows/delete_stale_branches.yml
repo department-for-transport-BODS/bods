@@ -3,6 +3,8 @@ name: Delete Stale Branches
 on:
   schedule:
     - cron: "0 0 * * *" # Everday at midnight
+  workflow_dispatch:
+    
 
 jobs:
   remove-stale-branches:
@@ -17,3 +19,4 @@ jobs:
           exempt-protected-branches: true
           operations-per-run: 100
           ignore-unknown-authors: true
+          default-recipient: '@department-for-transport-BODS/Development'
