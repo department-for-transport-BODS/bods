@@ -3,8 +3,6 @@ name: Delete Stale Branches
 on:
   schedule:
     - cron: "0 0 * * *" # Everday at midnight
-  workflow_dispatch:
-    
 
 jobs:
   remove-stale-branches:
