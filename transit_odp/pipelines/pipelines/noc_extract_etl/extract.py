@@ -1,4 +1,5 @@
 import os
+import re
 import tempfile
 import zipfile
 import requests
@@ -29,6 +30,19 @@ CSV_ALLOWED_EXTENSIONS = [".csv"]
 NOC_CSV_TABLE_NAMES = {
     table_name.lower() for table_name in getattr(settings, "NOC_CSV_TABLE_NAMES", ())
 }
+NOC_CSV_TABLE_NAME_MAP = {
+    table_name.removeprefix("table_"): table_name for table_name in NOC_CSV_TABLE_NAMES
+}
+NOC_CSV_TABLE_NAME_ALIASES = {
+    "noc_lines": "table_noclines",
+}
+
+
+def _normalise_table_name(filename):
+    basename = os.path.splitext(filename)[0]
+    snake_case = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", basename)
+    snake_case = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", snake_case).lower()
+    return snake_case
 
 
 def _download_to_temp_file(response):
@@ -75,14 +89,23 @@ def _extract_and_upload_noc_csv(storage, zip_file_path, latest_key):
             if not filename:
                 continue
 
-            source_table_name = os.path.splitext(filename)[0].lower()
-            if source_table_name not in NOC_CSV_TABLE_NAMES:
+            source_table_name = _normalise_table_name(filename)
+            mapped_table_name = NOC_CSV_TABLE_NAME_MAP.get(source_table_name)
+
+            if not mapped_table_name:
+                mapped_table_name = NOC_CSV_TABLE_NAME_ALIASES.get(source_table_name)
+
+            # Support direct matches where upstream already provides table_ prefixes.
+            if not mapped_table_name and source_table_name in NOC_CSV_TABLE_NAMES:
+                mapped_table_name = source_table_name
+
+            if not mapped_table_name:
                 logger.warning(
                     f"Skipping NOC archive member {filename}: no table mapping configured."
                 )
                 continue
 
-            destination_key = f"{destination_prefix}/{source_table_name}_latest_csv.csv"
+            destination_key = f"{destination_prefix}/{mapped_table_name}_latest_csv.csv"
             with archive.open(member) as src, storage.open(
                 destination_key, "wb"
             ) as dst:
