@@ -192,7 +192,9 @@ def extract_localities(xml_file_path):
                 "name": locality.descriptor.locality_name,
                 "easting": locality.location.translation.easting,
                 "northing": locality.location.translation.northing,
-                "district_id": int(locality.nptg_district_ref),
+                "district_id": int(locality.nptg_district_ref)
+                if locality.nptg_district_ref
+                else None,
                 "admin_area_id": int(locality.administrative_area_ref),
             }
 
