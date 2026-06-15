@@ -557,21 +557,10 @@ OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA = env.int("OTC_DAILY_JOB_EFFECTIVE_DATE_T
 # -------------------------------------------------------------------------------
 WECA_API_URL = env("WECA_API_URL", default="https://registrations.travelwest.info/agileBase/Public.ab")
 
-WECA_AUTH_TOKEN_SERVICES = env("WECA_AUTH_TOKEN_SERVICES", default=None)
-WECA_PARAM_C_SERVICES = env("WECA_PARAM_C_SERVICES", default=None)
-WECA_PARAM_T_SERVICES = env("WECA_PARAM_T_SERVICES", default=None)
-WECA_PARAM_R_SERVICES = env("WECA_PARAM_R_SERVICES", default=None)
-
-WECA_AUTH_TOKEN_REGISTRATIONS = env("WECA_AUTH_TOKEN_REGISTRATIONS", default=None)
-WECA_PARAM_C_REGISTRATIONS = env("WECA_PARAM_C_REGISTRATIONS", default=None)
-WECA_PARAM_T_REGISTRATIONS = env("WECA_PARAM_T_REGISTRATIONS", default=None)
-WECA_PARAM_R_REGISTRATIONS = env("WECA_PARAM_R_REGISTRATIONS", default=None)
-
-# Legacy WECA API Settings (to be removed when OTC service migrates to using landing zone data)
-WECA_AUTH_TOKEN = env("WECA_AUTH_TOKEN_SERVICES", default=None)
-WECA_PARAM_C = env("WECA_PARAM_C_SERVICES", default=None)
-WECA_PARAM_T = env("WECA_PARAM_T_SERVICES", default=None)
-WECA_PARAM_R = env("WECA_PARAM_R_SERVICES", default=None)
+WECA_AUTH_TOKEN = env("WECA_AUTH_TOKEN", default="WECA_AUTH_TOKEN")
+WECA_PARAM_C = env("WECA_PARAM_C", default="WECA_PARAM_C")
+WECA_PARAM_T = env("WECA_PARAM_T", default="WECA_PARAM_T")
+WECA_PARAM_R = env("WECA_PARAM_R", default="WECA_PARAM_R")
 
 # EP API
 # -------------------------------------------------------------------------------
