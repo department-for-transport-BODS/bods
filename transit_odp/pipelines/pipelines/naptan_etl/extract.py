@@ -6,7 +6,6 @@ import io
 import pandas as pd
 import requests
 from celery.utils.log import get_task_logger
-from django.conf import settings
 from lxml import etree as ET
 from requests import RequestException
 
@@ -14,14 +13,18 @@ from transit_odp.common.loggers import LoaderAdapter
 from transit_odp.naptan.dataclasses import StopPoint
 from transit_odp.naptan.dataclasses.nptg import NationalPublicTransportGazetteer
 
-
-from django.core.files.storage import default_storage
 from storages.backends.s3boto3 import S3Boto3Storage
 
 ns = "http://www.naptan.org.uk/"
 namespace = {"naptan": ns}
 
 CHUNK_SIZE = 8 * 1024 * 1024  # 8MB chunks
+
+NAPTAN_BUCKET_NAME = os.getenv("NAPTAN_BUCKET_NAME")
+BUCKET_REGION = os.getenv("BUCKET_REGION")
+NAPTAN_S3_KEY = os.getenv("NAPTAN_S3_KEY")
+NPTG_BUCKET_NAME = os.getenv("NPTG_BUCKET_NAME")
+NPTG_S3_KEY = os.getenv("NPTG_S3_KEY")
 
 DISK_PATH_FOR_NAPTAN_ZIP = "/tmp/NaptanStops.zip"
 
@@ -31,26 +34,43 @@ DISK_PATH_FOR_NPTG = "/tmp/NPTG.xml"
 
 logger = get_task_logger(__name__)
 logger = LoaderAdapter("NaPTANLoader", logger)
+nptg_logger = LoaderAdapter("NPTGLoader", get_task_logger(__name__))
 
 
 def get_naptan_s3_storage():
-    # Get S3 storage for NaPTAN data, or default storage if bucket name is not set
-    bucket_name = getattr(
-        settings, "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME", None
-    ) or os.getenv("AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME")
-    if bucket_name:
-        logger.info(f"Using S3 bucket {bucket_name} for NaPTAN data storage.")
-        return S3Boto3Storage(bucket_name=bucket_name)
-    else:
-        logger.warning(
-            "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME is not set. Using default storage."
-        )
-        return default_storage
+    # NaPTAN reads must use the configured S3 bucket.
+    if NAPTAN_BUCKET_NAME:
+        logger.info(f"Using S3 bucket {NAPTAN_BUCKET_NAME} for NaPTAN data storage.")
+        storage_kwargs = {"bucket_name": NAPTAN_BUCKET_NAME}
+        if BUCKET_REGION:
+            storage_kwargs["region_name"] = BUCKET_REGION
+        return S3Boto3Storage(**storage_kwargs)
+
+    message = "NAPTAN_BUCKET_NAME is not set. Cannot read NaPTAN data from S3."
+    logger.error(message)
+    raise RuntimeError(message)
+
+
+def get_nptg_s3_storage():
+    if not NPTG_BUCKET_NAME:
+        message = "NPTG_BUCKET_NAME is not set. Cannot read NPTG data from S3."
+        nptg_logger.error(message)
+        raise RuntimeError(message)
+
+    storage_kwargs = {"bucket_name": NPTG_BUCKET_NAME}
+    if BUCKET_REGION:
+        storage_kwargs["region_name"] = BUCKET_REGION
+
+    nptg_logger.info(f"Using S3 bucket {NPTG_BUCKET_NAME} for NPTG data storage.")
+    return S3Boto3Storage(**storage_kwargs)
 
 
 def get_latest_naptan_xml():
     storage = get_naptan_s3_storage()
-    s3_key = "raw/naptan/naptan_latest_xml.xml"
+    s3_key = NAPTAN_S3_KEY
+    if not s3_key:
+        logger.error("NAPTAN_S3_KEY is not set.")
+        return None
 
     try:
         logger.info(f"Attempting to retrieve latest NaPTAN data from S3 at {s3_key}.")
@@ -67,23 +87,31 @@ def get_latest_naptan_xml():
 
 
 def get_latest_nptg():
-    nptg_url = settings.NPTG_IMPORT_URL
-    logger.info(f"Loading NPTG from {nptg_url}.")
+    storage = get_nptg_s3_storage()
+    s3_key = NPTG_S3_KEY
+    if not s3_key:
+        nptg_logger.warning("NPTG_S3_KEY is not set.")
+        return None
+
+    nptg_logger.info(f"Attempting to retrieve latest NPTG data from S3 at {s3_key}.")
     xml_file_path = None
     try:
-        response = requests.get(nptg_url)
-        logger.info("Writing NPTG response data to a file on disk.")
-        if response.status_code == 200:
-            with open(DISK_PATH_FOR_NPTG, "wb") as f:
-                for chunk in response.iter_content(CHUNK_SIZE):
-                    f.write(chunk)
-            logger.info("Finished NPTG writing to file on disk.")
-            xml_file_path = DISK_PATH_FOR_NPTG
+        if not storage.exists(s3_key):
+            nptg_logger.warning(f"No NPTG data found in S3 at {s3_key}")
+            return None
 
-    except Exception as e:
-        logger.warning("Exception while getting NPTG data.", exc_info=e)
+        nptg_logger.info("Writing NPTG data from S3 to a file on disk.")
+        with storage.open(s3_key, "rb") as source, open(DISK_PATH_FOR_NPTG, "wb") as f:
+            for chunk in source.chunks(CHUNK_SIZE):
+                f.write(chunk)
 
-    logger.info("NPTG file successfully extracted to disk.")
+        nptg_logger.info("Finished NPTG writing to file on disk.")
+        xml_file_path = DISK_PATH_FOR_NPTG
+
+    except Exception as exc:
+        nptg_logger.warning("Exception while getting NPTG data from S3.", exc_info=exc)
+
+    nptg_logger.info("NPTG file successfully extracted to disk.")
     return xml_file_path
 
 
