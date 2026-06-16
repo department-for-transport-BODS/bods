@@ -18,6 +18,7 @@ if not settings.configured:
 
 
 logger = get_task_logger(__name__)
+logger.setLevel(os.getenv("LOG_LEVEL", "WARNING").upper())
 
 
 class GetSecretWrapper:

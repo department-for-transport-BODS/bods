@@ -1,5 +1,6 @@
 import requests
 import re
+import os
 from http import HTTPStatus
 from datetime import datetime, date
 from typing import Literal, Optional, List, Any
@@ -13,6 +14,7 @@ from transit_odp.common.loggers import LoaderAdapter
 
 
 logger = get_task_logger(__name__)
+logger.setLevel(os.getenv("LOG_LEVEL", "WARNING").upper())
 logger = LoaderAdapter("WECA - Client", logger)
 
 

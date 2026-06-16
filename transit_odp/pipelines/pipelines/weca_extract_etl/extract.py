@@ -19,6 +19,7 @@ from transit_odp.pipelines.pipelines.weca_extract_etl.client import (
 )
 
 logger = get_task_logger(__name__)
+logger.setLevel(os.getenv("LOG_LEVEL", "WARNING").upper())
 logger = LoaderAdapter("WECA - Ingest", logger)
 
 
@@ -251,9 +252,11 @@ def get_latest_data(
             "WECA_S3_KEY_REGISTRATIONS_VALID", "raw/weca/weca_registrations_validated_latest.json"
         ),
     }
+    logger.debug(f"Using S3 keys: {json.dumps(keys, indent=4)}")
 
     # WECA Pipeline metadata
     previous_metadata = get_metadata(storage, keys["metadata"])
+    logger.debug(f"Previous WECA metadata: {json.dumps(previous_metadata, indent=4)}")
     new_metadata = {"last_checked": datetime.datetime.now(datetime.UTC).isoformat()}
 
     # Get the latest services and registrations data
@@ -270,7 +273,7 @@ def get_latest_data(
                 r_param=params[ds].get("param_r"),
                 token=params[ds].get("api_key"),
             )
-            ds_raw_metadata = validate_and_store(ds_raw, previous_metadata.get(ds), keys[ds], storage, client.url)
+            ds_raw_metadata = validate_and_store(ds_raw, previous_metadata.get(keys[ds]), keys[ds], storage, client.url)
 
             ds_validated = client.validate_weca_data(ds, ds_raw)
             ds_validated_key = keys[f"{ds}_validated"]
