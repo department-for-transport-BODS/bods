@@ -97,7 +97,7 @@ if __name__ == "__main__":
 
 ### Testing in a Lambda
 
-Create a python test script as detailed below, and run with your AWS credentials that have access to both the S3 bucket and secrets:
+Create a python test script as detailed below:
 
 ```py
 #!/usr/bin/env python
@@ -105,7 +105,7 @@ Create a python test script as detailed below, and run with your AWS credentials
 Local test script for WECA Lambda handler.
 
 Usage (from repo root, with docker-compose services running):
-    docker-compose run --rm $(grep -v '^#\|^$' .env.weca_local | sed 's/^/-e /') django python test_weca_lambda_local.py
+    docker compose run --rm $(grep -v '^#\|^$' .env.weca_local | sed 's/^/-e /') django python test_weca_lambda_local.py
 """
 import os
 import sys
@@ -162,3 +162,18 @@ if __name__ == "__main__":
     print()
     print("=" * 70)
 ```
+
+Execute with AWS credentials:
+
+```sh
+# Optionally with `--use-device-code` in WSL environments
+aws sso login --profile <profile name>
+
+# Export as environment variables
+export $(aws configure export-credentials --profile <profile name> --format env-export)
+
+# Execute test lambda
+docker-compose run --rm $(grep -v '^#\|^$' .env.weca_local | sed 's/^/-e /') -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_SESSION_TOKEN -e AWS_DEFAULT_REGION django python test_lambda_local.py
+```
+
+*Note* - This test will only pull the registrations data as crednetial secrets configured in bods-nonprod don't work for services requests. As such the test will only output registrations data to S3.

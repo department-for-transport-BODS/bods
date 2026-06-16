@@ -91,7 +91,7 @@ def store_s3_data(
             "source": client_url,
             "size_mb": round(file_size_mb, 2),
             "validation_count": validation_count,
-            "timestamp": datetime.datetime.now(datetime.UTC).isoformat(),
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "checksum_sha256": checksum,
         }
         return {key: metadata}
@@ -257,7 +257,7 @@ def get_latest_data(
     # WECA Pipeline metadata
     previous_metadata = get_metadata(storage, keys["metadata"])
     logger.debug(f"Previous WECA metadata: {json.dumps(previous_metadata, indent=4)}")
-    new_metadata = {"last_checked": datetime.datetime.now(datetime.UTC).isoformat()}
+    new_metadata = {"last_checked": datetime.datetime.now(datetime.timezone.utc).isoformat()}
 
     # Get the latest services and registrations data
     for ds in get_args(WECA_DATASETS):
@@ -284,7 +284,8 @@ def get_latest_data(
             new_metadata = new_metadata | ds_raw_metadata | ds_validated_metadata
         except Exception as e:
             logger.error(f"Unable to fetch WECA Services data from {client.url}.", exc_info=e)
-            raise
+            # If one request fails, we still want to continue with the others.
+            # raise
 
     # Update metadata in S3
     with storage.open(keys["metadata"], "w") as f:
