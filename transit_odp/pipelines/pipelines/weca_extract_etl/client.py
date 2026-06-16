@@ -228,18 +228,18 @@ class WecaClient:
         logger.debug(f"API Response: {response.status_code}")
         if response.status_code == HTTPStatus.NO_CONTENT:
             logger.warning(f"Empty Response, API return {HTTPStatus.NO_CONTENT}, " f"for params {params}")
-            return self.default_response(dataset)
+            return self.default_response(dataset).model_dump()
         try:
             return response.json()
         except:
-            return self.default_response(dataset)
+            return self.default_response(dataset).model_dump()
 
     def default_response(self, dataset: WECA_DATASETS) -> APIServiceResponse | APIRegistrationsResponse:
         """
         Create default return response for placeholder purpose
         """
 
-        response = {"fields": [], "data": [], "raw_data": {}}
+        response = {"fields": [], "data": []}
         if dataset == "services":
             return APIServiceResponse(**response)
         return APIRegistrationsResponse(**response)

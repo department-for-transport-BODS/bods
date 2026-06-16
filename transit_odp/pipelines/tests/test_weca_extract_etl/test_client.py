@@ -9,14 +9,6 @@ from django.conf import settings
 from transit_odp.pipelines.pipelines.weca_extract_etl.client import WecaClient
 
 
-@pytest.fixture(autouse=True)
-def mock_api_type_weca():
-    with patch(
-        "transit_odp.pipelines.pipelines.weca_extract_etl.client.API_TYPE_WECA", "WECA"
-    ):
-        yield
-
-
 @pytest.fixture
 def weca_registrations_data():
     registrations_data = {
@@ -248,26 +240,41 @@ def weca_registrations_data():
 
 
 @pytest.fixture
-def weca_get_registrations_data(weca_registrations_data):
+def weca_credentials():
+    test_services = {
+        "url": "https://registrations.travelwest.info/agileBase/Public.ab",
+        "api_key": "abc123xyz456",
+        "param_c": "company123",
+        "param_t": "table123",
+        "param_r": "report123",
+    }
+    yield test_services
+
+
+@pytest.fixture
+def weca_get_registrations_data(weca_registrations_data, weca_credentials):
     with requests_mock.Mocker() as mock:
         data = json.loads(weca_registrations_data)
         mock.post(
-            f"{settings.WECA_API_URL}?c={settings.WECA_PARAM_C_REGISTRATIONS}&t={settings.WECA_PARAM_T_REGISTRATIONS}&r={settings.WECA_PARAM_R_REGISTRATIONS}&get_report_json=true&json_format=json",
+            f"{weca_credentials['url']}?c={weca_credentials['param_c']}&t={weca_credentials['param_t']}&r={weca_credentials['param_r']}&get_report_json=true&json_format=json",
             json=data,
         )
     yield mock
 
 
-def test_weca_api_registrations_response_returned(weca_get_registrations_data):
+def test_weca_api_registrations_response_returned(weca_get_registrations_data, weca_credentials):
     with weca_get_registrations_data:
-        client = WecaClient()
-        response = client.fetch_weca_registrations()
-        assert len(response.data) == 3
-        assert len(response.fields) == 21
+        client = WecaClient(weca_credentials["url"])
+        response = client.fetch_weca_data(
+            "registrations",
+            weca_credentials["param_c"],
+            weca_credentials["param_t"],
+            weca_credentials["param_r"],
+            weca_credentials["api_key"],
+        )
+        assert len(response["data"]) == 3
+        assert len(response["fields"]) == 21
 
-
-@patch("django.conf.settings.WECA_PARAM_C_REGISTRATIONS", "dummay_weca_param_c")
-def test_weca_api_registrations_response_error():
-    with pytest.raises(HTTPError) as e:
-        client = WecaClient()
-        response = client.fetch_weca_registrations()
+        validated = client.validate_weca_data("registrations", response)
+        assert len(validated["data"]) == 3
+        assert len(validated["fields"]) == 21
