@@ -8,7 +8,9 @@ import os
 import environ
 from dateutil import parser
 
-ROOT_DIR = environ.Path(__file__) - 3  # (transit_odp/config/settings/base.py - 3 = transit_odp/)
+ROOT_DIR = (
+    environ.Path(__file__) - 3
+)  # (transit_odp/config/settings/base.py - 3 = transit_odp/)
 APPS_DIR = ROOT_DIR.path("transit_odp")
 
 env = environ.Env()
@@ -36,7 +38,9 @@ TIME_ZONE = "Europe/London"
 LANGUAGE_CODE = "en-us"
 # https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 # SITE_ID = 1  # GB removing to ensure get_current_site uses request thus resolving Site for the django-host
-ROOT_SITE_ID = 1  # GB - adding this as some migrations specifically update the root site
+ROOT_SITE_ID = (
+    1  # GB - adding this as some migrations specifically update the root site
+)
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
 USE_I18N = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
@@ -87,7 +91,9 @@ ALLOWED_HOSTS += [
 ]
 
 # https://github.com/ottoyiu/django-cors-headers#cors_origin_whitelist
-CORS_ORIGIN_REGEX_WHITELIST = (rf"^(https?://)?([\w-]+\.)?{PARENT_HOST}(:{HOST_PORT})?$",)
+CORS_ORIGIN_REGEX_WHITELIST = (
+    rf"^(https?://)?([\w-]+\.)?{PARENT_HOST}(:{HOST_PORT})?$",
+)
 # CORS_URLS_REGEX = rf'^(https?://)?{ROOT_SUBDOMAIN}.{PARENT_HOST}(:{HOST_PORT})?/api/.*$'
 CORS_URLS_REGEX = rf"^(https?://)?.*/api/.*$"
 
@@ -210,7 +216,9 @@ PASSWORD_HASHERS = [
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -246,7 +254,9 @@ MIDDLEWARE = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-root
 STATIC_ROOT = str(ROOT_DIR("staticfiles"))
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-url
-STATIC_URL = "/assets/"  # TODO - fix issue with Gov.UK footer logo then put back to /static/
+STATIC_URL = (
+    "/assets/"  # TODO - fix issue with Gov.UK footer logo then put back to /static/
+)
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [str(APPS_DIR.path("static"))]
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
@@ -312,9 +322,13 @@ FIXTURE_DIRS = (str(APPS_DIR.path("fixtures")),)
 # EMAIL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = env("DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
+EMAIL_BACKEND = env(
+    "DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
+)
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
-DEFAULT_FROM_EMAIL = env("DJANGO_DEFAULT_FROM_EMAIL", default="Bus Open Data Service <noreply@bods.com>")
+DEFAULT_FROM_EMAIL = env(
+    "DJANGO_DEFAULT_FROM_EMAIL", default="Bus Open Data Service <noreply@bods.com>"
+)
 # https://docs.djangoproject.com/en/dev/ref/settings/#server-email
 SERVER_EMAIL = env("DJANGO_SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
@@ -353,7 +367,9 @@ CELERY_RESULT_SERIALIZER = "json"
 # Increasing visibility_timeout due to issues with duplicate Celery tasks,
 # see https://github.com/celery/django-celery/issues/215#issuecomment-154824966
 CELERY_BROKER_TRANSPORT_OPTIONS = {
-    "visibility_timeout": env("CELERY_BROKER_VISIBILITY_TIMEOUT", default=18000, cast=int)
+    "visibility_timeout": env(
+        "CELERY_BROKER_VISIBILITY_TIMEOUT", default=18000, cast=int
+    )
 }
 
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-time-limit
@@ -372,7 +388,9 @@ CELERYD_MAX_MEMORY_PER_CHILD = 500000
 # ------------------------------------------------------------------------------
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
-ACCOUNT_EMAIL_SUBJECT_PREFIX = env.bool("DJANGO_ACCOUNT_EMAIL_SUBJECT_PREFIX", EMAIL_SUBJECT_PREFIX)
+ACCOUNT_EMAIL_SUBJECT_PREFIX = env.bool(
+    "DJANGO_ACCOUNT_EMAIL_SUBJECT_PREFIX", EMAIL_SUBJECT_PREFIX
+)
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
 ACCOUNT_EMAIL_REQUIRED = True
@@ -420,12 +438,20 @@ ACCOUNT_FORMS = {
 # django-invitations
 # ------------------------------------------------------------------------------
 # https://github.com/bee-keeper/django-invitations#additional-configuration
-INVITATIONS_ADAPTER = ACCOUNT_ADAPTER  # django-invitations isn't consistent with allauth...
-INVITATIONS_EMAIL_SUBJECT_PREFIX = env.bool("DJANGO_INVITATIONS_EMAIL_SUBJECT_PREFIX", EMAIL_SUBJECT_PREFIX)
+INVITATIONS_ADAPTER = (
+    ACCOUNT_ADAPTER  # django-invitations isn't consistent with allauth...
+)
+INVITATIONS_EMAIL_SUBJECT_PREFIX = env.bool(
+    "DJANGO_INVITATIONS_EMAIL_SUBJECT_PREFIX", EMAIL_SUBJECT_PREFIX
+)
 INVITATION_MODEL = "users.Invitation"
-INVITATIONS_INVITATION_MODEL = INVITATION_MODEL  # invitations settings are not used self-consisten    tly
+INVITATIONS_INVITATION_MODEL = (
+    INVITATION_MODEL  # invitations settings are not used self-consisten    tly
+)
 INVITATIONS_ADMIN_ADD_FORM = "transit_odp.users.forms.admin.InvitationAdminAddForm"
-INVITATIONS_INVITE_FORM = "transit_odp.organisation.forms.management.InvitationSubsequentForm"
+INVITATIONS_INVITE_FORM = (
+    "transit_odp.organisation.forms.management.InvitationSubsequentForm"
+)
 # If we need to provide different invitation forms for different views,  we could override SendInvite view in urls.py
 # rather than this static setting
 INVITATIONS_ACCEPT_INVITE_AFTER_SIGNUP = True
@@ -474,7 +500,9 @@ CLAMAV_PORT = env.int("CLAMAV_PORT", default=3310)
 # ------------------------------------------------------------------------------
 
 DISABLE_NAPTAN_SCHEMA_VALIDATION = True
-FEED_MONITOR_MAX_RETRY_ATTEMPTS = env("DJANGO_FEED_MONITOR_MAX_RETRY_ATTEMPTS", default=14)
+FEED_MONITOR_MAX_RETRY_ATTEMPTS = env(
+    "DJANGO_FEED_MONITOR_MAX_RETRY_ATTEMPTS", default=14
+)
 
 # NAPTAN import URL
 NAPTAN_XML_IMPORT_URL = env(
@@ -487,9 +515,13 @@ NAPTAN_CSV_IMPORT_URL = env(
 )
 
 # NPTG import URL
-NPTG_IMPORT_URL = env("NPTG_IMPORT_URL", default="https://naptan.api.dft.gov.uk/v1/nptg")
+NPTG_IMPORT_URL = env(
+    "NPTG_IMPORT_URL", default="https://naptan.api.dft.gov.uk/v1/nptg"
+)
 
-BANK_HOLIDAY_API_URL = env("BANK_HOLIDAY_API_URL", default="https://www.gov.uk/bank-holidays.json")
+BANK_HOLIDAY_API_URL = env(
+    "BANK_HOLIDAY_API_URL", default="https://www.gov.uk/bank-holidays.json"
+)
 
 # Google Analytics Key
 GOOGLE_ANALYTICS_KEY = env("GOOGLE_ANALYTICS_KEY", default="")
@@ -505,8 +537,12 @@ AVL_LOWER_THRESHOLD = env("AVL_LOWER_THRESHOLD", cast=float, default=0.45)
 # ------------------------------------------------------------------------------
 
 ITO_GTFS_AWS_ACCESS_KEY_ID = env("DJANGO_ITO_GTFS_AWS_ACCESS_KEY_ID", default=None)
-ITO_GTFS_AWS_SECRET_ACCESS_KEY = env("DJANGO_ITO_GTFS_AWS_SECRET_ACCESS_KEY", default=None)
-ITO_GTFS_AWS_STORAGE_BUCKET_NAME = env("DJANGO_ITO_GTFS_AWS_STORAGE_BUCKET_NAME", default=None)
+ITO_GTFS_AWS_SECRET_ACCESS_KEY = env(
+    "DJANGO_ITO_GTFS_AWS_SECRET_ACCESS_KEY", default=None
+)
+ITO_GTFS_AWS_STORAGE_BUCKET_NAME = env(
+    "DJANGO_ITO_GTFS_AWS_STORAGE_BUCKET_NAME", default=None
+)
 ITO_GTFS_AWS_REGION = env("DJANGO_ITO_GTFS_AWS_REGION", default="eu-west-2")
 
 # TxC Schema
@@ -544,19 +580,25 @@ PTI_PDF_URL = env(
 MS_TENANT_ID = env("MS_TENANT_ID", default="")
 MS_LOGIN_URL = env("MS_LOGIN_URL", default="https://login.microsoftonline.com")
 MS_CLIENT_ID = env("MS_CLIENT_ID", default="")
-MS_SCOPE = env("MS_SCOPE", default=f"https://DVSAUK.onmicrosoft.com/{MS_CLIENT_ID}/.default")
+MS_SCOPE = env(
+    "MS_SCOPE", default=f"https://DVSAUK.onmicrosoft.com/{MS_CLIENT_ID}/.default"
+)
 
 # OTC API
 # ------------------------------------------------------------------------------
 OTC_CLIENT_SECRET = env("OTC_CLIENT_SECRET", default="")
-OTC_API_URL = env("OTC_API_URL", default="https://volapi.app.olcs.dvsacloud.uk/1.0/psv/busservice")
+OTC_API_URL = env(
+    "OTC_API_URL", default="https://volapi.app.olcs.dvsacloud.uk/1.0/psv/busservice"
+)
 OTC_API_KEY = env("OTC_API_KEY", default="")
-OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA = env.int("OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA", default=3)
-
+OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA = env.int(
+    "OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA", default=3
+)
 # WECA API
 # -------------------------------------------------------------------------------
-WECA_API_URL = env("WECA_API_URL", default="https://registrations.travelwest.info/agileBase/Public.ab")
-
+WECA_API_URL = env(
+    "WECA_API_URL", default="https://registrations.travelwest.info/agileBase/Public.ab"
+)
 WECA_AUTH_TOKEN = env("WECA_AUTH_TOKEN", default="WECA_AUTH_TOKEN")
 WECA_PARAM_C = env("WECA_PARAM_C", default="WECA_PARAM_C")
 WECA_PARAM_T = env("WECA_PARAM_T", default="WECA_PARAM_T")
@@ -619,7 +661,9 @@ DQS_STATE_MACHINE_ARN = env("DQS_STATE_MACHINE_ARN", default="")
 
 # SQS QUEUE
 # ------------------------------------------------------------------------------
-SQS_QUEUE_ENDPOINT_URL = env("SQS_QUEUE_ENDPOINT_URL", default="http://localstack-main:4566")
+SQS_QUEUE_ENDPOINT_URL = env(
+    "SQS_QUEUE_ENDPOINT_URL", default="http://localstack-main:4566"
+)
 AWS_REGION_NAME = env("AWS_REGION_NAME", default="eu-west-2")
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default="test")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="test")
@@ -632,7 +676,9 @@ FARES_STATE_MACHINE_ARN = env("FARES_STATE_MACHINE_ARN", default="")
 
 # ABODS AVL LINE LEVEL DETAILS
 # -------------------------------------------------------------------------------
-ABODS_AVL_LINE_LEVEL_DETAILS_URL = env("ABODS_AVL_LINE_LEVEL_DETAILS_URL", default="https://abods_api.url")
+ABODS_AVL_LINE_LEVEL_DETAILS_URL = env(
+    "ABODS_AVL_LINE_LEVEL_DETAILS_URL", default="https://abods_api.url"
+)
 ABODS_AVL_AUTH_TOKEN = env("ABODS_AVL_AUTH_TOKEN", default="")
 
 
@@ -717,7 +763,9 @@ MAPBOX_KEY = env("MAPBOX_KEY", default=None)
 SUPPORT_EMAIL = env("SUPPORT_EMAIL")
 SUPPORT_PHONE = env("SUPPORT_PHONE")
 
-DJANGO_AXE_REPORT_PATH = os.path.join(str(APPS_DIR.path("static")), "accessibility_report.json")
+DJANGO_AXE_REPORT_PATH = os.path.join(
+    str(APPS_DIR.path("static")), "accessibility_report.json"
+)
 DJANGO_AXE_ENABLED = env.bool("DJANGO_AXE_ENABLED", default=False)
 DD_DBM_PROPAGATION_MODE = "full"
 
@@ -756,7 +804,9 @@ CSP_WORKER_SRC = ("'self'", "blob:")
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
 CLOUDFRONT_PUBLIC_KEY_ID = env("CLOUDFRONT_PUBLIC_KEY_ID", default="")
-CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER = env("CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER", default="")
+CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER = env(
+    "CLOUDFRONT_PRIVATE_KEY_SSM_PARAMETER", default=""
+)
 SSM_PARAMETER_AWS_REGION = env("SSM_PARAMETER_AWS_REGION", default="eu-west-2")
 S3_PRESIGNED_URL_TTL = env("S3_PRESIGNED_URL_TTL", default=300)
 CLOUDFRONT_CUSTOM_DOMAIN = env("CLOUDFRONT_CUSTOM_DOMAIN", default="")

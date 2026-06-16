@@ -44,6 +44,8 @@ These environment variables may be set to override the default values.
 
 ## Testing
 
+### Testing locally (no AWS secrets)
+
 Create and run the following Python script from the terminal:
 
 ```py
@@ -91,4 +93,72 @@ if __name__ == "__main__":
     metadata = get_latest_data(test_services, test_registrations)
 
     logger.info(f"Results: {json.dumps(metadata, indent=4)}")
+```
+
+### Testing in a Lambda
+
+Create a python test script as detailed below, and run with your AWS credentials that have access to both the S3 bucket and secrets:
+
+```py
+#!/usr/bin/env python
+"""
+Local test script for WECA Lambda handler.
+
+Usage (from repo root, with docker-compose services running):
+    docker-compose run --rm $(grep -v '^#\|^$' .env.weca_local | sed 's/^/-e /') django python test_weca_lambda_local.py
+"""
+import os
+import sys
+import django
+import json
+
+# Setup Django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.base")
+django.setup()
+
+# Import Lambda handler
+from transit_odp.pipelines.pipelines.weca_extract_etl.lambda_handler import handler
+
+
+if __name__ == "__main__":
+    print("=" * 70)
+    print("Testing WECA Lambda Handler Locally")
+    print("=" * 70)
+    print()
+
+    # Test the handler
+    print("Invoking handler(event={}, context={})...")
+    print()
+
+    try:
+        result = handler({}, {})
+
+        status_code = result.get("statusCode")
+        body = json.loads(result.get("body", "{}"))
+
+        print(f"Status Code: {status_code}")
+        print(f"Response Body:")
+        print(json.dumps(body, indent=2))
+
+        if status_code == 200:
+            print()
+            print("✅ SUCCESS: WECA archived to S3")
+            print(f"   Metadata: {body}")
+        else:
+            print()
+            print("❌ FAILED: Lambda returned error")
+            print(f"   Error: {body}")
+            if "trace" in body:
+                print(f"   Traceback:\n{body.get('trace')}")
+            sys.exit(1)
+
+    except Exception as e:
+        print(f"❌ EXCEPTION: {e}")
+        import traceback
+
+        traceback.print_exc()
+        sys.exit(1)
+
+    print()
+    print("=" * 70)
 ```
