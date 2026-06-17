@@ -28,7 +28,9 @@ class GetSecretWrapper:
     def get_secret(self, secret_name) -> dict[str, str]:
 
         try:
-            get_secret_value_response = self.client.get_secret_value(SecretId=secret_name)
+            get_secret_value_response = self.client.get_secret_value(
+                SecretId=secret_name
+            )
             logger.info("Secret retrieved successfully.")
             return get_secret_value_response["SecretString"]
         except self.client.exceptions.ResourceNotFoundException:
@@ -61,8 +63,12 @@ def handler(event, context):
 
         sm_client = boto3.client("secretsmanager")
         sm_wrapper = GetSecretWrapper(sm_client)
-        services_secret = json.loads(sm_wrapper.get_secret(os.getenv("AWS_WECA_SERVICES_SECRET")))
-        resgistrations_secret = json.loads(sm_wrapper.get_secret(os.getenv("AWS_WECA_REGISTRATIONS_SECRET")))
+        services_secret = json.loads(
+            sm_wrapper.get_secret(os.getenv("AWS_WECA_SERVICES_SECRET"))
+        )
+        resgistrations_secret = json.loads(
+            sm_wrapper.get_secret(os.getenv("AWS_WECA_REGISTRATIONS_SECRET"))
+        )
 
         weca_meta = get_latest_data(services_secret, resgistrations_secret)
 

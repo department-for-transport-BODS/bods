@@ -47,7 +47,9 @@ def get_s3_storage() -> Storage:
         logger.info(f"Using S3 bucket for WECA data storage.")
         return S3Boto3Storage(bucket_name=bucket_name)
     else:
-        logger.warning("WECA raw data storage location is not set. Using default storage.")
+        logger.warning(
+            "WECA raw data storage location is not set. Using default storage."
+        )
         return default_storage
 
 
@@ -74,7 +76,9 @@ def store_s3_data(
     try:
         # Ensure the default storage location exists if not using S3
         if not isinstance(storage, S3Boto3Storage):
-            Path(os.path.join(storage.location, os.path.dirname(key))).mkdir(parents=True, exist_ok=True)
+            Path(os.path.join(storage.location, os.path.dirname(key))).mkdir(
+                parents=True, exist_ok=True
+            )
 
         with storage.open(key, "w") as f:
             if isinstance(data, (APIRegistrationsResponse, APIServiceResponse)):
@@ -112,14 +116,20 @@ def get_metadata(storage: Storage, key: str) -> dict[str, str | MetaData]:
         if storage.exists(key):
             return json.loads(storage.open(key, "r").read())
         else:
-            logger.warning(f"No previous WECA metadata found. Returning empty metadata.")
+            logger.warning(
+                f"No previous WECA metadata found. Returning empty metadata."
+            )
             return {}
     except Exception as e:
-        logger.error("Exception while fetching previous WECA metadata from S3.", exc_info=e)
+        logger.error(
+            "Exception while fetching previous WECA metadata from S3.", exc_info=e
+        )
         raise
 
 
-def store_temp_data(data: APIServiceResponse | APIRegistrationsResponse | Any, prefix: str) -> str:
+def store_temp_data(
+    data: APIServiceResponse | APIRegistrationsResponse | Any, prefix: str
+) -> str:
     """Write WECA data to a temporary file.
 
     Args:
@@ -212,7 +222,9 @@ def validate_and_store(
     base_name = Path(s3_key).name.replace(Path(s3_key).suffix, "")
     changed, checksum = has_changed(data, previous_metadata, base_name)
     if changed is False:
-        logger.info(f"No changes detected in WECA data since {previous_metadata['timestamp']}. Skipping S3 upload.")
+        logger.info(
+            f"No changes detected in WECA data since {previous_metadata['timestamp']}. Skipping S3 upload."
+        )
         metadata = {s3_key: previous_metadata}
     else:
         metadata = store_s3_data(data, storage, s3_key, client_url, checksum)
@@ -221,7 +233,8 @@ def validate_and_store(
 
 
 def get_latest_data(
-    services_params: Optional[dict[str, str]], registrations_params: Optional[dict[str, str]]
+    services_params: Optional[dict[str, str]],
+    registrations_params: Optional[dict[str, str]],
 ) -> dict[str, str | MetaData]:
     """Fetch the latest WECA data from WECA API, and store in S3.
 
@@ -244,12 +257,21 @@ def get_latest_data(
     # Get storage config
     storage = get_s3_storage()
     keys = {
-        "metadata": os.getenv("WECA_S3_KEY_METADATA", "raw/weca/weca_metadata_latest.json"),
-        "services": os.getenv("WECA_S3_KEY_SERVICES", "raw/weca/weca_services_latest.json"),
-        "services_validated": os.getenv("WECA_S3_KEY_SERVICES_VALID", "raw/weca/weca_services_validated_latest.json"),
-        "registrations": os.getenv("WECA_S3_KEY_REGISTRATIONS", "raw/weca/weca_registrations_latest.json"),
+        "metadata": os.getenv(
+            "WECA_S3_KEY_METADATA", "raw/weca/weca_metadata_latest.json"
+        ),
+        "services": os.getenv(
+            "WECA_S3_KEY_SERVICES", "raw/weca/weca_services_latest.json"
+        ),
+        "services_validated": os.getenv(
+            "WECA_S3_KEY_SERVICES_VALID", "raw/weca/weca_services_validated_latest.json"
+        ),
+        "registrations": os.getenv(
+            "WECA_S3_KEY_REGISTRATIONS", "raw/weca/weca_registrations_latest.json"
+        ),
         "registrations_validated": os.getenv(
-            "WECA_S3_KEY_REGISTRATIONS_VALID", "raw/weca/weca_registrations_validated_latest.json"
+            "WECA_S3_KEY_REGISTRATIONS_VALID",
+            "raw/weca/weca_registrations_validated_latest.json",
         ),
     }
     logger.debug(f"Using S3 keys: {json.dumps(keys, indent=4)}")
@@ -257,7 +279,9 @@ def get_latest_data(
     # WECA Pipeline metadata
     previous_metadata = get_metadata(storage, keys["metadata"])
     logger.debug(f"Previous WECA metadata: {json.dumps(previous_metadata, indent=4)}")
-    new_metadata = {"last_checked": datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    new_metadata = {
+        "last_checked": datetime.datetime.now(datetime.timezone.utc).isoformat()
+    }
 
     # Get the latest services and registrations data
     for ds in get_args(WECA_DATASETS):
@@ -273,17 +297,25 @@ def get_latest_data(
                 r_param=params[ds].get("param_r"),
                 token=params[ds].get("api_key"),
             )
-            ds_raw_metadata = validate_and_store(ds_raw, previous_metadata.get(keys[ds]), keys[ds], storage, client.url)
+            ds_raw_metadata = validate_and_store(
+                ds_raw, previous_metadata.get(keys[ds]), keys[ds], storage, client.url
+            )
 
             ds_validated = client.validate_weca_data(ds, ds_raw)
             ds_validated_key = keys[f"{ds}_validated"]
             ds_validated_metadata = validate_and_store(
-                ds_validated, previous_metadata.get(ds_validated_key), ds_validated_key, storage, client.url
+                ds_validated,
+                previous_metadata.get(ds_validated_key),
+                ds_validated_key,
+                storage,
+                client.url,
             )
 
             new_metadata = new_metadata | ds_raw_metadata | ds_validated_metadata
         except Exception as e:
-            logger.error(f"Unable to fetch WECA Services data from {client.url}.", exc_info=e)
+            logger.error(
+                f"Unable to fetch WECA Services data from {client.url}.", exc_info=e
+            )
             # If one request fails, we still want to continue with the others.
             # raise
 

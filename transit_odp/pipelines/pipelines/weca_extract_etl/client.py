@@ -95,39 +95,65 @@ class RegistrationsModel(BaseModel):
         json_schema_extra="PC7654321",
         alias="operatorlicence_istervices",
     )
-    registration_number: str = Field(json_schema_extra="PD7654321/87654321", alias="serialnum_ervi")
-    route_number: str = Field(..., json_schema_extra="2", alias="servicenumbers_icespt7a")
+    registration_number: str = Field(
+        json_schema_extra="PD7654321/87654321", alias="serialnum_ervi"
+    )
+    route_number: str = Field(
+        ..., json_schema_extra="2", alias="servicenumbers_icespt7a"
+    )
     route_description: str = Field(
         "",
         json_schema_extra="City Center - Suburb - Main Street",
         alias="routedescriptio_istervices",
     )
     variation_number: int = Field(..., json_schema_extra=1, alias="variation_ervi")
-    start_point: str = Field(..., json_schema_extra="City Center", alias="startpoint_espt")
+    start_point: str = Field(
+        ..., json_schema_extra="City Center", alias="startpoint_espt"
+    )
     finish_point: str = Field(..., json_schema_extra="Suburb", alias="endpoint_sp")
-    via: str = Field(..., json_schema_extra="Main Street", alias="via_services_pt7atfu9e78z39yqc")
+    via: str = Field(
+        ..., json_schema_extra="Main Street", alias="via_services_pt7atfu9e78z39yqc"
+    )
     subsidised: str = Field(..., json_schema_extra="Fully", alias="subsidised_tervic")
     subsidy_detail: str = Field(
         ...,
         json_schema_extra="Transport for Local Authority (LA)",
         alias="subsidisedby_stervice",
     )
-    is_short_notice: bool = Field(..., json_schema_extra=False, alias="shortnotice_tervic")
-    received_date: date = Field(..., json_schema_extra="01/01/2000", alias="receiveddate_stervice")
-    granted_date: date = Field(..., json_schema_extra="01/02/2000", alias="granteddate_tervic")
-    effective_date: date = Field(..., json_schema_extra="01/03/2000", alias="proposedstartda_istervices")
+    is_short_notice: bool = Field(
+        ..., json_schema_extra=False, alias="shortnotice_tervic"
+    )
+    received_date: date = Field(
+        ..., json_schema_extra="01/01/2000", alias="receiveddate_stervice"
+    )
+    granted_date: date = Field(
+        ..., json_schema_extra="01/02/2000", alias="granteddate_tervic"
+    )
+    effective_date: date = Field(
+        ..., json_schema_extra="01/03/2000", alias="proposedstartda_istervices"
+    )
     end_date: date = Field(..., json_schema_extra="01/04/2000", alias="enddate_sp")
-    operator_name: str = Field(..., json_schema_extra="Blue Sky Buses", alias="tenantid_sp")
-    bus_service_type_id: str = Field(..., json_schema_extra="Standard", alias="servicetype_tervic")
-    bus_service_type_description: str = Field(..., json_schema_extra="Normal Stopping", alias="typeofservice_stervice")
+    operator_name: str = Field(
+        ..., json_schema_extra="Blue Sky Buses", alias="tenantid_sp"
+    )
+    bus_service_type_id: str = Field(
+        ..., json_schema_extra="Standard", alias="servicetype_tervic"
+    )
+    bus_service_type_description: str = Field(
+        ..., json_schema_extra="Normal Stopping", alias="typeofservice_stervice"
+    )
     traffic_area_id: str = Field(default="WECA", json_schema_extra="C")
-    application_type: str = Field(..., json_schema_extra="New", alias="applicationtype_istervices")
+    application_type: str = Field(
+        ..., json_schema_extra="New", alias="applicationtype_istervices"
+    )
     publication_text: Optional[str] = Field(
         None,
         json_schema_extra="Revised timetable to improve reliability",
         alias="publicationText",
     )
-    other_details: Optional[str] = Field(None, json_schema_extra="", alias="otherDetails")
+    other_details: Optional[str] = Field(
+        None, json_schema_extra="", alias="otherDetails"
+    )
 
     @field_validator(
         "route_description",
@@ -148,7 +174,9 @@ class RegistrationsModel(BaseModel):
             return v.strip()
         return v
 
-    @field_validator("received_date", "granted_date", "effective_date", "end_date", mode="before")
+    @field_validator(
+        "received_date", "granted_date", "effective_date", "end_date", mode="before"
+    )
     def parse_date(cls, v):
         v = v.replace("Sept", "Sep")
 
@@ -227,14 +255,19 @@ class WecaClient:
 
         logger.debug(f"API Response: {response.status_code}")
         if response.status_code == HTTPStatus.NO_CONTENT:
-            logger.warning(f"Empty Response, API return {HTTPStatus.NO_CONTENT}, " f"for params {params}")
+            logger.warning(
+                f"Empty Response, API return {HTTPStatus.NO_CONTENT}, "
+                f"for params {params}"
+            )
             return self.default_response(dataset).model_dump()
         try:
             return response.json()
         except:
             return self.default_response(dataset).model_dump()
 
-    def default_response(self, dataset: WECA_DATASETS) -> APIServiceResponse | APIRegistrationsResponse:
+    def default_response(
+        self, dataset: WECA_DATASETS
+    ) -> APIServiceResponse | APIRegistrationsResponse:
         """
         Create default return response for placeholder purpose
         """
@@ -244,7 +277,14 @@ class WecaClient:
             return APIServiceResponse(**response)
         return APIRegistrationsResponse(**response)
 
-    def fetch_weca_data(self, request_type: WECA_DATASETS, c_param: str, t_param: str, r_param: str, token: str) -> Any:
+    def fetch_weca_data(
+        self,
+        request_type: WECA_DATASETS,
+        c_param: str,
+        t_param: str,
+        r_param: str,
+        token: str,
+    ) -> Any:
         """Fetch data from the WECA API.
 
         Returns:
@@ -252,11 +292,17 @@ class WecaClient:
         """
         logger.info(f"Making request to WECA API for {request_type} data")
         response = self._make_request(
-            dataset=request_type, param_c=c_param, param_t=t_param, param_r=r_param, token=token
+            dataset=request_type,
+            param_c=c_param,
+            param_t=t_param,
+            param_r=r_param,
+            token=token,
         )
         return response
 
-    def validate_weca_data(self, dataset: WECA_DATASETS, data: Any) -> APIServiceResponse | APIRegistrationsResponse:
+    def validate_weca_data(
+        self, dataset: WECA_DATASETS, data: Any
+    ) -> APIServiceResponse | APIRegistrationsResponse:
 
         try:
             if dataset == "services":

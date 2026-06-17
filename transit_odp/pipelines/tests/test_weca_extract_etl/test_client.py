@@ -262,7 +262,9 @@ def weca_get_registrations_data(weca_registrations_data, weca_credentials):
     yield mock
 
 
-def test_weca_api_registrations_response_returned(weca_get_registrations_data, weca_credentials):
+def test_weca_api_registrations_response_returned(
+    weca_get_registrations_data, weca_credentials
+):
     with weca_get_registrations_data:
         client = WecaClient(weca_credentials["url"])
         response = client.fetch_weca_data(
