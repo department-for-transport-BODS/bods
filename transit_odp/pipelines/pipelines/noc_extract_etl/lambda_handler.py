@@ -1,5 +1,5 @@
 """
-Lambda handler for NaPTAN upload to S3
+Lambda handler for NOC upload to S3
 """
 import json
 import os
@@ -16,10 +16,10 @@ if not settings.configured:
 
 def handler(event, context):
     """
-    AWS Lambda handler for NaPTAN file download.
+    AWS Lambda handler for NOC file download.
 
-    Downloads latest NaPTAN files from DfT API,
-    and saves them under raw/naptan for ETL to consume.
+    Downloads latest NOC files from DfT API,
+    and saves them under raw/noc for ETL to consume.
 
     Args:
         event: Lambda event (unused for this function)
@@ -29,18 +29,18 @@ def handler(event, context):
         dict: Response with statusCode and body containing result or error
     """
     try:
-        from transit_odp.pipelines.pipelines.naptan_extract_etl.extract import (
-            get_latest_naptan_to_s3,
+        from transit_odp.pipelines.pipelines.noc_extract_etl.extract import (
+            get_latest_noc_to_s3,
         )
 
-        naptan_key = get_latest_naptan_to_s3()
+        noc_key = get_latest_noc_to_s3()
 
         return {
             "statusCode": 200,
             "body": json.dumps(
                 {
-                    "message": "Latest NaPTAN downloaded successfully",
-                    "naptan": naptan_key,
+                    "message": "Latest NOC downloaded successfully",
+                    "noc": noc_key,
                 }
             ),
         }
