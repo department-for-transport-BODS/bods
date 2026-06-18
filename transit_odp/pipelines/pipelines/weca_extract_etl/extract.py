@@ -45,7 +45,10 @@ def get_s3_storage() -> Storage:
 
     if bucket_name:
         logger.info(f"Using S3 bucket for WECA data storage.")
-        return S3Boto3Storage(bucket_name=bucket_name)
+        return S3Boto3Storage(
+            bucket_name=bucket_name,
+            object_parameters={"ServerSideEncryption": "aws:kms"},
+        )
     else:
         logger.warning(
             "WECA raw data storage location is not set. Using default storage."
@@ -293,12 +296,16 @@ def get_latest_data(
             if params.get(ds) is None:
                 continue
 
+            # Support for old and new format parameter secrets
+            token = params[ds].get("api_key") or params[ds].get(f"api_key_{ds}")
+            param_r = params[ds].get("param_r") or params[ds].get(f"param_r_{ds}")
+
             ds_raw = client.fetch_weca_data(
                 ds,
                 c_param=params[ds].get("param_c"),
                 t_param=params[ds].get("param_t"),
-                r_param=params[ds].get("param_r"),
-                token=params[ds].get("api_key"),
+                r_param=param_r,
+                token=token,
             )
             ds_raw_metadata = validate_and_store(
                 ds_raw, previous_metadata.get(keys[ds]), keys[ds], storage, client.url

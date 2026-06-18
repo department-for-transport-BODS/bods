@@ -4,6 +4,7 @@ Lambda handler for WECA upload to S3
 import json
 import os
 import boto3
+from typing import Optional
 
 from celery.utils.log import get_task_logger
 import django
@@ -24,20 +25,20 @@ class GetSecretWrapper:
     def __init__(self, sm_client):
         self.client = sm_client
 
-    def get_secret(self, secret_name) -> dict[str, str]:
+    def get_secret(self, secret_name) -> Optional[dict[str, str]]:
 
         try:
             get_secret_value_response = self.client.get_secret_value(
                 SecretId=secret_name
             )
             logger.info("Secret retrieved successfully.")
-            return get_secret_value_response["SecretString"]
+            return json.loads(get_secret_value_response["SecretString"])
         except self.client.exceptions.ResourceNotFoundException:
             msg = f"The requested secret {secret_name} was not found."
             logger.info(msg)
-            return msg
+            return None
         except Exception as e:
-            logger.error(f"An unknown error occurred: {str(e)}.")
+            logger.error(f"An unknown error occurred when getting secret: {str(e)}.")
             raise
 
 
@@ -62,11 +63,9 @@ def handler(event, context):
 
         sm_client = boto3.client("secretsmanager")
         sm_wrapper = GetSecretWrapper(sm_client)
-        services_secret = json.loads(
-            sm_wrapper.get_secret(os.getenv("AWS_WECA_SERVICES_SECRET"))
-        )
-        resgistrations_secret = json.loads(
-            sm_wrapper.get_secret(os.getenv("AWS_WECA_REGISTRATIONS_SECRET"))
+        services_secret = sm_wrapper.get_secret(os.getenv("AWS_WECA_SERVICES_SECRET"))
+        resgistrations_secret = sm_wrapper.get_secret(
+            os.getenv("AWS_WECA_REGISTRATIONS_SECRET")
         )
 
         weca_meta = get_latest_data(services_secret, resgistrations_secret)
