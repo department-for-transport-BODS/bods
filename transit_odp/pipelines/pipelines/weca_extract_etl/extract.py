@@ -188,7 +188,7 @@ def has_changed(
 
     temp_file_path = store_temp_data(data, base_name)
     checksum = create_sha256_checksum(temp_file_path)
-    Path.unlink(temp_file_path)  # Remove temp file.
+    Path(temp_file_path).unlink(missing_ok=True)  # Remove temp file.
 
     if previous_metadata is None:
         logger.info(f"No previous metadata for {base_name}. Treating as new data.")
@@ -285,6 +285,9 @@ def get_latest_data(
 
     # Get the latest services and registrations data
     for ds in get_args(WECA_DATASETS):
+
+        ds_validated_key = keys[f"{ds}_validated"]
+
         try:
             # Skip if no params for this dataset
             if params.get(ds) is None:
@@ -300,9 +303,21 @@ def get_latest_data(
             ds_raw_metadata = validate_and_store(
                 ds_raw, previous_metadata.get(keys[ds]), keys[ds], storage, client.url
             )
+            new_metadata = new_metadata | ds_raw_metadata
 
+        except Exception as e:
+            logger.error(
+                f"Unable to fetch WECA Services data from {client.url}.", exc_info=e
+            )
+            new_metadata = (
+                new_metadata
+                | {keys[ds]: previous_metadata.get(keys[ds])}
+                | {ds_validated_key: previous_metadata.get(ds_validated_key)}
+            )
+            continue
+
+        try:
             ds_validated = client.validate_weca_data(ds, ds_raw)
-            ds_validated_key = keys[f"{ds}_validated"]
             ds_validated_metadata = validate_and_store(
                 ds_validated,
                 previous_metadata.get(ds_validated_key),
@@ -311,13 +326,15 @@ def get_latest_data(
                 client.url,
             )
 
-            new_metadata = new_metadata | ds_raw_metadata | ds_validated_metadata
+            new_metadata = new_metadata | ds_validated_metadata
         except Exception as e:
             logger.error(
                 f"Unable to fetch WECA Services data from {client.url}.", exc_info=e
             )
-            # If one request fails, we still want to continue with the others.
-            # raise
+            new_metadata = new_metadata | {
+                ds_validated_key: previous_metadata.get(ds_validated_key)
+            }
+            continue
 
     # Update metadata in S3
     with storage.open(keys["metadata"], "w") as f:

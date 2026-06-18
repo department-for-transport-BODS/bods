@@ -16,7 +16,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.base")
 if not settings.configured:
     django.setup()
 
-
 logger = get_task_logger(__name__)
 logger.setLevel(os.getenv("LOG_LEVEL", "WARNING").upper())
 
@@ -77,7 +76,7 @@ def handler(event, context):
             "body": json.dumps(
                 {
                     "message": "Latest WECA downloaded successfully",
-                    "weca": weca_meta,
+                    "metadata": weca_meta,
                 }
             ),
         }
