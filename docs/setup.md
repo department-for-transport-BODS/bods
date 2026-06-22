@@ -5,38 +5,7 @@ E.g. Docker/Docker Compose, pipenv, npm, Black, etc.
 
 ## Installation
 
-### Step 1: Configure /etc/hosts
-
-The Django app serves multiple sites on different subdomains. In order
-to emulate this in development, add to `/etc/hosts`:
-
-```sh
-127.0.0.1 www.bods.local data.bods.local publish.bods.local admin.bods.local
-```
-
-and set `DJANGO_PARENT_HOST=bods.local` in your environment (see
-Step 2 and Step 3).
-
-`DJANGO_PARENT_HOST` must have at least one dot in it to make it a valid domain.
-Otherwise, the browser will ignore cross-domain cookies, such as the sessionid
-cookie - making it impossible to log in.
-
-If you want to change `DJANGO_PARENT_HOST` after having already
-`python manage.py migrate`, then you must edit the site records manually in the
-`django_site` database table. Update the domains as necessary, e.g:
-
-```sh
-1 www.bods.local Bus Open Data Service
-2 data.bods.local Find Open Data Service
-3 publish.bods.local Publish Open Data Service
-4 admin.bods.local Bus Open Data Service (Internal)
-```
-
-After to have made these changes running `docker-compose up`
-will launch all the services. After a few minutes, you should be able to access
-[www.bods.local:8000](www.bods.local:8000).
-
-### Step 2: Set up Docker Compose
+### Step 1: Set up Docker Compose
 
 Environment configuration when using Docker Compose is achieved using a `.env`
 file that is passed to the docker containers. A template for the `.env` file is
@@ -63,7 +32,46 @@ $ id -g
 Setting these variables ensures that any files created by Django running in the
 container are owned by your system user.
 
+Set `DJANGO_PARENT_HOST=bods.local` in your environment (see Step 2 and Step 3).
+
 Remember to set `DQS_URL`.
+
+### Step 2: Configure /etc/hosts
+
+The Django app serves multiple sites on different subdomains. In order
+to emulate this in development, add to `/etc/hosts`:
+
+```sh
+127.0.0.1 www.bods.local data.bods.local publish.bods.local admin.bods.local
+```
+
+and set `DJANGO_PARENT_HOST=bods.local` in your environment (see
+Step 2 and Step 3).
+
+`DJANGO_PARENT_HOST` must have at least one dot in it to make it a valid domain.
+Otherwise, the browser will ignore cross-domain cookies, such as the sessionid
+cookie - making it impossible to log in.
+
+If you want to change `DJANGO_PARENT_HOST` after having already
+`python manage.py migrate`, then you must edit the site records manually in the
+`django_site` database table. Update the domains as necessary, e.g:
+
+```sh
+1 www.bods.local Bus Open Data Service
+2 data.bods.local Find Open Data Service
+3 publish.bods.local Publish Open Data Service
+4 admin.bods.local Bus Open Data Service (Internal)
+```
+
+### Step 3: Run Docker Compose
+
+Run `docker compose pull`.
+
+Then run `docker compose build django`.
+
+Running `docker compose up` will launch all the services. After a few minutes, you
+should be able to access [www.bods.local:8000](www.bods.local:8000).
+
 
 ### Step 3: Local Development (Optional)
 
