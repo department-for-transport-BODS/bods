@@ -1,11 +1,11 @@
 import os
 import shutil
 from pathlib import Path
-import io
 
 import pandas as pd
 import requests
 from celery.utils.log import get_task_logger
+from django.conf import settings
 from lxml import etree as ET
 from requests import RequestException
 
@@ -13,105 +13,73 @@ from transit_odp.common.loggers import LoaderAdapter
 from transit_odp.naptan.dataclasses import StopPoint
 from transit_odp.naptan.dataclasses.nptg import NationalPublicTransportGazetteer
 
-from storages.backends.s3boto3 import S3Boto3Storage
-
 ns = "http://www.naptan.org.uk/"
 namespace = {"naptan": ns}
 
-CHUNK_SIZE = 8 * 1024 * 1024  # 8MB chunks
-
-NAPTAN_BUCKET_NAME = os.getenv("NAPTAN_BUCKET_NAME")
-BUCKET_REGION = os.getenv("BUCKET_REGION")
-NAPTAN_S3_KEY = os.getenv("NAPTAN_S3_KEY")
-NPTG_BUCKET_NAME = os.getenv("NPTG_BUCKET_NAME")
-NPTG_S3_KEY = os.getenv("NPTG_S3_KEY")
+CHUNK_SIZE = 2000
 
 DISK_PATH_FOR_NAPTAN_ZIP = "/tmp/NaptanStops.zip"
 
-DISK_PATH_FOR_NAPTAN_FOLDER = "/tmp/Naptan/"
+DISK_PATH_FOR_NAPTAN_FOLDER = "/tmp/NaptanStops/"
 DISK_PATH_FOR_NPTG_FOLDER = "/tmp/NPTG/"
 DISK_PATH_FOR_NPTG = "/tmp/NPTG.xml"
 
 logger = get_task_logger(__name__)
 logger = LoaderAdapter("NaPTANLoader", logger)
-nptg_logger = LoaderAdapter("NPTGLoader", get_task_logger(__name__))
-
-
-def get_naptan_s3_storage():
-    # NaPTAN reads must use the configured S3 bucket.
-    if NAPTAN_BUCKET_NAME:
-        logger.info(f"Using S3 bucket {NAPTAN_BUCKET_NAME} for NaPTAN data storage.")
-        storage_kwargs = {"bucket_name": NAPTAN_BUCKET_NAME}
-        if BUCKET_REGION:
-            storage_kwargs["region_name"] = BUCKET_REGION
-        return S3Boto3Storage(**storage_kwargs)
-
-    message = "NAPTAN_BUCKET_NAME is not set. Cannot read NaPTAN data from S3."
-    logger.error(message)
-    raise RuntimeError(message)
-
-
-def get_nptg_s3_storage():
-    if not NPTG_BUCKET_NAME:
-        message = "NPTG_BUCKET_NAME is not set. Cannot read NPTG data from S3."
-        nptg_logger.error(message)
-        raise RuntimeError(message)
-
-    storage_kwargs = {"bucket_name": NPTG_BUCKET_NAME}
-    if BUCKET_REGION:
-        storage_kwargs["region_name"] = BUCKET_REGION
-
-    nptg_logger.info(f"Using S3 bucket {NPTG_BUCKET_NAME} for NPTG data storage.")
-    return S3Boto3Storage(**storage_kwargs)
 
 
 def get_latest_naptan_xml():
-    storage = get_naptan_s3_storage()
-    s3_key = NAPTAN_S3_KEY
-    if not s3_key:
-        logger.error("NAPTAN_S3_KEY is not set.")
-        return None
+    naptan_url = settings.NAPTAN_IMPORT_URL
+    logger.info(f"Loading NaPTAN file from {naptan_url}.")
+    xml_file_path = None
 
     try:
-        logger.info(f"Attempting to retrieve latest NaPTAN data from S3 at {s3_key}.")
-        if not storage.exists(s3_key):
-            logger.warning(f"No NaPTAN data found in S3 at {s3_key}")
-            return None
+        response = requests.get(naptan_url)
+    except RequestException as exc:
+        logger.error(f"Unable to fetch NaPTAN data from {naptan_url}.", exc_info=exc)
+        return xml_file_path
 
-        logger.info(f"NaPTAN XML found in S3 at {s3_key}.")
-        return storage.open(s3_key, "rb")
+    try:
+        logger.info("Writing NaPTAN response data to a file on disk.")
+        if response.status_code == 200:
+            dir_path = Path(DISK_PATH_FOR_NAPTAN_FOLDER)
+            if not dir_path.exists():
+                dir_path.mkdir(parents=True, exist_ok=True)
 
+            filepath = dir_path / "Naptan.xml"
+            with filepath.open("wb") as f:
+                for chunk in response.iter_content(CHUNK_SIZE):
+                    f.write(chunk)
+
+            logger.info("Finished NaPTAN writing to file on disk.")
+            for filename in os.listdir(DISK_PATH_FOR_NAPTAN_FOLDER):
+                if filename.endswith(".xml"):
+                    xml_file_path = os.path.join(DISK_PATH_FOR_NAPTAN_FOLDER, filename)
     except Exception as exc:
         logger.error("Exception while getting NaPTAN data.", exc_info=exc)
-        return None
+
+    logger.info("NaPTAN file successfully extracted to disk.")
+    return xml_file_path
 
 
 def get_latest_nptg():
-    storage = get_nptg_s3_storage()
-    s3_key = NPTG_S3_KEY
-    if not s3_key:
-        nptg_logger.warning("NPTG_S3_KEY is not set.")
-        return None
-
-    nptg_logger.info(f"Attempting to retrieve latest NPTG data from S3 at {s3_key}.")
+    nptg_url = settings.NPTG_IMPORT_URL
+    logger.info(f"Loading NPTG from {nptg_url}.")
     xml_file_path = None
     try:
-        if not storage.exists(s3_key):
-            nptg_logger.warning(f"No NPTG data found in S3 at {s3_key}")
-            return None
+        response = requests.get(nptg_url)
+        logger.info("Writing NPTG response data to a file on disk.")
+        if response.status_code == 200:
+            with open(DISK_PATH_FOR_NPTG, "wb") as f:
+                for chunk in response.iter_content(CHUNK_SIZE):
+                    f.write(chunk)
+            logger.info("Finished NPTG writing to file on disk.")
+            xml_file_path = DISK_PATH_FOR_NPTG
 
-        nptg_logger.info("Writing NPTG data from S3 to a file on disk.")
-        with storage.open(s3_key, "rb") as source, open(DISK_PATH_FOR_NPTG, "wb") as f:
-            for chunk in source.chunks(CHUNK_SIZE):
-                f.write(chunk)
+    except Exception as e:
+        logger.warning("Exception while getting NPTG data.", exc_info=e)
 
-        nptg_logger.info("Finished NPTG writing to file on disk.")
-        xml_file_path = DISK_PATH_FOR_NPTG
-
-    except Exception as exc:
-        nptg_logger.warning("Exception while getting NPTG data from S3.", exc_info=exc)
-
-    nptg_logger.info("NPTG file successfully extracted to disk.")
+    logger.info("NPTG file successfully extracted to disk.")
     return xml_file_path
 
 
@@ -220,9 +188,7 @@ def extract_localities(xml_file_path):
                 "name": locality.descriptor.locality_name,
                 "easting": locality.location.translation.easting,
                 "northing": locality.location.translation.northing,
-                "district_id": int(locality.nptg_district_ref)
-                if locality.nptg_district_ref
-                else None,
+                "district_id": int(locality.nptg_district_ref),
                 "admin_area_id": int(locality.administrative_area_ref),
             }
 
@@ -247,6 +213,9 @@ def cleanup():
     if os.path.exists(DISK_PATH_FOR_NAPTAN_ZIP):
         logger.info(f"Removing {DISK_PATH_FOR_NAPTAN_ZIP}.")
         os.remove(DISK_PATH_FOR_NAPTAN_ZIP)
+    if os.path.exists(DISK_PATH_FOR_NAPTAN_FOLDER):
+        logger.info(f"Removing {DISK_PATH_FOR_NAPTAN_FOLDER}.")
+        shutil.rmtree(DISK_PATH_FOR_NAPTAN_FOLDER)
     if os.path.exists(DISK_PATH_FOR_NPTG):
         logger.info(f"Removing {DISK_PATH_FOR_NPTG}.")
         os.remove(DISK_PATH_FOR_NPTG)

@@ -9,7 +9,7 @@ jobs:
     name: Remove Stale Branches
     runs-on: ubuntu-latest
     steps:
-      - uses: fpicalausa/remove-stale-branches@9b829bc2975ade0c61e64e9613def53ec0732440 # 2.6.1
+      - uses: fpicalausa/remove-stale-branches@v1.6.0
         with:
           dry-run: false # Check out the console output before setting this to false
           days-before-branch-stale: 60
@@ -17,4 +17,3 @@ jobs:
           exempt-protected-branches: true
           operations-per-run: 100
           ignore-unknown-authors: true
-          default-recipient: '@department-for-transport-BODS/Development'

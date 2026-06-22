@@ -5,38 +5,7 @@ E.g. Docker/Docker Compose, pipenv, npm, Black, etc.
 
 ## Installation
 
-### Step 1: Set up Docker Compose
-
-Environment configuration when using Docker Compose is achieved using a `.env`
-file that is passed to the docker containers. A template for the `.env` file is
-provided in the repository (`.env.local.template`).
-
-First copy the `.env.local.template` file to `.env`.
-
-```sh
-# assuming you're in the bodp-django root directory
-cp .env.local.template .env
-```
-
-The only change we need to make to the `.env` file is to set the UID and GID
-variables to your user's UID/GID. These can be found as follows;
-
-```sh
-$ id -u
-1001
-
-$ id -g
-1001
-```
-
-Setting these variables ensures that any files created by Django running in the
-container are owned by your system user.
-
-Set `DJANGO_PARENT_HOST=bods.local` in your environment (see Step 2 and Step 3).
-
-Remember to set `DQS_URL`.
-
-### Step 2: Configure /etc/hosts
+### Step 1: Configure /etc/hosts
 
 The Django app serves multiple sites on different subdomains. In order
 to emulate this in development, add to `/etc/hosts`:
@@ -63,15 +32,38 @@ If you want to change `DJANGO_PARENT_HOST` after having already
 4 admin.bods.local Bus Open Data Service (Internal)
 ```
 
-### Step 3: Run Docker Compose
+After to have made these changes running `docker-compose up`
+will launch all the services. After a few minutes, you should be able to access
+[www.bods.local:8000](www.bods.local:8000).
 
-Run `docker compose pull`.
+### Step 2: Set up Docker Compose
 
-Then run `docker compose build django`.
+Environment configuration when using Docker Compose is achieved using a `.env`
+file that is passed to the docker containers. A template for the `.env` file is
+provided in the repository (`.env.local.template`).
 
-Running `docker compose up` will launch all the services. After a few minutes, you
-should be able to access [www.bods.local:8000](www.bods.local:8000).
+First copy the `.env.local.template` file to `.env`.
 
+```sh
+# assuming you're in the bodp-django root directory
+cp .env.local.template .env
+```
+
+The only change we need to make to the `.env` file is to set the UID and GID
+variables to your user's UID/GID. These can be found as follows;
+
+```sh
+$ id -u
+1001
+
+$ id -g
+1001
+```
+
+Setting these variables ensures that any files created by Django running in the
+container are owned by your system user.
+
+Remember to set `DQS_URL`.
 
 ### Step 3: Local Development (Optional)
 
