@@ -22,7 +22,6 @@ CHAR_LEN = 512
 
 logger = logging.getLogger(__name__)
 
-
 class OperationalStats(models.Model):
     date = models.DateField(unique=True)
 
@@ -128,7 +127,7 @@ class ResourceRequestCounter(models.Model):
             """
         with connection.cursor() as cursor:
             cursor.execute(query, [day, requestor_id, path_info])
-
+    
     @classmethod
     def from_request(cls, request: HttpRequest):
         requestor_id = request.user.id if request.user.is_authenticated else None
@@ -142,8 +141,7 @@ class ResourceRequestCounter(models.Model):
                 )
             except Exception:
                 logger.exception(
-                    "Failed to increment resource request counter",
-                    extra={"path": path_info},
+                    "Failed to increment resource request counter", extra={"path": path_info}
                 )
 
         transaction.on_commit(write_counter_after_response_commit)
