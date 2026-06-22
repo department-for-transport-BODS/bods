@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -48,7 +48,7 @@ class NptgLocality(BaseModel):
     nptg_locality_code: str
     descriptor: Descriptor
     administrative_area_ref: str
-    nptg_district_ref: str
+    nptg_district_ref: Optional[str]
     source_locality_type: str
     location: Location
 
