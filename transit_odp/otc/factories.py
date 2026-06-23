@@ -189,7 +189,7 @@ class UILtaFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = UILta
 
-    name = factory.Faker("name")
+    name = factory.Sequence(lambda n: f"name {n}")
 
 
 class LocalAuthorityFactory(factory.django.DjangoModelFactory):
