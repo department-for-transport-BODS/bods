@@ -75,7 +75,7 @@ class FeedDeleteView(OrgUserViewMixin, PublishFeedDetailViewBase):
 
         return HttpResponseRedirect(
             reverse(
-                "feed-delete-success",
+                "revision-delete-success",
                 kwargs={"pk": self.object.id if self.object is not None else None},
                 host=config.hosts.PUBLISH_HOST,
             )
