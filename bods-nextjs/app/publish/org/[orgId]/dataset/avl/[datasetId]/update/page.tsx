@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AvlUploadFields, PublishStepper } from '@/components/publish';
+import { Modal } from '@/components/shared';
 import { validateAvlCommentStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
 
 type Step = 'comment' | 'cancel' | 'upload';
@@ -12,11 +13,6 @@ function getHeading(step: Step): string {
   if (step === 'comment') {
     return 'Add comment to your feed (optional)';
   }
-
-  if (step === 'cancel') {
-    return 'Would you like to cancel updating this data feed?';
-  }
-
   return 'Update your published data feed';
 }
 
@@ -106,27 +102,27 @@ function AVLUpdatePageContent() {
   };
 
   const onCancelConfirm = () => {
-    globalThis.location.href = listUrl;
+    globalThis.location.href = `/publish/org/${orgId}/dataset/avl/${datasetId}/review`;
   };
+
+  const activeStep = step === 'cancel' ? stepBeforeCancel : step;
 
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        {step !== 'cancel' && (
-          <div className="govuk-breadcrumbs">
-            <PublishStepper
-              steps={[
-                { label: '1. Add update comment', state: step === 'comment' ? 'selected' : 'previous' },
-                { label: '2. Provide your data', state: step === 'upload' ? 'selected' : 'next' },
-                { label: '3. Review and publish', state: 'next' },
-              ]}
-            />
-          </div>
-        )}
+        <div className="govuk-breadcrumbs">
+          <PublishStepper
+            steps={[
+              { label: '1. Add update comment', state: activeStep === 'comment' ? 'selected' : 'previous' },
+              { label: '2. Provide your data', state: activeStep === 'upload' ? 'selected' : 'next' },
+              { label: '3. Review and publish', state: 'next' },
+            ]}
+          />
+        </div>
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-l">{getHeading(step)}</h1>
+            <h1 className="govuk-heading-l">{getHeading(activeStep)}</h1>
 
             {submitError && (
               <div className="govuk-error-summary" role="alert" aria-labelledby="avl-update-error-title">
@@ -141,7 +137,7 @@ function AVLUpdatePageContent() {
               </div>
             )}
 
-            {step === 'comment' && (
+            {activeStep === 'comment' && (
               <form method="post" onSubmit={onContinueFromComment} noValidate>
                 <div className={`govuk-form-group ${errors.comment ? 'govuk-form-group--error' : ''}`}>
                   <label className="govuk-label" htmlFor="id_comment">
@@ -171,9 +167,12 @@ function AVLUpdatePageContent() {
               </form>
             )}
 
-            {step === 'cancel' && (
-              <>
-                <p className="govuk-body">Any changes you have made so far will not be saved.</p>
+            <Modal
+              open={step === 'cancel'}
+              title="Would you like to cancel updating this data feed?"
+              description="Any changes you have made so far will not be saved."
+              onClose={onCancelBack}
+            >
                 <div className="govuk-button-group">
                   <button type="button" className="govuk-button" onClick={onCancelConfirm}>
                     Confirm
@@ -182,10 +181,9 @@ function AVLUpdatePageContent() {
                     Cancel
                   </button>
                 </div>
-              </>
-            )}
+            </Modal>
 
-            {step === 'upload' && (
+            {activeStep === 'upload' && (
               <form method="post" onSubmit={onContinueFromUpload} noValidate>
                 <AvlUploadFields
                   urlLink={urlLink}

@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AvlUploadFields, DatasetDescriptionFields, PublishStepper } from '@/components/publish';
+import { LinkWithArrow, Modal } from '@/components/shared';
 import { validateAvlDescriptionStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
 import { config } from '@/config';
 
@@ -12,9 +13,6 @@ type Step = 'description' | 'cancel' | 'upload';
 function getHeading(step: Step): string {
   if (step === 'description') {
     return 'Describe your data feed';
-  }
-  if (step === 'cancel') {
-    return 'Would you like to cancel publishing this data feed?';
   }
   return 'Provide your data using the link below';
 }
@@ -114,24 +112,24 @@ function AVLCreatePageContent() {
     globalThis.location.href = listUrl;
   };
 
+  const activeStep = step === 'cancel' ? stepBeforeCancel : step;
+
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        {step !== 'cancel' && (
-          <div className="govuk-breadcrumbs">
-            <PublishStepper
-              steps={[
-                { label: '1. Describe your data feed', state: step === 'description' ? 'selected' : 'previous' },
-                { label: '2. Provide your data', state: step === 'upload' ? 'selected' : 'next' },
-                { label: '3. Review and publish', state: 'next' },
-              ]}
-            />
-          </div>
-        )}
+        <div className="govuk-breadcrumbs">
+          <PublishStepper
+            steps={[
+              { label: '1. Describe your data feed', state: activeStep === 'description' ? 'selected' : 'previous' },
+              { label: '2. Provide your data', state: activeStep === 'upload' ? 'selected' : 'next' },
+              { label: '3. Review and publish', state: 'next' },
+            ]}
+          />
+        </div>
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-l">{getHeading(step)}</h1>
+            <h1 className="govuk-heading-l">{getHeading(activeStep)}</h1>
 
             {submitError && (
               <div className="govuk-error-summary" role="alert" aria-labelledby="avl-create-error-title">
@@ -146,7 +144,7 @@ function AVLCreatePageContent() {
               </div>
             )}
 
-            {step === 'description' && (
+            {activeStep === 'description' && (
               <form method="post" onSubmit={onContinueFromDescription} noValidate>
                 <DatasetDescriptionFields
                   description={description}
@@ -169,9 +167,12 @@ function AVLCreatePageContent() {
               </form>
             )}
 
-            {step === 'cancel' && (
-              <>
-                <p className="govuk-body">Any changes you have made so far will not be saved.</p>
+            <Modal
+              open={step === 'cancel'}
+              title="Would you like to cancel publishing this data feed?"
+              description="Any changes you have made so far will not be saved."
+              onClose={onCancelBack}
+            >
                 <div className="govuk-button-group">
                   <button type="button" className="govuk-button" onClick={onCancelConfirm}>
                     Confirm
@@ -180,10 +181,9 @@ function AVLCreatePageContent() {
                     Cancel
                   </button>
                 </div>
-              </>
-            )}
+            </Modal>
 
-            {step === 'upload' && (
+            {activeStep === 'upload' && (
               <form method="post" onSubmit={onContinueFromUpload} noValidate>
                 <AvlUploadFields
                   urlLink={urlLink}
@@ -221,14 +221,14 @@ function AVLCreatePageContent() {
             <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <a className="govuk-link large-font" href={supportBusOperatorsUrl}>
+                <LinkWithArrow href={supportBusOperatorsUrl} className="govuk-link large-font">
                   View our guidelines here
-                </a>
+                </LinkWithArrow>
               </li>
               <li>
-                <a className="govuk-link large-font" href={contactSupportUrl}>
+                <LinkWithArrow href={contactSupportUrl} className="govuk-link large-font">
                   Contact support desk
-                </a>
+                </LinkWithArrow>
               </li>
             </ul>
           </div>
