@@ -71,7 +71,9 @@ def fuzzy_date() -> datetime.date:
 
 
 def fuzzy_datetime() -> datetime.datetime:
-    return factory.fuzzy.FuzzyDateTime(start_dt=_recent_datetime(), end_dt=_now()).fuzz()
+    return factory.fuzzy.FuzzyDateTime(
+        start_dt=_recent_datetime(), end_dt=_now()
+    ).fuzz()
 
 
 class RegistrationFactory(factory.Factory):
