@@ -1,27 +1,19 @@
 import logging
-import requests
+import json
 import boto3
 from os import getenv
-from http import HTTPStatus
 from datetime import datetime, date
 from typing import Optional, List
-from requests import HTTPError, RequestException, Timeout
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-
 from pydantic import Field, validator
 from pydantic.main import BaseModel
+
 from transit_odp.otc.constants import API_TYPE_WECA
 
 logger = logging.getLogger(__name__)
-
-
-class EmptyResponseException(Exception):
-    pass
-
-
-retry_exceptions = (RequestException, EmptyResponseException)
+logger.setLevel(getenv("LOG_LEVEL") or "WARNING")
 
 
 class FieldModel(BaseModel):
@@ -46,6 +38,10 @@ class DataModel(BaseModel):
 
     @validator("effective_date", pre=True)
     def parse_effective_date(cls, value):
+        # Fix for date issue identified here:
+        # https://busopendataservice.atlassian.net/wiki/spaces/KBODS/pages/129040419/WECA+API+responses+sometimes+improperly+structured+causing+missing+or+incorrect+records+-+Fix+testing
+        value = value.replace("Sept", "Sep")
+
         return datetime.strptime(value, "%d %b %Y")
 
     @validator("registration_number")
@@ -102,13 +98,16 @@ class WecaClient:
 
         s3_client = boto3.client("s3")
         try:
-            response_json = (
+            logger.debug(f"Getting data from {settings.WECA_DLZ_S3_BUCKET}")
+            logger.debug(f"Data key: {settings.WECA_DLZ_S3_KEY}")
+            response_json = json.loads(
                 s3_client.get_object(
                     Bucket=settings.WECA_DLZ_S3_BUCKET, Key=settings.WECA_DLZ_S3_KEY
                 )["Body"]
                 .read()
                 .decode("utf-8")
             )
+            logger.debug(f"Raw JSON:\n{response_json}")
         except Exception as e:
             logger.error(f"Error fetching WECA data from S3: {e}")
             return self.default_response()
