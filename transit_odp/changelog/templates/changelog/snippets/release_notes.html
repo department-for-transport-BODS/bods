@@ -1,5 +1,31 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "June 2026 (1.60.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.60.0 (June 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Improved NaPTAN/NPTG ingestion across BODS and ABODS, with enhanced alerting to support quicker issue identification and resolution.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue in the Create Disruptions tool so that all bus services serving a stop are returned when creating a disruption with a service consequence.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Optimised queries in BODS and ABODS. 
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "June 2026 (1.59.0)" %}
 </h3>
 <h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.59.0 (June 2026)</h4>
