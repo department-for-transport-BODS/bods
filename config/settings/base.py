@@ -637,6 +637,10 @@ WECA_AUTH_TOKEN = env("WECA_AUTH_TOKEN", default="WECA_AUTH_TOKEN")
 WECA_PARAM_C = env("WECA_PARAM_C", default="WECA_PARAM_C")
 WECA_PARAM_T = env("WECA_PARAM_T", default="WECA_PARAM_T")
 WECA_PARAM_R = env("WECA_PARAM_R", default="WECA_PARAM_R")
+WECA_DLZ_S3_BUCKET = env("AWS_WECA_RAW_STORAGE_BUCKET_NAME", default=None)
+WECA_DLZ_S3_KEY = env(
+    "WECA_S3_KEY_SERVICES", default="raw/weca/weca_services_latest.json"
+)
 
 # EP API
 # -------------------------------------------------------------------------------

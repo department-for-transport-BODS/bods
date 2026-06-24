@@ -1,25 +1,19 @@
 import logging
-import requests
-from http import HTTPStatus
+import json
+import boto3
+from os import getenv
 from datetime import datetime, date
 from typing import Optional, List
-from requests import HTTPError, RequestException, Timeout
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-
 from pydantic import Field, validator
 from pydantic.main import BaseModel
+
 from transit_odp.otc.constants import API_TYPE_WECA
 
 logger = logging.getLogger(__name__)
-
-
-class EmptyResponseException(Exception):
-    pass
-
-
-retry_exceptions = (RequestException, EmptyResponseException)
+logger.setLevel(getenv("LOG_LEVEL") or "WARNING")
 
 
 class FieldModel(BaseModel):
@@ -44,6 +38,10 @@ class DataModel(BaseModel):
 
     @validator("effective_date", pre=True)
     def parse_effective_date(cls, value):
+        # Fix for date issue identified here:
+        # https://busopendataservice.atlassian.net/wiki/spaces/KBODS/pages/129040419/WECA+API+responses+sometimes+improperly+structured+causing+missing+or+incorrect+records+-+Fix+testing
+        value = value.replace("Sept", "Sep")
+
         return datetime.strptime(value, "%d %b %Y")
 
     @validator("registration_number")
@@ -97,53 +95,32 @@ class WecaClient:
         Send Request to WECA API Endpoint
         Response will be returned in the JSON format
         """
-        url = settings.WECA_API_URL
 
-        params = {
-            "c": settings.WECA_PARAM_C,
-            "t": settings.WECA_PARAM_T,
-            "r": settings.WECA_PARAM_R,
-            "get_report_json": "true",
-            "json_format": "json",
-            **kwargs,
-        }
-        files = []
-        headers = {"Authorization": settings.WECA_AUTH_TOKEN}
-
+        s3_client = boto3.client("s3")
         try:
-            response = requests.post(
-                url=url,
-                headers=headers,
-                params=params,
-                files=files,
-                timeout=timeout,
+            logger.debug(f"Getting data from {settings.WECA_DLZ_S3_BUCKET}")
+            logger.debug(f"Data key: {settings.WECA_DLZ_S3_KEY}")
+            response_json = json.loads(
+                s3_client.get_object(
+                    Bucket=settings.WECA_DLZ_S3_BUCKET, Key=settings.WECA_DLZ_S3_KEY
+                )["Body"]
+                .read()
+                .decode("utf-8")
             )
-            response.raise_for_status()
-        except Timeout as e:
-            msg = f"Timeout Error: {e}"
-            logger.exception(msg)
-            raise
-
-        except HTTPError as e:
-            msg = f"HTTPError: {e}"
-            logger.exception(msg)
-            raise
-
-        if response.status_code == HTTPStatus.NO_CONTENT:
-            logger.warning(
-                f"Empty Response, API return {HTTPStatus.NO_CONTENT}, "
-                f"for params {params}"
-            )
+            logger.debug(f"Raw JSON:\n{response_json}")
+        except Exception as e:
+            logger.error(f"Error fetching WECA data from S3: {e}")
             return self.default_response()
+
         try:
-            return APIResponse(**response.json())
+            return APIResponse(**response_json)
         except ValidationError as exc:
             logger.error("Validation error in WECA API response")
-            logger.error(f"Response JSON: {response.text}")
+            logger.error(f"Response JSON: {response_json}")
             logger.error(f"Validation Error: {exc}")
         except ValueError as exc:
             logger.error("Validation error in WECA API response")
-            logger.error(f"Response JSON: {response.text}")
+            logger.error(f"Response JSON: {response_json}")
             logger.error(f"Validation Error: {exc}")
         return self.default_response()
 
