@@ -284,7 +284,7 @@ class ServiceCodeExemptionFactory(DjangoModelFactory):
         model = ServiceCodeExemption
 
     licence = factory.SubFactory(LicenceFactory)
-    registration_code = factory.Sequence(lambda n: str(1 + n))
+    registration_code = factory.Faker("pyint", min_value=1, max_value=4000)
     justification = factory.Faker("text", max_nb_chars=50)
     exempted_by = factory.SubFactory(
         "transit_odp.users.factories.UserFactory", account_type=OrgAdminType
@@ -304,7 +304,7 @@ class SeasonalServiceFactory(DjangoModelFactory):
         model = SeasonalService
 
     licence = factory.SubFactory(LicenceFactory)
-    registration_code = factory.Sequence(lambda n: 1 + n)
+    registration_code = factory.Faker("pyint", min_value=1, max_value=4000)
     start = factory.Faker(
         "date_between",
         start_date=datetime.datetime(2023, 1, 1, tzinfo=pytz.utc),
