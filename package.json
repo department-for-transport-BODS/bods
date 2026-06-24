@@ -32,7 +32,7 @@
     "eslint": "^8.54.0",
     "eslint-plugin-html": "^7.1.0",
     "file-loader": "^6.2.0",
-    "jasmine": "^5.1.0",
+    "jasmine": "^6.3.0",
     "jasmine-core": "^5.1.1",
     "karma": "^6.4.2",
     "mini-css-extract-plugin": "^2.7.6",
