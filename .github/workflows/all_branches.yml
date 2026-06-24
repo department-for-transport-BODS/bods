@@ -33,5 +33,5 @@ jobs:
       - name: djlint
         id: djlint
         run: |
-          pip install --upgrade djlint --break-system-packages
+          pip install "djlint==1.36.4" --break-system-packages
           djlint .
