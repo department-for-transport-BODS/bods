@@ -11,6 +11,7 @@ from transit_odp.avl.views.api import (
     delete_avl_dataset_api,
     get_avl_review_status_api,
     publish_avl_dataset_api,
+    update_avl_dataset_api,
 )
 from transit_odp.common.utils.custom_error_handlers import (
     page_not_found,
@@ -71,6 +72,11 @@ urlpatterns = [
         "api/avl/delete/<int:pk1>/<int:pk>/",
         delete_avl_dataset_api,
         name="nextjs-avl-delete",
+    ),
+    path(
+        "api/avl/update/<int:pk1>/<int:pk>/",
+        update_avl_dataset_api,
+        name="nextjs-avl-update",
     ),
     path(
         "api/timetables/create/<int:pk1>/",
