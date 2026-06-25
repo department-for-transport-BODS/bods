@@ -16,8 +16,9 @@ from transit_odp.avl.models import CAVLValidationTaskResult
 from transit_odp.avl.tasks import task_validate_avl_feed
 from transit_odp.avl.views.review import ERROR_DESCRIPTIONS
 from transit_odp.avl.views.utils import get_validation_task_result_from_revision_id
-from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision, Organisation
+from transit_odp.timetables.tasks import delete_dataset_revision
 
 
 _jwt_auth = JWTAuthentication()
@@ -26,6 +27,7 @@ AUTH_REQUIRED_ERROR = "Authentication required"
 ORG_ACCESS_REQUIRED_ERROR = "Org user access required"
 ORG_NOT_FOUND_ERROR = "Organisation not found"
 REVISION_NOT_FOUND_ERROR = "Dataset revision not found"
+ExpiredStatus = FeedStatus.expired.value
 
 
 def _authenticate_jwt(request):
@@ -218,6 +220,7 @@ def get_avl_review_status_api(request, pk1, pk):
         {
             "datasetId": revision.dataset_id,
             "revisionId": revision.id,
+            "hasLiveRevision": revision.dataset.live_revision is not None,
             "status": revision.status,
             "progress": progress,
             "loading": loading,
@@ -268,6 +271,25 @@ def publish_avl_dataset_api(request, pk1, pk):
         {
             "redirect": f"/publish/org/{pk1}/dataset/avl/{pk}/success",
             "published": True,
+        },
+        status=200,
+    )
+
+
+@csrf_exempt
+@require_POST
+def delete_avl_dataset_api(request, pk1, pk):
+    _user, _org, revision, error_response = _get_request_context(request, pk1, pk)
+    if error_response is not None:
+        return error_response
+
+    if not revision.is_published or revision.status == ExpiredStatus:
+        delete_dataset_revision.delay(revision.id)
+
+    return JsonResponse(
+        {
+            "redirect": f"/publish/org/{pk1}/dataset/avl/{pk}/delete/success",
+            "deleted": True,
         },
         status=200,
     )
