@@ -6,11 +6,7 @@ import { AvlReviewPageContent } from '../../_components/AvlReviewPageContent';
 export default function AVLReviewPage() {
   return (
     <ProtectedRoute>
-      <AvlReviewPageContent
-        reviewStatusPath="/api/avl/review-status"
-        publishPath="/api/avl/publish"
-        isUpdate={false}
-      />
+      <AvlReviewPageContent isUpdate={false} />
     </ProtectedRoute>
   );
 }

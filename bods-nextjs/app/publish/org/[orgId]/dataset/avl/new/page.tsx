@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AvlUploadFields, DatasetDescriptionFields, PublishStepper } from '@/components/publish';
 import { ErrorSummary, LinkWithArrow, Modal } from '@/components/shared';
+import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
 import { config } from '@/config';
 
@@ -63,7 +64,6 @@ function AVLCreatePageContent() {
     setIsSubmitting(true);
 
     try {
-      const token = globalThis.window ? globalThis.window.localStorage.getItem('bods.auth.access') : null;
       const formData = new FormData();
       formData.set('description', description);
       formData.set('short_description', shortDescription);
@@ -72,10 +72,17 @@ function AVLCreatePageContent() {
       formData.set('password', password);
       formData.set('requestor_ref', requestorRef);
 
-      const response = await fetch(`/api/avl/create?orgId=${orgId}`, {
+      const headers = new Headers();
+      const csrfToken = getCsrfToken();
+      if (csrfToken) {
+        headers.set('X-CSRFToken', csrfToken);
+      }
+
+      const response = await fetch(`${config.djangoApiUrl}/api/avl/create/${orgId}/`, {
         method: 'POST',
         body: formData,
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers,
+        credentials: 'include',
       });
 
       const data = (await response.json().catch(() => ({}))) as { error?: string; redirect?: string };

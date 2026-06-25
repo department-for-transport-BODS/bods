@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { PublishStepper } from '@/components/publish';
+import { api } from '@/lib/api-client';
 import { formatDateTime } from '@/lib/utils/date';
 import { validateAvlConsentStep } from '@/lib/validation/avl-publish';
 
@@ -25,14 +26,12 @@ type AvlReviewStatusResponse = {
 };
 
 type AvlReviewPageContentProps = {
-  reviewStatusPath: string;
-  publishPath: string;
   isUpdate: boolean;
 };
 
 const POLL_INTERVAL_MS = 1000;
 
-export function AvlReviewPageContent({ reviewStatusPath, publishPath, isUpdate }: AvlReviewPageContentProps) {
+export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
@@ -48,46 +47,12 @@ export function AvlReviewPageContent({ reviewStatusPath, publishPath, isUpdate }
   const updateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
   const deleteUrl = listUrl;
 
-  const token = useMemo(() => {
-    if (!globalThis.window) {
-      return null;
-    }
-
-    return globalThis.window.localStorage.getItem('bods.auth.access');
-  }, []);
-
   useEffect(() => {
     let isCancelled = false;
-    let intervalId: ReturnType<typeof setInterval> | undefined;
 
     const fetchStatus = async () => {
-      if (!token) {
-        if (!isCancelled) {
-          setErrorMessage('Not authenticated. Please sign in and retry.');
-          setIsInitialLoading(false);
-        }
-        return;
-      }
-
       try {
-        const response = await fetch(`${reviewStatusPath}?orgId=${orgId}&datasetId=${datasetId}`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = (await response.json().catch(() => ({}))) as AvlReviewStatusResponse & {
-          error?: string;
-        };
-
-        if (!response.ok) {
-          if (!isCancelled) {
-            setErrorMessage(data.error || `Status check failed (${response.status}).`);
-            setIsInitialLoading(false);
-          }
-          return;
-        }
+        const data = await api.get<AvlReviewStatusResponse>(`/api/avl/review-status/${orgId}/${datasetId}/`);
 
         if (!isCancelled) {
           setStatusData(data);
@@ -95,7 +60,7 @@ export function AvlReviewPageContent({ reviewStatusPath, publishPath, isUpdate }
           setIsInitialLoading(false);
         }
 
-        if (!data.loading && intervalId) {
+        if (!data.loading) {
           clearInterval(intervalId);
         }
       } catch {
@@ -106,8 +71,8 @@ export function AvlReviewPageContent({ reviewStatusPath, publishPath, isUpdate }
       }
     };
 
+    const intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
     fetchStatus();
-    intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
 
     return () => {
       isCancelled = true;
@@ -115,10 +80,10 @@ export function AvlReviewPageContent({ reviewStatusPath, publishPath, isUpdate }
         clearInterval(intervalId);
       }
     };
-  }, [datasetId, orgId, reviewStatusPath, token]);
+  }, [datasetId, orgId]);
 
   const handlePublish = async () => {
-    if (!token || isPublishing) {
+    if (isPublishing) {
       return;
     }
 
@@ -132,35 +97,25 @@ export function AvlReviewPageContent({ reviewStatusPath, publishPath, isUpdate }
     setErrorMessage('');
 
     try {
-      const response = await fetch(
-        `${publishPath}?orgId=${orgId}&datasetId=${datasetId}&isUpdate=${isUpdate}`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+      const publishPath = isUpdate
+        ? `/api/avl/publish-update/${orgId}/${datasetId}/`
+        : `/api/avl/publish/${orgId}/${datasetId}/`;
+      const data = await api.post<{ error?: string; redirect?: string }>(
+        publishPath,
       );
-
-      const data = (await response.json().catch(() => ({}))) as { error?: string; redirect?: string };
-
-      if (!response.ok) {
-        setErrorMessage(data.error || `Publish failed (${response.status}).`);
-        setIsPublishing(false);
-        return;
-      }
 
       globalThis.location.href = data.redirect || (isUpdate
         ? `/publish/org/${orgId}/dataset/avl/${datasetId}/update/success`
         : `/publish/org/${orgId}/dataset/avl/${datasetId}/success`);
-    } catch {
-      setErrorMessage('An error occurred while publishing. Please try again.');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'An error occurred while publishing. Please try again.');
       setIsPublishing(false);
     }
   };
 
   const loading = statusData?.loading ?? true;
   const progress = Math.max(0, Math.min(100, statusData?.progress ?? 0));
+  const reviewErrorMessage = statusData?.error || '';
 
   return (
     <div className="govuk-width-container">
@@ -184,7 +139,7 @@ export function AvlReviewPageContent({ reviewStatusPath, publishPath, isUpdate }
             data-module="govuk-error-summary"
           >
             <h2 className="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
-              Supplied data feed has failed to upload
+              There is a problem
             </h2>
             <div className="govuk-error-summary__body">
               <ul className="govuk-list govuk-error-summary__list">
@@ -217,6 +172,33 @@ export function AvlReviewPageContent({ reviewStatusPath, publishPath, isUpdate }
               </div>
             ) : (
               <div id="preview-section">
+                {reviewErrorMessage && (
+                  <>
+                    <div
+                      className="govuk-error-summary govuk-!-margin-bottom-0"
+                      aria-labelledby="avl-review-error-title"
+                      role="alert"
+                      tabIndex={-1}
+                      data-module="govuk-error-summary"
+                    >
+                      <h2 className="govuk-error-summary__title govuk-!-margin-bottom-2" id="avl-review-error-title">
+                        Supplied data feed has failed to upload
+                      </h2>
+                      <div className="govuk-error-summary__body">
+                        <ul className="govuk-list govuk-error-summary__list">
+                          <li className="no-underline-l app-error-summary__item">{reviewErrorMessage}</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
+                      <Link role="button" className="govuk-button govuk-!-margin-bottom-0" href={updateUrl}>
+                        Publish correct data feed
+                      </Link>
+                    </div>
+                  </>
+                )}
+
                 <h2 className="govuk-heading-l dont-break-out">{statusData?.name || 'AVL data feed'}</h2>
 
                 <table className="govuk-table dataset-property-table">
@@ -260,44 +242,48 @@ export function AvlReviewPageContent({ reviewStatusPath, publishPath, isUpdate }
                   </tbody>
                 </table>
 
-                <div className="govuk-form-group">
-                  <div className="govuk-checkboxes__item">
-                    <input
-                      className="govuk-checkboxes__input"
-                      id="id_has_reviewed"
-                      type="checkbox"
-                      checked={hasReviewed}
-                      onChange={(event) => {
-                        setHasReviewed(event.target.checked);
-                        setErrors({});
-                      }}
-                    />
-                    <label className="govuk-label govuk-checkboxes__label" htmlFor="id_has_reviewed">
-                      I have reviewed the data and wish to publish my data
-                    </label>
-                  </div>
-                  {errors.consent && <p className="govuk-error-message">{errors.consent}</p>}
-                </div>
+                {!reviewErrorMessage && (
+                  <>
+                    <div className="govuk-form-group">
+                      <div className="govuk-checkboxes__item">
+                        <input
+                          className="govuk-checkboxes__input"
+                          id="id_has_reviewed"
+                          type="checkbox"
+                          checked={hasReviewed}
+                          onChange={(event) => {
+                            setHasReviewed(event.target.checked);
+                            setErrors({});
+                          }}
+                        />
+                        <label className="govuk-label govuk-checkboxes__label" htmlFor="id_has_reviewed">
+                          I have reviewed the data and wish to publish my data
+                        </label>
+                      </div>
+                      {errors.consent && <p className="govuk-error-message">{errors.consent}</p>}
+                    </div>
 
-                <div className="btn-group-justified govuk-button-group">
-                  <button
-                    type="button"
-                    className="govuk-button"
-                    disabled={isPublishing}
-                    onClick={handlePublish}
-                  >
-                    {isPublishing ? 'Publishing...' : 'Publish data feed'}
-                  </button>
-                  <Link role="button" className="govuk-button govuk-button--secondary" href={deleteUrl}>
-                    Delete data feed
-                  </Link>
-                  <Link role="button" className="govuk-button govuk-button--secondary" href={updateUrl}>
-                    Publish correct data feed
-                  </Link>
-                  <Link className="govuk-link" href={listUrl}>
-                    Back to data feeds
-                  </Link>
-                </div>
+                    <div className="btn-group-justified govuk-button-group">
+                      <button
+                        type="button"
+                        className="govuk-button"
+                        disabled={isPublishing}
+                        onClick={handlePublish}
+                      >
+                        {isPublishing ? 'Publishing...' : 'Publish data feed'}
+                      </button>
+                      <Link role="button" className="govuk-button govuk-button--secondary" href={deleteUrl}>
+                        Delete data feed
+                      </Link>
+                      <Link role="button" className="govuk-button govuk-button--secondary" href={updateUrl}>
+                        Publish correct data feed
+                      </Link>
+                      <Link className="govuk-link" href={listUrl}>
+                        Back to data feeds
+                      </Link>
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>
