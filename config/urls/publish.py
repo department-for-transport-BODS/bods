@@ -6,6 +6,11 @@ from django.views.generic import TemplateView
 from transit_odp.api.views.auth import CurrentUserOrganisationsAPIView
 
 from transit_odp.avl.views.archive import PPCArchiveView
+from transit_odp.avl.views.api import (
+    create_avl_dataset_api,
+    get_avl_review_status_api,
+    publish_avl_dataset_api,
+)
 from transit_odp.common.utils.custom_error_handlers import (
     page_not_found,
     permission_denied,
@@ -46,6 +51,21 @@ handler403 = "transit_odp.common.utils.custom_error_handlers.permission_denied"
 
 urlpatterns = [
     path("", view=PublishHomeView.as_view(), name="home"),
+    path(
+        "api/avl/create/<int:pk1>/",
+        create_avl_dataset_api,
+        name="nextjs-avl-create",
+    ),
+    path(
+        "api/avl/review-status/<int:pk1>/<int:pk>/",
+        get_avl_review_status_api,
+        name="nextjs-avl-review-status",
+    ),
+    path(
+        "api/avl/publish/<int:pk1>/<int:pk>/",
+        publish_avl_dataset_api,
+        name="nextjs-avl-publish",
+    ),
     path(
         "api/timetables/create/<int:pk1>/",
         create_timetables_dataset_api,

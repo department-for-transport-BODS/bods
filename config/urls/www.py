@@ -24,6 +24,11 @@ from transit_odp.fares.views.api import (
     get_fares_review_status_api,
     publish_fares_dataset_api,
 )
+from transit_odp.avl.views.api import (
+    create_avl_dataset_api,
+    get_avl_review_status_api,
+    publish_avl_dataset_api,
+)
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
     get_timetables_review_status_api,
@@ -49,6 +54,21 @@ urlpatterns = [
         "api/organisations/",
         CurrentUserOrganisationsAPIView.as_view(),
         name="api-user-organisations",
+    ),
+    path(
+        "api/avl/create/<int:pk1>/",
+        create_avl_dataset_api,
+        name="nextjs-avl-create",
+    ),
+    path(
+        "api/avl/review-status/<int:pk1>/<int:pk>/",
+        get_avl_review_status_api,
+        name="nextjs-avl-review-status",
+    ),
+    path(
+        "api/avl/publish/<int:pk1>/<int:pk>/",
+        publish_avl_dataset_api,
+        name="nextjs-avl-publish",
     ),
     path(
         "api/fares/create/<int:pk1>/",

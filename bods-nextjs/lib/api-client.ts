@@ -46,6 +46,10 @@ function getErrorMessage(payload: unknown, fallback: string): string {
     return payload.message;
   }
 
+  if ('error' in payload && typeof payload.error === 'string') {
+    return payload.error;
+  }
+
   if (
     'non_field_errors' in payload &&
     Array.isArray(payload.non_field_errors) &&
