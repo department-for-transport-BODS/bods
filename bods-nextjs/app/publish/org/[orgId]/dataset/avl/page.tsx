@@ -69,12 +69,8 @@ function AVLManagement() {
                       <td className="govuk-table__cell">{feed.url}</td>
                       <td className="govuk-table__cell">{feed.status}</td>
                       <td className="govuk-table__cell">
-                        <Link href={`/publish/org/${orgId}/dataset/avl/${feed.id}/update`} className="govuk-link">
-                          Update
-                        </Link>
-                        <span className="govuk-!-padding-left-2 govuk-!-padding-right-2" aria-hidden="true">|</span>
-                        <Link href={`/publish/org/${orgId}/dataset/avl/${feed.id}/review`} className="govuk-link">
-                          Review
+                        <Link href={`/publish/org/${orgId}/dataset/avl/${feed.id}`} className="govuk-link">
+                          Manage
                         </Link>
                       </td>
                     </tr>

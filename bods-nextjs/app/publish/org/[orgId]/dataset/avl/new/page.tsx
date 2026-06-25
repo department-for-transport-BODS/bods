@@ -23,7 +23,7 @@ function AVLCreatePageContent() {
 
   const djangoApiBaseUrl = config.djangoApiBaseUrl;
   const djangoPublishBaseUrl = djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
-  const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/?section=buslocation`;
+  const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
   const contactSupportUrl = `${djangoApiBaseUrl}/contact/`;
   const listUrl = `/publish/org/${orgId}/dataset/avl`;
 
@@ -79,9 +79,42 @@ function AVLCreatePageContent() {
       });
 
       const data = (await response.json().catch(() => ({}))) as { error?: string; redirect?: string };
+      const dataWithFieldErrors = data as {
+        error?: string;
+        redirect?: string;
+        fieldErrors?: Record<string, string[] | string>;
+      };
 
       if (!response.ok) {
-        setSubmitError(data.error || `Submit failed (${response.status}).`);
+        const nextErrors: Record<string, string> = {};
+        const fieldErrors = dataWithFieldErrors.fieldErrors || {};
+
+        const urlLinkError = fieldErrors.url_link;
+        if (urlLinkError) {
+          nextErrors.urlLink = Array.isArray(urlLinkError) ? urlLinkError[0] : urlLinkError;
+        }
+
+        const usernameError = fieldErrors.username;
+        if (usernameError) {
+          nextErrors.username = Array.isArray(usernameError) ? usernameError[0] : usernameError;
+        }
+
+        const passwordError = fieldErrors.password;
+        if (passwordError) {
+          nextErrors.password = Array.isArray(passwordError) ? passwordError[0] : passwordError;
+        }
+
+        const requestorRefError = fieldErrors.requestor_ref;
+        if (requestorRefError) {
+          nextErrors.requestorRef = Array.isArray(requestorRefError) ? requestorRefError[0] : requestorRefError;
+        }
+
+        if (Object.keys(nextErrors).length > 0) {
+          setErrors(nextErrors);
+          setSubmitError('There is a problem with the form.');
+        } else {
+          setSubmitError(data.error || `Submit failed (${response.status}).`);
+        }
         setIsSubmitting(false);
         return;
       }
@@ -128,7 +161,7 @@ function AVLCreatePageContent() {
         </div>
 
         <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
+          <div className="govuk-grid-column-two-thirds indented-text">
             <h1 className="govuk-heading-l">{getHeading(activeStep)}</h1>
 
             {submitError && (
@@ -149,9 +182,13 @@ function AVLCreatePageContent() {
                 <DatasetDescriptionFields
                   description={description}
                   shortDescription={shortDescription}
+                  descriptionLabel="Data feed description"
+                  shortDescriptionLabel="Data feed short description"
                   errors={{ description: errors.description, shortDescription: errors.shortDescription }}
-                  descriptionHint="The info will give context to data feed users."
-                  shortDescriptionHint="Maximum number of characters is 30."
+                  descriptionHint="The info will give context to data feed users. Please be descriptive but do not use personally identifiable information. Information you may wish to include: time & date of feed connection, reason for updating feed, OpCo/region/zone of feed, services included in feed."
+                  shortDescriptionHint="This info will be displayed on your published data feed dashboard to identify this feed and will not be visible to data feed users. The maximum number of characters (with spaces) is 30 characters."
+                  descriptionClassName="govuk-!-width-three-quarters"
+                  shortDescriptionClassName="govuk-!-width-three-quarters"
                   onDescriptionChange={setDescription}
                   onShortDescriptionChange={setShortDescription}
                 />
@@ -190,6 +227,7 @@ function AVLCreatePageContent() {
                   username={username}
                   password={password}
                   requestorRef={requestorRef}
+                  guidanceUrl={supportBusOperatorsUrl}
                   errors={{
                     urlLink: errors.urlLink,
                     username: errors.username,
@@ -221,12 +259,12 @@ function AVLCreatePageContent() {
             <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <LinkWithArrow href={supportBusOperatorsUrl} className="govuk-link large-font">
+                <LinkWithArrow href={supportBusOperatorsUrl} className="govuk-link large-font" target="_blank" rel="noreferrer">
                   View our guidelines here
                 </LinkWithArrow>
               </li>
               <li>
-                <LinkWithArrow href={contactSupportUrl} className="govuk-link large-font">
+                <LinkWithArrow href={contactSupportUrl} className="govuk-link large-font" target="_blank" rel="noreferrer">
                   Contact support desk
                 </LinkWithArrow>
               </li>

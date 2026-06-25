@@ -554,6 +554,21 @@ ul.dashed > li::before {
   width: 25%;
 }
 
+/* Legacy utility parity for migrated Django pages */
+.indented-text {
+  padding-left: 15px;
+}
+
+.large-font {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 1.3157894737;
+}
+
+.blue-background {
+  background-color: #1d70b8;
+}
+
 /* Dataset "Choose data type" page */
 .app-dataset-form {
   font-family: sans-serif;
