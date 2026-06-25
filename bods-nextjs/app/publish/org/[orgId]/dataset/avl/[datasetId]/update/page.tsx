@@ -65,7 +65,7 @@ function AVLUpdatePageContent() {
 
         const data = (await response.json()) as AvlUpdateContext;
         if (!cancelled) {
-          setComment(data.comment || '');
+          setComment('');
           setUrlLink(data.urlLink || '');
           setRequestorRef(data.requestorRef || '');
         }
