@@ -5,8 +5,11 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { PublishStepper } from '@/components/publish';
 import { api } from '@/lib/api-client';
+import { config } from '@/config';
 import { formatDateTime } from '@/lib/utils/date';
 import { validateAvlConsentStep } from '@/lib/validation/avl-publish';
+import { AvlReviewErrorGuidance, AvlReviewHelpAside } from './AvlReviewAuxiliaryPanels';
+import { statusIndicatorClass, statusLabel } from './avlStatus';
 
 type AvlReviewStatusResponse = {
   datasetId: number;
@@ -45,7 +48,11 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
 
   const listUrl = `/publish/org/${orgId}/dataset/avl`;
   const updateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
-  const deleteUrl = listUrl;
+  const deleteUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/delete`;
+  const djangoApiBaseUrl = config.djangoApiBaseUrl;
+  const djangoPublishBaseUrl = djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
+  const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
+  const contactSupportUrl = `${djangoApiBaseUrl}/contact/`;
 
   useEffect(() => {
     let isCancelled = false;
@@ -213,7 +220,11 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">URL link</th>
-                      <td className="govuk-table__cell dont-break-out">{statusData?.urlLink || '-'}</td>
+                      <td className="govuk-table__cell">
+                        <span className="dont-break-out" style={{ display: 'block', maxWidth: '100%', overflowWrap: 'anywhere' }}>
+                          {statusData?.urlLink || '-'}
+                        </span>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Description</th>
@@ -225,7 +236,11 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Status</th>
-                      <td className="govuk-table__cell">{statusData?.status || '-'}</td>
+                      <td className="govuk-table__cell">
+                        <span className={`status-indicator ${statusIndicatorClass(statusData?.status)}`}>
+                          {statusLabel(statusData?.status)}
+                        </span>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Owner</th>
@@ -241,6 +256,10 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                     </tr>
                   </tbody>
                 </table>
+
+                {reviewErrorMessage && (
+                  <AvlReviewErrorGuidance deleteUrl={deleteUrl} />
+                )}
 
                 {!reviewErrorMessage && (
                   <>
@@ -287,6 +306,10 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
               </div>
             )}
           </div>
+          <AvlReviewHelpAside
+            supportBusOperatorsUrl={supportBusOperatorsUrl}
+            contactSupportUrl={contactSupportUrl}
+          />
         </div>
       </div>
     </div>

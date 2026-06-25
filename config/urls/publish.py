@@ -8,6 +8,7 @@ from transit_odp.api.views.auth import CurrentUserOrganisationsAPIView
 from transit_odp.avl.views.archive import PPCArchiveView
 from transit_odp.avl.views.api import (
     create_avl_dataset_api,
+    delete_avl_dataset_api,
     get_avl_review_status_api,
     publish_avl_dataset_api,
 )
@@ -65,6 +66,11 @@ urlpatterns = [
         "api/avl/publish/<int:pk1>/<int:pk>/",
         publish_avl_dataset_api,
         name="nextjs-avl-publish",
+    ),
+    path(
+        "api/avl/delete/<int:pk1>/<int:pk>/",
+        delete_avl_dataset_api,
+        name="nextjs-avl-delete",
     ),
     path(
         "api/timetables/create/<int:pk1>/",
