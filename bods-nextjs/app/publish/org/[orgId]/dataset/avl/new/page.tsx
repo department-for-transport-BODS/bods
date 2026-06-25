@@ -4,7 +4,7 @@ import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AvlUploadFields, DatasetDescriptionFields, PublishStepper } from '@/components/publish';
-import { LinkWithArrow, Modal } from '@/components/shared';
+import { ErrorSummary, LinkWithArrow, Modal } from '@/components/shared';
 import { validateAvlDescriptionStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
 import { config } from '@/config';
 
@@ -55,11 +55,11 @@ function AVLCreatePageContent() {
     event.preventDefault();
     const validationErrors = validateAvlUploadStep({ urlLink, username, password });
     setErrors(validationErrors);
+    setSubmitError('');
     if (Object.keys(validationErrors).length > 0) {
       return;
     }
 
-    setSubmitError('');
     setIsSubmitting(true);
 
     try {
@@ -111,7 +111,7 @@ function AVLCreatePageContent() {
 
         if (Object.keys(nextErrors).length > 0) {
           setErrors(nextErrors);
-          setSubmitError('There is a problem with the form.');
+          setSubmitError('');
         } else {
           setSubmitError(data.error || `Submit failed (${response.status}).`);
         }
@@ -146,6 +146,15 @@ function AVLCreatePageContent() {
   };
 
   const activeStep = step === 'cancel' ? stepBeforeCancel : step;
+  const uploadValidationSummaryErrors =
+    activeStep === 'upload'
+      ? [
+          errors.urlLink ? { text: errors.urlLink, href: '#id_url_link' } : null,
+          errors.username ? { text: errors.username, href: '#id_username' } : null,
+          errors.password ? { text: errors.password, href: '#id_password' } : null,
+          errors.requestorRef ? { text: errors.requestorRef, href: '#id_requestor_ref' } : null,
+        ].filter((error): error is { text: string; href: string } => error !== null)
+      : [];
 
   return (
     <div className="govuk-width-container">
@@ -162,19 +171,12 @@ function AVLCreatePageContent() {
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds indented-text">
-            <h1 className="govuk-heading-l">{getHeading(activeStep)}</h1>
+            {uploadValidationSummaryErrors.length > 0 && <ErrorSummary errors={uploadValidationSummaryErrors} summaryId="avl-create-error-title" />}
 
+            <h1 className="govuk-heading-l">{getHeading(activeStep)}</h1>
+            
             {submitError && (
-              <div className="govuk-error-summary" role="alert" aria-labelledby="avl-create-error-title">
-                <h2 className="govuk-error-summary__title" id="avl-create-error-title">
-                  There is a problem
-                </h2>
-                <div className="govuk-error-summary__body">
-                  <ul className="govuk-list govuk-error-summary__list">
-                    <li>{submitError}</li>
-                  </ul>
-                </div>
-              </div>
+              <ErrorSummary errors={[submitError]} summaryId="avl-create-submit-error-title" />
             )}
 
             {activeStep === 'description' && (
@@ -184,6 +186,7 @@ function AVLCreatePageContent() {
                   shortDescription={shortDescription}
                   descriptionLabel="Data feed description"
                   shortDescriptionLabel="Data feed short description"
+                  showShortDescriptionCounter={false}
                   errors={{ description: errors.description, shortDescription: errors.shortDescription }}
                   descriptionHint="The info will give context to data feed users. Please be descriptive but do not use personally identifiable information. Information you may wish to include: time & date of feed connection, reason for updating feed, OpCo/region/zone of feed, services included in feed."
                   shortDescriptionHint="This info will be displayed on your published data feed dashboard to identify this feed and will not be visible to data feed users. The maximum number of characters (with spaces) is 30 characters."
@@ -238,7 +241,7 @@ function AVLCreatePageContent() {
                   onUsernameChange={setUsername}
                   onPasswordChange={setPassword}
                   onRequestorRefChange={setRequestorRef}
-                  ipAllowListHint={process.env.NEXT_PUBLIC_AVL_IP_ALLOW_LIST || ''}
+                  ipAllowListHint={config.avlIpAllowList}
                 />
 
                 <div className="govuk-button-group govuk-!-margin-top-5">
@@ -259,12 +262,12 @@ function AVLCreatePageContent() {
             <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <LinkWithArrow href={supportBusOperatorsUrl} className="govuk-link large-font" target="_blank" rel="noreferrer">
+                <LinkWithArrow href={supportBusOperatorsUrl} className="govuk-link large-font">
                   View our guidelines here
                 </LinkWithArrow>
               </li>
               <li>
-                <LinkWithArrow href={contactSupportUrl} className="govuk-link large-font" target="_blank" rel="noreferrer">
+                <LinkWithArrow href={contactSupportUrl} className="govuk-link large-font">
                   Contact support desk
                 </LinkWithArrow>
               </li>

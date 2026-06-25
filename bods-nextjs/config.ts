@@ -12,6 +12,7 @@ export const config = {
   // Support
   supportPhone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || '0808 172 4134',
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@busopendataservice.atlassian.net',
+  avlIpAllowList: process.env.NEXT_PUBLIC_AVL_IP_ALLOW_LIST || '',
 
   // App
   appVersion: version,
