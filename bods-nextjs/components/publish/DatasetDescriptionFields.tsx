@@ -8,6 +8,7 @@ type DatasetDescriptionFieldsProps = {
   descriptionHint?: ReactNode;
   shortDescriptionHint?: ReactNode;
   maxShortDescLength?: number;
+  showShortDescriptionCounter?: boolean;
   descriptionClassName?: string;
   shortDescriptionClassName?: string;
   errors?: { description?: string; shortDescription?: string };
@@ -23,6 +24,7 @@ export function DatasetDescriptionFields({
   descriptionHint,
   shortDescriptionHint,
   maxShortDescLength = 30,
+  showShortDescriptionCounter = true,
   descriptionClassName,
   shortDescriptionClassName,
   errors,
@@ -60,9 +62,11 @@ export function DatasetDescriptionFields({
           value={shortDescription}
           onChange={(e) => onShortDescriptionChange(e.target.value)}
         />
-        <span className="govuk-hint">
-          You have {maxShortDescLength - shortDescription.length} characters remaining.
-        </span>
+        {showShortDescriptionCounter && (
+          <span className="govuk-hint">
+            You have {maxShortDescLength - shortDescription.length} characters remaining.
+          </span>
+        )}
       </div>
     </>
   );
