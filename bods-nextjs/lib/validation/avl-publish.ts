@@ -41,6 +41,15 @@ export const validateAvlUploadStep = ({
 
   if (!urlLink.trim()) {
     errors.urlLink = AVL_PUBLISH_ERRORS.urlLink;
+  } else {
+    try {
+      const parsed = new URL(urlLink);
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        errors.urlLink = AVL_PUBLISH_ERRORS.invalidUrlLink;
+      }
+    } catch {
+      errors.urlLink = AVL_PUBLISH_ERRORS.invalidUrlLink;
+    }
   }
 
   if (!username.trim()) {

@@ -10,6 +10,7 @@ type AvlUploadFieldsProps = {
   username: string;
   password: string;
   requestorRef: string;
+  guidanceUrl?: string;
   errors?: AvlUploadFieldErrors;
   onUrlLinkChange: (value: string) => void;
   onUsernameChange: (value: string) => void;
@@ -23,6 +24,7 @@ export function AvlUploadFields({
   username,
   password,
   requestorRef,
+  guidanceUrl,
   errors,
   onUrlLinkChange,
   onUsernameChange,
@@ -37,7 +39,15 @@ export function AvlUploadFields({
           Provide a URL link
         </label>
         <div className="govuk-hint">
-          We have guidance on the SIRI-VM standard and how to provide data.
+          We have{' '}
+          {guidanceUrl ? (
+            <a className="govuk-link" href={guidanceUrl} target="_blank" rel="noreferrer">
+              guidance
+            </a>
+          ) : (
+            'guidance'
+          )}{' '}
+          on the SIRI-VM standard and how to provide data
         </div>
         {errors?.urlLink && <p className="govuk-error-message">{errors.urlLink}</p>}
         <input
@@ -93,8 +103,7 @@ export function AvlUploadFields({
 
       {ipAllowListHint && (
         <span className="govuk-hint">
-          If you require your SIRI-VM feed to be restricted to particular IP addresses, please
-          allow-list these IP addresses: {ipAllowListHint}
+          If you require your SIRI-VM feed to be restricted to particular IP addresses, please allow-list these IP addresses: {ipAllowListHint}
         </span>
       )}
     </>
