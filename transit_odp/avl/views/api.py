@@ -12,6 +12,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 import config.hosts
 from transit_odp.avl.forms import AvlFeedDescriptionForm, AvlFeedUploadForm
+from transit_odp.avl.forms import AVLFeedCommentForm
 from transit_odp.avl.models import CAVLValidationTaskResult
 from transit_odp.avl.tasks import task_validate_avl_feed
 from transit_odp.avl.views.review import ERROR_DESCRIPTIONS
@@ -69,6 +70,17 @@ def _get_revision_for_dataset(org_id, dataset_id):
             dataset_id=dataset_id,
             dataset__organisation_id=org_id,
             is_published=False,
+        )
+        .order_by("-id")
+        .first()
+    )
+
+
+def _get_dataset_for_org(org_id, dataset_id):
+    return (
+        Dataset.objects.filter(
+            id=dataset_id,
+            organisation_id=org_id,
         )
         .order_by("-id")
         .first()
@@ -227,7 +239,9 @@ def get_avl_review_status_api(request, pk1, pk):
             "name": revision.name,
             "description": revision.description,
             "shortDescription": revision.short_description,
+            "comment": revision.comment,
             "urlLink": revision.url_link,
+            "requestorRef": revision.requestor_ref,
             "ownerName": revision.dataset.organisation.name,
             "siriVersion": schema_version,
             "lastModified": _iso_or_none(revision.modified),
@@ -293,3 +307,71 @@ def delete_avl_dataset_api(request, pk1, pk):
         },
         status=200,
     )
+
+
+@csrf_exempt
+@require_POST
+def update_avl_dataset_api(request, pk1, pk):
+    user = _authenticate_user(request)
+    if user is None or not user.is_authenticated:
+        return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+
+    if not user.is_org_user:
+        return JsonResponse({"error": ORG_ACCESS_REQUIRED_ERROR}, status=403)
+
+    organisation = _get_user_org(user, pk1)
+    if organisation is None:
+        return JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404)
+
+    dataset = _get_dataset_for_org(organisation.id, pk)
+    if dataset is None:
+        return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
+
+    revision = DatasetRevision.objects.filter(dataset=dataset, is_published=False).first()
+    if revision is None:
+        revision = dataset.start_revision()
+        revision.url_link = ""
+
+    comment_form = AVLFeedCommentForm(data=request.POST, instance=revision, is_update=True)
+    if not comment_form.is_valid():
+        return JsonResponse(
+            {
+                "error": "Comment validation failed",
+                "field_errors": comment_form.errors,
+            },
+            status=400,
+        )
+
+    upload_form = AvlFeedUploadForm(data=request.POST, instance=revision, is_update=True)
+    if not upload_form.is_valid():
+        return JsonResponse(
+            {
+                "error": "Upload validation failed",
+                "field_errors": upload_form.errors,
+            },
+            status=400,
+        )
+
+    all_data = {}
+    all_data.update(comment_form.cleaned_data)
+    all_data.update(upload_form.cleaned_data)
+    all_data["last_modified_user"] = user
+    all_data["status"] = "success"
+
+    with transaction.atomic():
+        for key, value in all_data.items():
+            setattr(revision, key, value)
+        revision.save()
+
+        task_id = uuid.uuid4()
+        CAVLValidationTaskResult.objects.create(
+            revision=revision,
+            task_id=task_id,
+            status=CAVLValidationTaskResult.STARTED,
+        )
+
+        transaction.on_commit(lambda: task_validate_avl_feed.delay(task_id))
+
+    review_url = f"/publish/org/{organisation.id}/dataset/avl/{dataset.id}/update/review"
+
+    return JsonResponse({"redirect": review_url}, status=200)

@@ -104,9 +104,7 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
     setErrorMessage('');
 
     try {
-      const publishPath = isUpdate
-        ? `/api/avl/publish-update/${orgId}/${datasetId}/`
-        : `/api/avl/publish/${orgId}/${datasetId}/`;
+      const publishPath = `/api/avl/publish/${orgId}/${datasetId}/`;
       const data = await api.post<{ error?: string; redirect?: string }>(
         publishPath,
       );
