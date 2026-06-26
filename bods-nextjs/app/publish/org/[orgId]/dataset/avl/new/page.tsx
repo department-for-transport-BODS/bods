@@ -2,9 +2,10 @@
 
 import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AvlUploadFields, DatasetDescriptionFields, PublishStepper } from '@/components/publish';
-import { ErrorSummary, LinkWithArrow, Modal } from '@/components/shared';
+import { ErrorSummary, Modal } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
 import { config } from '@/config';
@@ -269,14 +270,14 @@ function AVLCreatePageContent() {
             <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <LinkWithArrow href={supportBusOperatorsUrl} className="govuk-link large-font">
+                <Link href={supportBusOperatorsUrl} className="govuk-link large-font">
                   View our guidelines here
-                </LinkWithArrow>
+                </Link>
               </li>
               <li>
-                <LinkWithArrow href={contactSupportUrl} className="govuk-link large-font">
+                <Link href={contactSupportUrl} className="govuk-link large-font">
                   Contact support desk
-                </LinkWithArrow>
+                </Link>
               </li>
             </ul>
           </div>
