@@ -46,7 +46,6 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [errorMessage, setErrorMessage] = useState('');
 
-  const listUrl = `/publish/org/${orgId}/dataset/avl`;
   const updateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
   const deleteUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/delete`;
   const djangoApiBaseUrl = config.djangoApiBaseUrl;
@@ -154,9 +153,11 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
           </div>
         )}
 
+        <h1 className="govuk-heading-l">Review and publish</h1>
+        <hr className="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-l">Review and publish</h1>
 
             {isInitialLoading || loading ? (
               <div className="govuk-panel blue-background govuk-panel--confirmation">
@@ -177,6 +178,37 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
               </div>
             ) : (
               <div id="preview-section">
+                {!reviewErrorMessage && (
+                  <div className="govuk-!-margin-bottom-6">
+                    <div className="govuk-form-group">
+                      <div className="govuk-checkboxes__item">
+                        <input
+                          className="govuk-checkboxes__input"
+                          id="id_has_reviewed"
+                          type="checkbox"
+                          checked={hasReviewed}
+                          onChange={(event) => {
+                            setHasReviewed(event.target.checked);
+                            setErrors({});
+                          }}
+                        />
+                        <label className="govuk-label govuk-checkboxes__label" htmlFor="id_has_reviewed">
+                          I have reviewed the data and wish to publish my data
+                        </label>
+                      </div>
+                      {errors.consent && <p className="govuk-error-message">{errors.consent}</p>}
+                    </div>
+                    <button
+                      type="button"
+                      className="govuk-button"
+                      disabled={!hasReviewed || isPublishing}
+                      onClick={handlePublish}
+                    >
+                      {isPublishing ? 'Publishing...' : 'Publish data feed'}
+                    </button>
+                  </div>
+                )}
+
                 {reviewErrorMessage && (
                   <>
                     <div
@@ -217,14 +249,6 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                       <td className="govuk-table__cell dont-break-out">{statusData?.datasetId || '-'}</td>
                     </tr>
                     <tr className="govuk-table__row">
-                      <th scope="row" className="govuk-table__header">URL link</th>
-                      <td className="govuk-table__cell">
-                        <span className="dont-break-out" style={{ display: 'block', maxWidth: '100%', overflowWrap: 'anywhere' }}>
-                          {statusData?.urlLink || '-'}
-                        </span>
-                      </td>
-                    </tr>
-                    <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Description</th>
                       <td className="govuk-table__cell">{statusData?.description || '-'}</td>
                     </tr>
@@ -249,8 +273,24 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                       <td className="govuk-table__cell">{statusData?.siriVersion || '-'}</td>
                     </tr>
                     <tr className="govuk-table__row">
-                      <th scope="row" className="govuk-table__header">Last modified</th>
-                      <td className="govuk-table__cell">{formatDateTime(statusData?.lastModified)}</td>
+                      <th scope="row" className="govuk-table__header">URL link</th>
+                      <td className="govuk-table__cell">
+                        <span className="dont-break-out" style={{ display: 'block', maxWidth: '100%', overflowWrap: 'anywhere' }}>
+                          {statusData?.urlLink || '-'}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr className="govuk-table__row">
+                      <th scope="row" className="govuk-table__header">Feed details last updated</th>
+                      <td className="govuk-table__cell">
+                        {statusData?.lastModified
+                          ? `${formatDateTime(statusData.lastModified)}${statusData.lastModifiedUser ? ` by ${statusData.lastModifiedUser}` : ''}`
+                          : '-'}
+                      </td>
+                    </tr>
+                    <tr className="govuk-table__row">
+                      <th scope="row" className="govuk-table__header">Last automated update</th>
+                      <td className="govuk-table__cell">Unknown</td>
                     </tr>
                   </tbody>
                 </table>
@@ -260,46 +300,14 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                 )}
 
                 {!reviewErrorMessage && (
-                  <>
-                    <div className="govuk-form-group">
-                      <div className="govuk-checkboxes__item">
-                        <input
-                          className="govuk-checkboxes__input"
-                          id="id_has_reviewed"
-                          type="checkbox"
-                          checked={hasReviewed}
-                          onChange={(event) => {
-                            setHasReviewed(event.target.checked);
-                            setErrors({});
-                          }}
-                        />
-                        <label className="govuk-label govuk-checkboxes__label" htmlFor="id_has_reviewed">
-                          I have reviewed the data and wish to publish my data
-                        </label>
-                      </div>
-                      {errors.consent && <p className="govuk-error-message">{errors.consent}</p>}
-                    </div>
-
-                    <div className="btn-group-justified govuk-button-group">
-                      <button
-                        type="button"
-                        className="govuk-button"
-                        disabled={isPublishing}
-                        onClick={handlePublish}
-                      >
-                        {isPublishing ? 'Publishing...' : 'Publish data feed'}
-                      </button>
-                      <Link role="button" className="govuk-button govuk-button--secondary" href={deleteUrl}>
-                        Delete data feed
-                      </Link>
-                      <Link role="button" className="govuk-button govuk-button--secondary" href={updateUrl}>
-                        Publish correct data feed
-                      </Link>
-                      <Link className="govuk-link" href={listUrl}>
-                        Back to data feeds
-                      </Link>
-                    </div>
-                  </>
+                  <div className="btn-group-justified govuk-button-group">
+                    <Link role="button" className="govuk-button govuk-button--secondary" href={deleteUrl}>
+                      Delete data feed
+                    </Link>
+                    <Link role="button" className="govuk-button govuk-button--secondary" href={updateUrl}>
+                      Publish correct data feed
+                    </Link>
+                  </div>
                 )}
               </div>
             )}
