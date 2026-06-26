@@ -8,6 +8,7 @@ import { AvlUploadFields, PublishStepper } from '@/components/publish';
 import { ErrorSummary, Modal } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlCommentStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
+import { AvlReviewHelpAside } from '../../_components/AvlReviewAuxiliaryPanels';
 
 type Step = 'comment' | 'cancel' | 'upload';
 
@@ -340,21 +341,12 @@ function AVLUpdatePageContent() {
             <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />
           </div>
 
-          <div className="govuk-grid-column-one-third">
-            <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
-            <ul className="govuk-list app-list--nav govuk-!-font-size-19">
-              <li>
-                <a href={supportBusOperatorsUrl} className="govuk-link large-font" target="_blank" rel="noreferrer">
-                  View our guidelines here
-                </a>
-              </li>
-              <li>
-                <a href={contactSupportUrl} className="govuk-link large-font" target="_blank" rel="noreferrer">
-                  Contact support desk
-                </a>
-              </li>
-            </ul>
-          </div>
+          <AvlReviewHelpAside
+            supportBusOperatorsUrl={supportBusOperatorsUrl}
+            contactSupportUrl={contactSupportUrl}
+            linkClassName="govuk-link large-font"
+            openInNewTab
+          />
         </div>
       </div>
     </div>

@@ -3,18 +3,31 @@ import Link from 'next/link';
 type AvlReviewHelpAsideProps = {
   supportBusOperatorsUrl: string;
   contactSupportUrl: string;
+  linkClassName?: string;
+  openInNewTab?: boolean;
 };
 
-export function AvlReviewHelpAside({ supportBusOperatorsUrl, contactSupportUrl }: AvlReviewHelpAsideProps) {
+export function AvlReviewHelpAside({
+  supportBusOperatorsUrl,
+  contactSupportUrl,
+  linkClassName = 'govuk-link',
+  openInNewTab = false,
+}: AvlReviewHelpAsideProps) {
+  const sharedLinkProps = openInNewTab ? { target: '_blank', rel: 'noreferrer' } : {};
+
   return (
     <div className="govuk-grid-column-one-third">
       <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
       <ul className="govuk-list app-list--nav govuk-!-font-size-19">
         <li>
-          <a className="govuk-link" href={supportBusOperatorsUrl}>View our guidelines here</a>
+          <a className={linkClassName} href={supportBusOperatorsUrl} {...sharedLinkProps}>
+            View our guidelines here
+          </a>
         </li>
         <li>
-          <a className="govuk-link" href={contactSupportUrl}>Contact support desk</a>
+          <a className={linkClassName} href={contactSupportUrl} {...sharedLinkProps}>
+            Contact support desk
+          </a>
         </li>
       </ul>
     </div>

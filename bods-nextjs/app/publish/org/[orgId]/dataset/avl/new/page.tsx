@@ -2,13 +2,13 @@
 
 import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AvlUploadFields, DatasetDescriptionFields, PublishStepper } from '@/components/publish';
 import { ErrorSummary, Modal } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
 import { config } from '@/config';
+import { AvlReviewHelpAside } from '../_components/AvlReviewAuxiliaryPanels';
 
 type Step = 'description' | 'cancel' | 'upload';
 
@@ -266,21 +266,11 @@ function AVLCreatePageContent() {
             <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />
           </div>
 
-          <div className="govuk-grid-column-one-third">
-            <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
-            <ul className="govuk-list app-list--nav govuk-!-font-size-19">
-              <li>
-                <Link href={supportBusOperatorsUrl} className="govuk-link large-font">
-                  View our guidelines here
-                </Link>
-              </li>
-              <li>
-                <Link href={contactSupportUrl} className="govuk-link large-font">
-                  Contact support desk
-                </Link>
-              </li>
-            </ul>
-          </div>
+          <AvlReviewHelpAside
+            supportBusOperatorsUrl={supportBusOperatorsUrl}
+            contactSupportUrl={contactSupportUrl}
+            linkClassName="govuk-link large-font"
+          />
         </div>
       </div>
     </div>
