@@ -1,6 +1,7 @@
 name: update_task_definition
 
-# Were we can define the inputs that our action will accept
+description: Updates a task definition with a new image and deploys it using AWS maintained github actions
+
 inputs:
   service:
     description: The name of the service
@@ -15,19 +16,22 @@ inputs:
     description: The updated image
     required: true
 
-description: Updates a task definition with new image name and deploys it
-
 runs:
   using: "composite"
   steps:
-  # aws-ecs/deploy-service-update
-    - name: Download task definition
-      shell: bash
-      env:
-        TASK_FAMILY: bodds_${{ inputs.service }}_${{ inputs.environment }}
-        CLUSTER: bodds-${{ inputs.environment }}
-      run: |
-        aws ecs describe-task-definition --include TAGS --task-definition $TASK_FAMILY | jq '.taskDefinition.containerDefinitions[] |= if (.name=="${{ inputs.container }}" ) then (.image = "${{ inputs.image_id }}") else . end | .taskDefinition["tags"] = .tags | .taskDefinition | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatabilities) | del(.registeredAt) | del(.registeredBy) | del(.compatibilities)' > ${{ github.workspace }}/task-definition.json
-        aws ecs register-task-definition --cli-input-json file://${{ github.workspace }}/task-definition.json
-        def_arn=$( aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition.taskDefinitionArn --output text )
-        aws ecs update-service --cluster $CLUSTER --service ${{ inputs.service }} --task-definition $def_arn
+    - name: Render ECS task definition
+      id: render-task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@6853cfae8c3a7d978fbf68b5a55453395541dfbb # 1.8.5
+      with:
+        task-definition-family: bodds_${{ inputs.service }}_${{ inputs.environment }}
+        container-name: ${{ inputs.container }}
+        image: ${{ inputs.image_id }}
+
+    - name: Deploy ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@a310a830f5c14e583e35d84e4e1ec7dd177c3c9c # 2.6.2
+      with:
+        task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+        service: ${{ inputs.service }}
+        cluster: bodds-${{ inputs.environment }}
+        wait-for-service-stability: true
+

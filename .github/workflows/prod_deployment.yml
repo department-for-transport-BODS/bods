@@ -139,15 +139,6 @@ jobs:
         environment: ${{ env.ENVIRONMENT_NAME }}
         image_id: ${{ steps.check-image.outputs.image }}
 
-    - name: Check for service stability
-      uses: robsteel24/ecs-wait@v2
-      with:
-        aws-region: ${{ env.AWS_REGION }}
-        ecs-cluster: bodds-${{ env.ENVIRONMENT_NAME }}
-        ecs-services: '["celeryflower", "celeryworker", "celerybeat", "frontend", "api_frontend", "api_frontend_internal" ]'
-        retries: 5
-        verbose: true
-
     - name: Obtain SSM parameters for pg migration
       id: params
       shell: bash
