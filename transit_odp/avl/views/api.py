@@ -272,11 +272,7 @@ def publish_avl_dataset_api(request, pk1, pk):
     except Exception:
         return JsonResponse(
             {
-                "redirect": reverse(
-                    "avl:revision-publish-error",
-                    kwargs={"pk": pk, "pk1": pk1},
-                    host=config.hosts.PUBLISH_HOST,
-                )
+                "redirect": f"/publish/org/{pk1}/dataset/avl/{pk}/error"
             },
             status=200,
         )
