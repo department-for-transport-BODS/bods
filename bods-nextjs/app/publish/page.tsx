@@ -38,7 +38,11 @@ function PublishDashboard() {
       const data = await getPaginated<Organisation>('/api/organisations/');
 
       if (data.results.length === 1) {
-        router.push(`/publish/org/${data.results[0].id}/dataset/${selectedDataType}/new`);
+        if (selectedDataType === 'avl') {
+          router.push(`/publish/org/${data.results[0].id}/dataset/${selectedDataType}/new`);
+        } else {
+          router.push(`/publish/org/${data.results[0].id}/dataset/${selectedDataType}`);
+        }
         return;
       }
 
