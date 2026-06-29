@@ -18,7 +18,12 @@ from transit_odp.avl.tasks import task_validate_avl_feed
 from transit_odp.avl.views.review import ERROR_DESCRIPTIONS
 from transit_odp.avl.views.utils import get_validation_task_result_from_revision_id
 from transit_odp.organisation.constants import DatasetType, FeedStatus
-from transit_odp.organisation.models import Dataset, DatasetMetadata, DatasetRevision, Organisation
+from transit_odp.organisation.models import (
+    Dataset,
+    DatasetMetadata,
+    DatasetRevision,
+    Organisation,
+)
 from transit_odp.timetables.tasks import delete_dataset_revision
 
 
@@ -188,11 +193,7 @@ def create_avl_dataset_api(request, pk1):
 
         revision = DatasetRevision.objects.filter(
             Q(dataset=dataset) & Q(is_published=False)
-        ).update_or_create(
-            dataset=dataset,
-            is_published=False,
-            defaults=all_data,
-        )[0]
+        ).update_or_create(dataset=dataset, is_published=False, defaults=all_data,)[0]
 
         task_id = uuid.uuid4()
         CAVLValidationTaskResult.objects.create(
@@ -271,9 +272,7 @@ def publish_avl_dataset_api(request, pk1, pk):
             revision.publish(user)
     except Exception:
         return JsonResponse(
-            {
-                "redirect": f"/publish/org/{pk1}/dataset/avl/{pk}/error"
-            },
+            {"redirect": f"/publish/org/{pk1}/dataset/avl/{pk}/error"},
             status=200,
         )
 
@@ -323,12 +322,16 @@ def update_avl_dataset_api(request, pk1, pk):
     if dataset is None:
         return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
 
-    revision = DatasetRevision.objects.filter(dataset=dataset, is_published=False).first()
+    revision = DatasetRevision.objects.filter(
+        dataset=dataset, is_published=False
+    ).first()
     if revision is None:
         revision = dataset.start_revision()
         revision.url_link = ""
 
-    comment_form = AVLFeedCommentForm(data=request.POST, instance=revision, is_update=True)
+    comment_form = AVLFeedCommentForm(
+        data=request.POST, instance=revision, is_update=True
+    )
     if not comment_form.is_valid():
         return JsonResponse(
             {
@@ -338,7 +341,9 @@ def update_avl_dataset_api(request, pk1, pk):
             status=400,
         )
 
-    upload_form = AvlFeedUploadForm(data=request.POST, instance=revision, is_update=True)
+    upload_form = AvlFeedUploadForm(
+        data=request.POST, instance=revision, is_update=True
+    )
     if not upload_form.is_valid():
         return JsonResponse(
             {
@@ -368,6 +373,8 @@ def update_avl_dataset_api(request, pk1, pk):
 
         transaction.on_commit(lambda: task_validate_avl_feed.delay(task_id))
 
-    review_url = f"/publish/org/{organisation.id}/dataset/avl/{dataset.id}/update/review"
+    review_url = (
+        f"/publish/org/{organisation.id}/dataset/avl/{dataset.id}/update/review"
+    )
 
     return JsonResponse({"redirect": review_url}, status=200)
