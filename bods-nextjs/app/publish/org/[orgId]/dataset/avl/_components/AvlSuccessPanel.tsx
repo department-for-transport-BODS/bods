@@ -11,6 +11,8 @@ export function AvlSuccessPanel({ update }: AvlSuccessPanelProps) {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
+  const listUrl = `/publish/org/${orgId}/dataset/avl`;
+  const detailUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}`;
 
   return (
     <div className="govuk-width-container">
@@ -30,18 +32,30 @@ export function AvlSuccessPanel({ update }: AvlSuccessPanelProps) {
           <div className="govuk-grid-column-three-quarters">
             <h2 className="govuk-heading-m">What happens next?</h2>
             <p className="govuk-body-m">
-              You can view data feeds on your data feeds page. The data will now be live for everyone else to see.
+              You can view the data feed on your{' '}
+              <Link className="govuk-link" href={listUrl}>
+                data feeds page
+              </Link>{' '}
+              or by clicking the button below. The data will now be live for everyone else to see.
+            </p>
+            <p className="govuk-body-m">
+              Please note the introduction of a new SIRI-VM validator to ensure the highest quality data is provided to
+              consumers.
+            </p>
+            <p className="govuk-body-m">
+              The SIRI-VM validator will check the mandatory fields are populated 24 hours after publishing and if
+              necessary an error report will be sent to you. If there are still missing fields at the end of 7 days
+              the feed will change to a compliance error status. To learn more about the compliance error status and
+              how it works please read the{' '}
+              <Link className="govuk-link" href="/guidance/support/bus-operators?section=buslocation">
+                guidance page.
+              </Link>
             </p>
 
             <hr className="govuk-section-break govuk-section-break--l govuk-section-break" />
-            <div className="govuk-button-group">
-              <Link role="button" className="govuk-button" href={`/publish/org/${orgId}/dataset/avl`}>
-                View data feeds
-              </Link>
-              <Link className="govuk-link" href={`/publish/org/${orgId}/dataset/avl/${datasetId}/review`}>
-                Back to review
-              </Link>
-            </div>
+            <Link role="button" className="govuk-button" href={detailUrl}>
+              View published data feed
+            </Link>
             <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />
           </div>
         </div>
