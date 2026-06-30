@@ -378,3 +378,64 @@ def update_avl_dataset_api(request, pk1, pk):
     )
 
     return JsonResponse({"redirect": review_url}, status=200)
+
+
+@csrf_exempt
+@require_GET
+def list_avl_datasets_api(request, pk1):
+    user, organisation, _, error_response = _get_request_context(request, pk1)
+    if error_response is not None:
+        return error_response
+
+    tab = request.GET.get("tab", "active")
+    sort_by = request.GET.get("sort_by", "modified")
+    order = request.GET.get("order", "desc")
+
+    # Map frontend column names to model fields
+    sort_field_map = {
+        "status": "live_revision__status",
+        "name": "live_revision__name",
+        "percent_matching": "percent_matching",
+        "avl_feed_last_checked": "avl_feed_last_checked",
+        "modified": "modified",
+    }
+
+    sort_field = sort_field_map.get(sort_by, "modified")
+    if order == "asc":
+        sort_field = sort_field
+    else:
+        sort_field = f"-{sort_field}"
+
+    qs = Dataset.objects.filter(
+        organisation_id=organisation.id,
+        dataset_type=DatasetType.AVL.value,
+    ).select_related("live_revision").order_by(sort_field)
+
+    if tab == "active":
+        qs = qs.filter(live_revision__status="live")
+    elif tab == "draft":
+        qs = qs.filter(live_revision__status__in=["success", "draft", "indexing", "pending", "processing"])
+    elif tab == "archive":
+        qs = qs.filter(live_revision__status__in=["inactive", "expired"])
+    else:
+        qs = qs.filter(live_revision__status="live")
+
+    results = []
+    for dataset in qs:
+        revision = dataset.live_revision
+        if revision is None:
+            continue
+        results.append({
+            "id": dataset.id,
+            "name": revision.name or "",
+            "status": revision.status,
+            "short_description": revision.short_description or "",
+            "avl_feed_last_checked": (
+                dataset.avl_feed_last_checked.isoformat()
+                if dataset.avl_feed_last_checked
+                else None
+            ),
+            "modified": revision.modified.isoformat() if revision.modified else None,
+        })
+
+    return JsonResponse({"count": len(results), "results": results})

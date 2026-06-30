@@ -68,6 +68,7 @@ export function AvlUploadFields({
           className="govuk-input govuk-!-width-three-quarters"
           id="id_username"
           type="text"
+          autoComplete="off"
           value={username}
           onChange={(event) => onUsernameChange(event.target.value)}
         />
@@ -82,6 +83,7 @@ export function AvlUploadFields({
           className="govuk-input govuk-!-width-three-quarters"
           id="id_password"
           type="password"
+          autoComplete="new-password"
           value={password}
           onChange={(event) => onPasswordChange(event.target.value)}
         />

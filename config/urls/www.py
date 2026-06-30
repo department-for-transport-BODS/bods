@@ -28,6 +28,7 @@ from transit_odp.avl.views.api import (
     create_avl_dataset_api,
     delete_avl_dataset_api,
     get_avl_review_status_api,
+    list_avl_datasets_api,
     publish_avl_dataset_api,
     update_avl_dataset_api,
 )
@@ -56,6 +57,11 @@ urlpatterns = [
         "api/organisations/",
         CurrentUserOrganisationsAPIView.as_view(),
         name="api-user-organisations",
+    ),
+    path(
+        "api/avl/list/<int:pk1>/",
+        list_avl_datasets_api,
+        name="nextjs-avl-list",
     ),
     path(
         "api/avl/create/<int:pk1>/",
