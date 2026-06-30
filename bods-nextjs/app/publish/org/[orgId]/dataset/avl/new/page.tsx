@@ -154,6 +154,13 @@ function AVLCreatePageContent() {
   };
 
   const activeStep = step === 'cancel' ? stepBeforeCancel : step;
+  const descriptionValidationSummaryErrors =
+    activeStep === 'description'
+      ? [
+          errors.description ? { text: errors.description, href: '#id_description' } : null,
+          errors.shortDescription ? { text: errors.shortDescription, href: '#id_short_description' } : null,
+        ].filter((error): error is { text: string; href: string } => error !== null)
+      : [];
   const uploadValidationSummaryErrors =
     activeStep === 'upload'
       ? [
@@ -179,6 +186,7 @@ function AVLCreatePageContent() {
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds indented-text">
+            {descriptionValidationSummaryErrors.length > 0 && <ErrorSummary errors={descriptionValidationSummaryErrors} summaryId="avl-create-error-title" />}
             {uploadValidationSummaryErrors.length > 0 && <ErrorSummary errors={uploadValidationSummaryErrors} summaryId="avl-create-error-title" />}
 
             <h1 className="govuk-heading-l">{getHeading(activeStep)}</h1>

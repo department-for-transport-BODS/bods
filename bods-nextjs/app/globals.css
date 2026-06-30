@@ -51,7 +51,13 @@ body {
   border-bottom: 1px solid #1d70b8; /* govuk-colour("blue") */
   color: #ffffff;
   background-color: #1d70b8; /* govuk-colour("blue") */
-  margin-top: 0;
+  margin-top: 16px;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 
 .app-masthead .govuk-body {
@@ -545,15 +551,6 @@ ul.dashed > li::before {
   text-decoration-skip-ink: none;
 }
 
-/* Table column widths */
-.app-table-col--20 {
-  width: 20%;
-}
-
-.app-table-col--25 {
-  width: 25%;
-}
-
 /* Legacy utility parity for migrated Django pages */
 .indented-text {
   padding-left: 15px;
@@ -595,4 +592,151 @@ ul.dashed > li::before {
 .app-dataset-form__selected {
   margin-top: 16px;
   color: #555;
+}
+
+/* =========================================================
+   Publish list page: masthead title variant and review banner
+   Mirrors transit_odp/frontend/assets/sass/components/banner/_title-banner.scss
+   and transit_odp/frontend/assets/sass/components/publish_list/_publish_list.scss
+   ========================================================= */
+
+.app-masthead__title_agent_dashboard {
+  color: #ffffff !important;
+  margin-bottom: 20px;
+  white-space: normal;
+}
+
+.review-banner {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+.review-stat {
+  margin: 0 30px 30px 0;
+}
+
+.review-stat:last-child {
+  margin-right: 0;
+}
+
+.review-stat__top {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 48px;
+  line-height: 50px;
+  font-weight: 700;
+  display: block;
+}
+
+.review-stat__bottom {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 25px;
+  position: relative;
+  right: 5px;
+}
+
+.review-stat__description {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+}
+
+a.review-stat__link {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+  color: inherit;
+}
+
+a.review-stat__link:visited {
+  color: unset;
+}
+
+/* custom_govuk_table: same as govuk-table but with inverted borders */
+.custom_govuk_table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.custom_govuk_table .govuk-table__header,
+.custom_govuk_table .govuk-table__cell {
+  border-top: 1px solid #b1b4b6;
+  border-bottom: none;
+}
+
+.custom_govuk_table .govuk-table__head .govuk-table__row:first-child .govuk-table__header {
+  border-top: none;
+}
+
+/* select-wrapper: container for the Choose data type dropdown */
+.select-wrapper {
+  position: relative;
+}
+
+/* Help modal styling */
+.help-modal {
+  display: inline;
+}
+
+.help-modal .help-icon {
+  color: #0b0c0c;
+  cursor: pointer;
+}
+
+.help-modal .help-icon-white {
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.help-modal .overlay {
+  display: none;
+  position: fixed;
+  justify-content: center;
+  align-items: center;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.help-modal .overlay.active {
+  display: flex;
+}
+
+.help-modal .overlay .window {
+  position: relative;
+  width: 100%;
+  max-width: 75%;
+  background: #ffffff;
+  padding: 20px;
+  border: 1px solid #b1b4b6;
+}
+
+.help-modal .overlay .close-button {
+  position: absolute;
+  right: 0;
+  margin: 20px;
+  border: 0;
+  border-style: none;
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.help-modal .overlay .content {
+  position: relative;
+  margin-top: 40px;
+}
+
+/* Position utility for relative bottom offset */
+.bods-relative-bottom {
+  position: relative;
+  bottom: -5px;
 }
