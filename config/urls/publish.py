@@ -6,6 +6,18 @@ from django.views.generic import TemplateView
 from transit_odp.api.views.auth import CurrentUserOrganisationsAPIView
 
 from transit_odp.avl.views.archive import PPCArchiveView
+from transit_odp.avl.views.api import (
+    create_avl_dataset_api,
+    delete_avl_dataset_api,
+    edit_avl_dataset_description_api,
+    get_avl_changelog_api,
+    get_avl_dataset_edit_api,
+    get_avl_review_status_api,
+    get_avl_feed_detail_api,
+    list_avl_datasets_api,
+    publish_avl_dataset_api,
+    update_avl_dataset_api,
+)
 from transit_odp.common.utils.custom_error_handlers import (
     page_not_found,
     permission_denied,
@@ -46,6 +58,56 @@ handler403 = "transit_odp.common.utils.custom_error_handlers.permission_denied"
 
 urlpatterns = [
     path("", view=PublishHomeView.as_view(), name="home"),
+    path(
+        "api/avl/list/<int:pk1>/",
+        list_avl_datasets_api,
+        name="nextjs-avl-list",
+    ),
+    path(
+        "api/avl/create/<int:pk1>/",
+        create_avl_dataset_api,
+        name="nextjs-avl-create",
+    ),
+    path(
+        "api/avl/review-status/<int:pk1>/<int:pk>/",
+        get_avl_review_status_api,
+        name="nextjs-avl-review-status",
+    ),
+    path(
+        "api/avl/detail/<int:pk1>/<int:pk>/",
+        get_avl_feed_detail_api,
+        name="nextjs-avl-detail",
+    ),
+    path(
+        "api/avl/dataset-edit/<int:pk1>/<int:pk>/",
+        get_avl_dataset_edit_api,
+        name="nextjs-avl-dataset-edit-get",
+    ),
+    path(
+        "api/avl/dataset-edit/<int:pk1>/<int:pk>/save/",
+        edit_avl_dataset_description_api,
+        name="nextjs-avl-dataset-edit-save",
+    ),
+    path(
+        "api/avl/changelog/<int:pk1>/<int:pk>/",
+        get_avl_changelog_api,
+        name="nextjs-avl-changelog",
+    ),
+    path(
+        "api/avl/publish/<int:pk1>/<int:pk>/",
+        publish_avl_dataset_api,
+        name="nextjs-avl-publish",
+    ),
+    path(
+        "api/avl/delete/<int:pk1>/<int:pk>/",
+        delete_avl_dataset_api,
+        name="nextjs-avl-delete",
+    ),
+    path(
+        "api/avl/update/<int:pk1>/<int:pk>/",
+        update_avl_dataset_api,
+        name="nextjs-avl-update",
+    ),
     path(
         "api/timetables/create/<int:pk1>/",
         create_timetables_dataset_api,

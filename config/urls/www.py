@@ -24,6 +24,18 @@ from transit_odp.fares.views.api import (
     get_fares_review_status_api,
     publish_fares_dataset_api,
 )
+from transit_odp.avl.views.api import (
+    create_avl_dataset_api,
+    delete_avl_dataset_api,
+    edit_avl_dataset_description_api,
+    get_avl_changelog_api,
+    get_avl_dataset_edit_api,
+    get_avl_feed_detail_api,
+    get_avl_review_status_api,
+    list_avl_datasets_api,
+    publish_avl_dataset_api,
+    update_avl_dataset_api,
+)
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
     get_timetables_review_status_api,
@@ -49,6 +61,56 @@ urlpatterns = [
         "api/organisations/",
         CurrentUserOrganisationsAPIView.as_view(),
         name="api-user-organisations",
+    ),
+    path(
+        "api/avl/list/<int:pk1>/",
+        list_avl_datasets_api,
+        name="nextjs-avl-list",
+    ),
+    path(
+        "api/avl/create/<int:pk1>/",
+        create_avl_dataset_api,
+        name="nextjs-avl-create",
+    ),
+    path(
+        "api/avl/review-status/<int:pk1>/<int:pk>/",
+        get_avl_review_status_api,
+        name="nextjs-avl-review-status",
+    ),
+    path(
+        "api/avl/detail/<int:pk1>/<int:pk>/",
+        get_avl_feed_detail_api,
+        name="nextjs-avl-detail",
+    ),
+    path(
+        "api/avl/dataset-edit/<int:pk1>/<int:pk>/",
+        get_avl_dataset_edit_api,
+        name="nextjs-avl-dataset-edit-get",
+    ),
+    path(
+        "api/avl/dataset-edit/<int:pk1>/<int:pk>/save/",
+        edit_avl_dataset_description_api,
+        name="nextjs-avl-dataset-edit-save",
+    ),
+    path(
+        "api/avl/changelog/<int:pk1>/<int:pk>/",
+        get_avl_changelog_api,
+        name="nextjs-avl-changelog",
+    ),
+    path(
+        "api/avl/publish/<int:pk1>/<int:pk>/",
+        publish_avl_dataset_api,
+        name="nextjs-avl-publish",
+    ),
+    path(
+        "api/avl/delete/<int:pk1>/<int:pk>/",
+        delete_avl_dataset_api,
+        name="nextjs-avl-delete",
+    ),
+    path(
+        "api/avl/update/<int:pk1>/<int:pk>/",
+        update_avl_dataset_api,
+        name="nextjs-avl-update",
     ),
     path(
         "api/fares/create/<int:pk1>/",
