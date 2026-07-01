@@ -3,6 +3,7 @@ import logging
 import re
 import time
 from datetime import datetime
+from typing import Optional
 
 import boto3
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
@@ -12,11 +13,13 @@ from storages.backends.s3boto3 import S3Boto3Storage
 logger = logging.getLogger(__name__)
 
 
-def get_s3_bucket_storage() -> object:
+def get_s3_bucket_storage(bucket_name: Optional[str] = None) -> object:
     """
     Get AWS S3 bucker storage object
     """
-    bucket_name = getattr(settings, "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME", None)
+    bucket_name = bucket_name or getattr(
+        settings, "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME", None
+    )
     if not bucket_name:
         logger.error("Bucket name is not configured in settings.")
         raise ValueError("Bucket name is not configured in settings.")

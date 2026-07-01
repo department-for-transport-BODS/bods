@@ -1,20 +1,41 @@
 import pytest
-from unittest.mock import patch
-from requests.exceptions import HTTPError
+import json
+from io import StringIO
+from unittest.mock import patch, MagicMock
 
 from transit_odp.otc.weca.client import WecaClient
 
 
-def test_weca_api_response_returned(weca_get_agliebase_data):
-    with weca_get_agliebase_data:
+def test_weca_client_reads_s3_json(weca_get_agliebase_data):
+
+    # Mock S3 storage
+    mock_storage = MagicMock()
+    mock_storage.open.return_value.__enter__.return_value = StringIO(
+        json.dumps(weca_get_agliebase_data)
+    )
+    # Patch where boto3.client is referenced inside the module under test
+    with patch(
+        "transit_odp.otc.weca.client.get_s3_bucket_storage",
+        return_value=mock_storage,
+    ):
         client = WecaClient()
         response = client.fetch_weca_services()
-        assert len(response.data) == 5
-        assert len(response.fields) == 12
+
+    assert len(response.fields) == 12
+    assert len(response.data) == 5
 
 
-@patch("django.conf.settings.WECA_PARAM_C", "dummay_weca_param_c")
-def test_weca_api_response_error():
-    with pytest.raises(HTTPError) as e:
+def test_weca_client_fails_s3_json():
+
+    # Make a mock S3 storage who fails on get file
+    mock_storage = MagicMock()
+    mock_storage.open.side_effect = FileNotFoundError("missing file")
+
+    with patch(
+        "transit_odp.otc.weca.client.get_s3_bucket_storage",
+        return_value=mock_storage,
+    ):
         client = WecaClient()
         response = client.fetch_weca_services()
+        assert len(response.fields) == 0
+        assert len(response.data) == 0
