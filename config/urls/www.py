@@ -27,6 +27,9 @@ from transit_odp.fares.views.api import (
 from transit_odp.avl.views.api import (
     create_avl_dataset_api,
     delete_avl_dataset_api,
+    edit_avl_dataset_description_api,
+    get_avl_changelog_api,
+    get_avl_dataset_edit_api,
     get_avl_feed_detail_api,
     get_avl_review_status_api,
     list_avl_datasets_api,
@@ -78,6 +81,21 @@ urlpatterns = [
         "api/avl/detail/<int:pk1>/<int:pk>/",
         get_avl_feed_detail_api,
         name="nextjs-avl-detail",
+    ),
+    path(
+        "api/avl/dataset-edit/<int:pk1>/<int:pk>/",
+        get_avl_dataset_edit_api,
+        name="nextjs-avl-dataset-edit-get",
+    ),
+    path(
+        "api/avl/dataset-edit/<int:pk1>/<int:pk>/save/",
+        edit_avl_dataset_description_api,
+        name="nextjs-avl-dataset-edit-save",
+    ),
+    path(
+        "api/avl/changelog/<int:pk1>/<int:pk>/",
+        get_avl_changelog_api,
+        name="nextjs-avl-changelog",
     ),
     path(
         "api/avl/publish/<int:pk1>/<int:pk>/",
