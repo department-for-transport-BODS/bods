@@ -1,7 +1,5 @@
 import logging
 import json
-import boto3
-from os import getenv
 from datetime import datetime, date
 from typing import Optional, List
 
@@ -11,9 +9,9 @@ from pydantic import Field, validator
 from pydantic.main import BaseModel
 
 from transit_odp.otc.constants import API_TYPE_WECA
+from transit_odp.common.utils.aws_common import get_s3_bucket_storage
 
 logger = logging.getLogger(__name__)
-logger.setLevel(getenv("LOG_LEVEL") or "WARNING")
 
 
 class FieldModel(BaseModel):
@@ -84,36 +82,39 @@ class DataModel(BaseModel):
             return value
 
 
-class APIResponse(BaseModel):
+class WECAData(BaseModel):
     fields: List[FieldModel]
     data: List[DataModel]
 
 
 class WecaClient:
-    def _make_request(self, timeout: int = 30, **kwargs) -> APIResponse:
+    def _make_request(self, timeout: int = 30, **kwargs) -> WECAData:
         """
         Send Request to WECA API Endpoint
         Response will be returned in the JSON format
         """
 
-        s3_client = boto3.client("s3")
+        s3_key = settings.WECA_DLZ_S3_KEY
         try:
-            logger.debug(f"Getting data from {settings.WECA_DLZ_S3_BUCKET}")
-            logger.debug(f"Data key: {settings.WECA_DLZ_S3_KEY}")
-            response_json = json.loads(
-                s3_client.get_object(
-                    Bucket=settings.WECA_DLZ_S3_BUCKET, Key=settings.WECA_DLZ_S3_KEY
-                )["Body"]
-                .read()
-                .decode("utf-8")
-            )
-            logger.debug(f"Raw JSON:\n{response_json}")
+            storage = get_s3_bucket_storage(settings.WECA_DLZ_S3_BUCKET)
+            directories, files = storage.listdir("/raw/weca")
+            print("Subdirectories:", directories)
+            print("Files:", files)
+
+            with storage.open(s3_key, "r") as f:
+                response_json = json.load(f)
+        except FileNotFoundError:
+            logger.error(f"File not found in S3: {s3_key}")
+            return self.default_response()
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON in file {s3_key}: {e}")
+            return self.default_response()
         except Exception as e:
-            logger.error(f"Error fetching WECA data from S3: {e}")
+            logger.error(f"Error reading JSON from S3: {e}")
             return self.default_response()
 
         try:
-            return APIResponse(**response_json)
+            return WECAData(**response_json)
         except ValidationError as exc:
             logger.error("Validation error in WECA API response")
             logger.error(f"Response JSON: {response_json}")
@@ -129,9 +130,9 @@ class WecaClient:
         Create default return response for placeholder purpose
         """
         response = {"fields": [], "data": []}
-        return APIResponse(**response)
+        return WECAData(**response)
 
-    def fetch_weca_services(self) -> APIResponse:
+    def fetch_weca_services(self) -> WECAData:
         """
         Fetch method for sending request to WECA
         Return Pydentic model response

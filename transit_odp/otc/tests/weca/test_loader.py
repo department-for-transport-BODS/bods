@@ -4,7 +4,7 @@ import pytest
 from transit_odp.otc.factories import WecaServiceFactory
 from transit_odp.otc.models import Service
 from transit_odp.otc.tests.conftest import get_weca_data
-from transit_odp.otc.weca.client import APIResponse
+from transit_odp.otc.weca.client import WECAData
 from transit_odp.otc.weca.loaders import Loader
 from transit_odp.otc.weca.registry import Registry
 from transit_odp.otc.constants import API_TYPE_WECA
@@ -13,7 +13,7 @@ pytestmark = pytest.mark.django_db
 
 
 def get_weca_response():
-    weca_data = APIResponse(**get_weca_data())
+    weca_data = WECAData(**get_weca_data())
     services_list = [service.model_dump() for service in weca_data.data]
     service_df = pd.DataFrame(services_list)
     service_df["licence_id"] = None

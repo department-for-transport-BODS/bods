@@ -4,7 +4,7 @@ import pytest
 
 from transit_odp.otc.factories import ServiceModelFactory, LicenceModelFactory
 from transit_odp.otc.tests.conftest import get_weca_data
-from transit_odp.otc.weca.client import APIResponse
+from transit_odp.otc.weca.client import WECAData
 from transit_odp.otc.weca.registry import Registry
 
 pytestmark = pytest.mark.django_db
@@ -13,16 +13,16 @@ CLIENT = "transit_odp.otc.weca.client.WecaClient.fetch_weca_services"
 
 
 def get_weca_client_response():
-    return APIResponse(**get_weca_data())
+    return WECAData(**get_weca_data())
 
 
 def get_weca_client_response_from_file(filename):
-    return APIResponse(**get_weca_data(filename))
+    return WECAData(**get_weca_data(filename))
 
 
 def get_weca_client_blank_response():
     response = {"fields": [], "data": []}
-    return APIResponse(**response)
+    return WECAData(**response)
 
 
 @patch(CLIENT)
@@ -32,7 +32,7 @@ def test_weca_registry(mock_weca_fetch):
     registry = Registry()
     response = registry.fetch_all_records()
 
-    assert type(response) == APIResponse
+    assert type(response) == WECAData
     assert len(registry.data) == 5
     assert len(registry.fields) == 12
 
@@ -44,7 +44,7 @@ def test_weca_registry_blank_response(mock_weca_fetch):
     registry = Registry()
     response = registry.fetch_all_records()
 
-    assert type(response) == APIResponse
+    assert type(response) == WECAData
     assert len(registry.data) == 0
     assert len(registry.fields) == 0
 
