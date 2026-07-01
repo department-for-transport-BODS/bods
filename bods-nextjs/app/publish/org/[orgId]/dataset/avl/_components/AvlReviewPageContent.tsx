@@ -213,12 +213,12 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                   <>
                     <div
                       className="govuk-error-summary govuk-!-margin-bottom-0"
-                      aria-labelledby="avl-review-error-title"
+                      aria-labelledby="error-summary-title"
                       role="alert"
                       tabIndex={-1}
                       data-module="govuk-error-summary"
                     >
-                      <h2 className="govuk-error-summary__title govuk-!-margin-bottom-2" id="avl-review-error-title">
+                      <h2 className="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
                         Supplied data feed has failed to upload
                       </h2>
                       <div className="govuk-error-summary__body">
