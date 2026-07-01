@@ -12,9 +12,17 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 import config.hosts
-from transit_odp.avl.forms import AvlFeedDescriptionForm, AvlFeedUploadForm, EditFeedDescriptionForm
+from transit_odp.avl.forms import (
+    AvlFeedDescriptionForm,
+    AvlFeedUploadForm,
+    EditFeedDescriptionForm,
+)
 from transit_odp.avl.forms import AVLFeedCommentForm
-from transit_odp.avl.models import CAVLValidationTaskResult, PostPublishingCheckReport, PPCReportType
+from transit_odp.avl.models import (
+    CAVLValidationTaskResult,
+    PostPublishingCheckReport,
+    PPCReportType,
+)
 from transit_odp.avl.tasks import task_validate_avl_feed
 from transit_odp.avl.views.review import ERROR_DESCRIPTIONS
 from transit_odp.avl.views.utils import get_validation_task_result_from_revision_id
@@ -495,15 +503,27 @@ def list_avl_datasets_api(request, pk1):
     else:
         sort_field = f"-{sort_field}"
 
-    qs = Dataset.objects.filter(
-        organisation_id=organisation.id,
-        dataset_type=DatasetType.AVL.value,
-    ).select_related("live_revision").order_by(sort_field)
+    qs = (
+        Dataset.objects.filter(
+            organisation_id=organisation.id,
+            dataset_type=DatasetType.AVL.value,
+        )
+        .select_related("live_revision")
+        .order_by(sort_field)
+    )
 
     if tab == "active":
         qs = qs.filter(live_revision__status="live")
     elif tab == "draft":
-        qs = qs.filter(live_revision__status__in=["success", "draft", "indexing", "pending", "processing"])
+        qs = qs.filter(
+            live_revision__status__in=[
+                "success",
+                "draft",
+                "indexing",
+                "pending",
+                "processing",
+            ]
+        )
     elif tab == "archive":
         qs = qs.filter(live_revision__status__in=["inactive", "expired"])
     else:
@@ -514,18 +534,22 @@ def list_avl_datasets_api(request, pk1):
         revision = dataset.live_revision
         if revision is None:
             continue
-        results.append({
-            "id": dataset.id,
-            "name": revision.name or "",
-            "status": revision.status,
-            "short_description": revision.short_description or "",
-            "avl_feed_last_checked": (
-                dataset.avl_feed_last_checked.isoformat()
-                if dataset.avl_feed_last_checked
-                else None
-            ),
-            "modified": revision.modified.isoformat() if revision.modified else None,
-        })
+        results.append(
+            {
+                "id": dataset.id,
+                "name": revision.name or "",
+                "status": revision.status,
+                "short_description": revision.short_description or "",
+                "avl_feed_last_checked": (
+                    dataset.avl_feed_last_checked.isoformat()
+                    if dataset.avl_feed_last_checked
+                    else None
+                ),
+                "modified": revision.modified.isoformat()
+                if revision.modified
+                else None,
+            }
+        )
 
     return JsonResponse({"count": len(results), "results": results})
 
@@ -703,7 +727,8 @@ def get_avl_feed_detail_api(request, pk1, pk):
             "lastServerUpdate": last_server_update,
             "publishedBy": published_by,
             "publishedAt": _iso_or_none(revision.published_at),
-            "avlComplianceStatus": getattr(dataset, "avl_compliance_status_cached", "") or "",
+            "avlComplianceStatus": getattr(dataset, "avl_compliance_status_cached", "")
+            or "",
             "avlTimetablesMatching": ppc_weekly_score,
             "isDummy": dataset.is_dummy,
         },
