@@ -141,8 +141,10 @@ $RECYCLE.BIN/
 .coverage.*
 .directory
 .eggs/
+/.env*
 .env
 .env-prod
+.env.naptan-test
 .envrc
 .envs/*
 .eslintcache
@@ -263,3 +265,6 @@ db_backup.sql
 .ruff_cache/
 .yarnrc.yml
 *.rdb
+
+# Testing WECA data-pipeline locally
+/test_weca_*
