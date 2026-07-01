@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from django_hosts import reverse
 
@@ -14,6 +16,7 @@ from transit_odp.organisation.factories import (
     OrganisationFactory,
 )
 from transit_odp.organisation.models import Dataset
+from transit_odp.pipelines.factories import BulkDataArchiveFactory
 from transit_odp.users.constants import OrgAdminType, SiteAdminType
 from transit_odp.users.factories import UserFactory
 
@@ -151,3 +154,39 @@ class TestUserFaresFeedbackView(TestUserAVLFeedbackView):
             published_by=publisher,
             dataset__organisation=org,
         )
+
+
+class TestFaresArchiveDownloads:
+    def test_download_returns_file_response_when_direct_s3_is_disabled(
+        self, client_factory
+    ):
+        archive = BulkDataArchiveFactory(dataset_type=FaresType)
+        client = client_factory(host=DATA_HOST)
+
+        with patch(
+            "transit_odp.browse.views.fares_views.flag_is_active", return_value=False
+        ):
+            response = client.get(reverse("downloads-fares-bulk", host=DATA_HOST))
+
+        assert response.status_code == 200
+        assert response.as_attachment is True
+        assert response.filename == archive.data.name
+
+    def test_download_redirects_to_signed_url_when_direct_s3_is_enabled(
+        self, client_factory
+    ):
+        archive = BulkDataArchiveFactory(dataset_type=FaresType)
+        client = client_factory(host=DATA_HOST)
+        signed_url = "https://example.test/signed-url"
+
+        with patch(
+            "transit_odp.browse.views.fares_views.flag_is_active", return_value=True
+        ), patch(
+            "transit_odp.browse.views.fares_views.generate_signed_url",
+            return_value=signed_url,
+        ) as mocked_generate_signed_url:
+            response = client.get(reverse("downloads-fares-bulk", host=DATA_HOST))
+
+        assert response.status_code == 302
+        assert response["Location"] == signed_url
+        mocked_generate_signed_url.assert_called_once_with(f"fares/{archive.data.name}")
