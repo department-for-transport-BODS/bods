@@ -16,7 +16,9 @@ export function AvlFeedDetailActions({ feedDetail, orgId, datasetId }: AvlFeedDe
   }
 
   const updateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
-  const deactivateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/archive`;
+  const deactivateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/archive?name=${encodeURIComponent(
+    feedDetail.name,
+  )}`;
 
   return (
     <div className="btn-group-justified" style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
