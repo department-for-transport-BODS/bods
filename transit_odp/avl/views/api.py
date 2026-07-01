@@ -1,6 +1,7 @@
 import uuid
 
 from django.contrib.auth import get_user
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
@@ -11,7 +12,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 import config.hosts
-from transit_odp.avl.forms import AvlFeedDescriptionForm, AvlFeedUploadForm
+from transit_odp.avl.forms import AvlFeedDescriptionForm, AvlFeedUploadForm, EditFeedDescriptionForm
 from transit_odp.avl.forms import AVLFeedCommentForm
 from transit_odp.avl.models import CAVLValidationTaskResult, PostPublishingCheckReport, PPCReportType
 from transit_odp.avl.tasks import task_validate_avl_feed
@@ -385,6 +386,91 @@ def update_avl_dataset_api(request, pk1, pk):
 
 @csrf_exempt
 @require_GET
+def get_avl_dataset_edit_api(request, pk1, pk):
+    """Fetch existing description fields for AVL dataset edit page."""
+    user = _authenticate_user(request)
+    if user is None or not user.is_authenticated:
+        return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+
+    if not user.is_org_user:
+        return JsonResponse({"error": ORG_ACCESS_REQUIRED_ERROR}, status=403)
+
+    organisation = _get_user_org(user, pk1)
+    if organisation is None:
+        return JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404)
+
+    dataset = _get_dataset_for_org(organisation.id, pk)
+    if dataset is None:
+        return JsonResponse({"error": "Dataset not found"}, status=404)
+
+    revision = dataset.live_revision
+    if revision is None and ALLOW_DRAFT_DETAIL_FALLBACK:
+        revision = _get_revision_for_dataset(organisation.id, pk)
+
+    if revision is None:
+        return JsonResponse({"error": "Dataset revision not found"}, status=404)
+
+    return JsonResponse(
+        {
+            "datasetId": dataset.id,
+            "name": revision.name or "",
+            "description": revision.description or "",
+            "shortDescription": revision.short_description or "",
+        },
+        status=200,
+    )
+
+
+@csrf_exempt
+@require_POST
+def edit_avl_dataset_description_api(request, pk1, pk):
+    """Save AVL description fields edited from feed detail page."""
+    user = _authenticate_user(request)
+    if user is None or not user.is_authenticated:
+        return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+
+    if not user.is_org_user:
+        return JsonResponse({"error": ORG_ACCESS_REQUIRED_ERROR}, status=403)
+
+    organisation = _get_user_org(user, pk1)
+    if organisation is None:
+        return JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404)
+
+    dataset = _get_dataset_for_org(organisation.id, pk)
+    if dataset is None:
+        return JsonResponse({"error": "Dataset not found"}, status=404)
+
+    revision = dataset.live_revision
+    if revision is None and ALLOW_DRAFT_DETAIL_FALLBACK:
+        revision = _get_revision_for_dataset(organisation.id, pk)
+
+    if revision is None:
+        return JsonResponse({"error": "Dataset revision not found"}, status=404)
+
+    form = EditFeedDescriptionForm(data=request.POST, instance=revision)
+    if not form.is_valid():
+        return JsonResponse(
+            {
+                "error": "Description validation failed",
+                "field_errors": form.errors,
+            },
+            status=400,
+        )
+
+    revision.description = form.cleaned_data["description"]
+    revision.short_description = form.cleaned_data["short_description"]
+    revision.save()
+
+    return JsonResponse(
+        {
+            "redirect": f"/publish/org/{organisation.id}/dataset/avl/{dataset.id}",
+        },
+        status=200,
+    )
+
+
+@csrf_exempt
+@require_GET
 def list_avl_datasets_api(request, pk1):
     user, organisation, _, error_response = _get_request_context(request, pk1)
     if error_response is not None:
@@ -442,6 +528,86 @@ def list_avl_datasets_api(request, pk1):
         })
 
     return JsonResponse({"count": len(results), "results": results})
+
+
+@csrf_exempt
+@require_GET
+def get_avl_changelog_api(request, pk1, pk):
+    """Fetch paginated changelog entries for an AVL dataset."""
+    user = _authenticate_user(request)
+    if user is None or not user.is_authenticated:
+        return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+
+    if not user.is_org_user:
+        return JsonResponse({"error": ORG_ACCESS_REQUIRED_ERROR}, status=403)
+
+    organisation = _get_user_org(user, pk1)
+    if organisation is None:
+        return JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404)
+
+    dataset = _get_dataset_for_org(pk1, pk)
+    if dataset is None:
+        return JsonResponse({"error": "Dataset not found"}, status=404)
+
+    revisions_qs = (
+        DatasetRevision.objects.filter(dataset=dataset)
+        .get_published()
+        .prefetch_related("errors")
+        .order_by("-created")
+    )
+
+    page_value = request.GET.get("page", "1")
+    try:
+        page_number = max(1, int(page_value))
+    except (TypeError, ValueError):
+        page_number = 1
+
+    paginator = Paginator(revisions_qs, 10)
+    page_obj = paginator.get_page(page_number)
+
+    feed_name = ""
+    if dataset.live_revision is not None and dataset.live_revision.name:
+        feed_name = dataset.live_revision.name
+    else:
+        latest_published = revisions_qs.first()
+        if latest_published is not None:
+            feed_name = latest_published.name or ""
+        else:
+            draft_revision = _get_revision_for_dataset(pk1, pk)
+            if draft_revision is not None:
+                feed_name = draft_revision.name or ""
+
+    results = []
+    for revision in page_obj.object_list:
+        error_descriptions = []
+        if revision.status == "error":
+            error_descriptions = [error.description for error in revision.errors.all()]
+
+        updated_at = revision.published_at or revision.created
+        results.append(
+            {
+                "revisionId": revision.id,
+                "status": revision.status,
+                "comment": revision.comment or "",
+                "updatedAt": _iso_or_none(updated_at),
+                "errors": error_descriptions,
+            }
+        )
+
+    return JsonResponse(
+        {
+            "datasetId": dataset.id,
+            "feedName": feed_name,
+            "count": paginator.count,
+            "page": page_obj.number,
+            "pageSize": paginator.per_page,
+            "totalPages": paginator.num_pages,
+            "hasNext": page_obj.has_next(),
+            "hasPrevious": page_obj.has_previous(),
+            "results": results,
+        },
+        status=200,
+    )
 
 
 @csrf_exempt

@@ -12,7 +12,7 @@ interface AvlFeedDetailTableProps {
 }
 
 export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProps) {
-  const editUrl = `/publish/org/${orgId}/dataset/avl/${feedDetail.datasetId}/update`;
+  const editUrl = `/publish/org/${orgId}/dataset/avl/${feedDetail.datasetId}/dataset-edit`;
 
   return (
     <table className="govuk-table dataset-property-table">
@@ -84,7 +84,7 @@ export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProp
           </th>
           <td className="govuk-table__cell govuk-!-padding-3">
             <div className="flex-between">
-              <span className={statusIndicatorClass(feedDetail.status)}>
+              <span className={`status-indicator ${statusIndicatorClass(feedDetail.status)}`}>
                 {statusLabel(feedDetail.status)}
               </span>
             </div>
