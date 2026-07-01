@@ -241,7 +241,7 @@ function AvlDatasetEditContent() {
                 <button type="submit" className="govuk-button" disabled={isSubmitting}>
                   {isSubmitting ? 'Saving...' : 'Save and continue'}
                 </button>
-                <Link className="govuk-link" href={detailUrl}>
+                <Link role="button" className="govuk-button govuk-button--secondary" href={detailUrl}>
                   Cancel
                 </Link>
               </div>
