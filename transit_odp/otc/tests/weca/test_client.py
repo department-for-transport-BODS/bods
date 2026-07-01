@@ -1,22 +1,23 @@
 import pytest
 import json
-from io import BytesIO
+from io import StringIO
 from unittest.mock import patch, MagicMock
-from requests.exceptions import HTTPError
 
 from transit_odp.otc.weca.client import WecaClient
 
 
 def test_weca_client_reads_s3_json(weca_get_agliebase_data):
 
-    payload_bytes = json.dumps(weca_get_agliebase_data).encode("utf-8")
-
-    # Make a mock S3 client whose get_object returns {'Body': <file-like>}
-    mock_s3 = MagicMock()
-    mock_s3.get_object.return_value = {"Body": BytesIO(payload_bytes)}
-
+    # Mock S3 storage
+    mock_storage = MagicMock()
+    mock_storage.open.return_value.__enter__.return_value = StringIO(
+        json.dumps(weca_get_agliebase_data)
+    )
     # Patch where boto3.client is referenced inside the module under test
-    with patch("transit_odp.otc.weca.client.boto3.client", return_value=mock_s3):
+    with patch(
+        "transit_odp.otc.weca.client.get_s3_bucket_storage",
+        return_value=mock_storage,
+    ):
         client = WecaClient()
         response = client.fetch_weca_services()
 
@@ -24,14 +25,16 @@ def test_weca_client_reads_s3_json(weca_get_agliebase_data):
     assert len(response.data) == 5
 
 
-def test_weca_client_fails_s3_json(weca_get_agliebase_data):
+def test_weca_client_fails_s3_json():
 
-    # Make a mock S3 client whose get_object returns {'Body': <file-like>}
-    mock_s3 = MagicMock()
-    mock_s3.get_object.return_value = {"Body": None}
+    # Make a mock S3 storage who fails on get file
+    mock_storage = MagicMock()
+    mock_storage.open.side_effect = FileNotFoundError("missing file")
 
-    # Patch where boto3.client is referenced inside the module under test
-    with patch("transit_odp.otc.weca.client.boto3.client", return_value=None):
+    with patch(
+        "transit_odp.otc.weca.client.get_s3_bucket_storage",
+        return_value=mock_storage,
+    ):
         client = WecaClient()
         response = client.fetch_weca_services()
         assert len(response.fields) == 0
