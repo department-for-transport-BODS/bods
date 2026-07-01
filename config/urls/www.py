@@ -27,6 +27,7 @@ from transit_odp.fares.views.api import (
 from transit_odp.avl.views.api import (
     create_avl_dataset_api,
     delete_avl_dataset_api,
+    get_avl_feed_detail_api,
     get_avl_review_status_api,
     list_avl_datasets_api,
     publish_avl_dataset_api,
@@ -72,6 +73,11 @@ urlpatterns = [
         "api/avl/review-status/<int:pk1>/<int:pk>/",
         get_avl_review_status_api,
         name="nextjs-avl-review-status",
+    ),
+    path(
+        "api/avl/detail/<int:pk1>/<int:pk>/",
+        get_avl_feed_detail_api,
+        name="nextjs-avl-detail",
     ),
     path(
         "api/avl/publish/<int:pk1>/<int:pk>/",

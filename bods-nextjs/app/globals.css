@@ -693,6 +693,11 @@ a.review-stat__link:visited {
   cursor: pointer;
 }
 
+.help-modal .help-icon-blue {
+  color: #1d70b8;
+  cursor: pointer;
+}
+
 .help-modal .overlay {
   display: none;
   position: fixed;

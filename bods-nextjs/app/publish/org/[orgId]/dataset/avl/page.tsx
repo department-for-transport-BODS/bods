@@ -6,9 +6,8 @@ import { api } from '@/lib/api-client';
 import { formatDate } from '@/lib/utils/date';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { config } from '@/config';
 import { statusIndicatorClass, statusLabel } from './_components/avlStatus';
-import { AvlWeeklyMatchingHelpModal } from '@/components/publish/AvlWeeklyMatchingHelpModal';
+import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
 
 type AvlTab = 'active' | 'draft' | 'archive';
 
@@ -110,25 +109,35 @@ function AvlManagement() {
     return sortOrder === 'desc' ? ' ▼' : ' ▲';
   };
 
+  const sortButtonStyle: React.CSSProperties = {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#0087DC',
+    font: 'inherit',
+    padding: 0,
+    textAlign: 'left',
+  };
+
   return (
     <>
       <div className="govuk-width-container">
         <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
           <ol className="govuk-breadcrumbs__list">
             <li className="govuk-breadcrumbs__list-item">
-              <a className="govuk-breadcrumbs__link" href="/">
+              <Link className="govuk-breadcrumbs__link" href="/">
                 Bus Open Data Service
-              </a>
+              </Link>
             </li>
             <li className="govuk-breadcrumbs__list-item">
-              <a className="govuk-breadcrumbs__link" href="/publish/">
+              <Link className="govuk-breadcrumbs__link" href="/publish/">
                 Publish Open Data Service
-              </a>
+              </Link>
             </li>
             <li className="govuk-breadcrumbs__list-item">
-              <a className="govuk-breadcrumbs__link" href={`/publish/org/${orgId}/dataset/avl`}>
+              <Link className="govuk-breadcrumbs__link" href={`/publish/org/${orgId}/dataset/avl`}>
                 Review My Bus Location Data
-              </a>
+              </Link>
             </li>
           </ol>
         </nav>
@@ -157,7 +166,7 @@ function AvlManagement() {
                       <span className="review-stat__top">
                         Pending
                         <b className="govuk-!-font-size-16 bods-relative-bottom">
-                          <AvlWeeklyMatchingHelpModal />
+                          <AvlMatchingHelpModal />
                         </b>
                       </span>
                     </div>
@@ -205,19 +214,19 @@ function AvlManagement() {
           <h2 className="govuk-tabs__title">Contents</h2>
           <ul className="govuk-tabs__list">
             <li className={`govuk-tabs__list-item ${tab === 'active' ? 'govuk-tabs__list-item--selected' : ''}`}>
-              <a className="govuk-tabs__tab" href={tabLinks.active}>
+              <Link className="govuk-tabs__tab" href={tabLinks.active}>
                 Active
-              </a>
+              </Link>
             </li>
             <li className={`govuk-tabs__list-item ${tab === 'draft' ? 'govuk-tabs__list-item--selected' : ''}`}>
-              <a className="govuk-tabs__tab" href={tabLinks.draft}>
+              <Link className="govuk-tabs__tab" href={tabLinks.draft}>
                 Draft
-              </a>
+              </Link>
             </li>
             <li className={`govuk-tabs__list-item ${tab === 'archive' ? 'govuk-tabs__list-item--selected' : ''}`}>
-              <a className="govuk-tabs__tab" href={tabLinks.archive}>
+              <Link className="govuk-tabs__tab" href={tabLinks.archive}>
                 Inactive
-              </a>
+              </Link>
             </li>
           </ul>
 
@@ -238,98 +247,32 @@ function AvlManagement() {
                   <thead className="govuk-table__head">
                     <tr className="govuk-table__row">
                       <th className="govuk-table__header" scope="col">
-                        <button
-                          onClick={() => handleHeaderClick('status')}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: '#0087DC',
-                            font: 'inherit',
-                            padding: 0,
-                            textAlign: 'left',
-                          }}
-                        >
+                        <button onClick={() => handleHeaderClick('status')} style={sortButtonStyle}>
                           Status{getSortIndicator('status')}
                         </button>
                       </th>
                       <th className="govuk-table__header" scope="col">
-                        <button
-                          onClick={() => handleHeaderClick('percent_matching')}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: '#0087DC',
-                            font: 'inherit',
-                            padding: 0,
-                            textAlign: 'left',
-                          }}
-                        >
+                        <button onClick={() => handleHeaderClick('percent_matching')} style={sortButtonStyle}>
                           AVL to Timetable matching{getSortIndicator('percent_matching')}
                         </button>
                       </th>
                       <th className="govuk-table__header" scope="col">
-                        <button
-                          onClick={() => handleHeaderClick('name')}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: '#0087DC',
-                            font: 'inherit',
-                            padding: 0,
-                            textAlign: 'left',
-                          }}
-                        >
+                        <button onClick={() => handleHeaderClick('name')} style={sortButtonStyle}>
                           Data feed name{getSortIndicator('name')}
                         </button>
                       </th>
                       <th className="govuk-table__header" scope="col">
-                        <button
-                          onClick={() => handleHeaderClick('id')}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: '#0087DC',
-                            font: 'inherit',
-                            padding: 0,
-                            textAlign: 'left',
-                          }}
-                        >
+                        <button onClick={() => handleHeaderClick('id')} style={sortButtonStyle}>
                           Data feed ID{getSortIndicator('id')}
                         </button>
                       </th>
                       <th className="govuk-table__header" scope="col">
-                        <button
-                          onClick={() => handleHeaderClick('avl_feed_last_checked')}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: '#0087DC',
-                            font: 'inherit',
-                            padding: 0,
-                            textAlign: 'left',
-                          }}
-                        >
+                        <button onClick={() => handleHeaderClick('avl_feed_last_checked')} style={sortButtonStyle}>
                           Last automated update{getSortIndicator('avl_feed_last_checked')}
                         </button>
                       </th>
                       <th className="govuk-table__header" scope="col">
-                        <button
-                          onClick={() => handleHeaderClick('short_description')}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: '#0087DC',
-                            font: 'inherit',
-                            padding: 0,
-                            textAlign: 'left',
-                          }}
-                        >
+                        <button onClick={() => handleHeaderClick('short_description')} style={sortButtonStyle}>
                           Short description{getSortIndicator('short_description')}
                         </button>
                       </th>
