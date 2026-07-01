@@ -97,9 +97,6 @@ class WecaClient:
         s3_key = settings.WECA_DLZ_S3_KEY
         try:
             storage = get_s3_bucket_storage(settings.WECA_DLZ_S3_BUCKET)
-            directories, files = storage.listdir("/raw/weca")
-            print("Subdirectories:", directories)
-            print("Files:", files)
 
             with storage.open(s3_key, "r") as f:
                 response_json = json.load(f)
