@@ -82,13 +82,13 @@ class DataModel(BaseModel):
             return value
 
 
-class WECAData(BaseModel):
+class WECAResponse(BaseModel):
     fields: List[FieldModel]
     data: List[DataModel]
 
 
 class WecaClient:
-    def _make_request(self, timeout: int = 30, **kwargs) -> WECAData:
+    def _make_request(self, timeout: int = 30, **kwargs) -> WECAResponse:
         """
         Send Request to WECA API Endpoint
         Response will be returned in the JSON format
@@ -111,7 +111,7 @@ class WecaClient:
             return self.default_response()
 
         try:
-            return WECAData(**response_json)
+            return WECAResponse(**response_json)
         except ValidationError as exc:
             logger.error("Validation error in WECA API response")
             logger.error(f"Response JSON: {response_json}")
@@ -127,9 +127,9 @@ class WecaClient:
         Create default return response for placeholder purpose
         """
         response = {"fields": [], "data": []}
-        return WECAData(**response)
+        return WECAResponse(**response)
 
-    def fetch_weca_services(self) -> WECAData:
+    def fetch_weca_services(self) -> WECAResponse:
         """
         Fetch method for sending request to WECA
         Return Pydentic model response
