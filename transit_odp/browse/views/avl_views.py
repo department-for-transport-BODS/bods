@@ -8,6 +8,7 @@ from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 from django.views.generic import DetailView, TemplateView, UpdateView
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.avl.constants import (
@@ -18,6 +19,7 @@ from transit_odp.avl.constants import (
 from transit_odp.avl.models import CAVLDataArchive, PostPublishingCheckReport
 from transit_odp.avl.proxies import AVLDataset
 from transit_odp.browse.filters import AVLSearchFilter
+from transit_odp.browse.cfn import generate_signed_url
 from transit_odp.browse.tables import DatasetPaginatorTable
 from transit_odp.browse.views.base_views import BaseSearchView, ChangeLogView
 from transit_odp.browse.views.timetable_views import (
@@ -172,7 +174,16 @@ class DownloadCAVLDataArchiveView(DownloadView):
         return archive
 
     def get_download_file(self):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return generate_signed_url(f"avl/{self.object.data.name}")
         return self.object.data
+
+    def render_to_response(self, **response_kwargs):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return redirect(self.get_download_file())
+        return super().render_to_response(**response_kwargs)
 
 
 class DownloadSIRIVMDataArchiveView(ResourceCounterMixin, DownloadCAVLDataArchiveView):
