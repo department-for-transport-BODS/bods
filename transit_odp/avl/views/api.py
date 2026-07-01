@@ -13,10 +13,11 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 import config.hosts
 from transit_odp.avl.forms import AvlFeedDescriptionForm, AvlFeedUploadForm
 from transit_odp.avl.forms import AVLFeedCommentForm
-from transit_odp.avl.models import CAVLValidationTaskResult
+from transit_odp.avl.models import CAVLValidationTaskResult, PostPublishingCheckReport, PPCReportType
 from transit_odp.avl.tasks import task_validate_avl_feed
 from transit_odp.avl.views.review import ERROR_DESCRIPTIONS
 from transit_odp.avl.views.utils import get_validation_task_result_from_revision_id
+import pytz
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import (
     Dataset,
@@ -24,6 +25,7 @@ from transit_odp.organisation.models import (
     DatasetRevision,
     Organisation,
 )
+from transit_odp.publish.forms import dataset
 from transit_odp.timetables.tasks import delete_dataset_revision
 
 
@@ -34,6 +36,7 @@ ORG_ACCESS_REQUIRED_ERROR = "Org user access required"
 ORG_NOT_FOUND_ERROR = "Organisation not found"
 REVISION_NOT_FOUND_ERROR = "Dataset revision not found"
 ExpiredStatus = FeedStatus.expired.value
+ALLOW_DRAFT_DETAIL_FALLBACK = True
 
 
 def _authenticate_jwt(request):
@@ -439,3 +442,104 @@ def list_avl_datasets_api(request, pk1):
         })
 
     return JsonResponse({"count": len(results), "results": results})
+
+
+@csrf_exempt
+@require_GET
+def get_avl_feed_detail_api(request, pk1, pk):
+    """Fetch detailed information for a published AVL feed."""
+    user = _authenticate_user(request)
+    if user is None or not user.is_authenticated:
+        return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+
+    if not user.is_org_user:
+        return JsonResponse({"error": ORG_ACCESS_REQUIRED_ERROR}, status=403)
+
+    organisation = _get_user_org(user, pk1)
+    if organisation is None:
+        return JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404)
+
+    # Get published dataset (not draft revision)
+    dataset = _get_dataset_for_org(pk1, pk)
+    if dataset is None:
+        return JsonResponse({"error": "Published dataset not found"}, status=404)
+
+    # Use live revision if available; optional fallback to draft for local UI testing
+    revision = dataset.live_revision
+    if revision is None and ALLOW_DRAFT_DETAIL_FALLBACK:
+        revision = _get_revision_for_dataset(pk1, pk)
+
+    if revision is None:
+        return JsonResponse({"error": "Dataset not found"}, status=404)
+
+    # Get last modified user
+    last_modified_username = None
+    if revision.last_modified_user is not None:
+        last_modified_username = revision.last_modified_user.username
+
+    # Get published by user
+    published_by = None
+    if revision.published_by is not None:
+        published_by = revision.published_by.username
+
+    # Get SIRI version from metadata
+    siri_version = None
+    try:
+        metadata = DatasetMetadata.objects.get(revision=revision)
+        siri_version = metadata.schema_version
+    except DatasetMetadata.DoesNotExist:
+        pass
+
+    # Get last server update (avl_feed_last_checked), fallback to revision modified
+    last_server_update = ""
+    if dataset.avl_feed_last_checked is not None:
+        last_server_update = dataset.avl_feed_last_checked.astimezone(
+            pytz.timezone("Europe/London")
+        ).strftime("%d %b %Y %H:%M")
+    elif revision.modified is not None:
+        last_server_update = revision.modified.astimezone(
+            pytz.timezone("Europe/London")
+        ).strftime("%d %b %Y %H:%M")
+
+    # Get PPC weekly matching score
+    ppc_weekly_score = None
+    try:
+        ppc_avl_dataset = (
+            PostPublishingCheckReport.objects.filter(granularity="weekly")
+            .filter(dataset__id=dataset.id)
+            .order_by("-created")
+        ).first()
+        if ppc_avl_dataset and ppc_avl_dataset.vehicle_activities_analysed > 0:
+            ppc_weekly_score = (
+                str(
+                    ppc_avl_dataset.vehicle_activities_completely_matching
+                    * 100
+                    // ppc_avl_dataset.vehicle_activities_analysed,
+                )
+                + "%"
+            )
+    except (Exception,):
+        pass
+
+    return JsonResponse(
+        {
+            "datasetId": dataset.id,
+            "name": revision.name or "",
+            "description": revision.description or "",
+            "shortDescription": revision.short_description or "",
+            "status": revision.status,
+            "organisationName": dataset.organisation.name,
+            "organisationId": dataset.organisation_id,
+            "siriVersion": siri_version or "",
+            "urlLink": revision.url_link or "",
+            "lastModified": _iso_or_none(revision.modified),
+            "lastModifiedUser": last_modified_username,
+            "lastServerUpdate": last_server_update,
+            "publishedBy": published_by,
+            "publishedAt": _iso_or_none(revision.published_at),
+            "avlComplianceStatus": getattr(dataset, "avl_compliance_status_cached", "") or "",
+            "avlTimetablesMatching": ppc_weekly_score,
+            "isDummy": dataset.is_dummy,
+        },
+        status=200,
+    )

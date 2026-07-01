@@ -1,12 +1,12 @@
-import { redirect } from 'next/navigation';
+'use client';
 
-type AvlFeedDetailRedirectPageProps = {
-  params: Promise<{
-    orgId: string;
-  }>;
-};
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { AvlFeedDetailContent } from './_components/AvlFeedDetailContent';
 
-export default async function AvlFeedDetailRedirectPage({ params }: AvlFeedDetailRedirectPageProps) {
-  const { orgId } = await params;
-  redirect(`/publish/org/${orgId}/dataset/avl/`);
+export default function AvlFeedDetailPage() {
+  return (
+    <ProtectedRoute>
+      <AvlFeedDetailContent />
+    </ProtectedRoute>
+  );
 }
