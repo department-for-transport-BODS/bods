@@ -25,6 +25,22 @@ export class AvlUploadPage {
     await this.page.getByRole('button', { name: 'Continue' }).first().click();
   }
 
+  async clickCancel(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Cancel' }).first().click();
+  }
+
+  async assertCancelModalVisible(): Promise<void> {
+    await expect(this.page.getByText('Would you like to cancel publishing this data feed?')).toBeVisible();
+  }
+
+  async confirmCancelModal(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Confirm' }).click();
+  }
+
+  async assertOnAvlListPage(orgId: string): Promise<void> {
+    await expect(this.page).toHaveURL(new RegExp(`/publish/org/${orgId}/dataset/avl/?$`));
+  }
+
   async assertUploadStep(): Promise<void> {
     await expect(this.page.getByRole('heading', { name: 'Provide your data using the link below' })).toBeVisible();
   }
@@ -42,6 +58,12 @@ export class AvlUploadPage {
   async assertDescriptionErrorsVisible(): Promise<void> {
     await expect(this.page.locator('.govuk-error-summary a[href="#id_description"]')).toBeVisible();
     await expect(this.page.locator('.govuk-error-summary a[href="#id_short_description"]')).toBeVisible();
+  }
+
+  async assertUploadErrorsVisible(): Promise<void> {
+    await expect(this.page.locator('.govuk-error-summary a[href="#id_url_link"]')).toBeVisible();
+    await expect(this.page.locator('.govuk-error-summary a[href="#id_username"]')).toBeVisible();
+    await expect(this.page.locator('.govuk-error-summary a[href="#id_password"]')).toBeVisible();
   }
 
   async assertSuccess(): Promise<void> {

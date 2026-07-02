@@ -3,6 +3,10 @@ import { expect, Page } from '@playwright/test';
 export class AvlReviewSection {
   constructor(private readonly page: Page) {}
 
+  private publishButton() {
+    return this.page.getByRole('button', { name: /publish data feed|publishing/i });
+  }
+
   async waitForReviewToBeReady(timeoutMs = 180000): Promise<void> {
     await expect(this.page.getByRole('heading', { name: 'Review and publish' })).toBeVisible();
 
@@ -20,10 +24,22 @@ export class AvlReviewSection {
   }
 
   async publish(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Publish data feed' }).click();
+    await this.publishButton().click();
+  }
+
+  async assertPublishDisabled(): Promise<void> {
+    await expect(this.publishButton()).toBeDisabled();
+  }
+
+  async assertPublishEnabled(): Promise<void> {
+    await expect(this.publishButton()).toBeEnabled();
   }
 
   async assertReviewError(): Promise<void> {
     await expect(this.page.getByText('Supplied data feed has failed to upload')).toBeVisible();
+  }
+
+  async assertPublishCorrectFeedVisible(): Promise<void> {
+    await expect(this.page.getByRole('button', { name: 'Publish correct data feed' })).toBeVisible();
   }
 }
