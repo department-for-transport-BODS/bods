@@ -199,10 +199,4 @@ def otc_date_data_truncated_no_content(otc_date_data_truncated):
 
 @pytest.fixture
 def weca_get_agliebase_data():
-    with requests_mock.Mocker() as mock:
-        data = get_weca_data("weca/response.json")
-        mock.post(
-            f"{settings.WECA_API_URL}?c={settings.WECA_PARAM_C}&t={settings.WECA_PARAM_T}&r={settings.WECA_PARAM_R}&get_report_json=true&json_format=json",
-            json=data,
-        )
-    yield mock
+    yield get_weca_data("weca/response.json")
