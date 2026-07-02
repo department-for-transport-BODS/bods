@@ -8,8 +8,10 @@ from django.utils.translation import gettext as _
 from django.views.generic import DetailView, TemplateView, UpdateView
 from django.views.generic.detail import BaseDetailView
 from django_hosts import reverse
+from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.browse.cfn import generate_signed_url
 from transit_odp.browse.filters import FaresSearchFilter
 from transit_odp.browse.tables import DatasetPaginatorTable
 from transit_odp.browse.views.base_views import (
@@ -70,7 +72,16 @@ class DownloadFaresBulkDataArchiveView(ResourceCounterMixin, DownloadView):
             )
 
     def get_download_file(self):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return generate_signed_url(f"fares/{self.object.data.name}")
         return self.object.data
+
+    def render_to_response(self, **response_kwargs):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return redirect(self.get_download_file())
+        return super().render_to_response(**response_kwargs)
 
 
 class FaresSearchView(BaseSearchView):

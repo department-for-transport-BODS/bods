@@ -5,16 +5,44 @@ const _createCookie = (name, domain, value, days) => {
     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
     expires = date.toGMTString();
   }
-  document.cookie = `${name}=${value}; expires=${expires}; path=/; domain=.${domain}`;
+
+  // Modify the domain to ensure cookie functionality can be tested on localhost, as well as ensuring
+  // it works across all subdomains in production.
+  const domainPart = (domain) && (domain !== "localhost") ? `; domain=.${domain}` : "";
+  document.cookie = `${name}=${value}; expires=${expires}; path=/${domainPart}`;
 };
 
 const _hideBanner = (elemId) => {
-  document.getElementById(elemId).style.display = "none";
+  document.getElementById(elemId).hidden = true;
 };
 
-const createCookie = (bannerId, domain) => {
-  _createCookie("cookielaw_accepted", domain, "1", 10 * 365);
+const _showElement = (elemId, action) => {
+  if (action) {
+    const msg = document.getElementById("cookie-confirmation-message");
+    if (msg) {
+      msg.innerHTML = `You've ${action} analytics cookies.`;
+    }
+  }
+  document.getElementById(elemId).hidden = false;
+};
+
+const _processCookieChoice = (bannerId, domain, policy, action) => {
+  _createCookie("cookie_msg_ack", domain, "1", 365/2);  // 6 months = 365 / 2 days
+  _createCookie("cookie_policy", domain, policy, 365/2);
   _hideBanner(bannerId);
+  _showElement("cookie-banner-confirmation", action);
+};
+
+const acceptCookies = (bannerId, domain) => {
+  _processCookieChoice(bannerId, domain, "accept", "accepted");
+};
+
+const rejectCookies = (bannerId, domain) => {
+  _processCookieChoice(bannerId, domain, "reject", "rejected");
+};
+
+const hideCookieMessage = (elemId) => {
+  _hideBanner(elemId);
 };
 
 const skipToMain = () => {
@@ -23,4 +51,4 @@ const skipToMain = () => {
   mainContent.focus();
 };
 
-export { createCookie, skipToMain, _createCookie, _hideBanner };
+export { acceptCookies, rejectCookies, hideCookieMessage, skipToMain, _createCookie, _hideBanner };

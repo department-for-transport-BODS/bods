@@ -68,10 +68,7 @@
                        id="cookie-accept-1"
                        name="cookie-accept"
                        type="radio"
-                       value="True"
-                       {% if is_accept == 'True' %}
-                         checked
-                       {% endif %} />
+                       value="True"/>
                 <label class="govuk-label govuk-radios__label" for="cookie-accept-1">
                   Use cookies that measure my website use
                 </label>
@@ -82,9 +79,7 @@
                        name="cookie-accept"
                        type="radio"
                        value="False"
-                       {% if is_accept == 'False' %}
-                         checked
-                       {% endif %} />
+                       checked/>
                 <label class="govuk-label govuk-radios__label" for="cookie-accept-2">
                   Do not use cookies that measure my website use
                 </label>
@@ -113,7 +108,7 @@
             {% trans "Find out more about cookies on Bus Open Data Service" %}
           </a>
         </p>
-        <button class="govuk-button" type="submit" onClick="BODSFrontend.createCookie('CookielawBanner', '{{ parent_host }}')">
+        <button class="govuk-button" type="submit">
           {% trans "Save changes" %}
         </button>
       </form>

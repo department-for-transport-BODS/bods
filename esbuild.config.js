@@ -66,6 +66,7 @@ async function build({ watch = false } = {}) {
     ],
     bundle: true,
     outdir,
+    publicPath: "/assets/frontend/",
     splitting: true,
     format: "esm",
     globalName: undefined,

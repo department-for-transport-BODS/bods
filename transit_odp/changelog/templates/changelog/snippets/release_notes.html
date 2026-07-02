@@ -1,5 +1,241 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "June 2026 (1.60.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.60.0 (June 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Improved NaPTAN/NPTG ingestion across BODS and ABODS, with enhanced alerting to support quicker issue identification and resolution.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue in the Create Disruptions tool so that all bus services serving a stop are returned when creating a disruption with a service consequence.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Optimised queries in BODS and ABODS. 
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "June 2026 (1.59.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.59.0 (June 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    Resolved an issue where the Integrated Data NaPTAN Processor failed due to an invalid ATCO Area Code.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Upgraded components to address a potential security vulnerability.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Performance improvements.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "May 2026 (1.58.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.58.4 (May 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    Resolved GTFS Step Function failure where the TxC processor incorrectly rejected empty &lt;VehicleType/&gt; elements.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.58.3 (May 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    Implemented a resillience improvement to GTFS processing.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "April 2026 (1.58.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.58.2 (Apr 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    Resolved an issue preventing API access.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.58.1 (Apr 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    Resolved an issue where data stopped displaying in the Incomplete Data tab in Data Monitoring.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.58 (Apr 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    Resolved an issue where data stopped displaying in the Incomplete Data tab in Data Monitoring.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Upgraded components to address a potential security vulnerability.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.57.1 (Apr 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    Resolved an issue preventing timetables from being generated in GTFS format.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "March 2026 (1.57.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    Resolved an issue that prevented disruption icons from displaying on the BODS map.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Fixed a defect where ABODS occasionally plotted expected routes incorrectly within Vehicle Journeys.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Added Trackaroo to the list of supported AVL suppliers on BODS.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Introduced the ability for users to reject analytics cookies, improving privacy‑preference control.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Released cancellation functionality, enabling operators to publish cancellation data.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "January 2026 (1.56.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    We fixed an issue that was preventing certain operators showing in the Disruptions tool.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    We fixed an issue that shows users the relevant screens when they are locked out of ABODS.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    We made a change to improve specific coach operator’s feeds to BODS.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    We made a change to stop emails for inactive datasets.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    We fixed an issue to handle Unicode characters in the Create Fares Tool.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "December 2025 (1.55.0)" %}
+</h3>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+    Updated support desk contact details on public-facing pages of the service.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Updated access controls to support management of environments and applications following the supplier transition.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+    Fixed an issue where users were shown outdated contact details when attempting to reset their password.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "November 2025 (1.54.0)" %}
 </h3>
 <p class="govuk-body govuk-!-font-size-19">
