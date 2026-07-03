@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { api } from '@/lib/api-client';
+import { useApiResource } from '@/hooks/useApiResource';
 
 type AvlDeleteContext = {
   name?: string;
@@ -17,39 +18,24 @@ function AvlDeletePageContent() {
   const datasetId = params.datasetId as string;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoadingContext, setIsLoadingContext] = useState(true);
-  const [datasetName, setDatasetName] = useState('');
-  const [hasLiveRevision, setHasLiveRevision] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const reviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/review`;
   const updateReviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`;
   const fallbackSuccessUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/delete/success`;
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadContext = useCallback(
+    () => api.get<AvlDeleteContext>(`/api/avl/review-status/${orgId}/${datasetId}/`),
+    [datasetId, orgId],
+  );
 
-    const loadContext = async () => {
-      try {
-        const data = await api.get<AvlDeleteContext>(`/api/avl/review-status/${orgId}/${datasetId}/`);
-        if (!cancelled) {
-          setDatasetName(data.name || '');
-          setHasLiveRevision(Boolean(data.hasLiveRevision));
-          setIsLoadingContext(false);
-        }
-      } catch {
-        if (!cancelled) {
-          setIsLoadingContext(false);
-        }
-      }
-    };
+  const {
+    data: context,
+    isLoading: isLoadingContext,
+  } = useApiResource<AvlDeleteContext>(loadContext, '');
 
-    loadContext();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [datasetId, orgId]);
+  const datasetName = context?.name || '';
+  const hasLiveRevision = Boolean(context?.hasLiveRevision);
 
   const handleDelete = async () => {
     if (isSubmitting) {

@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { api } from '@/lib/api-client';
+import { useApiResource } from '@/hooks/useApiResource';
 import { AvlFeedDetailTable } from './AvlFeedDetailTable';
 import { AvlCompliancePanels } from './AvlCompliancePanels';
 import { AvlFeedDetailSidebar } from './AvlFeedDetailSidebar';
@@ -35,42 +36,16 @@ export function AvlFeedDetailContent() {
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
 
-  const [feedDetail, setFeedDetail] = useState<AvlFeedDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  const fetchFeedDetail = useCallback(
+    () => api.get<AvlFeedDetail>(`/api/avl/detail/${orgId}/${datasetId}/`),
+    [datasetId, orgId],
+  );
 
-  useEffect(() => {
-    let isCancelled = false;
-
-    const fetchFeedDetail = async () => {
-      setIsLoading(true);
-      setError('');
-
-      try {
-        const response = await api.get<AvlFeedDetail>(
-          `/api/avl/detail/${orgId}/${datasetId}/`,
-        );
-        if (!isCancelled) {
-          setFeedDetail(response);
-        }
-      } catch (err) {
-        if (!isCancelled) {
-          const errorMsg = err instanceof Error ? err.message : 'Failed to load feed details';
-          setError(errorMsg);
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchFeedDetail();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [orgId, datasetId]);
+  const {
+    data: feedDetail,
+    isLoading,
+    error,
+  } = useApiResource<AvlFeedDetail>(fetchFeedDetail, 'Failed to load feed details');
 
   if (isLoading) {
     return (

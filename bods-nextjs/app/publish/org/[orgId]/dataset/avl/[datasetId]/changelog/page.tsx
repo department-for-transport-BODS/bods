@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useMemo } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { api } from '@/lib/api-client';
+import { useApiResource } from '@/hooks/useApiResource';
 import { formatDateTime } from '@/lib/utils/date';
 import { statusIndicatorClass, statusLabel } from '../../_components/avlStatus';
 
@@ -43,46 +44,18 @@ function AvlChangelogContent() {
   const detailUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}`;
   const baseChangelogUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/changelog`;
 
-  const [state, setState] = useState<{
-    isLoading: boolean;
-    error: string;
-    data: ChangelogResponse | null;
-  }>({
-    isLoading: true,
-    error: '',
-    data: null,
-  });
+  const loadChangelog = useCallback(
+    () => api.get<ChangelogResponse>(`/api/avl/changelog/${orgId}/${datasetId}/?page=${page}`),
+    [datasetId, orgId, page],
+  );
 
-  useEffect(() => {
-    let isCancelled = false;
+  const {
+    data,
+    isLoading,
+    error,
+  } = useApiResource<ChangelogResponse>(loadChangelog, 'Unable to load changelog');
 
-    const loadChangelog = async () => {
-      setState({ isLoading: true, error: '', data: null });
-
-      try {
-        const data = await api.get<ChangelogResponse>(
-          `/api/avl/changelog/${orgId}/${datasetId}/?page=${page}`,
-        );
-
-        if (!isCancelled) {
-          setState({ isLoading: false, error: '', data });
-        }
-      } catch (err) {
-        if (!isCancelled) {
-          const message = err instanceof Error ? err.message : 'Unable to load changelog';
-          setState({ isLoading: false, error: message, data: null });
-        }
-      }
-    };
-
-    loadChangelog();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [orgId, datasetId, page]);
-
-  if (state.isLoading) {
+  if (isLoading) {
     return (
       <div className="govuk-width-container">
         <div className="govuk-main-wrapper">
@@ -92,14 +65,14 @@ function AvlChangelogContent() {
     );
   }
 
-  if (state.error || !state.data) {
+  if (error || !data) {
     return (
       <div className="govuk-width-container">
         <div className="govuk-main-wrapper">
           <div className="govuk-error-summary" role="alert">
             <h2 className="govuk-error-summary__title">Unable to load changelog</h2>
             <div className="govuk-error-summary__body">
-              <p className="govuk-body">{state.error || 'No changelog data found'}</p>
+              <p className="govuk-body">{error || 'No changelog data found'}</p>
               <Link className="govuk-link" href={detailUrl}>
                 Back to feed details
               </Link>
@@ -109,8 +82,6 @@ function AvlChangelogContent() {
       </div>
     );
   }
-
-  const data = state.data;
 
   return (
     <div className="govuk-width-container">

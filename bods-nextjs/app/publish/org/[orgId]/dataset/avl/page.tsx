@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { api } from '@/lib/api-client';
+import { useApiResource } from '@/hooks/useApiResource';
 import { formatDate } from '@/lib/utils/date';
 import { useParams, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { statusIndicatorClass, statusLabel } from './_components/avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
 import { AvlBreadcrumbs } from './_components/AvlBreadcrumbs';
@@ -22,6 +23,11 @@ interface AVLFeed {
   short_description?: string;
   percent_matching?: number | null;
   avl_feed_last_checked?: string | null;
+}
+
+interface AVLFeedListResponse {
+  count: number;
+  results: AVLFeed[];
 }
 
 function getTabFromSearchParams(value: string | null): AvlTab {
@@ -42,44 +48,24 @@ function AvlManagement() {
 
   const tab = getTabFromSearchParams(searchParams.get('tab'));
 
-  const [feeds, setFeeds] = useState<AVLFeed[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const [sortBy, setSortBy] = useState<string>('modified');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  useEffect(() => {
-    let isCancelled = false;
+  const loadFeeds = useCallback(
+    () => api.get<AVLFeedListResponse>(`/api/avl/list/${orgId}?tab=${tab}&sort_by=${sortBy}&order=${sortOrder}`),
+    [orgId, sortBy, sortOrder, tab],
+  );
 
-    const loadFeeds = async () => {
-      setIsLoading(true);
-      setError('');
+  const {
+    data: feedResponse,
+    isLoading,
+    error,
+  } = useApiResource<AVLFeedListResponse>(
+    loadFeeds,
+    'Unable to load bus location data feeds here. You can continue in the Django list view.',
+  );
 
-      try {
-        const response = await api.get<{ count: number; results: AVLFeed[] }>(
-          `/api/avl/list/${orgId}?tab=${tab}&sort_by=${sortBy}&order=${sortOrder}`,
-        );
-        if (!isCancelled) {
-          setFeeds(response.results);
-        }
-      } catch {
-        if (!isCancelled) {
-          setError('Unable to load bus location data feeds here. You can continue in the Django list view.');
-          setFeeds([]);
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadFeeds();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [orgId, tab, sortBy, sortOrder]);
+  const feeds = feedResponse?.results || [];
 
   const tabLinks = useMemo(
     () => ({
