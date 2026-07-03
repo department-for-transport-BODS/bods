@@ -7,6 +7,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DatasetDescriptionFields } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { validateAvlDescriptionStep } from '@/lib/validation/avl-publish';
+import { AvlBreadcrumbs } from '../../_components/AvlBreadcrumbs';
 
 interface DatasetEditResponse {
   datasetId: number;
@@ -143,8 +144,7 @@ function AvlDatasetEditContent() {
     errors.shortDescription ? { text: errors.shortDescription, href: '#id_short_description' } : null,
   ].filter((error): error is { text: string; href: string } => error !== null);
 
-  const breadcrumbFeedName =
-    feedName.length > 20 ? `${feedName.slice(0, 19)}...` : feedName || `Feed ${datasetId}`;
+  const breadcrumbFeedName = feedName || `Feed ${datasetId}`;
 
   if (isLoading) {
     return (
@@ -176,35 +176,24 @@ function AvlDatasetEditContent() {
 
   return (
     <div className="govuk-width-container">
-      <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
-        <ol className="govuk-breadcrumbs__list">
-          <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href="/">
-              Bus Open Data Service
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href="/publish/">
-              Publish Open Data Service
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href={listUrl}>
-              Your data feed
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href={detailUrl}>
-              {breadcrumbFeedName}
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item" aria-current="page">
-            <Link className="govuk-breadcrumbs__link" href={editUrl}>
-              Edit description
-            </Link>
-          </li>
-        </ol>
-      </nav>
+      <AvlBreadcrumbs
+        items={[
+          {
+            label: 'Your data feed',
+            href: listUrl,
+          },
+          {
+            label: breadcrumbFeedName,
+            href: detailUrl,
+            truncateLabel: true,
+          },
+          {
+            label: 'Edit description',
+            href: editUrl,
+            isCurrent: true,
+          },
+        ]}
+      />
 
       <div className="govuk-main-wrapper">
 

@@ -8,6 +8,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { statusIndicatorClass, statusLabel } from './_components/avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
+import { AvlBreadcrumbs } from './_components/AvlBreadcrumbs';
 
 type AvlTab = 'active' | 'draft' | 'archive';
 
@@ -122,25 +123,15 @@ function AvlManagement() {
   return (
     <>
       <div className="govuk-width-container">
-        <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
-          <ol className="govuk-breadcrumbs__list">
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/">
-                Bus Open Data Service
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/publish/">
-                Publish Open Data Service
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href={`/publish/org/${orgId}/dataset/avl`}>
-                Review My Bus Location Data
-              </Link>
-            </li>
-          </ol>
-        </nav>
+        <AvlBreadcrumbs
+          items={[
+            {
+              label: 'Review My Bus Location Data',
+              href: `/publish/org/${orgId}/dataset/avl`,
+              isCurrent: true,
+            },
+          ]}
+        />
       </div>
 
       <div className="app-masthead">

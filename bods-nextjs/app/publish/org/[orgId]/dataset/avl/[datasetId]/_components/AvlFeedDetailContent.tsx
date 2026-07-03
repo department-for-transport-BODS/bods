@@ -8,6 +8,7 @@ import { AvlFeedDetailTable } from './AvlFeedDetailTable';
 import { AvlCompliancePanels } from './AvlCompliancePanels';
 import { AvlFeedDetailSidebar } from './AvlFeedDetailSidebar';
 import { AvlFeedDetailActions } from './AvlFeedDetailActions';
+import { AvlBreadcrumbs } from '../../_components/AvlBreadcrumbs';
 
 export interface AvlFeedDetail {
   datasetId: number;
@@ -107,35 +108,22 @@ export function AvlFeedDetailContent() {
     );
   }
 
-  const breadcrumbName =
-    feedDetail.name.length > 20 ? `${feedDetail.name.slice(0, 19)}...` : feedDetail.name;
-
   return (
     <div className="govuk-width-container">
-      <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
-        <ol className="govuk-breadcrumbs__list">
-          <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href="/">
-              Bus Open Data Service
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href="/publish/">
-              Publish Open Data Service
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href={`/publish/org/${orgId}/dataset/avl`}>
-              Review My Bus Location Data
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item" aria-current="page">
-            <Link className="govuk-breadcrumbs__link" href={`/publish/org/${orgId}/dataset/avl/${datasetId}`}>
-              {breadcrumbName}
-            </Link>
-          </li>
-        </ol>
-      </nav>
+      <AvlBreadcrumbs
+        items={[
+          {
+            label: 'Review My Bus Location Data',
+            href: `/publish/org/${orgId}/dataset/avl`,
+          },
+          {
+            label: feedDetail.name,
+            href: `/publish/org/${orgId}/dataset/avl/${datasetId}`,
+            isCurrent: true,
+            truncateLabel: true,
+          },
+        ]}
+      />
 
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
