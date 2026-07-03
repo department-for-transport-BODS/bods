@@ -221,7 +221,6 @@ def create_avl_dataset_api(request, pk1):
     return JsonResponse({"redirect": review_url}, status=201)
 
 
-@csrf_exempt
 @require_GET
 def get_avl_review_status_api(request, pk1, pk):
     _, _, revision, error_response = _get_request_context(request, pk1, pk)
@@ -285,7 +284,7 @@ def publish_avl_dataset_api(request, pk1, pk):
     except Exception:
         return JsonResponse(
             {"redirect": f"/publish/org/{pk1}/dataset/avl/{pk}/error"},
-            status=200,
+            status=500,
         )
 
     return JsonResponse(
@@ -369,7 +368,7 @@ def update_avl_dataset_api(request, pk1, pk):
     all_data.update(comment_form.cleaned_data)
     all_data.update(upload_form.cleaned_data)
     all_data["last_modified_user"] = user
-    all_data["status"] = "success"
+    all_data["status"] = FeedStatus.success.value
 
     with transaction.atomic():
         for key, value in all_data.items():
@@ -392,7 +391,6 @@ def update_avl_dataset_api(request, pk1, pk):
     return JsonResponse({"redirect": review_url}, status=200)
 
 
-@csrf_exempt
 @require_GET
 def get_avl_dataset_edit_api(request, pk1, pk):
     """Fetch existing description fields for AVL dataset edit page."""
@@ -477,7 +475,6 @@ def edit_avl_dataset_description_api(request, pk1, pk):
     )
 
 
-@csrf_exempt
 @require_GET
 def list_avl_datasets_api(request, pk1):
     user, organisation, _, error_response = _get_request_context(request, pk1)
@@ -498,9 +495,7 @@ def list_avl_datasets_api(request, pk1):
     }
 
     sort_field = sort_field_map.get(sort_by, "modified")
-    if order == "asc":
-        sort_field = sort_field
-    else:
+    if order != "asc":
         sort_field = f"-{sort_field}"
 
     qs = (
@@ -554,7 +549,6 @@ def list_avl_datasets_api(request, pk1):
     return JsonResponse({"count": len(results), "results": results})
 
 
-@csrf_exempt
 @require_GET
 def get_avl_changelog_api(request, pk1, pk):
     """Fetch paginated changelog entries for an AVL dataset."""
@@ -634,7 +628,6 @@ def get_avl_changelog_api(request, pk1, pk):
     )
 
 
-@csrf_exempt
 @require_GET
 def get_avl_feed_detail_api(request, pk1, pk):
     """Fetch detailed information for a published AVL feed."""

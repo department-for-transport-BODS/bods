@@ -1,43 +1,48 @@
-export function statusIndicatorClass(status?: string) {
+export type AvlStatus =
+  | 'live'
+  | 'published'
+  | 'success'
+  | 'draft'
+  | 'indexing'
+  | 'pending'
+  | 'processing'
+  | 'error'
+  | 'warning';
+
+interface StatusMeta {
+  label: string;
+  indicator: string;
+}
+
+const DEFAULT_STATUS_META: StatusMeta = {
+  label: 'Draft',
+  indicator: 'status-indicator--draft',
+};
+
+const STATUS_META: Record<AvlStatus, StatusMeta> = {
+  live: { label: 'Published', indicator: 'status-indicator--success' },
+  published: { label: 'Published', indicator: 'status-indicator--success' },
+  success: { label: 'Draft', indicator: 'status-indicator--draft' },
+  draft: { label: 'Draft', indicator: 'status-indicator--draft' },
+  indexing: { label: 'Processing', indicator: 'status-indicator--indexing' },
+  pending: { label: 'Processing', indicator: 'status-indicator--indexing' },
+  processing: { label: 'Processing', indicator: 'status-indicator--indexing' },
+  error: { label: 'Error', indicator: 'status-indicator--error' },
+  warning: { label: 'Warning', indicator: 'status-indicator--warning' },
+};
+
+function getStatusMeta(status?: string): StatusMeta {
   if (!status) {
-    return 'status-indicator--draft';
+    return DEFAULT_STATUS_META;
   }
 
-  if (status === 'live' || status === 'published') {
-    return 'status-indicator--success';
-  }
+  return STATUS_META[status as AvlStatus] ?? DEFAULT_STATUS_META;
+}
 
-  if (status === 'error') {
-    return 'status-indicator--error';
-  }
-
-  if (status === 'warning') {
-    return 'status-indicator--warning';
-  }
-
-  if (status === 'indexing' || status === 'pending' || status === 'processing') {
-    return 'status-indicator--indexing';
-  }
-
-  return 'status-indicator--draft';
+export function statusIndicatorClass(status?: string) {
+  return getStatusMeta(status).indicator;
 }
 
 export function statusLabel(status?: string) {
-  if (!status) {
-    return 'Draft';
-  }
-
-  if (status === 'live' || status === 'published') {
-    return 'Published';
-  }
-
-  if (status === 'indexing' || status === 'pending' || status === 'processing') {
-    return 'Processing';
-  }
-
-  if (status === 'success' || status === 'draft') {
-    return 'Draft';
-  }
-
-  return status.charAt(0).toUpperCase() + status.slice(1);
+  return getStatusMeta(status).label;
 }

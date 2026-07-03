@@ -146,7 +146,7 @@ export function AvlFeedDetailContent() {
             <hr className="govuk-section-break govuk-section-break--xs govuk-section-break--visible" />
 
             {/* Compliance panels - conditional rendering */}
-            <AvlCompliancePanels feedDetail={feedDetail} orgId={orgId} datasetId={datasetId} />
+            <AvlCompliancePanels feedDetail={feedDetail} />
 
             {/* Main property table */}
             <AvlFeedDetailTable feedDetail={feedDetail} orgId={orgId} />

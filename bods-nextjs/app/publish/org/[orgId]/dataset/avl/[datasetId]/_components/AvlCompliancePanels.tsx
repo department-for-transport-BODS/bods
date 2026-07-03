@@ -1,25 +1,27 @@
-'use client';
-
 import Link from 'next/link';
-import { AvlFeedDetail } from './AvlFeedDetailContent';
+import type { AvlFeedDetail } from './AvlFeedDetailContent';
+
+enum AvlComplianceStatus {
+  Compliant = 'Compliant',
+  AwaitingPublisherReview = 'Awaiting publisher review',
+  PartiallyCompliant = 'Partially compliant',
+  NonCompliant = 'Non-compliant',
+}
 
 interface AvlCompliancePanelsProps {
   feedDetail: AvlFeedDetail;
-  orgId: string;
-  datasetId: string;
 }
 
-export function AvlCompliancePanels({ feedDetail, orgId, datasetId }: AvlCompliancePanelsProps) {
+export function AvlCompliancePanels({ feedDetail }: AvlCompliancePanelsProps) {
   const status = feedDetail.avlComplianceStatus;
   const validationReportUrl = `/api/avl/download-validation-report/${feedDetail.datasetId}`;
-  const matchingReportUrl = `/api/avl/download-matching-report/${feedDetail.datasetId}`;
 
   // No panel for compliant status
-  if (status === 'Compliant') {
+  if (status === AvlComplianceStatus.Compliant) {
     return null;
   }
 
-  if (status === 'Awaiting publisher review') {
+  if (status === AvlComplianceStatus.AwaitingPublisherReview) {
     return (
       <div className="govuk-warning-text govuk-!-margin-bottom-7">
         <span className="govuk-warning-text__icon" aria-hidden="true">
@@ -40,7 +42,7 @@ export function AvlCompliancePanels({ feedDetail, orgId, datasetId }: AvlComplia
     );
   }
 
-  if (status === 'Partially compliant') {
+  if (status === AvlComplianceStatus.PartiallyCompliant) {
     return (
       <div className="govuk-warning-text govuk-!-margin-bottom-7">
         <span className="govuk-warning-text__icon" aria-hidden="true">
@@ -58,7 +60,7 @@ export function AvlCompliancePanels({ feedDetail, orgId, datasetId }: AvlComplia
     );
   }
 
-  if (status === 'Non-compliant') {
+  if (status === AvlComplianceStatus.NonCompliant) {
     return (
       <div className="govuk-error-summary govuk-!-margin-bottom-7" role="alert">
         <h2 className="govuk-error-summary__title">Data feed not compliant</h2>

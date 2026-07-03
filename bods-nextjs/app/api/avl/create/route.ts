@@ -63,9 +63,6 @@ function toNextJsPath(djangoUrl: string): string {
 
   try {
     const url = new URL(djangoUrl, 'http://placeholder');
-    if (url.pathname.startsWith('/org/')) {
-      return `/publish${url.pathname}${url.search}`;
-    }
     return `/publish${url.pathname}${url.search}`;
   } catch {
     if (djangoUrl.startsWith('/org/')) {

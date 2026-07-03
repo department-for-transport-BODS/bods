@@ -87,9 +87,9 @@ describe('avlStatus utilities', () => {
       expect(statusLabel('error')).toBe('Error');
     });
 
-    it('capitalizes first letter for arbitrary status', () => {
-      expect(statusLabel('archived')).toBe('Archived');
-      expect(statusLabel('inactive')).toBe('Inactive');
+    it('returns default label for arbitrary unknown status', () => {
+      expect(statusLabel('archived')).toBe('Draft');
+      expect(statusLabel('inactive')).toBe('Draft');
     });
   });
 });

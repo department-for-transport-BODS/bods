@@ -1,7 +1,5 @@
-'use client';
-
 import Link from 'next/link';
-import { AvlFeedDetail } from './AvlFeedDetailContent';
+import type { AvlFeedDetail } from './AvlFeedDetailContent';
 
 interface AvlFeedDetailActionsProps {
   feedDetail: AvlFeedDetail;

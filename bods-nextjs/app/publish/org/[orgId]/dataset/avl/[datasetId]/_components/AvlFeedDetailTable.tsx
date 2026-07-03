@@ -1,7 +1,5 @@
-'use client';
-
 import Link from 'next/link';
-import { AvlFeedDetail } from './AvlFeedDetailContent';
+import type { AvlFeedDetail } from './AvlFeedDetailContent';
 import { statusIndicatorClass, statusLabel } from '../../_components/avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
 import { formatDateTime } from '@/lib/utils/date';

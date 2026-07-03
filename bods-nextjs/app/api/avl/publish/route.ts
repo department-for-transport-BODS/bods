@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   const url = new URL(request.url);
   const orgId = url.searchParams.get('orgId');
   const datasetId = url.searchParams.get('datasetId');
-  const isUpdate = url.searchParams.get('isUpdate') === 'true';
+  const publishPath = `/api/avl/publish/${orgId}/${datasetId}/`;
 
   if (!orgId || !datasetId) {
     return NextResponse.json({ error: 'orgId and datasetId are required' }, { status: 400 });
@@ -15,10 +15,6 @@ export async function POST(request: NextRequest) {
   if (!authHeader.startsWith('Bearer ')) {
     return NextResponse.json({ error: 'Not authenticated. Please sign in and retry.' }, { status: 401 });
   }
-
-  const publishPath = isUpdate
-    ? `/api/avl/publish-update/${orgId}/${datasetId}/`
-    : `/api/avl/publish/${orgId}/${datasetId}/`;
 
   try {
     const djangoResp = await fetch(`${config.djangoOrigin}${publishPath}`, {

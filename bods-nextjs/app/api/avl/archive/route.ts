@@ -12,6 +12,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'orgId and datasetId are required' }, { status: 400 });
   }
 
+  const authHeader = request.headers.get('authorization') || '';
+  if (!authHeader.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Not authenticated. Please sign in and retry.' }, { status: 401 });
+  }
+
   const cookieHeader = request.headers.get('cookie') || '';
   const csrfHeader = request.headers.get('x-csrftoken') || request.headers.get('X-CSRFToken') || '';
 
@@ -19,6 +24,7 @@ export async function POST(request: NextRequest) {
     const publishOrigin = getPublishOrigin();
     let djangoResp = await postDeactivate(
       `${publishOrigin}/org/${orgId}/dataset/avl/${datasetId}/deactivate/`,
+      authHeader,
       cookieHeader,
       csrfHeader,
     );
@@ -27,6 +33,7 @@ export async function POST(request: NextRequest) {
     if (djangoResp.status === 404 && publishOrigin !== config.djangoOrigin) {
       djangoResp = await postDeactivate(
         `${config.djangoOrigin}/org/${orgId}/dataset/avl/${datasetId}/deactivate/`,
+        authHeader,
         cookieHeader,
         csrfHeader,
       );
@@ -56,10 +63,16 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function postDeactivate(url: string, cookieHeader: string, csrfHeader: string): Promise<Response> {
+function postDeactivate(
+  url: string,
+  authHeader: string,
+  cookieHeader: string,
+  csrfHeader: string,
+): Promise<Response> {
   return fetch(url, {
     method: 'POST',
     headers: {
+      Authorization: authHeader,
       cookie: cookieHeader,
       'Content-Type': 'application/x-www-form-urlencoded',
       ...(csrfHeader ? { 'X-CSRFToken': csrfHeader } : {}),

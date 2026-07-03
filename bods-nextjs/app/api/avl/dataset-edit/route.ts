@@ -10,11 +10,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'orgId and datasetId are required' }, { status: 400 });
   }
 
+  const authHeader = request.headers.get('authorization') || '';
+  if (!authHeader.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Not authenticated. Please sign in and retry.' }, { status: 401 });
+  }
+
   try {
     const djangoResp = await fetch(`${config.djangoOrigin}/api/avl/dataset-edit/${orgId}/${datasetId}/`, {
       method: 'GET',
       headers: {
-        cookie: request.headers.get('cookie') || '',
+        Authorization: authHeader,
       },
     });
 
@@ -43,6 +48,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'orgId and datasetId are required' }, { status: 400 });
   }
 
+  const authHeader = request.headers.get('authorization') || '';
+  if (!authHeader.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Not authenticated. Please sign in and retry.' }, { status: 401 });
+  }
+
   const outgoing = new FormData();
   const incoming = await request.formData();
   for (const [key, value] of incoming.entries()) {
@@ -58,7 +68,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       body: outgoing,
       headers: {
-        cookie: request.headers.get('cookie') || '',
+        Authorization: authHeader,
       },
       redirect: 'manual',
     });
