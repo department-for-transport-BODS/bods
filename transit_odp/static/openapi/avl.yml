@@ -97,7 +97,11 @@ paths:
             type: string
             example: "21027012"
 
-      responses: {}
+      responses:
+        200:
+          description: Successfully retrieved datafeeds
+        400:
+          description: Invalid data supplied
 
   /api/v1/datafeed/{datafeedID}/:
     get:
@@ -113,7 +117,13 @@ paths:
             type: integer
             format: int64
           required: true
-      responses: {}
+      responses:
+        200:
+          description: Successfully retrieved datafeed
+        400:
+          description: Invalid data supplied
+        404:
+          description: Datafeed not found
 
   /api/v1/gtfsrtdatafeed/:
     get:
@@ -126,7 +136,7 @@ paths:
       description: Returns all published datafeeds
       responses:
         200:
-          description: Successfully retrieved all datafeeds
+          description: Successfully retrieved datafeeds
         400:
           description: Invalid data supplied
       parameters:
