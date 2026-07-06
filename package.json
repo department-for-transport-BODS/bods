@@ -15,7 +15,7 @@
     "normalize.css": "~8.0.1",
     "process": "^0.11.10",
     "stream": "^0.0.2",
-    "swagger-ui": "^5.17.14"
+    "swagger-ui": "5.32.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
@@ -45,9 +45,12 @@
     "webpack": "^5.89.0",
     "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1",
-    "webpack-visualizer-plugin": "^0.1.11"
+    "webpack-dev-server": "^4.15.1"
   },
+  "resolutions": {
+		"react": "^18.3.1",
+    "react-dom": "^18.3.1"
+	},
   "scripts": {
     "start": "node esbuild.config.js --watch",
     "build": "node esbuild.config.js"
