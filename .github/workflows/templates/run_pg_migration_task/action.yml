@@ -1,10 +1,10 @@
-name: update_task_definition
+name: run_pg_migration_task
 
 # Were we can define the inputs that our action will accept
 inputs:
   environment:
     required: true
-  security_groups: 
+  security_groups:
     required: true
   subnets:
     required: true
