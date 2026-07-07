@@ -80,7 +80,7 @@ jobs:
       run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
     - name: Update celeryflower task
-      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@main
+      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@v1
       with:
         service: celeryflower
         container: celeryflower
@@ -90,7 +90,7 @@ jobs:
         wait_for_service_stability: false
 
     - name: Update celeryworker task
-      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@main
+      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@v1
       with:
         service: celeryworker
         container: celeryworker
@@ -100,7 +100,7 @@ jobs:
         wait_for_service_stability: false
 
     - name: Update celerybeat task
-      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@main
+      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@v1
       with:
         service: celerybeat
         container: celerybeat
@@ -110,7 +110,7 @@ jobs:
         wait_for_service_stability: false
 
     - name: Update frontend task
-      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@main
+      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@v1
       with:
         service: frontend
         container: frontend
@@ -120,7 +120,7 @@ jobs:
         wait_for_service_stability: false
 
     - name: Update api_frontend task
-      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@main
+      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@v1
       with:
         service: api_frontend
         container: frontend
@@ -130,7 +130,7 @@ jobs:
         wait_for_service_stability: false
 
     - name: Update api_frontend_internal task
-      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@main
+      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@v1
       with:
         service: api_frontend_internal
         container: frontend
@@ -156,7 +156,7 @@ jobs:
         image_id: ${{ steps.check-image.outputs.image }}
 
     - name: Wait for ECS service stability
-      uses: department-for-transport-BODS/.github/actions/wait-for-ecs-service-stability@main
+      uses: department-for-transport-BODS/.github/actions/wait-for-ecs-service-stability@v1
       with:
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         service_names: 'celeryflower celeryworker celerybeat frontend api_frontend api_frontend_internal'
