@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { config } from '@/config';
+import { getSessionHeaders, hasSessionCookie } from '../_utils/session-auth';
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -10,17 +11,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'orgId and datasetId are required' }, { status: 400 });
   }
 
-  const authHeader = request.headers.get('authorization') || '';
-  if (!authHeader.startsWith('Bearer ')) {
+  if (!hasSessionCookie(request)) {
     return NextResponse.json({ error: 'Not authenticated. Please sign in and retry.' }, { status: 401 });
   }
 
   try {
     const djangoResp = await fetch(`${config.djangoOrigin}/api/avl/dataset-edit/${orgId}/${datasetId}/`, {
       method: 'GET',
-      headers: {
-        Authorization: authHeader,
-      },
+      headers: getSessionHeaders(request),
     });
 
     const data = await djangoResp.json().catch(() => ({}));
@@ -48,8 +46,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'orgId and datasetId are required' }, { status: 400 });
   }
 
-  const authHeader = request.headers.get('authorization') || '';
-  if (!authHeader.startsWith('Bearer ')) {
+  if (!hasSessionCookie(request)) {
     return NextResponse.json({ error: 'Not authenticated. Please sign in and retry.' }, { status: 401 });
   }
 
@@ -67,9 +64,7 @@ export async function POST(request: NextRequest) {
     const djangoResp = await fetch(`${config.djangoOrigin}/api/avl/dataset-edit/${orgId}/${datasetId}/save/`, {
       method: 'POST',
       body: outgoing,
-      headers: {
-        Authorization: authHeader,
-      },
+      headers: getSessionHeaders(request, { includeCsrf: true }),
       redirect: 'manual',
     });
 

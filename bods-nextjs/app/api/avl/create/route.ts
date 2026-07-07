@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { config } from '@/config';
+import { getSessionHeaders, hasSessionCookie } from '../_utils/session-auth';
 
 export async function POST(request: NextRequest) {
   const orgId = new URL(request.url).searchParams.get('orgId');
@@ -7,8 +8,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'orgId is required' }, { status: 400 });
   }
 
-  const authHeader = request.headers.get('authorization') || '';
-  if (!authHeader.startsWith('Bearer ')) {
+  if (!hasSessionCookie(request)) {
     return NextResponse.json({ error: 'Not authenticated. Please sign in and retry.' }, { status: 401 });
   }
 
@@ -28,9 +28,7 @@ export async function POST(request: NextRequest) {
     const djangoResp = await fetch(createUrl, {
       method: 'POST',
       body: outgoing,
-      headers: {
-        Authorization: authHeader,
-      },
+      headers: getSessionHeaders(request, { includeCsrf: true }),
     });
 
     const data = (await djangoResp.json().catch(() => ({}))) as {

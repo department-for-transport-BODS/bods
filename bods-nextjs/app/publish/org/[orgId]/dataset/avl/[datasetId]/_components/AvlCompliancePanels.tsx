@@ -14,7 +14,7 @@ interface AvlCompliancePanelsProps {
 
 export function AvlCompliancePanels({ feedDetail }: AvlCompliancePanelsProps) {
   const status = feedDetail.avlComplianceStatus;
-  const validationReportUrl = `/api/avl/download-validation-report/${feedDetail.datasetId}`;
+  const validationReportUrl = `/publish/org/${feedDetail.organisationId}/dataset/avl/${feedDetail.datasetId}/validation-report/`;
 
   // No panel for compliant status
   if (status === AvlComplianceStatus.Compliant) {

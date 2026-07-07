@@ -134,7 +134,7 @@ describe('AvlCompliancePanels', () => {
     );
 
     const link = screen.getByRole('link', { name: /Download validation report/i });
-    expect(link).toHaveAttribute('href', '/api/avl/download-validation-report/456');
+    expect(link).toHaveAttribute('href', '/publish/org/123/dataset/avl/456/validation-report/');
   });
 
   it('renders error panel for non-compliant status', () => {
@@ -170,7 +170,7 @@ describe('AvlCompliancePanels', () => {
     );
 
     const link = screen.getByRole('link', { name: /Download validation report/i });
-    expect(link).toHaveAttribute('href', '/api/avl/download-validation-report/456');
+    expect(link).toHaveAttribute('href', '/publish/org/123/dataset/avl/456/validation-report/');
   });
 
   it('uses correct validation report URL with dataset ID', () => {
@@ -189,13 +189,13 @@ describe('AvlCompliancePanels', () => {
     );
 
     const link = screen.getByRole('link', { name: /Download validation report/i });
-    expect(link).toHaveAttribute('href', '/api/avl/download-validation-report/789');
+    expect(link).toHaveAttribute('href', '/publish/org/123/dataset/avl/789/validation-report/');
   });
 
   it('renders nothing for unknown compliance status', () => {
     const unknownStatusFeed = {
       ...mockFeedDetail,
-      avlComplianceStatus: 'Unknown Status' as any,
+      avlComplianceStatus: 'Unknown Status',
     };
 
     const { container } = render(
