@@ -23,7 +23,6 @@ HTTP_CONNECT_TIMEOUT = int(os.getenv("BANK_HOLIDAYS_HTTP_CONNECT_TIMEOUT", 30))
 HTTP_READ_TIMEOUT = int(os.getenv("BANK_HOLIDAYS_HTTP_READ_TIMEOUT", 600))
 
 logger = get_task_logger(__name__)
-logger.setLevel(os.getenv("LOG_LEVEL", "DEBUG").upper())
 logger = LoaderAdapter("BankHolidaysLoader", logger)
 
 
