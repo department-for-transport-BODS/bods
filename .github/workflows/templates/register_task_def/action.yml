@@ -24,5 +24,7 @@ runs:
   - name: Register task definition
     shell: bash
     run: |
-      cat ${{ steps.render-task-def.outputs.task-definition }} | jq 'del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)' > ${{ github.workspace }}/updated-task-definition.json
+      cat ${{ steps.render-task-def.outputs.task-definition }} \
+        | jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy) | if (.tags // []) == [] then del(.tags) else . end' \
+        > ${{ github.workspace }}/updated-task-definition.json
       aws ecs register-task-definition --cli-input-json file://updated-task-definition.json
