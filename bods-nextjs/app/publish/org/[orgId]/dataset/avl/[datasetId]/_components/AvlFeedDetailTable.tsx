@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import type { AvlFeedDetail } from './AvlFeedDetailContent';
 import { statusIndicatorClass, statusLabel } from '../../_components/avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
@@ -157,12 +159,12 @@ function AvlTimetableMatchingSection({ matching }: { matching?: string }) {
     <p className="govuk-body govuk-!-margin-bottom-0">
       {!matching || matching === '0%' ? (
         <>
-          <i className="fas fa-exclamation-circle fa"></i>
+          <FontAwesomeIcon icon={faCircleExclamation} aria-hidden="true" />
           {' Pending '}
         </>
       ) : (
         <>
-          {matching !== '100%' && <i className="fas fa-exclamation-circle fa"></i>}
+          {matching !== '100%' && <FontAwesomeIcon icon={faCircleExclamation} aria-hidden="true" />}
           {matching} completely matched AVL to Timetables
         </>
       )}

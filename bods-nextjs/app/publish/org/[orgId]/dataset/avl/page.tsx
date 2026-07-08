@@ -1,5 +1,7 @@
 'use client';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { api } from '@/lib/api-client';
@@ -133,7 +135,7 @@ function AvlManagement() {
                       <span className="review-stat__top">0</span>
                     </div>
                     <p className="review-stat__description">Total consumer interactions with your data</p>
-                    <i className="fas fa-play govuk-!-margin-right-1" aria-hidden="true"></i>
+                    <FontAwesomeIcon icon={faPlay} className="govuk-!-margin-right-1" aria-hidden="true" />
                     <a className="review-stat__link" href={dataActivityUrl}>
                       More details
                     </a>

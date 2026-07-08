@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 
 interface AvlTimetableMatchingProps {
   matching?: string;
@@ -14,12 +16,12 @@ export function AvlTimetableMatching({ matching, datasetId, orgId }: AvlTimetabl
       <p className="govuk-body govuk-!-margin-bottom-0">
         {!matching || matching === '0%' ? (
           <>
-            <i className="fas fa-exclamation-circle fa"></i>
+            <FontAwesomeIcon icon={faCircleExclamation} aria-hidden="true" />
             {' Pending '}
           </>
         ) : (
           <>
-            {matching !== '100%' && <i className="fas fa-exclamation-circle fa"></i>}
+            {matching !== '100%' && <FontAwesomeIcon icon={faCircleExclamation} aria-hidden="true" />}
             {matching} completely matched AVL to Timetables
           </>
         )}

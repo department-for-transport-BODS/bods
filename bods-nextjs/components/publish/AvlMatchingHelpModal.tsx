@@ -1,5 +1,7 @@
 'use client';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 
 type MatchingHelpVariant = 'overall' | 'feed';
@@ -37,8 +39,9 @@ export function AvlMatchingHelpModal({ variant = 'overall' }: AvlMatchingHelpMod
 
   return (
     <div className="help-modal">
-      <i
-        className={`${content.iconClass} fas fa-question-circle`}
+      <FontAwesomeIcon
+        icon={faCircleQuestion}
+        className={content.iconClass}
         onClick={() => setIsOpen(!isOpen)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
