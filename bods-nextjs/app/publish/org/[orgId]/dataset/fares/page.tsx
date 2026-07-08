@@ -3,6 +3,8 @@
 // and provides links to create new datasets and access guidance resources. The page also includes error handling for data fetching.
 'use client';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { getPaginated } from '@/lib/api-client';
@@ -134,7 +136,7 @@ function FaresPublish() {
                         <span className="review-stat__bottom">/-</span>
                       </div>
                       <p className="review-stat__description">Total service codes that require attention</p>
-                      <i className="fas fa-play govuk-!-margin-right-1" aria-hidden="true"></i>
+                      <FontAwesomeIcon icon={faPlay} className="govuk-!-margin-right-1" aria-hidden="true" />
                       <a className="review-stat__link" href={djangoAttentionUrl}>
                         More details
                       </a>
