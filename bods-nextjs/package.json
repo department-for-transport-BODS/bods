@@ -15,6 +15,9 @@
     "postinstall": "npm run copy-gds-assets"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/react-fontawesome": "^3.1.0",
     "@hookform/resolvers": "^5.2.2",
     "@swc/core": "^1.15.13",
     "@types/mapbox-gl": "^3.5.0",
