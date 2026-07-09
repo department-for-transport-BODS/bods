@@ -549,6 +549,33 @@ ul.dashed > li::before {
   padding: 20px 0;
 }
 
+.feed-stat {
+  display: inline-block;
+  min-width: 8rem;
+  font-weight: 700;
+  font-family: "GDS Transport", Arial, sans-serif;
+}
+
+.feed-stat__list {
+  width: 100%;
+  padding: 1rem;
+}
+
+.feed-stat__label {
+  display: block;
+  color: var(--govuk-colour-black);
+}
+
+.feed-stat__value {
+  display: block;
+  color: var(--govuk-colour-black);
+  font-size: 3rem;
+}
+
+.feed-stat__value--l {
+  font-size: 5rem;
+}
+
 .status-indicator {
   font-family: "GDS Transport", Arial, sans-serif;
   font-size: inherit;

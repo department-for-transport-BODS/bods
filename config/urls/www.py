@@ -52,6 +52,7 @@ from transit_odp.api.views.auth import (
     CurrentUserAPIView,
     LoginAPIView,
     LogoutAPIView,
+    OrganisationStatsAPIView,
 )
 
 urlpatterns = [
@@ -65,6 +66,11 @@ urlpatterns = [
         "api/organisations/",
         CurrentUserOrganisationsAPIView.as_view(),
         name="api-user-organisations",
+    ),
+    path(
+        "api/organisation/stats/<int:pk1>/",
+        OrganisationStatsAPIView.as_view(),
+        name="api-organisation-stats",
     ),
     path(
         "api/avl/list/<int:pk1>/",
