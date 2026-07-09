@@ -14,6 +14,7 @@ from allauth.account.utils import send_email_confirmation
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
+from transit_odp.organisation.models import Organisation
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -154,6 +155,36 @@ class CSRFTokenAPIView(APIView):
 
     def get(self, request):
         return Response({"csrfToken": get_token(request)})
+
+
+class OrganisationStatsAPIView(APIView):
+    """Return consumer activity stats for an organisation available to the user."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk1):
+        has_org_access = request.user.organisations.filter(id=pk1).exists()
+        if not has_org_access:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        organisation = (
+            Organisation.objects.select_related("stats")
+            .add_total_subscriptions()
+            .filter(id=pk1)
+            .first()
+        )
+        if organisation is None:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(
+            {
+                "total_subscriptions": organisation.total_subscriptions,
+                "weekly_downloads": organisation.stats.weekly_downloads,
+                "weekly_api_hits": organisation.stats.weekly_api_hits,
+                "weekly_unique_consumers": organisation.stats.weekly_unique_consumers,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 def _serialize_user(user):

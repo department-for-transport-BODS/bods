@@ -46,7 +46,7 @@ function AvlManagement() {
 
   const nextListUrl = `/publish/org/${orgId}/dataset/avl`;
   const nextCreateUrl = `/publish/org/${orgId}/dataset/avl/new`;
-  const dataActivityUrl = `/publish/org/${orgId}/avl/data-activity/`;
+  const dataActivityUrl = `/publish/org/${orgId}/dataset/data-activity?prev=avl-feed-list`;
 
   const tab = getTabFromSearchParams(searchParams.get('tab'));
 
