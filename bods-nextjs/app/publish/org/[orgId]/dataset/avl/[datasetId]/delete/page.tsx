@@ -63,6 +63,9 @@ function AvlDeletePageContent() {
 
   return (
     <div className="govuk-width-container">
+      <Link className="govuk-back-link" href={reviewUrl}>
+        Back
+      </Link>
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-full">
