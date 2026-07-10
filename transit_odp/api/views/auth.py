@@ -14,6 +14,8 @@ from allauth.account.utils import send_email_confirmation
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -47,6 +49,7 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField()
 
 
+@method_decorator(csrf_protect, name="dispatch")
 class LoginAPIView(APIView):
     """Authenticate and create a Django session.
 
