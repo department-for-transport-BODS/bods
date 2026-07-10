@@ -62,6 +62,7 @@ interface PaginationProps {
   onPageChange?: (page: number) => void;
   pageParam?: string;
   baseUrl?: string;
+  showSinglePage?: boolean;
 }
 
 export function Pagination({
@@ -72,6 +73,7 @@ export function Pagination({
   onPageChange,
   pageParam = 'page',
   baseUrl,
+  showSinglePage = false,
 }: PaginationProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -108,7 +110,7 @@ export function Pagination({
     return range;
   };
 
-  if (totalPages <= 1) {
+  if (totalPages <= 1 && !showSinglePage) {
     return null;
   }
 
@@ -122,7 +124,7 @@ export function Pagination({
     : null;
 
   return (
-    <nav className="govuk-pagination" aria-label="Pagination">
+    <nav className="justify-center-l govuk-pagination" aria-label="Pagination">
       {totalResults && resultsPerPage && (
         <p className="govuk-body govuk-!-margin-bottom-4">
           Showing {startResult} to {endResult} of {totalResults} results
@@ -177,13 +179,26 @@ export function Pagination({
             className={`govuk-pagination__item ${page === currentPage ? 'govuk-pagination__item--current' : ''}`}
           >
             {page === currentPage ? (
-              <span
-                className="govuk-pagination__link"
-                aria-current="page"
-                aria-label={`Page ${page}, current page`}
-              >
-                {page}
-              </span>
+              isUrlMode ? (
+                <Link
+                  href={createPageUrl(page)}
+                  className="govuk-link govuk-pagination__link"
+                  aria-current="page"
+                  aria-label={`Page ${page}, current page`}
+                >
+                  {page}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  className="govuk-link govuk-pagination__link"
+                  onClick={(e) => handlePageClick(page, e)}
+                  aria-current="page"
+                  aria-label={`Page ${page}, current page`}
+                >
+                  {page}
+                </button>
+              )
             ) : isUrlMode ? (
               <Link
                 href={createPageUrl(page)}

@@ -1,1 +1,7 @@
 @import "govuk-frontend/dist/govuk/index";
+
+@media (min-width: 40.0625em) {
+	.justify-center-l {
+		justify-content: center;
+	}
+}
