@@ -90,7 +90,11 @@ export function AvlFeedDetailContent() {
           { label: 'Bus Open Data Service', href: '/' },
           { label: 'Publish Bus Open Data', href: '/publish/' },
           {
-            label: 'Review My Bus Location Data',
+            label: 'Choose data type',
+            href: `/publish/org/${orgId}/dataset/select`,
+          },
+          {
+            label: 'Bus Location Data Feeds',
             href: `/publish/org/${orgId}/dataset/avl`,
           },
           {
@@ -104,11 +108,16 @@ export function AvlFeedDetailContent() {
 
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
+          <div className="govuk-grid-column-full">
             <h1 className="govuk-heading-xl app-!-mb-4 dont-break-out">{feedDetail.name}</h1>
             <p className="govuk-body">Preview your service data status and make changes</p>
+          </div>
+        </div>
 
-            <hr className="govuk-section-break govuk-section-break--xs govuk-section-break--visible" />
+        <hr className="govuk-section-break govuk-section-break--xs govuk-section-break--visible" />
+
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds">
 
             {/* Compliance panels - conditional rendering */}
             <AvlCompliancePanels feedDetail={feedDetail} />

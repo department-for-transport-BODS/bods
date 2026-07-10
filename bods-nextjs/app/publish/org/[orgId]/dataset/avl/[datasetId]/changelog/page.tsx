@@ -8,6 +8,7 @@ import { api } from '@/lib/api-client';
 import { useApiResource } from '@/hooks/useApiResource';
 import { formatDateTime } from '@/lib/utils/date';
 import { statusIndicatorClass, statusLabel } from '../../_components/avlStatus';
+import { Pagination } from '@/components/shared/Pagination';
 
 interface ChangelogEntry {
   revisionId: number;
@@ -139,33 +140,13 @@ function AvlChangelogContent() {
           </tbody>
         </table>
 
-        {data.totalPages > 1 && (
-          <nav className="govuk-pagination" aria-label="Pagination">
-            {data.hasPrevious ? (
-              <div className="govuk-pagination__prev">
-                <Link className="govuk-link govuk-pagination__link" href={`${baseChangelogUrl}?page=${data.page - 1}`} rel="prev">
-                  Previous
-                </Link>
-              </div>
-            ) : (
-              <div />
-            )}
-
-            <p className="govuk-body govuk-!-margin-bottom-0">
-              Page {data.page} of {data.totalPages}
-            </p>
-
-            {data.hasNext ? (
-              <div className="govuk-pagination__next">
-                <Link className="govuk-link govuk-pagination__link" href={`${baseChangelogUrl}?page=${data.page + 1}`} rel="next">
-                  Next
-                </Link>
-              </div>
-            ) : (
-              <div />
-            )}
-          </nav>
-        )}
+        <Pagination
+          currentPage={data.page}
+          totalPages={data.totalPages}
+          pageParam="page"
+          baseUrl={baseChangelogUrl}
+          showSinglePage
+        />
       </div>
     </div>
   );

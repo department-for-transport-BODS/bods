@@ -183,7 +183,11 @@ function AvlDatasetEditContent() {
           { label: 'Bus Open Data Service', href: '/' },
           { label: 'Publish Bus Open Data', href: '/publish/' },
           {
-            label: 'Your data feed',
+            label: 'Choose data type',
+            href: `/publish/org/${orgId}/dataset/select`,
+          },
+          {
+            label: 'Bus Location Data Feeds',
             href: listUrl,
           },
           {
