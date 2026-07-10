@@ -8,6 +8,9 @@ export async function GET(request: NextRequest) {
   const tab = url.searchParams.get('tab') || 'active';
   const sortBy = url.searchParams.get('sort_by') || 'modified';
   const order = url.searchParams.get('order') || 'desc';
+  const page = url.searchParams.get('page') || '1';
+  const parsedPage = Number.parseInt(page, 10);
+  const requestedPage = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
 
   if (!orgId) {
     return NextResponse.json({ error: 'orgId is required' }, { status: 400 });
@@ -35,7 +38,28 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(data, { status: 200 });
+    const payload = data as { count?: number; results?: unknown[] };
+    const allResults = Array.isArray(payload.results) ? payload.results : [];
+
+    const pageSize = 10;
+    const count = typeof payload.count === 'number' ? payload.count : allResults.length;
+    const totalPages = Math.max(1, Math.ceil(count / pageSize));
+    const currentPage = Math.min(requestedPage, totalPages);
+    const start = (currentPage - 1) * pageSize;
+    const results = allResults.slice(start, start + pageSize);
+
+    return NextResponse.json(
+      {
+        count,
+        page: currentPage,
+        pageSize,
+        totalPages,
+        hasNext: currentPage < totalPages,
+        hasPrevious: currentPage > 1,
+        results,
+      },
+      { status: 200 },
+    );
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: `Failed to reach Django: ${message}` }, { status: 502 });

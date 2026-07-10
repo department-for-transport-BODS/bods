@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { api } from '@/lib/api-client';
 import { useApiResource } from '@/hooks/useApiResource';
 import { formatDateTimeFeedsList } from '@/lib/utils/date';
 import { useParams, useSearchParams } from 'next/navigation';
@@ -12,6 +11,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { statusIndicatorClass, statusLabel } from './_components/avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
 import { AvlBreadcrumbs } from './_components/AvlBreadcrumbs';
+import { Pagination } from '@/components/shared/Pagination';
 
 type AvlTab = 'active' | 'draft' | 'archive';
 
@@ -29,6 +29,11 @@ interface AVLFeed {
 
 interface AVLFeedListResponse {
   count: number;
+  page?: number;
+  pageSize?: number;
+  totalPages?: number;
+  hasNext?: boolean;
+  hasPrevious?: boolean;
   results: AVLFeed[];
 }
 
@@ -49,14 +54,30 @@ function AvlManagement() {
   const dataActivityUrl = `/publish/org/${orgId}/dataset/data-activity?prev=avl-feed-list`;
 
   const tab = getTabFromSearchParams(searchParams.get('tab'));
+  const pageParam = searchParams.get('page');
+  const currentPage = pageParam ? Number.parseInt(pageParam, 10) : 1;
+  const safeCurrentPage = Number.isNaN(currentPage) || currentPage < 1 ? 1 : currentPage;
 
   const [sortBy, setSortBy] = useState<string>('modified');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  const loadFeeds = useCallback(
-    () => api.get<AVLFeedListResponse>(`/api/avl/list/${orgId}?tab=${tab}&sort_by=${sortBy}&order=${sortOrder}`),
-    [orgId, sortBy, sortOrder, tab],
-  );
+  const loadFeeds = useCallback(async (): Promise<AVLFeedListResponse> => {
+    const response = await fetch(
+      `/api/avl/list?orgId=${encodeURIComponent(orgId)}&tab=${encodeURIComponent(tab)}&sort_by=${encodeURIComponent(sortBy)}&order=${encodeURIComponent(sortOrder)}&page=${safeCurrentPage}`,
+      {
+        method: 'GET',
+        credentials: 'include',
+      },
+    );
+
+    const payload = (await response.json().catch(() => ({}))) as AVLFeedListResponse & { error?: string };
+
+    if (!response.ok) {
+      throw new Error(payload.error || `Unable to load AVL feeds (status ${response.status})`);
+    }
+
+    return payload;
+  }, [orgId, sortBy, sortOrder, tab, safeCurrentPage]);
 
   const {
     data: feedResponse,
@@ -68,6 +89,8 @@ function AvlManagement() {
   );
 
   const feeds = feedResponse?.results || [];
+  const currentResponsePage = feedResponse?.page ?? safeCurrentPage;
+  const totalPages = feedResponse?.totalPages ?? 1;
 
   const tabLinks = useMemo(
     () => ({
@@ -87,15 +110,27 @@ function AvlManagement() {
       // Toggle sort order if same column clicked
       setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
     } else {
-      // Change to new column, default to descending
+      // Change to new column, default to ascending
       setSortBy(column);
-      setSortOrder('desc');
+      setSortOrder('asc');
     }
   };
 
   const getSortIndicator = (column: string) => {
     if (sortBy !== column) return null;
     return sortOrder === 'desc' ? ' ▼' : ' ▲';
+  };
+
+  const getMatchingDisplay = (feed: AVLFeed): string => {
+    if (feed.percent_matching != null) {
+      return `${feed.percent_matching}%`;
+    }
+
+    if (tab === 'active') {
+      return 'Pending';
+    }
+
+    return '';
   };
 
   const sortButtonStyle: React.CSSProperties = {
@@ -222,69 +257,79 @@ function AvlManagement() {
               )}
 
               {!isLoading && !error && feeds.length > 0 && (
-                <table className="custom_govuk_table govuk-table">
-                  <thead className="govuk-table__head">
-                    <tr className="govuk-table__row">
-                      <th className="govuk-table__header" scope="col">
-                        <button onClick={() => handleHeaderClick('status')} style={sortButtonStyle}>
-                          Status{getSortIndicator('status')}
-                        </button>
-                      </th>
-                      <th className="govuk-table__header" scope="col">
-                        <button onClick={() => handleHeaderClick('percent_matching')} style={sortButtonStyle}>
-                          AVL to Timetable matching{getSortIndicator('percent_matching')}
-                        </button>
-                      </th>
-                      <th className="govuk-table__header" scope="col">
-                        <button onClick={() => handleHeaderClick('name')} style={sortButtonStyle}>
-                          Data feed name{getSortIndicator('name')}
-                        </button>
-                      </th>
-                      <th className="govuk-table__header" scope="col">
-                        <button onClick={() => handleHeaderClick('id')} style={sortButtonStyle}>
-                          Data feed ID{getSortIndicator('id')}
-                        </button>
-                      </th>
-                      <th className="govuk-table__header" scope="col">
-                        <button onClick={() => handleHeaderClick('avl_feed_last_checked')} style={sortButtonStyle}>
-                          Last automated update{getSortIndicator('avl_feed_last_checked')}
-                        </button>
-                      </th>
-                      <th className="govuk-table__header" scope="col">
-                        <button onClick={() => handleHeaderClick('short_description')} style={sortButtonStyle}>
-                          Short description{getSortIndicator('short_description')}
-                        </button>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="govuk-table__body">
-                    {feeds.map((feed) => (
-                      <tr key={feed.id} className="govuk-table__row">
-                        <td className="govuk-table__cell">
-                          <span className={`status-indicator ${statusIndicatorClass(feed.status)}`}>
-                            {statusLabel(feed.status)}
-                          </span>
-                        </td>
-                        <td className="govuk-table__cell">
-                          {feed.percent_matching != null ? `${feed.percent_matching}%` : 'Pending'}
-                        </td>
-                        <td className="govuk-table__cell">
-                          <Link
-                            className="govuk-link"
-                            href={`/publish/org/${orgId}/dataset/avl/${feed.id}`}
-                          >
-                            {feed.name || '-'}
-                          </Link>
-                        </td>
-                        <td className="govuk-table__cell">{feed.id}</td>
-                        <td className="govuk-table__cell">
-                          {formatDateTimeFeedsList(feed.avl_feed_last_checked ?? feed.modified)}
-                        </td>
-                        <td className="govuk-table__cell">{feed.short_description || '-'}</td>
+                <>
+                  <table className="custom_govuk_table govuk-table">
+                    <thead className="govuk-table__head">
+                      <tr className="govuk-table__row">
+                        <th className="govuk-table__header" scope="col">
+                          <button onClick={() => handleHeaderClick('status')} style={sortButtonStyle}>
+                            Status{getSortIndicator('status')}
+                          </button>
+                        </th>
+                        <th className="govuk-table__header" scope="col">
+                          <button onClick={() => handleHeaderClick('percent_matching')} style={sortButtonStyle}>
+                            AVL to Timetable matching{getSortIndicator('percent_matching')}
+                          </button>
+                        </th>
+                        <th className="govuk-table__header" scope="col">
+                          <button onClick={() => handleHeaderClick('name')} style={sortButtonStyle}>
+                            Data feed name{getSortIndicator('name')}
+                          </button>
+                        </th>
+                        <th className="govuk-table__header" scope="col">
+                          <button onClick={() => handleHeaderClick('id')} style={sortButtonStyle}>
+                            Data feed ID{getSortIndicator('id')}
+                          </button>
+                        </th>
+                        <th className="govuk-table__header" scope="col">
+                          <button onClick={() => handleHeaderClick('avl_feed_last_checked')} style={sortButtonStyle}>
+                            Last automated update{getSortIndicator('avl_feed_last_checked')}
+                          </button>
+                        </th>
+                        <th className="govuk-table__header" scope="col">
+                          <button onClick={() => handleHeaderClick('short_description')} style={sortButtonStyle}>
+                            Short description{getSortIndicator('short_description')}
+                          </button>
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="govuk-table__body">
+                      {feeds.map((feed) => (
+                        <tr key={feed.id} className="govuk-table__row">
+                          <td className="govuk-table__cell">
+                            <span className={`status-indicator ${statusIndicatorClass(feed.status)}`}>
+                              {statusLabel(feed.status)}
+                            </span>
+                          </td>
+                          <td className="govuk-table__cell">
+                            {getMatchingDisplay(feed)}
+                          </td>
+                          <td className="govuk-table__cell">
+                            <Link
+                              className="govuk-link"
+                              href={`/publish/org/${orgId}/dataset/avl/${feed.id}`}
+                            >
+                              {feed.name || '-'}
+                            </Link>
+                          </td>
+                          <td className="govuk-table__cell">{feed.id}</td>
+                          <td className="govuk-table__cell">
+                            {formatDateTimeFeedsList(feed.avl_feed_last_checked ?? feed.modified)}
+                          </td>
+                          <td className="govuk-table__cell">{feed.short_description || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <Pagination
+                    currentPage={currentResponsePage}
+                    totalPages={totalPages}
+                    pageParam="page"
+                    showSinglePage
+                    baseUrl={`/publish/org/${orgId}/dataset/avl`}
+                  />
+                </>
               )}
             </div>
           </section>
