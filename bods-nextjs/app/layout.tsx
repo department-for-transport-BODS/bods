@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./govuk.scss";
 import "./globals.css";
-import { AuthProvider } from "@/lib/auth/jwt-auth";
+import { AuthProvider } from "@/lib/auth/session-auth";
 import { GDSProvider } from "@/components/gds/GDSProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
