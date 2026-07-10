@@ -302,6 +302,14 @@ body {
   align-items: center;
 }
 
+.right-justify {
+  text-align: right;
+}
+
+.dataset-property-table .flex-between {
+  align-items: flex-start;
+}
+
 .govuk-button-group {
   display: flex;
   gap: 10px;
@@ -698,6 +706,11 @@ a.review-stat__link:visited {
 
 .custom_govuk_table .govuk-table__head .govuk-table__row:first-child .govuk-table__header {
   border-top: none;
+}
+
+.custom_govuk_table .govuk-table__body .govuk-table__row:last-child .govuk-table__cell,
+.custom_govuk_table .govuk-table__body .govuk-table__row:last-child .govuk-table__header {
+  border-bottom: 1px solid #b1b4b6;
 }
 
 /* select-wrapper: container for the Choose data type dropdown */

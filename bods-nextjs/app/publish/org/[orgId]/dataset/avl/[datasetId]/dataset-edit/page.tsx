@@ -179,7 +179,11 @@ function AvlDatasetEditContent() {
       <AvlBreadcrumbs
         items={[
           {
-            label: 'Your data feed',
+            label: 'Choose data type',
+            href: `/publish/org/${orgId}/dataset/select`,
+          },
+          {
+            label: 'Bus Location Data Feeds',
             href: listUrl,
           },
           {
