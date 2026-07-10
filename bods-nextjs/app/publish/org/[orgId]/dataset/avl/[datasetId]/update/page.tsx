@@ -5,12 +5,12 @@ import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { config } from '@/config';
 import { AvlUploadFields, PublishStepper } from '@/components/publish';
-import { ErrorSummary, Modal } from '@/components/shared';
+import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlCommentStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
 import { AvlReviewHelpAside } from '../../_components/AvlReviewAuxiliaryPanels';
 
-type Step = 'comment' | 'cancel' | 'upload';
+type Step = 'comment' | 'upload';
 
 type AvlUpdateContext = {
   urlLink?: string;
@@ -36,7 +36,6 @@ function AVLUpdatePageContent() {
   const reviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`;
 
   const [step, setStep] = useState<Step>('comment');
-  const [stepBeforeCancel, setStepBeforeCancel] = useState<'comment' | 'upload'>('comment');
   const [comment, setComment] = useState('');
   const [urlLink, setUrlLink] = useState('');
   const [username, setUsername] = useState('');
@@ -186,20 +185,11 @@ function AVLUpdatePageContent() {
     }
   };
 
-  const onCancelClick = (from: 'comment' | 'upload') => {
-    setStepBeforeCancel(from);
-    setStep('cancel');
+  const onCancelClick = () => {
+    globalThis.location.href = `/publish/org/${orgId}/dataset/avl/${datasetId}/update/cancel`;
   };
 
-  const onCancelBack = () => {
-    setStep(stepBeforeCancel);
-  };
-
-  const onCancelConfirm = () => {
-    globalThis.location.href = reviewUrl;
-  };
-
-  const activeStep = step === 'cancel' ? stepBeforeCancel : step;
+  const activeStep = step;
 
   const commentSummaryErrors =
     activeStep === 'comment'
@@ -278,29 +268,13 @@ function AVLUpdatePageContent() {
                   <button
                     type="button"
                     className="govuk-button govuk-button--secondary"
-                    onClick={() => onCancelClick('comment')}
+                    onClick={onCancelClick}
                   >
                     Cancel
                   </button>
                 </div>
               </form>
             )}
-
-            <Modal
-              open={step === 'cancel'}
-              title="Would you like to cancel updating this data feed?"
-              description="Any changes you have made so far will not be saved."
-              onClose={onCancelBack}
-            >
-              <div className="govuk-button-group">
-                <button type="button" className="govuk-button" onClick={onCancelConfirm}>
-                  Confirm
-                </button>
-                <button type="button" className="govuk-button govuk-button--secondary" onClick={onCancelBack}>
-                  Cancel
-                </button>
-              </div>
-            </Modal>
 
             {activeStep === 'upload' && (
               <form method="post" onSubmit={onContinueFromUpload} noValidate>
@@ -330,7 +304,7 @@ function AVLUpdatePageContent() {
                   <button
                     type="button"
                     className="govuk-button govuk-button--secondary"
-                    onClick={() => onCancelClick('upload')}
+                    onClick={onCancelClick}
                   >
                     Cancel
                   </button>

@@ -4,13 +4,13 @@ import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AvlUploadFields, DatasetDescriptionFields, PublishStepper } from '@/components/publish';
-import { ErrorSummary, Modal } from '@/components/shared';
+import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
 import { config } from '@/config';
 import { AvlReviewHelpAside } from '../_components/AvlReviewAuxiliaryPanels';
 
-type Step = 'description' | 'cancel' | 'upload';
+type Step = 'description' | 'upload';
 
 function getHeading(step: Step): string {
   if (step === 'description') {
@@ -27,10 +27,7 @@ function AVLCreatePageContent() {
   const djangoPublishBaseUrl = djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
   const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
   const contactSupportUrl = `${djangoApiBaseUrl}/contact/`;
-  const listUrl = `/publish/org/${orgId}/dataset/avl`;
-
   const [step, setStep] = useState<Step>('description');
-  const [stepBeforeCancel, setStepBeforeCancel] = useState<'description' | 'upload'>('description');
   const [description, setDescription] = useState('');
   const [shortDescription, setShortDescription] = useState('');
   const [urlLink, setUrlLink] = useState('');
@@ -140,20 +137,11 @@ function AVLCreatePageContent() {
     }
   };
 
-  const onCancelClick = (from: 'description' | 'upload') => {
-    setStepBeforeCancel(from);
-    setStep('cancel');
+  const onCancelClick = () => {
+    globalThis.location.href = `/publish/org/${orgId}/dataset/avl/new/cancel`;
   };
 
-  const onCancelBack = () => {
-    setStep(stepBeforeCancel);
-  };
-
-  const onCancelConfirm = () => {
-    globalThis.location.href = listUrl;
-  };
-
-  const activeStep = step === 'cancel' ? stepBeforeCancel : step;
+  const activeStep = step;
   const descriptionValidationSummaryErrors =
     activeStep === 'description'
       ? [
@@ -216,28 +204,12 @@ function AVLCreatePageContent() {
                   <button type="submit" className="govuk-button">
                     Continue
                   </button>
-                  <button type="button" className="govuk-button govuk-button--secondary" onClick={() => onCancelClick('description')}>
+                  <button type="button" className="govuk-button govuk-button--secondary" onClick={onCancelClick}>
                     Cancel
                   </button>
                 </div>
               </form>
             )}
-
-            <Modal
-              open={step === 'cancel'}
-              title="Would you like to cancel publishing this data feed?"
-              description="Any changes you have made so far will not be saved."
-              onClose={onCancelBack}
-            >
-                <div className="govuk-button-group">
-                  <button type="button" className="govuk-button" onClick={onCancelConfirm}>
-                    Confirm
-                  </button>
-                  <button type="button" className="govuk-button govuk-button--secondary" onClick={onCancelBack}>
-                    Cancel
-                  </button>
-                </div>
-            </Modal>
 
             {activeStep === 'upload' && (
               <form method="post" onSubmit={onContinueFromUpload} noValidate>
@@ -264,7 +236,7 @@ function AVLCreatePageContent() {
                   <button type="submit" className="govuk-button" disabled={isSubmitting}>
                     {isSubmitting ? 'Submitting...' : 'Continue'}
                   </button>
-                  <button type="button" className="govuk-button govuk-button--secondary" onClick={() => onCancelClick('upload')}>
+                  <button type="button" className="govuk-button govuk-button--secondary" onClick={onCancelClick}>
                     Cancel
                   </button>
                 </div>
