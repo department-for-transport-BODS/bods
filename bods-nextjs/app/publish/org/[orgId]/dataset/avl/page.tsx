@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { api } from '@/lib/api-client';
 import { useApiResource } from '@/hooks/useApiResource';
-import { formatDate } from '@/lib/utils/date';
+import { formatDateTimeFeedsList } from '@/lib/utils/date';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { statusIndicatorClass, statusLabel } from './_components/avlStatus';
@@ -278,7 +278,7 @@ function AvlManagement() {
                         </td>
                         <td className="govuk-table__cell">{feed.id}</td>
                         <td className="govuk-table__cell">
-                          {formatDate(feed.avl_feed_last_checked ?? feed.modified)}
+                          {formatDateTimeFeedsList(feed.avl_feed_last_checked ?? feed.modified)}
                         </td>
                         <td className="govuk-table__cell">{feed.short_description || '-'}</td>
                       </tr>
