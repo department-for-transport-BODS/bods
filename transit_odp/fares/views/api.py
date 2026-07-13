@@ -12,7 +12,6 @@ from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
 from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
 
-
 FIRST_PUBLICATION_COMMENT = "First publication"
 LOADING_STATUSES = {"indexing", "processing", "pending"}
 AUTH_REQUIRED_ERROR = "Authentication required"
@@ -174,9 +173,7 @@ def create_fares_dataset_api(request, pk1):
         revision = _upsert_draft_revision(dataset, all_data)
         _trigger_fares_processing(revision)
 
-    review_url = (
-        f"/publish/org/{organisation.id}/dataset/fares/{dataset.id}/review"
-    )
+    review_url = f"/publish/org/{organisation.id}/dataset/fares/{dataset.id}/review"
 
     return JsonResponse({"redirect": review_url}, status=201)
 
