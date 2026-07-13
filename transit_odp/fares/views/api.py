@@ -43,6 +43,13 @@ LIST_SECTIONS = {
 EXCLUDED_LIVE_STATUSES = [FeedStatus.expired.value, FeedStatus.inactive.value]
 
 
+def _get_first_form_error(form, fallback):
+    for errors in form.errors.values():
+        if errors:
+            return str(errors[0])
+    return fallback
+
+
 def _get_user_org(user, org_id):
     try:
         return user.organisations.get(id=org_id)
@@ -482,7 +489,9 @@ def update_fares_dataset_api(request, pk1, pk):
         if not comment_form.is_valid():
             return JsonResponse(
                 {
-                    "error": "Comment validation failed",
+                    "error": _get_first_form_error(
+                        comment_form, "Comment validation failed"
+                    ),
                     "field_errors": comment_form.errors,
                 },
                 status=400,
@@ -498,7 +507,7 @@ def update_fares_dataset_api(request, pk1, pk):
     if not upload_form.is_valid():
         return JsonResponse(
             {
-                "error": "Upload validation failed",
+                "error": _get_first_form_error(upload_form, "Upload validation failed"),
                 "field_errors": upload_form.errors,
             },
             status=400,
