@@ -7,7 +7,7 @@ const djangoOrigin =
 
 const nextConfig: NextConfig = {
   // Transpile the GDS component library and govuk-frontend
-  transpilePackages: ['kainossoftwareltd-govuk-react-kainos', 'govuk-frontend'],
+  transpilePackages: ['govuk-frontend'],
 
   async rewrites() {
     return [
