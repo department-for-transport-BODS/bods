@@ -30,7 +30,7 @@ export function AvlBreadcrumbs({ items }: AvlBreadcrumbsProps) {
         </li>
         <li className="govuk-breadcrumbs__list-item">
           <Link className="govuk-breadcrumbs__link" href="/publish/">
-            Publish Open Data Service
+            Publish Bus Open Data
           </Link>
         </li>
         {items.map((item) => (

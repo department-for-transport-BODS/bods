@@ -60,7 +60,7 @@ export function Header() {
   const isPublish = pathname?.startsWith('/publish');
   const isData = pathname?.startsWith('/data');
   const showServiceMenu = Boolean(isPublish || isData);
-  const serviceName = isPublish ? 'Publish Open Data Service' : 'Bus Open Data Service';
+  const serviceName = isPublish ? 'Publish Bus Open Data' : 'Bus Open Data Service';
   let serviceHomeUrl = '/';
   if (isPublish) {
     serviceHomeUrl = '/publish';

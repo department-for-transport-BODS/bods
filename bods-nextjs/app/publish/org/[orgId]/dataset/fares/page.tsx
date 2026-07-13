@@ -130,7 +130,7 @@ function FaresPublish() {
               </li>
               <li className="govuk-breadcrumbs__list-item">
                 <Link className="govuk-breadcrumbs__link" href="/publish">
-                  Publish Open Data Service
+                  Publish Bus Open Data
                 </Link>
               </li>
               <li className="govuk-breadcrumbs__list-item" aria-current="page">
