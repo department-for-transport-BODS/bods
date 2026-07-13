@@ -40,6 +40,7 @@ type ReviewStatusResponse = {
   error?: string | null;
   errorDescription?: string | null;
   schemaValidationReportUrl?: string | null;
+  hasLiveRevision?: boolean;
 };
 
 const PUBLISHED_STATUSES = new Set(['live', 'expiring', 'warning']);
@@ -398,6 +399,7 @@ function FaresReviewPageContent() {
   const progress = Math.max(0, Math.min(100, statusData?.progress ?? 0));
   const hasBlockingError = Boolean(statusData?.error) || statusData?.status === 'error';
   const canPublish = !hasBlockingError;
+  const isUpdate = statusData?.hasLiveRevision ?? false;
 
   useEffect(() => {
     let isCancelled = false;
@@ -509,11 +511,19 @@ function FaresReviewPageContent() {
       <div className="govuk-main-wrapper">
         <div className="govuk-breadcrumbs">
           <PublishStepper
-            steps={[
-              { label: '1. Describe data', state: 'previous' },
-              { label: '2. Provide data', state: 'previous' },
-              { label: '3. Review and publish', state: 'selected' },
-            ]}
+            steps={
+              isUpdate
+                ? [
+                    { label: '1. Comment', state: 'previous' },
+                    { label: '2. Update', state: 'previous' },
+                    { label: '3. Review and publish', state: 'selected' },
+                  ]
+                : [
+                    { label: '1. Describe data', state: 'previous' },
+                    { label: '2. Provide data', state: 'previous' },
+                    { label: '3. Review and publish', state: 'selected' },
+                  ]
+            }
           />
         </div>
 

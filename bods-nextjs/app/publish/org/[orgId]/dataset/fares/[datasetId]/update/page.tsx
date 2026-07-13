@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { api } from '@/lib/api-client';
 
@@ -55,7 +55,11 @@ function CommentStepView({
       <div className="govuk-form-group">
         <label className="govuk-label" htmlFor="comment">Comment on data set updates</label>
         <div className="govuk-hint">
-          Provide a comment to describe what has changed in this update. For example: update to fares for route 36.
+          This information will give context to data set users. Please be descriptive but do not
+          include personally identifiable information. You may wish to include: The original file
+          name, start date of data, description of the fares, products, OpCo, locations/region,
+          routes/service numbers for which the data applies, or any other useful high level
+          information. The description should reflect the data included at a high level.
         </div>
         <textarea
           className="govuk-textarea govuk-!-width-three-quarters"
@@ -78,12 +82,14 @@ function UploadStepView({
   orgId,
   datasetId,
   comment,
+  modifyDraft,
   reviewUrl,
   onCancel,
 }: Readonly<{
   orgId: string;
   datasetId: string;
   comment: string;
+  modifyDraft: boolean;
   reviewUrl: string;
   onCancel: () => void;
 }>) {
@@ -97,15 +103,15 @@ function UploadStepView({
     event.preventDefault();
     setErrorMessage('');
     if (!selectedItem) {
-      setErrorMessage('Select how to provide your data set.');
+      setErrorMessage('Please provide a file or url');
       return;
     }
     if (selectedItem === URL_LINK_ITEM_ID && !urlLink.trim()) {
-      setErrorMessage('Enter a URL link for your fares data.');
+      setErrorMessage('Please provide a URL link');
       return;
     }
     if (selectedItem === UPLOAD_FILE_ITEM_ID && !uploadFile) {
-      setErrorMessage('Choose a fares file to upload.');
+      setErrorMessage('Please provide a file');
       return;
     }
     setIsSubmitting(true);
@@ -113,6 +119,9 @@ function UploadStepView({
       const formData = new FormData();
       formData.set('comment', comment);
       formData.set('selected_item', selectedItem);
+      if (modifyDraft) {
+        formData.set('modify_draft', 'true');
+      }
       if (selectedItem === URL_LINK_ITEM_ID) {
         formData.set('url_link', urlLink);
       } else if (uploadFile) {
@@ -132,7 +141,9 @@ function UploadStepView({
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <h1 className="govuk-heading-l">Choose how to provide your data set</h1>
+      <h1 className="govuk-heading-l">
+        {modifyDraft ? 'Choose how to provide your data set' : 'Update your published data set'}
+      </h1>
       {errorMessage ? (
         <div className="govuk-error-summary" role="alert" aria-labelledby="upload-error-title">
           <h2 className="govuk-error-summary__title" id="upload-error-title">There is a problem</h2>
@@ -181,7 +192,8 @@ function UploadStepView({
         <div className="govuk-form-group">
           <label className="govuk-label" htmlFor="id_url_link">URL Link</label>
           <div className="govuk-hint">
-            Please provide a URL link where your NeTEX files are hosted. Example address: mybuscompany.com/fares.xml.
+            Please provide a URL link where your NeTEX files are hosted. Example address:
+            &apos;mybuscompany.com/fares.xml&apos;.
           </div>
           <input
             id="id_url_link"
@@ -214,7 +226,7 @@ function UploadStepView({
 
       <div className="govuk-button-group">
         <button className="govuk-button" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Uploading...' : 'Continue'}
+          Continue
         </button>
         <button
           className="govuk-button govuk-button--secondary"
@@ -231,14 +243,19 @@ function UploadStepView({
 
 function FaresUpdatePageContent() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
+  const modifyDraft = searchParams.get('modifyDraft') === 'true';
 
   const reviewUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/review`;
-  const faresListUrl = `/publish/org/${orgId}/dataset/fares`;
+  const detailUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}`;
+  const cancelUrl = modifyDraft ? reviewUrl : detailUrl;
 
-  const [step, setStep] = useState<Step>(COMMENT_STEP);
-  const [stepBeforeCancel, setStepBeforeCancel] = useState<typeof COMMENT_STEP | typeof UPLOAD_STEP>(COMMENT_STEP);
+  const [step, setStep] = useState<Step>(modifyDraft ? UPLOAD_STEP : COMMENT_STEP);
+  const [stepBeforeCancel, setStepBeforeCancel] = useState<typeof COMMENT_STEP | typeof UPLOAD_STEP>(
+    modifyDraft ? UPLOAD_STEP : COMMENT_STEP,
+  );
   const [comment, setComment] = useState('');
   const [commentError, setCommentError] = useState('');
 
@@ -264,10 +281,10 @@ function FaresUpdatePageContent() {
           <div className="govuk-breadcrumbs">
             <ol className="publish-stepper govuk-breadcrumbs__list" aria-label="Progress">
               <li className={`publish-stepper__item ${step === COMMENT_STEP ? 'publish-stepper__item--selected' : 'publish-stepper__item--previous'}`}>
-                1. Add comment
+                1. Comment
               </li>
               <li className={`publish-stepper__item ${step === UPLOAD_STEP ? 'publish-stepper__item--selected' : 'publish-stepper__item--next'}`}>
-                2. Provide data
+                2. Update
               </li>
               <li className="publish-stepper__item publish-stepper__item--next">3. Review and publish</li>
             </ol>
@@ -278,7 +295,7 @@ function FaresUpdatePageContent() {
           <div className="govuk-grid-column-two-thirds indented-text">
             {step === CANCEL_STEP ? (
               <CancelStepView
-                onConfirm={() => { globalThis.location.href = faresListUrl; }}
+                onConfirm={() => { globalThis.location.href = cancelUrl; }}
                 onBack={() => setStep(stepBeforeCancel)}
               />
             ) : null}
@@ -296,6 +313,7 @@ function FaresUpdatePageContent() {
                 orgId={orgId}
                 datasetId={datasetId}
                 comment={comment}
+                modifyDraft={modifyDraft}
                 reviewUrl={reviewUrl}
                 onCancel={() => handleCancelClick(UPLOAD_STEP)}
               />
