@@ -6,9 +6,10 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
+import { getCsrfToken } from '@/lib/api-client';
 import { formatDateTime } from '@/lib/utils/date';
 
 type ReviewStatusResponse = {
@@ -59,33 +60,14 @@ function FaresReviewPageContent() {
   const [hasReviewed, setHasReviewed] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const token = useMemo(() => {
-    if (!globalThis.window) {
-      return null;
-    }
-
-    return globalThis.window.localStorage.getItem('bods.auth.access');
-  }, []);
-
   useEffect(() => {
     let isCancelled = false;
-    let intervalId: ReturnType<typeof setInterval> | undefined;
 
     const fetchStatus = async () => {
-      if (!token) {
-        if (!isCancelled) {
-          setErrorMessage('Not authenticated. Please sign in and retry.');
-          setIsInitialLoading(false);
-        }
-        return;
-      }
-
       try {
-        const resp = await fetch(`/api/fares/review-status?orgId=${orgId}&datasetId=${datasetId}`, {
+        const resp = await fetch(`/api/fares/review-status/${orgId}/${datasetId}/`, {
           method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: 'include',
         });
 
         const data = (await resp.json().catch(() => ({}))) as ReviewStatusResponse & {
@@ -118,7 +100,7 @@ function FaresReviewPageContent() {
     };
 
     fetchStatus();
-    intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
+    const intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
 
     return () => {
       isCancelled = true;
@@ -126,10 +108,10 @@ function FaresReviewPageContent() {
         clearInterval(intervalId);
       }
     };
-  }, [datasetId, orgId, token]);
+  }, [datasetId, orgId]);
 
   const handlePublish = async () => {
-    if (!token || isPublishing) {
+    if (isPublishing) {
       return;
     }
 
@@ -137,11 +119,11 @@ function FaresReviewPageContent() {
     setErrorMessage('');
 
     try {
-      const resp = await fetch(`/api/fares/publish?orgId=${orgId}&datasetId=${datasetId}`, {
+      const csrfToken = getCsrfToken();
+      const resp = await fetch(`/api/fares/publish/${orgId}/${datasetId}/`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
+        headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
       });
 
       const data = (await resp.json().catch(() => ({}))) as {
