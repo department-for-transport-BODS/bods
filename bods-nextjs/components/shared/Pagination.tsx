@@ -169,7 +169,7 @@ export function Pagination({
 
         {showStartEllipsis && (
           <li className="govuk-pagination__item govuk-pagination__item--ellipses">
-            &ctdot;
+            ...
           </li>
         )}
 
@@ -222,7 +222,7 @@ export function Pagination({
 
         {showEndEllipsis && (
           <li className="govuk-pagination__item govuk-pagination__item--ellipses">
-            &ctdot;
+            ...
           </li>
         )}
 

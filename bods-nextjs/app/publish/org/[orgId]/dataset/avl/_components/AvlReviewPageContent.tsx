@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { PublishStepper } from '@/components/publish';
 import { api } from '@/lib/api-client';
 import { config } from '@/config';
@@ -36,8 +36,10 @@ const POLL_INTERVAL_MS = 1000;
 
 export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
   const params = useParams();
+  const searchParams = useSearchParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
+  const refreshToken = searchParams.get('refresh') || '';
 
   const [statusData, setStatusData] = useState<AvlReviewStatusResponse | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -59,10 +61,14 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
 
   useEffect(() => {
     let isCancelled = false;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
 
     const fetchStatus = async () => {
       try {
-        const data = await api.get<AvlReviewStatusResponse>(`/api/avl/review-status/${orgId}/${datasetId}/`);
+        const data = await api.get<AvlReviewStatusResponse>(
+          `/api/avl/review-status/${orgId}/${datasetId}/?t=${Date.now()}`,
+          { cache: 'no-store' },
+        );
 
         if (!isCancelled) {
           setStatusData(data);
@@ -70,7 +76,7 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
           setIsInitialLoading(false);
         }
 
-        if (!data.loading) {
+        if (!data.loading && intervalId) {
           clearInterval(intervalId);
         }
       } catch {
@@ -81,16 +87,24 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
       }
     };
 
-    const intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
+    const refreshStatus = () => {
+      void fetchStatus();
+    };
+
+    intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
     fetchStatus();
+    window.addEventListener('pageshow', refreshStatus);
+    window.addEventListener('focus', refreshStatus);
 
     return () => {
       isCancelled = true;
       if (intervalId) {
         clearInterval(intervalId);
       }
+      window.removeEventListener('pageshow', refreshStatus);
+      window.removeEventListener('focus', refreshStatus);
     };
-  }, [datasetId, orgId]);
+  }, [datasetId, orgId, refreshToken]);
 
   const handlePublish = async () => {
     if (isPublishing) {
@@ -234,7 +248,11 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                       </h2>
                       <div className="govuk-error-summary__body">
                         <ul className="govuk-list govuk-error-summary__list">
-                          <li className="no-underline-l app-error-summary__item">{reviewErrorMessage}</li>
+                          <li
+                            className="govuk-error-message app-error-summary__item"
+                            style={{ color: '#d4351c', textDecoration: 'underline' }}
+                            dangerouslySetInnerHTML={{ __html: reviewErrorMessage }}
+                          />
                         </ul>
                       </div>
                     </div>
@@ -297,26 +315,30 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                       <th scope="row" className="govuk-table__header">SIRI-VM version</th>
                       <td className="govuk-table__cell">{statusData?.siriVersion || '-'}</td>
                     </tr>
-                    <tr className="govuk-table__row">
-                      <th scope="row" className="govuk-table__header">URL link</th>
-                      <td className="govuk-table__cell">
-                        <span className="dont-break-out" style={{ display: 'block', maxWidth: '100%', overflowWrap: 'anywhere' }}>
-                          {statusData?.urlLink || '-'}
-                        </span>
-                      </td>
-                    </tr>
-                    <tr className="govuk-table__row">
-                      <th scope="row" className="govuk-table__header">Feed details last updated</th>
-                      <td className="govuk-table__cell">
-                        {statusData?.lastModified
-                          ? `${formatDateTime(statusData.lastModified)}${statusData.lastModifiedUser ? ` by ${statusData.lastModifiedUser}` : ''}`
-                          : '-'}
-                      </td>
-                    </tr>
-                    <tr className="govuk-table__row">
-                      <th scope="row" className="govuk-table__header">Last automated update</th>
-                      <td className="govuk-table__cell">Unknown</td>
-                    </tr>
+                    {!reviewErrorMessage && (
+                      <>
+                        <tr className="govuk-table__row">
+                          <th scope="row" className="govuk-table__header">URL link</th>
+                          <td className="govuk-table__cell">
+                            <span className="dont-break-out" style={{ display: 'block', maxWidth: '100%', overflowWrap: 'anywhere' }}>
+                              {statusData?.urlLink || '-'}
+                            </span>
+                          </td>
+                        </tr>
+                        <tr className="govuk-table__row">
+                          <th scope="row" className="govuk-table__header">Feed details last updated</th>
+                          <td className="govuk-table__cell">
+                            {statusData?.lastModified
+                              ? `${formatDateTime(statusData.lastModified)}${statusData.lastModifiedUser ? ` by ${statusData.lastModifiedUser}` : ''}`
+                              : '-'}
+                          </td>
+                        </tr>
+                        <tr className="govuk-table__row">
+                          <th scope="row" className="govuk-table__header">Last automated update</th>
+                          <td className="govuk-table__cell">Unknown</td>
+                        </tr>
+                      </>
+                    )}
                   </tbody>
                 </table>
 

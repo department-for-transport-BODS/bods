@@ -141,7 +141,8 @@ function AvlDatasetEditContent() {
       }
 
       if (hasReturnUrl) {
-        globalThis.location.href = returnUrl;
+        const separator = returnUrl.includes('?') ? '&' : '?';
+        globalThis.location.href = `${returnUrl}${separator}refresh=${Date.now()}`;
         return;
       }
 

@@ -167,6 +167,9 @@ function AVLUpdatePageContent() {
         if (Object.keys(nextErrors).length > 0) {
           setErrors(nextErrors);
           setSubmitError('');
+          if (nextErrors.comment) {
+            setStep('comment');
+          }
           moveToTop();
         } else {
           setSubmitError(data.error || `Submit failed (${response.status}).`);
@@ -224,7 +227,7 @@ function AVLUpdatePageContent() {
         <div id="avl-update-page-top" />
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl govuk-!-margin-bottom-0 dont-break-out govuk-!-padding-top-3 govuk-!-padding-bottom-4">
+            <h1 className="govuk-heading-xl govuk-!-margin-bottom-0 dont-break-out govuk-!-padding-bottom-4">
               {getHeading(activeStep)}
             </h1>
           </div>

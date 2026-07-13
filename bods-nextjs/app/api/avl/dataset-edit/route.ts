@@ -96,41 +96,6 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    if (mode === 'revision') {
-      const djangoResp = await fetch(`${config.djangoOrigin}/org/${orgId}/dataset/avl/${datasetId}/revision-edit/`, {
-        method: 'POST',
-        body: outgoing,
-        headers: getSessionHeaders(request, { includeCsrf: true }),
-        redirect: 'manual',
-      });
-
-      if (djangoResp.status >= 300 && djangoResp.status < 400) {
-        const location = djangoResp.headers.get('location') || '';
-        return NextResponse.json(
-          {
-            redirect: toNextJsPath(location || `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`),
-          },
-          { status: 200 },
-        );
-      }
-
-      if (djangoResp.ok) {
-        return NextResponse.json(
-          {
-            redirect: `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`,
-          },
-          { status: 200 },
-        );
-      }
-
-      return NextResponse.json(
-        {
-          error: `Django responded with status ${djangoResp.status}`,
-        },
-        { status: djangoResp.status },
-      );
-    }
-
     const modeQuery = mode ? `?mode=${encodeURIComponent(mode)}` : '';
     const djangoResp = await fetch(`${config.djangoOrigin}/api/avl/dataset-edit/${orgId}/${datasetId}/save/${modeQuery}`, {
       method: 'POST',

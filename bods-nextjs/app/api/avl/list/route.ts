@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { config } from '@/config';
 import { getSessionHeaders, hasSessionCookie } from '../_utils/session-auth';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 type AvlListItem = {
   id: number;
   name: string;
@@ -61,6 +64,7 @@ export async function GET(request: NextRequest) {
       {
         method: 'GET',
         headers: getSessionHeaders(request),
+        cache: 'no-store',
       },
     );
 
@@ -110,25 +114,11 @@ async function loadDraftFeeds(orgId: string, request: NextRequest): Promise<AvlL
     `${publishOrigin}/publish/org/${orgId}/dataset/avl/?tab=draft`,
   ];
 
-  let html = '';
   let datasetIds: number[] = [];
 
   for (const candidateUrl of draftPageCandidates) {
-    const draftHtmlResp = await fetch(candidateUrl, {
-      method: 'GET',
-      headers: getSessionHeaders(request),
-    });
-
-    if (!draftHtmlResp.ok) {
-      continue;
-    }
-
-    html = await draftHtmlResp.text();
-
-    const idsFromLinks = Array.from(html.matchAll(/\/dataset\/avl\/(\d+)(?:\/|\?|"|')/g), (match) => Number.parseInt(match[1], 10));
-    const idsFromCells = Array.from(html.matchAll(/<td[^>]*class="govuk-table__cell"[^>]*>\s*(\d+)\s*<\/td>/g), (match) => Number.parseInt(match[1], 10));
-
-    datasetIds = [...new Set([...idsFromLinks, ...idsFromCells].filter((id) => !Number.isNaN(id)))];
+    const collectedIds = await loadDraftIdsFromCandidate(candidateUrl, request);
+    datasetIds = [...new Set(collectedIds)];
     if (datasetIds.length > 0) {
       break;
     }
@@ -145,6 +135,7 @@ async function loadDraftFeeds(orgId: string, request: NextRequest): Promise<AvlL
         {
           method: 'GET',
           headers: getSessionHeaders(request),
+          cache: 'no-store',
         },
       );
 
@@ -174,6 +165,62 @@ async function loadDraftFeeds(orgId: string, request: NextRequest): Promise<AvlL
   );
 
   return draftRows.filter((row): row is AvlListItem => row !== null);
+}
+
+async function loadDraftIdsFromCandidate(candidateUrl: string, request: NextRequest): Promise<number[]> {
+  const collected = new Set<number>();
+  const maxPagesToScan = 200;
+
+  for (let page = 1; page <= maxPagesToScan; page += 1) {
+    const pageUrl = appendPageQuery(candidateUrl, page);
+    const draftHtmlResp = await fetch(pageUrl, {
+      method: 'GET',
+      headers: getSessionHeaders(request),
+      cache: 'no-store',
+    });
+
+    if (!draftHtmlResp.ok) {
+      if (page === 1) {
+        return [];
+      }
+      break;
+    }
+
+    const html = await draftHtmlResp.text();
+    const idsFromLinks = Array.from(
+      html.matchAll(/\/dataset\/avl\/(\d+)(?:\/|\?|"|')/g),
+      (match) => Number.parseInt(match[1], 10),
+    );
+    const idsFromCells = Array.from(
+      html.matchAll(/<td[^>]*class="govuk-table__cell"[^>]*>\s*(\d+)\s*<\/td>/g),
+      (match) => Number.parseInt(match[1], 10),
+    );
+
+    const pageIds = [...idsFromLinks, ...idsFromCells].filter((id) => !Number.isNaN(id));
+    const previousSize = collected.size;
+    pageIds.forEach((id) => collected.add(id));
+
+    if (pageIds.length === 0) {
+      break;
+    }
+
+    const hasExplicitNext = html.includes(`page=${page + 1}`) || html.includes(`?page=${page + 1}`);
+    if (!hasExplicitNext && collected.size === previousSize) {
+      break;
+    }
+
+    if (!hasExplicitNext && pageIds.length > 0 && collected.size > previousSize) {
+      break;
+    }
+  }
+
+  return [...collected];
+}
+
+function appendPageQuery(url: string, page: number): string {
+  const parsed = new URL(url);
+  parsed.searchParams.set('page', String(page));
+  return parsed.toString();
 }
 
 function sortResults(results: AvlListItem[], sortBy: string, order: string): AvlListItem[] {

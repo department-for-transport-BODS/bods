@@ -9,7 +9,7 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Radios } from 'kainossoftwareltd-govuk-react-kainos';
 import { getPaginated } from '@/lib/api-client';
 
@@ -20,6 +20,10 @@ interface Organisation {
 }
 
 function PublishDashboard() {
+  useEffect(() => {
+    document.title = 'Choose data type';
+  }, []);
+
   const router = useRouter();
   const [selectedDataType, setSelectedDataType] = useState<DataType | ''>('');
   const [hasSubmitted, setHasSubmitted] = useState(false);
