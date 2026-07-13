@@ -69,7 +69,7 @@ body {
 }
 
 .app-masthead .govuk-body {
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 .app-masthead .govuk-body a {
@@ -886,6 +886,10 @@ a.review-stat__link:visited {
 .help-modal .overlay .content {
   position: relative;
   margin-top: 40px;
+}
+
+.help-modal .overlay .content .govuk-body {
+  color: #0b0c0c;
 }
 
 /* Position utility for relative bottom offset */
