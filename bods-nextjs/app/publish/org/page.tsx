@@ -9,6 +9,7 @@
 import { useState, useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { getPaginated } from '@/lib/api-client';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Organisation {
@@ -20,6 +21,7 @@ interface Organisation {
 function SelectOrg() {
   const [orgs, setOrgs] = useState<Organisation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -29,19 +31,30 @@ function SelectOrg() {
     selectedDataType === 'timetable' || selectedDataType === 'avl' || selectedDataType === 'fares';
 
   useEffect(() => {
-    loadOrganisations();
-  }, []);
+    const loadOrganisations = async () => {
+      try {
+        const data = await getPaginated<Organisation>('/api/organisations/');
 
-  const loadOrganisations = async () => {
-    try {
-      const data = await getPaginated<Organisation>('/api/organisations/');
-      setOrgs(data.results);
-    } catch (err) {
-      console.error('Failed to load organisations', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        if (data.results.length === 1 && user?.is_single_org_user) {
+          const orgId = data.results[0].id;
+          router.push(
+            isValidDataType
+              ? `/publish/org/${orgId}/dataset/${selectedDataType}`
+              : `/publish/org/${orgId}/dataset/timetable`,
+          );
+          return;
+        }
+
+        setOrgs(data.results);
+      } catch (err) {
+        console.error('Failed to load organisations', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadOrganisations();
+  }, [isValidDataType, router, selectedDataType, user?.is_single_org_user]);
 
   const handleSelect = (orgId: number) => {
     if (isValidDataType) {

@@ -45,7 +45,7 @@ function getErrorMessage(payload: unknown, fallback: string): string {
   return fallback;
 }
 
-function normaliseUser(user: Partial<User>): User {
+export function normaliseUser(user: Partial<User>): User {
   return {
     id: Number(user.id ?? 0),
     email: user.email || '',
@@ -54,6 +54,11 @@ function normaliseUser(user: Partial<User>): User {
     roles: user.roles,
     is_staff: user.is_staff,
     is_superuser: user.is_superuser,
+    account_type: user.account_type,
+    organisation_id: user.organisation_id,
+    is_org_user: user.is_org_user,
+    is_single_org_user: user.is_single_org_user,
+    is_agent_user: user.is_agent_user,
   };
 }
 
