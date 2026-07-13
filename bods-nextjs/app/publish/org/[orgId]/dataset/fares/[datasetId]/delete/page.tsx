@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { getCsrfToken } from '@/lib/api-client';
+import { api } from '@/lib/api-client';
 
 function FaresDeletePageContent() {
   const params = useParams();
@@ -19,10 +19,10 @@ function FaresDeletePageContent() {
   const [hasLiveRevision, setHasLiveRevision] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/fares/review-status/${orgId}/${datasetId}/`, {
-      credentials: 'include',
-    })
-      .then((r) => r.json())
+    api
+      .get<{ name?: string; hasLiveRevision?: boolean }>(
+        `/api/fares/review-status/${orgId}/${datasetId}/`,
+      )
       .then((data: { name?: string; hasLiveRevision?: boolean }) => {
         setDatasetName(data.name || '');
         setHasLiveRevision(Boolean(data.hasLiveRevision));
@@ -43,30 +43,15 @@ function FaresDeletePageContent() {
     setIsDeleting(true);
 
     try {
-      const csrfToken = getCsrfToken();
-      const response = await fetch(`/api/fares/delete/${orgId}/${datasetId}/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
-      });
-
-      const data = (await response.json().catch(() => ({}))) as {
-        error?: string;
-        redirect?: string;
+      const data = await api.post<{
         deleted?: boolean;
         dataset_name?: string;
-      };
-
-      if (!response.ok) {
-        setErrorMessage(data.error || `Delete failed (${response.status}).`);
-        setIsDeleting(false);
-        return;
-      }
+      }>(`/api/fares/delete/${orgId}/${datasetId}/`);
 
       const successUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/delete/success?name=${encodeURIComponent(data.dataset_name || datasetName)}`;
       globalThis.location.href = successUrl;
-    } catch {
-      setErrorMessage('Unable to delete data set. Please try again.');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to delete data set. Please try again.');
       setIsDeleting(false);
     }
   };

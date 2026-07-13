@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { getCsrfToken } from '@/lib/api-client';
+import { api } from '@/lib/api-client';
 
 function FaresDeactivatePageContent() {
   const params = useParams();
@@ -21,30 +21,15 @@ function FaresDeactivatePageContent() {
     setIsDeactivating(true);
 
     try {
-      const csrfToken = getCsrfToken();
-      const response = await fetch(`/api/fares/deactivate/${orgId}/${datasetId}/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
-      });
-
-      const data = (await response.json().catch(() => ({}))) as {
-        error?: string;
-        redirect?: string;
+      const data = await api.post<{
         deactivated?: boolean;
         dataset_name?: string;
-      };
-
-      if (!response.ok) {
-        setErrorMessage(data.error || `Deactivate failed (${response.status}).`);
-        setIsDeactivating(false);
-        return;
-      }
+      }>(`/api/fares/deactivate/${orgId}/${datasetId}/`);
 
       const successUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/deactivate/success?name=${encodeURIComponent(data.dataset_name || '')}`;
       globalThis.location.href = successUrl;
-    } catch {
-      setErrorMessage('Unable to deactivate data set. Please try again.');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to deactivate data set. Please try again.');
       setIsDeactivating(false);
     }
   };

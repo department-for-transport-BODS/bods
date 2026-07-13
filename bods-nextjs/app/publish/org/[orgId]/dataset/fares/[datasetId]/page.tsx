@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { api } from '@/lib/api-client';
 
 type FaresDetailResponse = {
   datasetId: number;
@@ -97,15 +98,9 @@ function FaresDatasetDetailContent() {
 
     const load = async () => {
       try {
-        const response = await fetch(`/api/fares/review-status/${orgId}/${datasetId}/`, {
-          credentials: 'include',
-        });
-
-        const payload = (await response.json().catch(() => ({}))) as FaresDetailResponse & { error?: string };
-
-        if (!response.ok) {
-          throw new Error(payload.error || `Unable to load dataset (${response.status})`);
-        }
+        const payload = await api.get<FaresDetailResponse>(
+          `/api/fares/review-status/${orgId}/${datasetId}/`,
+        );
 
         if (!isCancelled) {
           setData(payload);

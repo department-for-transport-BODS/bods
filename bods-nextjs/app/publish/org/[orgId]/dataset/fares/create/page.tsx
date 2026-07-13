@@ -5,7 +5,7 @@
 import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { getCsrfToken } from '@/lib/api-client';
+import { api } from '@/lib/api-client';
 
 const DESCRIPTION_STEP = 'description';
 const CANCEL_STEP = 'cancel';
@@ -308,21 +308,7 @@ function FaresCreatePageContent() {
         formData.set('upload_file', uploadFile, uploadFile.name);
       }
 
-      const csrfToken = getCsrfToken();
-      const resp = await fetch(`/api/fares/create/${orgId}/`, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-        headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
-      });
-
-      const data = (await resp.json().catch(() => ({}))) as { error?: string; redirect?: string };
-
-      if (!resp.ok) {
-        setErrorMessage(data.error || `Submit failed (${resp.status}).`);
-        setIsSubmitting(false);
-        return;
-      }
+      const data = await api.post<{ redirect?: string }>(`/api/fares/create/${orgId}/`, formData);
 
       if (!data.redirect) {
         setErrorMessage('Unexpected response from server.');
@@ -332,8 +318,8 @@ function FaresCreatePageContent() {
 
       // Navigate within Next.js (the bridge rewrites Django URLs to Next.js paths)
       globalThis.location.href = data.redirect;
-    } catch {
-      setErrorMessage('An error occurred while submitting. Please try again.');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'An error occurred while submitting. Please try again.');
       setIsSubmitting(false);
     }
   };

@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { api } from '@/lib/api-client';
 import { formatDate } from '@/lib/utils/date';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
@@ -79,18 +80,7 @@ function FaresPublish() {
       setError('');
 
       try {
-        const response = await fetch(`/api/fares/list/${orgId}/?tab=${tab}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        const data = (await response.json().catch(() => ({}))) as Partial<FaresListResponse> & {
-          error?: string;
-        };
-
-        if (!response.ok) {
-          throw new Error(data.error || `Unable to load fares datasets (${response.status})`);
-        }
+        const data = await api.get<FaresListResponse>(`/api/fares/list/${orgId}/?tab=${tab}`);
 
         if (!isCancelled) {
           setDatasets(Array.isArray(data.results) ? data.results : []);

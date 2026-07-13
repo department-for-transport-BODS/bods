@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { StopPoint } from '@/components/data/StopMap';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
-import { getCsrfToken } from '@/lib/api-client';
+import { api } from '@/lib/api-client';
 import { formatDateTime } from '@/lib/utils/date';
 import { config } from '@/config';
 
@@ -127,14 +127,12 @@ function FaresStopMapPreview({ revisionId, mapboxToken }: Readonly<FaresStopMapP
       setIsMapLoading(true);
       setHasLoadedStops(false);
       try {
-        const response = await fetch(`/api/app/fare_stops/?revision=${revisionId}`, {
-          credentials: 'include',
-        });
-
-        const payload = (await response.json().catch(() => ({}))) as FareStopsApiResponse;
+        const payload = await api.get<FareStopsApiResponse>(
+          `/api/app/fare_stops/?revision=${revisionId}`,
+        );
         if (!isCancelled) {
-          setFareStops(response.ok ? parseFareStops(payload) : []);
-          setHasLoadedStops(response.ok);
+          setFareStops(parseFareStops(payload));
+          setHasLoadedStops(true);
         }
       } catch {
         if (!isCancelled) {
@@ -290,22 +288,9 @@ function FaresReviewPageContent() {
 
     const fetchStatus = async () => {
       try {
-        const resp = await fetch(`/api/fares/review-status/${orgId}/${datasetId}/`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        const data = (await resp.json().catch(() => ({}))) as ReviewStatusResponse & {
-          error?: string;
-        };
-
-        if (!resp.ok) {
-          if (!isCancelled) {
-            setErrorMessage(data.error || `Status check failed (${resp.status}).`);
-            setIsInitialLoading(false);
-          }
-          return;
-        }
+        const data = await api.get<ReviewStatusResponse>(
+          `/api/fares/review-status/${orgId}/${datasetId}/`,
+        );
 
         if (!isCancelled) {
           setStatusData(data);
@@ -316,9 +301,13 @@ function FaresReviewPageContent() {
         if (!data.loading && intervalId) {
           clearInterval(intervalId);
         }
-      } catch {
+      } catch (error) {
         if (!isCancelled) {
-          setErrorMessage('Unable to check processing status. Please refresh and try again.');
+          setErrorMessage(
+            error instanceof Error
+              ? error.message
+              : 'Unable to check processing status. Please refresh and try again.',
+          );
           setIsInitialLoading(false);
         }
       }
@@ -344,27 +333,13 @@ function FaresReviewPageContent() {
     setErrorMessage('');
 
     try {
-      const csrfToken = getCsrfToken();
-      const resp = await fetch(`/api/fares/publish/${orgId}/${datasetId}/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
-      });
-
-      const data = (await resp.json().catch(() => ({}))) as {
-        error?: string;
+      const data = await api.post<{
         redirect?: string;
-      };
-
-      if (!resp.ok) {
-        setErrorMessage(data.error || `Publish failed (${resp.status}).`);
-        setIsPublishing(false);
-        return;
-      }
+      }>(`/api/fares/publish/${orgId}/${datasetId}/`);
 
       globalThis.location.href = data.redirect || faresListUrl;
-    } catch {
-      setErrorMessage('An error occurred while publishing. Please try again.');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'An error occurred while publishing. Please try again.');
       setIsPublishing(false);
     }
   };

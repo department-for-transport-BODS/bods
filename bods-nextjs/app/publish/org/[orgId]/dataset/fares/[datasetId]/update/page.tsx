@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { getCsrfToken } from '@/lib/api-client';
+import { api } from '@/lib/api-client';
 
 const COMMENT_STEP = 'comment';
 const UPLOAD_STEP = 'upload';
@@ -119,22 +119,13 @@ function UploadStepView({
         formData.set('upload_file', uploadFile, uploadFile.name);
       }
 
-      const csrfToken = getCsrfToken();
-      const resp = await fetch(`/api/fares/update/${orgId}/${datasetId}/`, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-        headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
-      });
-      const data = (await resp.json().catch(() => ({}))) as { error?: string; redirect?: string };
-      if (!resp.ok) {
-        setErrorMessage(data.error || `Upload failed (${resp.status}).`);
-        setIsSubmitting(false);
-        return;
-      }
+      const data = await api.post<{ redirect?: string }>(
+        `/api/fares/update/${orgId}/${datasetId}/`,
+        formData,
+      );
       globalThis.location.href = data.redirect || reviewUrl;
-    } catch {
-      setErrorMessage('An error occurred while uploading. Please try again.');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'An error occurred while uploading. Please try again.');
       setIsSubmitting(false);
     }
   };
