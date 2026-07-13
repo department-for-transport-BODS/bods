@@ -82,7 +82,7 @@ export function AvlUploadFields({
         <input
           className="govuk-input govuk-!-width-three-quarters"
           id="id_password"
-          type="password"
+          type="text"
           autoComplete="new-password"
           value={password}
           onChange={(event) => onPasswordChange(event.target.value)}

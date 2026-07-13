@@ -209,15 +209,29 @@ function AVLUpdatePageContent() {
 
   return (
     <div className="govuk-width-container">
+      <div className="govuk-breadcrumbs">
+        <PublishStepper
+          steps={[
+            { label: '1. Comment', state: activeStep === 'comment' ? 'selected' : 'previous' },
+            { label: '2. Update', state: activeStep === 'upload' ? 'selected' : 'next' },
+            { label: '3. Review and publish', state: 'next' },
+          ]}
+        />
+      </div>
+
       <div className="govuk-main-wrapper">
         <div id="avl-update-page-top" />
-        <div className="govuk-breadcrumbs">
-          <PublishStepper
-            steps={[
-              { label: '1. Add update comment', state: activeStep === 'comment' ? 'selected' : 'previous' },
-              { label: '2. Provide your data', state: activeStep === 'upload' ? 'selected' : 'next' },
-              { label: '3. Review and publish', state: 'next' },
-            ]}
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds">
+            <h1 className="govuk-heading-xl govuk-!-margin-bottom-0 dont-break-out govuk-!-padding-top-3 govuk-!-padding-bottom-4">
+              {getHeading(activeStep)}
+            </h1>
+          </div>
+          <AvlReviewHelpAside
+            supportBusOperatorsUrl={supportBusOperatorsUrl}
+            contactSupportUrl={contactSupportUrl}
+            linkClassName="govuk-link large-font"
+            openInNewTab
           />
         </div>
 
@@ -229,8 +243,6 @@ function AVLUpdatePageContent() {
             {uploadSummaryErrors.length > 0 && (
               <ErrorSummary errors={uploadSummaryErrors} summaryId="avl-update-upload-error-title" />
             )}
-
-            <h1 className="govuk-heading-l">{getHeading(activeStep)}</h1>
 
             {submitError && (
               <ErrorSummary errors={[submitError]} summaryId="avl-update-submit-error-title" />
@@ -313,13 +325,6 @@ function AVLUpdatePageContent() {
 
             <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />
           </div>
-
-          <AvlReviewHelpAside
-            supportBusOperatorsUrl={supportBusOperatorsUrl}
-            contactSupportUrl={contactSupportUrl}
-            linkClassName="govuk-link large-font"
-            openInNewTab
-          />
         </div>
       </div>
     </div>

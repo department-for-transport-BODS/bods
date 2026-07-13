@@ -49,6 +49,10 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
 
   const updateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
   const deleteUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/delete`;
+  const reviewUrl = isUpdate
+    ? `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`
+    : `/publish/org/${orgId}/dataset/avl/${datasetId}/review`;
+  const editUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/dataset-edit?mode=revision&redirect=${encodeURIComponent(reviewUrl)}`;
   const djangoApiBaseUrl = config.djangoApiBaseUrl;
   const djangoPublishBaseUrl = djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
   const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
@@ -124,15 +128,23 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
 
   return (
     <div className="govuk-width-container">
+      <div className="govuk-breadcrumbs">
+        <PublishStepper
+          steps={[
+            { label: isUpdate ? '1. Comment' : '1. Describe data', state: 'previous' },
+            { label: '2. Update', state: 'previous' },
+            { label: '3. Review and publish', state: 'selected' },
+          ]}
+        />
+      </div>
+
       <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <PublishStepper
-            steps={[
-              { label: isUpdate ? '1. Add update comment' : '1. Describe your data feed', state: 'previous' },
-              { label: '2. Provide your data', state: 'previous' },
-              { label: '3. Review and publish', state: 'selected' },
-            ]}
-          />
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds">
+            <h1 className="govuk-heading-xl govuk-!-margin-bottom-0 dont-break-out govuk-!-padding-top-3 govuk-!-padding-bottom-3">
+              Review and publish
+            </h1>
+          </div>
         </div>
 
         <ErrorSummary
@@ -144,7 +156,6 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
           dataModule="govuk-error-summary"
         />
 
-        <h1 className="govuk-heading-l">Review and publish</h1>
         <hr className="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
 
         <div className="govuk-grid-row">
@@ -234,11 +245,25 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Description</th>
-                      <td className="govuk-table__cell">{statusData?.description || '-'}</td>
+                      <td className="govuk-table__cell">
+                        <div className="flex-between">
+                          <span className="dont-break-out">{statusData?.description || '-'}</span>
+                          <Link className="govuk-link" href={editUrl}>
+                            Edit
+                          </Link>
+                        </div>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Short description</th>
-                      <td className="govuk-table__cell dont-break-out">{statusData?.shortDescription || '-'}</td>
+                      <td className="govuk-table__cell dont-break-out">
+                        <div className="flex-between">
+                          <span>{statusData?.shortDescription || '-'}</span>
+                          <Link className="govuk-link" href={editUrl}>
+                            Edit
+                          </Link>
+                        </div>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Status</th>

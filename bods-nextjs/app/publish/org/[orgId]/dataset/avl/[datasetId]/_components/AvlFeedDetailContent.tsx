@@ -91,7 +91,7 @@ export function AvlFeedDetailContent() {
           { label: 'Publish Bus Open Data', href: '/publish/' },
           {
             label: 'Choose data type',
-            href: `/publish/org/${orgId}/dataset/select`,
+            href: `/publish/`,
           },
           {
             label: 'Bus Location Data Feeds',
