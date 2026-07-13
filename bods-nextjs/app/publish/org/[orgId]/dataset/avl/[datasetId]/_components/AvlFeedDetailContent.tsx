@@ -89,7 +89,7 @@ export function AvlFeedDetailContent() {
         items={[
           {
             label: 'Choose data type',
-            href: `/publish/org/${orgId}/dataset/select`,
+            href: `/publish/`,
           },
           {
             label: 'Bus Location Data Feeds',

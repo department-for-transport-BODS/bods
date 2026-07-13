@@ -7,6 +7,7 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Radios } from 'kainossoftwareltd-govuk-react-kainos';
@@ -56,6 +57,26 @@ function PublishDashboard() {
 
   return (
     <div className="govuk-width-container">
+      <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
+        <ol className="govuk-breadcrumbs__list">
+          <li className="govuk-breadcrumbs__list-item">
+            <Link className="govuk-breadcrumbs__link" href="/">
+              Bus Open Data Service
+            </Link>
+          </li>
+          <li className="govuk-breadcrumbs__list-item">
+            <Link className="govuk-breadcrumbs__link" href="/publish">
+              Publish Bus Open Data
+            </Link>
+          </li>
+          <li className="govuk-breadcrumbs__list-item" aria-current="page">
+            <Link className="govuk-breadcrumbs__link" href="/publish">
+            Publish a Dataset or Data Feed
+            </Link>
+          </li>
+        </ol>
+      </nav>
+
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">

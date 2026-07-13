@@ -219,4 +219,22 @@ describe('AvlReviewPageContent', () => {
       expect(checkbox).toBeInTheDocument();
     });
   });
+
+  it('shows edit links for description fields in update review mode', async () => {
+    mockApiGet.mockResolvedValue({
+      ...mockReviewResponse,
+      loading: false,
+    });
+
+    render(<AvlReviewPageContent isUpdate />);
+
+    await waitFor(() => {
+      const editLinks = screen.getAllByRole('link', { name: 'Edit' });
+      expect(editLinks).toHaveLength(2);
+      expect(editLinks[0]).toHaveAttribute(
+        'href',
+        '/publish/org/org-123/dataset/avl/dataset-456/dataset-edit?mode=revision&redirect=%2Fpublish%2Forg%2Forg-123%2Fdataset%2Favl%2Fdataset-456%2Fupdate%2Freview',
+      );
+    });
+  });
 });

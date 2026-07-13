@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const orgId = url.searchParams.get('orgId');
   const datasetId = url.searchParams.get('datasetId');
+  const mode = url.searchParams.get('mode');
 
   if (!orgId || !datasetId) {
     return NextResponse.json({ error: 'orgId and datasetId are required' }, { status: 400 });
@@ -16,7 +17,40 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const djangoResp = await fetch(`${config.djangoOrigin}/api/avl/dataset-edit/${orgId}/${datasetId}/`, {
+    if (mode === 'revision') {
+      const djangoResp = await fetch(`${config.djangoOrigin}/api/avl/review-status/${orgId}/${datasetId}/`, {
+        method: 'GET',
+        headers: getSessionHeaders(request),
+      });
+
+      const data = await djangoResp.json().catch(() => ({})) as {
+        error?: string;
+        datasetId?: number;
+        name?: string;
+        description?: string;
+        shortDescription?: string;
+      };
+
+      if (!djangoResp.ok) {
+        return NextResponse.json(
+          { error: data.error || `Django responded with status ${djangoResp.status}` },
+          { status: djangoResp.status },
+        );
+      }
+
+      return NextResponse.json(
+        {
+          datasetId: data.datasetId,
+          name: data.name || '',
+          description: data.description || '',
+          shortDescription: data.shortDescription || '',
+        },
+        { status: 200 },
+      );
+    }
+
+    const modeQuery = mode ? `?mode=${encodeURIComponent(mode)}` : '';
+    const djangoResp = await fetch(`${config.djangoOrigin}/api/avl/dataset-edit/${orgId}/${datasetId}/${modeQuery}`, {
       method: 'GET',
       headers: getSessionHeaders(request),
     });
@@ -41,6 +75,7 @@ export async function POST(request: NextRequest) {
   const url = new URL(request.url);
   const orgId = url.searchParams.get('orgId');
   const datasetId = url.searchParams.get('datasetId');
+  const mode = url.searchParams.get('mode');
 
   if (!orgId || !datasetId) {
     return NextResponse.json({ error: 'orgId and datasetId are required' }, { status: 400 });
@@ -61,7 +96,43 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const djangoResp = await fetch(`${config.djangoOrigin}/api/avl/dataset-edit/${orgId}/${datasetId}/save/`, {
+    if (mode === 'revision') {
+      const djangoResp = await fetch(`${config.djangoOrigin}/org/${orgId}/dataset/avl/${datasetId}/revision-edit/`, {
+        method: 'POST',
+        body: outgoing,
+        headers: getSessionHeaders(request, { includeCsrf: true }),
+        redirect: 'manual',
+      });
+
+      if (djangoResp.status >= 300 && djangoResp.status < 400) {
+        const location = djangoResp.headers.get('location') || '';
+        return NextResponse.json(
+          {
+            redirect: toNextJsPath(location || `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`),
+          },
+          { status: 200 },
+        );
+      }
+
+      if (djangoResp.ok) {
+        return NextResponse.json(
+          {
+            redirect: `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`,
+          },
+          { status: 200 },
+        );
+      }
+
+      return NextResponse.json(
+        {
+          error: `Django responded with status ${djangoResp.status}`,
+        },
+        { status: djangoResp.status },
+      );
+    }
+
+    const modeQuery = mode ? `?mode=${encodeURIComponent(mode)}` : '';
+    const djangoResp = await fetch(`${config.djangoOrigin}/api/avl/dataset-edit/${orgId}/${datasetId}/save/${modeQuery}`, {
       method: 'POST',
       body: outgoing,
       headers: getSessionHeaders(request, { includeCsrf: true }),

@@ -21,6 +21,7 @@ interface AVLFeed {
   modified?: string;
   description?: string;
   status?: string;
+  has_live_revision?: boolean;
   avl_feed_status?: string;
   short_description?: string;
   percent_matching?: number | null;
@@ -141,6 +142,18 @@ function AvlManagement() {
     font: 'inherit',
     padding: 0,
     textAlign: 'left',
+  };
+
+  const getFeedHref = (feed: AVLFeed): string => {
+    if (tab !== 'draft') {
+      return `/publish/org/${orgId}/dataset/avl/${feed.id}`;
+    }
+
+    if (feed.has_live_revision) {
+      return `/publish/org/${orgId}/dataset/avl/${feed.id}/update/review`;
+    }
+
+    return `/publish/org/${orgId}/dataset/avl/${feed.id}/review`;
   };
 
   return (
@@ -307,7 +320,7 @@ function AvlManagement() {
                           <td className="govuk-table__cell">
                             <Link
                               className="govuk-link"
-                              href={`/publish/org/${orgId}/dataset/avl/${feed.id}`}
+                              href={getFeedHref(feed)}
                             >
                               {feed.name || '-'}
                             </Link>
