@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -14,6 +14,10 @@ type AvlDeleteContext = {
 };
 
 function AvlDeletePageContent() {
+  useEffect(() => {
+    document.title = 'Delete data feed';
+  }, []);
+
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;

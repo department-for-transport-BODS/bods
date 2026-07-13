@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AvlUploadFields, DatasetDescriptionFields, PublishStepper } from '@/components/publish';
@@ -28,6 +28,12 @@ function AVLCreatePageContent() {
   const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
   const contactSupportUrl = `${djangoApiBaseUrl}/contact/`;
   const [step, setStep] = useState<Step>('description');
+
+  useEffect(() => {
+    const stepTitle = step === 'description' ? 'description' : 'upload';
+    document.title = `Publish new data feed: ${stepTitle}`;
+  }, [step]);
+
   const [description, setDescription] = useState('');
   const [shortDescription, setShortDescription] = useState('');
   const [urlLink, setUrlLink] = useState('');
@@ -172,20 +178,10 @@ function AVLCreatePageContent() {
 
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl govuk-!-margin-bottom-0 dont-break-out govuk-!-padding-top-3 govuk-!-padding-bottom-4">
+          <div className="govuk-grid-column-two-thirds indented-text">
+            <h1 className="govuk-heading-xl dont-break-out">
               {getHeading(activeStep)}
             </h1>
-          </div>
-          <AvlReviewHelpAside
-            supportBusOperatorsUrl={supportBusOperatorsUrl}
-            contactSupportUrl={contactSupportUrl}
-            linkClassName="govuk-link large-font"
-          />
-        </div>
-
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds indented-text">
             {descriptionValidationSummaryErrors.length > 0 && <ErrorSummary errors={descriptionValidationSummaryErrors} summaryId="avl-create-error-title" />}
             {uploadValidationSummaryErrors.length > 0 && <ErrorSummary errors={uploadValidationSummaryErrors} summaryId="avl-create-error-title" />}
             
@@ -255,6 +251,11 @@ function AVLCreatePageContent() {
 
             <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />
           </div>
+          <AvlReviewHelpAside
+            supportBusOperatorsUrl={supportBusOperatorsUrl}
+            contactSupportUrl={contactSupportUrl}
+            linkClassName="govuk-link large-font"
+          />
         </div>
       </div>
     </div>

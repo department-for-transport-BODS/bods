@@ -7,7 +7,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useApiResource } from '@/hooks/useApiResource';
 import { formatDateTimeFeedsList } from '@/lib/utils/date';
 import { useParams, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { statusIndicatorClass, statusLabel } from './_components/avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
@@ -46,6 +46,10 @@ function getTabFromSearchParams(value: string | null): AvlTab {
 }
 
 function AvlManagement() {
+  useEffect(() => {
+    document.title = 'Review my bus location data';
+  }, []);
+
   const params = useParams();
   const searchParams = useSearchParams();
   const orgId = params.orgId as string;
@@ -68,6 +72,7 @@ function AvlManagement() {
       {
         method: 'GET',
         credentials: 'include',
+        cache: 'no-store',
       },
     );
 

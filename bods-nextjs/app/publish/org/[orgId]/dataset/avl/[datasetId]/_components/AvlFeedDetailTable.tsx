@@ -13,6 +13,9 @@ interface AvlFeedDetailTableProps {
 
 export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProps) {
   const editUrl = `/publish/org/${orgId}/dataset/avl/${feedDetail.datasetId}/dataset-edit`;
+  const formattedPublishedAt = formatDateTime(feedDetail.publishedAt);
+  const hasPublishedTimestamp = formattedPublishedAt !== '-';
+  const publishedByDisplay = feedDetail.publishedBy || 'System';
 
   return (
     <table className="govuk-table dataset-property-table">
@@ -127,11 +130,7 @@ export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProp
           </th>
           <td className="govuk-table__cell govuk-!-padding-3">
             <div className="flex-between">
-              <span>
-                {formatDateTime(feedDetail.publishedAt)}
-                {' by '}
-                {feedDetail.publishedBy || 'System'}
-              </span>
+              <span>{hasPublishedTimestamp ? `${formattedPublishedAt} by ${publishedByDisplay}` : '-'}</span>
               <span className="right-justify">
                 <Link className="govuk-link" href={`/publish/org/${orgId}/dataset/avl/${feedDetail.datasetId}/changelog`}>
                   View change log

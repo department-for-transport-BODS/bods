@@ -9,9 +9,19 @@
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Radios } from 'kainossoftwareltd-govuk-react-kainos';
+import { getPaginated } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 
 function PublishDashboard() {
+  useEffect(() => {
+    document.title = 'Choose data type';
+  }, []);
+
+  const router = useRouter();
   const { user } = useAuth();
 
   // all publish navigation inside Next routes.
