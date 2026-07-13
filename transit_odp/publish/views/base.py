@@ -43,6 +43,58 @@ logger = logging.getLogger(__name__)
 ExpiredStatus = FeedStatus.expired.value
 
 
+def deactivate_dataset(dataset, user):
+    client = get_notifications()
+    dataset_revision = dataset.live_revision
+
+    dataset_revision.to_inactive()
+    dataset_revision.last_modified_user = user
+    dataset_revision.save()
+    now = timezone.now()
+
+    dataset.revisions.exclude(id=dataset_revision.id).filter(
+        is_published=False
+    ).delete()
+
+    if not dataset.contact.is_agent_user:
+        client.send_data_endpoint_deactivated_notification(
+            dataset_id=dataset.id,
+            dataset_name=dataset_revision.name,
+            short_description=dataset_revision.short_description,
+            contact_email=dataset.contact.email,
+            published_at=dataset_revision.published_at,
+            expired_at=now,
+        )
+
+    for agent in dataset.organisation.agentuserinvite_set.filter(
+        status=AgentUserInvite.ACCEPTED,
+        agent__is_active=True,
+    ):
+        client.send_agent_data_endpoint_deactivated_notification(
+            dataset_id=dataset.id,
+            dataset_name=dataset_revision.name,
+            contact_email=agent.email,
+            operator_name=dataset.organisation.name,
+            short_description=dataset_revision.short_description,
+            published_at=dataset_revision.published_at,
+            expired_at=now,
+        )
+
+    for developer in dataset.subscribers.exclude(
+        settings__mute_all_dataset_notifications=True
+    ).order_by("id"):
+        client.send_developer_data_endpoint_expired_notification(
+            dataset_id=dataset.id,
+            dataset_name=dataset_revision.name,
+            short_description=dataset_revision.short_description,
+            contact_email=developer.email,
+            published_at=dataset_revision.published_at,
+            expired_at=now,
+        )
+
+    return dataset_revision
+
+
 class PublishFeedDetailViewBase(BaseDetailView):
     """Baseclass to use for all child routes of the /feed/<int:pk>/
 
@@ -296,61 +348,8 @@ class FeedArchiveBaseView(OrgUserViewMixin, BaseUpdateView):
         )
 
     def form_valid(self, form):
-        client = get_notifications()
         dataset = self.get_object()
-        dataset_revision = dataset.live_revision
-        user = self.request.user
-
-        # set published revision to 'inactive'
-        dataset_revision.to_inactive()
-        dataset_revision.last_modified_user = user
-        dataset_revision.save()
-        now = timezone.now()
-
-        # delete draft revisions of the dataset
-        draft_revisions = dataset.revisions.exclude(id=dataset_revision.id).filter(
-            is_published=False
-        )
-        draft_revisions.delete()
-
-        if not dataset.contact.is_agent_user:
-            # If the normal user flow is respected (ie adding through invites)
-            # then we can assume that if an organisations user is an agent
-            # then they must be an agent for that organisation. Mixed accounts
-            # are not supported.
-            client.send_data_endpoint_deactivated_notification(
-                dataset_id=dataset.id,
-                dataset_name=dataset.live_revision.name,
-                short_description=dataset.live_revision.short_description,
-                contact_email=dataset.contact.email,
-                published_at=dataset.live_revision.published_at,
-                expired_at=now,
-            )
-
-        for agent in dataset.organisation.agentuserinvite_set.filter(
-            status=AgentUserInvite.ACCEPTED, agent__is_active=True
-        ):
-            client.send_agent_data_endpoint_deactivated_notification(
-                dataset_id=dataset.id,
-                dataset_name=dataset.live_revision.name,
-                contact_email=agent.email,
-                operator_name=dataset.organisation.name,
-                short_description=dataset.live_revision.short_description,
-                published_at=dataset.live_revision.published_at,
-                expired_at=now,
-            )
-
-        for developer in dataset.subscribers.exclude(
-            settings__mute_all_dataset_notifications=True
-        ).order_by("id"):
-            client.send_developer_data_endpoint_expired_notification(
-                dataset_id=dataset.id,
-                dataset_name=dataset.live_revision.name,
-                short_description=dataset.live_revision.short_description,
-                contact_email=developer.email,
-                published_at=dataset.live_revision.published_at,
-                expired_at=now,
-            )
+        deactivate_dataset(dataset, self.request.user)
 
         return HttpResponseRedirect(self.get_success_url())
 

@@ -10,11 +10,16 @@ from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.fares.constants import ERROR_CODE_MAP
-from transit_odp.fares.forms import FaresFeedDescriptionForm, FaresFeedUploadForm
+from transit_odp.fares.forms import (
+    FaresFeedCommentForm,
+    FaresFeedDescriptionForm,
+    FaresFeedUploadForm,
+)
 from transit_odp.fares.tasks import task_run_fares_pipeline
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
+from transit_odp.publish.views.base import deactivate_dataset
 from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
 from transit_odp.timetables.tasks import delete_dataset_revision
 from transit_odp.validate.errors import XMLErrorMessageRenderer
@@ -425,7 +430,38 @@ def update_fares_dataset_api(request, pk1, pk):
     except Dataset.DoesNotExist:
         return JsonResponse({"error": "Dataset not found"}, status=404)
 
-    upload_form = FaresFeedUploadForm(data=request.POST, files=request.FILES)
+    if dataset.revisions.filter(
+        status__in=[
+            FeedStatus.draft.value,
+            FeedStatus.success.value,
+            FeedStatus.error.value,
+            FeedStatus.indexing.value,
+        ]
+    ).exists():
+        return JsonResponse({"error": "A draft update already exists"}, status=409)
+
+    revision = dataset.start_revision()
+
+    comment_form = FaresFeedCommentForm(
+        data=request.POST,
+        instance=revision,
+        is_update=True,
+    )
+    if not comment_form.is_valid():
+        return JsonResponse(
+            {
+                "error": "Comment validation failed",
+                "field_errors": comment_form.errors,
+            },
+            status=400,
+        )
+
+    upload_form = FaresFeedUploadForm(
+        data=request.POST,
+        files=request.FILES,
+        instance=revision,
+        is_update=True,
+    )
     if not upload_form.is_valid():
         return JsonResponse(
             {
@@ -436,13 +472,14 @@ def update_fares_dataset_api(request, pk1, pk):
         )
 
     all_data = {}
+    all_data.update(comment_form.cleaned_data)
     all_data.update(upload_form.cleaned_data)
     all_data["last_modified_user"] = user
-    comment = request.POST.get("comment", "").strip()
-    all_data["comment"] = comment if comment else "Dataset update"
 
     with transaction.atomic():
-        revision = _upsert_draft_revision(dataset, all_data)
+        for key, value in all_data.items():
+            setattr(revision, key, value)
+        revision.save()
         _trigger_fares_processing(revision)
 
     return JsonResponse(
@@ -453,13 +490,21 @@ def update_fares_dataset_api(request, pk1, pk):
 
 @require_POST
 def deactivate_fares_dataset_api(request, pk1, pk):
-    user, _, revision, error_response = _get_request_context(
-        request, pk1, pk, include_published_revision=True
-    )
+    user, organisation, _, error_response = _get_request_context(request, pk1)
     if error_response is not None:
         return error_response
 
-    if not revision.is_published or revision.status in (
+    try:
+        dataset = Dataset.objects.select_related("live_revision", "contact").get(
+            id=pk,
+            organisation_id=organisation.id,
+            dataset_type=DatasetType.FARES.value,
+        )
+    except Dataset.DoesNotExist:
+        return JsonResponse({"error": "Dataset not found"}, status=404)
+
+    revision = dataset.live_revision
+    if revision is None or revision.status in (
         FeedStatus.inactive.value,
         FeedStatus.expired.value,
     ):
@@ -469,10 +514,7 @@ def deactivate_fares_dataset_api(request, pk1, pk):
         )
 
     try:
-        with transaction.atomic():
-            revision.to_inactive()
-            revision.last_modified_user = user
-            revision.save()
+        deactivate_dataset(dataset, user)
     except Exception:
         logger.exception(
             "Failed to deactivate fares revision",
