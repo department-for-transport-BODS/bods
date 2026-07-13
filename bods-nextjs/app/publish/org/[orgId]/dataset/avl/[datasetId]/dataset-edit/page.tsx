@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DatasetDescriptionFields } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
+import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep } from '@/lib/validation/avl-publish';
 import { AvlBreadcrumbs } from '../../_components/AvlBreadcrumbs';
 
@@ -40,7 +41,7 @@ function AvlDatasetEditContent() {
       setSubmitError('');
 
       try {
-        const response = await fetch(`/api/avl/dataset-edit?orgId=${orgId}&datasetId=${datasetId}`, {
+        const response = await fetch(`/api/avl/dataset-edit/${orgId}/${datasetId}/`, {
           credentials: 'include',
         });
 
@@ -93,22 +94,23 @@ function AvlDatasetEditContent() {
       formData.set('description', description);
       formData.set('short_description', shortDescription);
 
-      const response = await fetch(`/api/avl/dataset-edit?orgId=${orgId}&datasetId=${datasetId}`, {
+      const csrfToken = getCsrfToken();
+      const response = await fetch(`/api/avl/dataset-edit/${orgId}/${datasetId}/save/`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
+        headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
       });
 
       const data = (await response.json().catch(() => ({}))) as {
         redirect?: string;
         error?: string;
-        fieldErrors?: Record<string, string[] | string>;
         field_errors?: Record<string, string[] | string>;
       };
 
       if (!response.ok) {
         const nextErrors: Record<string, string> = {};
-        const fieldErrors = data.fieldErrors || data.field_errors || {};
+        const fieldErrors = data.field_errors || {};
 
         const descriptionError = fieldErrors.description;
         if (descriptionError) {
