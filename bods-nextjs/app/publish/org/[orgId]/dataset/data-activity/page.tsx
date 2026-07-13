@@ -127,7 +127,7 @@ function DataActivityContent() {
               <p className="govuk-body">
                 This will include subscription, download, search results from browsing, and API hits.
               </p>
-              <a className="govuk-link govuk-!-font-size-19" href={`/publish/org/${orgId}/dataset/consumer-interactions/`}>
+              <a className="govuk-link govuk-!-font-size-19" href={`/api/avl/consumer-interactions/${orgId}`}>
                 Download report
               </a>
 
@@ -136,7 +136,7 @@ function DataActivityContent() {
                 This will provide you details of the data with issues that have been reported on and also the number of
                 issues reported on each of them.
               </p>
-              <a className="govuk-link govuk-!-font-size-19" href={`/publish/org/${orgId}/dataset/consumer-feedback/`}>
+              <a className="govuk-link govuk-!-font-size-19" href={`/api/avl/consumer-feedback/${orgId}`}>
                 Download report
               </a>
             </div>
