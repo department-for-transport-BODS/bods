@@ -99,7 +99,7 @@ function FaresDatasetDetailContent() {
     const load = async () => {
       try {
         const payload = await api.get<FaresDetailResponse>(
-          `/api/fares/review-status/${orgId}/${datasetId}/`,
+          `/api/fares/review-status/${orgId}/${datasetId}/?revision=live`,
         );
 
         if (!isCancelled) {
