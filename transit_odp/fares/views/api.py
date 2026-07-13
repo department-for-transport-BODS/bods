@@ -274,10 +274,27 @@ def create_fares_dataset_api(request, pk1):
 
 @require_GET
 def get_fares_review_status_api(request, pk1, pk):
-    _, _, revision, error_response = _get_request_context(
-        request, pk1, pk,
-        include_published_revision=True,
-    )
+    is_live_detail = request.GET.get("revision") == "live"
+    if is_live_detail:
+        _, organisation, _, error_response = _get_request_context(request, pk1)
+        if error_response is not None:
+            return error_response
+
+        try:
+            dataset = Dataset.objects.select_related("live_revision").get(
+                id=pk,
+                organisation_id=organisation.id,
+                dataset_type=DatasetType.FARES.value,
+            )
+        except Dataset.DoesNotExist:
+            return JsonResponse({"error": "Dataset not found"}, status=404)
+
+        revision = dataset.live_revision
+        if revision is None:
+            return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
+    else:
+        _, _, revision, error_response = _get_request_context(request, pk1, pk)
+
     if error_response is not None:
         return error_response
 
@@ -323,8 +340,9 @@ def get_fares_review_status_api(request, pk1, pk):
                 kwargs={"pk1": pk1, "pk": pk},
                 host=config.hosts.PUBLISH_HOST,
             )
-            + "?is_review=true"
         )
+        if not is_live_detail:
+            download_url += "?is_review=true"
 
     last_modified_user = None
     if revision.last_modified_user is not None:
@@ -543,16 +561,8 @@ def delete_fares_dataset_api(request, pk1, pk):
     if error_response is not None:
         return error_response
 
-    if revision.is_published and revision.status not in (
-        FeedStatus.inactive.value,
-        FeedStatus.expired.value,
-    ):
-        return JsonResponse(
-            {"error": "Active published data sets cannot be deleted. Please deactivate first."},
-            status=400,
-        )
-
-    delete_dataset_revision.delay(revision.id)
+    if not revision.is_published or revision.status == FeedStatus.expired.value:
+        delete_dataset_revision.delay(revision.id)
 
     return JsonResponse(
         {
