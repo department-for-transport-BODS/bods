@@ -39,6 +39,7 @@ type ReviewStatusResponse = {
   };
   error?: string | null;
   errorDescription?: string | null;
+  schemaValidationReportUrl?: string | null;
 };
 
 const PUBLISHED_STATUSES = new Set(['live', 'expiring', 'warning']);
@@ -96,6 +97,118 @@ type FaresStopMapPreviewProps = {
   revisionId?: number;
   mapboxToken: string;
 };
+
+type ValidationFailurePanelProps = {
+  errorCode?: string | null;
+  errorDescription?: string | null;
+  schemaValidationReportUrl?: string | null;
+  contactSupportUrl: string;
+  guidanceUrl: string;
+  updateUrl: string;
+};
+
+function ValidationFailurePanel({
+  errorCode,
+  errorDescription,
+  schemaValidationReportUrl,
+  contactSupportUrl,
+  guidanceUrl,
+  updateUrl,
+}: Readonly<ValidationFailurePanelProps>) {
+  const isSchemaError = errorCode === 'SCHEMA_ERROR';
+  const descriptionParts = errorDescription?.split(/<\/?br\s*\/?>/i) ?? [];
+
+  return (
+    <>
+      {isSchemaError ? (
+        <div className="app-dqs-panel govuk-!-margin-bottom-7">
+          <div className="app-dqs-panel__body">
+            <div className="app-dqs-panel__success">
+              <h2 className="govuk-heading-m">3a Validation Check - Failed</h2>
+              <p className="govuk-body">
+                The validation report checks for compliance against the NeTEx schema.
+                <br />
+                <br />
+                {schemaValidationReportUrl ? (
+                  <a className="govuk-link" href={schemaValidationReportUrl}>
+                    Download schema validation report
+                  </a>
+                ) : null}
+                <br />
+              </p>
+              <p className="govuk-body govuk-!-margin-bottom-0">
+                The fares data supplied is non-compliant and cannot be submitted to BODS as per the{' '}
+                <a className="govuk-link" href={guidanceUrl}>
+                  guidance.
+                </a>{' '}
+                To pass the validation please address all outstanding issues in the validation report.
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div
+          className="govuk-error-summary govuk-!-margin-bottom-0"
+          aria-labelledby="error-summary-title"
+          role="alert"
+          tabIndex={-1}
+          data-module="govuk-error-summary"
+        >
+          <h2
+            className="govuk-error-summary__title govuk-!-margin-bottom-2"
+            id="error-summary-title"
+          >
+            Supplied data set has failed to upload
+          </h2>
+          <div className="govuk-error-summary__body">
+            <ul className="govuk-list govuk-error-summary__list">
+              <li className="app-error-summary__item dont-break-out no-underline-l">
+                {errorCode === 'SUSPICIOUS_FILE' ? (
+                  <>
+                    Our antivirus scan detected an issue with your dataset. If you believe this to be
+                    wrong, please{' '}
+                    <Link className="govuk-link" href={contactSupportUrl}>
+                      contact support
+                    </Link>
+                    .
+                  </>
+                ) : (
+                  descriptionParts.map((part, index) => (
+                    <span key={`${index}-${part}`}>
+                      {index > 0 ? <br /> : null}
+                      {part}
+                    </span>
+                  ))
+                )}
+              </li>
+            </ul>
+          </div>
+        </div>
+      )}
+
+      <div className="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
+        <Link className="govuk-button govuk-!-margin-bottom-0" href={updateUrl}>
+          Publish correct data set
+        </Link>
+      </div>
+    </>
+  );
+}
+
+function ValidationFailureNextSteps() {
+  return (
+    <>
+      <h3 className="govuk-heading-m">What should I do next?</h3>
+      <p className="govuk-body govuk-!-font-size-19">
+        You can re-upload a different data set file again. Please ensure that your provided data
+        format is correct and that your data set file contains valid data.
+      </p>
+      <p className="govuk-body app-!-text-muted govuk-!-font-size-19">
+        Accepted file formats include .xml (Netex).
+      </p>
+    </>
+  );
+}
 
 function FaresStopMapPreview({ revisionId, mapboxToken }: Readonly<FaresStopMapPreviewProps>) {
   const [fareStops, setFareStops] = useState<StopPoint[]>([]);
@@ -271,7 +384,9 @@ function FaresReviewPageContent() {
   const datasetId = params.datasetId as string;
 
   const faresListUrl = `/publish/org/${orgId}/dataset/fares`;
+  const modifyDraftUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/update?modifyDraft=true`;
   const supportBusOperatorsUrl = '/publish/guide-me';
+  const dataQualityGuidanceUrl = `${supportBusOperatorsUrl}?section=dataquality`;
   const contactSupportUrl = '/publish/account';
 
   const [statusData, setStatusData] = useState<ReviewStatusResponse | null>(null);
@@ -281,7 +396,8 @@ function FaresReviewPageContent() {
   const [errorMessage, setErrorMessage] = useState('');
   const loading = statusData?.loading ?? true;
   const progress = Math.max(0, Math.min(100, statusData?.progress ?? 0));
-  const validationErrorMessage = statusData?.errorDescription || null;
+  const hasBlockingError = Boolean(statusData?.error) || statusData?.status === 'error';
+  const canPublish = !hasBlockingError;
 
   useEffect(() => {
     let isCancelled = false;
@@ -445,41 +561,46 @@ function FaresReviewPageContent() {
               </div>
             ) : (
               <>
-                {statusData?.error && validationErrorMessage ? (
-                  <div className="app-dqs-panel govuk-!-margin-bottom-7">
-                    <div className="app-dqs-panel__body">
-                      <p className="govuk-body govuk-!-margin-bottom-0">{validationErrorMessage}</p>
-                    </div>
-                  </div>
+                {hasBlockingError ? (
+                  <ValidationFailurePanel
+                    errorCode={statusData?.error}
+                    errorDescription={statusData?.errorDescription}
+                    schemaValidationReportUrl={statusData?.schemaValidationReportUrl}
+                    contactSupportUrl={contactSupportUrl}
+                    guidanceUrl={dataQualityGuidanceUrl}
+                    updateUrl={modifyDraftUrl}
+                  />
                 ) : null}
 
-                <div className="govuk-!-margin-bottom-6">
-                  <div className="govuk-checkboxes" data-module="govuk-checkboxes">
-                    <div className="govuk-checkboxes__item">
-                      <input
-                        className="govuk-checkboxes__input"
-                        id="publish-review-confirmation"
-                        name="publish-review-confirmation"
-                        type="checkbox"
-                        checked={hasReviewed}
-                        onChange={(event) => setHasReviewed(event.target.checked)}
-                      />
-                      <label className="govuk-label govuk-checkboxes__label" htmlFor="publish-review-confirmation">
-                        I have reviewed the submission and wish to publish my data
-                      </label>
+                {canPublish ? (
+                  <div className="govuk-!-margin-bottom-6">
+                    <div className="govuk-checkboxes" data-module="govuk-checkboxes">
+                      <div className="govuk-checkboxes__item">
+                        <input
+                          className="govuk-checkboxes__input"
+                          id="publish-review-confirmation"
+                          name="publish-review-confirmation"
+                          type="checkbox"
+                          checked={hasReviewed}
+                          onChange={(event) => setHasReviewed(event.target.checked)}
+                        />
+                        <label className="govuk-label govuk-checkboxes__label" htmlFor="publish-review-confirmation">
+                          I have reviewed the submission and wish to publish my data
+                        </label>
+                      </div>
                     </div>
-                  </div>
 
-                  <button
-                    type="button"
-                    className="govuk-button"
-                    onClick={handlePublish}
-                    disabled={isPublishing || !hasReviewed}
-                    aria-disabled={isPublishing || !hasReviewed}
-                  >
-                    {isPublishing ? 'Publishing...' : 'Publish data'}
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      className="govuk-button"
+                      onClick={handlePublish}
+                      disabled={isPublishing || !hasReviewed}
+                      aria-disabled={isPublishing || !hasReviewed}
+                    >
+                      {isPublishing ? 'Publishing...' : 'Publish data'}
+                    </button>
+                  </div>
+                ) : null}
 
                 <h2 className="govuk-heading-l dont-break-out">{statusData?.name || 'Unnamed fares dataset'}</h2>
 
@@ -618,13 +739,15 @@ function FaresReviewPageContent() {
                   </tbody>
                 </table>
 
+                {hasBlockingError ? <ValidationFailureNextSteps /> : null}
+
                 <div className="govuk-button-group">
                   {PUBLISHED_STATUSES.has(statusData?.status ?? '') ? null : (
                     <Link
                       className="govuk-button govuk-button--secondary"
                       href={`/publish/org/${orgId}/dataset/fares/${datasetId}/delete`}
                     >
-                      Delete data set
+                      {hasBlockingError ? 'Delete data' : 'Delete data set'}
                     </Link>
                   )}
                 </div>

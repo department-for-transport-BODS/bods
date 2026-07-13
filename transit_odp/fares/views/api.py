@@ -19,6 +19,7 @@ from transit_odp.fares.tasks import task_run_fares_pipeline
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
+from transit_odp.pipelines.models import DatasetETLTaskResult
 from transit_odp.publish.views.base import deactivate_dataset
 from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
 from transit_odp.timetables.tasks import delete_dataset_revision
@@ -300,6 +301,13 @@ def get_fares_review_status_api(request, pk1, pk):
 
     progress, error_code = _get_revision_progress(revision)
     error_description = _get_error_description(revision, error_code)
+    schema_validation_report_url = None
+    if not is_live_detail and error_code == DatasetETLTaskResult.SCHEMA_ERROR:
+        schema_validation_report_url = reverse(
+            "fares:review-fares-csv",
+            kwargs={"pk1": pk1, "pk": pk},
+            host=config.hosts.PUBLISH_HOST,
+        )
 
     status = revision.status
     is_loading = _is_loading_status(status)
@@ -334,12 +342,10 @@ def get_fares_review_status_api(request, pk1, pk):
 
     download_url = revision.url_link
     if not download_url:
-        download_url = (
-            reverse(
-                "fares:feed-download",
-                kwargs={"pk1": pk1, "pk": pk},
-                host=config.hosts.PUBLISH_HOST,
-            )
+        download_url = reverse(
+            "fares:feed-download",
+            kwargs={"pk1": pk1, "pk": pk},
+            host=config.hosts.PUBLISH_HOST,
         )
         if not is_live_detail:
             download_url += "?is_review=true"
@@ -372,6 +378,7 @@ def get_fares_review_status_api(request, pk1, pk):
             "metadata": metadata,
             "error": error_code,
             "errorDescription": error_description,
+            "schemaValidationReportUrl": schema_validation_report_url,
             "hasLiveRevision": has_live_revision,
         },
         status=200,
@@ -448,37 +455,45 @@ def update_fares_dataset_api(request, pk1, pk):
     except Dataset.DoesNotExist:
         return JsonResponse({"error": "Dataset not found"}, status=404)
 
-    if dataset.revisions.filter(
-        status__in=[
-            FeedStatus.draft.value,
-            FeedStatus.success.value,
-            FeedStatus.error.value,
-            FeedStatus.indexing.value,
-        ]
-    ).exists():
-        return JsonResponse({"error": "A draft update already exists"}, status=409)
+    modify_draft = request.POST.get("modify_draft") == "true"
+    comment_form = None
+    if modify_draft:
+        try:
+            revision = dataset.revisions.get(is_published=False)
+        except DatasetRevision.DoesNotExist:
+            return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
+    else:
+        if dataset.revisions.filter(
+            status__in=[
+                FeedStatus.draft.value,
+                FeedStatus.success.value,
+                FeedStatus.error.value,
+                FeedStatus.indexing.value,
+            ]
+        ).exists():
+            return JsonResponse({"error": "A draft update already exists"}, status=409)
 
-    revision = dataset.start_revision()
-
-    comment_form = FaresFeedCommentForm(
-        data=request.POST,
-        instance=revision,
-        is_update=True,
-    )
-    if not comment_form.is_valid():
-        return JsonResponse(
-            {
-                "error": "Comment validation failed",
-                "field_errors": comment_form.errors,
-            },
-            status=400,
+        revision = dataset.start_revision()
+        comment_form = FaresFeedCommentForm(
+            data=request.POST,
+            instance=revision,
+            is_update=True,
         )
+        if not comment_form.is_valid():
+            return JsonResponse(
+                {
+                    "error": "Comment validation failed",
+                    "field_errors": comment_form.errors,
+                },
+                status=400,
+            )
 
     upload_form = FaresFeedUploadForm(
         data=request.POST,
         files=request.FILES,
         instance=revision,
-        is_update=True,
+        is_update=not modify_draft,
+        is_revision_modify=modify_draft,
     )
     if not upload_form.is_valid():
         return JsonResponse(
@@ -490,7 +505,8 @@ def update_fares_dataset_api(request, pk1, pk):
         )
 
     all_data = {}
-    all_data.update(comment_form.cleaned_data)
+    if comment_form is not None:
+        all_data.update(comment_form.cleaned_data)
     all_data.update(upload_form.cleaned_data)
     all_data["last_modified_user"] = user
 
@@ -539,7 +555,9 @@ def deactivate_fares_dataset_api(request, pk1, pk):
             extra={"org_id": pk1, "dataset_id": pk, "revision_id": revision.id},
         )
         return JsonResponse(
-            {"error": "Unable to deactivate this data set right now. Please try again."},
+            {
+                "error": "Unable to deactivate this data set right now. Please try again."
+            },
             status=500,
         )
 
