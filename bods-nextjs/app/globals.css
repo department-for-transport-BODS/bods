@@ -649,11 +649,11 @@ ul.dashed > li::before {
 }
 
 .review-stat {
-  margin: 0 30px 30px 0;
+  margin: 0 35px 35px 0;
 }
 
 .review-stat:last-child {
-  margin-right: 0;
+  margin-right: unset;
 }
 
 .review-stat__top {
@@ -661,7 +661,14 @@ ul.dashed > li::before {
   font-size: 48px;
   line-height: 50px;
   font-weight: 700;
-  display: block;
+}
+
+.review-stat__spaced-label {
+  letter-spacing: 0.02em;
+}
+
+.review-stat__top .bods-relative-bottom {
+  bottom: -2px;
 }
 
 .review-stat__bottom {
@@ -677,7 +684,11 @@ ul.dashed > li::before {
   font-size: 16px;
   line-height: 20px;
   font-weight: 700;
-  margin: 0 0 20px 0;
+  margin: 0 0 30px 0;
+}
+
+.review-stat__details {
+  margin-top: auto;
 }
 
 a.review-stat__link {
@@ -702,6 +713,11 @@ a.review-stat__link:visited {
 .custom_govuk_table .govuk-table__cell {
   border-top: 1px solid #b1b4b6;
   border-bottom: none;
+}
+
+.custom_govuk_table .govuk-table__header {
+  font-weight: normal;
+  font-size: 18px;
 }
 
 .custom_govuk_table .govuk-table__head .govuk-table__row:first-child .govuk-table__header {
