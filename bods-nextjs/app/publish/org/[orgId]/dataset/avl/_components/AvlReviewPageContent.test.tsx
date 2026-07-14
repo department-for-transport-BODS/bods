@@ -8,11 +8,13 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { AvlReviewPageContent } from './AvlReviewPageContent';
 
 const mockUseParams = jest.fn();
+const mockUseSearchParams = jest.fn();
 const mockApiGet = jest.fn();
 const mockApiPost = jest.fn();
 
 jest.mock('next/navigation', () => ({
   useParams: () => mockUseParams(),
+  useSearchParams: () => mockUseSearchParams(),
 }));
 
 jest.mock('@/lib/api-client', () => ({
@@ -65,6 +67,7 @@ describe('AvlReviewPageContent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseParams.mockReturnValue(mockParams);
+    mockUseSearchParams.mockReturnValue(new URLSearchParams());
     jest.useFakeTimers();
   });
 
@@ -108,7 +111,7 @@ describe('AvlReviewPageContent', () => {
 
     await waitFor(() => {
       expect(mockApiGet).toHaveBeenCalledWith(
-        '/api/avl/review-status/org-123/dataset-456/',
+        expect.stringMatching(/^\/api\/avl\/review-status\/org-123\/dataset-456\/\?t=\d+$/),
       );
     });
   });
