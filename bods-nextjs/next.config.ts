@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: '/api/:path*/',
+        destination: `${djangoOrigin}/api/:path*/`,
+      },
+      {
         source: '/api/:path*',
         destination: `${djangoOrigin}/api/:path*`,
       },
@@ -21,6 +25,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  skipTrailingSlashRedirect: true,
   trailingSlash: false,
 };
 
