@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { api } from '@/lib/api-client';
 
 function AVLUpdateCancelPageContent() {
   const params = useParams();
@@ -12,6 +14,32 @@ function AVLUpdateCancelPageContent() {
 
   const formUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
   const detailUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}`;
+  const reviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/review`;
+  const [confirmUrl, setConfirmUrl] = useState(detailUrl);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const resolveConfirmUrl = async () => {
+      try {
+        const detail = await api.get<{ status?: string }>(`/api/avl/detail/${orgId}/${datasetId}/`);
+
+        if (!isCancelled) {
+          setConfirmUrl(detail.status === 'draft' ? reviewUrl : detailUrl);
+        }
+      } catch {
+        if (!isCancelled) {
+          setConfirmUrl(detailUrl);
+        }
+      }
+    };
+
+    resolveConfirmUrl();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [datasetId, detailUrl, orgId, reviewUrl]);
 
   const goBackOrFallback = () => {
     if (globalThis.history.length > 1) {
@@ -34,7 +62,7 @@ function AVLUpdateCancelPageContent() {
             <p className="govuk-body">Any changes you have made so far will not be saved.</p>
 
             <div className="govuk-button-group">
-              <Link role="button" className="govuk-button" href={detailUrl}>
+              <Link role="button" className="govuk-button" href={confirmUrl}>
                 Confirm
               </Link>
               <button type="button" className="govuk-button govuk-button--secondary" onClick={goBackOrFallback}>

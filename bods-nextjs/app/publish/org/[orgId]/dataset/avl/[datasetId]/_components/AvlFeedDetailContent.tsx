@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useCallback, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api-client';
 import { useApiResource } from '@/hooks/useApiResource';
 import { AvlFeedDetailTable } from './AvlFeedDetailTable';
@@ -33,6 +33,7 @@ export interface AvlFeedDetail {
 
 export function AvlFeedDetailContent() {
   const params = useParams();
+  const router = useRouter();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
 
@@ -46,6 +47,12 @@ export function AvlFeedDetailContent() {
     isLoading,
     error,
   } = useApiResource<AvlFeedDetail>(fetchFeedDetail, 'Failed to load feed details');
+
+  useEffect(() => {
+    if (feedDetail?.status === 'draft') {
+      router.replace(`/publish/org/${orgId}/dataset/avl/${datasetId}/review`);
+    }
+  }, [datasetId, feedDetail?.status, orgId, router]);
 
   if (isLoading) {
     return (
@@ -81,6 +88,10 @@ export function AvlFeedDetailContent() {
         </div>
       </div>
     );
+  }
+
+  if (feedDetail.status === 'draft') {
+    return null;
   }
 
   return (
