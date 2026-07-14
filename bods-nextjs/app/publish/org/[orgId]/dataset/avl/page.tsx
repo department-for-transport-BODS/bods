@@ -247,15 +247,17 @@ function AvlManagement() {
                       <span className="review-stat__top">{totalConsumerInteractions}</span>
                     </div>
                     <p className="review-stat__description">Total consumer interactions with your data</p>
-                    <FontAwesomeIcon icon={faPlay} className="govuk-!-margin-right-1" aria-hidden="true" />
-                    <a className="review-stat__link" href={dataActivityUrl}>
-                      More details
-                    </a>
+                    <div className="review-stat__details">
+                      <FontAwesomeIcon icon={faPlay} className="govuk-!-margin-right-1" aria-hidden="true" />
+                      <a className="review-stat__link" href={dataActivityUrl}>
+                        More details
+                      </a>
+                    </div>
                   </div>
                   <div className="review-stat">
                     <div>
                       <span className="review-stat__top">
-                        Pending
+                        <span className="review-stat__spaced-label">Pending</span>{' '}
                         <b className="govuk-!-font-size-16 bods-relative-bottom">
                           <AvlMatchingHelpModal />
                         </b>
@@ -265,18 +267,20 @@ function AvlManagement() {
                   </div>
                   <div className="review-stat">
                     <div>
-                      <span className="review-stat__top">
+                      <span className="review-stat__top review-stat__spaced-label">
                         {attentionTopValue}
                       </span>
-                      <span className="review-stat__bottom">
+                      <span className="review-stat__bottom review-stat__spaced-label">
                         /{attentionBottomValue}
                       </span>
                     </div>
                     <p className="review-stat__description">Total service codes that require attention</p>
-                    <FontAwesomeIcon icon={faPlay} className="govuk-!-margin-right-1" aria-hidden="true" />
-                    <a className="review-stat__link" href={attentionMoreDetailsUrl}>
-                      More details
-                    </a>
+                    <div className="review-stat__details">
+                      <FontAwesomeIcon icon={faPlay} className="govuk-!-margin-right-1" aria-hidden="true" />
+                      <a className="review-stat__link" href={attentionMoreDetailsUrl}>
+                        More details
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>

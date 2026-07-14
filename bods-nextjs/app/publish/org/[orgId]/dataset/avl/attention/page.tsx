@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -43,7 +42,7 @@ function AvlAttentionContent() {
   const page = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
 
   useEffect(() => {
-    document.title = 'Service codes requiring attention';
+    document.title = 'Service Codes Requiring Attention';
   }, []);
 
   const loadAttentionData = useCallback(async (): Promise<AttentionPageResponse> => {
@@ -77,12 +76,6 @@ function AvlAttentionContent() {
 
   return (
     <>
-      <div className="govuk-width-container">
-        <a href={backUrl} className="govuk-back-link">
-          Back
-        </a>
-      </div>
-
       <div className="govuk-width-container">
         <AvlBreadcrumbs
           items={[
@@ -129,7 +122,7 @@ function AvlAttentionContent() {
                 <div className="govuk-grid-column-one-quarter">
                   <div className="feed-stat">
                     <span className="feed-stat__value">{summary?.totalInScopeInSeasonServices ?? 0}</span>
-                    <span className="feed-stat__label govuk-!-font-size-16">
+                    <span className="feed-stat__label govuk-!-font-size-16" style={{ maxWidth: '11rem' }}>
                       Total in scope/in season registered services
                     </span>
                   </div>
@@ -137,7 +130,10 @@ function AvlAttentionContent() {
                 <div className="govuk-grid-column-one-quarter">
                   <div className="feed-stat">
                     <span className="feed-stat__value">{summary?.percentage ?? 0}%</span>
-                    <span className="feed-stat__label govuk-!-font-size-16 govuk-!-margin-bottom-2">
+                    <span
+                      className="feed-stat__label govuk-!-font-size-16 govuk-!-margin-bottom-2"
+                      style={{ maxWidth: '11rem' }}
+                    >
                       Services requiring attention
                     </span>
                     {(summary?.percentage ?? 0) === 0 ? (
@@ -155,12 +151,20 @@ function AvlAttentionContent() {
                     <label className="govuk-label" htmlFor="q">
                       Search for a licence number, service code or line number
                     </label>
-                    <div className="govuk-input__wrapper" style={{ maxWidth: '500px' }}>
-                      <input className="govuk-input" id="q" name="q" type="text" defaultValue={query} />
+                    <div className="app-data-browser__searchbox" style={{ maxWidth: '500px' }}>
+                      <input className="app-data-browser__searchbox-input" id="q" name="q" type="text" defaultValue={query} />
+                      <button className="app-data-browser__searchbox-button" type="submit" aria-label="Search">
+                        <svg width="21" height="22" viewBox="0 0 21 22" xmlns="http://www.w3.org/2000/svg">
+                          <g transform="translate(-760 -316)" fill="none" fillRule="evenodd">
+                            <path
+                              d="M776.594 331.75a9.418 9.418 0 0 0 2.428-6.296c0-5.213-4.268-9.454-9.51-9.454-5.244 0-9.512 4.242-9.512 9.454 0 5.213 4.268 9.455 9.51 9.455a9.523 9.523 0 0 0 5.04-1.444l4.176 4.152c.25.248.59.383.931.383.34 0 .681-.136.931-.383a1.295 1.295 0 0 0 .023-1.873l-4.017-3.994zm-13.939-6.296c0-3.746 3.065-6.814 6.855-6.814 3.792 0 6.833 3.068 6.833 6.814s-3.064 6.815-6.832 6.815-6.856-3.047-6.856-6.815z"
+                              fill="#FFF"
+                              fillRule="nonzero"
+                            />
+                          </g>
+                        </svg>
+                      </button>
                     </div>
-                    <button className="govuk-button govuk-!-margin-top-2 govuk-!-margin-bottom-0" type="submit">
-                      Search
-                    </button>
                   </div>
                 </form>
               </div>
@@ -169,8 +173,7 @@ function AvlAttentionContent() {
                 <div className="govuk-grid-row">
                   <div className="govuk-grid-column-two-thirds">
                     <h2 className="govuk-heading-m">Sorry, no results found for your search</h2>
-                    <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />
-                    <p className="govuk-body">
+                    <p className="govuk-body govuk-!-margin-top-8">
                       <b>Having trouble finding what you want?</b>
                     </p>
                     <ul className="govuk-list govuk-list--bullet">
@@ -235,11 +238,6 @@ function AvlAttentionContent() {
           )}
 
           <div className="govuk-grid-row govuk-!-margin-top-5">
-            <div className="govuk-grid-column-full">
-              <Link className="govuk-link" href={backUrl}>
-                Return to Review my bus location data
-              </Link>
-            </div>
           </div>
         </div>
       </div>
