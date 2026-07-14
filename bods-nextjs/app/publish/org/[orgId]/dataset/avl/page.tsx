@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useApiResource } from '@/hooks/useApiResource';
 import { formatDateTimeFeedsList } from '@/lib/utils/date';
+import { api } from '@/lib/api-client';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { statusIndicatorClass, statusLabel } from './_components/avlStatus';
@@ -36,6 +37,20 @@ interface AVLFeedListResponse {
   hasNext?: boolean;
   hasPrevious?: boolean;
   results: AVLFeed[];
+}
+
+interface AttentionSummaryResponse {
+  summary: {
+    available: boolean;
+    servicesRequiringAttention: number | null;
+    totalInScopeInSeasonServices: number | null;
+  };
+}
+
+interface OrganisationStats {
+  total_subscriptions: number;
+  weekly_downloads: number;
+  weekly_api_hits: number;
 }
 
 function getTabFromSearchParams(value: string | null): AvlTab {
@@ -85,6 +100,26 @@ function AvlManagement() {
     return payload;
   }, [orgId, sortBy, sortOrder, tab, safeCurrentPage]);
 
+  const loadAttentionSummary = useCallback(async (): Promise<AttentionSummaryResponse> => {
+    const response = await fetch(`/api/avl/requires-attention?orgId=${encodeURIComponent(orgId)}&summaryOnly=1`, {
+      method: 'GET',
+      credentials: 'include',
+      cache: 'no-store',
+    });
+
+    const payload = (await response.json().catch(() => ({}))) as AttentionSummaryResponse & { error?: string };
+
+    if (!response.ok) {
+      throw new Error(payload.error || `Unable to load attention summary (status ${response.status})`);
+    }
+
+    return payload;
+  }, [orgId]);
+
+  const loadOrganisationStats = useCallback(async (): Promise<OrganisationStats> => {
+    return api.get<OrganisationStats>(`/api/organisation/stats/${orgId}/`);
+  }, [orgId]);
+
   const {
     data: feedResponse,
     isLoading,
@@ -94,9 +129,31 @@ function AvlManagement() {
     'Unable to load bus location data feeds here. You can continue in the Django list view.',
   );
 
+  const {
+    data: attentionSummaryResponse,
+  } = useApiResource<AttentionSummaryResponse>(
+    loadAttentionSummary,
+    'Unable to load service code attention summary.',
+  );
+
+  const {
+    data: organisationStats,
+  } = useApiResource<OrganisationStats>(
+    loadOrganisationStats,
+    'Unable to load organisation stats.',
+  );
+
   const feeds = feedResponse?.results || [];
   const currentResponsePage = feedResponse?.page ?? safeCurrentPage;
   const totalPages = feedResponse?.totalPages ?? 1;
+  const attentionSummary = attentionSummaryResponse?.summary;
+  const attentionMoreDetailsUrl = `/publish/org/${orgId}/dataset/avl/attention`;
+  const attentionTopValue = attentionSummary?.servicesRequiringAttention ?? 0;
+  const attentionBottomValue = attentionSummary?.totalInScopeInSeasonServices ?? 0;
+  const totalConsumerInteractions =
+    (organisationStats?.weekly_downloads ?? 0) +
+    (organisationStats?.weekly_api_hits ?? 0) +
+    (organisationStats?.total_subscriptions ?? 0);
 
   const tabLinks = useMemo(
     () => ({
@@ -185,7 +242,7 @@ function AvlManagement() {
                 <div className="review-banner">
                   <div className="review-stat">
                     <div>
-                      <span className="review-stat__top">0</span>
+                      <span className="review-stat__top">{totalConsumerInteractions}</span>
                     </div>
                     <p className="review-stat__description">Total consumer interactions with your data</p>
                     <FontAwesomeIcon icon={faPlay} className="govuk-!-margin-right-1" aria-hidden="true" />
@@ -203,6 +260,21 @@ function AvlManagement() {
                       </span>
                     </div>
                     <p className="review-stat__description">Weekly overall AVL to Timetables matching score</p>
+                  </div>
+                  <div className="review-stat">
+                    <div>
+                      <span className="review-stat__top">
+                        {attentionTopValue}
+                      </span>
+                      <span className="review-stat__bottom">
+                        /{attentionBottomValue}
+                      </span>
+                    </div>
+                    <p className="review-stat__description">Total service codes that require attention</p>
+                    <FontAwesomeIcon icon={faPlay} className="govuk-!-margin-right-1" aria-hidden="true" />
+                    <a className="review-stat__link" href={attentionMoreDetailsUrl}>
+                      More details
+                    </a>
                   </div>
                 </div>
               </div>
