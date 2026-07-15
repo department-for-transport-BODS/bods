@@ -31,6 +31,12 @@ interface AttentionResponse {
   noResults: boolean;
 }
 
+function buildExportProxyUrl(orgId: string): string {
+  const url = new URL('/api/avl/requires-attention/export', 'http://localhost');
+  url.searchParams.set('orgId', orgId);
+  return `${url.pathname}${url.search}`;
+}
+
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const orgId = url.searchParams.get('orgId');
@@ -75,7 +81,7 @@ export async function GET(request: NextRequest) {
       rows: details.rows,
       pagination: details.pagination,
       query: q,
-      exportUrl: details.exportUrl,
+      exportUrl: buildExportProxyUrl(orgId),
       noResults: details.noResults,
     };
 
@@ -170,18 +176,13 @@ async function loadAttentionDetails(orgId: string, q: string, page: number, head
   );
   const totalPages = Math.max(currentPage, pageNumbers.length > 0 ? Math.max(...pageNumbers) : 1);
 
-  const exportHref = getFirstMatch(
-    html,
-    /<a[^>]*href\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))[^>]*>\s*Download detailed export\s*<\/a>/i,
-  );
-
   return {
     rows,
     pagination: {
       currentPage,
       totalPages,
     },
-    exportUrl: resolveHref(exportHref, url),
+    exportUrl: buildExportProxyUrl(orgId),
     noResults: html.includes('Sorry, no results found for your search') || rows.length === 0,
   };
 }

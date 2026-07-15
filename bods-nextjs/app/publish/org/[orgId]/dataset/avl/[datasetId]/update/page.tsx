@@ -14,6 +14,8 @@ type Step = 'comment' | 'upload';
 
 type AvlUpdateContext = {
   urlLink?: string;
+  username?: string;
+  password?: string;
   requestorRef?: string;
   comment?: string;
 };
@@ -54,6 +56,8 @@ function AVLUpdatePageContent() {
   useEffect(() => {
     let cancelled = false;
 
+    document.title = 'Update data feed: upload';
+
     const loadExistingDraft = async () => {
       try {
         const response = await fetch(`/api/avl/review-status/${orgId}/${datasetId}/`, {
@@ -67,6 +71,8 @@ function AVLUpdatePageContent() {
         if (!cancelled) {
           setComment('');
           setUrlLink(data.urlLink || '');
+          setUsername(data.username || '');
+          setPassword(data.password || '');
           setRequestorRef(data.requestorRef || '');
         }
       } catch {

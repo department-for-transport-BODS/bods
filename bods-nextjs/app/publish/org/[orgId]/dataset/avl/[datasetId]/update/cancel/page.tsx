@@ -6,6 +6,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { api } from '@/lib/api-client';
 
+const DRAFT_LIKE_STATUSES = new Set(['draft', 'success', 'indexing', 'pending', 'processing']);
+
 function AVLUpdateCancelPageContent() {
   const params = useParams();
   const router = useRouter();
@@ -25,7 +27,7 @@ function AVLUpdateCancelPageContent() {
         const detail = await api.get<{ status?: string }>(`/api/avl/detail/${orgId}/${datasetId}/`);
 
         if (!isCancelled) {
-          setConfirmUrl(detail.status === 'draft' ? reviewUrl : detailUrl);
+          setConfirmUrl(DRAFT_LIKE_STATUSES.has(detail.status ?? '') ? reviewUrl : detailUrl);
         }
       } catch {
         if (!isCancelled) {

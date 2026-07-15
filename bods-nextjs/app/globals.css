@@ -837,6 +837,19 @@ a.review-stat__link:visited {
   border-bottom: 1px solid #b1b4b6;
 }
 
+.avl-changelog-page__back-link {
+  display: inline-block;
+  margin-bottom: 40px;
+}
+
+.avl-changelog-page .govuk-main-wrapper {
+  padding-top: 16px;
+}
+
+.avl-changelog-page .custom_govuk_table .govuk-table__header {
+  font-weight: 700;
+}
+
 /* select-wrapper: container for the Choose data type dropdown */
 .select-wrapper {
   position: relative;
@@ -890,13 +903,16 @@ a.review-stat__link:visited {
 
 .help-modal .overlay .close-button {
   position: absolute;
-  right: 0;
-  margin: 20px;
+  top: 25px;
+  right: 20px;
+  margin: 0;
   border: 0;
   border-style: none;
   background-color: transparent;
   padding: 0;
   cursor: pointer;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
 }
 
 .help-modal .overlay .content {

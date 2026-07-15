@@ -146,7 +146,7 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
         <PublishStepper
           steps={[
             { label: isUpdate ? '1. Comment' : '1. Describe data', state: 'previous' },
-            { label: '2. Update', state: 'previous' },
+            { label: isUpdate ? '2. Update' : '2. Provide data', state: 'previous' },
             { label: '3. Review and publish', state: 'selected' },
           ]}
         />
@@ -155,7 +155,7 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl govuk-!-margin-bottom-0 dont-break-out govuk-!-padding-top-3 govuk-!-padding-bottom-3">
+            <h1 className="govuk-heading-xl dont-break-out govuk-!-padding-top-3 govuk-!-padding-bottom-3 govuk-!-margin-bottom-4">
               Review and publish
             </h1>
           </div>
@@ -197,20 +197,22 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                 {!reviewErrorMessage && (
                   <div className="govuk-!-margin-bottom-6">
                     <div className="govuk-form-group">
-                      <div className="govuk-checkboxes__item">
-                        <input
-                          className="govuk-checkboxes__input"
-                          id="id_has_reviewed"
-                          type="checkbox"
-                          checked={hasReviewed}
-                          onChange={(event) => {
-                            setHasReviewed(event.target.checked);
-                            setErrors({});
-                          }}
-                        />
-                        <label className="govuk-label govuk-checkboxes__label" htmlFor="id_has_reviewed">
-                          I have reviewed the data and wish to publish my data
-                        </label>
+                      <div className="govuk-checkboxes govuk-checkboxes--small">
+                        <div className="govuk-checkboxes__item">
+                          <input
+                            className="govuk-checkboxes__input"
+                            id="id_has_reviewed"
+                            type="checkbox"
+                            checked={hasReviewed}
+                            onChange={(event) => {
+                              setHasReviewed(event.target.checked);
+                              setErrors({});
+                            }}
+                          />
+                          <label className="govuk-label govuk-checkboxes__label" htmlFor="id_has_reviewed">
+                            I have reviewed the data and wish to publish my data
+                          </label>
+                        </div>
                       </div>
                       {errors.consent && <p className="govuk-error-message">{errors.consent}</p>}
                     </div>
@@ -220,7 +222,7 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                       disabled={!hasReviewed || isPublishing}
                       onClick={handlePublish}
                     >
-                      {isPublishing ? 'Publishing...' : 'Publish data feed'}
+                      {isPublishing ? 'Publishing...' : 'Publish data'}
                     </button>
                   </div>
                 )}

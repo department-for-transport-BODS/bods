@@ -51,6 +51,20 @@ describe('AVLUpdateCancelPage', () => {
     });
   });
 
+  it('navigates to review page when feed is in pre-live success state', async () => {
+    mockApiGet.mockResolvedValue({ status: 'success' });
+
+    render(<AVLUpdateCancelPage />);
+
+    await waitFor(() => {
+      const confirmLink = screen.getByRole('button', { name: 'Confirm' });
+      expect(confirmLink).toHaveAttribute(
+        'href',
+        '/publish/org/org-123/dataset/avl/dataset-456/review',
+      );
+    });
+  });
+
   it('navigates to detail page when feed is not draft', async () => {
     mockApiGet.mockResolvedValue({ status: 'published' });
 

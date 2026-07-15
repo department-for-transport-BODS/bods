@@ -229,6 +229,8 @@ def get_avl_review_status_api(request, pk1, pk):
             "shortDescription": revision.short_description,
             "comment": revision.comment,
             "urlLink": revision.url_link,
+            "username": revision.username,
+            "password": revision.password,
             "requestorRef": revision.requestor_ref,
             "ownerName": revision.dataset.organisation.name,
             "siriVersion": schema_version,

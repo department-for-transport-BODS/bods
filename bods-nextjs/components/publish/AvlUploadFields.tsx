@@ -67,8 +67,11 @@ export function AvlUploadFields({
         <input
           className="govuk-input govuk-!-width-three-quarters"
           id="id_username"
+          name="avl_feed_username"
           type="text"
           autoComplete="off"
+          data-lpignore="true"
+          data-1p-ignore="true"
           value={username}
           onChange={(event) => onUsernameChange(event.target.value)}
         />
@@ -82,8 +85,11 @@ export function AvlUploadFields({
         <input
           className="govuk-input govuk-!-width-three-quarters"
           id="id_password"
+          name="avl_feed_password"
           type="text"
-          autoComplete="new-password"
+          autoComplete="off"
+          data-lpignore="true"
+          data-1p-ignore="true"
           value={password}
           onChange={(event) => onPasswordChange(event.target.value)}
         />

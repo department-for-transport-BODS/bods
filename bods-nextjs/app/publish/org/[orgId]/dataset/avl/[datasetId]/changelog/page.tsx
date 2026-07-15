@@ -85,9 +85,9 @@ function AvlChangelogContent() {
   }
 
   return (
-    <div className="govuk-width-container">
+    <div className="govuk-width-container avl-changelog-page">
       <div className="govuk-main-wrapper">
-        <Link className="govuk-back-link" href={detailUrl}>
+        <Link className="govuk-back-link avl-changelog-page__back-link" href={detailUrl}>
           Back
         </Link>
 
