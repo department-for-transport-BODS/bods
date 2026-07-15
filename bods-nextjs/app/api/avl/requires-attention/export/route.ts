@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const sessionHeaders = getSessionHeaders(request);
-    const exportCandidates = buildCandidateUrls(orgId, '/dataset/compliance-report/', {});
+    const exportCandidates = buildCandidateUrls(orgId, '/dataset/timetable/compliance-report/', {});
 
     let exportResponse = await fetch(exportCandidates[0], {
       method: 'GET',
