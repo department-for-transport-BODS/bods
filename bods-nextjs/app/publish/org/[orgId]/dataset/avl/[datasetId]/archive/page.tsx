@@ -6,6 +6,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
+import { useEffect } from 'react';
 
 function AvlArchivePageContent() {
   const params = useParams();
@@ -15,6 +16,10 @@ function AvlArchivePageContent() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    document.title = 'Deactivate data feed';
+  }, []);
 
   const datasetName = searchParams.get('name') || '';
   const detailUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}`;

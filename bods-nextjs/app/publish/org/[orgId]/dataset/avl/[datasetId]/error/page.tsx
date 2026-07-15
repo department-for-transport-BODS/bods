@@ -2,12 +2,17 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function AVLErrorPage() {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
+
+  useEffect(() => {
+    document.title = 'Could not publish changes';
+  }, []);
 
   return (
     <ProtectedRoute>

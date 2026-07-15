@@ -20,6 +20,10 @@ function AVLUpdateCancelPageContent() {
   const [confirmUrl, setConfirmUrl] = useState(detailUrl);
 
   useEffect(() => {
+    document.title = 'Update data feed: Cancel step for publish';
+  }, []);
+
+  useEffect(() => {
     let isCancelled = false;
 
     const resolveConfirmUrl = async () => {

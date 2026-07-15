@@ -2,12 +2,17 @@
 
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 function AVLCreateCancelPageContent() {
   const params = useParams();
   const router = useRouter();
   const orgId = params.orgId as string;
+
+  useEffect(() => {
+    document.title = 'Publish new data feed: Cancel step for publish';
+  }, []);
 
   const formUrl = `/publish/org/${orgId}/dataset/avl/new`;
   const listUrl = `/publish/org/${orgId}/dataset/avl`;
