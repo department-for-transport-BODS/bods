@@ -2,12 +2,17 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 function AvlDeleteSuccessPageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
   const listUrl = `/publish/org/${orgId}/dataset/avl`;
+
+  useEffect(() => {
+    document.title = 'Data feed deleted';
+  }, []);
 
   return (
     <div className="govuk-width-container">

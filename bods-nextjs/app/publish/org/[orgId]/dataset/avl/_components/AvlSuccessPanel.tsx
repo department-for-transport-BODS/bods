@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 type AvlSuccessPanelProps = {
   update: boolean;
@@ -13,6 +14,10 @@ export function AvlSuccessPanel({ update }: AvlSuccessPanelProps) {
   const datasetId = params.datasetId as string;
   const listUrl = `/publish/org/${orgId}/dataset/avl`;
   const detailUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}`;
+
+  useEffect(() => {
+    document.title = update ? 'Data feed updated' : 'Data feed published';
+  }, [update]);
 
   return (
     <div className="govuk-width-container">

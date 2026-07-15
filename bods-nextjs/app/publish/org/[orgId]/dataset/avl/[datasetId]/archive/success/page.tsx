@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 function AvlArchiveSuccessPageContent() {
@@ -11,6 +12,10 @@ function AvlArchiveSuccessPageContent() {
   const orgId = params.orgId as string;
   const datasetName = searchParams.get('name');
   const listUrl = `/publish/org/${orgId}/dataset/avl`;
+
+  useEffect(() => {
+    document.title = 'Data feed deactivated';
+  }, []);
 
   return (
     <div className="govuk-width-container">
