@@ -518,7 +518,9 @@ def list_avl_datasets_api(request, pk1):
                     "has_live_revision": revision.dataset.live_revision is not None,
                     "short_description": revision.short_description or "",
                     "avl_feed_last_checked": None,
-                    "modified": revision.modified.isoformat() if revision.modified else None,
+                    "modified": revision.modified.isoformat()
+                    if revision.modified
+                    else None,
                 }
             )
 
@@ -622,7 +624,9 @@ def get_avl_requires_attention_api(request, pk1):
     if is_operator_prefetch_sra_active:
         org_object = Organisation.objects.filter(id=organisation.id).first()
         total_inscope = org_object.total_inscope if org_object is not None else 0
-        services_requiring_attention = org_object.avl_sra if org_object is not None else 0
+        services_requiring_attention = (
+            org_object.avl_sra if org_object is not None else 0
+        )
     else:
         total_inscope = len(get_in_scope_in_season_services_line_level(organisation.id))
         services_requiring_attention = len(rows)
