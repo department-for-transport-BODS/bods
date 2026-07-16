@@ -80,7 +80,7 @@ describe('SelectOrgPage routing', () => {
     },
   );
 
-  it('defaults single organisation users directly to the timetable dataset page', async () => {
+  it('defaults single organisation users directly to the dataset chooser page', async () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams());
     (useAuth as jest.Mock).mockReturnValue({
       user: {
@@ -97,7 +97,7 @@ describe('SelectOrgPage routing', () => {
     render(<SelectOrgPage />);
 
     await waitFor(() =>
-      expect(mockPush).toHaveBeenCalledWith('/publish/org/123/dataset/timetable'),
+      expect(mockPush).toHaveBeenCalledWith('/publish/org/123/dataset'),
     );
   });
 
@@ -125,7 +125,7 @@ describe('SelectOrgPage routing', () => {
     },
   );
 
-  it('defaults selected organisations to the timetable dataset page', async () => {
+  it('defaults selected organisations to the dataset chooser page', async () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams());
     (useAuth as jest.Mock).mockReturnValue({
       user: {
@@ -143,6 +143,6 @@ describe('SelectOrgPage routing', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'OrganisationOne' }));
 
-    expect(mockPush).toHaveBeenCalledWith('/publish/org/123/dataset/timetable');
+    expect(mockPush).toHaveBeenCalledWith('/publish/org/123/dataset');
   });
 });
