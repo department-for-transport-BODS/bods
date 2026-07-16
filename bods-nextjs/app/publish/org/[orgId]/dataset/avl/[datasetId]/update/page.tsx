@@ -57,7 +57,7 @@ function AVLUpdatePageContent() {
 
     const loadExistingDraft = async () => {
       try {
-        const response = await fetch(`${config.djangoApiUrl}/api/avl/review-status/${orgId}/${datasetId}/`, {
+        const response = await fetch(`/api/avl/review-status/${orgId}/${datasetId}/`, {
           credentials: 'include',
         });
         if (!response.ok || cancelled) {
@@ -122,7 +122,7 @@ function AVLUpdatePageContent() {
         headers.set('X-CSRFToken', csrfToken);
       }
 
-      const response = await fetch(`/api/avl/update?orgId=${orgId}&datasetId=${datasetId}`, {
+      const response = await fetch(`/api/avl/update/${orgId}/${datasetId}/`, {
         method: 'POST',
         body: formData,
         headers,
@@ -132,13 +132,12 @@ function AVLUpdatePageContent() {
       const data = (await response.json().catch(() => ({}))) as {
         error?: string;
         redirect?: string;
-        fieldErrors?: Record<string, string[] | string>;
         field_errors?: Record<string, string[] | string>;
       };
 
       if (!response.ok) {
         const nextErrors: Record<string, string> = {};
-        const fieldErrors = data.fieldErrors || data.field_errors || {};
+        const fieldErrors = data.field_errors || {};
 
         const commentError = fieldErrors.comment;
         if (commentError) {

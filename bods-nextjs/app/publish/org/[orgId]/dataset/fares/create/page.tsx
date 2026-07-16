@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper, DatasetDescriptionFields, DataProviderRadioGroup, URL_LINK_ITEM_ID, UPLOAD_FILE_ITEM_ID } from '@/components/publish';
 import { config } from '@/config';
+import { getCsrfToken } from '@/lib/api-client';
 
 const DESCRIPTION_STEP = 'description';
 const CANCEL_STEP = 'cancel';
@@ -205,14 +206,12 @@ function FaresCreatePageContent() {
         formData.set('upload_file', uploadFile, uploadFile.name);
       }
 
-      const token = globalThis.window
-        ? globalThis.window.localStorage.getItem('bods.auth.access')
-        : null;
-
-      const resp = await fetch(`/api/fares/create?orgId=${orgId}`, {
+      const csrfToken = getCsrfToken();
+      const resp = await fetch(`/api/fares/create/${orgId}/`, {
         method: 'POST',
         body: formData,
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        credentials: 'include',
+        headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
       });
 
       const data = (await resp.json().catch(() => ({}))) as { error?: string; redirect?: string };
@@ -229,7 +228,6 @@ function FaresCreatePageContent() {
         return;
       }
 
-      // Navigate within Next.js (the bridge rewrites Django URLs to Next.js paths)
       globalThis.location.href = data.redirect;
     } catch {
       setErrorMessage('An error occurred while submitting. Please try again.');

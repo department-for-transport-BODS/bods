@@ -11,10 +11,14 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function LogoutPage() {
-  const { signOut, isAuthenticated } = useAuth();
+  const { signOut, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+
     if (isAuthenticated) {
       signOut().then(() => {
         router.push('/');
@@ -23,7 +27,7 @@ export default function LogoutPage() {
     } else {
       router.push('/');
     }
-  }, [isAuthenticated, signOut, router]);
+  }, [isAuthenticated, isLoading, signOut, router]);
 
   return (
     <div className="govuk-width-container">

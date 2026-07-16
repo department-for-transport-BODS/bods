@@ -1,5 +1,3 @@
-import { config } from '@/config';
-
 interface ApiRequestOptions extends Omit<RequestInit, 'body' | 'method'> {
   body?: BodyInit | Record<string, unknown> | null;
 }
@@ -89,7 +87,7 @@ async function request<T>(method: string, path: string, options: ApiRequestOptio
     }
   }
 
-  const response = await fetch(`${config.djangoApiUrl}${path}`, {
+  const response = await fetch(path, {
     ...init,
     method,
     headers,

@@ -5,11 +5,8 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 from django_hosts import reverse
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 import config.hosts
 from transit_odp.avl.forms import (
@@ -38,7 +35,6 @@ from transit_odp.publish.forms import dataset
 from transit_odp.timetables.tasks import delete_dataset_revision
 
 
-_jwt_auth = JWTAuthentication()
 FIRST_PUBLICATION_COMMENT = "First publication"
 AUTH_REQUIRED_ERROR = "Authentication required"
 ORG_ACCESS_REQUIRED_ERROR = "Org user access required"
@@ -48,30 +44,11 @@ ExpiredStatus = FeedStatus.expired.value
 ALLOW_DRAFT_DETAIL_FALLBACK = True
 
 
-def _authenticate_jwt(request):
-    try:
-        result = _jwt_auth.authenticate(request)
-    except (InvalidToken, TokenError):
-        return None
-    if result is None:
-        return None
-    user, _token = result
-    return user
-
-
 def _authenticate_user(request):
     session_user = get_user(request)
     if session_user is not None and session_user.is_authenticated:
         return session_user
-
-    if (
-        hasattr(request, "user")
-        and request.user is not None
-        and request.user.is_authenticated
-    ):
-        return request.user
-
-    return _authenticate_jwt(request)
+    return None
 
 
 def _get_user_org(user, org_id):
@@ -162,7 +139,6 @@ def _get_review_state(revision):
     return False, progress, error
 
 
-@csrf_exempt
 @require_POST
 def create_avl_dataset_api(request, pk1):
     user, organisation, _, error_response = _get_request_context(request, pk1)
@@ -264,7 +240,6 @@ def get_avl_review_status_api(request, pk1, pk):
     )
 
 
-@csrf_exempt
 @require_POST
 def publish_avl_dataset_api(request, pk1, pk):
     user, _, revision, error_response = _get_request_context(request, pk1, pk)
@@ -296,7 +271,6 @@ def publish_avl_dataset_api(request, pk1, pk):
     )
 
 
-@csrf_exempt
 @require_POST
 def delete_avl_dataset_api(request, pk1, pk):
     _user, _org, revision, error_response = _get_request_context(request, pk1, pk)
@@ -315,7 +289,6 @@ def delete_avl_dataset_api(request, pk1, pk):
     )
 
 
-@csrf_exempt
 @require_POST
 def update_avl_dataset_api(request, pk1, pk):
     user = _authenticate_user(request)
@@ -427,7 +400,6 @@ def get_avl_dataset_edit_api(request, pk1, pk):
     )
 
 
-@csrf_exempt
 @require_POST
 def edit_avl_dataset_description_api(request, pk1, pk):
     """Save AVL description fields edited from feed detail page."""

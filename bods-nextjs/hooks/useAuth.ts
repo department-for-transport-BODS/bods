@@ -1,7 +1,7 @@
 /**
  * useAuth Hook
  * 
- * Re-export of the JWT auth context for backward compatibility
+ * Re-export of the session auth context.
  */
 
-export { useAuth } from '@/lib/auth/jwt-auth';
+export { useAuth } from '@/lib/auth/session-auth';

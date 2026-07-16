@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Radios } from 'kainossoftwareltd-govuk-react-kainos';
 import { getPaginated } from '@/lib/api-client';
+import { useAuth } from '@/hooks/useAuth';
 
 type DataType = 'timetable' | 'avl' | 'fares';
 
@@ -20,6 +21,7 @@ interface Organisation {
 
 function PublishDashboard() {
   const router = useRouter();
+  const { user } = useAuth();
   const [selectedDataType, setSelectedDataType] = useState<DataType | ''>('');
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,9 +37,18 @@ function PublishDashboard() {
     setIsSubmitting(true);
 
     try {
+      if (user?.is_single_org_user && user.organisation_id) {
+        if (selectedDataType === 'avl') {
+          router.push(`/publish/org/${user.organisation_id}/dataset/${selectedDataType}/new`);
+        } else {
+          router.push(`/publish/org/${user.organisation_id}/dataset/${selectedDataType}`);
+        }
+        return;
+      }
+
       const data = await getPaginated<Organisation>('/api/organisations/');
 
-      if (data.results.length === 1) {
+      if (data.results.length === 1 && user?.is_single_org_user) {
         if (selectedDataType === 'avl') {
           router.push(`/publish/org/${data.results[0].id}/dataset/${selectedDataType}/new`);
         } else {
