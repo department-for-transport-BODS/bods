@@ -4,7 +4,7 @@ export class AvlReviewSection {
   constructor(private readonly page: Page) {}
 
   private publishButton() {
-    return this.page.getByRole('button', { name: /publish data feed|publishing/i });
+    return this.page.getByRole('button', { name: /publish data|publish data feed|publishing/i });
   }
 
   async waitForReviewToBeReady(timeoutMs = 180000): Promise<void> {
