@@ -19,6 +19,13 @@ jest.mock('./RouteMap', () => ({
   RouteMap: (props: unknown) => mockRouteMap(props),
 }));
 
+jest.mock('@/config', () => ({
+  config: {
+    mapboxToken: 'test-mapbox-token',
+    djangoApiUrl: 'http://localhost:8000',
+  },
+}));
+
 const mockDataset: Dataset = {
   id: 123,
   organisationId: 456,

@@ -14,7 +14,12 @@ import styles from './StopMap.module.css';
 
 jest.mock('mapbox-gl', () => ({
   Map: jest.fn(() => ({
-    on: jest.fn(),
+    on: jest.fn((event, layerOrHandler, maybeHandler) => {
+      const handler = typeof layerOrHandler === 'function' ? layerOrHandler : maybeHandler;
+      if (event === 'load' && typeof handler === 'function') {
+        handler();
+      }
+    }),
     addControl: jest.fn(),
     addSource: jest.fn(),
     addLayer: jest.fn(),
@@ -473,9 +478,10 @@ describe('StopMap', () => {
           enableClustering={false}
         />
       );
-      
-      const styles = document.querySelector('style');
-      expect(styles?.textContent).toContain('scale(1.2)');
+
+      const mapboxgl = require('mapbox-gl');
+      const markerElement = mapboxgl.Marker.mock.calls[0][0];
+      expect(markerElement).toHaveClass(styles.stopMarker);
     });
   });
 

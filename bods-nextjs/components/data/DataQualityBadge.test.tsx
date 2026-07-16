@@ -10,6 +10,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { DataQualityBadge } from './DataQualityBadge';
+import styles from './DataQualityBadge.module.css';
 
 jest.mock('next/link', () => {
   return ({ children, href, ...props }: any) => {
@@ -128,9 +129,10 @@ describe('DataQualityBadge', () => {
 
   describe('Variant Styles', () => {
     it('renders inline variant by default', () => {
-      const { container } = render(<DataQualityBadge score="100%" rag="green" />);
-      
-      expect(container.querySelector('.dq-badge-stacked')).not.toBeInTheDocument();
+      render(<DataQualityBadge score="100%" rag="green" />);
+
+      expect(screen.queryByText('Data quality')).not.toBeInTheDocument();
+      expect(screen.getByLabelText(/data quality score: 100%, rated GREEN/i)).toHaveClass(styles.inline);
     });
 
     it('renders stacked variant with label', () => {
@@ -148,25 +150,15 @@ describe('DataQualityBadge', () => {
   });
 
   describe('Size Variants', () => {
-    it('applies default medium size', () => {
-      render(<DataQualityBadge score="100%" rag="green" size="medium" />);
-      
-      const badge = screen.getByLabelText(/data quality score: 100%, rated GREEN/i);
-      expect(badge).toHaveStyle({ fontSize: 'inherit' });
-    });
+    it.each([
+      ['medium', styles.sizeMedium],
+      ['small', styles.sizeSmall],
+      ['large', styles.sizeLarge],
+    ] as const)('applies the %s size class', (size, expectedClass) => {
+      render(<DataQualityBadge score="100%" rag="green" size={size} />);
 
-    it('applies small size', () => {
-      render(<DataQualityBadge score="100%" rag="green" size="small" />);
-      
       const badge = screen.getByLabelText(/data quality score: 100%, rated GREEN/i);
-      expect(badge).toHaveStyle({ fontSize: '0.875rem' });
-    });
-
-    it('applies large size', () => {
-      render(<DataQualityBadge score="100%" rag="green" size="large" />);
-      
-      const badge = screen.getByLabelText(/data quality score: 100%, rated GREEN/i);
-      expect(badge).toHaveStyle({ fontSize: '1.25rem' });
+      expect(badge).toHaveClass(expectedClass);
     });
   });
 
@@ -202,25 +194,15 @@ describe('DataQualityBadge', () => {
   });
 
   describe('CSS Indicator Classes', () => {
-    it('applies success class for green status', () => {
-      render(<DataQualityBadge score="100%" rag="green" />);
-      
-      const badge = screen.getByLabelText(/data quality score: 100%, rated GREEN/i);
-      expect(badge).toHaveClass('status-indicator--success');
-    });
+    it.each([
+      ['green', '100%', /data quality score: 100%, rated GREEN/i, styles.success],
+      ['amber', '95%', /data quality score: 95%, rated AMBER/i, styles.warning],
+      ['red', '85%', /data quality score: 85%, rated RED/i, styles.error],
+    ] as const)('applies the expected indicator class for %s status', (_rag, score, label, expectedClass) => {
+      render(<DataQualityBadge score={score} rag={_rag} />);
 
-    it('applies warning class for amber status', () => {
-      render(<DataQualityBadge score="95%" rag="amber" />);
-      
-      const badge = screen.getByLabelText(/data quality score: 95%, rated AMBER/i);
-      expect(badge).toHaveClass('status-indicator--warning');
-    });
-
-    it('applies error class for red status', () => {
-      render(<DataQualityBadge score="85%" rag="red" />);
-      
-      const badge = screen.getByLabelText(/data quality score: 85%, rated RED/i);
-      expect(badge).toHaveClass('status-indicator--error');
+      const badge = screen.getByLabelText(label);
+      expect(badge).toHaveClass(styles.statusIndicator, expectedClass);
     });
   });
 
