@@ -79,23 +79,22 @@ function AVLCreatePageContent() {
         headers.set('X-CSRFToken', csrfToken);
       }
 
-      const response = await fetch(`${config.djangoApiUrl}/api/avl/create/${orgId}/`, {
+      const response = await fetch(`/api/avl/create/${orgId}/`, {
         method: 'POST',
         body: formData,
         headers,
         credentials: 'include',
       });
 
-      const data = (await response.json().catch(() => ({}))) as { error?: string; redirect?: string };
-      const dataWithFieldErrors = data as {
+      const data = (await response.json().catch(() => ({}))) as {
         error?: string;
         redirect?: string;
-        fieldErrors?: Record<string, string[] | string>;
+        field_errors?: Record<string, string[] | string>;
       };
 
       if (!response.ok) {
         const nextErrors: Record<string, string> = {};
-        const fieldErrors = dataWithFieldErrors.fieldErrors || {};
+        const fieldErrors = data.field_errors || {};
 
         const urlLinkError = fieldErrors.url_link;
         if (urlLinkError) {

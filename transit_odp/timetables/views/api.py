@@ -2,11 +2,8 @@ from django.contrib.auth import get_user
 from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 from django_hosts import reverse
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from waffle import flag_is_active
 
 import config.hosts
@@ -17,7 +14,6 @@ from transit_odp.organisation.models import Dataset, DatasetRevision, Organisati
 from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
 
 
-_jwt_auth = JWTAuthentication()
 FIRST_PUBLICATION_COMMENT = "First publication"
 LOADING_STATUSES = {"indexing", "processing", "pending"}
 AUTH_REQUIRED_ERROR = "Authentication required"
@@ -26,32 +22,12 @@ ORG_NOT_FOUND_ERROR = "Organisation not found"
 REVISION_NOT_FOUND_ERROR = "Dataset revision not found"
 
 
-def _authenticate_jwt(request):
-    """Return the authenticated user from a Bearer token, or None."""
-    try:
-        result = _jwt_auth.authenticate(request)
-    except (InvalidToken, TokenError):
-        return None
-    if result is None:
-        return None
-    user, _token = result
-    return user
-
-
 def _authenticate_user(request):
-    """Prefer Django session auth, then fall back to JWT."""
+    """Return the authenticated Django session user."""
     session_user = get_user(request)
     if session_user is not None and session_user.is_authenticated:
         return session_user
-
-    if (
-        hasattr(request, "user")
-        and request.user is not None
-        and request.user.is_authenticated
-    ):
-        return request.user
-
-    return _authenticate_jwt(request)
+    return None
 
 
 def _get_user_org(user, org_id):
@@ -165,7 +141,6 @@ def _get_request_context(request, org_id, dataset_id=None):
     return user, organisation, revision, None
 
 
-@csrf_exempt
 @require_POST
 def create_timetables_dataset_api(request, pk1):
     user, organisation, _, error_response = _get_request_context(request, pk1)
@@ -213,7 +188,6 @@ def create_timetables_dataset_api(request, pk1):
     return JsonResponse({"redirect": review_url}, status=201)
 
 
-@csrf_exempt
 @require_GET
 def get_timetables_review_status_api(request, pk1, pk):
     _, _, revision, error_response = _get_request_context(request, pk1, pk)
@@ -281,7 +255,6 @@ def get_timetables_review_status_api(request, pk1, pk):
     )
 
 
-@csrf_exempt
 @require_POST
 def publish_timetables_dataset_api(request, pk1, pk):
     user, _, revision, error_response = _get_request_context(request, pk1, pk)
