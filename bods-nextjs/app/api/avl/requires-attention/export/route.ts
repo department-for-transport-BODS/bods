@@ -1,28 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { config } from '@/config';
+import { getDjangoOriginCandidates, toDownloadResponse } from '../../_utils/download-proxy';
 import { getSessionHeaders, hasSessionCookie } from '../../_utils/session-auth';
 
-function getPublishOrigin(): string {
-  const explicitOrigin = process.env.DJANGO_PUBLISH_ORIGIN;
-  if (explicitOrigin) {
-    return explicitOrigin.replace(/\/$/, '');
-  }
-
-  try {
-    const parsed = new URL(config.djangoOrigin);
-    if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
-      parsed.hostname = 'publish.localhost';
-      return parsed.toString().replace(/\/$/, '');
-    }
-  } catch {
-    // no-op, fall through to default origin
-  }
-
-  return config.djangoOrigin.replace(/\/$/, '');
-}
-
 function buildCandidateUrls(orgId: string, pathSuffix: string, query: Record<string, string>): string[] {
-  const origins = [getPublishOrigin(), config.djangoOrigin.replace(/\/$/, '')];
+  const origins = getDjangoOriginCandidates();
   const prefixes = ['', '/publish'];
   const urls: string[] = [];
 
@@ -79,28 +60,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (!exportResponse.ok) {
-      return NextResponse.json(
-        { error: `Django responded with status ${exportResponse.status}` },
-        { status: exportResponse.status },
-      );
-    }
-
-    const contentDisposition = exportResponse.headers.get('Content-Disposition') || '';
-    const contentType = exportResponse.headers.get('Content-Type') || 'application/octet-stream';
-    const body = exportResponse.body;
-
-    if (!body) {
-      return NextResponse.json({ error: 'No file content returned from server' }, { status: 502 });
-    }
-
-    return new NextResponse(body, {
-      status: 200,
-      headers: {
-        'Content-Type': contentType,
-        'Content-Disposition': contentDisposition,
-      },
-    });
+    return toDownloadResponse(exportResponse, 'application/octet-stream');
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: `Failed to reach Django: ${message}` }, { status: 502 });
