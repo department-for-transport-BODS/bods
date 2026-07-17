@@ -533,15 +533,17 @@ def list_avl_datasets_api(request, pk1):
         paginator = Paginator(draft_results, 10)
         page_obj = paginator.get_page(page_number)
 
-        return JsonResponse({
-            "count": len(draft_results),
-            "page": page_obj.number,
-            "pageSize": 10,
-            "totalPages": paginator.num_pages or 1,
-            "hasNext": page_obj.has_next(),
-            "hasPrevious": page_obj.has_previous(),
-            "results": page_obj.object_list,
-        })
+        return JsonResponse(
+            {
+                "count": len(draft_results),
+                "page": page_obj.number,
+                "pageSize": 10,
+                "totalPages": paginator.num_pages or 1,
+                "hasNext": page_obj.has_next(),
+                "hasPrevious": page_obj.has_previous(),
+                "results": page_obj.object_list,
+            }
+        )
 
     sort_field = sort_field_map.get(sort_by, "modified")
     if order != "asc":
@@ -588,15 +590,17 @@ def list_avl_datasets_api(request, pk1):
     paginator = Paginator(results, 10)
     page_obj = paginator.get_page(page_number)
 
-    return JsonResponse({
-        "count": len(results),
-        "page": page_obj.number,
-        "pageSize": 10,
-        "totalPages": paginator.num_pages or 1,
-        "hasNext": page_obj.has_next(),
-        "hasPrevious": page_obj.has_previous(),
-        "results": page_obj.object_list,
-    })
+    return JsonResponse(
+        {
+            "count": len(results),
+            "page": page_obj.number,
+            "pageSize": 10,
+            "totalPages": paginator.num_pages or 1,
+            "hasNext": page_obj.has_next(),
+            "hasPrevious": page_obj.has_previous(),
+            "results": page_obj.object_list,
+        }
+    )
 
 
 def _get_avl_requires_attention_rows(org_id):
