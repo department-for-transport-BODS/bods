@@ -91,7 +91,7 @@ test.describe('AVL upload migration flow', () => {
         status: 400,
         contentType: 'application/json',
         body: JSON.stringify({
-          fieldErrors: {
+          field_errors: {
             url_link: ['Enter a valid URL.'],
             username: ['Username is required.'],
             password: ['Password is required.'],

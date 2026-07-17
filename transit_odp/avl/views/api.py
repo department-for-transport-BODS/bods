@@ -465,6 +465,12 @@ def list_avl_datasets_api(request, pk1):
     tab = request.GET.get("tab", "active")
     sort_by = request.GET.get("sort_by", "modified")
     order = request.GET.get("order", "desc")
+    page_value = request.GET.get("page", "1")
+
+    try:
+        page_number = max(1, int(page_value))
+    except (TypeError, ValueError):
+        page_number = 1
 
     # Map frontend column names to model fields
     sort_field_map = {
@@ -508,9 +514,9 @@ def list_avl_datasets_api(request, pk1):
             .order_by(draft_sort_field)
         )
 
-        results = []
+        draft_results = []
         for revision in draft_qs:
-            results.append(
+            draft_results.append(
                 {
                     "id": revision.dataset_id,
                     "name": revision.name or "",
@@ -524,7 +530,18 @@ def list_avl_datasets_api(request, pk1):
                 }
             )
 
-        return JsonResponse({"count": len(results), "results": results})
+        paginator = Paginator(draft_results, 10)
+        page_obj = paginator.get_page(page_number)
+
+        return JsonResponse({
+            "count": len(draft_results),
+            "page": page_obj.number,
+            "pageSize": 10,
+            "totalPages": paginator.num_pages or 1,
+            "hasNext": page_obj.has_next(),
+            "hasPrevious": page_obj.has_previous(),
+            "results": page_obj.object_list,
+        })
 
     sort_field = sort_field_map.get(sort_by, "modified")
     if order != "asc":
@@ -568,7 +585,18 @@ def list_avl_datasets_api(request, pk1):
             }
         )
 
-    return JsonResponse({"count": len(results), "results": results})
+    paginator = Paginator(results, 10)
+    page_obj = paginator.get_page(page_number)
+
+    return JsonResponse({
+        "count": len(results),
+        "page": page_obj.number,
+        "pageSize": 10,
+        "totalPages": paginator.num_pages or 1,
+        "hasNext": page_obj.has_next(),
+        "hasPrevious": page_obj.has_previous(),
+        "results": page_obj.object_list,
+    })
 
 
 def _get_avl_requires_attention_rows(org_id):
@@ -642,6 +670,7 @@ def get_avl_requires_attention_api(request, pk1):
         "totalInScopeInSeasonServices": total_inscope,
         "percentage": percentage,
     }
+    export_url = f"/api/avl/requires-attention/export?orgId={organisation.id}"
 
     if summary_only:
         return JsonResponse(
@@ -651,6 +680,7 @@ def get_avl_requires_attention_api(request, pk1):
                 "pagination": {"currentPage": 1, "totalPages": 1},
                 "query": "",
                 "noResults": False,
+                "exportUrl": None,
             },
             status=200,
         )
@@ -686,6 +716,7 @@ def get_avl_requires_attention_api(request, pk1):
                 "totalPages": paginator.num_pages or 1,
             },
             "query": q,
+            "exportUrl": export_url,
             "noResults": len(results) == 0,
         },
         status=200,

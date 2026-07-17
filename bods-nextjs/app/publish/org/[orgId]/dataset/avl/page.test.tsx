@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AVLPage from './page';
-import { api } from '@/lib/api-client';
 import { useApiResource } from '@/hooks/useApiResource';
 
 const mockUseSearchParams = jest.fn();
@@ -10,6 +9,7 @@ let loadFeeds: (() => Promise<unknown>) | undefined;
 jest.mock('next/navigation', () => ({
   useParams: () => ({ orgId: '123' }),
   useSearchParams: () => mockUseSearchParams(),
+  usePathname: () => '/publish/org/123/dataset/avl',
 }));
 
 jest.mock('@/components/auth/ProtectedRoute', () => ({
@@ -37,9 +37,16 @@ describe('AVL - Publish - Page', () => {
     jest.clearAllMocks();
     loadFeeds = undefined;
     mockUseSearchParams.mockReturnValue(new URLSearchParams());
-    (api.get as jest.Mock).mockResolvedValue({ count: 0, results: [] });
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ count: 0, results: [] }),
+    });
+    let firstCall = true;
     mockUseApiResource.mockImplementation((loader) => {
-      loadFeeds = loader;
+      if (firstCall) {
+        loadFeeds = loader;
+        firstCall = false;
+      }
       return { data: { count: 0, results: [] }, isLoading: false, error: '' };
     });
   });
@@ -58,14 +65,23 @@ describe('AVL - Publish - Page', () => {
     render(<AVLPage />);
     await loadFeeds?.();
 
-    expect(api.get).toHaveBeenCalledWith(
-      `/api/avl/list/123?tab=${expectedTab}&sort_by=modified&order=desc`,
+    expect(global.fetch).toHaveBeenCalledWith(
+      `/api/avl/list/123/?tab=${expectedTab}&sort_by=modified&order=desc&page=1`,
+      expect.any(Object),
     );
   });
 
   it('changes sort order when the same table header is selected twice', async () => {
+    let callCount = 0;
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ count: 1, results: [] }),
+    });
     mockUseApiResource.mockImplementation((loader) => {
-      loadFeeds = loader;
+      if (callCount % 3 === 0) {
+        loadFeeds = loader;
+      }
+      callCount++;
       return {
         data: {
           count: 1,
@@ -90,15 +106,17 @@ describe('AVL - Publish - Page', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Status' }));
     await loadFeeds?.();
 
-    expect(api.get).toHaveBeenLastCalledWith(
-      '/api/avl/list/123?tab=active&sort_by=status&order=desc',
+    expect(global.fetch).toHaveBeenLastCalledWith(
+      '/api/avl/list/123/?tab=active&sort_by=status&order=asc&page=1',
+      expect.any(Object),
     );
 
-    await userEvent.click(screen.getByRole('button', { name: 'Status ▼' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Status ▲' }));
     await loadFeeds?.();
 
-    expect(api.get).toHaveBeenLastCalledWith(
-      '/api/avl/list/123?tab=active&sort_by=status&order=asc',
+    expect(global.fetch).toHaveBeenLastCalledWith(
+      '/api/avl/list/123/?tab=active&sort_by=status&order=desc&page=1',
+      expect.any(Object),
     );
   });
 });

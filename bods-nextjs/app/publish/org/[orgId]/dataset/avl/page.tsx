@@ -83,7 +83,7 @@ function AvlManagement() {
 
   const loadFeeds = useCallback(async (): Promise<AVLFeedListResponse> => {
     const response = await fetch(
-      `/api/avl/list?orgId=${encodeURIComponent(orgId)}&tab=${encodeURIComponent(tab)}&sort_by=${encodeURIComponent(sortBy)}&order=${encodeURIComponent(sortOrder)}&page=${safeCurrentPage}`,
+      `/api/avl/list/${encodeURIComponent(orgId)}/?tab=${encodeURIComponent(tab)}&sort_by=${encodeURIComponent(sortBy)}&order=${encodeURIComponent(sortOrder)}&page=${safeCurrentPage}`,
       {
         method: 'GET',
         credentials: 'include',
@@ -101,7 +101,7 @@ function AvlManagement() {
   }, [orgId, sortBy, sortOrder, tab, safeCurrentPage]);
 
   const loadAttentionSummary = useCallback(async (): Promise<AttentionSummaryResponse> => {
-    const response = await fetch(`/api/avl/requires-attention?orgId=${encodeURIComponent(orgId)}&summaryOnly=1`, {
+    const response = await fetch(`/api/avl/requires-attention/${encodeURIComponent(orgId)}/?summaryOnly=1`, {
       method: 'GET',
       credentials: 'include',
       cache: 'no-store',

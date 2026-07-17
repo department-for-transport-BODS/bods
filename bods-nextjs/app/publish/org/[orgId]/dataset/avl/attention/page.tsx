@@ -47,7 +47,7 @@ function AvlAttentionContent() {
 
   const loadAttentionData = useCallback(async (): Promise<AttentionPageResponse> => {
     const response = await fetch(
-      `/api/avl/requires-attention?orgId=${encodeURIComponent(orgId)}&q=${encodeURIComponent(query)}&page=${page}`,
+      `/api/avl/requires-attention/${encodeURIComponent(orgId)}/?q=${encodeURIComponent(query)}&page=${page}`,
       {
         method: 'GET',
         credentials: 'include',
