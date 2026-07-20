@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { PublishStepper } from '@/components/publish';
 import { api } from '@/lib/api-client';
 
 const COMMENT_STEP = 'comment';
@@ -279,15 +280,13 @@ function FaresUpdatePageContent() {
       <div className="govuk-main-wrapper">
         {step === CANCEL_STEP ? null : (
           <div className="govuk-breadcrumbs">
-            <ol className="publish-stepper govuk-breadcrumbs__list" aria-label="Progress">
-              <li className={`publish-stepper__item ${step === COMMENT_STEP ? 'publish-stepper__item--selected' : 'publish-stepper__item--previous'}`}>
-                1. Comment
-              </li>
-              <li className={`publish-stepper__item ${step === UPLOAD_STEP ? 'publish-stepper__item--selected' : 'publish-stepper__item--next'}`}>
-                2. Update
-              </li>
-              <li className="publish-stepper__item publish-stepper__item--next">3. Review and publish</li>
-            </ol>
+            <PublishStepper
+              steps={[
+                { label: '1. Comment', state: step === COMMENT_STEP ? 'selected' : 'previous' },
+                { label: '2. Update', state: step === UPLOAD_STEP ? 'selected' : 'next' },
+                { label: '3. Review and publish', state: 'next' },
+              ]}
+            />
           </div>
         )}
 

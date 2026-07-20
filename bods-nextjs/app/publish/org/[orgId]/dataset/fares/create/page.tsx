@@ -5,6 +5,7 @@
 import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { PublishStepper } from '@/components/publish';
 import { api } from '@/lib/api-client';
 
 const DESCRIPTION_STEP = 'description';
@@ -330,23 +331,13 @@ function FaresCreatePageContent() {
         {step === CANCEL_STEP ? null : (
           <div className="govuk-breadcrumbs">
             <div className="govuk-breadcrumbs">
-              <ol className="publish-stepper govuk-breadcrumbs__list" aria-label="Progress">
-                <li
-                  className={`publish-stepper__item ${
-                    step === DESCRIPTION_STEP ? 'publish-stepper__item--selected' : 'publish-stepper__item--previous'
-                  }`}
-                >
-                  1. Describe data
-                </li>
-                <li
-                  className={`publish-stepper__item ${
-                    step === UPLOAD_STEP ? 'publish-stepper__item--selected' : 'publish-stepper__item--next'
-                  }`}
-                >
-                  2. Provide data
-                </li>
-                <li className="publish-stepper__item publish-stepper__item--next">3. Review and publish</li>
-              </ol>
+              <PublishStepper
+                steps={[
+                  { label: '1. Describe data', state: step === DESCRIPTION_STEP ? 'selected' : 'previous' },
+                  { label: '2. Provide data', state: step === UPLOAD_STEP ? 'selected' : 'next' },
+                  { label: '3. Review and publish', state: 'next' },
+                ]}
+              />
             </div>
           </div>
           )}
