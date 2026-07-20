@@ -9,6 +9,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import mapboxgl from 'mapbox-gl';
 import { RouteMap } from './RouteMap';
 import styles from './RouteMap.module.css';
 
@@ -233,8 +234,7 @@ describe('RouteMap', () => {
       render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
 
       await waitFor(() => {
-        const mapboxgl = require('mapbox-gl');
-        const addLayer = mapboxgl.Map.mock.results[0].value.addLayer;
+        const addLayer = (mapboxgl.Map as jest.Mock).mock.results[0].value.addLayer;
         expect(addLayer).toHaveBeenCalledWith(
           expect.objectContaining({
             id: 'service-patterns',
@@ -250,8 +250,7 @@ describe('RouteMap', () => {
       render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
 
       await waitFor(() => {
-        const mapboxgl = require('mapbox-gl');
-        const addLayer = mapboxgl.Map.mock.results[0].value.addLayer;
+        const addLayer = (mapboxgl.Map as jest.Mock).mock.results[0].value.addLayer;
         expect(addLayer).toHaveBeenCalledWith(
           expect.objectContaining({
             id: 'service-patterns-hover',
@@ -327,12 +326,11 @@ describe('RouteMap', () => {
         <RouteMap revisionId={123} mapboxToken={mockMapboxToken} />
       );
       
-      const mapboxgl = require('mapbox-gl');
-      const initialCallCount = mapboxgl.Map.mock.calls.length;
+      const initialCallCount = (mapboxgl.Map as jest.Mock).mock.calls.length;
       
       rerender(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
       
-      expect(mapboxgl.Map.mock.calls.length).toBe(initialCallCount);
+      expect((mapboxgl.Map as jest.Mock).mock.calls.length).toBe(initialCallCount);
     });
 
     it('cleans up map on unmount', () => {
@@ -340,8 +338,7 @@ describe('RouteMap', () => {
         <RouteMap revisionId={123} mapboxToken={mockMapboxToken} />
       );
       
-      const mapboxgl = require('mapbox-gl');
-      const mockRemove = mapboxgl.Map.mock.results[0].value.remove;
+      const mockRemove = (mapboxgl.Map as jest.Mock).mock.results[0].value.remove;
       
       unmount();
       

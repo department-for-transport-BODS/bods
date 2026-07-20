@@ -23,7 +23,7 @@ jest.mock('@/lib/api-client', () => ({
 }));
 
 jest.mock('@/components/publish', () => ({
-  PublishStepper: ({ steps }: { steps: unknown[] }) => (
+  PublishStepper: () => (
     <div data-testid="publish-stepper">Stepper</div>
   ),
 }));

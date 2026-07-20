@@ -6,14 +6,14 @@
  * tooltips, accessibility features, and link behavior.
  */
 
-import React from 'react';
+import React, { type AnchorHTMLAttributes, type ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { DataQualityBadge } from './DataQualityBadge';
 import styles from './DataQualityBadge.module.css';
 
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => {
+  return function MockLink({ children, href, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { children: ReactNode; href: string }) {
     return <a href={href} {...props}>{children}</a>;
   };
 });

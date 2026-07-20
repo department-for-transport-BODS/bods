@@ -193,8 +193,8 @@ describe('AvlFeedDetailContent', () => {
   });
 
   it('cancels fetch on unmount', async () => {
-    let resolveApiCall: any;
-    const apiPromise = new Promise((resolve) => {
+    let resolveApiCall: (value: AvlFeedDetail) => void = () => {};
+    const apiPromise = new Promise<AvlFeedDetail>((resolve) => {
       resolveApiCall = resolve;
     });
     mockApiGet.mockReturnValue(apiPromise);

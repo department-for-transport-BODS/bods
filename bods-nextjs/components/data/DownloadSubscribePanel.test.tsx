@@ -5,13 +5,13 @@
  * Tests the download and subscribe panel with various scenarios
  */
 
-import React from 'react';
+import React, { type AnchorHTMLAttributes, type ReactNode } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { DownloadSubscribePanel } from './DownloadSubscribePanel';
 
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => {
+  return function MockLink({ children, href, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { children: ReactNode; href: string }) {
     return <a href={href} {...props}>{children}</a>;
   };
 });

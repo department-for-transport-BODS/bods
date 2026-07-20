@@ -35,13 +35,7 @@ describe('AvlCompliancePanels', () => {
   it('renders nothing for compliant status', () => {
     const compliantFeed = { ...mockFeedDetail, avlComplianceStatus: 'Compliant' };
 
-    const { container } = render(
-      <AvlCompliancePanels
-        feedDetail={compliantFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    const { container } = render(<AvlCompliancePanels feedDetail={compliantFeed} />);
 
     expect(container.firstChild).toBeNull();
   });
@@ -53,13 +47,7 @@ describe('AvlCompliancePanels', () => {
       status: 'published',
     };
 
-    render(
-      <AvlCompliancePanels
-        feedDetail={awaitingReviewFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    render(<AvlCompliancePanels feedDetail={awaitingReviewFeed} />);
 
     expect(screen.getByText(/Your data is currently being published but contains potential issues/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Download validation report/i })).toBeInTheDocument();
@@ -72,13 +60,7 @@ describe('AvlCompliancePanels', () => {
       status: 'draft',
     };
 
-    render(
-      <AvlCompliancePanels
-        feedDetail={awaitingReviewDraftFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    render(<AvlCompliancePanels feedDetail={awaitingReviewDraftFeed} />);
 
     expect(screen.getByText(/If no corrections are made your feed will be unpublished/i)).toBeInTheDocument();
   });
@@ -90,13 +72,7 @@ describe('AvlCompliancePanels', () => {
       status: 'published',
     };
 
-    render(
-      <AvlCompliancePanels
-        feedDetail={awaitingReviewPublishedFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    render(<AvlCompliancePanels feedDetail={awaitingReviewPublishedFeed} />);
 
     expect(screen.queryByText(/If no corrections are made your feed will be unpublished/i)).not.toBeInTheDocument();
   });
@@ -107,13 +83,7 @@ describe('AvlCompliancePanels', () => {
       avlComplianceStatus: 'Partially compliant',
     };
 
-    render(
-      <AvlCompliancePanels
-        feedDetail={partiallyCompliantFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    render(<AvlCompliancePanels feedDetail={partiallyCompliantFeed} />);
 
     expect(screen.getByText(/The AVL data feed is only partially compliant/i)).toBeInTheDocument();
     expect(screen.getByText(/To fully pass validation please address all outstanding issues/i)).toBeInTheDocument();
@@ -125,13 +95,7 @@ describe('AvlCompliancePanels', () => {
       avlComplianceStatus: 'Partially compliant',
     };
 
-    render(
-      <AvlCompliancePanels
-        feedDetail={partiallyCompliantFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    render(<AvlCompliancePanels feedDetail={partiallyCompliantFeed} />);
 
     const link = screen.getByRole('link', { name: /Download validation report/i });
     expect(link).toHaveAttribute('href', '/publish/org/123/dataset/avl/456/validation-report/');
@@ -143,13 +107,7 @@ describe('AvlCompliancePanels', () => {
       avlComplianceStatus: 'Non-compliant',
     };
 
-    render(
-      <AvlCompliancePanels
-        feedDetail={nonCompliantFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    render(<AvlCompliancePanels feedDetail={nonCompliantFeed} />);
 
     expect(screen.getByText('Data feed not compliant')).toBeInTheDocument();
     expect(screen.getByText(/The AVL data feed is non-compliant/i)).toBeInTheDocument();
@@ -161,13 +119,7 @@ describe('AvlCompliancePanels', () => {
       avlComplianceStatus: 'Non-compliant',
     };
 
-    render(
-      <AvlCompliancePanels
-        feedDetail={nonCompliantFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    render(<AvlCompliancePanels feedDetail={nonCompliantFeed} />);
 
     const link = screen.getByRole('link', { name: /Download validation report/i });
     expect(link).toHaveAttribute('href', '/publish/org/123/dataset/avl/456/validation-report/');
@@ -180,13 +132,7 @@ describe('AvlCompliancePanels', () => {
       avlComplianceStatus: 'Non-compliant',
     };
 
-    render(
-      <AvlCompliancePanels
-        feedDetail={nonCompliantFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    render(<AvlCompliancePanels feedDetail={nonCompliantFeed} />);
 
     const link = screen.getByRole('link', { name: /Download validation report/i });
     expect(link).toHaveAttribute('href', '/publish/org/123/dataset/avl/789/validation-report/');
@@ -198,13 +144,7 @@ describe('AvlCompliancePanels', () => {
       avlComplianceStatus: 'Unknown Status',
     };
 
-    const { container } = render(
-      <AvlCompliancePanels
-        feedDetail={unknownStatusFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    const { container } = render(<AvlCompliancePanels feedDetail={unknownStatusFeed} />);
 
     expect(container.firstChild).toBeNull();
   });
@@ -215,13 +155,7 @@ describe('AvlCompliancePanels', () => {
       avlComplianceStatus: 'Awaiting publisher review',
     };
 
-    render(
-      <AvlCompliancePanels
-        feedDetail={awaitingReviewFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    render(<AvlCompliancePanels feedDetail={awaitingReviewFeed} />);
 
     expect(screen.getByText('Warning')).toBeInTheDocument();
   });
@@ -232,13 +166,7 @@ describe('AvlCompliancePanels', () => {
       avlComplianceStatus: 'Non-compliant',
     };
 
-    render(
-      <AvlCompliancePanels
-        feedDetail={nonCompliantFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    render(<AvlCompliancePanels feedDetail={nonCompliantFeed} />);
 
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
@@ -249,13 +177,7 @@ describe('AvlCompliancePanels', () => {
       avlComplianceStatus: 'compliant', // lowercase
     };
 
-    const { container } = render(
-      <AvlCompliancePanels
-        feedDetail={caseSensitiveFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
+    const { container } = render(<AvlCompliancePanels feedDetail={caseSensitiveFeed} />);
 
     // Component only matches exact casing - lowercase 'compliant' renders nothing
     expect(container.firstChild).toBeNull();
