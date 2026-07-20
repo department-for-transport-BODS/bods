@@ -6,6 +6,7 @@
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import type { Map as MapboxMap } from 'mapbox-gl';
 import type { StopPoint } from '@/components/data/StopMap';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
@@ -216,7 +217,7 @@ function FaresStopMapPreview({ revisionId, mapboxToken }: Readonly<FaresStopMapP
   const [isMapLoading, setIsMapLoading] = useState(false);
   const [hasLoadedStops, setHasLoadedStops] = useState(false);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<InstanceType<(typeof import('mapbox-gl'))['default']['Map']> | null>(null);
+  const mapRef = useRef<MapboxMap | null>(null);
 
   const getMapUnavailableMessage = () => {
     if (isMapLoading) {
