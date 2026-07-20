@@ -21,7 +21,7 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ["scripts/copy-gds-assets.js"],
+    files: ["jest.config.js", "scripts/copy-gds-assets.js"],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
       "@typescript-eslint/no-unused-expressions": "off",
