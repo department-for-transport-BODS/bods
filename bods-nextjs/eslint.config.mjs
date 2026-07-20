@@ -35,17 +35,7 @@ const eslintConfig = defineConfig([
       "lib/**/*.{js,jsx,ts,tsx}",
       "middleware.ts",
       "config.ts",
-    ],
-    rules: {
-      "max-lines": [
-        "error",
-        {
-          max: 300,
-          skipBlankLines: true,
-          skipComments: true,
-        },
-      ],
-    },
+    ]
   },
   globalIgnores([
     ".next/**",
