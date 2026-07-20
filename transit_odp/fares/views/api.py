@@ -588,13 +588,14 @@ def delete_fares_dataset_api(request, pk1, pk):
     if error_response is not None:
         return error_response
 
-    if not revision.is_published or revision.status == FeedStatus.expired.value:
+    delete_queued = not revision.is_published or revision.status == FeedStatus.expired.value
+    if delete_queued:
         delete_dataset_revision.delay(revision.id)
 
     return JsonResponse(
         {
-            "redirect": f"/publish/org/{pk1}/dataset/fares",
-            "deleted": True,
+            "redirect": f"/publish/org/{pk1}/dataset/fares/{pk}/delete/success",
+            "delete_queued": delete_queued,
             "dataset_name": revision.name,
         },
         status=200,

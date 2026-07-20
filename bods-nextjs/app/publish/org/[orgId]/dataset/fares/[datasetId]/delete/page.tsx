@@ -45,11 +45,11 @@ function FaresDeletePageContent() {
 
     try {
       const data = await api.post<{
-        deleted?: boolean;
+        redirect?: string;
         dataset_name?: string;
       }>(`/api/fares/delete/${orgId}/${datasetId}/`);
 
-      const successUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/delete/success?name=${encodeURIComponent(data.dataset_name || datasetName)}`;
+      const successUrl = `${data.redirect || `/publish/org/${orgId}/dataset/fares/${datasetId}/delete/success`}?name=${encodeURIComponent(data.dataset_name || datasetName)}`;
       globalThis.location.href = successUrl;
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Unable to delete data set. Please try again.');
