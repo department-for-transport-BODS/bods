@@ -205,7 +205,7 @@ function ValidationFailureNextSteps() {
         format is correct and that your data set file contains valid data.
       </p>
       <p className="govuk-body app-!-text-muted govuk-!-font-size-19">
-        Accepted file formats include .xml (Netex).
+        Accepted file formats include .xml (NeTEx).
       </p>
     </>
   );

@@ -189,7 +189,7 @@ function UploadStepView({
             URL Link
           </label>
           <div className="govuk-hint">
-            Please provide a URL link where your NeTEX files are hosted. Example address: mybuscompany.com/fares.xml.
+            Please provide a URL link where your NeTEx files are hosted. Example address: mybuscompany.com/fares.xml.
           </div>
           <input
             id="id_url_link"
@@ -208,7 +208,7 @@ function UploadStepView({
             Upload File
           </label>
           <div className="govuk-hint">
-            This must be either NeTEX (see description in guidance) or a zip consisting only of NeTEX files
+            This must be either NeTEx (see description in guidance) or a zip consisting only of NeTEx files
           </div>
           <input
             id="id_upload_file"
