@@ -6,13 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "copy-gds-assets": "node scripts/copy-gds-assets.js",
     "prebuild": "npm run copy-gds-assets",
-    "postinstall": "npm run copy-gds-assets"
+    "postinstall": "npm run copy-gds-assets",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
