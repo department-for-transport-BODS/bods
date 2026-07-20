@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 
 function FaresDeactivatePageContent() {
@@ -51,18 +52,7 @@ function FaresDeactivatePageContent() {
               still be viewed and used by data consumers.
             </p>
 
-            {errorMessage ? (
-              <div className="govuk-error-summary" role="alert" aria-labelledby="deactivate-error-title">
-                <h2 className="govuk-error-summary__title" id="deactivate-error-title">
-                  There is a problem
-                </h2>
-                <div className="govuk-error-summary__body">
-                  <ul className="govuk-list govuk-error-summary__list">
-                    <li>{errorMessage}</li>
-                  </ul>
-                </div>
-              </div>
-            ) : null}
+            <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="deactivate-error-title" />
 
             <div className="govuk-button-group">
               <button

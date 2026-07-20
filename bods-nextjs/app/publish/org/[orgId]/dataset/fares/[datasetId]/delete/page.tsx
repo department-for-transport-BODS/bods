@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 
 function FaresDeletePageContent() {
@@ -70,18 +71,7 @@ function FaresDeletePageContent() {
             <h1 className="govuk-heading-xl">{heading}</h1>
             <p className="govuk-body-l">{bodyText}</p>
 
-            {errorMessage ? (
-              <div className="govuk-error-summary" role="alert" aria-labelledby="delete-error-title">
-                <h2 className="govuk-error-summary__title" id="delete-error-title">
-                  There is a problem
-                </h2>
-                <div className="govuk-error-summary__body">
-                  <ul className="govuk-list govuk-error-summary__list">
-                    <li>{errorMessage}</li>
-                  </ul>
-                </div>
-              </div>
-            ) : null}
+            <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="delete-error-title" />
 
             <div className="govuk-button-group">
               <button

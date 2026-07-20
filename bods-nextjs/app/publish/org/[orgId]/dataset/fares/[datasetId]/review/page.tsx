@@ -10,6 +10,7 @@ import type { Map as MapboxMap } from 'mapbox-gl';
 import type { StopPoint } from '@/components/data/StopMap';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
+import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 import { formatDateTime } from '@/lib/utils/date';
 import { config } from '@/config';
@@ -528,18 +529,7 @@ function FaresReviewPageContent() {
           />
         </div>
 
-        {errorMessage ? (
-          <div className="govuk-error-summary" role="alert" aria-labelledby="fares-review-error-title">
-            <h2 className="govuk-error-summary__title" id="fares-review-error-title">
-              There is a problem
-            </h2>
-            <div className="govuk-error-summary__body">
-              <ul className="govuk-list govuk-error-summary__list">
-                <li>{errorMessage}</li>
-              </ul>
-            </div>
-          </div>
-        ) : null}
+        <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="fares-review-error-title" />
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">

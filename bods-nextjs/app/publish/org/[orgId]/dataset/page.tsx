@@ -3,6 +3,7 @@
 import { FormEvent, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { ErrorSummary } from '@/components/shared';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 
 type DatasetType = 'timetable' | 'avl' | 'fares';
@@ -43,18 +44,7 @@ function SelectDatasetTypePageContent() {
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds govuk-!-padding-right-9">
-            {showError ? (
-              <div className="govuk-error-summary" role="alert" aria-labelledby="dataset-type-error-title">
-                <h2 className="govuk-error-summary__title" id="dataset-type-error-title">
-                  There is a problem
-                </h2>
-                <div className="govuk-error-summary__body">
-                  <ul className="govuk-list govuk-error-summary__list">
-                    <li>Please select a data type</li>
-                  </ul>
-                </div>
-              </div>
-            ) : null}
+            <ErrorSummary errors={showError ? ['Please select a data type'] : []} summaryId="dataset-type-error-title" />
 
             <form onSubmit={handleSubmit}>
               <div className={`govuk-form-group${showError ? ' govuk-form-group--error' : ''}`}>

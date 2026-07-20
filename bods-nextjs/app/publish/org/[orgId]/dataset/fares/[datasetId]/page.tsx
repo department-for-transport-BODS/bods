@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { ErrorSummary } from '@/components/shared';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
 
@@ -141,18 +142,7 @@ function FaresDatasetDetailContent() {
 
         {loading ? <p className="govuk-body">Loading dataset details...</p> : null}
 
-        {error ? (
-          <div className="govuk-error-summary" role="alert" aria-labelledby="dataset-detail-error-title">
-            <h2 className="govuk-error-summary__title" id="dataset-detail-error-title">
-              There is a problem
-            </h2>
-            <div className="govuk-error-summary__body">
-              <ul className="govuk-list govuk-error-summary__list">
-                <li>{error}</li>
-              </ul>
-            </div>
-          </div>
-        ) : null}
+        <ErrorSummary errors={error ? [error] : []} summaryId="dataset-detail-error-title" />
 
         {!loading && !error && data ? (
           <>
