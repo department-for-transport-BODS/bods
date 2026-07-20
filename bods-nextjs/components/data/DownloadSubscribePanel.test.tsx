@@ -59,6 +59,12 @@ describe('DownloadSubscribePanel', () => {
       expect(screen.getByText(/2\.5 MB/i)).toBeInTheDocument();
     });
 
+    it('formats numeric file size when provided', () => {
+      render(<DownloadSubscribePanel {...defaultProps} fileSize={2621440} />);
+
+      expect(screen.getByText(/2\.5 MB/i)).toBeInTheDocument();
+    });
+
     it('does not display file size when not provided', () => {
       render(<DownloadSubscribePanel {...defaultProps} />);
       

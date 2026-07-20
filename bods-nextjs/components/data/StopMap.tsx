@@ -61,6 +61,29 @@ interface StopFeatureCollection {
   }>;
 }
 
+interface StopApiFeature {
+  id: number;
+  geometry: StopPoint['location'];
+  properties: {
+    atco_code: string;
+    common_name: string;
+  };
+}
+
+interface StopApiResponse {
+  results?: StopPoint[];
+  features?: StopApiFeature[];
+}
+
+function getPointCoordinates(geometry: { type: string; coordinates?: unknown }): [number, number] | null {
+  if (geometry.type !== 'Point' || !Array.isArray(geometry.coordinates)) {
+    return null;
+  }
+
+  const [longitude, latitude] = geometry.coordinates;
+  return typeof longitude === 'number' && typeof latitude === 'number' ? [longitude, latitude] : null;
+}
+
 export function StopMap({
   revisionId,
   stops,
@@ -73,6 +96,9 @@ export function StopMap({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const popup = useRef<mapboxgl.Popup | null>(null);
+  const stopsRef = useRef(stops);
+  const displayStopsRef = useRef<(stopPoints: StopPoint[]) => void>(() => undefined);
+  const fetchAndDisplayStopsRef = useRef<() => void>(() => undefined);
   const [error, setError] = useState<string | null>(null);
   const [stopCount, setStopCount] = useState<number>(0);
   const markers = useRef<Map<number, mapboxgl.Marker>>(new Map());
@@ -112,16 +138,18 @@ export function StopMap({
     });
 
     map.current.on('load', () => {
-      if (stops) {
-        displayStops(stops);
+      if (stopsRef.current) {
+        displayStopsRef.current(stopsRef.current);
       } else if (revisionId) {
-        fetchAndDisplayStops();
+        fetchAndDisplayStopsRef.current();
       }
     });
 
+    const currentMarkers = markers.current;
+
     return () => {
-      markers.current.forEach((marker) => marker.remove());
-      markers.current.clear();
+      currentMarkers.forEach((marker) => marker.remove());
+      currentMarkers.clear();
 
       if (map.current) {
         map.current.remove();
@@ -131,8 +159,10 @@ export function StopMap({
   }, [revisionId, mapboxToken, ariaLabel]);
 
   useEffect(() => {
+    stopsRef.current = stops;
+
     if (map.current && stops) {
-      displayStops(stops);
+      displayStopsRef.current(stops);
     }
   }, [stops]);
 
@@ -147,12 +177,12 @@ export function StopMap({
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      const stopPoints: StopPoint[] = data.results || data.features?.map((f: any) => ({
-        id: f.id,
-        atco_code: f.properties.atco_code,
-        common_name: f.properties.common_name,
-        location: f.geometry,
+      const data = await response.json() as StopApiResponse;
+      const stopPoints: StopPoint[] = data.results || data.features?.map((feature) => ({
+        id: feature.id,
+        atco_code: feature.properties.atco_code,
+        common_name: feature.properties.common_name,
+        location: feature.geometry,
       })) || [];
 
       displayStops(stopPoints);
@@ -175,6 +205,9 @@ export function StopMap({
       displayStopsWithMarkers(stopPoints);
     }
   };
+
+  displayStopsRef.current = displayStops;
+  fetchAndDisplayStopsRef.current = fetchAndDisplayStops;
 
   const displayStopsWithClustering = (stopPoints: StopPoint[]) => {
     if (!map.current) return;
@@ -318,7 +351,9 @@ export function StopMap({
       source.getClusterExpansionZoom(clusterId, (err, zoom) => {
         if (err || !map.current || zoom == null) return;
 
-        const coordinates = (features[0].geometry as any).coordinates;
+        const coordinates = getPointCoordinates(features[0].geometry);
+        if (!coordinates) return;
+
         map.current.easeTo({
           center: coordinates,
           zoom: zoom,
@@ -343,18 +378,22 @@ export function StopMap({
 
       const feature = e.features[0];
       const properties = feature.properties;
+      const coordinates = getPointCoordinates(feature.geometry);
+      if (!coordinates) return;
 
       if (onStopClick && properties) {
         const stop: StopPoint = {
           id: properties.id,
           atco_code: properties.atco_code,
           common_name: properties.common_name,
-          location: feature.geometry as any,
+          location: {
+            type: 'Point',
+            coordinates,
+          },
         };
         onStopClick(stop);
       }
 
-      const coordinates = (feature.geometry as any).coordinates.slice();
       const description = `<h3>${properties?.common_name}</h3><p>ATCO: ${properties?.atco_code}</p>`;
 
       popup.current!.setLngLat(coordinates).setHTML(description).addTo(map.current);
@@ -367,7 +406,9 @@ export function StopMap({
 
       if (e.features && e.features.length > 0) {
         const feature = e.features[0];
-        const coordinates = (feature.geometry as any).coordinates.slice();
+        const coordinates = getPointCoordinates(feature.geometry);
+        if (!coordinates) return;
+
         const properties = feature.properties;
         const description = properties?.common_name || 'Bus Stop';
 

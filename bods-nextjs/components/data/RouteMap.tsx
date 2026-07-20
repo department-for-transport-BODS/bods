@@ -56,6 +56,7 @@ export function RouteMap({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const popup = useRef<mapboxgl.Popup | null>(null);
+  const fetchAndDisplayRoutesRef = useRef<() => void>(() => undefined);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const hoveredStateId = useRef<number | null>(null);
@@ -93,9 +94,7 @@ export function RouteMap({
       closeOnClick: false,
     });
 
-    map.current.on('load', () => {
-      fetchAndDisplayRoutes();
-    });
+    map.current.on('load', () => fetchAndDisplayRoutesRef.current());
 
     return () => {
       if (map.current) {
@@ -190,6 +189,8 @@ export function RouteMap({
       setError(errorMessage);
     }
   };
+
+  fetchAndDisplayRoutesRef.current = fetchAndDisplayRoutes;
 
   const setupHoverInteractions = () => {
     if (!map.current || !popup.current) return;
