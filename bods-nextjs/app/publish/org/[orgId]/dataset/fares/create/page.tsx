@@ -6,35 +6,20 @@ import { FormEvent, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
+import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
+import {
+  FaresUploadItem,
+  FaresUploadStep,
+  UPLOAD_FILE_ITEM_ID,
+  URL_LINK_ITEM_ID,
+} from '../_components/FaresUploadStep';
 
 const DESCRIPTION_STEP = 'description';
 const CANCEL_STEP = 'cancel';
 const UPLOAD_STEP = 'upload';
-const UPLOAD_FILE_ITEM_ID = 'upload_file-conditional';
-const URL_LINK_ITEM_ID = 'url_link-conditional';
 
-type UploadItem = typeof UPLOAD_FILE_ITEM_ID | typeof URL_LINK_ITEM_ID;
 type Step = typeof DESCRIPTION_STEP | typeof CANCEL_STEP | typeof UPLOAD_STEP;
-
-function StepErrorSummary({ message, titleId }: Readonly<{ message: string; titleId: string }>) {
-  if (!message) {
-    return null;
-  }
-
-  return (
-    <div className="govuk-error-summary" role="alert" aria-labelledby={titleId}>
-      <h2 className="govuk-error-summary__title" id={titleId}>
-        There is a problem
-      </h2>
-      <div className="govuk-error-summary__body">
-        <ul className="govuk-list govuk-error-summary__list">
-          <li>{message}</li>
-        </ul>
-      </div>
-    </div>
-  );
-}
 
 function CancelStepView({ onConfirm, onBack }: Readonly<{ onConfirm: () => void; onBack: () => void }>) {
   return (
@@ -73,7 +58,7 @@ function DescriptionStepView({
   return (
     <form method="post" encType="multipart/form-data" onSubmit={onSubmit} noValidate>
       <h1 className="govuk-heading-l">Describe your data set</h1>
-      <StepErrorSummary message={errorMessage} titleId="fares-description-error-title" />
+      <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="fares-description-error-title" />
       <div className="govuk-form-group">
         <label className="govuk-label" htmlFor="id_description-description">
           Data set description
@@ -123,117 +108,6 @@ function DescriptionStepView({
   );
 }
 
-function UploadStepView({
-  selectedItem,
-  urlLink,
-  isSubmitting,
-  errorMessage,
-  onSelectedItemChange,
-  onUrlLinkChange,
-  onUploadFileChange,
-  onSubmit,
-  onCancel,
-}: Readonly<{
-  selectedItem: UploadItem | null;
-  urlLink: string;
-  isSubmitting: boolean;
-  errorMessage: string;
-  onSelectedItemChange: (value: UploadItem) => void;
-  onUrlLinkChange: (value: string) => void;
-  onUploadFileChange: (file: File | null) => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  onCancel: () => void;
-}>) {
-  return (
-    <form onSubmit={onSubmit} noValidate>
-      <h1 className="govuk-heading-l">Choose how to provide your data set</h1>
-      <StepErrorSummary message={errorMessage} titleId="fares-upload-error-title" />
-      <div className="govuk-form-group">
-        <fieldset className="govuk-fieldset">
-          <legend className="govuk-fieldset__legend govuk-visually-hidden">Choose how to provide your data set</legend>
-          <div className="govuk-radios">
-            <div className="govuk-radios__item">
-              <input
-                className="govuk-radios__input"
-                id={URL_LINK_ITEM_ID}
-                name="selected_item"
-                type="radio"
-                value={URL_LINK_ITEM_ID}
-                checked={selectedItem === URL_LINK_ITEM_ID}
-                onChange={() => onSelectedItemChange(URL_LINK_ITEM_ID)}
-              />
-              <label className="govuk-label govuk-radios__label" htmlFor={URL_LINK_ITEM_ID}>
-                Provide a link to your data set
-              </label>
-            </div>
-            <div className="govuk-radios__item">
-              <input
-                className="govuk-radios__input"
-                id={UPLOAD_FILE_ITEM_ID}
-                name="selected_item"
-                type="radio"
-                value={UPLOAD_FILE_ITEM_ID}
-                checked={selectedItem === UPLOAD_FILE_ITEM_ID}
-                onChange={() => onSelectedItemChange(UPLOAD_FILE_ITEM_ID)}
-              />
-              <label className="govuk-label govuk-radios__label" htmlFor={UPLOAD_FILE_ITEM_ID}>
-                Upload data set to Bus Open Data Service
-              </label>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      {selectedItem === URL_LINK_ITEM_ID ? (
-        <div className="govuk-form-group">
-          <label className="govuk-label" htmlFor="id_url_link">
-            URL Link
-          </label>
-          <div className="govuk-hint">
-            Please provide a URL link where your NeTEx files are hosted. Example address: mybuscompany.com/fares.xml.
-          </div>
-          <input
-            id="id_url_link"
-            name="url_link"
-            className="govuk-input govuk-!-width-three-quarters"
-            type="url"
-            aria-label="url link"
-            value={urlLink}
-            onChange={(event) => onUrlLinkChange(event.target.value)}
-          />
-        </div>
-      ) : null}
-      {selectedItem === UPLOAD_FILE_ITEM_ID ? (
-        <div className="govuk-form-group">
-          <label className="govuk-label" htmlFor="id_upload_file">
-            Upload File
-          </label>
-          <div className="govuk-hint">
-            This must be either NeTEx (see description in guidance) or a zip consisting only of NeTEx files
-          </div>
-          <input
-            id="id_upload_file"
-            name="upload_file"
-            className="govuk-file-upload"
-            type="file"
-            aria-label="Choose file"
-            onChange={(event) => onUploadFileChange(event.target.files?.[0] || null)}
-          />
-        </div>
-      ) : null}
-
-      <div className="govuk-button-group">
-        <button className="govuk-button" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Submitting...' : 'Continue'}
-        </button>
-        <button className="govuk-button govuk-button--secondary" type="button" onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
-    </form>
-  );
-}
-
 function FaresCreatePageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
@@ -245,7 +119,7 @@ function FaresCreatePageContent() {
   const [stepBeforeCancel, setStepBeforeCancel] = useState<typeof DESCRIPTION_STEP | typeof UPLOAD_STEP>(DESCRIPTION_STEP);
   const [description, setDescription] = useState('');
   const [shortDescription, setShortDescription] = useState('');
-  const [selectedItem, setSelectedItem] = useState<UploadItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<FaresUploadItem | null>(null);
   const [urlLink, setUrlLink] = useState('');
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -359,11 +233,14 @@ function FaresCreatePageContent() {
               />
             ) : null}
             {step === UPLOAD_STEP ? (
-              <UploadStepView
+              <FaresUploadStep
                 selectedItem={selectedItem}
                 urlLink={urlLink}
                 isSubmitting={isSubmitting}
                 errorMessage={errorMessage}
+                heading="Choose how to provide your data set"
+                submitButtonText={isSubmitting ? 'Submitting...' : 'Continue'}
+                errorTitleId="fares-upload-error-title"
                 onSelectedItemChange={setSelectedItem}
                 onUrlLinkChange={setUrlLink}
                 onUploadFileChange={setUploadFile}

@@ -5,16 +5,20 @@ import { FormEvent, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
+import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
+import {
+  FaresUploadItem,
+  FaresUploadStep,
+  UPLOAD_FILE_ITEM_ID,
+  URL_LINK_ITEM_ID,
+} from '../../_components/FaresUploadStep';
 
 const COMMENT_STEP = 'comment';
 const UPLOAD_STEP = 'upload';
 const CANCEL_STEP = 'cancel';
-const UPLOAD_FILE_ITEM_ID = 'upload_file-conditional';
-const URL_LINK_ITEM_ID = 'url_link-conditional';
 
 type Step = typeof COMMENT_STEP | typeof UPLOAD_STEP | typeof CANCEL_STEP;
-type UploadItem = typeof UPLOAD_FILE_ITEM_ID | typeof URL_LINK_ITEM_ID;
 
 function CancelStepView({ onConfirm, onBack }: Readonly<{ onConfirm: () => void; onBack: () => void }>) {
   return (
@@ -45,14 +49,7 @@ function CommentStepView({
   return (
     <form onSubmit={onSubmit} noValidate>
       <h1 className="govuk-heading-l">Provide a comment on what has been updated</h1>
-      {errorMessage ? (
-        <div className="govuk-error-summary" role="alert" aria-labelledby="comment-error-title">
-          <h2 className="govuk-error-summary__title" id="comment-error-title">There is a problem</h2>
-          <div className="govuk-error-summary__body">
-            <ul className="govuk-list govuk-error-summary__list"><li>{errorMessage}</li></ul>
-          </div>
-        </div>
-      ) : null}
+      <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="comment-error-title" />
       <div className="govuk-form-group">
         <label className="govuk-label" htmlFor="comment">Comment on data set updates</label>
         <div className="govuk-hint">
@@ -94,7 +91,7 @@ function UploadStepView({
   reviewUrl: string;
   onCancel: () => void;
 }>) {
-  const [selectedItem, setSelectedItem] = useState<UploadItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<FaresUploadItem | null>(null);
   const [urlLink, setUrlLink] = useState('');
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -141,104 +138,22 @@ function UploadStepView({
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <h1 className="govuk-heading-l">
-        {modifyDraft ? 'Choose how to provide your data set' : 'Update your published data set'}
-      </h1>
-      {errorMessage ? (
-        <div className="govuk-error-summary" role="alert" aria-labelledby="upload-error-title">
-          <h2 className="govuk-error-summary__title" id="upload-error-title">There is a problem</h2>
-          <div className="govuk-error-summary__body">
-            <ul className="govuk-list govuk-error-summary__list"><li>{errorMessage}</li></ul>
-          </div>
-        </div>
-      ) : null}
-      <div className="govuk-form-group">
-        <fieldset className="govuk-fieldset">
-          <legend className="govuk-fieldset__legend govuk-visually-hidden">Choose how to provide your data set</legend>
-          <div className="govuk-radios">
-            <div className="govuk-radios__item">
-              <input
-                className="govuk-radios__input"
-                id={URL_LINK_ITEM_ID}
-                name="selected_item"
-                type="radio"
-                value={URL_LINK_ITEM_ID}
-                checked={selectedItem === URL_LINK_ITEM_ID}
-                onChange={() => setSelectedItem(URL_LINK_ITEM_ID)}
-              />
-              <label className="govuk-label govuk-radios__label" htmlFor={URL_LINK_ITEM_ID}>
-                Provide a link to your data set
-              </label>
-            </div>
-            <div className="govuk-radios__item">
-              <input
-                className="govuk-radios__input"
-                id={UPLOAD_FILE_ITEM_ID}
-                name="selected_item"
-                type="radio"
-                value={UPLOAD_FILE_ITEM_ID}
-                checked={selectedItem === UPLOAD_FILE_ITEM_ID}
-                onChange={() => setSelectedItem(UPLOAD_FILE_ITEM_ID)}
-              />
-              <label className="govuk-label govuk-radios__label" htmlFor={UPLOAD_FILE_ITEM_ID}>
-                Upload data set to Bus Open Data Service
-              </label>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      {selectedItem === URL_LINK_ITEM_ID ? (
-        <div className="govuk-form-group">
-          <label className="govuk-label" htmlFor="id_url_link">URL Link</label>
-          <div className="govuk-hint">
-            Please provide a URL link where your NeTEx files are hosted. Example address:
-            &apos;mybuscompany.com/fares.xml&apos;.
-          </div>
-          <input
-            id="id_url_link"
-            name="url_link"
-            className="govuk-input govuk-!-width-three-quarters"
-            type="url"
-            aria-label="url link"
-            value={urlLink}
-            onChange={(e) => setUrlLink(e.target.value)}
-          />
-        </div>
-      ) : null}
-
-      {selectedItem === UPLOAD_FILE_ITEM_ID ? (
-        <div className="govuk-form-group">
-          <label className="govuk-label" htmlFor="id_upload_file">Upload File</label>
-          <div className="govuk-hint">
-            This must be either NeTEx (see description in guidance) or a zip consisting only of NeTEx files
-          </div>
-          <input
-            id="id_upload_file"
-            name="upload_file"
-            className="govuk-file-upload"
-            type="file"
-            aria-label="Choose file"
-            onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-          />
-        </div>
-      ) : null}
-
-      <div className="govuk-button-group">
-        <button className="govuk-button" type="submit" disabled={isSubmitting}>
-          Continue
-        </button>
-        <button
-          className="govuk-button govuk-button--secondary"
-          type="button"
-          onClick={onCancel}
-          disabled={isSubmitting}
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+    <FaresUploadStep
+      selectedItem={selectedItem}
+      urlLink={urlLink}
+      isSubmitting={isSubmitting}
+      errorMessage={errorMessage}
+      heading={modifyDraft ? 'Choose how to provide your data set' : 'Update your published data set'}
+      submitButtonText="Continue"
+      errorTitleId="upload-error-title"
+      urlLinkHint="Please provide a URL link where your NeTEx files are hosted. Example address: 'mybuscompany.com/fares.xml'."
+      disableCancel={isSubmitting}
+      onSelectedItemChange={setSelectedItem}
+      onUrlLinkChange={setUrlLink}
+      onUploadFileChange={setUploadFile}
+      onSubmit={handleSubmit}
+      onCancel={onCancel}
+    />
   );
 }
 
