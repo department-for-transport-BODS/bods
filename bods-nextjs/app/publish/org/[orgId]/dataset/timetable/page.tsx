@@ -9,7 +9,7 @@
 import { useState } from "react";
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useParams, useRouter } from "next/navigation";
-import Link from 'next/link';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from "@/lib/api-client";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { PublishStepper, DatasetDescriptionFields, DataProviderRadioGroup, URL_LINK_ITEM_ID, UPLOAD_FILE_ITEM_ID } from '@/components/publish';
@@ -118,23 +118,13 @@ function TimetablePublish() {
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <ol className="govuk-breadcrumbs__list">
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/data">
-                Bus Open Data Service
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/publish">
-                Publish Bus Open Data
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item" aria-current="page">
-              Review My Timetables Data
-            </li>
-          </ol>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Bus Open Data Service', href: '/data' },
+            { label: 'Publish Bus Open Data', href: '/publish' },
+            { label: 'Review My Timetables Data', current: true },
+          ]}
+        />
 
         <div className="govuk-grid-row">
           <PublishStepper steps={steps} />

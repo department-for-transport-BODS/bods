@@ -1,27 +1,18 @@
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 
 function ManageAccountPageContent() {
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <ol className="govuk-breadcrumbs__list">
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/data">
-                Bus Open Data Service
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/publish">
-                Publish Bus Open Data
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item" aria-current="page">
-              Manage your account
-            </li>
-          </ol>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Bus Open Data Service', href: '/data' },
+            { label: 'Publish Bus Open Data', href: '/publish' },
+            { label: 'Manage your account', current: true },
+          ]}
+        />
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">

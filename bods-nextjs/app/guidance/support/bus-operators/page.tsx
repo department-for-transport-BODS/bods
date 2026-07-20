@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { HOSTS } from '@/config';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { PaginationPrevIcon, PaginationNextIcon } from '@/components/shared/PaginationIcons';
 
 import {
@@ -125,23 +126,13 @@ function BusOperatorRequirementsContent() {
 
   return (
     <div className="govuk-width-container">
-      <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
-        <ol className="govuk-breadcrumbs__list">
-          <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href={HOSTS.root}>
-              Bus Open Data Service
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href="/">
-              Publish Bus Open Data
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item" aria-current="page">
-            Bus operator requirements
-          </li>
-        </ol>
-      </nav>
+      <Breadcrumbs
+        items={[
+          { label: 'Bus Open Data Service', href: HOSTS.root },
+          { label: 'Publish Bus Open Data', href: '/' },
+          { label: 'Bus operator requirements', current: true },
+        ]}
+      />
 
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">

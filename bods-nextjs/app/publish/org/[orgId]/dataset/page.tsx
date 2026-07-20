@@ -3,7 +3,7 @@
 import { FormEvent, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import Link from 'next/link';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 
 type DatasetType = 'timetable' | 'avl' | 'fares';
 
@@ -33,23 +33,13 @@ function SelectDatasetTypePageContent() {
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <ol className="govuk-breadcrumbs__list">
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/data">
-                Bus Open Data Service
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/publish">
-                Publish Bus Open Data
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item" aria-current="page">
-              Choose data type
-            </li>
-          </ol>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Bus Open Data Service', href: '/data' },
+            { label: 'Publish Bus Open Data', href: '/publish' },
+            { label: 'Choose data type', current: true },
+          ]}
+        />
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds govuk-!-padding-right-9">

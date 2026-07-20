@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
 
 type FaresDetailResponse = {
@@ -128,33 +129,15 @@ function FaresDatasetDetailContent() {
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <ol className="govuk-breadcrumbs__list">
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/data">
-                Bus Open Data Service
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/publish">
-                Publish Bus Open Data
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href={`/publish/org/${orgId}/dataset`}>
-                Choose data type
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href={`/publish/org/${orgId}/dataset/fares`}>
-                Fares Data Sets
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item" aria-current="page">
-              {(data?.name || `Dataset ${datasetId}`).slice(0, 20)}
-            </li>
-          </ol>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Bus Open Data Service', href: '/data' },
+            { label: 'Publish Bus Open Data', href: '/publish' },
+            { label: 'Choose data type', href: `/publish/org/${orgId}/dataset` },
+            { label: 'Fares Data Sets', href: `/publish/org/${orgId}/dataset/fares` },
+            { label: data?.name || `Dataset ${datasetId}`, current: true, truncateAt: 20 },
+          ]}
+        />
 
         {loading ? <p className="govuk-body">Loading dataset details...</p> : null}
 

@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
 import { formatDate } from '@/lib/utils/date';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -121,23 +122,13 @@ function FaresPublish() {
     <>
       <div className="govuk-width-container">
         <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
-          <div className="govuk-breadcrumbs">
-            <ol className="govuk-breadcrumbs__list">
-              <li className="govuk-breadcrumbs__list-item">
-                <Link className="govuk-breadcrumbs__link" href="/data">
-                  Bus Open Data Service
-                </Link>
-              </li>
-              <li className="govuk-breadcrumbs__list-item">
-                <Link className="govuk-breadcrumbs__link" href="/publish">
-                  Publish Bus Open Data
-                </Link>
-              </li>
-              <li className="govuk-breadcrumbs__list-item" aria-current="page">
-                Review My Fares Data
-              </li>
-            </ol>
-          </div>
+          <Breadcrumbs
+            items={[
+              { label: 'Bus Open Data Service', href: '/data' },
+              { label: 'Publish Bus Open Data', href: '/publish' },
+              { label: 'Review My Fares Data', current: true },
+            ]}
+          />
         </div>
       </div>
 
