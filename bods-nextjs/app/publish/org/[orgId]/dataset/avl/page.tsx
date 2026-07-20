@@ -11,7 +11,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { statusIndicatorClass, statusLabel } from './_components/avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
-import { AvlBreadcrumbs } from './_components/AvlBreadcrumbs';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 
 type AvlTab = 'active' | 'draft' | 'archive';
 
@@ -111,12 +111,14 @@ function AvlManagement() {
   return (
     <>
       <div className="govuk-width-container">
-        <AvlBreadcrumbs
+        <Breadcrumbs
           items={[
+            { label: 'Bus Open Data Service', href: '/' },
+            { label: 'Publish Bus Open Data', href: '/publish/' },
             {
               label: 'Review My Bus Location Data',
               href: `/publish/org/${orgId}/dataset/avl`,
-              isCurrent: true,
+              current: true,
             },
           ]}
         />
@@ -160,23 +162,17 @@ function AvlManagement() {
 
       <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <ol className="govuk-breadcrumbs__list">
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/data">
-                Bus Open Data Service
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/publish">
-                Publish Bus Open Data
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item" aria-current="page">
-              Review My Bus Location Data
-            </li>
-          </ol>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Bus Open Data Service', href: '/' },
+            { label: 'Publish Bus Open Data', href: '/publish/' },
+            {
+              label: 'Review My Bus Location Data',
+              href: `/publish/org/${orgId}/dataset/avl`,
+              current: true,
+            },
+          ]}
+        />
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
