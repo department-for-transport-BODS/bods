@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
@@ -90,7 +90,15 @@ function toAlertItem(input: unknown, index: number): AlertItem {
   };
 }
 
-export function AlertsBrowserPage({
+export function AlertsBrowserPage(props: AlertsBrowserPageProps) {
+  return (
+    <Suspense fallback={null}>
+      <AlertsBrowserPageInner {...props} />
+    </Suspense>
+  );
+}
+
+function AlertsBrowserPageInner({
   title,
   breadcrumbLabel,
   description,

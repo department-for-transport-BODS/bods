@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const djangoOrigin =
@@ -8,6 +9,10 @@ const djangoOrigin =
 const nextConfig: NextConfig = {
   // Transpile the GDS component library and govuk-frontend
   transpilePackages: ['govuk-frontend'],
+
+  turbopack: {
+    root: path.join(__dirname),
+  },
 
   async rewrites() {
     return [

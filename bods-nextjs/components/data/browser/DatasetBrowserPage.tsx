@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
@@ -61,7 +61,15 @@ function formatCompactDateTime(dateValue?: string | null): string {
   return `${yyyy}${mm}${dd} ${hh}:${mi}:${ss}`;
 }
 
-export function DatasetBrowserPage({
+export function DatasetBrowserPage(props: DatasetBrowserPageProps) {
+  return (
+    <Suspense fallback={null}>
+      <DatasetBrowserPageInner {...props} />
+    </Suspense>
+  );
+}
+
+function DatasetBrowserPageInner({
   title,
   breadcrumbLabel,
   description,
