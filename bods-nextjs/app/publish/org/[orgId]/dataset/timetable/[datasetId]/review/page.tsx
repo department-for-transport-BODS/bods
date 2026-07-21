@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 import { PublishStepper } from '@/components/publish';
 import { formatDateTime } from '@/lib/utils/date';
@@ -63,7 +64,6 @@ function TimetableReviewPageContent() {
 
   useEffect(() => {
     let isCancelled = false;
-    let intervalId: ReturnType<typeof setInterval> | undefined;
 
     const fetchStatus = async () => {
       try {
@@ -89,14 +89,12 @@ function TimetableReviewPageContent() {
       }
     };
 
+    const intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
     fetchStatus();
-    intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
 
     return () => {
       isCancelled = true;
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      clearInterval(intervalId);
     };
   }, [datasetId, orgId]);
 
@@ -134,18 +132,7 @@ function TimetableReviewPageContent() {
           />
         </div>
 
-        {errorMessage ? (
-          <div className="govuk-error-summary" role="alert" aria-labelledby="timetable-review-error-title">
-            <h2 className="govuk-error-summary__title" id="timetable-review-error-title">
-              There is a problem
-            </h2>
-            <div className="govuk-error-summary__body">
-              <ul className="govuk-list govuk-error-summary__list">
-                <li>{errorMessage}</li>
-              </ul>
-            </div>
-          </div>
-        ) : null}
+        <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="timetable-review-error-title" />
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">

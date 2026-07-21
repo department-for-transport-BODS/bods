@@ -6,6 +6,7 @@
 import { render, screen } from '@testing-library/react';
 import { DatasetCard } from './DatasetCard';
 import type { DatasetListItem } from '@/types';
+import badgeStyles from './DataQualityBadge.module.css';
 
 jest.mock('next/link', () => {
   return function MockLink({ children, href, ...props }: { children: React.ReactNode; href: string }) {
@@ -48,10 +49,11 @@ describe('DatasetCard', () => {
 
   it('displays data quality score with green badge', () => {
     render(<DatasetCard dataset={mockDataset} />);
-    
-    const badge = screen.getByText('85.5%');
+
+    const badge = screen.getByLabelText('Data quality score: 85.5%, rated GREEN');
     expect(badge).toBeInTheDocument();
-    expect(badge).toHaveClass('govuk-tag--green');
+    expect(badge).toHaveTextContent('85.5% GREEN');
+    expect(badge).toHaveClass(badgeStyles.statusIndicator, badgeStyles.success);
   });
 
   it('displays data type indicator', () => {
@@ -77,62 +79,38 @@ describe('DatasetCard', () => {
   });
 
   describe('data quality badge colors', () => {
-    it('displays green badge for green RAG status', () => {
-      const dataset = { ...mockDataset, dqRag: 'green' as const };
+    it.each([
+      ['green', '85.5%', 'Data quality score: 85.5%, rated GREEN', badgeStyles.success],
+      ['amber', '65.0%', 'Data quality score: 65.0%, rated AMBER', badgeStyles.warning],
+      ['red', '30.0%', 'Data quality score: 30.0%, rated RED', badgeStyles.error],
+    ] as const)('displays the expected badge for %s RAG status', (dqRag, dqScore, ariaLabel, expectedClass) => {
+      const dataset = { ...mockDataset, dqRag, dqScore };
       render(<DatasetCard dataset={dataset} />);
-      
-      const badge = screen.getByText('85.5%');
-      expect(badge).toHaveClass('govuk-tag--green');
+
+      const badge = screen.getByLabelText(ariaLabel);
+      expect(badge).toHaveTextContent(`${dqScore} ${dqRag.toUpperCase()}`);
+      expect(badge).toHaveClass(badgeStyles.statusIndicator, expectedClass);
     });
 
-    it('displays yellow badge for amber RAG status', () => {
-      const dataset = { ...mockDataset, dqRag: 'amber' as const, dqScore: '65.0%' };
-      render(<DatasetCard dataset={dataset} />);
-      
-      const badge = screen.getByText('65.0%');
-      expect(badge).toHaveClass('govuk-tag--yellow');
-    });
-
-    it('displays red badge for red RAG status', () => {
-      const dataset = { ...mockDataset, dqRag: 'red' as const, dqScore: '30.0%' };
-      render(<DatasetCard dataset={dataset} />);
-      
-      const badge = screen.getByText('30.0%');
-      expect(badge).toHaveClass('govuk-tag--red');
-    });
-
-    it('displays grey badge with N/A for unavailable RAG status', () => {
+    it('does not render a badge for unavailable RAG status', () => {
       const dataset = { ...mockDataset, dqRag: 'unavailable' as const };
       render(<DatasetCard dataset={dataset} />);
-      
-      const badge = screen.getByText('N/A');
-      expect(badge).toHaveClass('govuk-tag--grey');
+
+      expect(screen.queryByLabelText(/Data quality score:/i)).not.toBeInTheDocument();
     });
   });
 
   describe('data type badges', () => {
-    it('displays blue badge for TIMETABLE type', () => {
-      const dataset = { ...mockDataset, dataType: 'TIMETABLE' as const };
+    it.each([
+      ['TIMETABLE', 'Timetable', 'govuk-tag--blue'],
+      ['AVL', 'Location', 'govuk-tag--purple'],
+      ['FARES', 'Fares', 'govuk-tag--turquoise'],
+    ] as const)('displays the expected badge for %s datasets', (dataType, label, expectedClass) => {
+      const dataset = { ...mockDataset, dataType };
       render(<DatasetCard dataset={dataset} />);
-      
-      const badge = screen.getByText('Timetable');
-      expect(badge).toHaveClass('govuk-tag--blue');
-    });
 
-    it('displays purple badge for AVL type', () => {
-      const dataset = { ...mockDataset, dataType: 'AVL' as const };
-      render(<DatasetCard dataset={dataset} />);
-      
-      const badge = screen.getByText('Location');
-      expect(badge).toHaveClass('govuk-tag--purple');
-    });
-
-    it('displays turquoise badge for FARES type', () => {
-      const dataset = { ...mockDataset, dataType: 'FARES' as const };
-      render(<DatasetCard dataset={dataset} />);
-      
-      const badge = screen.getByText('Fares');
-      expect(badge).toHaveClass('govuk-tag--turquoise');
+      const badge = screen.getByText(label);
+      expect(badge).toHaveClass(expectedClass);
     });
   });
 
@@ -146,9 +124,9 @@ describe('DatasetCard', () => {
 
     it('has proper aria-label on quality badge', () => {
       render(<DatasetCard dataset={mockDataset} />);
-      
-      const badge = screen.getByText('85.5%');
-      expect(badge).toHaveAttribute('aria-label', 'Quality: 85.5%');
+
+      const badge = screen.getByLabelText('Data quality score: 85.5%, rated GREEN');
+      expect(badge).toBeInTheDocument();
     });
 
     it('uses semantic time element for date', () => {

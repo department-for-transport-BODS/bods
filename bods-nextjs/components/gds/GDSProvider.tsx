@@ -1,6 +1,5 @@
 'use client';
 
-import { initAll } from 'govuk-frontend';
 import { ReactNode, useEffect } from 'react';
 
 interface GDSProviderProps {
@@ -9,7 +8,7 @@ interface GDSProviderProps {
 
 export function GDSProvider({ children }: GDSProviderProps) {
   useEffect(() => {
-    initAll();
+    import('govuk-frontend').then(({ initAll }) => initAll());
   }, []);
 
   return <>{children}</>;

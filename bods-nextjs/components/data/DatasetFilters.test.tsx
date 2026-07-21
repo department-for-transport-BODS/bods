@@ -96,9 +96,12 @@ describe('DatasetFilters', () => {
     });
   });
 
-  it('shows clear all button when filters are active', () => {
-    mockSearchParams.set('area', '1');
-    
+  it.each([
+    ['area', '1'],
+    ['organisation', '10'],
+    ['status', 'live'],
+    ['dataType', '1'],
+  ] as const)('shows clear all button when the %s filter is active', (filterKey, filterValue) => {
     const { rerender } = render(
       <DatasetFilters
         areas={mockAreas}
@@ -108,12 +111,9 @@ describe('DatasetFilters', () => {
 
     expect(screen.queryByRole('button', { name: 'Clear all filters' })).not.toBeInTheDocument();
 
-    const areaSelect = screen.getByLabelText('Geographical area');
-    fireEvent.change(areaSelect, { target: { value: '1' } });
-
-    mockSearchParams.set('area', '1');
+    mockSearchParams.set(filterKey, filterValue);
     (useSearchParams as jest.Mock).mockReturnValue(mockSearchParams);
-    
+
     rerender(
       <DatasetFilters
         areas={mockAreas}

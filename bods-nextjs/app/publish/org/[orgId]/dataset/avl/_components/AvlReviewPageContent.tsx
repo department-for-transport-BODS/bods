@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { PublishStepper } from '@/components/publish';
+import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 import { config } from '@/config';
 import { formatDateTime } from '@/lib/utils/date';
@@ -134,24 +135,14 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
           />
         </div>
 
-        {errorMessage && (
-          <div
-            className="govuk-error-summary govuk-!-margin-bottom-0"
-            aria-labelledby="error-summary-title"
-            role="alert"
-            tabIndex={-1}
-            data-module="govuk-error-summary"
-          >
-            <h2 className="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
-              There is a problem
-            </h2>
-            <div className="govuk-error-summary__body">
-              <ul className="govuk-list govuk-error-summary__list">
-                <li className="no-underline-l app-error-summary__item">{errorMessage}</li>
-              </ul>
-            </div>
-          </div>
-        )}
+        <ErrorSummary
+          errors={errorMessage ? [errorMessage] : []}
+          className="govuk-!-margin-bottom-0"
+          titleClassName="govuk-!-margin-bottom-2"
+          itemClassName="no-underline-l app-error-summary__item"
+          tabIndex={-1}
+          dataModule="govuk-error-summary"
+        />
 
         <h1 className="govuk-heading-l">Review and publish</h1>
         <hr className="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
@@ -211,22 +202,15 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
 
                 {reviewErrorMessage && (
                   <>
-                    <div
-                      className="govuk-error-summary govuk-!-margin-bottom-0"
-                      aria-labelledby="error-summary-title"
-                      role="alert"
+                    <ErrorSummary
+                      errors={[reviewErrorMessage]}
+                      title="Supplied data feed has failed to upload"
+                      className="govuk-!-margin-bottom-0"
+                      titleClassName="govuk-!-margin-bottom-2"
+                      itemClassName="no-underline-l app-error-summary__item"
                       tabIndex={-1}
-                      data-module="govuk-error-summary"
-                    >
-                      <h2 className="govuk-error-summary__title govuk-!-margin-bottom-2" id="error-summary-title">
-                        Supplied data feed has failed to upload
-                      </h2>
-                      <div className="govuk-error-summary__body">
-                        <ul className="govuk-list govuk-error-summary__list">
-                          <li className="no-underline-l app-error-summary__item">{reviewErrorMessage}</li>
-                        </ul>
-                      </div>
-                    </div>
+                      dataModule="govuk-error-summary"
+                    />
 
                     <div className="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
                       <Link role="button" className="govuk-button govuk-!-margin-bottom-0" href={updateUrl}>

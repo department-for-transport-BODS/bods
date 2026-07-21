@@ -32,14 +32,12 @@ export default defineConfig({
 
     ignoreHTTPSErrors: process.env.IGNORE_HTTPS_ERRORS === 'true' || false,
 
-    /* Collect trace when retrying the failed test */
+
     trace: 'on-first-retry',
 
-    /* Screenshot on failure */
-    screenshot: 'only-on-failure',
+    screenshot: process.env.CI ? 'only-on-failure' : 'on',
 
-    /* Video on failure */
-    video: 'retain-on-failure',
+    video: process.env.CI ? 'retain-on-failure' : 'on',
 
     /* Timeouts */
     actionTimeout: config.defaultTimeout,

@@ -26,7 +26,7 @@ jest.mock('@/components/publish/AvlMatchingHelpModal', () => ({
 }));
 
 jest.mock('@/lib/utils/date', () => ({
-  formatDateTime: (date: string) => 'Formatted: 15 Jan 2026, 10:30',
+  formatDateTime: () => 'Formatted: 15 Jan 2026, 10:30',
 }));
 
 describe('AvlFeedDetailTable', () => {

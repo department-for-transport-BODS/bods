@@ -9,6 +9,7 @@
 import { useState } from "react";
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useParams, useRouter } from "next/navigation";
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from "@/lib/api-client";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { PublishStepper, DatasetDescriptionFields, DataProviderRadioGroup, URL_LINK_ITEM_ID, UPLOAD_FILE_ITEM_ID } from '@/components/publish';
@@ -18,6 +19,7 @@ import {
   validateTimetableStep2,
   validateTimetableStep3,
 } from '@/lib/validation/timetable-publish';
+
 
 function TimetablePublish() {
   const params = useParams();
@@ -116,6 +118,14 @@ function TimetablePublish() {
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
+        <Breadcrumbs
+          items={[
+            { label: 'Bus Open Data Service', href: '/data' },
+            { label: 'Publish Bus Open Data', href: '/publish' },
+            { label: 'Review My Timetables Data', current: true },
+          ]}
+        />
+
         <div className="govuk-grid-row">
           <PublishStepper steps={steps} />
 

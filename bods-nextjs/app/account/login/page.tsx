@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
-import { config } from '@/config';
+import { HOSTS } from '@/config';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -33,23 +34,13 @@ export default function LoginPage() {
 
   return (
     <div className="govuk-width-container">
-      <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
-        <ol className="govuk-breadcrumbs__list">
-          <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href={`HOSTS.root`}>
-              Bus Open Data Service
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item">
-            <Link className="govuk-breadcrumbs__link" href="/">
-              Publish Bus Open Data
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item" aria-current="page">
-            Sign in
-          </li>
-        </ol>
-      </nav>
+      <Breadcrumbs
+        items={[
+          { label: 'Bus Open Data Service', href: HOSTS.root },
+          { label: 'Publish Bus Open Data', href: '/' },
+          { label: 'Sign in', current: true },
+        ]}
+      />
 
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">

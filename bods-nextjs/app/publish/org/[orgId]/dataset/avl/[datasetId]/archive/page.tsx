@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
 
 function AvlArchivePageContent() {
@@ -73,18 +74,7 @@ function AvlArchivePageContent() {
           </div>
         </div>
 
-        {errorMessage && (
-          <div className="govuk-error-summary" role="alert" aria-labelledby="avl-archive-error-title">
-            <h2 className="govuk-error-summary__title" id="avl-archive-error-title">
-              There is a problem
-            </h2>
-            <div className="govuk-error-summary__body">
-              <ul className="govuk-list govuk-error-summary__list">
-                <li>{errorMessage}</li>
-              </ul>
-            </div>
-          </div>
-        )}
+        <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="avl-archive-error-title" />
 
         <div className="govuk-button-group">
           <button type="button" className="govuk-button" onClick={handleDeactivate} disabled={isSubmitting}>

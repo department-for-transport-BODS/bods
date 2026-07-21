@@ -9,12 +9,18 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import mapboxgl from 'mapbox-gl';
 import { RouteMap } from './RouteMap';
 import styles from './RouteMap.module.css';
 
 jest.mock('mapbox-gl', () => ({
   Map: jest.fn(() => ({
-    on: jest.fn(),
+    on: jest.fn((event, layerOrHandler, maybeHandler) => {
+      const handler = typeof layerOrHandler === 'function' ? layerOrHandler : maybeHandler;
+      if (event === 'load' && typeof handler === 'function') {
+        handler();
+      }
+    }),
     addControl: jest.fn(),
     addSource: jest.fn(),
     addLayer: jest.fn(),
@@ -127,7 +133,7 @@ describe('RouteMap', () => {
       );
       
       await waitFor(() => {
-        const timestamp = document.querySelector('#map-updated-timestamp');
+              const timestamp = document.querySelector(`.${styles.updatedTimestamp}`);
         expect(timestamp).toBeInTheDocument();
       });
     });
@@ -186,7 +192,7 @@ describe('RouteMap', () => {
       
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringMatching(/service_codes=CODE1,CODE2/)
+          expect.stringMatching(/service_codes=CODE1(%2C|,)CODE2/)
         );
       });
     });
@@ -226,19 +232,33 @@ describe('RouteMap', () => {
   describe('Route Display', () => {
     it('renders routes with correct teal color', async () => {
       render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
+
       await waitFor(() => {
-        const styles = document.querySelector('style');
-        expect(styles?.textContent).toContain('#49A39A');
+        const addLayer = (mapboxgl.Map as jest.Mock).mock.results[0].value.addLayer;
+        expect(addLayer).toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: 'service-patterns',
+            paint: expect.objectContaining({
+              'line-color': '#49A39A',
+            }),
+          }),
+        );
       });
     });
 
     it('applies hover color on route hover', async () => {
       render(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
-      
+
       await waitFor(() => {
-        const styles = document.querySelector('style');
-        expect(styles?.textContent).toContain('#34746e');
+        const addLayer = (mapboxgl.Map as jest.Mock).mock.results[0].value.addLayer;
+        expect(addLayer).toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: 'service-patterns-hover',
+            paint: expect.objectContaining({
+              'line-color': '#34746e',
+            }),
+          }),
+        );
       });
     });
   });
@@ -306,12 +326,11 @@ describe('RouteMap', () => {
         <RouteMap revisionId={123} mapboxToken={mockMapboxToken} />
       );
       
-      const mapboxgl = require('mapbox-gl');
-      const initialCallCount = mapboxgl.Map.mock.calls.length;
+      const initialCallCount = (mapboxgl.Map as jest.Mock).mock.calls.length;
       
       rerender(<RouteMap revisionId={123} mapboxToken={mockMapboxToken} />);
       
-      expect(mapboxgl.Map.mock.calls.length).toBe(initialCallCount);
+      expect((mapboxgl.Map as jest.Mock).mock.calls.length).toBe(initialCallCount);
     });
 
     it('cleans up map on unmount', () => {
@@ -319,8 +338,7 @@ describe('RouteMap', () => {
         <RouteMap revisionId={123} mapboxToken={mockMapboxToken} />
       );
       
-      const mapboxgl = require('mapbox-gl');
-      const mockRemove = mapboxgl.Map.mock.results[0].value.remove;
+      const mockRemove = (mapboxgl.Map as jest.Mock).mock.results[0].value.remove;
       
       unmount();
       

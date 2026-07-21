@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
 import { HOSTS } from '@/config';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
@@ -90,7 +90,15 @@ function toAlertItem(input: unknown, index: number): AlertItem {
   };
 }
 
-export function AlertsBrowserPage({
+export function AlertsBrowserPage(props: AlertsBrowserPageProps) {
+  return (
+    <Suspense fallback={null}>
+      <AlertsBrowserPageInner {...props} />
+    </Suspense>
+  );
+}
+
+function AlertsBrowserPageInner({
   title,
   breadcrumbLabel,
   description,
@@ -168,20 +176,14 @@ export function AlertsBrowserPage({
   return (
     <>
       <div className="govuk-width-container">
-        <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
-          <ol className="govuk-breadcrumbs__list">
-            <li className="govuk-breadcrumbs__list-item">
-              <a className="govuk-breadcrumbs__link" href={HOSTS.root}>Bus Open Data Service</a>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/">Find Bus Open Data</Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/data">Browse</Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item" aria-current="page">{breadcrumbLabel}</li>
-          </ol>
-        </nav>
+        <Breadcrumbs
+          items={[
+            { label: 'Bus Open Data Service', href: HOSTS.root },
+            { label: 'Find Bus Open Data', href: '/' },
+            { label: 'Browse', href: '/data' },
+            { label: breadcrumbLabel, current: true },
+          ]}
+        />
       </div>
 
       <BrowseSearchBanner

@@ -5,7 +5,7 @@
  */
 
 import Link from 'next/link';
-import { config, HOSTS } from '@/config';
+import { HOSTS } from '@/config';
 
 export default function AccessibilityPage() {
   return (

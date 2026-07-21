@@ -22,19 +22,20 @@ export interface DownloadSubscribePanelProps {
   datasetId: number;
   downloadUrl: string;
   fileExtension: string;
-  fileSize?: string;
+  fileSize?: string | number;
   isSubscribed?: boolean;
   onSubscribeToggle?: (subscribed: boolean) => Promise<void>;
 }
 
-/**
- * Format file size for display
- */
-function formatFileSize(bytes?: number): string {
-  if (!bytes) return '';
+function formatFileSize(fileSize?: string | number): string {
+  if (!fileSize) return '';
+
+  if (typeof fileSize === 'string') {
+    return fileSize;
+  }
 
   const units = ['B', 'KB', 'MB', 'GB'];
-  let size = bytes;
+  let size = fileSize;
   let unitIndex = 0;
 
   while (size >= 1024 && unitIndex < units.length - 1) {
@@ -55,6 +56,7 @@ export function DownloadSubscribePanel({
 }: DownloadSubscribePanelProps) {
   const [subscribed, setSubscribed] = useState(isSubscribed);
   const [isToggling, setIsToggling] = useState(false);
+  const formattedFileSize = formatFileSize(fileSize);
 
   const handleSubscribeToggle = async () => {
     if (!onSubscribeToggle) return;
@@ -102,10 +104,10 @@ export function DownloadSubscribePanel({
             href={downloadUrl}
             className="govuk-link"
             download
-            aria-label={`Download dataset (.${fileExtension}${fileSize ? `, ${fileSize}` : ''})`}
+            aria-label={`Download dataset (.${fileExtension}${formattedFileSize ? `, ${formattedFileSize}` : ''})`}
           >
             Download dataset (.{fileExtension})
-            {fileSize && <span className="govuk-!-font-size-16"> ({fileSize})</span>}
+            {formattedFileSize && <span className="govuk-!-font-size-16"> ({formattedFileSize})</span>}
           </a>
         </li>
       </ul>

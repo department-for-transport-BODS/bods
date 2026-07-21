@@ -14,14 +14,12 @@ import { api } from '@/lib/api-client';
 export function ConfirmEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const key = searchParams.get('key');
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const key = searchParams.get('key');
     if (!key) {
-      setStatus('error');
-      setMessage('Invalid confirmation link');
       return;
     }
 
@@ -35,9 +33,22 @@ export function ConfirmEmailContent() {
       })
       .catch(() => {
         setStatus('error');
-        setMessage('Invalid or expired confirmation link.');
+        setMessage('This email confirmation link expired or is invalid.');
       });
-  }, [searchParams, router]);
+  }, [key, router]);
+
+  if (!key) {
+    return (
+      <div className="govuk-error-summary" role="alert">
+        <h2 className="govuk-error-summary__title">
+          Confirmation failed
+        </h2>
+        <div className="govuk-error-summary__body">
+          <p className="govuk-body">This email confirmation link expired or is invalid.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (status === 'loading') {
     return <p className="govuk-body">Confirming your email address...</p>;

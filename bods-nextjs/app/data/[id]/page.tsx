@@ -10,6 +10,7 @@
 
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { DatasetDetailContent } from '@/components/data/DatasetDetailContent';
 import type { Dataset } from '@/types';
 import { config } from '@/config';
@@ -79,28 +80,14 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
 
   return (
     <div className="govuk-width-container">
-      <div className="govuk-breadcrumbs">
-        <ol className="govuk-breadcrumbs__list">
-          <li className="govuk-breadcrumbs__list-item">
-            <Link href="/" className="govuk-breadcrumbs__link">
-              Home
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item">
-            <Link href="/data" className="govuk-breadcrumbs__link">
-              Browse
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item">
-            <Link href="/data?status=live" className="govuk-breadcrumbs__link">
-              Timetables Data
-            </Link>
-          </li>
-          <li className="govuk-breadcrumbs__list-item">
-            {dataset.name.length > 19 ? `${dataset.name.substring(0, 16)}...` : dataset.name}
-          </li>
-        </ol>
-      </div>
+      <Breadcrumbs
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Browse', href: '/data' },
+          { label: 'Timetables Data', href: '/data?status=live' },
+          { label: dataset.name, current: true, truncateAt: 19 },
+        ]}
+      />
 
       <main className="govuk-main-wrapper" id="main-content" role="main">
         <div className="govuk-grid-row">

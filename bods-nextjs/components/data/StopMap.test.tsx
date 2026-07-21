@@ -7,14 +7,20 @@
  */
 
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import mapboxgl from 'mapbox-gl';
 import { StopMap, StopPoint } from './StopMap';
 import styles from './StopMap.module.css';
 
 jest.mock('mapbox-gl', () => ({
   Map: jest.fn(() => ({
-    on: jest.fn(),
+    on: jest.fn((event, layerOrHandler, maybeHandler) => {
+      const handler = typeof layerOrHandler === 'function' ? layerOrHandler : maybeHandler;
+      if (event === 'load' && typeof handler === 'function') {
+        handler();
+      }
+    }),
     addControl: jest.fn(),
     addSource: jest.fn(),
     addLayer: jest.fn(),
@@ -230,7 +236,6 @@ describe('StopMap', () => {
         />
       );
       
-      const mapboxgl = require('mapbox-gl');
       expect(true).toBe(true); // Placeholder for integration test
     });
 
@@ -473,9 +478,9 @@ describe('StopMap', () => {
           enableClustering={false}
         />
       );
-      
-      const styles = document.querySelector('style');
-      expect(styles?.textContent).toContain('scale(1.2)');
+
+      const markerElement = (mapboxgl.Marker as jest.Mock).mock.calls[0][0];
+      expect(markerElement).toHaveClass(styles.stopMarker);
     });
   });
 
@@ -485,12 +490,11 @@ describe('StopMap', () => {
         <StopMap stops={mockStops} mapboxToken={mockMapboxToken} />
       );
       
-      const mapboxgl = require('mapbox-gl');
-      const initialCallCount = mapboxgl.Map.mock.calls.length;
+      const initialCallCount = (mapboxgl.Map as jest.Mock).mock.calls.length;
       
       rerender(<StopMap stops={mockStops} mapboxToken={mockMapboxToken} />);
       
-      expect(mapboxgl.Map.mock.calls.length).toBe(initialCallCount);
+      expect((mapboxgl.Map as jest.Mock).mock.calls.length).toBe(initialCallCount);
     });
 
     it('cleans up markers on unmount', () => {
@@ -512,8 +516,7 @@ describe('StopMap', () => {
         <StopMap stops={mockStops} mapboxToken={mockMapboxToken} />
       );
       
-      const mapboxgl = require('mapbox-gl');
-      const mockRemove = mapboxgl.Map.mock.results[0]?.value.remove;
+      const mockRemove = (mapboxgl.Map as jest.Mock).mock.results[0]?.value.remove;
       
       unmount();
       

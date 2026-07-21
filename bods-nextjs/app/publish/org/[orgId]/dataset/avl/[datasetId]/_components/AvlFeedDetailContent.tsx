@@ -9,7 +9,7 @@ import { AvlFeedDetailTable } from './AvlFeedDetailTable';
 import { AvlCompliancePanels } from './AvlCompliancePanels';
 import { AvlFeedDetailSidebar } from './AvlFeedDetailSidebar';
 import { AvlFeedDetailActions } from './AvlFeedDetailActions';
-import { AvlBreadcrumbs } from '../../_components/AvlBreadcrumbs';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 
 export interface AvlFeedDetail {
   datasetId: number;
@@ -85,8 +85,10 @@ export function AvlFeedDetailContent() {
 
   return (
     <div className="govuk-width-container">
-      <AvlBreadcrumbs
+      <Breadcrumbs
         items={[
+          { label: 'Bus Open Data Service', href: '/' },
+          { label: 'Publish Bus Open Data', href: '/publish/' },
           {
             label: 'Review My Bus Location Data',
             href: `/publish/org/${orgId}/dataset/avl`,
@@ -94,8 +96,8 @@ export function AvlFeedDetailContent() {
           {
             label: feedDetail.name,
             href: `/publish/org/${orgId}/dataset/avl/${datasetId}`,
-            isCurrent: true,
-            truncateLabel: true,
+            current: true,
+            truncateAt: 20,
           },
         ]}
       />

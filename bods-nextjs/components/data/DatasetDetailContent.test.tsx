@@ -5,18 +5,29 @@
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { DatasetDetailContent } from './DatasetDetailContent';
+import type { ReactNode } from 'react';
 import type { Dataset } from '@/types';
 
-const mockRouteMap = jest.fn(() => <div data-testid="route-map" />);
+const mockRouteMap = jest.fn((props: unknown) => {
+  void props;
+  return <div data-testid="route-map" />;
+});
 
 jest.mock('next/link', () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => {
+  return function MockLink({ children, href }: { children: ReactNode; href: string }) {
     return <a href={href}>{children}</a>;
   };
 });
 
 jest.mock('./RouteMap', () => ({
   RouteMap: (props: unknown) => mockRouteMap(props),
+}));
+
+jest.mock('@/config', () => ({
+  config: {
+    mapboxToken: 'test-mapbox-token',
+    djangoApiUrl: 'http://localhost:8000',
+  },
 }));
 
 const mockDataset: Dataset = {

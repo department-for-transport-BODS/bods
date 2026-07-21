@@ -6,9 +6,10 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ApiUrlPanel } from './ApiUrlPanel';
+import styles from './ApiUrlPanel.module.css';
 
 Object.assign(navigator, {
   clipboard: {
@@ -26,19 +27,15 @@ describe('ApiUrlPanel', () => {
   });
 
   describe('Rendering', () => {
-    it('renders with default title for timetable dataset', () => {
-      render(<ApiUrlPanel {...defaultProps} datasetType="TIMETABLE" />);
-      
-      expect(screen.getByRole('heading', { 
-        name: /use this data set in your code/i 
-      })).toBeInTheDocument();
-    });
+    it.each([
+      ['TIMETABLE', /use this data set in your code/i],
+      ['AVL', /use this data feed in your code/i],
+      ['FARES', /use this data set in your code/i],
+    ] as const)('renders the expected default title for %s datasets', (datasetType, expectedTitle) => {
+      render(<ApiUrlPanel {...defaultProps} datasetType={datasetType} />);
 
-    it('renders with specific title for AVL dataset', () => {
-      render(<ApiUrlPanel {...defaultProps} datasetType="AVL" />);
-      
-      expect(screen.getByRole('heading', { 
-        name: /use this data feed in your code/i 
+      expect(screen.getByRole('heading', {
+        name: expectedTitle,
       })).toBeInTheDocument();
     });
 
@@ -52,10 +49,11 @@ describe('ApiUrlPanel', () => {
 
     it('displays the API URL', () => {
       render(<ApiUrlPanel {...defaultProps} />);
-      
-      const urlElement = screen.getByText(defaultProps.apiUrl);
+
+      const urlElement = screen.getByRole('textbox', { name: 'API endpoint URL' });
       expect(urlElement).toBeInTheDocument();
-      expect(urlElement).toHaveClass('api-url-panel__url');
+      expect(urlElement).toHaveTextContent(defaultProps.apiUrl);
+      expect(urlElement).toHaveClass(styles.url);
     });
 
     it('renders copy button', () => {
@@ -107,7 +105,9 @@ describe('ApiUrlPanel', () => {
         expect(copyButton).toHaveTextContent('Copied!');
       });
       
-      jest.advanceTimersByTime(2000);
+      act(() => {
+        jest.advanceTimersByTime(2000);
+      });
       
       await waitFor(() => {
         expect(copyButton).toHaveTextContent('Copy');
@@ -169,16 +169,17 @@ describe('ApiUrlPanel', () => {
     it('displays long URLs correctly', () => {
       const longUrl = 'https://api.example.com/v1/dataset/123/download?format=xml&include=metadata';
       render(<ApiUrlPanel {...defaultProps} apiUrl={longUrl} />);
-      
-      const urlElement = screen.getByText(longUrl);
-      expect(urlElement).toHaveClass('dont-break-out');
+
+      const urlElement = screen.getByRole('textbox', { name: 'API endpoint URL' });
+      expect(urlElement).toHaveTextContent(longUrl);
+      expect(urlElement).toHaveClass(styles.url);
     });
 
     it('uses monospace font for URL', () => {
       render(<ApiUrlPanel {...defaultProps} />);
-      
-      const urlElement = screen.getByText(defaultProps.apiUrl);
-      expect(urlElement).toHaveClass('api-url-panel__url');
+
+      const urlElement = screen.getByRole('textbox', { name: 'API endpoint URL' });
+      expect(urlElement).toHaveClass(styles.url);
     });
   });
 
@@ -193,26 +194,20 @@ describe('ApiUrlPanel', () => {
 
     it('has proper panel background', () => {
       const { container } = render(<ApiUrlPanel {...defaultProps} />);
-      
-      const panel = container.querySelector('.api-url-panel');
+
+      const panel = container.querySelector(`.${styles.panel}`);
       expect(panel).toBeInTheDocument();
     });
   });
 
   describe('Dataset Type Handling', () => {
-    it('handles TIMETABLE type correctly', () => {
-      render(<ApiUrlPanel {...defaultProps} datasetType="TIMETABLE" />);
-      expect(screen.getByText(/use this data set in your code/i)).toBeInTheDocument();
-    });
-
-    it('handles AVL type correctly', () => {
-      render(<ApiUrlPanel {...defaultProps} datasetType="AVL" />);
-      expect(screen.getByText(/use this data feed in your code/i)).toBeInTheDocument();
-    });
-
-    it('handles FARES type correctly', () => {
-      render(<ApiUrlPanel {...defaultProps} datasetType="FARES" />);
-      expect(screen.getByText(/use this data set in your code/i)).toBeInTheDocument();
+    it.each([
+      ['TIMETABLE', /use this data set in your code/i],
+      ['AVL', /use this data feed in your code/i],
+      ['FARES', /use this data set in your code/i],
+    ] as const)('handles %s type correctly', (datasetType, expectedTitle) => {
+      render(<ApiUrlPanel {...defaultProps} datasetType={datasetType} />);
+      expect(screen.getByText(expectedTitle)).toBeInTheDocument();
     });
   });
 });
