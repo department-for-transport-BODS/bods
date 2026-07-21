@@ -6,9 +6,9 @@ import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DatasetDescriptionFields } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep } from '@/lib/validation/avl-publish';
-import { AvlBreadcrumbs } from '../../_components/AvlBreadcrumbs';
 
 interface DatasetEditResponse {
   datasetId: number;
@@ -178,8 +178,10 @@ function AvlDatasetEditContent() {
 
   return (
     <div className="govuk-width-container">
-      <AvlBreadcrumbs
+      <Breadcrumbs
         items={[
+          { label: 'Bus Open Data Service', href: '/' },
+          { label: 'Publish Bus Open Data', href: '/publish/' },
           {
             label: 'Your data feed',
             href: listUrl,
@@ -187,12 +189,12 @@ function AvlDatasetEditContent() {
           {
             label: breadcrumbFeedName,
             href: detailUrl,
-            truncateLabel: true,
+            truncateAt: 20,
           },
           {
             label: 'Edit description',
             href: editUrl,
-            isCurrent: true,
+            current: true,
           },
         ]}
       />

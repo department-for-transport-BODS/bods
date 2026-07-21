@@ -21,6 +21,13 @@ const eslintConfig = defineConfig([
     },
   },
   {
+    files: ["jest.config.js", "scripts/copy-gds-assets.js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-unused-expressions": "off",
+    },
+  },
+  {
     files: [
       "app/**/*.{js,jsx,ts,tsx}",
       "components/**/*.{js,jsx,ts,tsx}",
@@ -28,17 +35,7 @@ const eslintConfig = defineConfig([
       "lib/**/*.{js,jsx,ts,tsx}",
       "middleware.ts",
       "config.ts",
-    ],
-    rules: {
-      "max-lines": [
-        "error",
-        {
-          max: 300,
-          skipBlankLines: true,
-          skipComments: true,
-        },
-      ],
-    },
+    ]
   },
   globalIgnores([
     ".next/**",

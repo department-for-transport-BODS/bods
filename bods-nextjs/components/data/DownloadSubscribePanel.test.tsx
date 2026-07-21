@@ -5,13 +5,13 @@
  * Tests the download and subscribe panel with various scenarios
  */
 
-import React from 'react';
+import React, { type AnchorHTMLAttributes, type ReactNode } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { DownloadSubscribePanel } from './DownloadSubscribePanel';
 
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => {
+  return function MockLink({ children, href, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { children: ReactNode; href: string }) {
     return <a href={href} {...props}>{children}</a>;
   };
 });
@@ -56,6 +56,12 @@ describe('DownloadSubscribePanel', () => {
     it('displays file size when provided', () => {
       render(<DownloadSubscribePanel {...defaultProps} fileSize="2.5 MB" />);
       
+      expect(screen.getByText(/2\.5 MB/i)).toBeInTheDocument();
+    });
+
+    it('formats numeric file size when provided', () => {
+      render(<DownloadSubscribePanel {...defaultProps} fileSize={2621440} />);
+
       expect(screen.getByText(/2\.5 MB/i)).toBeInTheDocument();
     });
 

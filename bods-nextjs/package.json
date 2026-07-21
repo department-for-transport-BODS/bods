@@ -6,13 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "copy-gds-assets": "node scripts/copy-gds-assets.js",
     "prebuild": "npm run copy-gds-assets",
-    "postinstall": "npm run copy-gds-assets"
+    "postinstall": "npm run copy-gds-assets",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
@@ -22,7 +23,6 @@
     "@swc/core": "^1.15.13",
     "@types/mapbox-gl": "^3.5.0",
     "govuk-frontend": "5.14.0",
-    "kainossoftwareltd-govuk-react-kainos": "^1.0.9",
     "mapbox-gl": "^3.19.0",
     "next": "16.2.10",
     "react": "19.2.4",

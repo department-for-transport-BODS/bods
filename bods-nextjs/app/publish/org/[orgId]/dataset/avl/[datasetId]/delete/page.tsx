@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 import { useApiResource } from '@/hooks/useApiResource';
 
@@ -75,18 +76,7 @@ function AvlDeletePageContent() {
               </p>
             )}
 
-            {errorMessage && (
-              <div className="govuk-error-summary" role="alert" aria-labelledby="avl-delete-error-title">
-                <h2 className="govuk-error-summary__title" id="avl-delete-error-title">
-                  There is a problem
-                </h2>
-                <div className="govuk-error-summary__body">
-                  <ul className="govuk-list govuk-error-summary__list">
-                    <li>{errorMessage}</li>
-                  </ul>
-                </div>
-              </div>
-            )}
+            <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="avl-delete-error-title" />
 
             <div className="govuk-button-group">
               <button type="button" className="govuk-button" onClick={handleDelete} disabled={isSubmitting}>

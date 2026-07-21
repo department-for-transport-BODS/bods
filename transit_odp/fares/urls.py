@@ -1,7 +1,6 @@
 from django.urls import include, path
 
 from transit_odp.fares import views
-from transit_odp.fares.views.api import create_fares_dataset_api
 from transit_odp.fares.views.download import (
     PublishedSchemaViolationsCSVFileView,
     ReviewSchemaViolationsCSVFileView,
@@ -24,11 +23,6 @@ urlpatterns = [
         "new/",
         views.FaresUploadWizard.as_view(),
         name="new-feed",
-    ),
-    path(
-        "api/create/",
-        create_fares_dataset_api,
-        name="create-feed-api",
     ),
     path(
         "<int:pk>/",

@@ -1,27 +1,18 @@
 import Link from 'next/link';
+import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { HOSTS } from '@/config';
 
 export default function DataBrowsePage() {
   return (
     <>
       <div className="govuk-width-container">
-        <nav className="govuk-breadcrumbs" aria-label="Breadcrumb">
-          <ol className="govuk-breadcrumbs__list">
-            <li className="govuk-breadcrumbs__list-item">
-              <a className="govuk-breadcrumbs__link" href={HOSTS.root}>
-                Bus Open Data Service
-              </a>
-            </li>
-            <li className="govuk-breadcrumbs__list-item">
-              <Link className="govuk-breadcrumbs__link" href="/">
-                Find Bus Open Data
-              </Link>
-            </li>
-            <li className="govuk-breadcrumbs__list-item" aria-current="page">
-              Browse
-            </li>
-          </ol>
-        </nav>
+        <Breadcrumbs
+          items={[
+            { label: 'Bus Open Data Service', href: HOSTS.root },
+            { label: 'Find Bus Open Data', href: '/' },
+            { label: 'Browse', current: true },
+          ]}
+        />
       </div>
 
       <div className="app-masthead">
@@ -46,9 +37,9 @@ export default function DataBrowsePage() {
             <div className="govuk-grid-column-two-thirds">
               <div className="govuk-!-padding-right-9">
                 <div className="govuk-grid-row">
-                  <a className="govuk-link-bold govuk-body" href="/data/timetables?status=live">
+                  <Link className="govuk-link-bold govuk-body" href="/data/timetables?status=live">
                     Timetables data
-                  </a>
+                  </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
                     You can filter and browse specific timetables data on the service.
                   </p>
@@ -61,9 +52,9 @@ export default function DataBrowsePage() {
                 </div>
 
                 <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <a className="govuk-link-bold govuk-body" href="/data/avl?status=live">
+                  <Link className="govuk-link-bold govuk-body" href="/data/avl?status=live">
                     Location data
-                  </a>
+                  </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
                     You can filter and browse the live locations of buses at a specific point in
                     time.
@@ -77,9 +68,9 @@ export default function DataBrowsePage() {
                 </div>
 
                 <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <a className="govuk-link-bold govuk-body" href="/data/fares?status=live">
+                  <Link className="govuk-link-bold govuk-body" href="/data/fares?status=live">
                     Fares data
-                  </a>
+                  </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
                     You can filter and browse specific fares data on the service.
                   </p>
@@ -92,9 +83,9 @@ export default function DataBrowsePage() {
                 </div>
 
                 <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <a className="govuk-link-bold govuk-body" href="/data/disruptions">
+                  <Link className="govuk-link-bold govuk-body" href="/data/disruptions">
                     Disruption data
-                  </a>
+                  </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
                     You can browse specific disruption data.
                   </p>
