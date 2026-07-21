@@ -588,7 +588,9 @@ def delete_fares_dataset_api(request, pk1, pk):
     if error_response is not None:
         return error_response
 
-    delete_queued = not revision.is_published or revision.status == FeedStatus.expired.value
+    delete_queued = (
+        not revision.is_published or revision.status == FeedStatus.expired.value
+    )
     if delete_queued:
         delete_dataset_revision.delay(revision.id)
 
