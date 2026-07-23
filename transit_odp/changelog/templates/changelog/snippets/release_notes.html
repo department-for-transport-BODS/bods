@@ -1,5 +1,46 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "July 2026 (1.61.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.61.0 (Jul 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Restricted the PDBRD registrations CSV download to the logged-in user's organisation, resolving an issue where large downloads were failing.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Improved performance and reliability of archive downloads on BODS.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue with the SwaggerUI widgets on the API documentation pages, restoring full functionality on the "Try API" pages.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Backend improvements to the AVL subscription process within Integrated Data.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Upgraded components to improve resilience and apply security updates.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Performance improvements.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "June 2026 (1.60.0)" %}
 </h3>
 <h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.60.0 (June 2026)</h4>

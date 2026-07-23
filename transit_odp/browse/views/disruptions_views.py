@@ -5,8 +5,10 @@ from django.core.paginator import Paginator
 from django.views.generic.list import ListView
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.shortcuts import redirect
 from waffle import flag_is_active
 
+from transit_odp.browse.cfn import generate_signed_url
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
 from transit_odp.disruptions.models import DisruptionsDataArchive
 from transit_odp.organisation.constants import DatasetType
@@ -54,7 +56,16 @@ class DownloadDisruptionsDataArchiveView(DownloadView):
         return archive
 
     def get_download_file(self):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return generate_signed_url(f"disruptions/{self.object.data.name}")
         return self.object.data
+
+    def render_to_response(self, **response_kwargs):
+        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
+        if is_direct_s3_url_active:
+            return redirect(self.get_download_file())
+        return super().render_to_response(**response_kwargs)
 
 
 class DownloadDisruptionsSIRIVMDataArchiveView(
@@ -125,11 +136,13 @@ class DisruptionsDataView(ListView):
         if ordering == "-modified":
             sorted_orgs = sorted(
                 orgs_to_show,
-                key=lambda item: datetime.strptime(
-                    item["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"
-                )
-                if item["stats"]["lastUpdated"]
-                else datetime.min,
+                key=lambda item: (
+                    datetime.strptime(
+                        item["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                    )
+                    if item["stats"]["lastUpdated"]
+                    else datetime.min
+                ),
                 reverse=reverse_order,
             )
         else:
@@ -147,11 +160,14 @@ class DisruptionsDataView(ListView):
                     "stats": dict(
                         item["stats"],
                         **{
-                            "lastUpdated": datetime.strptime(
-                                item["stats"]["lastUpdated"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                            "lastUpdated": (
+                                datetime.strptime(
+                                    item["stats"]["lastUpdated"],
+                                    "%Y-%m-%dT%H:%M:%S.%fZ",
+                                )
+                                if item["stats"]["lastUpdated"]
+                                else ""
                             )
-                            if item["stats"]["lastUpdated"]
-                            else ""
                         },
                     ),
                 },
@@ -235,9 +251,11 @@ class DisruptionDetailView(BaseTemplateView):
                     "consequenceType": type_of_consequence_dict[
                         consequence["consequenceType"]
                     ],
-                    "vehicleMode": vehicle_mode_dict[consequence["vehicleMode"]]
-                    if consequence["vehicleMode"] in vehicle_mode_dict
-                    else consequence["vehicleMode"],
+                    "vehicleMode": (
+                        vehicle_mode_dict[consequence["vehicleMode"]]
+                        if consequence["vehicleMode"] in vehicle_mode_dict
+                        else consequence["vehicleMode"]
+                    ),
                 }
                 for consequence in consequences
             ]
