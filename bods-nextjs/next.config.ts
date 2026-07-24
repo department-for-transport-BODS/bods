@@ -7,6 +7,8 @@ const djangoOrigin =
   'http://localhost:8000';
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+
   // Transpile the GDS component library and govuk-frontend
   transpilePackages: ['govuk-frontend'],
 
