@@ -1,104 +1,10 @@
-'use client';
-
-import { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import type { Metadata } from 'next';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { ErrorSummary } from '@/components/shared';
-import { api } from '@/lib/api-client';
-import { useApiResource } from '@/hooks/useApiResource';
+import { AvlDeletePageContent } from '../_components/AvlDeletePageContent';
 
-type AvlDeleteContext = {
-  name?: string;
-  hasLiveRevision?: boolean;
+export const metadata: Metadata = {
+  title: 'Delete data feed',
 };
-
-function AvlDeletePageContent() {
-  useEffect(() => {
-    document.title = 'Delete data feed';
-  }, []);
-
-  const params = useParams();
-  const orgId = params.orgId as string;
-  const datasetId = params.datasetId as string;
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const reviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/review`;
-  const updateReviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`;
-  const fallbackSuccessUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/delete/success`;
-
-  const loadContext = useCallback(
-    () => api.get<AvlDeleteContext>(`/api/avl/review-status/${orgId}/${datasetId}/`),
-    [datasetId, orgId],
-  );
-
-  const {
-    data: context,
-    isLoading: isLoadingContext,
-  } = useApiResource<AvlDeleteContext>(loadContext, '');
-
-  const datasetName = context?.name || '';
-  const hasLiveRevision = Boolean(context?.hasLiveRevision);
-
-  const handleDelete = async () => {
-    if (isSubmitting) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    setErrorMessage('');
-
-    try {
-      const data = await api.post<{ redirect?: string }>(`/api/avl/delete/${orgId}/${datasetId}/`);
-      globalThis.location.href = data.redirect || fallbackSuccessUrl;
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Unable to delete data feed. Please try again.');
-      setIsSubmitting(false);
-    }
-  };
-
-  const heading = hasLiveRevision
-    ? 'Would you like to cancel updating this data feed'
-    : 'Would you like to delete this data feed?';
-  const contextAction = hasLiveRevision ? 'cancel updating data feed' : 'delete data feed';
-  const cancelUrl = hasLiveRevision ? updateReviewUrl : reviewUrl;
-
-  return (
-    <div className="govuk-width-container">
-      <Link className="govuk-back-link" href={reviewUrl}>
-        Back
-      </Link>
-      <div className="govuk-main-wrapper">
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-full">
-            <h1 className="govuk-heading-xl">{heading}</h1>
-            {isLoadingContext ? (
-              <p className="govuk-body-l">Loading...</p>
-            ) : (
-              <p className="govuk-body-l">
-                Please confirm that you would like to {contextAction}
-                {datasetName ? ` "${datasetName}"` : ''}. Any changes you have made so far will not be saved.
-              </p>
-            )}
-
-            <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="avl-delete-error-title" />
-
-            <div className="govuk-button-group">
-              <button type="button" className="govuk-button" onClick={handleDelete} disabled={isSubmitting}>
-                {isSubmitting ? 'Deleting...' : 'Delete'}
-              </button>
-              <Link className="govuk-button govuk-button--secondary" href={cancelUrl}>
-                Cancel
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function AvlDeletePage() {
   return (
