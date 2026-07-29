@@ -23,10 +23,14 @@ function SelectDatasetTypePageContent() {
       return;
     }
 
-    const targetPath =
-      selectedType === 'fares'
-        ? `/publish/org/${orgId}/dataset/fares/create`
-        : `/publish/org/${orgId}/dataset/${selectedType}`;
+    let targetPath: string;
+    if (selectedType === 'fares') {
+      targetPath = `/publish/org/${orgId}/dataset/fares/create`;
+    } else if (selectedType === 'avl') {
+      targetPath = `/publish/org/${orgId}/dataset/avl/new`;
+    } else {
+      targetPath = `/publish/org/${orgId}/dataset/${selectedType}`;
+    }
 
     router.push(targetPath);
   };

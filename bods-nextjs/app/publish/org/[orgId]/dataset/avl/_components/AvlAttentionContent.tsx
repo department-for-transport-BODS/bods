@@ -74,6 +74,8 @@ export function AvlAttentionContent() {
       <div className="govuk-width-container">
         <Breadcrumbs
           items={[
+            { label: 'Bus Open Data Service', href: '/' },
+            { label: 'Publish Bus Open Data', href: '/publish/' },
             {
               label: 'Review My Bus Location Data',
               href: backUrl,

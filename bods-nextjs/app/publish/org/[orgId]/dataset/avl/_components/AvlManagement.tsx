@@ -287,18 +287,6 @@ export function AvlManagement() {
 
       <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: '/' },
-            { label: 'Publish Bus Open Data', href: '/publish/' },
-            {
-              label: 'Review My Bus Location Data',
-              href: `/publish/org/${orgId}/dataset/avl`,
-              current: true,
-            },
-          ]}
-        />
-
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h2 className="govuk-heading-m">Choose data type</h2>
