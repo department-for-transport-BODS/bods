@@ -18,6 +18,10 @@ body {
   margin: 0;
 }
 
+.justify-center-l {
+  justify-content: center;
+}
+
 .flex-container {
   display: flex;
 }
