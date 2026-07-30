@@ -11,7 +11,7 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { config } from '@/config';
+import { dataApiPath } from '@/lib/api-paths';
 import styles from './RouteMap.module.css';
 
 export interface RouteMapProps {
@@ -46,7 +46,7 @@ interface ServicePatternCollection {
 
 export function RouteMap({
   revisionId,
-  apiRoot = config.djangoApiUrl,
+  apiRoot,
   mapboxToken,
   lineName,
   serviceCodes,
@@ -109,7 +109,9 @@ export function RouteMap({
     if (revisionId) params.append('revision', revisionId.toString());
     if (lineName) params.append('line_name', lineName);
     if (serviceCodes) params.append('service_codes', serviceCodes);
-    return `${apiRoot}/api/v1/service_pattern/?${params.toString()}`;
+    const path = '/api/v1/service_pattern/';
+    const endpoint = apiRoot ? `${apiRoot}${path}` : dataApiPath(path);
+    return `${endpoint}?${params.toString()}`;
   };
 
   const fetchAndDisplayRoutes = async () => {

@@ -127,7 +127,7 @@ function UploadStepView({
       }
 
       const data = await api.post<{ redirect?: string }>(
-        `/api/fares/update/${orgId}/${datasetId}/`,
+        `/api/publish/fares/update/${orgId}/${datasetId}/`,
         formData,
       );
       globalThis.location.href = data.redirect || reviewUrl;

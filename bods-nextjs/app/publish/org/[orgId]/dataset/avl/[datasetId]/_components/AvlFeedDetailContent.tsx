@@ -38,7 +38,7 @@ export function AvlFeedDetailContent() {
   const datasetId = params.datasetId as string;
 
   const fetchFeedDetail = useCallback(
-    () => api.get<AvlFeedDetail>(`/api/avl/detail/${orgId}/${datasetId}/`),
+    () => api.get<AvlFeedDetail>(`/api/publish/avl/detail/${orgId}/${datasetId}/`),
     [datasetId, orgId],
   );
 

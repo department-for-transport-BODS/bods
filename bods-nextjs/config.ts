@@ -1,11 +1,28 @@
 import { version } from './package.json';
 
-export const config = {
-  // API URLs — must be set in every environment
-  djangoApiUrl: process.env.NEXT_PUBLIC_DJANGO_API_URL!,
-  djangoOrigin: process.env.DJANGO_INTERNAL_ORIGIN || 'http://localhost:8000',
-  djangoApiBaseUrl: process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000',
+const bodsBaseDomain = process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN || 'localhost';
+const isLocalDomain = bodsBaseDomain === 'localhost';
 
+function hostOrigin(subdomain: string): string {
+  const hostname = isLocalDomain
+    ? subdomain === 'www'
+      ? 'localhost'
+      : `${subdomain}.localhost`
+    : `${subdomain}.${bodsBaseDomain}`;
+  const scheme = isLocalDomain ? 'http' : 'https';
+  const port = isLocalDomain ? ':8000' : '';
+
+  return `${scheme}://${hostname}${port}`;
+}
+
+export const HOSTS = {
+  www: hostOrigin('www'),
+  data: hostOrigin('data'),
+  publish: hostOrigin('publish'),
+  admin: hostOrigin('admin'),
+} as const;
+
+export const config = {
   // Mapbox
   mapboxToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '',
 
@@ -16,13 +33,6 @@ export const config = {
 
   // App
   appVersion: version,
-  bodsBaseUrl: process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN || 'bus-data.dft.gov.uk',
+  bodsBaseUrl: bodsBaseDomain,
   nodeEnv: process.env.NODE_ENV || 'development',
-} as const;
-
-export const HOSTS = {
-  root: `https://www.${config.bodsBaseUrl}`,
-  data: `https://data.${config.bodsBaseUrl}`,
-  publish: `https://publish.${config.bodsBaseUrl}`,
-  admin: `https://admin.${config.bodsBaseUrl}`,
 } as const;

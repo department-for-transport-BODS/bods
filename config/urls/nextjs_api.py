@@ -1,0 +1,147 @@
+from django.urls import include, path
+
+from transit_odp.api.views.auth import CurrentUserOrganisationsAPIView
+from transit_odp.avl.views.api import (
+    create_avl_dataset_api,
+    delete_avl_dataset_api,
+    edit_avl_dataset_description_api,
+    get_avl_changelog_api,
+    get_avl_dataset_edit_api,
+    get_avl_feed_detail_api,
+    get_avl_requires_attention_api,
+    get_avl_review_status_api,
+    get_avl_update_context_api,
+    list_avl_datasets_api,
+    publish_avl_dataset_api,
+    update_avl_dataset_api,
+)
+from transit_odp.fares.views.api import (
+    create_fares_dataset_api,
+    deactivate_fares_dataset_api,
+    delete_fares_dataset_api,
+    get_fares_list_api,
+    get_fares_review_status_api,
+    publish_fares_dataset_api,
+    update_fares_dataset_api,
+)
+from transit_odp.timetables.views.api import (
+    create_timetables_dataset_api,
+    get_timetables_review_status_api,
+    publish_timetables_dataset_api,
+)
+
+urlpatterns = [
+    path("auth/", include("config.urls.session_auth_api")),
+    path(
+        "organisations/",
+        CurrentUserOrganisationsAPIView.as_view(),
+        name="api-user-organisations",
+    ),
+    path("avl/list/<int:pk1>/", list_avl_datasets_api, name="nextjs-avl-list"),
+    path(
+        "avl/create/<int:pk1>/",
+        create_avl_dataset_api,
+        name="nextjs-avl-create",
+    ),
+    path(
+        "avl/review-status/<int:pk1>/<int:pk>/",
+        get_avl_review_status_api,
+        name="nextjs-avl-review-status",
+    ),
+    path(
+        "avl/update-context/<int:pk1>/<int:pk>/",
+        get_avl_update_context_api,
+        name="nextjs-avl-update-context",
+    ),
+    path(
+        "avl/requires-attention/<int:pk1>/",
+        get_avl_requires_attention_api,
+        name="nextjs-avl-requires-attention",
+    ),
+    path(
+        "avl/detail/<int:pk1>/<int:pk>/",
+        get_avl_feed_detail_api,
+        name="nextjs-avl-detail",
+    ),
+    path(
+        "avl/dataset-edit/<int:pk1>/<int:pk>/",
+        get_avl_dataset_edit_api,
+        name="nextjs-avl-dataset-edit-get",
+    ),
+    path(
+        "avl/dataset-edit/<int:pk1>/<int:pk>/save/",
+        edit_avl_dataset_description_api,
+        name="nextjs-avl-dataset-edit-save",
+    ),
+    path(
+        "avl/changelog/<int:pk1>/<int:pk>/",
+        get_avl_changelog_api,
+        name="nextjs-avl-changelog",
+    ),
+    path(
+        "avl/publish/<int:pk1>/<int:pk>/",
+        publish_avl_dataset_api,
+        name="nextjs-avl-publish",
+    ),
+    path(
+        "avl/delete/<int:pk1>/<int:pk>/",
+        delete_avl_dataset_api,
+        name="nextjs-avl-delete",
+    ),
+    path(
+        "avl/update/<int:pk1>/<int:pk>/",
+        update_avl_dataset_api,
+        name="nextjs-avl-update",
+    ),
+    path(
+        "fares/create/<int:pk1>/",
+        create_fares_dataset_api,
+        name="nextjs-fares-create",
+    ),
+    path("fares/list/<int:pk1>/", get_fares_list_api, name="nextjs-fares-list"),
+    path(
+        "fares/review-status/<int:pk1>/<int:pk>/",
+        get_fares_review_status_api,
+        name="nextjs-fares-review-status",
+    ),
+    path(
+        "fares/publish/<int:pk1>/<int:pk>/",
+        publish_fares_dataset_api,
+        name="nextjs-fares-publish",
+    ),
+    path(
+        "fares/delete/<int:pk1>/<int:pk>/",
+        delete_fares_dataset_api,
+        name="nextjs-fares-delete",
+    ),
+    path(
+        "fares/update/<int:pk1>/<int:pk>/",
+        update_fares_dataset_api,
+        name="nextjs-fares-update",
+    ),
+    path(
+        "fares/deactivate/<int:pk1>/<int:pk>/",
+        deactivate_fares_dataset_api,
+        name="nextjs-fares-deactivate",
+    ),
+    path(
+        "timetables/review-status/<int:pk1>/<int:pk>/",
+        get_timetables_review_status_api,
+        name="nextjs-timetables-review-status",
+    ),
+    path(
+        "timetables/create/<int:pk1>/",
+        create_timetables_dataset_api,
+        name="nextjs-timetables-create",
+    ),
+    path(
+        "timetables/publish/<int:pk1>/<int:pk>/",
+        publish_timetables_dataset_api,
+        name="nextjs-timetables-publish",
+    ),
+    path(
+        "org/<int:pk1>/dataset/timetable/upload/",
+        create_timetables_dataset_api,
+        name="nextjs-timetables-upload-compat",
+    ),
+]

@@ -39,6 +39,13 @@ from transit_odp.api.views.disruptions import (
     DisruptionsGtfsRtServiceAlertsApiView,
 )
 from transit_odp.api.views.cancellations import CancellationsApiView
+from transit_odp.api.views.browser import (
+    BrowseAdminAreaListView,
+    BrowseAVLListView,
+    BrowseFaresListView,
+    BrowseOrganisationListView,
+    BrowseTimetableListView,
+)
 
 app_name = "api"
 
@@ -59,6 +66,23 @@ fares_views = get_swagger_view(title="Fares Data API")
 disruptions_views = get_swagger_view(title="Disruption Data API")
 
 urlpatterns = [
+    path(
+        "browser/timetables/",
+        BrowseTimetableListView.as_view(),
+        name="browser-timetables",
+    ),
+    path("browser/avl/", BrowseAVLListView.as_view(), name="browser-avl"),
+    path("browser/fares/", BrowseFaresListView.as_view(), name="browser-fares"),
+    path(
+        "browser/admin-areas/",
+        BrowseAdminAreaListView.as_view(),
+        name="browser-admin-areas",
+    ),
+    path(
+        "browser/organisations/",
+        BrowseOrganisationListView.as_view(),
+        name="browser-organisations",
+    ),
     # Authentication endpoints for NextJS
     path("user/", CurrentUserAPIView.as_view(), name="current-user"),
     path("timetable-openapi/", TimetablesApiView.as_view(), name="timetableopenapi"),

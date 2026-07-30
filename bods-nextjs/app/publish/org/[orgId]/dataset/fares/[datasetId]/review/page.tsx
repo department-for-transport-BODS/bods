@@ -14,6 +14,7 @@ import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 import { formatDateTime } from '@/lib/utils/date';
 import { config } from '@/config';
+import { useDatasetReview } from '@/hooks/useDatasetReview';
 
 type ReviewStatusResponse = {
   datasetId: number;
@@ -46,8 +47,6 @@ type ReviewStatusResponse = {
 };
 
 const PUBLISHED_STATUSES = new Set(['live', 'expiring', 'warning']);
-
-const POLL_INTERVAL_MS = 1000;
 
 type FareStopsApiResponse = {
   features?: Array<{
@@ -244,7 +243,7 @@ function FaresStopMapPreview({ revisionId, mapboxToken }: Readonly<FaresStopMapP
       setHasLoadedStops(false);
       try {
         const payload = await api.get<FareStopsApiResponse>(
-          `/api/app/fare_stops/?revision=${revisionId}`,
+          `/api/publish/app/fare_stops/?revision=${revisionId}`,
         );
         if (!isCancelled) {
           setFareStops(parseFareStops(payload));
@@ -392,57 +391,23 @@ function FaresReviewPageContent() {
   const dataQualityGuidanceUrl = `${supportBusOperatorsUrl}?section=dataquality`;
   const contactSupportUrl = '/publish/account';
 
-  const [statusData, setStatusData] = useState<ReviewStatusResponse | null>(null);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const {
+    statusData,
+    processingProgress,
+    isInitialLoading,
+    errorMessage,
+    setErrorMessage,
+  } = useDatasetReview<ReviewStatusResponse>(
+    datasetId,
+    `/api/publish/fares/review-status/${orgId}/${datasetId}/`,
+  );
   const [isPublishing, setIsPublishing] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
   const loading = statusData?.loading ?? true;
-  const progress = Math.max(0, Math.min(100, statusData?.progress ?? 0));
+  const progress = Math.max(0, Math.min(100, statusData?.progress ?? processingProgress));
   const hasBlockingError = Boolean(statusData?.error) || statusData?.status === 'error';
   const canPublish = !hasBlockingError;
   const isUpdate = statusData?.hasLiveRevision ?? false;
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    const fetchStatus = async () => {
-      try {
-        const data = await api.get<ReviewStatusResponse>(
-          `/api/fares/review-status/${orgId}/${datasetId}/`,
-        );
-
-        if (!isCancelled) {
-          setStatusData(data);
-          setErrorMessage('');
-          setIsInitialLoading(false);
-        }
-
-        if (!data.loading && intervalId) {
-          clearInterval(intervalId);
-        }
-      } catch (error) {
-        if (!isCancelled) {
-          setErrorMessage(
-            error instanceof Error
-              ? error.message
-              : 'Unable to check processing status. Please refresh and try again.',
-          );
-          setIsInitialLoading(false);
-        }
-      }
-    };
-
-    fetchStatus();
-    const intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
-
-    return () => {
-      isCancelled = true;
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [datasetId, orgId]);
 
   const handlePublish = async () => {
     if (isPublishing) {
@@ -455,7 +420,7 @@ function FaresReviewPageContent() {
     try {
       const data = await api.post<{
         redirect?: string;
-      }>(`/api/fares/publish/${orgId}/${datasetId}/`);
+      }>(`/api/publish/fares/publish/${orgId}/${datasetId}/`);
 
       globalThis.location.href = data.redirect || faresListUrl;
     } catch (error) {

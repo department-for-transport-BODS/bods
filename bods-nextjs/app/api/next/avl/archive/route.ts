@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { config } from '@/config';
-import { getSessionHeaders, hasSessionCookie } from '../_utils/session-auth';
+import { HOSTS } from '@/config';
+import { serverConfig } from '@/lib/server-config';
+import { getSessionHeaders, hasSessionCookie } from '../../_utils/session-auth';
 
 const DEACTIVATE_SUBMIT_BODY = 'submit=submit';
 
@@ -18,21 +19,15 @@ export async function POST(request: NextRequest) {
   }
 
   const sessionHeaders = getSessionHeaders(request, { includeCsrf: true });
+  const publishHost = new URL(HOSTS.publish).host;
+  sessionHeaders.set('host', publishHost);
+  sessionHeaders.set('x-forwarded-host', publishHost);
 
   try {
-    const publishOrigin = getPublishOrigin();
-    let djangoResp = await postDeactivate(
-      `${publishOrigin}/org/${orgId}/dataset/avl/${datasetId}/deactivate/`,
+    const djangoResp = await postDeactivate(
+      `${serverConfig.djangoInternalOrigin}/org/${orgId}/dataset/avl/${datasetId}/deactivate/`,
       sessionHeaders,
     );
-
-    // Fallback for environments where publish host isn't configured and Django is served from one host.
-    if (djangoResp.status === 404 && publishOrigin !== config.djangoOrigin) {
-      djangoResp = await postDeactivate(
-        `${config.djangoOrigin}/org/${orgId}/dataset/avl/${datasetId}/deactivate/`,
-        sessionHeaders,
-      );
-    }
 
     const location = djangoResp.headers.get('location') || '';
 
@@ -71,25 +66,6 @@ function postDeactivate(
     body: DEACTIVATE_SUBMIT_BODY,
     redirect: 'manual',
   });
-}
-
-function getPublishOrigin(): string {
-  const explicitOrigin = process.env.DJANGO_PUBLISH_ORIGIN;
-  if (explicitOrigin) {
-    return explicitOrigin;
-  }
-
-  try {
-    const parsed = new URL(config.djangoOrigin);
-    if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
-      parsed.hostname = 'publish.localhost';
-      return parsed.toString().replace(/\/$/, '');
-    }
-  } catch {
-    // no-op, fall through to default origin
-  }
-
-  return config.djangoOrigin;
 }
 
 function toNextJsPath(djangoUrl: string, orgId: string, datasetId: string): string {

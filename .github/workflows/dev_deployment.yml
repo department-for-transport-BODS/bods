@@ -154,7 +154,6 @@ jobs:
         docker build \
           --tag "${{ steps.nextjs-image.outputs.image }}" \
           --file docker/production/nextjs/Dockerfile \
-          --build-arg NEXT_PUBLIC_DJANGO_API_URL=https://www.dev.bus-data.dft.gov.uk \
           --build-arg NEXT_PUBLIC_BODS_BASE_DOMAIN=dev.bus-data.dft.gov.uk \
           --build-arg DJANGO_INTERNAL_ORIGIN=http://api_frontend_internal.bodds.dev:5000 \
           .
@@ -259,11 +258,17 @@ jobs:
       shell: bash
       run: |
         task_definition=$(aws ecs describe-task-definition --include TAGS --task-definition bodds_frontend_v2_${{ env.ENVIRONMENT_NAME }})
+        nextjs_environment='[
+          {"name":"DJANGO_INTERNAL_ORIGIN","value":"http://api_frontend_internal.bodds.dev:5000"},
+          {"name":"NODE_ENV","value":"production"},
+          {"name":"PORT","value":"5000"},
+          {"name":"HOSTNAME","value":"0.0.0.0"}
+        ]'
 
-        if jq -e '[.taskDefinition.containerDefinitions[] | select(.name == "frontend_v2-dd-agent" or has("command") or has("secrets"))] | length > 0' <<< "$task_definition" >/dev/null; then
-          jq '(.taskDefinition
+        if jq -e --argjson nextjs_environment "$nextjs_environment" '[.taskDefinition.containerDefinitions[] | select(.name == "frontend_v2-dd-agent" or has("command") or has("secrets") or (.name == "frontend_v2" and .environment != $nextjs_environment))] | length > 0' <<< "$task_definition" >/dev/null; then
+          jq --argjson nextjs_environment "$nextjs_environment" '(.taskDefinition
             | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)
-            | .containerDefinitions |= map(select(.name != "frontend_v2-dd-agent") | del(.command, .secrets)))
+            | .containerDefinitions |= map(select(.name != "frontend_v2-dd-agent") | if .name == "frontend_v2" then .environment = $nextjs_environment else . end | del(.command, .secrets)))
             + {tags: .tags}' <<< "$task_definition" > cleaned-task-definition.json
           task_definition_arn=$(aws ecs register-task-definition --cli-input-json file://cleaned-task-definition.json --query 'taskDefinition.taskDefinitionArn' --output text)
           aws ecs update-service --cluster bodds-${{ env.ENVIRONMENT_NAME }} --service frontend_v2 --task-definition "$task_definition_arn"

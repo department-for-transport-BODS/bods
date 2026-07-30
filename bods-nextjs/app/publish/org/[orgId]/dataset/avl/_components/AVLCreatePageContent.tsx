@@ -6,7 +6,7 @@ import { AvlUploadFields, DatasetDescriptionFields, PublishStepper } from '@/com
 import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
-import { config } from '@/config';
+import { config, HOSTS } from '@/config';
 import { AvlReviewHelpAside } from './AvlReviewAuxiliaryPanels';
 
 type Step = 'description' | 'upload';
@@ -22,10 +22,8 @@ export function AVLCreatePageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
 
-  const djangoApiBaseUrl = config.djangoApiBaseUrl;
-  const djangoPublishBaseUrl = djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
-  const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
-  const contactSupportUrl = `${djangoApiBaseUrl}/contact/`;
+  const supportBusOperatorsUrl = `${HOSTS.publish}/guidance/operator-requirements/`;
+  const contactSupportUrl = `${HOSTS.www}/contact/`;
   const [step, setStep] = useState<Step>('description');
 
   useEffect(() => {
@@ -80,7 +78,7 @@ export function AVLCreatePageContent() {
         headers.set('X-CSRFToken', csrfToken);
       }
 
-      const response = await fetch(`/api/avl/create/${orgId}/`, {
+      const response = await fetch(`/api/publish/avl/create/${orgId}/`, {
         method: 'POST',
         body: formData,
         headers,
