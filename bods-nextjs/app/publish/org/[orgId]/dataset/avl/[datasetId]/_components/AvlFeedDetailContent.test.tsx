@@ -97,7 +97,7 @@ describe('AvlFeedDetailContent', () => {
     render(<AvlFeedDetailContent />);
 
     await waitFor(() => {
-      expect(mockApiGet).toHaveBeenCalledWith('/api/avl/detail/org-123/dataset-456/');
+      expect(mockApiGet).toHaveBeenCalledWith('/api/publish/avl/detail/org-123/dataset-456/');
     });
   });
 
@@ -298,7 +298,7 @@ describe('AvlFeedDetailContent', () => {
     render(<AvlFeedDetailContent />);
 
     await waitFor(() => {
-      expect(mockApiGet).toHaveBeenCalledWith('/api/avl/detail/org-123/dataset-456/');
+      expect(mockApiGet).toHaveBeenCalledWith('/api/publish/avl/detail/org-123/dataset-456/');
     });
   });
 
@@ -319,7 +319,7 @@ describe('AvlFeedDetailContent', () => {
     rerender(<AvlFeedDetailContent />);
 
     await waitFor(() => {
-      expect(mockApiGet).toHaveBeenCalledWith('/api/avl/detail/org-789/dataset-999/');
+      expect(mockApiGet).toHaveBeenCalledWith('/api/publish/avl/detail/org-789/dataset-999/');
     });
   });
 });

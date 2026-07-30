@@ -34,7 +34,7 @@ function SelectOrg() {
   useEffect(() => {
     const loadOrganisations = async () => {
       try {
-        const data = await getPaginated<Organisation>('/api/organisations/');
+        const data = await getPaginated<Organisation>('/api/publish/organisations/');
 
         if (data.results.length === 1 && user?.is_single_org_user) {
           const orgId = data.results[0].id;

@@ -66,7 +66,7 @@ describe('AVL - Publish - Page', () => {
     await loadFeeds?.();
 
     expect(global.fetch).toHaveBeenCalledWith(
-      `/api/avl/list/123/?tab=${expectedTab}&sort_by=modified&order=desc&page=1`,
+      `/api/publish/avl/list/123/?tab=${expectedTab}&sort_by=modified&order=desc&page=1`,
       expect.any(Object),
     );
   });
@@ -107,7 +107,7 @@ describe('AVL - Publish - Page', () => {
     await loadFeeds?.();
 
     expect(global.fetch).toHaveBeenLastCalledWith(
-      '/api/avl/list/123/?tab=active&sort_by=status&order=asc&page=1',
+      '/api/publish/avl/list/123/?tab=active&sort_by=status&order=asc&page=1',
       expect.any(Object),
     );
 
@@ -115,7 +115,7 @@ describe('AVL - Publish - Page', () => {
     await loadFeeds?.();
 
     expect(global.fetch).toHaveBeenLastCalledWith(
-      '/api/avl/list/123/?tab=active&sort_by=status&order=desc&page=1',
+      '/api/publish/avl/list/123/?tab=active&sort_by=status&order=desc&page=1',
       expect.any(Object),
     );
   });

@@ -25,7 +25,7 @@ export function AvlDeletePageContent() {
   const fallbackSuccessUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/delete/success`;
 
   const loadContext = useCallback(
-    () => api.get<AvlDeleteContext>(`/api/avl/review-status/${orgId}/${datasetId}/`),
+    () => api.get<AvlDeleteContext>(`/api/publish/avl/review-status/${orgId}/${datasetId}/`),
     [datasetId, orgId],
   );
 
@@ -46,7 +46,7 @@ export function AvlDeletePageContent() {
     setErrorMessage('');
 
     try {
-      const data = await api.post<{ redirect?: string }>(`/api/avl/delete/${orgId}/${datasetId}/`);
+      const data = await api.post<{ redirect?: string }>(`/api/publish/avl/delete/${orgId}/${datasetId}/`);
       globalThis.location.href = data.redirect || fallbackSuccessUrl;
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Unable to delete data feed. Please try again.');

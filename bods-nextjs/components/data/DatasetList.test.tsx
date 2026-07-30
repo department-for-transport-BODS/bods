@@ -139,10 +139,9 @@ describe('DatasetList', () => {
       
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/api/v1/dataset/'),
+          expect.stringContaining('/api/data/v1/dataset/'),
           expect.objectContaining({
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
           })
         );

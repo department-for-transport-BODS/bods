@@ -29,7 +29,7 @@ export function AvlArchivePageContent() {
 
     try {
       const csrfToken = getCsrfToken();
-      const response = await fetch(`/api/avl/archive?orgId=${orgId}&datasetId=${datasetId}`, {
+      const response = await fetch(`/api/next/avl/archive?orgId=${orgId}&datasetId=${datasetId}`, {
         method: 'POST',
         credentials: 'include',
         headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},

@@ -7,7 +7,7 @@ export default function TimetablesPage() {
         breadcrumbLabel="Timetables Data"
         description="Search for a specific operator or NOC"
         placeholder="Search by NOC or Operator"
-        endpointPath="/api/v1/dataset/"
+        endpointPath="/api/browser/timetables/"
         typeLabel="Timetables data"
         idLabel="Data set ID:"
         lastUpdatedLabel="Last updated:"

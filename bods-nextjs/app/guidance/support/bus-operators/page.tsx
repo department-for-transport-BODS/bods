@@ -128,7 +128,7 @@ function BusOperatorRequirementsContent() {
     <div className="govuk-width-container">
       <Breadcrumbs
         items={[
-          { label: 'Bus Open Data Service', href: HOSTS.root },
+          { label: 'Bus Open Data Service', href: HOSTS.www },
           { label: 'Publish Bus Open Data', href: '/' },
           { label: 'Bus operator requirements', current: true },
         ]}

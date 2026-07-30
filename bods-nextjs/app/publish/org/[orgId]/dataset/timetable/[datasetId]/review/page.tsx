@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 import { PublishStepper } from '@/components/publish';
 import { formatDateTime } from '@/lib/utils/date';
+import { useDatasetReview } from '@/hooks/useDatasetReview';
 
 type TimetableMetadata = {
   filename?: string;
@@ -47,8 +48,6 @@ type PublishResponse = {
   published?: boolean;
 };
 
-const POLL_INTERVAL_MS = 1000;
-
 function TimetableReviewPageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
@@ -56,47 +55,18 @@ function TimetableReviewPageContent() {
 
   const timetablesListUrl = `/publish/org/${orgId}/dataset/timetable`;
 
-  const [statusData, setStatusData] = useState<TimetableReviewStatusResponse | null>(null);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const {
+    statusData,
+    processingProgress,
+    isInitialLoading,
+    errorMessage,
+    setErrorMessage,
+  } = useDatasetReview<TimetableReviewStatusResponse>(
+    datasetId,
+    `/api/publish/timetables/review-status/${orgId}/${datasetId}/`,
+  );
   const [isPublishing, setIsPublishing] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    const fetchStatus = async () => {
-      try {
-        const data = await api.get<TimetableReviewStatusResponse>(
-          `/api/timetables/review-status/${orgId}/${datasetId}/`,
-        );
-
-        if (!isCancelled) {
-          setStatusData(data);
-          setErrorMessage('');
-          setIsInitialLoading(false);
-        }
-
-        if (!data.loading && intervalId) {
-          clearInterval(intervalId);
-        }
-      } catch (error) {
-        if (!isCancelled) {
-          const message = error instanceof Error ? error.message : 'Unable to check processing status.';
-          setErrorMessage(message);
-          setIsInitialLoading(false);
-        }
-      }
-    };
-
-    const intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
-    fetchStatus();
-
-    return () => {
-      isCancelled = true;
-      clearInterval(intervalId);
-    };
-  }, [datasetId, orgId]);
 
   const handlePublish = async () => {
     if (isPublishing) {
@@ -107,7 +77,7 @@ function TimetableReviewPageContent() {
     setErrorMessage('');
 
     try {
-      const data = await api.post<PublishResponse>(`/api/timetables/publish/${orgId}/${datasetId}/`);
+      const data = await api.post<PublishResponse>(`/api/publish/timetables/publish/${orgId}/${datasetId}/`);
       globalThis.location.href = data.redirect || timetablesListUrl;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'An error occurred while publishing.';
@@ -117,7 +87,10 @@ function TimetableReviewPageContent() {
   };
 
   const loading = statusData?.loading ?? true;
-  const progress = Math.max(0, Math.min(100, statusData?.progress ?? 0));
+  const progress = Math.max(
+    0,
+    Math.min(100, statusData?.progress ?? processingProgress),
+  );
 
   return (
     <div className="govuk-width-container">

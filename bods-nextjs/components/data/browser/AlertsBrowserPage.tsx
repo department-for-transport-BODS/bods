@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
 import { HOSTS } from '@/config';
+import { dataApiPath } from '@/lib/api-paths';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
 
@@ -126,7 +127,7 @@ function AlertsBrowserPageInner({
       try {
         setIsLoading(true);
         setError('');
-        const data = await api.get<unknown>(`${endpointPath}?limit=500`);
+        const data = await api.get<unknown>(`${dataApiPath(endpointPath)}?limit=500`);
         const record = asRecord(data);
         const list = Array.isArray(record.results)
           ? record.results
@@ -178,7 +179,7 @@ function AlertsBrowserPageInner({
       <div className="govuk-width-container">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: HOSTS.root },
+            { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Find Bus Open Data', href: '/' },
             { label: 'Browse', href: '/data' },
             { label: breadcrumbLabel, current: true },

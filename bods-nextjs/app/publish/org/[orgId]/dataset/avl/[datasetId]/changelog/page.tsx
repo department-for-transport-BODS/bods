@@ -46,7 +46,7 @@ function AvlChangelogContent() {
   const baseChangelogUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/changelog`;
 
   const loadChangelog = useCallback(
-    () => api.get<ChangelogResponse>(`/api/avl/changelog/${orgId}/${datasetId}/?page=${page}`),
+    () => api.get<ChangelogResponse>(`/api/publish/avl/changelog/${orgId}/${datasetId}/?page=${page}`),
     [datasetId, orgId, page],
   );
 

@@ -104,7 +104,7 @@ describe('Timetable - Publish - Page', () => {
     await waitFor(() => expect(api.post).toHaveBeenCalled());
     const submittedFormData = (api.post as jest.Mock).mock.calls[0][1] as FormData;
 
-    expect(api.post).toHaveBeenCalledWith('/api/timetables/create/123/', expect.any(FormData));
+    expect(api.post).toHaveBeenCalledWith('/api/publish/timetables/create/123/', expect.any(FormData));
     expect(submittedFormData.get('description')).toBe('A useful timetable');
     expect(submittedFormData.get('short_description')).toBe('Timetable');
     expect(submittedFormData.get('selected_item')).toBe(expectedSelectedItem);

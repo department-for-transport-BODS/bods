@@ -68,6 +68,11 @@ describe('AvlReviewPageContent', () => {
     jest.clearAllMocks();
     mockUseParams.mockReturnValue(mockParams);
     mockUseSearchParams.mockReturnValue(new URLSearchParams());
+    mockApiGet.mockImplementation((path: string) => Promise.resolve(
+      path.includes('/progress/')
+        ? { progress: 100, status: 'success' }
+        : mockReviewResponse,
+    ));
     jest.useFakeTimers();
   });
 
@@ -76,11 +81,7 @@ describe('AvlReviewPageContent', () => {
   });
 
   it('renders loading state on initial load', () => {
-    mockApiGet.mockResolvedValue({
-      ...mockReviewResponse,
-      loading: true,
-      progress: 0,
-    });
+    mockApiGet.mockReturnValue(new Promise(() => undefined));
 
     render(<AvlReviewPageContent isUpdate={false} />);
 
@@ -88,11 +89,7 @@ describe('AvlReviewPageContent', () => {
   });
 
   it('displays progress percentage', async () => {
-    mockApiGet.mockResolvedValue({
-      ...mockReviewResponse,
-      loading: true,
-      progress: 75,
-    });
+    mockApiGet.mockResolvedValue({ progress: 75, status: 'pending' });
 
     render(<AvlReviewPageContent isUpdate={false} />);
 
@@ -102,26 +99,19 @@ describe('AvlReviewPageContent', () => {
   });
 
   it('fetches status on mount', async () => {
-    mockApiGet.mockResolvedValue({
-      ...mockReviewResponse,
-      loading: false,
-    });
-
     render(<AvlReviewPageContent isUpdate={false} />);
 
     await waitFor(() => {
       expect(mockApiGet).toHaveBeenCalledWith(
-        expect.stringMatching(/^\/api\/avl\/review-status\/org-123\/dataset-456\/\?t=\d+$/),
+        '/api/publish/dataset/dataset-456/progress/',
+      );
+      expect(mockApiGet).toHaveBeenCalledWith(
+        '/api/publish/avl/review-status/org-123/dataset-456/',
       );
     });
   });
 
   it('shows consent checkbox when processing is complete', async () => {
-    mockApiGet.mockResolvedValue({
-      ...mockReviewResponse,
-      loading: false,
-    });
-
     render(<AvlReviewPageContent isUpdate={false} />);
 
     await waitFor(() => {
@@ -130,11 +120,6 @@ describe('AvlReviewPageContent', () => {
   });
 
   it('validates consent before publishing', async () => {
-    mockApiGet.mockResolvedValue({
-      ...mockReviewResponse,
-      loading: false,
-    });
-
     render(<AvlReviewPageContent isUpdate={false} />);
 
     await waitFor(() => {
@@ -147,11 +132,6 @@ describe('AvlReviewPageContent', () => {
   });
 
   it('displays error when publish fails', async () => {
-    mockApiGet.mockResolvedValue({
-      ...mockReviewResponse,
-      loading: false,
-    });
-
     mockApiPost.mockRejectedValue(new Error('Network error'));
 
     render(<AvlReviewPageContent isUpdate={false} />);
@@ -165,11 +145,11 @@ describe('AvlReviewPageContent', () => {
   });
 
   it('displays review error message when status has error', async () => {
-    mockApiGet.mockResolvedValue({
-      ...mockReviewResponse,
-      loading: false,
-      error: 'Invalid data format',
-    });
+    mockApiGet.mockImplementation((path: string) => Promise.resolve(
+      path.includes('/progress/')
+        ? { progress: 100, status: 'error' }
+        : { ...mockReviewResponse, error: 'Invalid data format' },
+    ));
 
     render(<AvlReviewPageContent isUpdate={false} />);
 
@@ -179,11 +159,6 @@ describe('AvlReviewPageContent', () => {
   });
 
   it('clears errors when consent is unchecked', async () => {
-    mockApiGet.mockResolvedValue({
-      ...mockReviewResponse,
-      loading: false,
-    });
-
     render(<AvlReviewPageContent isUpdate={false} />);
 
     await waitFor(() => {
@@ -210,11 +185,6 @@ describe('AvlReviewPageContent', () => {
   });
 
   it('renders for update mode', async () => {
-    mockApiGet.mockResolvedValue({
-      ...mockReviewResponse,
-      loading: false,
-    });
-
     render(<AvlReviewPageContent isUpdate={true} />);
 
     await waitFor(() => {
@@ -224,11 +194,6 @@ describe('AvlReviewPageContent', () => {
   });
 
   it('shows edit links for description fields in update review mode', async () => {
-    mockApiGet.mockResolvedValue({
-      ...mockReviewResponse,
-      loading: false,
-    });
-
     render(<AvlReviewPageContent isUpdate />);
 
     await waitFor(() => {

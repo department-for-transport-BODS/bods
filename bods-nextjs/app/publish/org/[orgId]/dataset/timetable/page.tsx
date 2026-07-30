@@ -89,7 +89,7 @@ function TimetablePublish() {
       }
 
       const response = await api.post<{ redirect?: string }>(
-        `/api/timetables/create/${orgId}/`,
+        `/api/publish/timetables/create/${orgId}/`,
         formData,
       );
 

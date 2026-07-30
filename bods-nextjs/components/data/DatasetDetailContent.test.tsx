@@ -26,7 +26,6 @@ jest.mock('./RouteMap', () => ({
 jest.mock('@/config', () => ({
   config: {
     mapboxToken: 'test-mapbox-token',
-    djangoApiUrl: 'http://localhost:8000',
   },
 }));
 

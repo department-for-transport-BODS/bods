@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { config } from '@/config';
+import { config, HOSTS } from '@/config';
 import { AvlUploadFields, PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
@@ -30,10 +30,8 @@ export function AVLUpdatePageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
-  const djangoApiBaseUrl = config.djangoApiBaseUrl;
-  const djangoPublishBaseUrl = djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
-  const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
-  const contactSupportUrl = `${djangoApiBaseUrl}/contact/`;
+  const supportBusOperatorsUrl = `${HOSTS.publish}/guidance/operator-requirements/`;
+  const contactSupportUrl = `${HOSTS.www}/contact/`;
   const reviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`;
 
   const [step, setStep] = useState<Step>('comment');
@@ -62,7 +60,7 @@ export function AVLUpdatePageContent() {
 
     const loadExistingDraft = async () => {
       try {
-        const response = await fetch(`/api/avl/update-context/${orgId}/${datasetId}/`, {
+        const response = await fetch(`/api/publish/avl/update-context/${orgId}/${datasetId}/`, {
           credentials: 'include',
         });
         if (!response.ok || cancelled) {
@@ -129,7 +127,7 @@ export function AVLUpdatePageContent() {
         headers.set('X-CSRFToken', csrfToken);
       }
 
-      const response = await fetch(`/api/avl/update/${orgId}/${datasetId}/`, {
+      const response = await fetch(`/api/publish/avl/update/${orgId}/${datasetId}/`, {
         method: 'POST',
         body: formData,
         headers,

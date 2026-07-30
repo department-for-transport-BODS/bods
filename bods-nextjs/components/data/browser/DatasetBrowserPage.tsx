@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
 import { HOSTS } from '@/config';
+import { dataApiPath } from '@/lib/api-paths';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
@@ -125,7 +126,9 @@ function DatasetBrowserPageInner({
       try {
         setIsLoading(true);
         setError('');
-        const data = await api.get<ApiPaginated<BrowserDatasetItem>>(`${endpointPath}?limit=500`);
+        const data = await api.get<ApiPaginated<BrowserDatasetItem>>(
+          `${dataApiPath(endpointPath)}?limit=500`,
+        );
         setRawDatasets(Array.isArray(data.results) ? data.results : []);
       } catch {
         setError('Failed to load datasets');
@@ -219,7 +222,7 @@ function DatasetBrowserPageInner({
       <div className="govuk-width-container">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: HOSTS.root },
+            { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Find Bus Open Data', href: '/' },
             { label: 'Browse', href: '/data' },
             { label: breadcrumbLabel, current: true },

@@ -23,7 +23,7 @@ export function AVLUpdateCancelContent() {
 
     const resolveConfirmUrl = async () => {
       try {
-        const detail = await api.get<{ status?: string }>(`/api/avl/detail/${orgId}/${datasetId}/`);
+        const detail = await api.get<{ status?: string }>(`/api/publish/avl/detail/${orgId}/${datasetId}/`);
 
         if (!isCancelled) {
           setConfirmUrl(DRAFT_LIKE_STATUSES.has(detail.status ?? '') ? reviewUrl : detailUrl);

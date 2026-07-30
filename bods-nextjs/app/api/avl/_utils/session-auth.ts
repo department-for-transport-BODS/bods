@@ -1,4 +1,5 @@
 import type { NextRequest } from 'next/server';
+import { HOSTS } from '@/config';
 
 export function getSessionHeaders(request: NextRequest, options?: { includeCsrf?: boolean }): Headers {
   const headers = new Headers();
@@ -14,6 +15,10 @@ export function getSessionHeaders(request: NextRequest, options?: { includeCsrf?
       headers.set('X-CSRFToken', csrfHeader);
     }
   }
+
+  const publishHost = new URL(HOSTS.publish).host;
+  headers.set('host', publishHost);
+  headers.set('x-forwarded-host', publishHost);
 
   return headers;
 }

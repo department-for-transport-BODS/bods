@@ -25,7 +25,7 @@ function FaresDeactivatePageContent() {
       const data = await api.post<{
         deactivated?: boolean;
         dataset_name?: string;
-      }>(`/api/fares/deactivate/${orgId}/${datasetId}/`);
+      }>(`/api/publish/fares/deactivate/${orgId}/${datasetId}/`);
 
       const successUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/deactivate/success?name=${encodeURIComponent(data.dataset_name || '')}`;
       globalThis.location.href = successUrl;

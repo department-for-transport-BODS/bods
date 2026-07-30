@@ -21,7 +21,7 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { config } from '@/config';
+import { dataApiPath } from '@/lib/api-paths';
 import styles from './StopMap.module.css';
 
 export interface StopMapProps {
@@ -87,7 +87,7 @@ function getPointCoordinates(geometry: { type: string; coordinates?: unknown }):
 export function StopMap({
   revisionId,
   stops,
-  apiRoot = config.djangoApiUrl,
+  apiRoot,
   mapboxToken,
   onStopClick,
   ariaLabel = 'Interactive map showing bus stop locations',
@@ -170,7 +170,9 @@ export function StopMap({
     if (!map.current || !revisionId) return;
 
     try {
-      const url = `${apiRoot}/api/v1/stoppoint/?revision=${revisionId}`;
+      const path = '/api/v1/stoppoint/';
+      const endpoint = apiRoot ? `${apiRoot}${path}` : dataApiPath(path);
+      const url = `${endpoint}?revision=${revisionId}`;
       const response = await fetch(url);
 
       if (!response.ok) {

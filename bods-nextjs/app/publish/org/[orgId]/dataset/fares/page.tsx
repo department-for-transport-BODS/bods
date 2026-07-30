@@ -81,7 +81,7 @@ function FaresPublish() {
       setError('');
 
       try {
-        const data = await api.get<FaresListResponse>(`/api/fares/list/${orgId}/?tab=${tab}`);
+        const data = await api.get<FaresListResponse>(`/api/publish/fares/list/${orgId}/?tab=${tab}`);
 
         if (!isCancelled) {
           setDatasets(Array.isArray(data.results) ? data.results : []);

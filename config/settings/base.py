@@ -95,6 +95,11 @@ ALLOWED_HOSTS += [
     f"{ADMIN_SUBDOMAIN}.{PARENT_HOST}",
 ]
 
+CSRF_TRUSTED_ORIGINS = env.list(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    default=[f"https://{ROOT_SUBDOMAIN}.{PARENT_HOST}"],
+)
+
 # https://github.com/ottoyiu/django-cors-headers#cors_origin_whitelist
 CORS_ORIGIN_REGEX_WHITELIST = (
     rf"^(https?://)?([\w-]+\.)?{PARENT_HOST}(:{HOST_PORT})?$",

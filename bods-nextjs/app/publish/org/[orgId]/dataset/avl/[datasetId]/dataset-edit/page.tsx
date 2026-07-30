@@ -49,7 +49,7 @@ function AvlDatasetEditContent() {
       setSubmitError('');
 
       try {
-        const response = await fetch(`/api/avl/dataset-edit/${orgId}/${datasetId}/`, {
+        const response = await fetch(`/api/publish/avl/dataset-edit/${orgId}/${datasetId}/`, {
           credentials: 'include',
         });
 
@@ -103,7 +103,7 @@ function AvlDatasetEditContent() {
       formData.set('short_description', shortDescription);
 
       const csrfToken = getCsrfToken();
-      const response = await fetch(`/api/avl/dataset-edit/${orgId}/${datasetId}/save/`, {
+      const response = await fetch(`/api/publish/avl/dataset-edit/${orgId}/${datasetId}/save/`, {
         method: 'POST',
         body: formData,
         credentials: 'include',

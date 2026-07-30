@@ -8,7 +8,7 @@ export default function DataBrowsePage() {
       <div className="govuk-width-container">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: HOSTS.root },
+            { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Find Bus Open Data', href: '/' },
             { label: 'Browse', current: true },
           ]}
