@@ -1,13 +1,13 @@
 import logging
 from datetime import timedelta
 from django.conf import settings
+from django.http import Http404
 
 import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
-
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from transit_odp.api.views.avl import _get_consumer_api_response
 from transit_odp.avl.models import CAVLValidationTaskResult
 from transit_odp.organisation.constants import DatasetType
@@ -23,9 +23,17 @@ COMPLETED = 100
 
 
 class ProgressAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get_object(self, pk):
         """Get a dataset revision object from a dataset id."""
-        return DatasetRevision.objects.filter(dataset_id=pk).latest()
+        try:
+            return DatasetRevision.objects.filter(
+                dataset_id=pk,
+                dataset__organisation__in=self.request.user.organisations.all(),
+            ).latest()
+        except DatasetRevision.DoesNotExist as exc:
+            raise Http404 from exc
 
     def get_avl_progress(self, revision):
         """Get the progress of a currently processing AVL datafeed."""
