@@ -14,6 +14,7 @@ from transit_odp.avl.views.api import (
     get_avl_changelog_api,
     get_avl_dataset_edit_api,
     get_avl_review_status_api,
+    get_avl_update_context_api,
     get_avl_feed_detail_api,
     list_avl_datasets_api,
     publish_avl_dataset_api,
@@ -73,6 +74,11 @@ urlpatterns = [
         "api/avl/review-status/<int:pk1>/<int:pk>/",
         get_avl_review_status_api,
         name="nextjs-avl-review-status",
+    ),
+    path(
+        "api/avl/update-context/<int:pk1>/<int:pk>/",
+        get_avl_update_context_api,
+        name="nextjs-avl-update-context",
     ),
     path(
         "api/avl/requires-attention/<int:pk1>/",

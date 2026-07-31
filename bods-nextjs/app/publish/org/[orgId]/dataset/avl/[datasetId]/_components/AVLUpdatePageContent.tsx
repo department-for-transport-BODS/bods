@@ -62,7 +62,7 @@ export function AVLUpdatePageContent() {
 
     const loadExistingDraft = async () => {
       try {
-        const response = await fetch(`/api/avl/review-status/${orgId}/${datasetId}/`, {
+        const response = await fetch(`/api/avl/update-context/${orgId}/${datasetId}/`, {
           credentials: 'include',
         });
         if (!response.ok || cancelled) {

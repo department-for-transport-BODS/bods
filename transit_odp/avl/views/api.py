@@ -88,6 +88,16 @@ def _get_dataset_for_org(org_id, dataset_id):
     )
 
 
+def _get_or_create_update_revision(dataset):
+    revision = DatasetRevision.objects.filter(
+        dataset=dataset, is_published=False
+    ).first()
+    if revision is None:
+        revision = dataset.start_revision()
+        revision.url_link = ""
+    return revision
+
+
 def _get_request_context(request, org_id, dataset_id=None):
     user = _authenticate_user(request)
     if user is None or not user.is_authenticated:
@@ -236,14 +246,44 @@ def get_avl_review_status_api(request, pk1, pk):
             "shortDescription": revision.short_description,
             "comment": revision.comment,
             "urlLink": revision.url_link,
-            "username": revision.username,
-            "password": revision.password,
             "requestorRef": revision.requestor_ref,
             "ownerName": revision.dataset.organisation.name,
             "siriVersion": schema_version,
             "lastModified": _iso_or_none(revision.modified),
             "lastModifiedUser": last_modified_user,
             "error": error,
+        },
+        status=200,
+    )
+
+
+@require_GET
+def get_avl_update_context_api(request, pk1, pk):
+    user = _authenticate_user(request)
+    if user is None or not user.is_authenticated:
+        return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+
+    if not user.is_org_user:
+        return JsonResponse({"error": ORG_ACCESS_REQUIRED_ERROR}, status=403)
+
+    organisation = _get_user_org(user, pk1)
+    if organisation is None:
+        return JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404)
+
+    dataset = _get_dataset_for_org(organisation.id, pk)
+    if dataset is None:
+        return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
+
+    revision = _get_or_create_update_revision(dataset)
+
+    return JsonResponse(
+        {
+            "datasetId": dataset.id,
+            "urlLink": revision.url_link or "",
+            "username": revision.username or "",
+            "password": revision.password or "",
+            "requestorRef": revision.requestor_ref or "",
+            "comment": revision.comment or "",
         },
         status=200,
     )
@@ -315,12 +355,7 @@ def update_avl_dataset_api(request, pk1, pk):
     if dataset is None:
         return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
 
-    revision = DatasetRevision.objects.filter(
-        dataset=dataset, is_published=False
-    ).first()
-    if revision is None:
-        revision = dataset.start_revision()
-        revision.url_link = ""
+    revision = _get_or_create_update_revision(dataset)
 
     comment_form = AVLFeedCommentForm(
         data=request.POST, instance=revision, is_update=True
