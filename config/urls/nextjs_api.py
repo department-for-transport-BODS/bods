@@ -24,6 +24,7 @@ from transit_odp.fares.views.api import (
     publish_fares_dataset_api,
     update_fares_dataset_api,
 )
+from transit_odp.publish.views.api import ProgressAPIView
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
     get_timetables_review_status_api,
@@ -32,6 +33,11 @@ from transit_odp.timetables.views.api import (
 
 urlpatterns = [
     path("auth/", include("config.urls.session_auth_api")),
+    path(
+        "dataset/<int:pk>/progress/",
+        ProgressAPIView.as_view(),
+        name="nextjs-dataset-progress",
+    ),
     path(
         "organisations/",
         CurrentUserOrganisationsAPIView.as_view(),
