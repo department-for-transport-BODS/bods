@@ -171,7 +171,13 @@ describe('AvlFeedDetailActions', () => {
       />
     );
 
-    expect(screen.getByRole('button', { name: /Update data feed/i })).toBeInTheDocument();
+    const updateButton = screen.getByRole('button', { name: /Update data feed/i });
+    expect(updateButton).toBeInTheDocument();
+    expect(updateButton).toHaveAttribute(
+      'href',
+      '/publish/org/org-123/dataset/avl/dataset-456/review'
+    );
+    expect(screen.queryByRole('button', { name: /Deactivate data feed/i })).not.toBeInTheDocument();
   });
 
   it('renders both buttons for awaiting review feeds', () => {

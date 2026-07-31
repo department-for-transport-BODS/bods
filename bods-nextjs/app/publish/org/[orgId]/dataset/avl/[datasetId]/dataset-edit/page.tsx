@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DatasetDescriptionFields } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
@@ -19,11 +19,19 @@ interface DatasetEditResponse {
 
 function AvlDatasetEditContent() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
   const detailUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}`;
   const listUrl = `/publish/org/${orgId}/dataset/avl`;
-  const editUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/dataset-edit`;
+  const modeParam = searchParams.get('mode');
+  const editMode = modeParam === 'revision' ? 'revision' : 'live';
+  const redirectParam = searchParams.get('redirect');
+  const hasReturnUrl = Boolean(redirectParam && redirectParam.startsWith('/publish/'));
+  const returnUrl = hasReturnUrl ? redirectParam as string : detailUrl;
+  const editUrl = hasReturnUrl
+    ? `/publish/org/${orgId}/dataset/avl/${datasetId}/dataset-edit?mode=${editMode}&redirect=${encodeURIComponent(returnUrl)}`
+    : `/publish/org/${orgId}/dataset/avl/${datasetId}/dataset-edit?mode=${editMode}`;
 
   const [feedName, setFeedName] = useState('');
   const [description, setDescription] = useState('');
@@ -74,7 +82,7 @@ function AvlDatasetEditContent() {
     return () => {
       cancelled = true;
     };
-  }, [datasetId, orgId]);
+  }, [datasetId, editMode, orgId]);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -134,6 +142,12 @@ function AvlDatasetEditContent() {
         return;
       }
 
+      if (hasReturnUrl) {
+        const separator = returnUrl.includes('?') ? '&' : '?';
+        globalThis.location.href = `${returnUrl}${separator}refresh=${Date.now()}`;
+        return;
+      }
+
       globalThis.location.href = data.redirect || detailUrl;
     } catch {
       setSubmitError('An error occurred while saving. Please try again.');
@@ -166,7 +180,7 @@ function AvlDatasetEditContent() {
             <h2 className="govuk-error-summary__title">Unable to load edit page</h2>
             <div className="govuk-error-summary__body">
               <p className="govuk-body">{submitError}</p>
-              <Link className="govuk-link" href={detailUrl}>
+              <Link className="govuk-link" href={returnUrl}>
                 Back to feed details
               </Link>
             </div>
@@ -234,7 +248,7 @@ function AvlDatasetEditContent() {
                 <button type="submit" className="govuk-button" disabled={isSubmitting}>
                   {isSubmitting ? 'Saving...' : 'Save and continue'}
                 </button>
-                <Link role="button" className="govuk-button govuk-button--secondary" href={detailUrl}>
+                <Link role="button" className="govuk-button govuk-button--secondary" href={returnUrl}>
                   Cancel
                 </Link>
               </div>

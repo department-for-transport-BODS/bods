@@ -16,6 +16,16 @@ const nextConfig: NextConfig = {
 
   async rewrites() {
     return [
+      // Download/report routes - must be handled by Next.js handlers, not proxied
+      {
+        source: '/api/avl/consumer-feedback/:path*',
+        destination: '/api/avl/consumer-feedback/:path*',
+      },
+      {
+        source: '/api/avl/consumer-interactions/:path*',
+        destination: '/api/avl/consumer-interactions/:path*',
+      },
+      // Proxy everything else in /api/ to Django
       {
         source: '/api/:path*/',
         destination: `${djangoOrigin}/api/:path*/`,

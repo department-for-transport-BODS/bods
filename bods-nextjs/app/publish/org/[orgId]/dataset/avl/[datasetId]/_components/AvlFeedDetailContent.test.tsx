@@ -8,10 +8,14 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { AvlFeedDetailContent, type AvlFeedDetail } from './AvlFeedDetailContent';
 
 const mockUseParams = jest.fn();
+const mockReplace = jest.fn();
 const mockApiGet = jest.fn();
 
 jest.mock('next/navigation', () => ({
   useParams: () => mockUseParams(),
+  useRouter: () => ({
+    replace: mockReplace,
+  }),
 }));
 
 jest.mock('@/lib/api-client', () => ({
@@ -228,7 +232,7 @@ describe('AvlFeedDetailContent', () => {
     expect(screen.getByTestId('feed-actions')).toHaveTextContent('published');
   });
 
-  it('renders draft feed correctly', async () => {
+  it('redirects draft feed to review page', async () => {
     const draftFeed = {
       ...mockFeedDetail,
       status: 'draft',
@@ -239,7 +243,7 @@ describe('AvlFeedDetailContent', () => {
     render(<AvlFeedDetailContent />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('feed-actions')).toHaveTextContent('draft');
+      expect(mockReplace).toHaveBeenCalledWith('/publish/org/org-123/dataset/avl/dataset-456/review');
     });
   });
 

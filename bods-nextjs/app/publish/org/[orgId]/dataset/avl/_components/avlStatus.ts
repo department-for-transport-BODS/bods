@@ -3,6 +3,9 @@ export type AvlStatus =
   | 'published'
   | 'success'
   | 'draft'
+  | 'inactive'
+  | 'expired'
+  | 'archived'
   | 'indexing'
   | 'pending'
   | 'processing'
@@ -24,6 +27,9 @@ const STATUS_META: Record<AvlStatus, StatusMeta> = {
   published: { label: 'Published', indicator: 'status-indicator--success' },
   success: { label: 'Draft', indicator: 'status-indicator--draft' },
   draft: { label: 'Draft', indicator: 'status-indicator--draft' },
+  inactive: { label: 'Inactive', indicator: 'status-indicator--inactive' },
+  expired: { label: 'Inactive', indicator: 'status-indicator--inactive' },
+  archived: { label: 'Inactive', indicator: 'status-indicator--inactive' },
   indexing: { label: 'Processing', indicator: 'status-indicator--indexing' },
   pending: { label: 'Processing', indicator: 'status-indicator--indexing' },
   processing: { label: 'Processing', indicator: 'status-indicator--indexing' },

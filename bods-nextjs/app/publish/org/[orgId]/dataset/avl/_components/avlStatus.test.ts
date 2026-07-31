@@ -20,6 +20,18 @@ describe('avlStatus utilities', () => {
       expect(statusIndicatorClass('draft')).toBe('status-indicator--draft');
     });
 
+    it('returns inactive class for "inactive" status', () => {
+      expect(statusIndicatorClass('inactive')).toBe('status-indicator--inactive');
+    });
+
+    it('returns inactive class for "expired" status', () => {
+      expect(statusIndicatorClass('expired')).toBe('status-indicator--inactive');
+    });
+
+    it('returns inactive class for "archived" status', () => {
+      expect(statusIndicatorClass('archived')).toBe('status-indicator--inactive');
+    });
+
     it('returns error class for "error" status', () => {
       expect(statusIndicatorClass('error')).toBe('status-indicator--error');
     });
@@ -62,6 +74,18 @@ describe('avlStatus utilities', () => {
       expect(statusLabel('draft')).toBe('Draft');
     });
 
+    it('returns "Inactive" for "inactive" status', () => {
+      expect(statusLabel('inactive')).toBe('Inactive');
+    });
+
+    it('returns "Inactive" for "expired" status', () => {
+      expect(statusLabel('expired')).toBe('Inactive');
+    });
+
+    it('returns "Inactive" for "archived" status', () => {
+      expect(statusLabel('archived')).toBe('Inactive');
+    });
+
     it('returns "Draft" for "success" status', () => {
       expect(statusLabel('success')).toBe('Draft');
     });
@@ -88,8 +112,7 @@ describe('avlStatus utilities', () => {
     });
 
     it('returns default label for arbitrary unknown status', () => {
-      expect(statusLabel('archived')).toBe('Draft');
-      expect(statusLabel('inactive')).toBe('Draft');
+      expect(statusLabel('unknown_status')).toBe('Draft');
     });
   });
 });
