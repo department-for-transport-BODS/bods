@@ -1,25 +1,48 @@
-import { expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 
 export async function login(page: Page, baseUrl: string, username: string, password: string): Promise<void> {
-  await page.goto(`${baseUrl}/account/login/`, { waitUntil: 'domcontentloaded' });
+  const csrfResponse = await page.request.get(`${baseUrl}/api/auth/csrf/`);
+  const csrfBody = (await csrfResponse.text().catch(() => '')).trim();
 
-  // Prefer accessible locators so auth is resilient to form markup changes.
-  await page.getByLabel(/email/i).fill(username);
-  await page.getByLabel(/password/i).fill(password);
-  await page.getByRole('button', { name: /sign in/i }).click();
-  await page.waitForLoadState('networkidle');
-
-  const stillOnLogin = /\/account\/login\/?$/.test(page.url());
-  if (stillOnLogin) {
-    const throttleMessage = page.getByText(/Request was throttled/i);
-    if (await throttleMessage.isVisible()) {
-      const details = (await throttleMessage.textContent())?.trim() || 'Request was throttled.';
-      throw new Error(
-        `Login throttled by the service: ${details} Re-run after the throttle window or reuse an existing auth session.`,
-      );
-    }
+  if (!csrfResponse.ok()) {
+    const details = csrfBody || '<empty response body>';
+    throw new Error(`CSRF bootstrap failed: ${csrfResponse.status()} ${details}`);
   }
 
-  // Login page remains if auth fails.
-  await expect(page).not.toHaveURL(/\/account\/login\/?$/);
+  let csrfToken = '';
+  try {
+    const parsed = JSON.parse(csrfBody) as { csrfToken?: string };
+    csrfToken = parsed.csrfToken || '';
+  } catch {
+    csrfToken = '';
+  }
+
+  if (!csrfToken) {
+    throw new Error(`CSRF bootstrap returned no token: ${csrfBody || '<empty response body>'}`);
+  }
+
+  const loginResponse = await page.request.post(`${baseUrl}/api/auth/login/`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken,
+    },
+    data: {
+      email: username,
+      password,
+    },
+  });
+
+  const loginBody = (await loginResponse.text().catch(() => '')).trim();
+  if (!loginResponse.ok()) {
+    const details = loginBody || '<empty response body>';
+    throw new Error(`Login API failed: ${loginResponse.status()} ${details}`);
+  }
+
+  const currentUserResponse = await page.request.get(`${baseUrl}/api/auth/user/`);
+  const currentUserBody = (await currentUserResponse.text().catch(() => '')).trim();
+
+  if (!currentUserResponse.ok()) {
+    const details = currentUserBody || '<empty response body>';
+    throw new Error(`Session verification failed: ${currentUserResponse.status()} ${details}`);
+  }
 }

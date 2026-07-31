@@ -9,6 +9,8 @@ from django.views.decorators.http import require_GET, require_POST
 from django_hosts import reverse
 
 import config.hosts
+from transit_odp.browse.common import get_in_scope_in_season_services_line_level
+from transit_odp.common.constants import FeatureFlags
 from transit_odp.avl.forms import (
     AvlFeedDescriptionForm,
     AvlFeedUploadForm,
@@ -31,8 +33,13 @@ from transit_odp.organisation.models import (
     DatasetRevision,
     Organisation,
 )
+from transit_odp.organisation.models.report import ComplianceReport
+from transit_odp.publish.requires_attention import (
+    get_avl_requires_attention_line_level_data,
+)
 from transit_odp.publish.forms import dataset
 from transit_odp.timetables.tasks import delete_dataset_revision
+from waffle import flag_is_active
 
 
 FIRST_PUBLICATION_COMMENT = "First publication"
@@ -79,6 +86,16 @@ def _get_dataset_for_org(org_id, dataset_id):
         .order_by("-id")
         .first()
     )
+
+
+def _get_or_create_update_revision(dataset):
+    revision = DatasetRevision.objects.filter(
+        dataset=dataset, is_published=False
+    ).first()
+    if revision is None:
+        revision = dataset.start_revision()
+        revision.url_link = ""
+    return revision
 
 
 def _get_request_context(request, org_id, dataset_id=None):
@@ -240,6 +257,38 @@ def get_avl_review_status_api(request, pk1, pk):
     )
 
 
+@require_GET
+def get_avl_update_context_api(request, pk1, pk):
+    user = _authenticate_user(request)
+    if user is None or not user.is_authenticated:
+        return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+
+    if not user.is_org_user:
+        return JsonResponse({"error": ORG_ACCESS_REQUIRED_ERROR}, status=403)
+
+    organisation = _get_user_org(user, pk1)
+    if organisation is None:
+        return JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404)
+
+    dataset = _get_dataset_for_org(organisation.id, pk)
+    if dataset is None:
+        return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
+
+    revision = _get_or_create_update_revision(dataset)
+
+    return JsonResponse(
+        {
+            "datasetId": dataset.id,
+            "urlLink": revision.url_link or "",
+            "username": revision.username or "",
+            "password": revision.password or "",
+            "requestorRef": revision.requestor_ref or "",
+            "comment": revision.comment or "",
+        },
+        status=200,
+    )
+
+
 @require_POST
 def publish_avl_dataset_api(request, pk1, pk):
     user, _, revision, error_response = _get_request_context(request, pk1, pk)
@@ -306,12 +355,7 @@ def update_avl_dataset_api(request, pk1, pk):
     if dataset is None:
         return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
 
-    revision = DatasetRevision.objects.filter(
-        dataset=dataset, is_published=False
-    ).first()
-    if revision is None:
-        revision = dataset.start_revision()
-        revision.url_link = ""
+    revision = _get_or_create_update_revision(dataset)
 
     comment_form = AVLFeedCommentForm(
         data=request.POST, instance=revision, is_update=True
@@ -456,15 +500,85 @@ def list_avl_datasets_api(request, pk1):
     tab = request.GET.get("tab", "active")
     sort_by = request.GET.get("sort_by", "modified")
     order = request.GET.get("order", "desc")
+    page_value = request.GET.get("page", "1")
+
+    try:
+        page_number = max(1, int(page_value))
+    except (TypeError, ValueError):
+        page_number = 1
 
     # Map frontend column names to model fields
     sort_field_map = {
         "status": "live_revision__status",
         "name": "live_revision__name",
+        "id": "id",
         "percent_matching": "percent_matching",
         "avl_feed_last_checked": "avl_feed_last_checked",
+        "short_description": "live_revision__short_description",
         "modified": "modified",
     }
+
+    draft_sort_field_map = {
+        "status": "status",
+        "name": "name",
+        "id": "dataset_id",
+        "avl_feed_last_checked": "dataset__avl_feed_last_checked",
+        "short_description": "short_description",
+        "modified": "modified",
+    }
+
+    if tab == "draft":
+        draft_sort_field = draft_sort_field_map.get(sort_by, "modified")
+        if order != "asc":
+            draft_sort_field = f"-{draft_sort_field}"
+
+        draft_qs = (
+            DatasetRevision.objects.filter(
+                dataset__organisation_id=organisation.id,
+                dataset__dataset_type=DatasetType.AVL.value,
+                is_published=False,
+                is_deleted=False,
+            )
+            .exclude(
+                status__in=[
+                    FeedStatus.inactive.value,
+                    FeedStatus.expired.value,
+                ]
+            )
+            .select_related("dataset", "dataset__live_revision")
+            .order_by(draft_sort_field)
+        )
+
+        draft_results = []
+        for revision in draft_qs:
+            draft_results.append(
+                {
+                    "id": revision.dataset_id,
+                    "name": revision.name or "",
+                    "status": revision.status,
+                    "has_live_revision": revision.dataset.live_revision is not None,
+                    "short_description": revision.short_description or "",
+                    "avl_feed_last_checked": None,
+                    "modified": revision.modified.isoformat()
+                    if revision.modified
+                    else None,
+                }
+            )
+
+        paginator = Paginator(draft_results, 10)
+        page_obj = paginator.get_page(page_number)
+
+        return JsonResponse(
+            {
+                "count": len(draft_results),
+                "page": page_obj.number,
+                "pageSize": 10,
+                "totalPages": paginator.num_pages or 1,
+                "hasNext": page_obj.has_next(),
+                "hasPrevious": page_obj.has_previous(),
+                "results": page_obj.object_list,
+            }
+        )
 
     sort_field = sort_field_map.get(sort_by, "modified")
     if order != "asc":
@@ -481,16 +595,6 @@ def list_avl_datasets_api(request, pk1):
 
     if tab == "active":
         qs = qs.filter(live_revision__status="live")
-    elif tab == "draft":
-        qs = qs.filter(
-            live_revision__status__in=[
-                "success",
-                "draft",
-                "indexing",
-                "pending",
-                "processing",
-            ]
-        )
     elif tab == "archive":
         qs = qs.filter(live_revision__status__in=["inactive", "expired"])
     else:
@@ -518,7 +622,144 @@ def list_avl_datasets_api(request, pk1):
             }
         )
 
-    return JsonResponse({"count": len(results), "results": results})
+    paginator = Paginator(results, 10)
+    page_obj = paginator.get_page(page_number)
+
+    return JsonResponse(
+        {
+            "count": len(results),
+            "page": page_obj.number,
+            "pageSize": 10,
+            "totalPages": paginator.num_pages or 1,
+            "hasNext": page_obj.has_next(),
+            "hasPrevious": page_obj.has_previous(),
+            "results": page_obj.object_list,
+        }
+    )
+
+
+def _get_avl_requires_attention_rows(org_id):
+    is_prefetch_compliance_report = flag_is_active(
+        "", FeatureFlags.PREFETCH_DATABASE_COMPLIANCE_REPORT.value
+    )
+
+    if is_prefetch_compliance_report:
+        return list(
+            ComplianceReport.objects.extra(
+                select={
+                    "licence_number": "otc_licence_number",
+                    "service_code": "registration_number",
+                    "line_number": "service_number",
+                }
+            )
+            .filter(licence_organisation_id=org_id, avl_requires_attention="Yes")
+            .order_by("otc_licence_number", "service_number")
+            .values("licence_number", "service_code", "line_number")
+        )
+
+    return list(get_avl_requires_attention_line_level_data(org_id))
+
+
+@require_GET
+def get_avl_requires_attention_api(request, pk1):
+    user = _authenticate_user(request)
+    if user is None or not user.is_authenticated:
+        return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+
+    if not user.is_org_user:
+        return JsonResponse({"error": ORG_ACCESS_REQUIRED_ERROR}, status=403)
+
+    organisation = _get_user_org(user, pk1)
+    if organisation is None:
+        return JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404)
+
+    q = request.GET.get("q", "").strip()
+    summary_only = request.GET.get("summaryOnly") == "1"
+    page_value = request.GET.get("page", "1")
+
+    try:
+        page_number = max(1, int(page_value))
+    except (TypeError, ValueError):
+        page_number = 1
+
+    is_operator_prefetch_sra_active = flag_is_active(
+        "", FeatureFlags.OPERATOR_PREFETCH_SRA.value
+    )
+
+    rows = _get_avl_requires_attention_rows(organisation.id)
+
+    if is_operator_prefetch_sra_active:
+        org_object = Organisation.objects.filter(id=organisation.id).first()
+        total_inscope = org_object.total_inscope if org_object is not None else 0
+        services_requiring_attention = (
+            org_object.avl_sra if org_object is not None else 0
+        )
+    else:
+        total_inscope = len(get_in_scope_in_season_services_line_level(organisation.id))
+        services_requiring_attention = len(rows)
+
+    try:
+        percentage = round(100 * (services_requiring_attention / total_inscope))
+    except ZeroDivisionError:
+        percentage = 0
+
+    summary = {
+        "available": True,
+        "servicesRequiringAttention": services_requiring_attention,
+        "totalInScopeInSeasonServices": total_inscope,
+        "percentage": percentage,
+    }
+    export_url = f"/api/avl/requires-attention/export?orgId={organisation.id}"
+
+    if summary_only:
+        return JsonResponse(
+            {
+                "summary": summary,
+                "rows": [],
+                "pagination": {"currentPage": 1, "totalPages": 1},
+                "query": "",
+                "noResults": False,
+                "exportUrl": None,
+            },
+            status=200,
+        )
+
+    if q:
+        search = q.lower()
+        rows = [
+            row
+            for row in rows
+            if search in str(row.get("licence_number", "")).lower()
+            or search in str(row.get("service_code", "")).lower()
+            or search in str(row.get("line_number", "")).lower()
+        ]
+
+    paginator = Paginator(rows, 10)
+    page_obj = paginator.get_page(page_number)
+
+    results = [
+        {
+            "licenceNumber": row.get("licence_number", ""),
+            "serviceCode": row.get("service_code", ""),
+            "lineNumber": row.get("line_number", ""),
+        }
+        for row in page_obj.object_list
+    ]
+
+    return JsonResponse(
+        {
+            "summary": summary,
+            "rows": results,
+            "pagination": {
+                "currentPage": page_obj.number,
+                "totalPages": paginator.num_pages or 1,
+            },
+            "query": q,
+            "exportUrl": export_url,
+            "noResults": len(results) == 0,
+        },
+        status=200,
+    )
 
 
 @require_GET

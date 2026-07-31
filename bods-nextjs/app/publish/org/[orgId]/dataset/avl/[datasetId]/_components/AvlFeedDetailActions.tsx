@@ -8,12 +8,16 @@ interface AvlFeedDetailActionsProps {
 }
 
 export function AvlFeedDetailActions({ feedDetail, orgId, datasetId }: AvlFeedDetailActionsProps) {
+  const isDraftStatus = ['draft', 'success', 'indexing', 'pending', 'processing'].includes(feedDetail.status);
+
   // Don't show buttons if dummy or if status is inactive
   if (feedDetail.isDummy || feedDetail.status === 'inactive') {
     return null;
   }
 
-  const updateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
+  const updateUrl = isDraftStatus
+    ? `/publish/org/${orgId}/dataset/avl/${datasetId}/review`
+    : `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
   const deactivateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/archive?name=${encodeURIComponent(
     feedDetail.name,
   )}`;
@@ -23,7 +27,7 @@ export function AvlFeedDetailActions({ feedDetail, orgId, datasetId }: AvlFeedDe
       <Link role="button" className="govuk-button" href={updateUrl}>
         Update data feed
       </Link>
-      {feedDetail.status !== 'expired' && (
+      {feedDetail.status !== 'expired' && !isDraftStatus && (
         <Link role="button" className="govuk-button govuk-button--secondary" href={deactivateUrl}>
           Deactivate data feed
         </Link>

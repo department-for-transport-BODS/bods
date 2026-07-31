@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
@@ -37,8 +37,10 @@ const POLL_INTERVAL_MS = 1000;
 
 export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
   const params = useParams();
+  const searchParams = useSearchParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
+  const refreshToken = searchParams.get('refresh') || '';
 
   const [statusData, setStatusData] = useState<AvlReviewStatusResponse | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -49,6 +51,10 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
 
   const updateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
   const deleteUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/delete`;
+  const reviewUrl = isUpdate
+    ? `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`
+    : `/publish/org/${orgId}/dataset/avl/${datasetId}/review`;
+  const editUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/dataset-edit?mode=revision&redirect=${encodeURIComponent(reviewUrl)}`;
   const djangoApiBaseUrl = config.djangoApiBaseUrl;
   const djangoPublishBaseUrl = djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
   const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
@@ -56,10 +62,14 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
 
   useEffect(() => {
     let isCancelled = false;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
 
     const fetchStatus = async () => {
       try {
-        const data = await api.get<AvlReviewStatusResponse>(`/api/avl/review-status/${orgId}/${datasetId}/`);
+        const data = await api.get<AvlReviewStatusResponse>(
+          `/api/avl/review-status/${orgId}/${datasetId}/?t=${Date.now()}`,
+          { cache: 'no-store' },
+        );
 
         if (!isCancelled) {
           setStatusData(data);
@@ -67,7 +77,7 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
           setIsInitialLoading(false);
         }
 
-        if (!data.loading) {
+        if (!data.loading && intervalId) {
           clearInterval(intervalId);
         }
       } catch {
@@ -78,16 +88,24 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
       }
     };
 
-    const intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
+    const refreshStatus = () => {
+      void fetchStatus();
+    };
+
+    intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
     fetchStatus();
+    window.addEventListener('pageshow', refreshStatus);
+    window.addEventListener('focus', refreshStatus);
 
     return () => {
       isCancelled = true;
       if (intervalId) {
         clearInterval(intervalId);
       }
+      window.removeEventListener('pageshow', refreshStatus);
+      window.removeEventListener('focus', refreshStatus);
     };
-  }, [datasetId, orgId]);
+  }, [datasetId, orgId, refreshToken]);
 
   const handlePublish = async () => {
     if (isPublishing) {
@@ -124,15 +142,23 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
 
   return (
     <div className="govuk-width-container">
+      <div className="govuk-breadcrumbs">
+        <PublishStepper
+          steps={[
+            { label: isUpdate ? '1. Comment' : '1. Describe data', state: 'previous' },
+            { label: isUpdate ? '2. Update' : '2. Provide data', state: 'previous' },
+            { label: '3. Review and publish', state: 'selected' },
+          ]}
+        />
+      </div>
+
       <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <PublishStepper
-            steps={[
-              { label: isUpdate ? '1. Add update comment' : '1. Describe your data feed', state: 'previous' },
-              { label: '2. Provide your data', state: 'previous' },
-              { label: '3. Review and publish', state: 'selected' },
-            ]}
-          />
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds">
+            <h1 className="govuk-heading-xl dont-break-out govuk-!-padding-top-3 govuk-!-padding-bottom-3 govuk-!-margin-bottom-4">
+              Review and publish
+            </h1>
+          </div>
         </div>
 
         <ErrorSummary
@@ -144,7 +170,6 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
           dataModule="govuk-error-summary"
         />
 
-        <h1 className="govuk-heading-l">Review and publish</h1>
         <hr className="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
 
         <div className="govuk-grid-row">
@@ -172,20 +197,22 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                 {!reviewErrorMessage && (
                   <div className="govuk-!-margin-bottom-6">
                     <div className="govuk-form-group">
-                      <div className="govuk-checkboxes__item">
-                        <input
-                          className="govuk-checkboxes__input"
-                          id="id_has_reviewed"
-                          type="checkbox"
-                          checked={hasReviewed}
-                          onChange={(event) => {
-                            setHasReviewed(event.target.checked);
-                            setErrors({});
-                          }}
-                        />
-                        <label className="govuk-label govuk-checkboxes__label" htmlFor="id_has_reviewed">
-                          I have reviewed the data and wish to publish my data
-                        </label>
+                      <div className="govuk-checkboxes govuk-checkboxes--small">
+                        <div className="govuk-checkboxes__item">
+                          <input
+                            className="govuk-checkboxes__input"
+                            id="id_has_reviewed"
+                            type="checkbox"
+                            checked={hasReviewed}
+                            onChange={(event) => {
+                              setHasReviewed(event.target.checked);
+                              setErrors({});
+                            }}
+                          />
+                          <label className="govuk-label govuk-checkboxes__label" htmlFor="id_has_reviewed">
+                            I have reviewed the data and wish to publish my data
+                          </label>
+                        </div>
                       </div>
                       {errors.consent && <p className="govuk-error-message">{errors.consent}</p>}
                     </div>
@@ -195,7 +222,7 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                       disabled={!hasReviewed || isPublishing}
                       onClick={handlePublish}
                     >
-                      {isPublishing ? 'Publishing...' : 'Publish data feed'}
+                      {isPublishing ? 'Publishing...' : 'Publish data'}
                     </button>
                   </div>
                 )}
@@ -234,11 +261,25 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Description</th>
-                      <td className="govuk-table__cell">{statusData?.description || '-'}</td>
+                      <td className="govuk-table__cell">
+                        <div className="flex-between">
+                          <span className="dont-break-out">{statusData?.description || '-'}</span>
+                          <Link className="govuk-link" href={editUrl}>
+                            Edit
+                          </Link>
+                        </div>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Short description</th>
-                      <td className="govuk-table__cell dont-break-out">{statusData?.shortDescription || '-'}</td>
+                      <td className="govuk-table__cell dont-break-out">
+                        <div className="flex-between">
+                          <span>{statusData?.shortDescription || '-'}</span>
+                          <Link className="govuk-link" href={editUrl}>
+                            Edit
+                          </Link>
+                        </div>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Status</th>
@@ -256,26 +297,30 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
                       <th scope="row" className="govuk-table__header">SIRI-VM version</th>
                       <td className="govuk-table__cell">{statusData?.siriVersion || '-'}</td>
                     </tr>
-                    <tr className="govuk-table__row">
-                      <th scope="row" className="govuk-table__header">URL link</th>
-                      <td className="govuk-table__cell">
-                        <span className="dont-break-out" style={{ display: 'block', maxWidth: '100%', overflowWrap: 'anywhere' }}>
-                          {statusData?.urlLink || '-'}
-                        </span>
-                      </td>
-                    </tr>
-                    <tr className="govuk-table__row">
-                      <th scope="row" className="govuk-table__header">Feed details last updated</th>
-                      <td className="govuk-table__cell">
-                        {statusData?.lastModified
-                          ? `${formatDateTime(statusData.lastModified)}${statusData.lastModifiedUser ? ` by ${statusData.lastModifiedUser}` : ''}`
-                          : '-'}
-                      </td>
-                    </tr>
-                    <tr className="govuk-table__row">
-                      <th scope="row" className="govuk-table__header">Last automated update</th>
-                      <td className="govuk-table__cell">Unknown</td>
-                    </tr>
+                    {!reviewErrorMessage && (
+                      <>
+                        <tr className="govuk-table__row">
+                          <th scope="row" className="govuk-table__header">URL link</th>
+                          <td className="govuk-table__cell">
+                            <span className="dont-break-out" style={{ display: 'block', maxWidth: '100%', overflowWrap: 'anywhere' }}>
+                              {statusData?.urlLink || '-'}
+                            </span>
+                          </td>
+                        </tr>
+                        <tr className="govuk-table__row">
+                          <th scope="row" className="govuk-table__header">Feed details last updated</th>
+                          <td className="govuk-table__cell">
+                            {statusData?.lastModified
+                              ? `${formatDateTime(statusData.lastModified)}${statusData.lastModifiedUser ? ` by ${statusData.lastModifiedUser}` : ''}`
+                              : '-'}
+                          </td>
+                        </tr>
+                        <tr className="govuk-table__row">
+                          <th scope="row" className="govuk-table__header">Last automated update</th>
+                          <td className="govuk-table__cell">Unknown</td>
+                        </tr>
+                      </>
+                    )}
                   </tbody>
                 </table>
 

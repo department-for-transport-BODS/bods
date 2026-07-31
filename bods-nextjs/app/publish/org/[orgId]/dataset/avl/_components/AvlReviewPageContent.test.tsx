@@ -8,11 +8,13 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { AvlReviewPageContent } from './AvlReviewPageContent';
 
 const mockUseParams = jest.fn();
+const mockUseSearchParams = jest.fn();
 const mockApiGet = jest.fn();
 const mockApiPost = jest.fn();
 
 jest.mock('next/navigation', () => ({
   useParams: () => mockUseParams(),
+  useSearchParams: () => mockUseSearchParams(),
 }));
 
 jest.mock('@/lib/api-client', () => ({
@@ -65,6 +67,7 @@ describe('AvlReviewPageContent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseParams.mockReturnValue(mockParams);
+    mockUseSearchParams.mockReturnValue(new URLSearchParams());
     jest.useFakeTimers();
   });
 
@@ -108,7 +111,7 @@ describe('AvlReviewPageContent', () => {
 
     await waitFor(() => {
       expect(mockApiGet).toHaveBeenCalledWith(
-        '/api/avl/review-status/org-123/dataset-456/',
+        expect.stringMatching(/^\/api\/avl\/review-status\/org-123\/dataset-456\/\?t=\d+$/),
       );
     });
   });
@@ -217,6 +220,24 @@ describe('AvlReviewPageContent', () => {
     await waitFor(() => {
       const checkbox = screen.getByRole('checkbox', { name: /I have reviewed the data/ });
       expect(checkbox).toBeInTheDocument();
+    });
+  });
+
+  it('shows edit links for description fields in update review mode', async () => {
+    mockApiGet.mockResolvedValue({
+      ...mockReviewResponse,
+      loading: false,
+    });
+
+    render(<AvlReviewPageContent isUpdate />);
+
+    await waitFor(() => {
+      const editLinks = screen.getAllByRole('link', { name: 'Edit' });
+      expect(editLinks).toHaveLength(2);
+      expect(editLinks[0]).toHaveAttribute(
+        'href',
+        '/publish/org/org-123/dataset/avl/dataset-456/dataset-edit?mode=revision&redirect=%2Fpublish%2Forg%2Forg-123%2Fdataset%2Favl%2Fdataset-456%2Fupdate%2Freview',
+      );
     });
   });
 });

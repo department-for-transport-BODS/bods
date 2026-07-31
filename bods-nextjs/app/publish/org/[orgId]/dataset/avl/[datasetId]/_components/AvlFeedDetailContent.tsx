@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useCallback, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api-client';
 import { useApiResource } from '@/hooks/useApiResource';
 import { AvlFeedDetailTable } from './AvlFeedDetailTable';
@@ -33,6 +33,7 @@ export interface AvlFeedDetail {
 
 export function AvlFeedDetailContent() {
   const params = useParams();
+  const router = useRouter();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
 
@@ -46,6 +47,12 @@ export function AvlFeedDetailContent() {
     isLoading,
     error,
   } = useApiResource<AvlFeedDetail>(fetchFeedDetail, 'Failed to load feed details');
+
+  useEffect(() => {
+    if (feedDetail?.status === 'draft') {
+      router.replace(`/publish/org/${orgId}/dataset/avl/${datasetId}/review`);
+    }
+  }, [datasetId, feedDetail?.status, orgId, router]);
 
   if (isLoading) {
     return (
@@ -83,6 +90,10 @@ export function AvlFeedDetailContent() {
     );
   }
 
+  if (feedDetail.status === 'draft') {
+    return null;
+  }
+
   return (
     <div className="govuk-width-container">
       <Breadcrumbs
@@ -90,7 +101,11 @@ export function AvlFeedDetailContent() {
           { label: 'Bus Open Data Service', href: '/' },
           { label: 'Publish Bus Open Data', href: '/publish/' },
           {
-            label: 'Review My Bus Location Data',
+            label: 'Choose data type',
+            href: `/publish/`,
+          },
+          {
+            label: 'Bus Location Data Feeds',
             href: `/publish/org/${orgId}/dataset/avl`,
           },
           {
@@ -104,11 +119,16 @@ export function AvlFeedDetailContent() {
 
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
+          <div className="govuk-grid-column-full">
             <h1 className="govuk-heading-xl app-!-mb-4 dont-break-out">{feedDetail.name}</h1>
             <p className="govuk-body">Preview your service data status and make changes</p>
+          </div>
+        </div>
 
-            <hr className="govuk-section-break govuk-section-break--xs govuk-section-break--visible" />
+        <hr className="govuk-section-break govuk-section-break--xs govuk-section-break--visible" />
+
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds">
 
             {/* Compliance panels - conditional rendering */}
             <AvlCompliancePanels feedDetail={feedDetail} />
