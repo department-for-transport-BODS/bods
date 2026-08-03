@@ -1,0 +1,948 @@
+/**
+ * Global styles for BODS Next.js
+ *
+ * GOV.UK frontend styles are compiled from the package Sass entrypoint in the root layout.
+ * This file contains BODS-specific styles that extend GDS.
+ * TODO: Remove the below comment
+ * INFO: DO NOT add styles that conflict with GDS - the site must look
+ * identical to the Django version which uses govuk-frontend.
+ */
+
+/* Reset any browser defaults that might conflict */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Ensure body has no margin */
+body {
+  margin: 0;
+}
+
+.justify-center-l {
+  justify-content: center;
+}
+
+.flex-container {
+  display: flex;
+}
+
+.flexfill {
+  flex: 1;
+}
+
+/**
+ * GOV.UK colour palette exposed as CSS custom properties.
+ * Values mirror the Sass colours in govuk-frontend/settings/_colours-palette.scss
+ * so we can reference them from plain CSS. Keep in sync with GDS.
+ */
+:root {
+  --govuk-colour-red: #d4351c;
+  --govuk-colour-yellow: #ffdd00;
+  --govuk-colour-green: #00703c;
+  --govuk-colour-blue: #1d70b8;
+  --govuk-colour-dark-blue: #003078;
+  --govuk-colour-light-blue: #5694ca;
+  --govuk-colour-black: #0b0c0c;
+  --govuk-colour-dark-grey: #505a5f;
+  --govuk-colour-mid-grey: #b1b4b6;
+  --govuk-colour-light-grey: #f3f2f1;
+  --govuk-colour-white: #ffffff;
+  --govuk-colour-light-green: #85994b;
+  --govuk-error-colour: #d4351c;
+}
+
+/**
+ * BODS Custom Components
+ * These styles match the Django frontend exactly
+ */
+
+/* Masthead / Hero Section */
+.app-masthead {
+  padding-top: 0.1px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #1d70b8; /* govuk-colour("blue") */
+  color: #ffffff;
+  background-color: #1d70b8; /* govuk-colour("blue") */
+  margin-top: 16px;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.app-masthead .govuk-body {
+  color: #ffffff;
+}
+
+.app-masthead .govuk-body a {
+  color: #ffffff !important;
+}
+
+.app-masthead__title {
+  color: #ffffff !important;
+  margin-bottom: 20px;
+  white-space: nowrap;
+}
+
+.app-masthead__title_agent_dashboard {
+  color: #ffffff !important;
+  margin-bottom: 20px;
+  white-space: normal;
+}
+
+.app-masthead__description {
+  max-width: 40em;
+}
+
+.app-feature-block {
+  margin-bottom: 32px;
+  max-width: 40em;
+}
+
+.publish-home-masthead-copy .app-masthead__title {
+  margin-bottom: 10px;
+}
+
+.publish-home-masthead-copy .govuk-body {
+  margin-top: 0;
+}
+
+/* Inverted links for masthead */
+.app-a--inverted,
+.app-a--inverted:link,
+.app-a--inverted:visited {
+  color: #ffffff !important;
+}
+
+/* Inverted button for masthead */
+.govuk-button.app-button--inverted,
+.govuk-button.app-button--inverted:link,
+.govuk-button.app-button--inverted:visited,
+.govuk-button.app-button--inverted:hover,
+.govuk-button.app-button--inverted:focus,
+.govuk-button.app-button--inverted:active {
+  color: #1d70b8 !important;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 2px 0 #1d70b8 !important;
+  text-decoration: none;
+}
+
+.govuk-button.app-button--inverted:hover {
+  background-color: #f3f2f1 !important;
+}
+
+.govuk-button.app-button--inverted:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+}
+
+.govuk-button.app-button--inverted:active {
+  top: 2px;
+}
+
+.govuk-button.app-button--green,
+.govuk-button.app-button--green:link,
+.govuk-button.app-button--green:visited,
+.govuk-button.app-button--green:hover,
+.govuk-button.app-button--green:focus,
+.govuk-button.app-button--green:active {
+  color: #ffffff !important;
+  background-color: #00703c !important;
+  border-color: #00703c !important;
+  box-shadow: 0 2px 0 #002d18 !important;
+}
+
+.govuk-button.app-button--green:hover {
+  background-color: #005a30 !important;
+}
+
+.govuk-button.app-button--green:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+}
+
+/* Bold links */
+.govuk-link-bold {
+  font-weight: 700;
+}
+
+/* Navigation list */
+.app-list--nav {
+  margin-top: 0;
+}
+
+.app-list--nav li {
+  margin-bottom: 10px;
+}
+
+/* Navigation bold link */
+.app-nav-bold {
+  font-weight: 700;
+}
+
+/* Header navigation layout mirrors Django templates. */
+.govuk-header__navigation {
+  display: flex;
+}
+
+.account-menu__icon {
+  vertical-align: middle;
+  margin-right: 0.2rem;
+}
+
+.bods-dropdown {
+  display: block;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 17px;
+  color: #ffffff;
+  background: none;
+  position: relative;
+}
+
+.bods-dropdown::after {
+  content: "";
+  display: inline-block;
+  margin-left: 5px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #ffffff;
+  vertical-align: middle;
+}
+
+.bods-dropdown.open::after {
+  border-top: 0;
+  border-bottom: 8px solid #ffffff;
+}
+
+.bods-dropdown .bods-dropdown__toggle {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  font: inherit;
+}
+
+.dropdown .dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  min-width: 220px;
+  background-color: #f3f2f1;
+  box-shadow: 0 8px 16px 0 rgba(11, 12, 12, 0.25);
+  z-index: 1000;
+}
+
+.dropdown .dropdown-content.open {
+  display: block;
+}
+
+.dropdown .dropdown-content .govuk-link {
+  display: block;
+  padding: 12px 16px;
+}
+
+/* Data browser shared styles */
+.app-data-browser__searchbox {
+  width: 100%;
+  display: flex;
+  margin-bottom: 0;
+}
+
+.app-data-browser__searchbox-input {
+  width: 100%;
+  height: 45px;
+  z-index: 1;
+  border-right: 0;
+  padding: 0 10px;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+}
+
+.app-data-browser__searchbox-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0b0c0c;
+  height: 45px;
+  width: 45px;
+  border: 0;
+  cursor: pointer;
+}
+
+.app-data-browser__searchbox-button:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+}
+
+.app-data-browser__search-description {
+  margin-bottom: 10px;
+}
+
+.app-data-browser__result-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.125rem;
+}
+
+.app-data-browser__title-link {
+  margin-right: 1rem;
+}
+
+.app-data-browser__status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.app-data-browser__status-dot--live {
+  background-color: #00703c;
+}
+
+.app-data-browser__status-dot--inactive {
+  background-color: #6f777b;
+}
+
+.app-data-browser__status-dot--error {
+  background-color: #d4351c;
+}
+
+.app-data-browser__status-text {
+  font-size: 16px;
+}
+
+.app-data-browser__key-value-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 8px;
+}
+
+.app-data-browser__key-value-item {
+  display: flex;
+  margin-bottom: 4px;
+}
+
+.app-data-browser__item-key {
+  width: 170px;
+  font-weight: 700;
+}
+
+.app-data-browser__item-value {
+  flex: 1;
+}
+
+.app-data-browser__results-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.app-data-browser__filter-pillbox {
+  display: flex;
+  align-items: center;
+  background-color: #f8f8f8;
+  min-height: 48px;
+  padding: 10px;
+  border: 0;
+  margin-bottom: 12px;
+}
+
+.app-data-browser__filter-pill {
+  border: 1px solid #505a5f;
+  border-radius: 4px;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  background-color: #ffffff;
+  font-size: 16px;
+}
+
+.app-data-browser__pill-remove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  margin-right: 4px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.app-data-browser__sort-control {
+  margin-bottom: 16px;
+  max-width: 240px;
+}
+
+.app-data-browser__result-item {
+  margin-bottom: 24px;
+}
+
+.app-data-browser__result-divider {
+  border: 0;
+  border-bottom: 1px solid #b1b4b6;
+  margin: 20px 0;
+}
+
+/* Dataset detail shared styles */
+.consumer-property-table {
+  margin-bottom: 30px;
+}
+
+.dont-break-out {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.right-justify {
+  text-align: right;
+}
+
+.dataset-property-table .flex-between {
+  align-items: flex-start;
+}
+
+.govuk-button-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.app-mb-4 {
+  margin-bottom: 20px;
+}
+
+.app-mb-sm-0 {
+  margin-bottom: 0;
+}
+
+/* Guide me step navigation pattern */
+.app-step-nav__steps {
+  padding: 0;
+  margin: 0;
+}
+
+.app-step-nav__step {
+  position: relative;
+  list-style: none;
+  padding-left: 45px;
+}
+
+.app-step-nav__step::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 12px;
+  width: 0;
+  height: 100%;
+  border-left: 2px solid #b1b4b6;
+  background: #ffffff;
+}
+
+.app-step-nav__step:last-child::before {
+  content: "";
+  position: absolute;
+  z-index: 6;
+  bottom: 0;
+  left: 6px;
+  width: 13px;
+  height: 0;
+  border-bottom: 2px solid #b1b4b6;
+}
+
+.app-step-nav__step:last-child::after {
+  height: calc(100% - 15px);
+}
+
+.app-step-nav__header {
+  padding: 15px 0;
+  border-top: 2px solid #b1b4b6;
+}
+
+.app-step-nav__title {
+  color: #0b0c0c;
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 700;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__circle {
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 5;
+  top: 15px;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  color: #0b0c0c;
+  background: #ffffff;
+  border-radius: 100px;
+  text-align: center;
+}
+
+.app-step-nav__circle--number {
+  border: 2px solid #b1b4b6;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 23px;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__circle-inner {
+  float: right;
+  min-width: 100%;
+}
+
+.app-step-nav__panel {
+  color: #0b0c0c;
+  font-size: 16px;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.app-step-nav__paragraph {
+  padding-bottom: 15px;
+  margin: 0;
+}
+
+/* Dashed list style used by guidance section index pages */
+ul.dashed {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul.dashed > li {
+  text-indent: -10px;
+  padding-left: 10px;
+}
+
+ul.dashed > li::before {
+  content: "-";
+  margin-right: 4px;
+}
+
+/* Legacy publish/review component styles used by fares review */
+.app-dqs-panel {
+  text-align: left;
+  border: 5px solid #0b0c0c;
+  padding: 20px;
+  background: transparent;
+}
+
+.app-dqs-panel__body {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 1.32;
+}
+
+.dataset-property-table .govuk-table__row th,
+.dataset-property-table .govuk-table__row td {
+  padding: 20px 0;
+}
+
+.feed-stat {
+  display: inline-block;
+  min-width: 8rem;
+  font-weight: 700;
+  font-family: "GDS Transport", Arial, sans-serif;
+}
+
+.feed-stat__list {
+  width: 100%;
+  padding: 1rem;
+}
+
+.feed-stat__label {
+  display: block;
+  color: var(--govuk-colour-black);
+}
+
+.feed-stat__value {
+  display: block;
+  color: var(--govuk-colour-black);
+  font-size: 3rem;
+}
+
+.feed-stat__value--l {
+  font-size: 5rem;
+}
+
+.status-indicator {
+  font-family: "GDS Transport", Arial, sans-serif;
+  font-size: inherit;
+  white-space: nowrap;
+}
+
+.status-indicator::before {
+  content: " ";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin: 0 6px 0 4px;
+}
+
+.status-indicator--success::before {
+  background-color: var(--govuk-colour-green);
+}
+
+.status-indicator--indexing::before {
+  background-color: var(--govuk-colour-blue);
+}
+
+.status-indicator--warning::before {
+  background-color: var(--govuk-colour-yellow);
+}
+
+.status-indicator--inactive::before {
+  background-color: var(--govuk-colour-red);
+}
+
+.status-indicator--error::before {
+  background-color: var(--govuk-error-colour);
+}
+
+.status-indicator--draft::before,
+.status-indicator--pending::before {
+  background-color: var(--govuk-colour-mid-grey);
+}
+
+.review-map-placeholder {
+  border: 1px solid #b1b4b6;
+  background: linear-gradient(180deg, #e8edef 0%, #dfe5e7 100%);
+  height: 280px;
+  position: relative;
+}
+
+.review-map-placeholder__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #505a5f;
+  font-weight: 700;
+}
+/* Publish Stepper */
+.publish-stepper {
+  font-size: 19px;
+  color: #0b0c0c;
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid #b1b4b6;
+  list-style: none;
+  display: flex;
+}
+
+.publish-stepper .publish-stepper__item {
+  display: inline-flex;
+  margin-right: 15px;
+  padding-bottom: 10px;
+}
+
+.publish-stepper .publish-stepper__item--previous {
+  color: #1d70b8;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.publish-stepper .publish-stepper__item--next {
+  color: #505a5f;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.publish-stepper .publish-stepper__item--selected {
+  color: #000000;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-weight: bold;
+  font-size: 1.25rem;
+  border-bottom: 5px solid black;
+  padding-bottom: 5px;
+}
+
+/* Utility: unstyled button that looks like a link */
+.app-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.app-link-button:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-skip-ink: none;
+}
+
+/* Legacy utility parity for migrated Django pages */
+.indented-text {
+  padding-left: 15px;
+}
+
+.large-font {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 1.3157894737;
+}
+
+.blue-background {
+  background-color: #1d70b8;
+}
+
+/* Dataset "Choose data type" page */
+.app-dataset-form {
+  font-family: sans-serif;
+  max-width: 400px;
+  margin: 60px auto;
+}
+
+.app-dataset-form__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.app-dataset-form__button {
+  margin-top: 16px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.app-dataset-form__selected {
+  margin-top: 16px;
+  color: #555;
+}
+
+/* =========================================================
+   Publish list page: masthead title variant and review banner
+   Mirrors transit_odp/frontend/assets/sass/components/banner/_title-banner.scss
+   and transit_odp/frontend/assets/sass/components/publish_list/_publish_list.scss
+   ========================================================= */
+
+.app-masthead__title_agent_dashboard {
+  color: #ffffff !important;
+  margin-bottom: 20px;
+  white-space: normal;
+}
+
+.review-banner {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+.review-stat {
+  margin: 0 35px 35px 0;
+}
+
+.review-stat:last-child {
+  margin-right: unset;
+}
+
+.review-stat__top {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 48px;
+  line-height: 50px;
+  font-weight: 700;
+}
+
+.review-stat__spaced-label {
+  letter-spacing: 0.02em;
+}
+
+.review-stat__top .bods-relative-bottom {
+  bottom: -2px;
+}
+
+.review-stat__bottom {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 25px;
+  position: relative;
+  right: 5px;
+}
+
+.review-stat__description {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 700;
+  margin: 0 0 30px 0;
+}
+
+.review-stat__details {
+  margin-top: auto;
+}
+
+a.review-stat__link {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+  color: inherit;
+}
+
+a.review-stat__link:visited {
+  color: unset;
+}
+
+/* custom_govuk_table: same as govuk-table but with inverted borders */
+.custom_govuk_table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.custom_govuk_table .govuk-table__header,
+.custom_govuk_table .govuk-table__cell {
+  border-top: 1px solid #b1b4b6;
+  border-bottom: none;
+}
+
+.custom_govuk_table .govuk-table__header {
+  font-weight: normal;
+  font-size: 18px;
+}
+
+.custom_govuk_table .govuk-table__head .govuk-table__row:first-child .govuk-table__header {
+  border-top: none;
+}
+
+.custom_govuk_table .govuk-table__body .govuk-table__row:last-child .govuk-table__cell,
+.custom_govuk_table .govuk-table__body .govuk-table__row:last-child .govuk-table__header {
+  border-bottom: 1px solid #b1b4b6;
+}
+
+.avl-changelog-page__back-link {
+  display: inline-block;
+  margin-bottom: 40px;
+}
+
+.avl-changelog-page .govuk-main-wrapper {
+  padding-top: 16px;
+}
+
+.avl-changelog-page .custom_govuk_table .govuk-table__header {
+  font-weight: 700;
+}
+
+/* select-wrapper: container for the Choose data type dropdown */
+.select-wrapper {
+  position: relative;
+}
+
+/* Help modal styling */
+.help-modal {
+  display: inline;
+}
+
+.help-modal .help-icon {
+  color: #0b0c0c;
+  cursor: pointer;
+}
+
+.help-modal .help-icon-white {
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.help-modal .help-icon-blue {
+  color: #1d70b8;
+  cursor: pointer;
+}
+
+.help-modal .overlay {
+  display: none;
+  position: fixed;
+  justify-content: center;
+  align-items: center;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.help-modal .overlay.active {
+  display: flex;
+}
+
+.help-modal .overlay .window {
+  position: relative;
+  width: 100%;
+  max-width: 75%;
+  background: #ffffff;
+  padding: 20px;
+  border: 1px solid #b1b4b6;
+}
+
+.help-modal .overlay .close-button {
+  position: absolute;
+  top: 25px;
+  right: 20px;
+  margin: 0;
+  border: 0;
+  border-style: none;
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+}
+
+.help-modal .overlay .content {
+  position: relative;
+  margin-top: 40px;
+}
+
+.help-modal .overlay .content .govuk-body {
+  color: #0b0c0c;
+}
+
+/* Position utility for relative bottom offset */
+.bods-relative-bottom {
+  position: relative;
+  bottom: -5px;
+}
+
+.bods-bg-blue-light {
+  background-color: #1d70b8 !important;
+}
+
+.bods-bg-blue-light.govuk-panel {
+  margin-bottom: 30px;
+}
+
+.bods-bg-blue-light .govuk-panel__title,
+.bods-bg-blue-light .govuk-panel__body {
+  color: #ffffff;
+}

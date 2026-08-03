@@ -29,6 +29,11 @@ if READ_DOT_ENV_FILE:
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool("DJANGO_DEBUG", False)
+# https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
+SECRET_KEY = env(
+    "DJANGO_SECRET_KEY",
+    default="X61BMLHfhL8X8lPce9YuOVZ5N0YPfLqwFGcKJQPdZaOmBQ3MOvQQ6T3yLNvR0vCC",
+)
 # Local time zone. Choices are
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
@@ -111,6 +116,8 @@ SESSION_COOKIE_AGE = 600  # set to 10 minutes
 # Whether to save the session data on every request
 SESSION_SAVE_EVERY_REQUEST = True
 
+SESSION_COOKIE_SAMESITE = "Lax"
+
 # APPS
 # ------------------------------------------------------------------------------
 DJANGO_APPS = [
@@ -130,6 +137,7 @@ THIRD_PARTY_APPS = [
     "crispy_forms",
     "allauth",
     "allauth.account",
+    "allauth.socialaccount",
     "invitations",
     "corsheaders",
     "rest_framework",
@@ -461,8 +469,8 @@ INVITATIONS_ACCEPT_INVITE_AFTER_SIGNUP = True
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "transit_odp.api.authentication.TokenAuthSupportQueryString",
         "rest_framework.authentication.SessionAuthentication",
+        "transit_odp.api.authentication.TokenAuthSupportQueryString",
         "rest_framework.authentication.BasicAuthentication",
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
@@ -476,6 +484,12 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
     "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "login": "5/min",
+    },
 }
 
 # GOV.NOTIFY API KEY

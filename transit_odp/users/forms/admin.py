@@ -29,15 +29,20 @@ CONFIRM_PASSWORD_LABEL = _("Confirm new password*")
 CONFIRM_PASSWORD_NO_ASTERISK_LABEL = _("Confirm new password")
 CURRENT_PASSWORD_LABEL = _("Current password")
 NEW_PASSWORD_LABEL = _("New password")
-PRIVACY_POLICY_URL = reverse("privacy-policy")
-COOKIE_URL = reverse("cookie")
-PRIVACY_TEXT = mark_safe(
-    _(
-        '<p class="govuk-body">By using this website, you consent to our '
-        f"<a class='govuk-link' href='{PRIVACY_POLICY_URL}'>Privacy</a> and "
-        f"<a class='govuk-link' href='{COOKIE_URL}'>Cookies</a> policies.</p>"
+
+
+def get_privacy_text():
+    return mark_safe(
+        _(
+            '<p class="govuk-body">By using this website, you consent to our '
+            "<a class='govuk-link' href='{privacy_policy_url}'>Privacy</a> and "
+            "<a class='govuk-link' href='{cookie_url}'>Cookies</a> policies.</p>"
+        ).format(
+            privacy_policy_url=reverse("privacy-policy"),
+            cookie_url=reverse("cookie"),
+        )
     )
-)
+
 
 OPT_IN_USER_RESEARCH_OPERATOR = mark_safe(
     _(

@@ -48,7 +48,8 @@ SESSION_COOKIE_AGE = 600  # set to 10 minutes
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-secure
 CSRF_COOKIE_SECURE = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly
-CSRF_COOKIE_HTTPONLY = True
+# False so the Next.js frontend can read the CSRF token from the cookie
+CSRF_COOKIE_HTTPONLY = False
 
 # https://docs.djangoproject.com/en/dev/topics/security/#ssl-https
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-seconds

@@ -1,0 +1,265 @@
+'use client';
+
+import Link from 'next/link';
+import { FormEvent, useState } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { PublishStepper } from '@/components/publish';
+import { ErrorSummary } from '@/components/shared';
+import { api } from '@/lib/api-client';
+import {
+  FaresUploadItem,
+  FaresUploadStep,
+  UPLOAD_FILE_ITEM_ID,
+  URL_LINK_ITEM_ID,
+} from '../../_components/FaresUploadStep';
+
+const COMMENT_STEP = 'comment';
+const UPLOAD_STEP = 'upload';
+const CANCEL_STEP = 'cancel';
+
+type Step = typeof COMMENT_STEP | typeof UPLOAD_STEP | typeof CANCEL_STEP;
+
+function CancelStepView({ onConfirm, onBack }: Readonly<{ onConfirm: () => void; onBack: () => void }>) {
+  return (
+    <>
+      <h1 className="govuk-heading-l">Would you like to cancel updating this data set?</h1>
+      <p className="govuk-body">Any changes you have made so far will not be saved.</p>
+      <div className="govuk-button-group">
+        <button className="govuk-button" type="button" onClick={onConfirm}>Confirm</button>
+        <button className="govuk-button govuk-button--secondary" type="button" onClick={onBack}>Cancel</button>
+      </div>
+    </>
+  );
+}
+
+function CommentStepView({
+  comment,
+  errorMessage,
+  onChange,
+  onSubmit,
+  onCancel,
+}: Readonly<{
+  comment: string;
+  errorMessage: string;
+  onChange: (v: string) => void;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  onCancel: () => void;
+}>) {
+  return (
+    <form onSubmit={onSubmit} noValidate>
+      <h1 className="govuk-heading-l">Provide a comment on what has been updated</h1>
+      <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="comment-error-title" />
+      <div className="govuk-form-group">
+        <label className="govuk-label" htmlFor="comment">Comment on data set updates</label>
+        <div className="govuk-hint">
+          This information will give context to data set users. Please be descriptive but do not
+          include personally identifiable information. You may wish to include: The original file
+          name, start date of data, description of the fares, products, OpCo, locations/region,
+          routes/service numbers for which the data applies, or any other useful high level
+          information. The description should reflect the data included at a high level.
+        </div>
+        <textarea
+          className="govuk-textarea govuk-!-width-three-quarters"
+          id="comment"
+          name="comment"
+          rows={3}
+          value={comment}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      </div>
+      <div className="govuk-button-group">
+        <button className="govuk-button" type="submit">Continue</button>
+        <button className="govuk-button govuk-button--secondary" type="button" onClick={onCancel}>Cancel</button>
+      </div>
+    </form>
+  );
+}
+
+function UploadStepView({
+  orgId,
+  datasetId,
+  comment,
+  modifyDraft,
+  reviewUrl,
+  onCancel,
+}: Readonly<{
+  orgId: string;
+  datasetId: string;
+  comment: string;
+  modifyDraft: boolean;
+  reviewUrl: string;
+  onCancel: () => void;
+}>) {
+  const [selectedItem, setSelectedItem] = useState<FaresUploadItem | null>(null);
+  const [urlLink, setUrlLink] = useState('');
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setErrorMessage('');
+    if (!selectedItem) {
+      setErrorMessage('Please provide a file or url');
+      return;
+    }
+    if (selectedItem === URL_LINK_ITEM_ID && !urlLink.trim()) {
+      setErrorMessage('Please provide a URL link');
+      return;
+    }
+    if (selectedItem === UPLOAD_FILE_ITEM_ID && !uploadFile) {
+      setErrorMessage('Please provide a file');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.set('comment', comment);
+      formData.set('selected_item', selectedItem);
+      if (modifyDraft) {
+        formData.set('modify_draft', 'true');
+      }
+      if (selectedItem === URL_LINK_ITEM_ID) {
+        formData.set('url_link', urlLink);
+      } else if (uploadFile) {
+        formData.set('upload_file', uploadFile, uploadFile.name);
+      }
+
+      const data = await api.post<{ redirect?: string }>(
+        `/api/fares/update/${orgId}/${datasetId}/`,
+        formData,
+      );
+      globalThis.location.href = data.redirect || reviewUrl;
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'An error occurred while uploading. Please try again.');
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <FaresUploadStep
+      selectedItem={selectedItem}
+      urlLink={urlLink}
+      isSubmitting={isSubmitting}
+      errorMessage={errorMessage}
+      heading={modifyDraft ? 'Choose how to provide your data set' : 'Update your published data set'}
+      submitButtonText="Continue"
+      errorTitleId="upload-error-title"
+      urlLinkHint="Please provide a URL link where your NeTEx files are hosted. Example address: 'mybuscompany.com/fares.xml'."
+      disableCancel={isSubmitting}
+      onSelectedItemChange={setSelectedItem}
+      onUrlLinkChange={setUrlLink}
+      onUploadFileChange={setUploadFile}
+      onSubmit={handleSubmit}
+      onCancel={onCancel}
+    />
+  );
+}
+
+function FaresUpdatePageContent() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const orgId = params.orgId as string;
+  const datasetId = params.datasetId as string;
+  const modifyDraft = searchParams.get('modifyDraft') === 'true';
+
+  const reviewUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/review`;
+  const detailUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}`;
+  const cancelUrl = modifyDraft ? reviewUrl : detailUrl;
+
+  const [step, setStep] = useState<Step>(modifyDraft ? UPLOAD_STEP : COMMENT_STEP);
+  const [stepBeforeCancel, setStepBeforeCancel] = useState<typeof COMMENT_STEP | typeof UPLOAD_STEP>(
+    modifyDraft ? UPLOAD_STEP : COMMENT_STEP,
+  );
+  const [comment, setComment] = useState('');
+  const [commentError, setCommentError] = useState('');
+
+  const handleCommentSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setCommentError('');
+    if (!comment.trim()) {
+      setCommentError('Enter a comment in the box below');
+      return;
+    }
+    setStep(UPLOAD_STEP);
+  };
+
+  const handleCancelClick = (from: typeof COMMENT_STEP | typeof UPLOAD_STEP) => {
+    setStepBeforeCancel(from);
+    setStep(CANCEL_STEP);
+  };
+
+  return (
+    <div className="govuk-width-container">
+      <div className="govuk-main-wrapper">
+        {step === CANCEL_STEP ? null : (
+          <div className="govuk-breadcrumbs">
+            <PublishStepper
+              steps={[
+                { label: '1. Comment', state: step === COMMENT_STEP ? 'selected' : 'previous' },
+                { label: '2. Update', state: step === UPLOAD_STEP ? 'selected' : 'next' },
+                { label: '3. Review and publish', state: 'next' },
+              ]}
+            />
+          </div>
+        )}
+
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds indented-text">
+            {step === CANCEL_STEP ? (
+              <CancelStepView
+                onConfirm={() => { globalThis.location.href = cancelUrl; }}
+                onBack={() => setStep(stepBeforeCancel)}
+              />
+            ) : null}
+            {step === COMMENT_STEP ? (
+              <CommentStepView
+                comment={comment}
+                errorMessage={commentError}
+                onChange={setComment}
+                onSubmit={handleCommentSubmit}
+                onCancel={() => handleCancelClick(COMMENT_STEP)}
+              />
+            ) : null}
+            {step === UPLOAD_STEP ? (
+              <UploadStepView
+                orgId={orgId}
+                datasetId={datasetId}
+                comment={comment}
+                modifyDraft={modifyDraft}
+                reviewUrl={reviewUrl}
+                onCancel={() => handleCancelClick(UPLOAD_STEP)}
+              />
+            ) : null}
+            <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />
+          </div>
+
+          <div className="govuk-grid-column-one-third">
+            <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
+            <ul className="govuk-list app-list--nav govuk-!-font-size-19">
+              <li>
+                <Link className="govuk-link large-font" href="/publish/guide-me">
+                  View our guidelines here
+                </Link>
+              </li>
+              <li>
+                <Link className="govuk-link large-font" href="/publish/account">
+                  Contact support desk
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function FaresUpdatePage() {
+  return (
+    <ProtectedRoute>
+      <FaresUpdatePageContent />
+    </ProtectedRoute>
+  );
+}
