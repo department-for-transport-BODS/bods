@@ -5,6 +5,15 @@ on:
     paths:
     - version.txt
   workflow_dispatch:
+    inputs:
+      service:
+        description: Service to deploy
+        required: true
+        default: nextjs
+        type: choice
+        options:
+        - django
+        - nextjs
 
 name: 'test_deployment'
 
@@ -33,6 +42,14 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # 6.0.3
+
+    - name: Detect Next.js version changes
+      id: deploy-changes
+      uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # 4.0.1
+      with:
+        filters: |
+          nextjs:
+           - bods-nextjs/package.json
 
     # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
@@ -82,6 +99,32 @@ jobs:
             echo "The image $IMAGE_TAG exists in the $ECR_REPOSITORY Repository, build and push docker image first."
             exit 1
         fi
+
+    - name: Set Next.js image tag
+      if: (github.event_name == 'push' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
+      id: nextjs-image
+      run: |
+        version=$(node --input-type=module -e "import packageJson from './bods-nextjs/package.json' with { type: 'json' }; console.log(packageJson.version)")
+        echo "image=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${version}-$(date -u +'%Y%m%d%H%M%S')-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+    - name: Build and push Next.js image
+      if: (github.event_name == 'push' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
+      env:
+        NEXT_PUBLIC_MAPBOX_TOKEN: ${{ vars.MAPBOX_KEY }}
+        NEXT_PUBLIC_SUPPORT_PHONE: ${{ vars.SUPPORT_PHONE }}
+        NEXT_PUBLIC_SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
+        NEXT_PUBLIC_AVL_IP_ALLOW_LIST: ${{ vars.AVL_IP_ADDRESS_LIST }}
+      run: |
+        docker build \
+          --tag "${{ steps.nextjs-image.outputs.image }}" \
+          --file docker/production/nextjs/Dockerfile \
+          --build-arg NEXT_PUBLIC_BODS_BASE_DOMAIN=test.bus-data.dft.gov.uk \
+          --build-arg NEXT_PUBLIC_MAPBOX_TOKEN \
+          --build-arg NEXT_PUBLIC_SUPPORT_PHONE \
+          --build-arg NEXT_PUBLIC_SUPPORT_EMAIL \
+          --build-arg NEXT_PUBLIC_AVL_IP_ALLOW_LIST \
+          .
+        docker push "${{ steps.nextjs-image.outputs.image }}"
 
     - name: Logout of Amazon ECR
       if: always()
@@ -169,6 +212,17 @@ jobs:
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
+    - name: Update frontend_v2 task
+      if: (github.event_name == 'push' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
+      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@v1
+      with:
+        service: frontend_v2
+        container: frontend_v2
+        task_definition_family: bodds_frontend_v2_${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ steps.nextjs-image.outputs.image }}
+        cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
+        wait_for_service_stability: false
+
     - name: Update pg_migration
       uses: "./.github/workflows/templates/register_task_def"
       with:
@@ -190,6 +244,13 @@ jobs:
       with:
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         service_names: 'celeryflower celeryworker celerybeat frontend api_frontend api_frontend_internal'
+
+    - name: Wait for frontend_v2 service stability
+      if: (github.event_name == 'push' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
+      uses: department-for-transport-BODS/.github/actions/wait-for-ecs-service-stability@v1
+      with:
+        cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
+        service_names: frontend_v2
 
     - name: Obtain SSM parameters for pg migration
       id: params
