@@ -1,7 +1,12 @@
 import type { NextRequest } from 'next/server';
 import { HOSTS } from '@/config';
 
-export function getSessionHeaders(request: NextRequest, options?: { includeCsrf?: boolean }): Headers {
+const SESSION_COOKIE_PATTERN = /(?:^|;\s*)sessionid=[^;]+/;
+
+export function getSessionHeaders(
+  request: NextRequest,
+  options?: { includeCsrf?: boolean },
+): Headers {
   const headers = new Headers();
   const cookieHeader = request.headers.get('cookie');
 
@@ -10,7 +15,8 @@ export function getSessionHeaders(request: NextRequest, options?: { includeCsrf?
   }
 
   if (options?.includeCsrf) {
-    const csrfHeader = request.headers.get('x-csrftoken') || request.headers.get('X-CSRFToken');
+    const csrfHeader =
+      request.headers.get('x-csrftoken') || request.headers.get('X-CSRFToken');
     if (csrfHeader) {
       headers.set('X-CSRFToken', csrfHeader);
     }
@@ -24,5 +30,6 @@ export function getSessionHeaders(request: NextRequest, options?: { includeCsrf?
 }
 
 export function hasSessionCookie(request: NextRequest): boolean {
-  return Boolean(request.headers.get('cookie'));
+  const cookieHeader = request.headers.get('cookie');
+  return Boolean(cookieHeader && SESSION_COOKIE_PATTERN.test(cookieHeader));
 }
