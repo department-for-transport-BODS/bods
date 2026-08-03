@@ -150,20 +150,11 @@ jobs:
 
     - name: Build and push Next.js image
       if: (github.ref == 'refs/heads/bods-two' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
-      env:
-        NEXT_PUBLIC_MAPBOX_TOKEN: ${{ vars.MAPBOX_KEY }}
-        NEXT_PUBLIC_SUPPORT_PHONE: ${{ vars.SUPPORT_PHONE }}
-        NEXT_PUBLIC_SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
-        NEXT_PUBLIC_AVL_IP_ALLOW_LIST: ${{ vars.AVL_IP_ADDRESS_LIST }}
       run: |
         docker build \
           --tag "${{ steps.nextjs-image.outputs.image }}" \
           --file docker/production/nextjs/Dockerfile \
           --build-arg NEXT_PUBLIC_BODS_BASE_DOMAIN=dev.bus-data.dft.gov.uk \
-          --build-arg NEXT_PUBLIC_MAPBOX_TOKEN \
-          --build-arg NEXT_PUBLIC_SUPPORT_PHONE \
-          --build-arg NEXT_PUBLIC_SUPPORT_EMAIL \
-          --build-arg NEXT_PUBLIC_AVL_IP_ALLOW_LIST \
           .
         docker push "${{ steps.nextjs-image.outputs.image }}"
 
