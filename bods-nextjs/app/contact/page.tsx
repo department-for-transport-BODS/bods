@@ -6,9 +6,12 @@
  * Note: support contact details should be set via environment variables
  */
 
-import { config } from '@/config';
+import { connection } from 'next/server';
+import { config } from '@/runtime-config';
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  await connection();
+
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">

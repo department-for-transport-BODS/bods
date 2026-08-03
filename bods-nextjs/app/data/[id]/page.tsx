@@ -15,7 +15,7 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { DatasetDetailContent } from '@/components/data/DatasetDetailContent';
 import type { Dataset } from '@/types';
 import { HOSTS } from '@/config';
-import { serverConfig } from '@/lib/server-config';
+import { config } from '@/runtime-config';
 
 interface DatasetDetailPageProps {
   params: Promise<{ id: string }>;
@@ -45,7 +45,7 @@ async function getDataset(id: string): Promise<Dataset | null> {
   try {
     const url = new URL(
       `/api/v1/dataset/${encodeURIComponent(id)}/`,
-      serverConfig.djangoInternalOrigin,
+      config.djangoInternalOrigin,
     );
     const requestHeaders = await headers();
     const upstreamHeaders = new Headers();
@@ -116,7 +116,11 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <DatasetDetailContent dataset={dataset} formattedLastUpdated={formattedLastUpdated} />
+            <DatasetDetailContent
+              dataset={dataset}
+              formattedLastUpdated={formattedLastUpdated}
+              mapboxToken={config.mapboxToken}
+            />
           </div>
 
           <div className="govuk-grid-column-one-third">

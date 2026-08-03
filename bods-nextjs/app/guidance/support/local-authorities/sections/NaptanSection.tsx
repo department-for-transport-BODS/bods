@@ -1,6 +1,8 @@
-import { config } from '@/config';
+import { useSupportConfig } from '@/app/guidance/support/SupportConfigProvider';
 
 export function NaptanSection() {
+  const { supportEmail } = useSupportConfig();
+
   return (
     <>
       <h1 className="govuk-heading-l">NaPTAN stop data</h1>
@@ -26,7 +28,7 @@ export function NaptanSection() {
       <p className="govuk-body">
         In preparation of the statutory requirements that will be coming into action next year,
         the DfT is offering a free service whereby local authorities can get in contact with{' '}
-        <a className="govuk-link" href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>, to request
+        <a className="govuk-link" href={`mailto:${supportEmail}`}>{supportEmail}</a>, to request
         a spreadsheet that contains potential NaPTAN corrections for the areas that you are
         responsible for.
       </p>

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { config, HOSTS } from '@/config';
+import { HOSTS } from '@/config';
 import { AvlUploadFields, PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
@@ -26,7 +26,7 @@ function getHeading(step: Step): string {
   return 'Update your published data feed';
 }
 
-export function AVLUpdatePageContent() {
+export function AVLUpdatePageContent({ avlIpAllowList }: { avlIpAllowList: string }) {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
@@ -314,7 +314,7 @@ export function AVLUpdatePageContent() {
                   onUsernameChange={setUsername}
                   onPasswordChange={setPassword}
                   onRequestorRefChange={setRequestorRef}
-                  ipAllowListHint={config.avlIpAllowList}
+                  ipAllowListHint={avlIpAllowList}
                 />
 
                 <div className="govuk-button-group govuk-!-margin-top-5">
