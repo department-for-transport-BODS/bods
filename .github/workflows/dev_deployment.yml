@@ -150,12 +150,20 @@ jobs:
 
     - name: Build and push Next.js image
       if: (github.ref == 'refs/heads/bods-two' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
+      env:
+        NEXT_PUBLIC_MAPBOX_TOKEN: ${{ vars.MAPBOX_KEY }}
+        NEXT_PUBLIC_SUPPORT_PHONE: ${{ vars.SUPPORT_PHONE }}
+        NEXT_PUBLIC_SUPPORT_EMAIL: ${{ vars.SUPPORT_EMAIL }}
+        NEXT_PUBLIC_AVL_IP_ALLOW_LIST: ${{ vars.AVL_IP_ADDRESS_LIST }}
       run: |
         docker build \
           --tag "${{ steps.nextjs-image.outputs.image }}" \
           --file docker/production/nextjs/Dockerfile \
           --build-arg NEXT_PUBLIC_BODS_BASE_DOMAIN=dev.bus-data.dft.gov.uk \
-          --build-arg DJANGO_INTERNAL_ORIGIN=http://api_frontend_internal.bodds.dev:5000 \
+          --build-arg NEXT_PUBLIC_MAPBOX_TOKEN \
+          --build-arg NEXT_PUBLIC_SUPPORT_PHONE \
+          --build-arg NEXT_PUBLIC_SUPPORT_EMAIL \
+          --build-arg NEXT_PUBLIC_AVL_IP_ALLOW_LIST \
           .
         docker push "${{ steps.nextjs-image.outputs.image }}"
 
@@ -252,27 +260,6 @@ jobs:
         image_id: ${{ steps.check-image.outputs.image }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
-
-    - name: Remove legacy frontend_v2 task settings
-      if: (github.ref == 'refs/heads/bods-two' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
-      shell: bash
-      run: |
-        task_definition=$(aws ecs describe-task-definition --include TAGS --task-definition bodds_frontend_v2_${{ env.ENVIRONMENT_NAME }})
-        nextjs_environment='[
-          {"name":"DJANGO_INTERNAL_ORIGIN","value":"http://api_frontend_internal.bodds.dev:5000"},
-          {"name":"NODE_ENV","value":"production"},
-          {"name":"PORT","value":"5000"},
-          {"name":"HOSTNAME","value":"0.0.0.0"}
-        ]'
-
-        if jq -e --argjson nextjs_environment "$nextjs_environment" '[.taskDefinition.containerDefinitions[] | select(.name == "frontend_v2-dd-agent" or has("command") or has("secrets") or (.name == "frontend_v2" and .environment != $nextjs_environment))] | length > 0' <<< "$task_definition" >/dev/null; then
-          jq --argjson nextjs_environment "$nextjs_environment" '(.taskDefinition
-            | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)
-            | .containerDefinitions |= map(select(.name != "frontend_v2-dd-agent") | if .name == "frontend_v2" then .environment = $nextjs_environment else . end | del(.command, .secrets)))
-            + {tags: .tags}' <<< "$task_definition" > cleaned-task-definition.json
-          task_definition_arn=$(aws ecs register-task-definition --cli-input-json file://cleaned-task-definition.json --query 'taskDefinition.taskDefinitionArn' --output text)
-          aws ecs update-service --cluster bodds-${{ env.ENVIRONMENT_NAME }} --service frontend_v2 --task-definition "$task_definition_arn"
-        fi
 
     - name: Update frontend_v2 task
       if: (github.ref == 'refs/heads/bods-two' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
