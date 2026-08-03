@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionHeaders, hasSessionCookie } from '@/lib/api-session';
-import { serverConfig } from '@/lib/server-config';
+import { config } from '@/runtime-config';
 
 const DEACTIVATE_SUBMIT_BODY = 'submit=submit';
 const NUMERIC_ID = /^\d+$/;
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const djangoResp = await postDeactivate(
-      `${serverConfig.djangoInternalOrigin}/org/${orgId}/dataset/avl/${datasetId}/deactivate/`,
+      `${config.djangoInternalOrigin}/org/${orgId}/dataset/avl/${datasetId}/deactivate/`,
       getSessionHeaders(request, { includeCsrf: true }),
     );
 

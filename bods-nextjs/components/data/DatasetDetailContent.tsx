@@ -23,7 +23,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import type { Dataset } from '@/types';
 import { DataQualityBadge } from './DataQualityBadge';
-import { config } from '@/config';
 import { DownloadSubscribePanel } from './DownloadSubscribePanel';
 import { ApiUrlPanel } from './ApiUrlPanel';
 import { RouteMap } from './RouteMap';
@@ -31,9 +30,14 @@ import { RouteMap } from './RouteMap';
 interface DatasetDetailContentProps {
   dataset: Dataset;
   formattedLastUpdated: string;
+  mapboxToken?: string;
 }
 
-export function DatasetDetailContent({ dataset, formattedLastUpdated }: DatasetDetailContentProps) {
+export function DatasetDetailContent({
+  dataset,
+  formattedLastUpdated,
+  mapboxToken = '',
+}: DatasetDetailContentProps) {
   const [isSubscribed, setIsSubscribed] = useState(false);
 
   return (
@@ -197,12 +201,12 @@ export function DatasetDetailContent({ dataset, formattedLastUpdated }: DatasetD
         </div>
       )}
 
-      {config.mapboxToken && (
+      {mapboxToken && (
         <div className="govuk-!-margin-top-6">
           <h2 className="govuk-heading-m">Route map</h2>
           <RouteMap
             revisionId={dataset.revisionId}
-            mapboxToken={config.mapboxToken}
+            mapboxToken={mapboxToken}
             ariaLabel={`Interactive map showing routes for ${dataset.name}`}
           />
         </div>

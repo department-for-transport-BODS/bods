@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionHeaders, hasSessionCookie } from '@/lib/api-session';
-import { serverConfig } from '@/lib/server-config';
+import { config } from '@/runtime-config';
 import { toDownloadResponse } from '../../_utils/download-proxy';
 
 const NUMERIC_ID = /^\d+$/;
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await fetch(
-      `${serverConfig.djangoInternalOrigin}/org/${orgId}/dataset/timetable/compliance-report/`,
+      `${config.djangoInternalOrigin}/org/${orgId}/dataset/timetable/compliance-report/`,
       {
         method: 'GET',
         headers: getSessionHeaders(request),

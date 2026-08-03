@@ -6,7 +6,7 @@ import { AvlUploadFields, DatasetDescriptionFields, PublishStepper } from '@/com
 import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
-import { config, HOSTS } from '@/config';
+import { HOSTS } from '@/config';
 import { AvlReviewHelpAside } from './AvlReviewAuxiliaryPanels';
 
 type Step = 'description' | 'upload';
@@ -18,7 +18,7 @@ function getHeading(step: Step): string {
   return 'Provide your data using the link below';
 }
 
-export function AVLCreatePageContent() {
+export function AVLCreatePageContent({ avlIpAllowList }: { avlIpAllowList: string }) {
   const params = useParams();
   const orgId = params.orgId as string;
 
@@ -231,7 +231,7 @@ export function AVLCreatePageContent() {
                   onUsernameChange={setUsername}
                   onPasswordChange={setPassword}
                   onRequestorRefChange={setRequestorRef}
-                  ipAllowListHint={config.avlIpAllowList}
+                  ipAllowListHint={avlIpAllowList}
                 />
 
                 <div className="govuk-button-group govuk-!-margin-top-5">

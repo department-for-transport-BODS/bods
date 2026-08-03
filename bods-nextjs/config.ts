@@ -22,15 +22,8 @@ export const HOSTS = {
   admin: hostOrigin('admin'),
 } as const;
 
+// Build-time, client-safe configuration; do not add runtime-only or secret values.
 export const config = {
-  // Mapbox
-  mapboxToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '',
-
-  // Support
-  supportPhone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || '0808 172 4134',
-  supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@busopendataservice.atlassian.net',
-  avlIpAllowList: process.env.NEXT_PUBLIC_AVL_IP_ALLOW_LIST || '',
-
   // App
   appVersion: version,
   bodsBaseUrl: bodsBaseDomain,

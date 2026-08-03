@@ -1,7 +1,9 @@
 import Link from 'next/link';
-import { config } from '@/config';
+import { useSupportConfig } from '@/app/guidance/support/SupportConfigProvider';
 
 export function SupportSection() {
+  const { supportEmail } = useSupportConfig();
+
   return (
     <>
       <h1 className="govuk-heading-l">Timetables data support</h1>
@@ -27,7 +29,7 @@ export function SupportSection() {
       <p className="govuk-body">
         If you require additional support, DfT can support the creation of TxC using the tool.
         For more information please contact{' '}
-        <a className="govuk-link" href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>.
+        <a className="govuk-link" href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </p>
       <p className="govuk-body">Please ensure the timetables data provided aligns with TransXChange version 2.4.</p>
 

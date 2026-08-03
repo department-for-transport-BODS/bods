@@ -1,7 +1,8 @@
-import { config } from '@/config';
+import { useSupportConfig } from '@/app/guidance/support/SupportConfigProvider';
 
 export function HelpSectionTables() {
-  const supportEmailHref = `mailto:${config.supportEmail}`;
+  const { supportEmail } = useSupportConfig();
+  const supportEmailHref = `mailto:${supportEmail}`;
   return (
     <>
       <h2 className="govuk-heading-m">Timetables solution suppliers</h2>
@@ -18,7 +19,7 @@ export function HelpSectionTables() {
           <tr className="govuk-table__row">
             <td className="govuk-table__cell">Excel TransXChange Tool</td>
             <td className="govuk-table__cell">N/A</td>
-            <td className="govuk-table__cell"><a className="govuk-link" href={supportEmailHref}>{config.supportEmail}</a></td>
+            <td className="govuk-table__cell"><a className="govuk-link" href={supportEmailHref}>{supportEmail}</a></td>
             <td className="govuk-table__cell"></td>
           </tr>
           <tr className="govuk-table__row">
@@ -54,7 +55,7 @@ export function HelpSectionTables() {
           <tr className="govuk-table__row">
             <td className="govuk-table__cell">Create Fares Data Service</td>
             <td className="govuk-table__cell"><a className="govuk-link" href="https://fares-data.dft.gov.uk/" target="_blank" rel="noopener noreferrer">https://fares-data.dft.gov.uk/</a></td>
-            <td className="govuk-table__cell"><a className="govuk-link" href={supportEmailHref}>{config.supportEmail}</a></td>
+            <td className="govuk-table__cell"><a className="govuk-link" href={supportEmailHref}>{supportEmail}</a></td>
             <td className="govuk-table__cell">Fares</td>
           </tr>
           <tr className="govuk-table__row">

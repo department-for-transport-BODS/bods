@@ -1,20 +1,22 @@
-import { config } from '@/config';
 import { HelpSectionTables } from './HelpSectionTables';
+import { useSupportConfig } from '@/app/guidance/support/SupportConfigProvider';
 
 export function HelpSection() {
+  const { supportEmail } = useSupportConfig();
+
   return (
     <>
       <h1 className="govuk-heading-l">How to get help</h1>
       <h2 className="govuk-heading-l">NaPTAN stop data support</h2>
       <p className="govuk-body">
         The DfT is offering a free service whereby local authorities can get in contact with{' '}
-        <a className="govuk-link" href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a> to request
+        <a className="govuk-link" href={`mailto:${supportEmail}`}>{supportEmail}</a> to request
         a spreadsheet that contains potential NaPTAN corrections for the areas that you are
         responsible for.
       </p>
       <HelpSectionTables />
       <p className="govuk-body">
-        Contact <a className="govuk-link" href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>{' '}
+        Contact <a className="govuk-link" href={`mailto:${supportEmail}`}>{supportEmail}</a>{' '}
         for:
       </p>
       <ul className="govuk-list govuk-list--bullet">

@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { serverConfig } from '@/lib/server-config';
+import { config } from '@/runtime-config';
 
 function djangoUrl(path: string): string {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  return `${serverConfig.djangoInternalOrigin.replace(/\/$/, '')}${normalizedPath}`;
+  return `${config.djangoInternalOrigin.replace(/\/$/, '')}${normalizedPath}`;
 }
 
 export function toDownloadResponse(
