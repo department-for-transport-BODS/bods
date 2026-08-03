@@ -266,9 +266,9 @@ export function AVLUpdatePageContent() {
                     Comment on data feed updates
                   </label>
                   <div className="govuk-hint">
-                    Please add a comment to describe the data feed. Providers may want to include:
-                    time and date of feed connection, reason for updating feed, OpCo/Region/Zone of feed,
-                    internal references, or services included in the feed.
+                    Please add a comment to describe the data feed. Providers may want to include 
+                    the following information: time & date of feed connection, reason for updating feed, 
+                    OpCo/Region/Zone of feed, any internal references or services included in the feed.
                   </div>
                   {errors.comment && <p className="govuk-error-message">{errors.comment}</p>}
                   <textarea
