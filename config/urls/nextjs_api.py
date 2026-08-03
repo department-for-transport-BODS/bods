@@ -1,6 +1,9 @@
 from django.urls import include, path
 
-from transit_odp.api.views.auth import CurrentUserOrganisationsAPIView
+from transit_odp.api.views.auth import (
+    CurrentUserOrganisationsAPIView,
+    OrganisationStatsAPIView,
+)
 from transit_odp.avl.views.api import (
     create_avl_dataset_api,
     delete_avl_dataset_api,
@@ -42,6 +45,11 @@ urlpatterns = [
         "organisations/",
         CurrentUserOrganisationsAPIView.as_view(),
         name="api-user-organisations",
+    ),
+    path(
+        "organisation/stats/<int:pk1>/",
+        OrganisationStatsAPIView.as_view(),
+        name="api-organisation-stats",
     ),
     path("avl/list/<int:pk1>/", list_avl_datasets_api, name="nextjs-avl-list"),
     path(

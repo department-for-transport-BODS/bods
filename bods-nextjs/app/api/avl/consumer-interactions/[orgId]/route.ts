@@ -1,19 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { proxyDownloadWithPublishFallback } from '../../_utils/download-proxy';
-import { getSessionHeaders, hasSessionCookie } from '../../_utils/session-auth';
+import { getSessionHeaders, hasSessionCookie } from '@/lib/api-session';
+import { proxyDownload } from '../../_utils/download-proxy';
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ orgId: string }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ orgId: string }> },
+) {
   const { orgId } = await params;
 
   if (!hasSessionCookie(request)) {
-    return NextResponse.json({ error: 'Not authenticated. Please sign in and retry.' }, { status: 401 });
+    return NextResponse.json(
+      { error: 'Not authenticated. Please sign in and retry.' },
+      { status: 401 },
+    );
   }
 
-  const sessionHeaders = getSessionHeaders(request);
-
   try {
-    return await proxyDownloadWithPublishFallback(
-      sessionHeaders,
+    return await proxyDownload(
+      getSessionHeaders(request),
       `/org/${orgId}/dataset/data-activity/consumer-interactions/`,
     );
   } catch (err) {

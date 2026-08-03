@@ -25,7 +25,9 @@ export function DataActivityContent() {
     const loadStats = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get<OrganisationStats>(`/api/organisation/stats/${orgId}/`);
+        const response = await api.get<OrganisationStats>(
+          `/api/publish/organisation/stats/${orgId}/`,
+        );
         setStats(response);
       } catch (err) {
         console.error('Error loading stats:', err);

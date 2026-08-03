@@ -1,38 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { HOSTS } from '@/config';
+import { getSessionHeaders, hasSessionCookie } from '@/lib/api-session';
 import { serverConfig } from '@/lib/server-config';
-import { getSessionHeaders, hasSessionCookie } from '../../_utils/session-auth';
 
 const DEACTIVATE_SUBMIT_BODY = 'submit=submit';
+const NUMERIC_ID = /^\d+$/;
+
+function isNumericId(value: string | null): value is string {
+  return Boolean(value && NUMERIC_ID.test(value));
+}
 
 export async function POST(request: NextRequest) {
   const url = new URL(request.url);
   const orgId = url.searchParams.get('orgId');
   const datasetId = url.searchParams.get('datasetId');
 
-  if (!orgId || !datasetId) {
-    return NextResponse.json({ error: 'orgId and datasetId are required' }, { status: 400 });
+  if (!isNumericId(orgId) || !isNumericId(datasetId)) {
+    return NextResponse.json(
+      { error: 'orgId and datasetId must be numeric' },
+      { status: 400 },
+    );
   }
 
   if (!hasSessionCookie(request)) {
-    return NextResponse.json({ error: 'Not authenticated. Please sign in and retry.' }, { status: 401 });
+    return NextResponse.json(
+      { error: 'Not authenticated. Please sign in and retry.' },
+      { status: 401 },
+    );
   }
-
-  const sessionHeaders = getSessionHeaders(request, { includeCsrf: true });
-  const publishHost = new URL(HOSTS.publish).host;
-  sessionHeaders.set('host', publishHost);
-  sessionHeaders.set('x-forwarded-host', publishHost);
 
   try {
     const djangoResp = await postDeactivate(
       `${serverConfig.djangoInternalOrigin}/org/${orgId}/dataset/avl/${datasetId}/deactivate/`,
-      sessionHeaders,
+      getSessionHeaders(request, { includeCsrf: true }),
     );
 
     const location = djangoResp.headers.get('location') || '';
 
     if (djangoResp.status >= 300 && djangoResp.status < 400) {
-      return NextResponse.json({ redirect: toNextJsPath(location, orgId, datasetId) }, { status: 200 });
+      return NextResponse.json(
+        { redirect: toNextJsPath(location, orgId, datasetId) },
+        { status: 200 },
+      );
     }
 
     if (!djangoResp.ok) {
@@ -53,10 +61,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function postDeactivate(
-  url: string,
-  sessionHeaders: Headers,
-): Promise<Response> {
+function postDeactivate(url: string, sessionHeaders: Headers): Promise<Response> {
   const headers = new Headers(sessionHeaders);
   headers.set('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -85,7 +90,9 @@ function toNextJsPath(djangoUrl: string, orgId: string, datasetId: string): stri
 
     return `${pathname}${parsed.search}`;
   } catch {
-    const withPublishPrefix = djangoUrl.startsWith('/org/') ? `/publish${djangoUrl}` : djangoUrl;
+    const withPublishPrefix = djangoUrl.startsWith('/org/')
+      ? `/publish${djangoUrl}`
+      : djangoUrl;
     return withPublishPrefix.replace('/deactivate/', '/archive/');
   }
 }

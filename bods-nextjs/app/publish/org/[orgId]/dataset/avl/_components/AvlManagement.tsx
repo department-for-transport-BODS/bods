@@ -113,7 +113,7 @@ export function AvlManagement() {
   }, [orgId]);
 
   const loadOrganisationStats = useCallback(async (): Promise<OrganisationStats> => {
-    return api.get<OrganisationStats>(`/api/organisation/stats/${orgId}/`);
+    return api.get<OrganisationStats>(`/api/publish/organisation/stats/${orgId}/`);
   }, [orgId]);
 
   const {
