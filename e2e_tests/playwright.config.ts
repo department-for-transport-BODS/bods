@@ -30,6 +30,11 @@ export default defineConfig({
     /* Base URL */
     baseURL: config.baseUrl,
 
+    /* Route dev traffic to the Next.js frontend instead of the Django default */
+    extraHTTPHeaders: {
+      'use-frontend-two': 'true',
+    },
+
     ignoreHTTPSErrors: process.env.IGNORE_HTTPS_ERRORS === 'true' || false,
 
 

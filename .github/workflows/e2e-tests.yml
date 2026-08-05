@@ -1,47 +1,20 @@
 name: E2E Tests
 
 on:
-  push:
-    branches:
-      - develop-commentout
-    paths:
-      - 'e2e_tests/**'
-      - 'bods-nextjs/app/publish/**'
-      - 'bods-nextjs/app/api/fares/**'
-      - '.github/workflows/e2e-tests.yml'
-  pull_request:
-    paths:
-      - 'e2e_tests/**'
-      - 'bods-nextjs/app/publish/**'
-      - 'bods-nextjs/app/api/fares/**'
-      - '.github/workflows/e2e-tests.yml'
-  workflow_run:
-    workflows: ["dev_deployment"]
-    types:
-      - completed
-    branches:
-      - dev
   workflow_dispatch:
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '24'
 
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     environment: dev
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Wait for deployment to stabilize
-        if: github.event_name == 'workflow_run'
-        run: |
-          echo "Waiting 2 minutes for deployment to fully stabilize..."
-          sleep 120
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -100,39 +73,3 @@ jobs:
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Environment:** dev" >> $GITHUB_STEP_SUMMARY
-          echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ github.event_name }}" == "workflow_run" ]; then
-            echo "**Deployment workflow:** ${{ github.event.workflow_run.name }}" >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Comment on PR
-        if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const result = '${{ job.status }}' === 'success'
-              ? 'All E2E tests against dev environment passed'
-              : 'Some E2E tests failed. Check the artifacts for details.';
-
-            const comment = `## ${status} E2E Test Results
-
-            ${result}
-
-            **Environment:** dev
-            **Workflow Run:** [View Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-            <details>
-            <summary>Artifacts</summary>
-
-            - Playwright Report
-            - Test Results
-
-            Download from the workflow run link above.
-            </details>`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
