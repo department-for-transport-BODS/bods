@@ -1361,7 +1361,6 @@ class DownloadBulkDataArchiveView(ResourceCounterMixin, DownloadView):
     def get_download_file(self):
         return generate_signed_url(f"timetables/{self.object.data.name}")
 
-
     def render_to_response(self, **response_kwargs):
         return redirect(self.get_download_file())
 

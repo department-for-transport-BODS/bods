@@ -25,5 +25,3 @@ class DownloadDataCatalogueView(DetailView):
         return redirect(
             generate_signed_url(f"data-catalogue/{self.object.archive.name}")
         )
-
-

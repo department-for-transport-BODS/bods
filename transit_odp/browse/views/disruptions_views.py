@@ -57,10 +57,8 @@ class DownloadDisruptionsDataArchiveView(DownloadView):
     def get_download_file(self):
         return generate_signed_url(f"disruptions/{self.object.data.name}")
 
-
     def render_to_response(self, **response_kwargs):
         return redirect(self.get_download_file())
-
 
 
 class DownloadDisruptionsSIRIVMDataArchiveView(
