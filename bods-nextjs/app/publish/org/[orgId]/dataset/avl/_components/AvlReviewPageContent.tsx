@@ -6,7 +6,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
-import { HOSTS } from '@/config';
+import { HOSTS } from '@/config/client';
 import { formatDateTime } from '@/lib/utils/date';
 import { validateAvlConsentStep } from '@/lib/validation/avl-publish';
 import { useDatasetReview } from '@/hooks/useDatasetReview';

@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionHeaders, hasSessionCookie } from '@/lib/api-session';
-import { config } from '@/runtime-config';
+import { isNumericId } from '@/lib/utils/numeric-id';
+import { serverConfig } from '@/config/server';
 import { toDownloadResponse } from '../../_utils/download-proxy';
-
-const NUMERIC_ID = /^\d+$/;
 
 export async function GET(request: NextRequest) {
   const orgId = new URL(request.url).searchParams.get('orgId');
 
-  if (!orgId || !NUMERIC_ID.test(orgId)) {
+  if (!isNumericId(orgId)) {
     return NextResponse.json({ error: 'orgId must be numeric' }, { status: 400 });
   }
 
@@ -21,7 +20,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await fetch(
-      `${config.djangoInternalOrigin}/org/${orgId}/dataset/timetable/compliance-report/`,
+      `${serverConfig.djangoInternalOrigin}/org/${orgId}/dataset/timetable/compliance-report/`,
       {
         method: 'GET',
         headers: getSessionHeaders(request),

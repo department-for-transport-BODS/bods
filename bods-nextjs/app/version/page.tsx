@@ -4,10 +4,10 @@
  * Displays the current version of the application
  */
 
-import { config } from '@/config';
+import { clientConfig } from '@/config/client';
 
 export default function VersionPage() {
-  const version = config.appVersion;
+  const version = clientConfig.appVersion;
 
   return (
     <div className="govuk-width-container">

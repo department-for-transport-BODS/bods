@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionHeaders, hasSessionCookie } from '@/lib/api-session';
-import { config } from '@/runtime-config';
+import { isNumericId } from '@/lib/utils/numeric-id';
+import { serverConfig } from '@/config/server';
 
 const DEACTIVATE_SUBMIT_BODY = 'submit=submit';
-const NUMERIC_ID = /^\d+$/;
-
-function isNumericId(value: string | null): value is string {
-  return Boolean(value && NUMERIC_ID.test(value));
-}
 
 export async function POST(request: NextRequest) {
   const url = new URL(request.url);
@@ -30,7 +26,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const djangoResp = await postDeactivate(
-      `${config.djangoInternalOrigin}/org/${orgId}/dataset/avl/${datasetId}/deactivate/`,
+      `${serverConfig.djangoInternalOrigin}/org/${orgId}/dataset/avl/${datasetId}/deactivate/`,
       getSessionHeaders(request, { includeCsrf: true }),
     );
 

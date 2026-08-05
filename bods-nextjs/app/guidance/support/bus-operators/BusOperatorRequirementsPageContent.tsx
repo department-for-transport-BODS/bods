@@ -14,7 +14,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { HOSTS } from '@/config';
+import { HOSTS } from '@/config/client';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { PaginationPrevIcon, PaginationNextIcon } from '@/components/shared/PaginationIcons';
 

@@ -5,15 +5,6 @@ on:
     paths:
     - version.txt
   workflow_dispatch:
-    inputs:
-      service:
-        description: Service to deploy
-        required: true
-        default: nextjs
-        type: choice
-        options:
-        - django
-        - nextjs
 
 name: 'uat_deployment'
 
@@ -33,23 +24,18 @@ env:
   PROD_ASSUME_ROLE_ARN: ${{ vars.PROD_ASSUME_ROLE_ARN }}
 
 jobs:
-  uat_deployment:
-    name: 'uat_deployment'
+  build_and_push:
+    name: 'build_and_push'
     runs-on: ubuntu-latest
     environment:
       name: uat
+    outputs:
+      django_image: ${{ steps.check-image.outputs.image }}
+      nextjs_image: ${{ steps.nextjs-image.outputs.image }}
 
     steps:
     - name: Checkout
       uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # 6.0.3
-
-    - name: Detect Next.js version changes
-      id: deploy-changes
-      uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # 4.0.1
-      with:
-        filters: |
-          nextjs:
-           - bods-nextjs/package.json
 
     # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
@@ -101,14 +87,12 @@ jobs:
         fi
 
     - name: Set Next.js image tag
-      if: (github.event_name == 'push' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
       id: nextjs-image
       run: |
         version=$(node --input-type=module -e "import packageJson from './bods-nextjs/package.json' with { type: 'json' }; console.log(packageJson.version)")
         echo "image=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${version}-$(date -u +'%Y%m%d%H%M%S')-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
 
     - name: Build and push Next.js image
-      if: (github.event_name == 'push' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
       run: |
         docker build \
           --tag "${{ steps.nextjs-image.outputs.image }}" \
@@ -121,6 +105,18 @@ jobs:
       if: always()
       run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
+  # Runs concurrently with deploy_nextjs - both only depend on build_and_push.
+  deploy_django:
+    name: 'deploy_django'
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    environment:
+      name: uat
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # 6.0.3
+
     # Configure AWS credentials against the BODS Shared-Services account
     - name: Configure AWS credentials in Shared-Services
       uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # 6.2.0
@@ -130,7 +126,6 @@ jobs:
         role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
         role-duration-seconds: 3600
         role-skip-session-tagging: true
-        unset-current-credentials: true
 
     # Now assume a role in the Environment Specific account
     - name: Configure AWS Credentials in the environment specific account
@@ -149,7 +144,7 @@ jobs:
         service: celeryflower
         container: celeryflower
         task_definition_family: bodds_celeryflower_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.django_image }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -159,7 +154,7 @@ jobs:
         service: celeryworker
         container: celeryworker
         task_definition_family: bodds_celeryworker_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.django_image }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -169,7 +164,7 @@ jobs:
         service: celerybeat
         container: celerybeat
         task_definition_family: bodds_celerybeat_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.django_image }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -179,7 +174,7 @@ jobs:
         service: frontend
         container: frontend
         task_definition_family: bodds_frontend_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.django_image }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -189,7 +184,7 @@ jobs:
         service: api_frontend
         container: frontend
         task_definition_family: bodds_api_frontend_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.django_image }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -199,18 +194,7 @@ jobs:
         service: api_frontend_internal
         container: frontend
         task_definition_family: bodds_api_frontend_internal_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
-        cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
-        wait_for_service_stability: false
-
-    - name: Update frontend_v2 task
-      if: (github.event_name == 'push' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
-      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@v1
-      with:
-        service: frontend_v2
-        container: frontend_v2
-        task_definition_family: bodds_frontend_v2_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.nextjs-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.django_image }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -220,7 +204,7 @@ jobs:
         service: pg_migration
         container: db-migrate
         environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.django_image }}
 
     - name: Update pg_superuser
       uses: "./.github/workflows/templates/register_task_def"
@@ -228,20 +212,13 @@ jobs:
         service: pg_superuser
         container: pg-superuser
         environment: ${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.django_image }}
 
     - name: Wait for ECS service stability
       uses: department-for-transport-BODS/.github/actions/wait-for-ecs-service-stability@v1
       with:
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         service_names: 'celeryflower celeryworker celerybeat frontend api_frontend api_frontend_internal'
-
-    - name: Wait for frontend_v2 service stability
-      if: (github.event_name == 'push' && steps.deploy-changes.outputs.nextjs == 'true') || (github.event_name == 'workflow_dispatch' && inputs.service == 'nextjs')
-      uses: department-for-transport-BODS/.github/actions/wait-for-ecs-service-stability@v1
-      with:
-        cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
-        service_names: frontend_v2
 
     - name: Obtain SSM parameters for pg migration
       id: params
@@ -261,3 +238,49 @@ jobs:
         subnets: ${{ steps.params.outputs.SUBNETS }}
         security_groups: ${{ steps.params.outputs.SECURITY_GROUPS }}
         environment: ${{ env.ENVIRONMENT_NAME }}
+
+  # Runs concurrently with deploy_django - both only depend on build_and_push.
+  deploy_nextjs:
+    name: 'deploy_nextjs'
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    environment:
+      name: uat
+
+    steps:
+    # Configure AWS credentials against the BODS Shared-Services account
+    - name: Configure AWS credentials in Shared-Services
+      uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # 6.2.0
+      with:
+        aws-region: ${{ env.AWS_REGION }}
+        role-to-assume: ${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+        role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+
+    # Now assume a role in the Environment Specific account
+    - name: Configure AWS Credentials in the environment specific account
+      uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # 6.2.0
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        role-to-assume: ${{ vars.ASSUME_ROLE_ARN }}
+        role-session-name: testAWSCLISession
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+        role-chaining: true
+
+    - name: Update frontend_v2 task
+      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@v1
+      with:
+        service: frontend_v2
+        container: frontend_v2
+        task_definition_family: bodds_frontend_v2_${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ needs.build_and_push.outputs.nextjs_image }}
+        cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
+        wait_for_service_stability: false
+
+    - name: Wait for frontend_v2 service stability
+      uses: department-for-transport-BODS/.github/actions/wait-for-ecs-service-stability@v1
+      with:
+        cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
+        service_names: frontend_v2

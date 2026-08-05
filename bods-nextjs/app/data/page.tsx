@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
-import { HOSTS } from '@/config';
+import { HOSTS } from '@/config/client';
 
 export default function DataBrowsePage() {
   return (

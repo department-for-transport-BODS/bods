@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
-import { HOSTS } from '@/config';
-import { config } from '@/runtime-config';
+import { HOSTS } from '@/config/client';
+import { serverConfig } from '@/config/server';
 
 const BODYLESS_METHODS = new Set(['GET', 'HEAD']);
 const REQUEST_HEADERS_TO_REMOVE = [
@@ -43,7 +43,7 @@ export async function forwardToDjango(
   upstreamPath: string,
   upstreamHost: string,
 ): Promise<Response> {
-  const upstreamUrl = new URL(upstreamPath, config.djangoInternalOrigin);
+  const upstreamUrl = new URL(upstreamPath, serverConfig.djangoInternalOrigin);
   upstreamUrl.search = request.nextUrl.search;
 
   const headers = new Headers(request.headers);

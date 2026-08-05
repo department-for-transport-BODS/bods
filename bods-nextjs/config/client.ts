@@ -1,4 +1,4 @@
-import { version } from './package.json';
+import { version } from '../package.json';
 
 const bodsBaseDomain = process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN || 'localhost';
 const isLocalDomain = bodsBaseDomain === 'localhost';
@@ -23,7 +23,7 @@ export const HOSTS = {
 } as const;
 
 // Build-time, client-safe configuration; do not add runtime-only or secret values.
-export const config = {
+export const clientConfig = {
   // App
   appVersion: version,
   bodsBaseUrl: bodsBaseDomain,

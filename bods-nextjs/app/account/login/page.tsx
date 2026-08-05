@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
-import { HOSTS } from '@/config';
+import { HOSTS } from '@/config/client';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');

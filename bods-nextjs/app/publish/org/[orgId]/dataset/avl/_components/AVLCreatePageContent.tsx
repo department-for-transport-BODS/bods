@@ -6,7 +6,7 @@ import { AvlUploadFields, DatasetDescriptionFields, PublishStepper } from '@/com
 import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
-import { HOSTS } from '@/config';
+import { HOSTS } from '@/config/client';
 import { AvlReviewHelpAside } from './AvlReviewAuxiliaryPanels';
 
 type Step = 'description' | 'upload';

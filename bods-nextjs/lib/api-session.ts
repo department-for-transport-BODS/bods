@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { HOSTS } from '@/config';
+import { HOSTS } from '@/config/client';
 
 const SESSION_COOKIE_PATTERN = /(?:^|;\s*)sessionid=[^;]+/;
 

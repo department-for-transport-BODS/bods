@@ -7,7 +7,7 @@
  */
 
 import { connection } from 'next/server';
-import { config } from '@/runtime-config';
+import { serverConfig } from '@/config/server';
 
 export default async function ContactPage() {
   await connection();
@@ -38,10 +38,10 @@ export default async function ContactPage() {
               </p>
               <ul className="govuk-list">
                 <li>
-                  Telephone: {config.supportPhone}
+                  Telephone: {serverConfig.supportPhone}
                 </li>
                 <li>
-                  Email: <a className="govuk-link" href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
+                  Email: <a className="govuk-link" href={`mailto:${serverConfig.supportEmail}`}>{serverConfig.supportEmail}</a>
                 </li>
               </ul>
             </div>
