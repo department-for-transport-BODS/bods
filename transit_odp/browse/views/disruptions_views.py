@@ -6,7 +6,6 @@ from django.views.generic.list import ListView
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.shortcuts import redirect
-from waffle import flag_is_active
 
 from transit_odp.browse.cfn import generate_signed_url
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
@@ -56,16 +55,12 @@ class DownloadDisruptionsDataArchiveView(DownloadView):
         return archive
 
     def get_download_file(self):
-        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
-        if is_direct_s3_url_active:
-            return generate_signed_url(f"disruptions/{self.object.data.name}")
-        return self.object.data
+        return generate_signed_url(f"disruptions/{self.object.data.name}")
+
 
     def render_to_response(self, **response_kwargs):
-        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
-        if is_direct_s3_url_active:
-            return redirect(self.get_download_file())
-        return super().render_to_response(**response_kwargs)
+        return redirect(self.get_download_file())
+
 
 
 class DownloadDisruptionsSIRIVMDataArchiveView(
