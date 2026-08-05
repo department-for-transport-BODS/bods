@@ -10,7 +10,7 @@ describe('public BODS hosts', () => {
     process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN = 'localhost';
     jest.resetModules();
 
-    const { HOSTS } = await import('./config');
+    const { HOSTS } = await import('./config/client');
 
     expect(HOSTS).toEqual({
       www: 'http://localhost:8000',
@@ -24,7 +24,7 @@ describe('public BODS hosts', () => {
     process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN = 'dev.bus-data.dft.gov.uk';
     jest.resetModules();
 
-    const { HOSTS } = await import('./config');
+    const { HOSTS } = await import('./config/client');
 
     expect(HOSTS).toEqual({
       www: 'https://www.dev.bus-data.dft.gov.uk',

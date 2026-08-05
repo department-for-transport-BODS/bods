@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { HOSTS } from '@/config';
+import { HOSTS } from '@/config/client';
 import { AvlUploadFields, PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';

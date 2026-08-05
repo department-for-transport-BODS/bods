@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { connection } from 'next/server';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { config } from '@/runtime-config';
+import { serverConfig } from '@/config/server';
 import { AVLUpdatePageContent } from '../_components/AVLUpdatePageContent';
 
 export const metadata: Metadata = {
@@ -13,7 +13,7 @@ export default async function AVLUpdatePage() {
 
   return (
     <ProtectedRoute>
-      <AVLUpdatePageContent avlIpAllowList={config.avlIpAllowList} />
+      <AVLUpdatePageContent avlIpAllowList={serverConfig.avlIpAllowList} />
     </ProtectedRoute>
   );
 }
