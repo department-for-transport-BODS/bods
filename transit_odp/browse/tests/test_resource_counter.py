@@ -11,7 +11,7 @@ from transit_odp.organisation.constants import FaresType
 from transit_odp.pipelines.factories import BulkDataArchiveFactory
 from transit_odp.site_admin.models import ResourceRequestCounter
 
-pytestmark = pytest.mark.django_db
+pytestmark = pytest.mark.django_db(transaction=True)
 
 SIGNED_URL = "https://example.test/signed-url"
 

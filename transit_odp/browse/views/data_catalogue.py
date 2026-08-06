@@ -19,7 +19,7 @@ class DownloadDataCatalogueView(DetailView):
             raise Http404()
         return obj
 
-    def get(self):
+    def get(self, request, *args, **kwargs):
         self.object = self.get_object()
 
         return redirect(

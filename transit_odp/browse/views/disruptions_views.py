@@ -6,6 +6,7 @@ from django.views.generic.list import ListView
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.shortcuts import redirect
+from waffle import flag_is_active
 
 from transit_odp.browse.cfn import generate_signed_url
 from transit_odp.common.view_mixins import DownloadView, ResourceCounterMixin
