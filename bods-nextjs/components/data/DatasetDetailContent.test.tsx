@@ -23,13 +23,6 @@ jest.mock('./RouteMap', () => ({
   RouteMap: (props: unknown) => mockRouteMap(props),
 }));
 
-jest.mock('@/config', () => ({
-  config: {
-    mapboxToken: 'test-mapbox-token',
-    djangoApiUrl: 'http://localhost:8000',
-  },
-}));
-
 const mockDataset: Dataset = {
   id: 123,
   organisationId: 456,
@@ -61,6 +54,15 @@ const mockDataset: Dataset = {
 };
 
 describe('DatasetDetailContent', () => {
+  const renderDataset = (dataset = mockDataset) =>
+    render(
+      <DatasetDetailContent
+        dataset={dataset}
+        formattedLastUpdated="15 Jan 2024 14:30"
+        mapboxToken="test-mapbox-token"
+      />,
+    );
+
   beforeEach(() => {
     mockRouteMap.mockClear();
   });
@@ -182,11 +184,12 @@ describe('DatasetDetailContent', () => {
   });
 
   it('passes the live revision ID to the route map', () => {
-    render(<DatasetDetailContent dataset={mockDataset} formattedLastUpdated="15 Jan 2024 14:30" />);
+    renderDataset();
 
     expect(mockRouteMap).toHaveBeenCalledWith(
       expect.objectContaining({
         revisionId: mockDataset.revisionId,
+        mapboxToken: 'test-mapbox-token',
       })
     );
   });

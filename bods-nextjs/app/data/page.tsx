@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
-import { HOSTS } from '@/config';
+import { HOSTS } from '@/config/client';
 
 export default function DataBrowsePage() {
   return (
@@ -8,7 +8,7 @@ export default function DataBrowsePage() {
       <div className="govuk-width-container">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: HOSTS.root },
+            { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Find Bus Open Data', href: '/' },
             { label: 'Browse', current: true },
           ]}

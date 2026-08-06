@@ -9,11 +9,13 @@
  */
 
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { DatasetDetailContent } from '@/components/data/DatasetDetailContent';
 import type { Dataset } from '@/types';
-import { config } from '@/config';
+import { HOSTS } from '@/config/client';
+import { serverConfig } from '@/config/server';
 
 interface DatasetDetailPageProps {
   params: Promise<{ id: string }>;
@@ -41,14 +43,23 @@ function formatDatasetTimestamp(dateString: string): string {
  */
 async function getDataset(id: string): Promise<Dataset | null> {
   try {
-    const url = `${config.djangoApiUrl}/api/v1/dataset/${id}/`;
-    
+    const url = new URL(
+      `/api/v1/dataset/${encodeURIComponent(id)}/`,
+      serverConfig.djangoInternalOrigin,
+    );
+    const requestHeaders = await headers();
+    const upstreamHeaders = new Headers();
+    const cookie = requestHeaders.get('cookie');
+    if (cookie) {
+      upstreamHeaders.set('cookie', cookie);
+    }
+    const dataHost = new URL(HOSTS.data).host;
+    upstreamHeaders.set('host', dataHost);
+    upstreamHeaders.set('x-forwarded-host', dataHost);
+
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
+      headers: upstreamHeaders,
     });
 
     if (!response.ok) {
@@ -105,7 +116,11 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <DatasetDetailContent dataset={dataset} formattedLastUpdated={formattedLastUpdated} />
+            <DatasetDetailContent
+              dataset={dataset}
+              formattedLastUpdated={formattedLastUpdated}
+              mapboxToken={serverConfig.mapboxToken}
+            />
           </div>
 
           <div className="govuk-grid-column-one-third">

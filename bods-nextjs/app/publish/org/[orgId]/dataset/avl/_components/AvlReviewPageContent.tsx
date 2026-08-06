@@ -1,14 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
-import { config } from '@/config';
+import { HOSTS } from '@/config/client';
 import { formatDateTime } from '@/lib/utils/date';
 import { validateAvlConsentStep } from '@/lib/validation/avl-publish';
+import { useDatasetReview } from '@/hooks/useDatasetReview';
 import { AvlReviewErrorGuidance, AvlReviewHelpAside } from './AvlReviewAuxiliaryPanels';
 import { statusIndicatorClass, statusLabel } from './avlStatus';
 
@@ -33,8 +34,6 @@ type AvlReviewPageContentProps = {
   isUpdate: boolean;
 };
 
-const POLL_INTERVAL_MS = 1000;
-
 export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -42,12 +41,21 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
   const datasetId = params.datasetId as string;
   const refreshToken = searchParams.get('refresh') || '';
 
-  const [statusData, setStatusData] = useState<AvlReviewStatusResponse | null>(null);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const {
+    statusData,
+    processingProgress,
+    isInitialLoading,
+    errorMessage,
+    setErrorMessage,
+  } = useDatasetReview<AvlReviewStatusResponse>(
+    datasetId,
+    `/api/publish/avl/review-status/${orgId}/${datasetId}/`,
+    'Unable to check processing status. Please refresh and try again.',
+    refreshToken,
+  );
   const [isPublishing, setIsPublishing] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [errorMessage, setErrorMessage] = useState('');
 
   const updateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
   const deleteUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/delete`;
@@ -55,57 +63,8 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
     ? `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`
     : `/publish/org/${orgId}/dataset/avl/${datasetId}/review`;
   const editUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/dataset-edit?mode=revision&redirect=${encodeURIComponent(reviewUrl)}`;
-  const djangoApiBaseUrl = config.djangoApiBaseUrl;
-  const djangoPublishBaseUrl = djangoApiBaseUrl.replace('://localhost', '://publish.localhost');
-  const supportBusOperatorsUrl = `${djangoPublishBaseUrl}/guidance/operator-requirements/`;
-  const contactSupportUrl = `${djangoApiBaseUrl}/contact/`;
-
-  useEffect(() => {
-    let isCancelled = false;
-    let intervalId: ReturnType<typeof setInterval> | null = null;
-
-    const fetchStatus = async () => {
-      try {
-        const data = await api.get<AvlReviewStatusResponse>(
-          `/api/avl/review-status/${orgId}/${datasetId}/?t=${Date.now()}`,
-          { cache: 'no-store' },
-        );
-
-        if (!isCancelled) {
-          setStatusData(data);
-          setErrorMessage('');
-          setIsInitialLoading(false);
-        }
-
-        if (!data.loading && intervalId) {
-          clearInterval(intervalId);
-        }
-      } catch {
-        if (!isCancelled) {
-          setErrorMessage('Unable to check processing status. Please refresh and try again.');
-          setIsInitialLoading(false);
-        }
-      }
-    };
-
-    const refreshStatus = () => {
-      void fetchStatus();
-    };
-
-    intervalId = setInterval(fetchStatus, POLL_INTERVAL_MS);
-    fetchStatus();
-    window.addEventListener('pageshow', refreshStatus);
-    window.addEventListener('focus', refreshStatus);
-
-    return () => {
-      isCancelled = true;
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-      window.removeEventListener('pageshow', refreshStatus);
-      window.removeEventListener('focus', refreshStatus);
-    };
-  }, [datasetId, orgId, refreshToken]);
+  const supportBusOperatorsUrl = `${HOSTS.publish}/guidance/operator-requirements/`;
+  const contactSupportUrl = `${HOSTS.www}/contact/`;
 
   const handlePublish = async () => {
     if (isPublishing) {
@@ -122,7 +81,7 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
     setErrorMessage('');
 
     try {
-      const publishPath = `/api/avl/publish/${orgId}/${datasetId}/`;
+      const publishPath = `/api/publish/avl/publish/${orgId}/${datasetId}/`;
       const data = await api.post<{ error?: string; redirect?: string }>(
         publishPath,
       );
@@ -137,7 +96,7 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
   };
 
   const loading = statusData?.loading ?? true;
-  const progress = Math.max(0, Math.min(100, statusData?.progress ?? 0));
+  const progress = Math.max(0, Math.min(100, statusData?.progress ?? processingProgress));
   const reviewErrorMessage = statusData?.error || '';
 
   return (

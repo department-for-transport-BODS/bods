@@ -1,4 +1,8 @@
-export function HelpSection({ supportEmail }: { supportEmail: string }) {
+import { useSupportConfig } from '@/app/guidance/support/SupportConfigProvider';
+
+export function HelpSection() {
+  const { supportEmail } = useSupportConfig();
+
   return (
     <>
       <h1 className="govuk-heading-l">Data issues</h1>

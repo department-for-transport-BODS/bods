@@ -183,7 +183,7 @@ function FaresCreatePageContent() {
         formData.set('upload_file', uploadFile, uploadFile.name);
       }
 
-      const data = await api.post<{ redirect?: string }>(`/api/fares/create/${orgId}/`, formData);
+      const data = await api.post<{ redirect?: string }>(`/api/publish/fares/create/${orgId}/`, formData);
 
       if (!data.redirect) {
         setErrorMessage('Unexpected response from server.');

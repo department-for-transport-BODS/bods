@@ -7,7 +7,7 @@ export default function AvlPage() {
       breadcrumbLabel="Location Data"
       description="Search for a specific operator or NOC"
       placeholder="Search by NOC or Operator"
-      endpointPath="/api/v1/datafeed/"
+      endpointPath="/api/browser/avl/"
       typeLabel="Bus location data"
       idLabel="Data feed ID:"
       lastUpdatedLabel="Last automated update:"

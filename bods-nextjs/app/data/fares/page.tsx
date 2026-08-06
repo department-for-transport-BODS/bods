@@ -7,7 +7,7 @@ export default function FaresPage() {
       breadcrumbLabel="Fares Data"
       description="Search for a specific operator or NOC"
       placeholder="Search by NOC or Operator"
-      endpointPath="/api/v1/fares/dataset/"
+      endpointPath="/api/browser/fares/"
       typeLabel="Fares data"
       idLabel="Data set ID:"
       lastUpdatedLabel="Last updated:"

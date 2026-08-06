@@ -9,7 +9,7 @@
 
 import { useState, useEffect } from 'react';
 import type { FilterOption } from '@/components/data/DatasetFilters';
-import { config } from '@/config';
+import { dataApiPath } from '@/lib/api-paths';
 
 interface FilterOptionsData {
   areas: FilterOption[];
@@ -21,9 +21,7 @@ interface FilterOptionsData {
 /**
  * Fetch filter options from the API
  * 
- * Uses Django REST Framework endpoints:
- * - /api/v1/admin-area/ for regions
- * - /api/v1/organisation/ for operators
+ * Uses the public Django browser endpoints for regions and operators.
  */
 export function useFilterOptions(): FilterOptionsData {
   const [areas, setAreas] = useState<FilterOption[]>([]);
@@ -38,17 +36,11 @@ export function useFilterOptions(): FilterOptionsData {
         setError(null);
 
         const [areasResponse, orgsResponse] = await Promise.all([
-          fetch(`${config.djangoApiUrl}/api/v1/admin-area/`, {
+          fetch(dataApiPath('/api/browser/admin-areas/'), {
             credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-            },
           }),
-          fetch(`${config.djangoApiUrl}/api/v1/organisation/?is_active=true`, {
+          fetch(dataApiPath('/api/browser/organisations/'), {
             credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-            },
           }),
         ]);
 

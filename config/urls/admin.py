@@ -20,6 +20,7 @@ from transit_odp.users.views.auth import InviteOnlySignupView
 
 urlpatterns = [
     path("", AdminHomeView.as_view(), name="home"),
+    path("api/auth/", include("config.urls.session_auth_api")),
     path(
         "metrics/",
         include(metrics_paths),

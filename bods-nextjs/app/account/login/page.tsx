@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
-import { HOSTS } from '@/config';
+import { HOSTS } from '@/config/client';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -36,7 +36,7 @@ export default function LoginPage() {
     <div className="govuk-width-container">
       <Breadcrumbs
         items={[
-          { label: 'Bus Open Data Service', href: HOSTS.root },
+          { label: 'Bus Open Data Service', href: HOSTS.www },
           { label: 'Publish Bus Open Data', href: '/' },
           { label: 'Sign in', current: true },
         ]}

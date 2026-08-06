@@ -40,6 +40,7 @@ from transit_odp.users.views.account import (
 
 urlpatterns = [
     path("", view=BrowseHomeView.as_view(), name="home"),
+    path("api/auth/", include("config.urls.session_auth_api")),
     path("search/", view=SearchSelectView.as_view(), name="select-data"),
     path("downloads/", view=DownloadsView.as_view(), name="downloads"),
     path("api/", view=ApiSelectView.as_view(), name="api-select"),

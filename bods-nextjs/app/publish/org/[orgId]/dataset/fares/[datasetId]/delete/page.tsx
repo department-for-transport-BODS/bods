@@ -22,7 +22,7 @@ function FaresDeletePageContent() {
   useEffect(() => {
     api
       .get<{ name?: string; hasLiveRevision?: boolean }>(
-        `/api/fares/review-status/${orgId}/${datasetId}/`,
+        `/api/publish/fares/review-status/${orgId}/${datasetId}/`,
       )
       .then((data: { name?: string; hasLiveRevision?: boolean }) => {
         setDatasetName(data.name || '');
@@ -47,7 +47,7 @@ function FaresDeletePageContent() {
       const data = await api.post<{
         redirect?: string;
         dataset_name?: string;
-      }>(`/api/fares/delete/${orgId}/${datasetId}/`);
+      }>(`/api/publish/fares/delete/${orgId}/${datasetId}/`);
 
       const successUrl = `${data.redirect || `/publish/org/${orgId}/dataset/fares/${datasetId}/delete/success`}?name=${encodeURIComponent(data.dataset_name || datasetName)}`;
       globalThis.location.href = successUrl;

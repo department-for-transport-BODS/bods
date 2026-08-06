@@ -78,7 +78,11 @@ paths:
             maximum: 100
             example: 0
 
-      responses: {}
+      responses:
+        200:
+          description: Successfully retrieved datasets
+        400:
+          description: Invalid data supplied
 
   /api/v1/fares/dataset/{datasetID}:
     get:
@@ -96,7 +100,13 @@ paths:
             type: integer
             format: int64
             example: 86
-      responses: {}
+      responses:
+        200:
+          description: Successfully retrieved dataset
+        400:
+          description: Invalid data supplied
+        404:
+          description: Dataset not found
 
 components:
   schemas:
