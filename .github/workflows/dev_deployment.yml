@@ -17,6 +17,7 @@ defaults:
 
 env:
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
+  ECR_NEXTJS_REPOSITORY_NAME: ${{ secrets.ECR_NEXTJS_REPOSITORY }}
   ECR_BASE_REPOSITORY_NAME: ${{ secrets.ECR_BASE_REPOSITORY }}
   ENVIRONMENT_NAME: dev
   AWS_REGION: ${{ vars.AWS_REGION }}
@@ -120,7 +121,7 @@ jobs:
         version=$(node --input-type=module -e "import packageJson from './bods-nextjs/package.json' with { type: 'json' }; console.log(packageJson.version)")
         tag="${version}-$(date -u +'%Y%m%d%H%M%S')-${GITHUB_SHA::7}"
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-        echo "image=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${tag}" >> "$GITHUB_OUTPUT"
+        echo "image=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_NEXTJS_REPOSITORY_NAME }}:${tag}" >> "$GITHUB_OUTPUT"
 
     - name: Build and push Next.js image
       run: |
