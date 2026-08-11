@@ -18,6 +18,7 @@ defaults:
 
 env:
   ECR_REPOSITORY_NAME: ${{ secrets.ECR_REPOSITORY }}
+  ECR_NEXTJS_REPOSITORY_NAME: ${{ secrets.ECR_NEXTJS_REPOSITORY }}
   ENVIRONMENT_NAME: test
   AWS_REGION: ${{ vars.AWS_REGION }}
   BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN: ${{ vars.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
@@ -93,7 +94,7 @@ jobs:
         version=$(node --input-type=module -e "import packageJson from './bods-nextjs/package.json' with { type: 'json' }; console.log(packageJson.version)")
         tag="${version}-$(date -u +'%Y%m%d%H%M%S')-${GITHUB_SHA::7}"
         echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-        echo "image=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${tag}" >> "$GITHUB_OUTPUT"
+        echo "image=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_NEXTJS_REPOSITORY_NAME }}:${tag}" >> "$GITHUB_OUTPUT"
 
     - name: Build and push Next.js image
       run: |
@@ -278,7 +279,7 @@ jobs:
         service: frontend_v2
         container: frontend_v2
         task_definition_family: bodds_frontend_v2_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.nextjs_tag }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_NEXTJS_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.nextjs_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
