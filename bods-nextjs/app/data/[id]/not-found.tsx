@@ -6,6 +6,7 @@
  */
 
 import Link from 'next/link';
+import { HOSTS, dataPath, wwwPath } from '@/config/client';
 
 export default function DatasetNotFound() {
   return (
@@ -22,17 +23,17 @@ export default function DatasetNotFound() {
             </p>
             <ul className="govuk-list govuk-list--bullet">
               <li>
-                <Link href="/data" className="govuk-link">
+                <Link href={HOSTS.data} className="govuk-link">
                   Browse all datasets
                 </Link>
               </li>
               <li>
-                <Link href="/data?status=live" className="govuk-link">
+                <Link href={dataPath('?status=live')} className="govuk-link">
                   View published datasets
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="govuk-link">
+                <Link href={wwwPath('/contact')} className="govuk-link">
                   Contact us for support
                 </Link>
               </li>

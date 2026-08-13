@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { HOSTS } from '@/config/client';
+import { DJANGO_HOSTS } from '@/config/server';
 
 const SESSION_COOKIE_PATTERN = /(?:^|;\s*)sessionid=[^;]+/;
 
@@ -22,7 +22,7 @@ export function getSessionHeaders(
     }
   }
 
-  const publishHost = new URL(HOSTS.publish).host;
+  const publishHost = new URL(DJANGO_HOSTS.publish).host;
   headers.set('host', publishHost);
   headers.set('x-forwarded-host', publishHost);
 

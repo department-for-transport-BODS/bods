@@ -6,14 +6,15 @@
 
 'use client';
 
+import { wwwPath } from '@/config/client';
 import { GovUkCrownIcon } from './icons/GovUkCrownIcon';
 import { OpenGovernmentLicenceLogo } from './icons/OpenGovernmentLicenceLogo';
 
 const footerLinks = [
-  { href: '/cookie', text: 'Cookies' },
-  { href: '/contact', text: 'Contact' },
-  { href: '/accessibility', text: 'Accessibility' },
-  { href: '/privacy-policy', text: 'Privacy' },
+  { href: wwwPath('/cookie'), text: 'Cookies' },
+  { href: wwwPath('/contact'), text: 'Contact' },
+  { href: wwwPath('/accessibility'), text: 'Accessibility' },
+  { href: wwwPath('/privacy-policy'), text: 'Privacy' },
 ];
 
 export function Footer() {

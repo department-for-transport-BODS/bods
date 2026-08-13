@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import PublishPage from './page';
+import { publishAppPath, wwwPath } from '@/config/client';
 import { useAuth } from '@/hooks/useAuth';
 
 jest.mock('@/components/auth/ProtectedRoute', () => ({
@@ -46,8 +47,8 @@ describe('PublishPage', () => {
         is_agent_user: false,
         organisation_id: 123,
       },
-      '/publish/org/123/dataset',
-      '/publish/org/123/dataset/fares',
+      publishAppPath('/org/123/dataset'),
+      publishAppPath('/org/123/dataset/fares'),
     ],
     [
       'single-organisation users without an organisation id',
@@ -57,8 +58,8 @@ describe('PublishPage', () => {
         is_agent_user: false,
         organisation_id: null,
       },
-      '/publish/org',
-      '/publish/org',
+      publishAppPath('/org'),
+      publishAppPath('/org'),
     ],
     [
       'multi-organisation users',
@@ -68,8 +69,8 @@ describe('PublishPage', () => {
         is_agent_user: false,
         organisation_id: 123,
       },
-      '/publish/org',
-      '/publish/org',
+      publishAppPath('/org'),
+      publishAppPath('/org'),
     ],
   ])(
     'uses the expected dashboard links for %s',
@@ -88,9 +89,9 @@ describe('PublishPage', () => {
 
     render(<PublishPage />);
 
-    expect(screen.getByRole('link', { name: 'Guide me' })).toHaveAttribute('href', '/publish/guide-me');
-    expect(screen.getByRole('link', { name: 'Manage your account' })).toHaveAttribute('href', '/publish/account');
-    expect(screen.getByRole('link', { name: 'Service changelog' })).toHaveAttribute('href', '/changelog');
-    expect(screen.getByRole('link', { name: 'Contact us for technical issues' })).toHaveAttribute('href', '/contact');
+    expect(screen.getByRole('link', { name: 'Guide me' })).toHaveAttribute('href', publishAppPath('/guide-me'));
+    expect(screen.getByRole('link', { name: 'Manage your account' })).toHaveAttribute('href', publishAppPath('/account'));
+    expect(screen.getByRole('link', { name: 'Service changelog' })).toHaveAttribute('href', wwwPath('/changelog'));
+    expect(screen.getByRole('link', { name: 'Contact us for technical issues' })).toHaveAttribute('href', wwwPath('/contact'));
   });
 });

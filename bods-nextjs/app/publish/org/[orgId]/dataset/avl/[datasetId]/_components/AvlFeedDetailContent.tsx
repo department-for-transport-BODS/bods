@@ -10,6 +10,7 @@ import { AvlCompliancePanels } from './AvlCompliancePanels';
 import { AvlFeedDetailSidebar } from './AvlFeedDetailSidebar';
 import { AvlFeedDetailActions } from './AvlFeedDetailActions';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
+import { HOSTS, publishAppPath } from '@/config/client';
 
 export interface AvlFeedDetail {
   datasetId: number;
@@ -78,7 +79,7 @@ export function AvlFeedDetailContent() {
                 <h2 className="govuk-error-summary__title">Unable to load feed details</h2>
                 <div className="govuk-error-summary__body">
                   <p className="govuk-body">{error || 'Feed not found'}</p>
-                  <Link className="govuk-link" href={`/publish/org/${orgId}/dataset/avl`}>
+                  <Link className="govuk-link" href={publishAppPath(`/org/${orgId}/dataset/avl`)}>
                     Back to feeds
                   </Link>
                 </div>
@@ -99,18 +100,18 @@ export function AvlFeedDetailContent() {
       <Breadcrumbs
         items={[
           { label: 'Bus Open Data Service', href: '/' },
-          { label: 'Publish Bus Open Data', href: '/publish/' },
+          { label: 'Publish Bus Open Data', href: HOSTS.publish },
           {
             label: 'Choose data type',
-            href: `/publish/`,
+            href: HOSTS.publish,
           },
           {
             label: 'Bus Location Data Feeds',
-            href: `/publish/org/${orgId}/dataset/avl`,
+            href: publishAppPath(`/org/${orgId}/dataset/avl`),
           },
           {
             label: feedDetail.name,
-            href: `/publish/org/${orgId}/dataset/avl/${datasetId}`,
+            href: publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}`),
             current: true,
             truncateAt: 20,
           },

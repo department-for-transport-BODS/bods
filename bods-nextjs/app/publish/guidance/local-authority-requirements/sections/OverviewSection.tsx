@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { publishAppPath } from '@/config/client';
 import { RequirementsTable } from './RequirementsTable';
 
 export function OverviewSection() {
@@ -15,7 +16,7 @@ export function OverviewSection() {
       <p className="govuk-body">
         Local transport authorities are required to maintain NaPTAN stop data and should enable
         operators to publish data to this service to fulfil the{' '}
-        <Link className="govuk-link" href="/guidance/support/bus-operators">
+        <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements')}>
           operator requirements
         </Link>
         . Local transport authorities should be{' '}

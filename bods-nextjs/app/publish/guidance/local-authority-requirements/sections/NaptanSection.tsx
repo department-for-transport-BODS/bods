@@ -1,4 +1,4 @@
-import { useSupportConfig } from '@/app/guidance/support/SupportConfigProvider';
+import { useSupportConfig } from '@/components/shared/SupportConfigProvider';
 
 export function NaptanSection() {
   const { supportEmail } = useSupportConfig();

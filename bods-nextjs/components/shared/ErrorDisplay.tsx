@@ -6,6 +6,7 @@
 'use client';
 
 import Link from 'next/link';
+import { wwwPath } from '@/config/client';
 
 type ErrorType = 'network' | 'server' | 'notFound' | 'forbidden' | 'generic';
 
@@ -81,7 +82,7 @@ export function ErrorDisplay({
 
               {showContactLink && (
                 <Link
-                  href="/contact"
+                  href={wwwPath('/contact')}
                   className="govuk-link"
                 >
                   Contact support

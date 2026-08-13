@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HOSTS } from '@/config/client';
 
 export function DataCatalogueSection() {
   return (
@@ -9,7 +10,7 @@ export function DataCatalogueSection() {
         It covers primary sources (TransXChange timetables, SIRI-VM location and NeTEx fares).
       </p>
       <p className="govuk-body">
-        <Link className="govuk-link" href="/data">
+        <Link className="govuk-link" href={HOSTS.data}>
           Download the data catalogue
         </Link>{' '}
         for CSV files that describe data sets, organisations, locations and associated NOCs.

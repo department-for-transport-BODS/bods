@@ -14,8 +14,8 @@ import Link from 'next/link';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { DatasetDetailContent } from '@/components/data/DatasetDetailContent';
 import type { Dataset } from '@/types';
-import { HOSTS } from '@/config/client';
-import { serverConfig } from '@/config/server';
+import { HOSTS, dataPath, wwwPath } from '@/config/client';
+import { DJANGO_HOSTS, serverConfig } from '@/config/server';
 
 interface DatasetDetailPageProps {
   params: Promise<{ id: string }>;
@@ -53,7 +53,7 @@ async function getDataset(id: string): Promise<Dataset | null> {
     if (cookie) {
       upstreamHeaders.set('cookie', cookie);
     }
-    const dataHost = new URL(HOSTS.data).host;
+    const dataHost = new URL(DJANGO_HOSTS.data).host;
     upstreamHeaders.set('host', dataHost);
     upstreamHeaders.set('x-forwarded-host', dataHost);
 
@@ -93,9 +93,9 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
     <div className="govuk-width-container">
       <Breadcrumbs
         items={[
-          { label: 'Home', href: '/' },
-          { label: 'Browse', href: '/data' },
-          { label: 'Timetables Data', href: '/data?status=live' },
+          { label: 'Home', href: HOSTS.data },
+          { label: 'Browse', href: HOSTS.data },
+          { label: 'Timetables Data', href: dataPath('/timetables?status=live') },
           { label: dataset.name, current: true, truncateAt: 19 },
         ]}
       />
@@ -127,7 +127,7 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
             <h2 className="govuk-heading-m">What you need to know</h2>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <Link href="/guidance/support/developer" className="govuk-link">
+                <Link href={dataPath('/guidance/requirements')} className="govuk-link">
                   View developer documentation
                 </Link>
               </li>
@@ -142,7 +142,7 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
                 </a>
               </li>
               <li>
-                <Link href="/contact" className="govuk-link">
+                <Link href={wwwPath('/contact')} className="govuk-link">
                   Contact us for technical issues
                 </Link>
               </li>

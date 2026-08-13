@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { publishAppPath } from '@/config/client';
 import { useParams } from 'next/navigation';
 
 export function AVLErrorContent() {
@@ -34,7 +35,7 @@ export function AVLErrorContent() {
             </div>
             <div className="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
               <Link
-                href={`/publish/org/${orgId}/dataset/avl/${datasetId}/review`}
+                href={publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/review`)}
                 role="button"
                 className="govuk-button govuk-!-margin-bottom-0"
               >

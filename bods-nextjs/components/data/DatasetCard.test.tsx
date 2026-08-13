@@ -5,6 +5,7 @@
 
 import { render, screen } from '@testing-library/react';
 import { DatasetCard } from './DatasetCard';
+import { dataPath } from '@/config/client';
 import type { DatasetListItem } from '@/types';
 import badgeStyles from './DataQualityBadge.module.css';
 
@@ -32,7 +33,7 @@ describe('DatasetCard', () => {
     
     const link = screen.getByRole('link', { name: /view details for test bus routes dataset/i });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute('href', '/data/123');
+    expect(link).toHaveAttribute('href', dataPath('/123'));
   });
 
   it('displays operator name', () => {

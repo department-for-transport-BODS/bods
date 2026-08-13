@@ -5,6 +5,7 @@
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { DatasetDetailContent } from './DatasetDetailContent';
+import { dataPath } from '@/config/client';
 import type { ReactNode } from 'react';
 import type { Dataset } from '@/types';
 
@@ -85,7 +86,7 @@ describe('DatasetDetailContent', () => {
 
     const operatorLink = screen.getByRole('link', { name: /Test Operator Ltd/i });
     expect(operatorLink).toBeInTheDocument();
-    expect(operatorLink).toHaveAttribute('href', '/data?organisation=456&status=live');
+    expect(operatorLink).toHaveAttribute('href', dataPath('?organisation=456&status=live'));
   });
 
   it('renders status badge correctly', () => {
@@ -180,7 +181,7 @@ describe('DatasetDetailContent', () => {
 
     const changeLogLink = screen.getByRole('link', { name: /View change log/i });
     expect(changeLogLink).toBeInTheDocument();
-    expect(changeLogLink).toHaveAttribute('href', `/data/${mockDataset.id}/changelog`);
+    expect(changeLogLink).toHaveAttribute('href', dataPath(`/${mockDataset.id}/changelog`));
   });
 
   it('passes the live revision ID to the route map', () => {

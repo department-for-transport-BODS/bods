@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HOSTS } from '@/config/client';
 
 export function QuickStartSection() {
   return (
@@ -25,7 +26,7 @@ export function QuickStartSection() {
 
       <h2 className="govuk-heading-m">Download all data</h2>
       <p className="govuk-body">
-        <Link className="govuk-link" href="/data">
+        <Link className="govuk-link" href={HOSTS.data}>
           Download all data
         </Link>{' '}
         will give you all data cached by the service for your chosen data type.
@@ -33,7 +34,7 @@ export function QuickStartSection() {
 
       <h2 className="govuk-heading-m">Data provided to service</h2>
       <p className="govuk-body">
-        <Link className="govuk-link" href="/data">
+        <Link className="govuk-link" href={HOSTS.data}>
           Browse for specific data
         </Link>{' '}
         to look for examples of data published to the service, find a data set detail page,

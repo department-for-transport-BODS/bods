@@ -7,6 +7,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
+import { publishAppPath } from '@/config/client';
 import {
   FaresUploadItem,
   FaresUploadStep,
@@ -239,12 +240,12 @@ function FaresUpdatePageContent() {
             <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <Link className="govuk-link large-font" href="/publish/guide-me">
+                <Link className="govuk-link large-font" href={publishAppPath('/guide-me')}>
                   View our guidelines here
                 </Link>
               </li>
               <li>
-                <Link className="govuk-link large-font" href="/publish/account">
+                <Link className="govuk-link large-font" href={publishAppPath('/account')}>
                   Contact support desk
                 </Link>
               </li>

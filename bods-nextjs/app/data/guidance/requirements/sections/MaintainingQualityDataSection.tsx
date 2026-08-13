@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { publishAppPath } from '@/config/client';
 
 export function MaintainingQualityDataSection() {
   return (
@@ -9,7 +10,7 @@ export function MaintainingQualityDataSection() {
         over time.
       </p>
       <p className="govuk-body">
-        <Link className="govuk-link" href="/guidance/support/bus-operators?section=dataquality">
+        <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements?section=dataquality')}>
           Read data quality guidance
         </Link>
         .

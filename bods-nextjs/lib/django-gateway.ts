@@ -1,6 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { HOSTS } from '@/config/client';
-import { serverConfig } from '@/config/server';
+import { DJANGO_HOSTS, serverConfig } from '@/config/server';
 
 const BODYLESS_METHODS = new Set(['GET', 'HEAD']);
 const REQUEST_HEADERS_TO_REMOVE = [
@@ -12,15 +11,15 @@ const REQUEST_HEADERS_TO_REMOVE = [
 const DJANGO_NAMESPACES = {
   auth: {
     upstreamPrefix: '/api/auth/',
-    upstreamHost: new URL(HOSTS.www).host,
+    upstreamHost: new URL(DJANGO_HOSTS.www).host,
   },
   data: {
     upstreamPrefix: '/api/',
-    upstreamHost: new URL(HOSTS.data).host,
+    upstreamHost: new URL(DJANGO_HOSTS.data).host,
   },
   publish: {
     upstreamPrefix: '/api/',
-    upstreamHost: new URL(HOSTS.publish).host,
+    upstreamHost: new URL(DJANGO_HOSTS.publish).host,
   },
 } as const;
 

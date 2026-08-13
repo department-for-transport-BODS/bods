@@ -16,6 +16,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { dataPath } from '@/config/client';
 import styles from './DownloadSubscribePanel.module.css';
 
 export interface DownloadSubscribePanelProps {
@@ -91,7 +92,7 @@ export function DownloadSubscribePanel({
             </button>
           ) : (
             <Link
-              href={`/data/${datasetId}/subscription`}
+              href={dataPath(`/${datasetId}/subscription`)}
               className="govuk-link"
             >
               {subscribed ? 'Unsubscribe from this data set' : 'Subscribe to this data set'}

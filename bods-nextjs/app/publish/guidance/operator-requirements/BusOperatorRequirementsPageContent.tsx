@@ -1,23 +1,35 @@
+/**
+ * Bus Operator Requirements Page
+ * 
+ * Source: transit_odp/guidance/templates/guidance/bus_operators/base.html
+ * View: transit_odp/guidance/views.py - BusOperatorReqView
+ * 
+ * This is a sectioned guidance page with navigation between sections.
+ * Sections are defined in the sections/ directory, each corresponding
+ * to a Django template file.
+ */
+
 'use client';
 
 import Link from 'next/link';
-import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import { HOSTS, wwwPath, publishAppPath } from '@/config/client';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { PaginationPrevIcon, PaginationNextIcon } from '@/components/shared/PaginationIcons';
+
 import {
-  ApiReferenceSection,
-  BrowseDataSection,
-  CaseStudiesSection,
-  DataByOperatorSection,
-  DataCatalogueSection,
-  DataFormatsSection,
-  DownloadingDataSection,
-  HelpSection,
-  MaintainingQualityDataSection,
   OverviewSection,
-  QuickStartSection,
-  UsingApiSection,
+  WhoPublishesSection,
+  RegisteringSection,
+  AgentsSection,
+  PublishingSection,
+  DescriptionsSection,
+  TimetablesSection,
+  BusLocationSection,
+  FaresSection,
+  DataQualitySection,
+  HelpSection,
 } from './sections';
 
 interface Section {
@@ -27,41 +39,40 @@ interface Section {
 
 const SECTIONS: Section[] = [
   { name: 'overview', title: 'Overview' },
-  { name: 'quickstart', title: 'Quick start' },
-  { name: 'datacatalogue', title: 'Data catalogue' },
-  { name: 'databyoperator', title: 'Data by operator or location' },
-  { name: 'browse', title: 'Browse for specific data' },
-  { name: 'download', title: 'Downloading data' },
-  { name: 'api', title: 'Using the APIs' },
-  { name: 'apireference', title: 'API reference' },
-  { name: 'dataformats', title: 'Data formats' },
-  { name: 'maintainingqualitydata', title: 'Maintaining quality data' },
-  { name: 'casestudies', title: 'Case studies' },
+  { name: 'whopublishes', title: 'Who must publish open data?' },
+  { name: 'registering', title: 'Using our account' },
+  { name: 'agents', title: 'Agents' },
+  { name: 'publishing', title: 'Publishing data' },
+  { name: 'descriptions', title: 'Writing data descriptions' },
+  { name: 'timetables', title: 'Timetables data' },
+  { name: 'buslocation', title: 'Bus location data' },
+  { name: 'fares', title: 'Fares data' },
+  { name: 'dataquality', title: 'Data quality' },
   { name: 'help', title: 'How to get help' },
 ];
 
 function SectionContent({ section }: { section: string }) {
   switch (section) {
-    case 'quickstart':
-      return <QuickStartSection />;
-    case 'datacatalogue':
-      return <DataCatalogueSection />;
-    case 'databyoperator':
-      return <DataByOperatorSection />;
-    case 'browse':
-      return <BrowseDataSection />;
-    case 'download':
-      return <DownloadingDataSection />;
-    case 'api':
-      return <UsingApiSection />;
-    case 'apireference':
-      return <ApiReferenceSection />;
-    case 'dataformats':
-      return <DataFormatsSection />;
-    case 'maintainingqualitydata':
-      return <MaintainingQualityDataSection />;
-    case 'casestudies':
-      return <CaseStudiesSection />;
+    case 'overview':
+      return <OverviewSection />;
+    case 'whopublishes':
+      return <WhoPublishesSection />;
+    case 'registering':
+      return <RegisteringSection />;
+    case 'agents':
+      return <AgentsSection />;
+    case 'publishing':
+      return <PublishingSection />;
+    case 'descriptions':
+      return <DescriptionsSection />;
+    case 'timetables':
+      return <TimetablesSection />;
+    case 'buslocation':
+      return <BusLocationSection />;
+    case 'fares':
+      return <FaresSection />;
+    case 'dataquality':
+      return <DataQualitySection />;
     case 'help':
       return <HelpSection />;
     default:
@@ -69,10 +80,15 @@ function SectionContent({ section }: { section: string }) {
   }
 }
 
+/**
+ * Pagination Navigation
+ * Source: transit_odp/guidance/templates/guidance/snippets/previous_section.html
+ * Source: transit_odp/guidance/templates/guidance/snippets/next_section.html
+ */
 function PaginationNav({ currentSection }: { currentSection: string }) {
-  const currentIndex = SECTIONS.findIndex((s) => s.name === currentSection);
+  const currentIndex = SECTIONS.findIndex(s => s.name === currentSection);
   const prevSection = currentIndex > 0 ? SECTIONS[currentIndex - 1] : null;
-  const nextSection = currentIndex >= 0 && currentIndex < SECTIONS.length - 1 ? SECTIONS[currentIndex + 1] : null;
+  const nextSection = currentIndex < SECTIONS.length - 1 ? SECTIONS[currentIndex + 1] : null;
 
   return (
     <div className="govuk-!-margin-top-6">
@@ -104,7 +120,7 @@ function PaginationNav({ currentSection }: { currentSection: string }) {
   );
 }
 
-function DeveloperDocumentationContent() {
+function BusOperatorRequirementsContent() {
   const searchParams = useSearchParams();
   const section = searchParams.get('section') || 'overview';
 
@@ -112,21 +128,27 @@ function DeveloperDocumentationContent() {
     <div className="govuk-width-container">
       <Breadcrumbs
         items={[
-          { label: 'Bus Open Data Service', href: '/' },
-          { label: 'Find Bus Open Data', href: '/data' },
-          { label: 'Guide Me', href: '/publish/guide-me' },
-          { label: 'Developer documentation', current: true },
+          { label: 'Bus Open Data Service', href: HOSTS.www },
+          { label: 'Publish Bus Open Data', href: HOSTS.publish },
+          { label: 'Bus operator requirements', current: true },
         ]}
       />
 
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl">Developer documentation</h1>
-            <ul className="govuk-body dashed">
+            <h1 className="govuk-heading-xl">Bus operator requirements</h1>
+            <p className="govuk-body-l">
+              What you need to know to get started. Find guidance and support
+              material tailored to your needs.
+            </p>
+            <ul className="govuk-list">
               {SECTIONS.map((s) => (
                 <li key={s.name} className="govuk-!-padding-bottom-1">
-                  <Link className={`govuk-link ${s.name === section ? 'govuk-!-font-weight-bold' : ''}`} href={`?section=${s.name}`}>
+                  <Link
+                    className={`govuk-link ${s.name === section ? 'govuk-!-font-weight-bold' : ''}`}
+                    href={`?section=${s.name}`}
+                  >
                     {s.title}
                   </Link>
                 </li>
@@ -142,13 +164,19 @@ function DeveloperDocumentationContent() {
             <SectionContent section={section} />
             <PaginationNav currentSection={section} />
           </div>
+
           <div className="govuk-grid-column-one-third">
-            <h2 className="govuk-heading-s">Other development resources</h2>
-            <ul className="govuk-list">
+            <h2 className="govuk-heading-s">Related content</h2>
+            <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <a className="govuk-link" href="https://github.com/department-for-transport-BODS/bods" target="_blank" rel="noopener noreferrer">
-                  Github repo
-                </a>
+                <Link className="govuk-link" href={publishAppPath('/guidance/local-authority-requirements')}>
+                  Local authority requirements
+                </Link>
+              </li>
+              <li>
+                <Link className="govuk-link" href={wwwPath('/contact')}>
+                  Contact the Bus Open Data Service
+                </Link>
               </li>
             </ul>
           </div>
@@ -158,11 +186,10 @@ function DeveloperDocumentationContent() {
   );
 }
 
-export default function DeveloperDocumentationPageContent() {
+export default function BusOperatorRequirementsPageContent() {
   return (
     <Suspense fallback={<div className="govuk-width-container"><p className="govuk-body">Loading...</p></div>}>
-      <DeveloperDocumentationContent />
+      <BusOperatorRequirementsContent />
     </Suspense>
   );
 }
-
