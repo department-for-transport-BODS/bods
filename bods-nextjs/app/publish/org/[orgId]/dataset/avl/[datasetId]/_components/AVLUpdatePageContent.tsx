@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { wwwPath } from '@/config/client';
+import { publishAppPath, wwwPath } from '@/config/client';
 import { AvlUploadFields, PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
@@ -30,7 +30,7 @@ export function AVLUpdatePageContent({ avlIpAllowList }: { avlIpAllowList: strin
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
-  const supportBusOperatorsUrl = wwwPath('/guidance/support/bus-operators');
+  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
   const contactSupportUrl = wwwPath('/contact');
   const reviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`;
 

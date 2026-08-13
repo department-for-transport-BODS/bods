@@ -26,6 +26,15 @@ describe('subdomain routing proxy', () => {
       expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/publish/org/42');
     });
 
+    it('rewrites operator requirements on the publish host without losing the section query', () => {
+      const url = 'https://publish.xyz.com/guidance/operator-requirements?section=dataquality';
+      const response = proxy(request(url, 'publish.xyz.com'));
+      const rewriteUrl = new URL(response.headers.get('x-middleware-rewrite')!, url);
+
+      expect(rewriteUrl.pathname).toBe('/publish/guidance/operator-requirements');
+      expect(rewriteUrl.search).toBe('?section=dataquality');
+    });
+
     it('redirects a legacy publish path to the clean publish URL', () => {
       const response = proxy(request('https://publish.xyz.com/publish/org/42?tab=draft', 'publish.xyz.com'));
 

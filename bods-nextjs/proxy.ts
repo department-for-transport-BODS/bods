@@ -20,7 +20,6 @@ const wwwOnlyRoutePrefixes = [
   '/changelog',
   '/contact',
   '/cookie',
-  '/guidance',
   '/privacy-policy',
   '/version',
   '/account/login',
@@ -113,7 +112,10 @@ export function proxy(request: NextRequest) {
     return redirectToSubdomain(request, hostname, 'publish', '/account');
   }
 
-  if (subdomain !== 'www' && wwwOnlyRoutePrefixes.some((prefix) => hasRoutePrefix(pathname, prefix))) {
+  if (
+    subdomain !== 'www' &&
+    wwwOnlyRoutePrefixes.some((prefix) => hasRoutePrefix(pathname, prefix))
+  ) {
     return redirectToSubdomain(request, hostname, 'www', pathname);
   }
 
@@ -130,8 +132,9 @@ export function proxy(request: NextRequest) {
   }
 
   if (!hasRoutePrefix(pathname, routePrefix)) {
-    const newPath = `${routePrefix}${pathname === '/' ? '' : pathname}`;
-    return NextResponse.rewrite(new URL(newPath, request.url));
+    const url = request.nextUrl.clone();
+    url.pathname = `${routePrefix}${pathname === '/' ? '' : pathname}`;
+    return NextResponse.rewrite(url);
   }
 
   return NextResponse.next();
