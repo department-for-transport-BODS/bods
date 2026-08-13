@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { wwwPath } from '@/config/client';
+import { publishAppPath, wwwPath } from '@/config/client';
 
 export function AvlFeedDetailSidebar() {
   return (
@@ -7,7 +7,7 @@ export function AvlFeedDetailSidebar() {
       <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
       <ul className="govuk-list app-list--nav govuk-!-font-size-19">
         <li>
-          <Link className="govuk-link" href={wwwPath('/guidance/support/bus-operators')}>
+          <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements?section=dataquality')}>
             View our guidelines here
           </Link>
         </li>
@@ -17,14 +17,14 @@ export function AvlFeedDetailSidebar() {
           </Link>
         </li>
         <li>
-          <Link className="govuk-link" href={wwwPath('/guidance/support/bus-operators?section=dataquality')}>
+          <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements')}>
             AVL feed compliance guidance
           </Link>
         </li>
         <li>
           <Link
             className="govuk-link"
-            href={wwwPath('/guidance/support/bus-operators?section=dataquality#avl-to-timetable-matching')}
+            href={publishAppPath('/guidance/operator-requirements?section=dataquality#avl-to-timetable-matching')}
           >
             AVL to Timetables matching guidance
           </Link>

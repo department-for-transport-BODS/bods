@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { publishAppPath } from '@/config/client';
 import { useSupportConfig } from '@/app/guidance/support/SupportConfigProvider';
 
 export function SupportSection() {
@@ -42,7 +43,7 @@ export function SupportSection() {
       <p className="govuk-body">
         Please ensure ETM suppliers procured can provide bus location data in feeds that align
         with the standards documented in the{' '}
-        <Link className="govuk-link" href="/guidance/support/bus-operators">
+        <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements')}>
           operator requirements
         </Link>
         . Once a supplier has been procured, operators may require support getting set up.
@@ -66,7 +67,7 @@ export function SupportSection() {
       </p>
       <p className="govuk-body">
         Please ensure fares data provided aligns to the standards in the{' '}
-        <Link className="govuk-link" href="/guidance/support/bus-operators">
+        <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements')}>
           operator requirements
         </Link>
         .

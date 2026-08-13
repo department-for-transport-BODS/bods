@@ -439,7 +439,7 @@ export function AvlManagement() {
         <div className="govuk-grid-row govuk-!-margin-top-9">
           <div className="govuk-grid-column-one-third">
             <h3 className="govuk-heading-s">
-              <a className="govuk-link" href={wwwPath('/guidance/support/bus-operators')}>
+              <a className="govuk-link" href={publishAppPath('/guidance/operator-requirements')}>
                 Bus operator requirements
               </a>
             </h3>

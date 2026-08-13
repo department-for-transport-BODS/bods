@@ -13,7 +13,7 @@ const STEPS: StepItem[] = [
     links: [
       {
         label: 'View user guide',
-        href: '/guidance/support/bus-operators?section=publishing',
+        href: publishAppPath('/guidance/operator-requirements?section=publishing'),
         copy: 'The user guide includes an overview, the schema, guidance, requirements, and the best practices for publishing BODS data.',
       },
     ],
@@ -43,7 +43,7 @@ const STEPS: StepItem[] = [
       },
       {
         label: 'Understanding validation checks',
-        href: '/guidance/support/bus-operators?section=dataquality',
+        href: publishAppPath('/guidance/operator-requirements?section=dataquality'),
         copy: 'Read the guidance on post publishing validation and data quality reports to understand how to interpret and action them.',
       },
     ],

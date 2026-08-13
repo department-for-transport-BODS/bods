@@ -14,7 +14,7 @@ import {
   SupportSection,
   UsingBodsSection,
 } from './sections';
-import { HOSTS } from '@/config/client';
+import { HOSTS, publishAppPath } from '@/config/client';
 
 interface Section {
   name: string;
@@ -123,7 +123,7 @@ function LocalAuthoritiesContent() {
         items={[
           { label: 'Bus Open Data Service', href: '/' },
           { label: 'Publish Bus Open Data', href: HOSTS.publish },
-          { label: 'Guidance', href: '/guidance/support/bus-operators' },
+          { label: 'Guidance', href: publishAppPath('/guidance/operator-requirements') },
           { label: 'Local authority requirements', current: true },
         ]}
       />
@@ -164,7 +164,7 @@ function LocalAuthoritiesContent() {
             <h2 className="govuk-heading-s">Related content</h2>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <Link className="govuk-link" href="/guidance/support/bus-operators">
+                <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements')}>
                   Bus operator requirements
                 </Link>
               </li>

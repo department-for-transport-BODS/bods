@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { HOSTS, publishPath } from '@/config/client';
+import { HOSTS, publishAppPath, publishPath } from '@/config/client';
 
 export default function Home() {
   return (
@@ -47,7 +47,7 @@ export default function Home() {
                     </Link>
                   </li>
                   <li className="govuk-!-margin-bottom-4">
-                    <Link href="/guidance/support/bus-operators" className="govuk-link-bold">
+                    <Link href={publishAppPath('/guidance/operator-requirements')} className="govuk-link-bold">
                       View bus operator requirements
                     </Link>
                   </li>

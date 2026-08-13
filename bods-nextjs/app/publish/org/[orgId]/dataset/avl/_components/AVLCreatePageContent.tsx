@@ -6,7 +6,7 @@ import { AvlUploadFields, DatasetDescriptionFields, PublishStepper } from '@/com
 import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep, validateAvlUploadStep } from '@/lib/validation/avl-publish';
-import { wwwPath } from '@/config/client';
+import { publishAppPath, wwwPath } from '@/config/client';
 import { AvlReviewHelpAside } from './AvlReviewAuxiliaryPanels';
 
 type Step = 'description' | 'upload';
@@ -22,7 +22,7 @@ export function AVLCreatePageContent({ avlIpAllowList }: { avlIpAllowList: strin
   const params = useParams();
   const orgId = params.orgId as string;
 
-  const supportBusOperatorsUrl = wwwPath('/guidance/support/bus-operators');
+  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
   const contactSupportUrl = wwwPath('/contact');
   const [step, setStep] = useState<Step>('description');
 
