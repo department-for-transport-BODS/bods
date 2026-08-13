@@ -283,41 +283,7 @@ class TestDownloadDisruptionsDataArchiveView:
             ),
         ],
     )
-    def test_download_returns_file_response_when_direct_s3_is_disabled(
-        self, client_factory, view_name, data_format, filename
-    ):
-        archive = DisruptionsDataArchive.objects.create(
-            data_format=data_format,
-            data=ContentFile(b"content", name=filename),
-        )
-        client = client_factory(host=DATA_HOST)
-
-        with patch(
-            "transit_odp.browse.views.disruptions_views.flag_is_active",
-            return_value=False,
-        ):
-            response = client.get(reverse(view_name, host=DATA_HOST))
-
-        assert response.status_code == 200
-        assert response.as_attachment is True
-        assert response.filename == archive.data.name
-
-    @pytest.mark.parametrize(
-        "view_name, data_format, filename",
-        [
-            (
-                "downloads-disruptions-bulk",
-                DisruptionsDataArchive.SIRISX,
-                "sirisx.zip",
-            ),
-            (
-                "downloads-gtfs-rt-service-alerts-bulk",
-                DisruptionsDataArchive.GTFSRT,
-                "gtfsrt.zip",
-            ),
-        ],
-    )
-    def test_download_redirects_to_signed_url_when_direct_s3_is_enabled(
+    def test_download_redirects_to_signed_url(
         self, client_factory, view_name, data_format, filename
     ):
         archive = DisruptionsDataArchive.objects.create(
@@ -328,9 +294,6 @@ class TestDownloadDisruptionsDataArchiveView:
         signed_url = "https://example.test/signed-url"
 
         with patch(
-            "transit_odp.browse.views.disruptions_views.flag_is_active",
-            return_value=True,
-        ), patch(
             "transit_odp.browse.views.disruptions_views.generate_signed_url",
             return_value=signed_url,
         ) as mocked_generate_signed_url:

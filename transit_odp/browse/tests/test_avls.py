@@ -374,34 +374,7 @@ class TestAVLArchiveDownloads:
             ),
         ],
     )
-    def test_download_returns_file_response_when_direct_s3_is_disabled(
-        self, client_factory, factory, factory_kwargs, view_name
-    ):
-        archive = factory(**factory_kwargs)
-        client = client_factory(host=DATA_HOST)
-
-        with patch(
-            "transit_odp.browse.views.avl_views.flag_is_active", return_value=False
-        ):
-            response = client.get(reverse(view_name, host=DATA_HOST))
-
-        assert response.status_code == 200
-        assert response.as_attachment is True
-        assert response.filename == archive.data.name
-
-    @pytest.mark.parametrize(
-        "factory, factory_kwargs, view_name",
-        [
-            (CAVLDataArchiveFactory, {}, "downloads-avl-bulk"),
-            (GTFSRTDataArchiveFactory, {}, "download-gtfsrt-bulk"),
-            (
-                CAVLDataArchiveFactory,
-                {"data_format": CAVLDataArchive.SIRIVM_TFL},
-                "downloads-avl-bulk-tfl",
-            ),
-        ],
-    )
-    def test_download_redirects_to_signed_url_when_direct_s3_is_enabled(
+    def test_download_redirects_to_signed_url(
         self, client_factory, factory, factory_kwargs, view_name
     ):
         archive = factory(**factory_kwargs)
@@ -409,8 +382,6 @@ class TestAVLArchiveDownloads:
         signed_url = "https://example.test/signed-url"
 
         with patch(
-            "transit_odp.browse.views.avl_views.flag_is_active", return_value=True
-        ), patch(
             "transit_odp.browse.views.avl_views.generate_signed_url",
             return_value=signed_url,
         ) as mocked_generate_signed_url:
