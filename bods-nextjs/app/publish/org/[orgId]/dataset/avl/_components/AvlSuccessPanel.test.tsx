@@ -5,6 +5,7 @@
  */
 
 import { render, screen } from '@testing-library/react';
+import { publishAppPath } from '@/config/client';
 import { AvlSuccessPanel } from './AvlSuccessPanel';
 
 const mockUseParams = jest.fn();
@@ -82,7 +83,7 @@ describe('AvlSuccessPanel', () => {
       render(<AvlSuccessPanel update={false} />);
 
       const guidanceLink = screen.getByRole('link', { name: /guidance page/i });
-      expect(guidanceLink).toHaveAttribute('href', '/guidance/support/bus-operators?section=buslocation');
+      expect(guidanceLink).toHaveAttribute('href', publishAppPath('/guidance/operator-requirements?section=buslocation'));
     });
 
     it('mentions compliance error status', () => {

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import AVLErrorPage from './page';
+import { publishAppPath } from '@/config/client';
 
 const mockUseParams = jest.fn();
 
@@ -31,6 +32,6 @@ describe('AVLErrorPage', () => {
     expect(screen.getByText('Your changes could not be published')).toBeInTheDocument();
 
     const link = screen.getByRole('button', { name: 'Go back to review page' });
-    expect(link).toHaveAttribute('href', '/publish/org/org-123/dataset/avl/dataset-456/review');
+    expect(link).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl/dataset-456/review'));
   });
 });

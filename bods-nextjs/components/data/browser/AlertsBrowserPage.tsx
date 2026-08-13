@@ -181,7 +181,7 @@ function AlertsBrowserPageInner({
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Find Bus Open Data', href: '/' },
-            { label: 'Browse', href: '/data' },
+            { label: 'Browse', href: HOSTS.data },
             { label: breadcrumbLabel, current: true },
           ]}
         />

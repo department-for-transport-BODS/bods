@@ -12,6 +12,7 @@ import { api } from '@/lib/api-client';
 import { formatDate } from '@/lib/utils/date';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { HOSTS } from '@/config/client';
 
 type FaresTab = 'active' | 'draft' | 'archive';
 
@@ -124,8 +125,8 @@ function FaresPublish() {
         <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
           <Breadcrumbs
             items={[
-              { label: 'Bus Open Data Service', href: '/data' },
-              { label: 'Publish Bus Open Data', href: '/publish' },
+              { label: 'Bus Open Data Service', href: HOSTS.data },
+              { label: 'Publish Bus Open Data', href: HOSTS.publish },
               { label: 'Review My Fares Data', current: true },
             ]}
           />

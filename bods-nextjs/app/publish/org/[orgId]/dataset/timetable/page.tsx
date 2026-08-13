@@ -19,6 +19,7 @@ import {
   validateTimetableStep2,
   validateTimetableStep3,
 } from '@/lib/validation/timetable-publish';
+import { HOSTS } from '@/config/client';
 
 
 function TimetablePublish() {
@@ -120,8 +121,8 @@ function TimetablePublish() {
       <div className="govuk-main-wrapper">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: '/data' },
-            { label: 'Publish Bus Open Data', href: '/publish' },
+            { label: 'Bus Open Data Service', href: HOSTS.data },
+            { label: 'Publish Bus Open Data', href: HOSTS.publish },
             { label: 'Review My Timetables Data', current: true },
           ]}
         />

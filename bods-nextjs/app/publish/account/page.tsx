@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HOSTS, publishAppPath, wwwPath } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 
@@ -8,8 +9,8 @@ function ManageAccountPageContent() {
       <div className="govuk-main-wrapper">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: '/data' },
-            { label: 'Publish Bus Open Data', href: '/publish' },
+            { label: 'Bus Open Data Service', href: HOSTS.data },
+            { label: 'Publish Bus Open Data', href: HOSTS.publish },
             { label: 'Manage your account', current: true },
           ]}
         />
@@ -25,10 +26,10 @@ function ManageAccountPageContent() {
               or contact support if you need account changes made now.
             </div>
             <div className="govuk-button-group">
-              <Link href="/publish/org" className="govuk-button">
+              <Link href={publishAppPath('/org')} className="govuk-button">
                 Select organisation
               </Link>
-              <Link href="/contact" className="govuk-link">
+              <Link href={wwwPath('/contact')} className="govuk-link">
                 Contact support
               </Link>
             </div>
@@ -38,12 +39,12 @@ function ManageAccountPageContent() {
             <h2 className="govuk-heading-m">Need further help?</h2>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <Link className="govuk-link" href="/changelog">
+                <Link className="govuk-link" href={wwwPath('/changelog')}>
                   Service changelog
                 </Link>
               </li>
               <li>
-                <Link className="govuk-link" href="/contact">
+                <Link className="govuk-link" href={wwwPath('/contact')}>
                   Contact us for technical issues
                 </Link>
               </li>

@@ -12,6 +12,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
+import { publishAppPath } from '@/config/client';
 import { formatDateTime } from '@/lib/utils/date';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
 
@@ -710,7 +711,7 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
                   {PUBLISHED_STATUSES.has(statusData?.status ?? '') ? null : (
                     <Link
                       className="govuk-button govuk-button--secondary"
-                      href={`/publish/org/${orgId}/dataset/fares/${datasetId}/delete`}
+                      href={publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/delete`)}
                     >
                       {hasBlockingError ? 'Delete data' : 'Delete data set'}
                     </Link>

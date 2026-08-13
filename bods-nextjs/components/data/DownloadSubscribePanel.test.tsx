@@ -9,6 +9,7 @@ import React, { type AnchorHTMLAttributes, type ReactNode } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { DownloadSubscribePanel } from './DownloadSubscribePanel';
+import { dataPath } from '@/config/client';
 
 jest.mock('next/link', () => {
   return function MockLink({ children, href, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { children: ReactNode; href: string }) {
@@ -78,7 +79,7 @@ describe('DownloadSubscribePanel', () => {
       
       const subscribeLink = screen.getByText('Subscribe to this data set');
       expect(subscribeLink.tagName).toBe('A');
-      expect(subscribeLink).toHaveAttribute('href', '/data/123/subscription');
+      expect(subscribeLink).toHaveAttribute('href', dataPath('/123/subscription'));
     });
 
     it('renders as button when onSubscribeToggle provided', () => {

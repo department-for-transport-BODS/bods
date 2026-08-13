@@ -2,6 +2,16 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
+const prefixedHostPathMessage =
+  "Use dataPath() or publishPath() from @/config/client. /data and /publish are App Router internals, not public URLs.";
+
+const prefixedHostPathSelectors = [
+  "JSXAttribute[name.name='href'] > Literal[value=/^\\/(publish|data)(\\/|$|\\?|#)/]",
+  "JSXAttribute[name.name='href'] > TemplateLiteral > TemplateElement:first-child[value.raw=/^\\/(publish|data)(\\/|$|\\?|#)/]",
+  "Property[key.name='href'] > Literal[value=/^\\/(publish|data)(\\/|$|\\?|#)/]",
+  "Property[key.name='href'] > TemplateLiteral > TemplateElement:first-child[value.raw=/^\\/(publish|data)(\\/|$|\\?|#)/]",
+];
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
@@ -17,6 +27,13 @@ const eslintConfig = defineConfig([
         {
           forbid: ['>', '}'],
         },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        ...prefixedHostPathSelectors.map((selector) => ({
+          selector,
+          message: prefixedHostPathMessage,
+        })),
       ],
     },
   },

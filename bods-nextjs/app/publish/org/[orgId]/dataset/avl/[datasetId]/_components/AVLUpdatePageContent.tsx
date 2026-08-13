@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { HOSTS } from '@/config/client';
+import { publishAppPath, wwwPath } from '@/config/client';
 import { AvlUploadFields, PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { getCsrfToken } from '@/lib/api-client';
@@ -30,8 +30,8 @@ export function AVLUpdatePageContent({ avlIpAllowList }: { avlIpAllowList: strin
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
-  const supportBusOperatorsUrl = `${HOSTS.publish}/guidance/operator-requirements/`;
-  const contactSupportUrl = `${HOSTS.www}/contact/`;
+  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
+  const contactSupportUrl = wwwPath('/contact');
   const reviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`;
 
   const [step, setStep] = useState<Step>('comment');

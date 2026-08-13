@@ -46,6 +46,20 @@ browser extension such as Requestly, or via curl):
 curl -H 'use-frontend-two: true' https://www.dev.bus-data.dft.gov.uk/
 ```
 
+### Next.js hostname routing
+
+The Next.js frontend is a single App Router application and a single ECS service. It serves the public, data, and publishing experiences by hostname:
+
+- `www.<env/domain>`: public, static, and  shared routes
+- `data.<env/domain>`: data browsing routes
+- `publish.<env/domain>`: publishing routes
+
+The hostname is handled in `bods-nextjs/proxy.ts`. Clean public paths are rewritten internally to the corresponding App Router route namespace, for example `publish.<domain>/org/123` is served by the internal `/publish/org/123` route. Existing `/data/...` and `/publish/...` links are redirected to their owning hostname, and shared pages such as `/contact` redirect back to `www.<domain>` when reached from another host.
+
+For local development, run the Next.js app on port `3000` and use `http://localhost:3000`, `http://data.localhost:3000`, and `http://publish.localhost:3000`. This will be automatic.
+
+This design is semi-inherited from the previous python service to migrate the current routing decisions and was selected instead of Next.js Multi-Zones because the public, data, and publish areas currently deploy and scale together as one ECS service. Multi-Zones would require separate Next.js builds and and ECS services for each area, and infra to back this up. The proxy keeps the existing single-container deployment model while preserving clean host-specific URLs.
+
 ## HotFix Deployment
 
 ### Step 1

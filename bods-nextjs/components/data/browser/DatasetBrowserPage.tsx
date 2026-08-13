@@ -4,7 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
-import { HOSTS } from '@/config/client';
+import { HOSTS, dataPath } from '@/config/client';
 import { dataApiPath } from '@/lib/api-paths';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
@@ -224,7 +224,7 @@ function DatasetBrowserPageInner({
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Find Bus Open Data', href: '/' },
-            { label: 'Browse', href: '/data' },
+            { label: 'Browse', href: HOSTS.data },
             { label: breadcrumbLabel, current: true },
           ]}
         />
@@ -326,7 +326,7 @@ function DatasetBrowserPageInner({
                       {index > 0 && <hr className="app-data-browser__result-divider" />}
                       <DataBrowserResultCard
                         title={titleValue}
-                        href={`/data/${dataset.id}`}
+                        href={dataPath(`/${dataset.id}`)}
                         status={statusValue}
                         statusLabel={statusValue === 'inactive' ? 'Inactive' : 'Published'}
                         keyValues={keyValues}

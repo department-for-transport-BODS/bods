@@ -26,6 +26,7 @@ import { DataQualityBadge } from './DataQualityBadge';
 import { DownloadSubscribePanel } from './DownloadSubscribePanel';
 import { ApiUrlPanel } from './ApiUrlPanel';
 import { RouteMap } from './RouteMap';
+import { dataPath, publishAppPath } from '@/config/client';
 
 interface DatasetDetailContentProps {
   dataset: Dataset;
@@ -88,7 +89,7 @@ export function DatasetDetailContent({
             <td colSpan={2} className="govuk-table__cell dont-break-out">
               <div className="stacked">
                 <Link
-                  href={`/data?organisation=${dataset.organisationId}&status=live`}
+                  href={dataPath(`?organisation=${dataset.organisationId}&status=live`)}
                   className="govuk-link"
                 >
                   {dataset.operatorName}
@@ -138,13 +139,13 @@ export function DatasetDetailContent({
                   score={dataset.dqScore}
                   rag={dataset.dqRag}
                   variant="stacked"
-                  reportUrl={`/publish/org/${dataset.organisationId}/data-quality/${dataset.id}`}
+                  reportUrl={publishAppPath(`/org/${dataset.organisationId}/data-quality/${dataset.id}`)}
                 />
               </td>
               <td className="govuk-table__cell">
                 <a
                   className="govuk-link"
-                  href={`/publish/org/${dataset.organisationId}/data-quality/${dataset.id}`}
+                  href={publishAppPath(`/org/${dataset.organisationId}/data-quality/${dataset.id}`)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -163,7 +164,7 @@ export function DatasetDetailContent({
             </td>
             <td className="govuk-table__cell">
               <Link
-                href={`/data/${dataset.id}/changelog`}
+                href={dataPath(`/${dataset.id}/changelog`)}
                 className="govuk-link"
               >
                 View change log

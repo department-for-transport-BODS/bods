@@ -5,6 +5,7 @@
  */
 
 import Link from 'next/link';
+import { dataPath } from '@/config/client';
 
 export default function DataQualityPage() {
   return (
@@ -18,12 +19,12 @@ export default function DataQualityPage() {
             </p>
             <ul className="govuk-list">
               <li>
-                <Link href="/data/dq/overview" className="govuk-link">
+                <Link href={dataPath('/dq/overview')} className="govuk-link">
                   Report overview
                 </Link>
               </li>
               <li>
-                <Link href="/data/dq/csv" className="govuk-link">
+                <Link href={dataPath('/dq/csv')} className="govuk-link">
                   Download CSV report
                 </Link>
               </li>

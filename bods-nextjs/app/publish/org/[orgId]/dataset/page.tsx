@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ErrorSummary } from '@/components/shared';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
+import { HOSTS } from '@/config/client';
 
 type DatasetType = 'timetable' | 'avl' | 'fares';
 
@@ -40,8 +41,8 @@ function SelectDatasetTypePageContent() {
       <div className="govuk-main-wrapper">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: '/data' },
-            { label: 'Publish Bus Open Data', href: '/publish' },
+            { label: 'Bus Open Data Service', href: HOSTS.data },
+            { label: 'Publish Bus Open Data', href: HOSTS.publish },
             { label: 'Choose data type', current: true },
           ]}
         />

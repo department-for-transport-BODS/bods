@@ -6,6 +6,7 @@
 
 import { render, screen, waitFor } from '@testing-library/react';
 import { AvlFeedDetailContent, type AvlFeedDetail } from './AvlFeedDetailContent';
+import { publishAppPath } from '@/config/client';
 
 const mockUseParams = jest.fn();
 const mockReplace = jest.fn();
@@ -181,7 +182,7 @@ describe('AvlFeedDetailContent', () => {
     await waitFor(() => {
       const backLink = screen.getByRole('link', { name: /Back to feeds/i });
       expect(backLink).toBeInTheDocument();
-      expect(backLink).toHaveAttribute('href', '/publish/org/org-123/dataset/avl');
+      expect(backLink).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl'));
     });
   });
 

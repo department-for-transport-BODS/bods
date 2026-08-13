@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HOSTS, publishAppPath, publishPath, dataPath } from '@/config/client';
 
 export default function Home() {
   return (
@@ -41,22 +42,22 @@ export default function Home() {
                 </p>
                 <ul className="govuk-list">
                   <li className="govuk-!-margin-bottom-4">
-                    <Link href="/publish" className="govuk-link-bold">
+                    <Link href={HOSTS.publish} className="govuk-link-bold">
                       Publish bus data
                     </Link>
                   </li>
                   <li className="govuk-!-margin-bottom-4">
-                    <Link href="/guidance/support/bus-operators" className="govuk-link-bold">
+                    <Link href={publishAppPath('/guidance/operator-requirements')} className="govuk-link-bold">
                       View bus operator requirements
                     </Link>
                   </li>
                   <li className="govuk-!-margin-bottom-4">
-                    <Link href="/guidance/support/local-authorities" className="govuk-link-bold">
+                    <Link href={publishAppPath('/guidance/local-authority-requirements')} className="govuk-link-bold">
                       View local authority requirements
                     </Link>
                   </li>
                   <li>
-                    <Link href="/publish/guide-me" className="govuk-link-bold">
+                    <Link href={publishPath('/guide-me')} className="govuk-link-bold">
                       Guide me
                     </Link>
                   </li>
@@ -73,12 +74,12 @@ export default function Home() {
                 </p>
                 <ul className="govuk-list">
                   <li className="govuk-!-margin-bottom-4">
-                    <Link href="/data" className="govuk-link-bold">
+                    <Link href={HOSTS.data} className="govuk-link-bold">
                       Find bus open data
                     </Link>
                   </li>
                   <li>
-                    <Link href="/guidance/support/developer" className="govuk-link-bold">
+                    <Link href={dataPath('/guidance/requirements')} className="govuk-link-bold">
                       View developer documentation
                     </Link>
                   </li>

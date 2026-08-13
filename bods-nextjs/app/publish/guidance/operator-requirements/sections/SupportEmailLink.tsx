@@ -3,7 +3,7 @@
  * Renders a linked email address using the configured support email.
  */
 
-import { useSupportConfig } from '@/app/guidance/support/SupportConfigProvider';
+import { useSupportConfig } from '@/components/shared/SupportConfigProvider';
 
 export function SupportEmailLink() {
   const { supportEmail } = useSupportConfig();

@@ -1,9 +1,9 @@
 import { connection } from 'next/server';
 import type { ReactNode } from 'react';
 import { serverConfig } from '@/config/server';
-import { SupportConfigProvider } from './SupportConfigProvider';
+import { SupportConfigProvider } from '@/components/shared/SupportConfigProvider';
 
-export default async function SupportLayout({ children }: { children: ReactNode }) {
+export default async function PublishGuidanceLayout({ children }: { children: ReactNode }) {
   await connection();
 
   return (

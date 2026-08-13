@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { HOSTS, publishAppPath, wwwPath } from '@/config/client';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
+
 interface StepItem {
   title: string;
   links: Array<{ label: string; href: string; copy: string }>;
@@ -11,7 +13,7 @@ const STEPS: StepItem[] = [
     links: [
       {
         label: 'View user guide',
-        href: '/guidance/support/bus-operators?section=publishing',
+        href: publishAppPath('/guidance/operator-requirements?section=publishing'),
         copy: 'The user guide includes an overview, the schema, guidance, requirements, and the best practices for publishing BODS data.',
       },
     ],
@@ -26,7 +28,7 @@ const STEPS: StepItem[] = [
       },
       {
         label: 'Update profile',
-        href: '/publish/guide-me/profile/',
+        href: publishAppPath('/guide-me/profile/'),
         copy: 'Update your profile including licence number and NOC codes. Please make sure your profile information is correct and up to date.',
       },
     ],
@@ -36,12 +38,12 @@ const STEPS: StepItem[] = [
     links: [
       {
         label: 'Publish data',
-        href: '/publish/guide-me/publish/',
+        href: publishAppPath('/guide-me/publish/'),
         copy: 'Make your data open by publishing Timetable, Location and Fare data.',
       },
       {
         label: 'Understanding validation checks',
-        href: '/guidance/support/bus-operators?section=dataquality',
+        href: publishAppPath('/guidance/operator-requirements?section=dataquality'),
         copy: 'Read the guidance on post publishing validation and data quality reports to understand how to interpret and action them.',
       },
     ],
@@ -51,12 +53,12 @@ const STEPS: StepItem[] = [
     links: [
       {
         label: 'View publisher dashboard',
-        href: '/publish/guide-me/dashboard/',
+        href: publishAppPath('/guide-me/dashboard/'),
         copy: 'Review all datasets published on BODS from your organisation account and keep track of your data health.',
       },
       {
         label: 'View data consumers activity',
-        href: '/publish/guide-me/activity/',
+        href: publishAppPath('/guide-me/activity/'),
         copy: 'View stats on how data consumers are utilising and interacting with your published data.',
       },
     ],
@@ -69,8 +71,8 @@ export default function PublishGuideMePage() {
     <div className="govuk-width-container">
       <Breadcrumbs
         items={[
-          { label: 'Bus Open Data Service', href: '/data' },
-          { label: 'Publish Bus Open Data', href: '/publish' },
+          { label: 'Bus Open Data Service', href: HOSTS.data },
+          { label: 'Publish Bus Open Data', href: HOSTS.publish },
           { label: 'Guide me', current: true },
         ]}
       />
@@ -156,7 +158,7 @@ export default function PublishGuideMePage() {
                 </a>
               </li>
               <li>
-                <Link className="govuk-link" href="/contact">
+                <Link className="govuk-link" href={wwwPath('/contact')}>
                   Contact us for technical issues
                 </Link>
               </li>

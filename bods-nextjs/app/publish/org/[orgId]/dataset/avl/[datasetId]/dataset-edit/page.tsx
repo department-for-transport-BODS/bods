@@ -9,6 +9,7 @@ import { ErrorSummary } from '@/components/shared';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep } from '@/lib/validation/avl-publish';
+import { HOSTS } from '@/config/client';
 
 interface DatasetEditResponse {
   datasetId: number;
@@ -195,7 +196,7 @@ function AvlDatasetEditContent() {
       <Breadcrumbs
         items={[
           { label: 'Bus Open Data Service', href: '/' },
-          { label: 'Publish Bus Open Data', href: '/publish/' },
+          { label: 'Publish Bus Open Data', href: HOSTS.publish },
           {
             label: 'Your data feed',
             href: listUrl,
