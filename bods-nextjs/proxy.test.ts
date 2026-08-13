@@ -35,6 +35,24 @@ describe('subdomain routing proxy', () => {
       expect(rewriteUrl.search).toBe('?section=dataquality');
     });
 
+    it('rewrites local authority requirements on the publish host without losing the section query', () => {
+      const url = 'https://publish.xyz.com/guidance/local-authority-requirements?section=support';
+      const response = proxy(request(url, 'publish.xyz.com'));
+      const rewriteUrl = new URL(response.headers.get('x-middleware-rewrite')!, url);
+
+      expect(rewriteUrl.pathname).toBe('/publish/guidance/local-authority-requirements');
+      expect(rewriteUrl.search).toBe('?section=support');
+    });
+
+    it('rewrites developer requirements on the data host without losing the section query', () => {
+      const url = 'https://data.xyz.com/guidance/requirements?section=api';
+      const response = proxy(request(url, 'data.xyz.com'));
+      const rewriteUrl = new URL(response.headers.get('x-middleware-rewrite')!, url);
+
+      expect(rewriteUrl.pathname).toBe('/data/guidance/requirements');
+      expect(rewriteUrl.search).toBe('?section=api');
+    });
+
     it('redirects a legacy publish path to the clean publish URL', () => {
       const response = proxy(request('https://publish.xyz.com/publish/org/42?tab=draft', 'publish.xyz.com'));
 

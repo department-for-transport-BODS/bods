@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { publishAppPath } from '@/config/client';
-import { useSupportConfig } from '@/app/guidance/support/SupportConfigProvider';
+import { useSupportConfig } from '@/components/shared/SupportConfigProvider';
 
 export function SupportSection() {
   const { supportEmail } = useSupportConfig();

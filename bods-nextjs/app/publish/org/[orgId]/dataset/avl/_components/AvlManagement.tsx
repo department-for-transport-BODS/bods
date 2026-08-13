@@ -12,7 +12,7 @@ import { statusIndicatorClass, statusLabel } from './avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { Pagination } from '@/components/shared/Pagination';
-import { HOSTS, publishAppPath, wwwPath } from '@/config/client';
+import { HOSTS, publishAppPath } from '@/config/client';
 
 type AvlTab = 'active' | 'draft' | 'archive';
 
@@ -447,7 +447,7 @@ export function AvlManagement() {
           </div>
           <div className="govuk-grid-column-one-third">
             <h3 className="govuk-heading-s">
-              <a className="govuk-link" href={wwwPath('/guidance/support/local-authorities')}>
+              <a className="govuk-link" href={publishAppPath('/guidance/local-authority-requirements')}>
                 Local authority requirements
               </a>
             </h3>

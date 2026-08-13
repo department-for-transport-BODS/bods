@@ -1,5 +1,5 @@
 import { HelpSectionTables } from './HelpSectionTables';
-import { useSupportConfig } from '@/app/guidance/support/SupportConfigProvider';
+import { useSupportConfig } from '@/components/shared/SupportConfigProvider';
 
 export function HelpSection() {
   const { supportEmail } = useSupportConfig();

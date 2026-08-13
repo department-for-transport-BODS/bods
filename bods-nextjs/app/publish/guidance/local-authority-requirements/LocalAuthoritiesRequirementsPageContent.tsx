@@ -14,7 +14,7 @@ import {
   SupportSection,
   UsingBodsSection,
 } from './sections';
-import { HOSTS, publishAppPath } from '@/config/client';
+import { HOSTS, publishAppPath, wwwPath } from '@/config/client';
 
 interface Section {
   name: string;
@@ -169,7 +169,7 @@ function LocalAuthoritiesContent() {
                 </Link>
               </li>
               <li>
-                <Link className="govuk-link" href="/contact">
+                <Link className="govuk-link" href={wwwPath('/contact')}>
                   Support line
                 </Link>
               </li>

@@ -127,7 +127,7 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
             <h2 className="govuk-heading-m">What you need to know</h2>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <Link href={wwwPath('/guidance/support/developer')} className="govuk-link">
+                <Link href={dataPath('/guidance/requirements')} className="govuk-link">
                   View developer documentation
                 </Link>
               </li>

@@ -14,7 +14,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { HOSTS, wwwPath } from '@/config/client';
+import { HOSTS, wwwPath, publishAppPath } from '@/config/client';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { PaginationPrevIcon, PaginationNextIcon } from '@/components/shared/PaginationIcons';
 
@@ -169,7 +169,7 @@ function BusOperatorRequirementsContent() {
             <h2 className="govuk-heading-s">Related content</h2>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <Link className="govuk-link" href={wwwPath('/guidance/support/local-authorities')}>
+                <Link className="govuk-link" href={publishAppPath('/guidance/local-authority-requirements')}>
                   Local authority requirements
                 </Link>
               </li>
