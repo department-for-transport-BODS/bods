@@ -7,6 +7,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ErrorSummary } from '@/components/shared';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
+import { HOSTS, publishAppPath } from '@/config/client';
 
 type FaresDetailResponse = {
   datasetId: number;
@@ -132,10 +133,10 @@ function FaresDatasetDetailContent() {
       <div className="govuk-main-wrapper">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: '/data' },
-            { label: 'Publish Bus Open Data', href: '/publish' },
-            { label: 'Choose data type', href: `/publish/org/${orgId}/dataset` },
-            { label: 'Fares Data Sets', href: `/publish/org/${orgId}/dataset/fares` },
+            { label: 'Bus Open Data Service', href: HOSTS.data },
+            { label: 'Publish Bus Open Data', href: HOSTS.publish },
+            { label: 'Choose data type', href: publishAppPath(`/org/${orgId}/dataset`) },
+            { label: 'Fares Data Sets', href: publishAppPath(`/org/${orgId}/dataset/fares`) },
             { label: data?.name || `Dataset ${datasetId}`, current: true, truncateAt: 20 },
           ]}
         />
@@ -281,12 +282,12 @@ function FaresDatasetDetailContent() {
                 <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
                 <ul className="govuk-list app-list--nav govuk-!-font-size-19">
                   <li>
-                    <Link className="govuk-link" href="/publish/guide-me">
+                    <Link className="govuk-link" href={publishAppPath('/guide-me')}>
                       View our guidelines here
                     </Link>
                   </li>
                   <li>
-                    <Link className="govuk-link" href="/publish/account">
+                    <Link className="govuk-link" href={publishAppPath('/account')}>
                       Contact support desk
                     </Link>
                   </li>

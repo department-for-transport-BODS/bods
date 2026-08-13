@@ -9,20 +9,21 @@
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
+import { HOSTS, publishAppPath, wwwPath } from '@/config/client';
 import { useAuth } from '@/hooks/useAuth';
 
 function PublishDashboard() {
   const { user } = useAuth();
 
   // all publish navigation inside Next routes.
-  let startView = '/publish/org';
+  let startView = publishAppPath('/org');
   if (user?.is_single_org_user && user.organisation_id) {
-    startView = `/publish/org/${user.organisation_id}/dataset`;
+    startView = publishAppPath(`/org/${user.organisation_id}/dataset`);
   }
 
-  let reviewView = '/publish/org';
+  let reviewView = publishAppPath('/org');
   if (user?.is_single_org_user && user.organisation_id) {
-    reviewView = `/publish/org/${user.organisation_id}/dataset/fares`;
+    reviewView = publishAppPath(`/org/${user.organisation_id}/dataset/fares`);
   }
 
   return (
@@ -31,7 +32,7 @@ function PublishDashboard() {
         <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
           <Breadcrumbs
             items={[
-              { label: 'Bus Open Data Service', href: '/data' },
+              { label: 'Bus Open Data Service', href: HOSTS.data },
               { label: 'Publish Bus Open Data', current: true },
             ]}
           />
@@ -76,7 +77,7 @@ function PublishDashboard() {
           <div className="govuk-grid-row govuk-!-margin-bottom-8">
             <div className="govuk-grid-column-two-thirds govuk-!-padding-right-9">
               <h2 className="govuk-heading-s">
-                <Link className="govuk-link-bold" href="/publish/guide-me">
+                <Link className="govuk-link-bold" href={publishAppPath('/guide-me')}>
                   Guide me
                 </Link>
               </h2>
@@ -92,7 +93,7 @@ function PublishDashboard() {
               <p className="govuk-body govuk-!-margin-bottom-7">Review the health of your data.</p>
 
               <h2 className="govuk-heading-s">
-                <Link className="govuk-link-bold" href="/publish/account">
+                <Link className="govuk-link-bold" href={publishAppPath('/account')}>
                   Manage your account
                 </Link>
               </h2>
@@ -105,12 +106,12 @@ function PublishDashboard() {
               <h2 className="govuk-heading-m">Need further help?</h2>
               <ul className="govuk-list app-list--nav govuk-!-font-size-19">
                 <li>
-                  <Link className="govuk-link" href="/changelog">
+                  <Link className="govuk-link" href={wwwPath('/changelog')}>
                     Service changelog
                   </Link>
                 </li>
                 <li>
-                  <Link className="govuk-link" href="/contact">
+                  <Link className="govuk-link" href={wwwPath('/contact')}>
                     Contact us for technical issues
                   </Link>
                 </li>

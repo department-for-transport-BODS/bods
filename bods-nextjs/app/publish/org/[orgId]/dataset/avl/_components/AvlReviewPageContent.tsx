@@ -6,7 +6,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
-import { HOSTS } from '@/config/client';
+import { wwwPath } from '@/config/client';
 import { formatDateTime } from '@/lib/utils/date';
 import { validateAvlConsentStep } from '@/lib/validation/avl-publish';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
@@ -63,8 +63,8 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
     ? `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`
     : `/publish/org/${orgId}/dataset/avl/${datasetId}/review`;
   const editUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/dataset-edit?mode=revision&redirect=${encodeURIComponent(reviewUrl)}`;
-  const supportBusOperatorsUrl = `${HOSTS.publish}/guidance/operator-requirements/`;
-  const contactSupportUrl = `${HOSTS.www}/contact/`;
+  const supportBusOperatorsUrl = wwwPath('/guidance/support/bus-operators');
+  const contactSupportUrl = wwwPath('/contact');
 
   const handlePublish = async () => {
     if (isPublishing) {

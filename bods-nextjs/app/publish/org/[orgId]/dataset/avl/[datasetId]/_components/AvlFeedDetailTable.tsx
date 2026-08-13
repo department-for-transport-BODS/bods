@@ -5,6 +5,7 @@ import type { AvlFeedDetail } from './AvlFeedDetailContent';
 import { statusIndicatorClass, statusLabel } from '../../_components/avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
 import { formatDateTime } from '@/lib/utils/date';
+import { publishAppPath } from '@/config/client';
 
 interface AvlFeedDetailTableProps {
   feedDetail: AvlFeedDetail;
@@ -132,7 +133,7 @@ export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProp
             <div className="flex-between">
               <span>{hasPublishedTimestamp ? `${formattedPublishedAt} by ${publishedByDisplay}` : '-'}</span>
               <span className="right-justify">
-                <Link className="govuk-link" href={`/publish/org/${orgId}/dataset/avl/${feedDetail.datasetId}/changelog`}>
+                <Link className="govuk-link" href={publishAppPath(`/org/${orgId}/dataset/avl/${feedDetail.datasetId}/changelog`)}>
                   View change log
                 </Link>
               </span>

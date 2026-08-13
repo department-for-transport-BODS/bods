@@ -5,6 +5,7 @@ import { useCallback } from 'react';
 import { useApiResource } from '@/hooks/useApiResource';
 import { Pagination } from '@/components/shared/Pagination';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
+import { HOSTS } from '@/config/client';
 
 interface AttentionSummary {
   available: boolean;
@@ -75,7 +76,7 @@ export function AvlAttentionContent() {
         <Breadcrumbs
           items={[
             { label: 'Bus Open Data Service', href: '/' },
-            { label: 'Publish Bus Open Data', href: '/publish/' },
+            { label: 'Publish Bus Open Data', href: HOSTS.publish },
             {
               label: 'Review My Bus Location Data',
               href: backUrl,

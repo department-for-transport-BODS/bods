@@ -10,7 +10,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { clientConfig } from '@/config/client';
+import { clientConfig, wwwPath } from '@/config/client';
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -37,7 +37,7 @@ export default function Error({ error, reset }: ErrorProps) {
 
             <p className="govuk-body">
               If you continue to experience problems, please{' '}
-              <Link href="/contact" className="govuk-link">
+              <Link href={wwwPath('/contact')} className="govuk-link">
                 contact us
               </Link>
               .

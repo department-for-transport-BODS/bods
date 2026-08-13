@@ -14,6 +14,7 @@ import {
   SupportSection,
   UsingBodsSection,
 } from './sections';
+import { HOSTS } from '@/config/client';
 
 interface Section {
   name: string;
@@ -121,7 +122,7 @@ function LocalAuthoritiesContent() {
       <Breadcrumbs
         items={[
           { label: 'Bus Open Data Service', href: '/' },
-          { label: 'Publish Bus Open Data', href: '/publish' },
+          { label: 'Publish Bus Open Data', href: HOSTS.publish },
           { label: 'Guidance', href: '/guidance/support/bus-operators' },
           { label: 'Local authority requirements', current: true },
         ]}

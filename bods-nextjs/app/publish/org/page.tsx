@@ -12,6 +12,7 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { getPaginated } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { HOSTS } from '@/config/client';
 
 interface Organisation {
   id: number;
@@ -97,8 +98,8 @@ function SelectOrg() {
       <div className="govuk-main-wrapper">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: '/data' },
-            { label: 'Publish Bus Open Data', href: '/publish' },
+            { label: 'Bus Open Data Service', href: HOSTS.data },
+            { label: 'Publish Bus Open Data', href: HOSTS.publish },
             { label: 'Select organisation', current: true },
           ]}
         />

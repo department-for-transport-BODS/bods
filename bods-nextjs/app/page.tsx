@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HOSTS, publishPath } from '@/config/client';
 
 export default function Home() {
   return (
@@ -41,7 +42,7 @@ export default function Home() {
                 </p>
                 <ul className="govuk-list">
                   <li className="govuk-!-margin-bottom-4">
-                    <Link href="/publish" className="govuk-link-bold">
+                    <Link href={HOSTS.publish} className="govuk-link-bold">
                       Publish bus data
                     </Link>
                   </li>
@@ -56,7 +57,7 @@ export default function Home() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/publish/guide-me" className="govuk-link-bold">
+                    <Link href={publishPath('/guide-me')} className="govuk-link-bold">
                       Guide me
                     </Link>
                   </li>
@@ -73,7 +74,7 @@ export default function Home() {
                 </p>
                 <ul className="govuk-list">
                   <li className="govuk-!-margin-bottom-4">
-                    <Link href="/data" className="govuk-link-bold">
+                    <Link href={HOSTS.data} className="govuk-link-bold">
                       Find bus open data
                     </Link>
                   </li>

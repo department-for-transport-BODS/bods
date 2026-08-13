@@ -19,6 +19,7 @@ import {
   QuickStartSection,
   UsingApiSection,
 } from './sections';
+import { HOSTS } from '@/config/client';
 
 interface Section {
   name: string;
@@ -113,8 +114,8 @@ function DeveloperDocumentationContent() {
       <Breadcrumbs
         items={[
           { label: 'Bus Open Data Service', href: '/' },
-          { label: 'Find Bus Open Data', href: '/data' },
-          { label: 'Guide Me', href: '/publish/guide-me' },
+          { label: 'Find Bus Open Data', href: HOSTS.data },
+          { label: 'Guide Me', href: `${HOSTS.publish}/guide-me` },
           { label: 'Developer documentation', current: true },
         ]}
       />

@@ -12,6 +12,7 @@ import { statusIndicatorClass, statusLabel } from './avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { Pagination } from '@/components/shared/Pagination';
+import { HOSTS, publishAppPath, wwwPath } from '@/config/client';
 
 type AvlTab = 'active' | 'draft' | 'archive';
 
@@ -219,11 +220,11 @@ export function AvlManagement() {
       <div className="govuk-width-container">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: '/' },
-            { label: 'Publish Bus Open Data', href: '/publish/' },
+            { label: 'Bus Open Data Service', href: HOSTS.www },
+            { label: 'Publish Bus Open Data', href: HOSTS.publish },
             {
               label: 'Review My Bus Location Data',
-              href: `/publish/org/${orgId}/dataset/avl`,
+              href: publishAppPath(`/org/${orgId}/dataset/avl`),
               current: true,
             },
           ]}
@@ -438,7 +439,7 @@ export function AvlManagement() {
         <div className="govuk-grid-row govuk-!-margin-top-9">
           <div className="govuk-grid-column-one-third">
             <h3 className="govuk-heading-s">
-              <a className="govuk-link" href="/publish/guidance/support/bus-operators/">
+              <a className="govuk-link" href={wwwPath('/guidance/support/bus-operators')}>
                 Bus operator requirements
               </a>
             </h3>
@@ -446,7 +447,7 @@ export function AvlManagement() {
           </div>
           <div className="govuk-grid-column-one-third">
             <h3 className="govuk-heading-s">
-              <a className="govuk-link" href="/publish/guidance/support/local-authorities/">
+              <a className="govuk-link" href={wwwPath('/guidance/support/local-authorities')}>
                 Local authority requirements
               </a>
             </h3>
@@ -454,7 +455,7 @@ export function AvlManagement() {
           </div>
           <div className="govuk-grid-column-one-third">
             <h3 className="govuk-heading-s">
-              <a className="govuk-link" href={`/publish/org/${orgId}/profile/`}>
+              <a className="govuk-link" href={publishAppPath(`/org/${orgId}/profile/`)}>
                 Set up licence numbers
               </a>
             </h3>

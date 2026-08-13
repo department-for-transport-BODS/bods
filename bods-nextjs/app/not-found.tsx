@@ -6,6 +6,7 @@
  */
 
 import Link from 'next/link';
+import { wwwPath } from '@/config/client';
 
 export default function NotFound() {
   return (
@@ -25,7 +26,7 @@ export default function NotFound() {
 
             <p className="govuk-body">
               If the web address is correct or you selected a link or button,{' '}
-              <Link href="/contact" className="govuk-link">
+              <Link href={wwwPath('/contact')} className="govuk-link">
                 contact Bus open data support line
               </Link>{' '}
               if you need to speak to someone about the service.

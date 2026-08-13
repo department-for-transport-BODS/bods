@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
-import { HOSTS } from '@/config/client';
+import { HOSTS, dataPath, wwwPath } from '@/config/client';
 
 export default function DataBrowsePage() {
   return (
@@ -37,7 +37,7 @@ export default function DataBrowsePage() {
             <div className="govuk-grid-column-two-thirds">
               <div className="govuk-!-padding-right-9">
                 <div className="govuk-grid-row">
-                  <Link className="govuk-link-bold govuk-body" href="/data/timetables?status=live">
+                  <Link className="govuk-link-bold govuk-body" href={dataPath('/timetables?status=live')}>
                     Timetables data
                   </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
@@ -52,7 +52,7 @@ export default function DataBrowsePage() {
                 </div>
 
                 <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <Link className="govuk-link-bold govuk-body" href="/data/avl?status=live">
+                  <Link className="govuk-link-bold govuk-body" href={dataPath('/avl?status=live')}>
                     Location data
                   </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
@@ -68,7 +68,7 @@ export default function DataBrowsePage() {
                 </div>
 
                 <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <Link className="govuk-link-bold govuk-body" href="/data/fares?status=live">
+                  <Link className="govuk-link-bold govuk-body" href={dataPath('/fares?status=live')}>
                     Fares data
                   </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
@@ -83,7 +83,7 @@ export default function DataBrowsePage() {
                 </div>
 
                 <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <Link className="govuk-link-bold govuk-body" href="/data/disruptions">
+                  <Link className="govuk-link-bold govuk-body" href={dataPath('/disruptions')}>
                     Disruption data
                   </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
@@ -103,17 +103,17 @@ export default function DataBrowsePage() {
               <h2 className="govuk-heading-m">Need further help?</h2>
               <ul className="govuk-list">
                 <li className="govuk-!-margin-bottom-3">
-                  <Link className="govuk-link" href="/guidance/support/developer">
+                  <Link className="govuk-link" href={wwwPath('/guidance/support/developer')}>
                     Guide me
                   </Link>
                 </li>
                 <li className="govuk-!-margin-bottom-3">
-                  <Link className="govuk-link" href="/changelog">
+                  <Link className="govuk-link" href={wwwPath('/changelog')}>
                     Service changelog
                   </Link>
                 </li>
                 <li className="govuk-!-margin-bottom-3">
-                  <Link className="govuk-link" href="/contact">
+                  <Link className="govuk-link" href={wwwPath('/contact')}>
                     Contact us for technical issues
                   </Link>
                 </li>
