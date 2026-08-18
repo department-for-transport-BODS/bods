@@ -45,10 +45,16 @@ REVISION_NUMBER_OBSERVATION = Observation(
     rules=[],
 )
 
+SUPPORTED_TXC_VERSIONS = ("2.4", "2.4.1")
+DEFAULT_TXC_SCHEMA_VERSION = "2.4"
+
 
 class DatasetTXCValidator:
     def __init__(self, revision: DatasetRevision):
-        self._schema = get_transxchange_schema()
+        self._schemas = {
+            version: get_transxchange_schema(version)
+            for version in SUPPORTED_TXC_VERSIONS
+        }
         self._revision = revision
         self._failed_violation_filenames = []
 
@@ -90,9 +96,21 @@ class DatasetTXCValidator:
 
             file_.seek(0)
             doc = etree.parse(file_)
-            is_valid = self._schema.validate(doc)
+            version = doc.getroot().get("SchemaVersion")
+            validated_against = (
+                version if version in self._schemas else DEFAULT_TXC_SCHEMA_VERSION
+            )
+            schema = self._schemas[validated_against]
+            logger.info(
+                "Validating %s: file SchemaVersion=%s against TxC XSD %s",
+                getattr(file_, "name", "unknown"),
+                version,
+                validated_against,
+            )
+            is_valid = schema.validate(doc)
+
             if not is_valid:
-                for error in self._schema.error_log:
+                for error in schema.error_log:
                     violations.append(BaseSchemaViolation.from_error(error))
                     self._failed_violation_filenames.append(error.filename)
         return violations
