@@ -52,7 +52,8 @@ DEFAULT_TXC_SCHEMA_VERSION = "2.4"
 class DatasetTXCValidator:
     def __init__(self, revision: DatasetRevision):
         self._schemas = {
-            version: get_transxchange_schema(version) for version in SUPPORTED_TXC_VERSIONS
+            version: get_transxchange_schema(version)
+            for version in SUPPORTED_TXC_VERSIONS
         }
         self._revision = revision
         self._failed_violation_filenames = []
