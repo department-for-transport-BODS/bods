@@ -1,6 +1,7 @@
 from django.http import Http404
 from django.shortcuts import redirect
 from django.views.generic import DetailView
+from waffle import flag_is_active
 
 from transit_odp.browse.cfn import generate_signed_url
 from transit_odp.site_admin.constants import DataCatalogue
