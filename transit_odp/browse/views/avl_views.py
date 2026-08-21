@@ -174,10 +174,10 @@ class DownloadCAVLDataArchiveView(DownloadView):
         return archive
 
     def get_download_file(self):
-        is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
-        if is_direct_s3_url_active:
-            return generate_signed_url(f"avl/{self.object.data.name}")
-        return self.object.data
+        return generate_signed_url(f"avl/{self.object.data.name}")
+
+    def render_to_response(self, **response_kwargs):
+        return redirect(self.get_download_file())
 
     def render_to_response(self, **response_kwargs):
         is_direct_s3_url_active = flag_is_active("", "is_direct_s3_url_active")
