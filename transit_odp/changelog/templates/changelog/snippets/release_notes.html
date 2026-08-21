@@ -1,5 +1,61 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "August 2026 (1.62.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.62.0 (Aug 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Resolved an issue where Street Manager roadworks was not being ingested into the Disruptions service.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue where ABODS corridors stopped working for an organisation after one corridor creator was deleted.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue with the ABODS service monitoring page, restoring visibility for users using the Safari browser.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Removed the unused direct S3 URL feature flag from BODS.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Removed old changelog pages from Fares and Disruptions.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Updated Next.js in Fares create-data to version 16.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Completed Next.js migration work for Disruptions.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Replaced the previous CSRF approach in Disruptions as part of the Next.js migration.
+    {% endblocktrans %}
+  </li>
+    <li>
+    {% blocktrans %}
+      Upgraded Node versions across BODS, ABODS and Disruptions to improve resilience and apply security updates.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "July 2026 (1.61.0)" %}
 </h3>
 <h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.61.0 (Jul 2026)</h4>
