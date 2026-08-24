@@ -32,7 +32,7 @@ function PublishDashboard() {
         <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
           <Breadcrumbs
             items={[
-              { label: 'Bus Open Data Service', href: HOSTS.data },
+              { label: 'Bus Open Data Service', href: HOSTS.www },
               { label: 'Publish Bus Open Data', current: true },
             ]}
           />

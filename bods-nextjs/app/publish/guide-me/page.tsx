@@ -71,7 +71,7 @@ export default function PublishGuideMePage() {
     <div className="govuk-width-container">
       <Breadcrumbs
         items={[
-          { label: 'Bus Open Data Service', href: HOSTS.data },
+          { label: 'Bus Open Data Service', href: HOSTS.www },
           { label: 'Publish Bus Open Data', href: HOSTS.publish },
           { label: 'Guide me', current: true },
         ]}

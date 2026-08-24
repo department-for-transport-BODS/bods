@@ -133,7 +133,7 @@ function FaresDatasetDetailContent() {
       <div className="govuk-main-wrapper">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: HOSTS.data },
+            { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
             { label: 'Choose data type', href: publishAppPath(`/org/${orgId}/dataset`) },
             { label: 'Fares Data Sets', href: publishAppPath(`/org/${orgId}/dataset/fares`) },
