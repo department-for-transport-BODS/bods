@@ -24,6 +24,8 @@ function PublishDashboard() {
   let reviewView = publishAppPath('/org');
   if (user?.is_single_org_user && user.organisation_id) {
     reviewView = publishAppPath(`/org/${user.organisation_id}/dataset/fares`);
+  } else if (user?.is_agent_user) {
+    reviewView = publishAppPath('/agent-dashboard');
   }
 
   return (

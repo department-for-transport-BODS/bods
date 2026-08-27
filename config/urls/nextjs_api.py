@@ -27,15 +27,24 @@ from transit_odp.fares.views.api import (
     publish_fares_dataset_api,
     update_fares_dataset_api,
 )
-from transit_odp.publish.views.api import ProgressAPIView
+from transit_odp.publish.views.api import (
+    ProgressAPIView,
+    get_agent_dashboard_organisations_api,
+)
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
+    get_timetables_list_api,
     get_timetables_review_status_api,
     publish_timetables_dataset_api,
 )
 
 urlpatterns = [
     path("auth/", include("config.urls.session_auth_api")),
+    path(
+        "agent-dashboard/organisations/",
+        get_agent_dashboard_organisations_api,
+        name="nextjs-agent-dashboard-organisations",
+    ),
     path(
         "dataset/<int:pk>/progress/",
         ProgressAPIView.as_view(),
@@ -142,6 +151,11 @@ urlpatterns = [
         "timetables/review-status/<int:pk1>/<int:pk>/",
         get_timetables_review_status_api,
         name="nextjs-timetables-review-status",
+    ),
+    path(
+        "timetables/list/<int:pk1>/",
+        get_timetables_list_api,
+        name="nextjs-timetables-list",
     ),
     path(
         "timetables/create/<int:pk1>/",

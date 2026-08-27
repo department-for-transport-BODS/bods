@@ -3,6 +3,7 @@ import {
   djangoPath,
   forwardToDjango,
   getDjangoNamespace,
+  resolveUpstreamHost,
 } from '@/lib/django-gateway';
 
 type RouteContext = {
@@ -23,7 +24,7 @@ async function proxyDjangoRequest(
   return forwardToDjango(
     request,
     djangoPath(config.upstreamPrefix, path, request.nextUrl.pathname),
-    config.upstreamHost,
+    resolveUpstreamHost(config, request),
   );
 }
 

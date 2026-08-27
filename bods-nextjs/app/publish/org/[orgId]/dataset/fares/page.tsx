@@ -63,7 +63,7 @@ function FaresPublish() {
   const searchParams = useSearchParams();
   const orgId = params.orgId as string;
   const nextCreateUrl = `/publish/org/${orgId}/dataset/fares/create`;
-  const reviewDetailsUrl = '/publish/review';
+  const reviewDetailsUrl = `/publish/org/${orgId}/dataset/data-activity?prev=fares-feed-list`;
   const operatorRequirementsUrl = '/publish/guide-me';
   const localAuthorityRequirementsUrl = '/publish/guide-me';
   const setUpLicenceNumbersUrl = '/publish/account';

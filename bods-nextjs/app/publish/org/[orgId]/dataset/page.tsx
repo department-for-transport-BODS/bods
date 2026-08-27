@@ -29,6 +29,8 @@ function SelectDatasetTypePageContent() {
       targetPath = `/publish/org/${orgId}/dataset/fares/create`;
     } else if (selectedType === 'avl') {
       targetPath = `/publish/org/${orgId}/dataset/avl/new`;
+    } else if (selectedType === 'timetable') {
+      targetPath = `/publish/org/${orgId}/dataset/timetable/create`;
     } else {
       targetPath = `/publish/org/${orgId}/dataset/${selectedType}`;
     }
@@ -43,7 +45,7 @@ function SelectDatasetTypePageContent() {
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'Choose data type', current: true },
+            { label: 'Publish a Dataset or Data Feed', current: true },
           ]}
         />
 

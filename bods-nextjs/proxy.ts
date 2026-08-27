@@ -22,6 +22,12 @@ const wwwOnlyRoutePrefixes = [
   '/cookie',
   '/privacy-policy',
   '/version',
+];
+
+// Account pages exist on every service host (matching the Django service, where
+// allauth is mounted per subdomain) so sign-in/out stay on the host the user
+// came from and the session cookie is set for that host.
+const sharedRoutePrefixes = [
   '/account/login',
   '/account/logout',
   '/account/signup',
@@ -117,6 +123,10 @@ export function proxy(request: NextRequest) {
     wwwOnlyRoutePrefixes.some((prefix) => hasRoutePrefix(pathname, prefix))
   ) {
     return redirectToSubdomain(request, hostname, 'www', pathname);
+  }
+
+  if (sharedRoutePrefixes.some((prefix) => hasRoutePrefix(pathname, prefix))) {
+    return NextResponse.next();
   }
 
   const canonicalPath = publicPath(pathname, routePrefix);

@@ -1,15 +1,18 @@
-import type { NextRequest } from 'next/server';
+/** @jest-environment node */
+
+import { NextRequest } from 'next/server';
 import {
   djangoPath,
   forwardToDjango,
   getDjangoNamespace,
+  resolveUpstreamHost,
 } from './django-gateway';
 
 describe('getDjangoNamespace', () => {
-  it('maps each public namespace to its Django host and upstream prefix', () => {
+  it('maps each public namespace to its upstream prefix and static host, if any', () => {
     expect(getDjangoNamespace('auth')).toEqual({
       upstreamPrefix: '/api/auth/',
-      upstreamHost: 'localhost:8000',
+      upstreamHost: null,
     });
     expect(getDjangoNamespace('data')).toEqual({
       upstreamPrefix: '/api/',
@@ -20,6 +23,41 @@ describe('getDjangoNamespace', () => {
       upstreamHost: 'publish.localhost:8000',
     });
     expect(getDjangoNamespace('unknown')).toBeNull();
+  });
+});
+
+describe('resolveUpstreamHost', () => {
+  it('resolves the auth upstream from the request subdomain', () => {
+    const request = new NextRequest('http://publish.localhost:3000/api/auth/login/', {
+      headers: { host: 'publish.localhost:3000' },
+    });
+
+    expect(resolveUpstreamHost(getDjangoNamespace('auth')!, request)).toBe('publish.localhost:8000');
+  });
+
+  it('resolves the auth upstream to the data host for data requests', () => {
+    const request = new NextRequest('http://data.localhost:3000/api/auth/user/', {
+      headers: { host: 'data.localhost:3000' },
+    });
+
+    expect(resolveUpstreamHost(getDjangoNamespace('auth')!, request)).toBe('data.localhost:8000');
+  });
+
+  it('falls back to the www upstream when the request host has no subdomain', () => {
+    const request = new NextRequest('http://localhost:3000/api/auth/login/', {
+      headers: { host: 'localhost:3000' },
+    });
+
+    expect(resolveUpstreamHost(getDjangoNamespace('auth')!, request)).toBe('localhost:8000');
+  });
+
+  it('keeps the static upstream for the data and publish namespaces', () => {
+    const request = new NextRequest('http://localhost:3000/api/data/v1/dataset/', {
+      headers: { host: 'localhost:3000' },
+    });
+
+    expect(resolveUpstreamHost(getDjangoNamespace('data')!, request)).toBe('data.localhost:8000');
+    expect(resolveUpstreamHost(getDjangoNamespace('publish')!, request)).toBe('publish.localhost:8000');
   });
 });
 
