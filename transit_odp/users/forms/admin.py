@@ -9,6 +9,7 @@ from django_hosts import reverse
 from invitations.forms import CleanEmailMixin
 from invitations.utils import get_invitation_model
 
+from config.hosts import ROOT_HOST
 from transit_odp.users.constants import AccountType
 
 User = auth.get_user_model()
@@ -38,8 +39,10 @@ def get_privacy_text():
             "<a class='govuk-link' href='{privacy_policy_url}'>Privacy</a> and "
             "<a class='govuk-link' href='{cookie_url}'>Cookies</a> policies.</p>"
         ).format(
-            privacy_policy_url=reverse("privacy-policy"),
-            cookie_url=reverse("cookie"),
+            # privacy-policy and cookie are only routed on the root (www) host,
+            # but this form also renders on the publish host (e.g. signup/invite-accept).
+            privacy_policy_url=reverse("privacy-policy", host=ROOT_HOST),
+            cookie_url=reverse("cookie", host=ROOT_HOST),
         )
     )
 

@@ -20,6 +20,15 @@ AUTH_REQUIRED_ERROR = "Authentication required"
 ORG_ACCESS_REQUIRED_ERROR = "Org user access required"
 ORG_NOT_FOUND_ERROR = "Organisation not found"
 REVISION_NOT_FOUND_ERROR = "Dataset revision not found"
+ACTIVE_LIST_SECTION = "active"
+DRAFT_LIST_SECTION = "draft"
+ARCHIVE_LIST_SECTION = "archive"
+LIST_SECTIONS = {
+    ACTIVE_LIST_SECTION,
+    DRAFT_LIST_SECTION,
+    ARCHIVE_LIST_SECTION,
+}
+EXCLUDED_LIVE_STATUSES = [FeedStatus.expired.value, FeedStatus.inactive.value]
 
 
 def _authenticate_user(request):
@@ -86,6 +95,54 @@ def _get_revision_progress(revision: DatasetRevision):
 
 def _is_loading_status(status: str) -> bool:
     return status in LOADING_STATUSES
+
+
+def _get_timetables_list_section(request):
+    section = request.GET.get("tab", ACTIVE_LIST_SECTION)
+    if section not in LIST_SECTIONS:
+        return ACTIVE_LIST_SECTION
+    return section
+
+
+def _get_timetables_list_queryset(organisation, section):
+    datasets = (
+        Dataset.objects.filter(
+            organisation=organisation,
+            dataset_type=DatasetType.TIMETABLE.value,
+        )
+        .select_related("organisation")
+        .select_related("live_revision")
+        .order_by("id")
+    )
+
+    if section == ACTIVE_LIST_SECTION:
+        return (
+            datasets.add_live_data()
+            .exclude(status__in=EXCLUDED_LIVE_STATUSES)
+            .add_draft_revisions()
+        )
+
+    if section == DRAFT_LIST_SECTION:
+        return datasets.add_draft_revisions().add_draft_revision_data(
+            organisation=organisation,
+            dataset_type=DatasetType.TIMETABLE.value,
+        )
+
+    return (
+        datasets.add_live_data()
+        .filter(status__in=EXCLUDED_LIVE_STATUSES)
+        .add_draft_revisions()
+    )
+
+
+def _dataset_row_to_json(dataset):
+    return {
+        "id": dataset.id,
+        "name": getattr(dataset, "name", None),
+        "shortDescription": getattr(dataset, "short_description", None),
+        "status": getattr(dataset, "status", None),
+        "modified": _iso_or_none(getattr(dataset, "modified", None)),
+    }
 
 
 def _iso_or_none(value):
@@ -253,6 +310,19 @@ def get_timetables_review_status_api(request, pk1, pk):
         },
         status=200,
     )
+
+
+@require_GET
+def get_timetables_list_api(request, pk1):
+    _, organisation, _, error_response = _get_request_context(request, pk1)
+    if error_response is not None:
+        return error_response
+
+    section = _get_timetables_list_section(request)
+    queryset = _get_timetables_list_queryset(organisation, section)
+    datasets = [_dataset_row_to_json(dataset) for dataset in queryset]
+
+    return JsonResponse({"tab": section, "results": datasets}, status=200)
 
 
 @require_POST

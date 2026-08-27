@@ -100,10 +100,31 @@ describe('subdomain routing proxy', () => {
       expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/publish/account');
     });
 
-    it('redirects publish login to the www account login page', () => {
+    it('keeps account login on the publish host', () => {
       const response = proxy(request('https://publish.xyz.com/account/login', 'publish.xyz.com'));
 
-      expect(response.headers.get('location')).toBe('https://www.xyz.com/account/login');
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps account logout on the data host', () => {
+      const response = proxy(request('https://data.xyz.com/account/logout', 'data.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps nested account pages such as password reset on the publish host', () => {
+      const response = proxy(request('https://publish.xyz.com/account/password/reset', 'publish.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('still redirects genuinely www-only routes from the publish host to WWW', () => {
+      const response = proxy(request('https://publish.xyz.com/cookie', 'publish.xyz.com'));
+
+      expect(response.headers.get('location')).toBe('https://www.xyz.com/cookie');
     });
 
     it('redirects data /account to the publish account page', () => {
@@ -139,6 +160,13 @@ describe('subdomain routing proxy', () => {
       const response = proxy(request('http://localhost:3000/data/timetables', 'localhost:3000'));
 
       expect(response.headers.get('location')).toBe('http://data.localhost:3000/timetables');
+    });
+
+    it('keeps login on the local publish hostname', () => {
+      const response = proxy(request('http://publish.localhost:3000/account/login', 'publish.localhost:3000'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
     });
   });
 });

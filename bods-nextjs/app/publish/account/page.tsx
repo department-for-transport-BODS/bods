@@ -1,9 +1,16 @@
+'use client';
+
 import Link from 'next/link';
 import { HOSTS, publishAppPath, wwwPath } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
+import { useAuth } from '@/hooks/useAuth';
 
 function ManageAccountPageContent() {
+  const { user } = useAuth();
+
+  const selectOrgUrl = user?.is_agent_user ? publishAppPath('/agent-dashboard') : publishAppPath('/org');
+
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
@@ -26,7 +33,7 @@ function ManageAccountPageContent() {
               or contact support if you need account changes made now.
             </div>
             <div className="govuk-button-group">
-              <Link href={publishAppPath('/org')} className="govuk-button">
+              <Link href={selectOrgUrl} className="govuk-button">
                 Select organisation
               </Link>
               <Link href={wwwPath('/contact')} className="govuk-link">

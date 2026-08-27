@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { DJANGO_HOSTS, serverConfig } from '@/config/server';
+import { bodsAreaFromHostname, hostnameFromHeaders } from '@/config/hosts';
 
 const BODYLESS_METHODS = new Set(['GET', 'HEAD']);
 const REQUEST_HEADERS_TO_REMOVE = [
@@ -11,7 +12,9 @@ const REQUEST_HEADERS_TO_REMOVE = [
 const DJANGO_NAMESPACES = {
   auth: {
     upstreamPrefix: '/api/auth/',
-    upstreamHost: new URL(DJANGO_HOSTS.www).host,
+    // Session auth is mounted on every Django service host, so the upstream is
+    // resolved per request from the browser-facing subdomain.
+    upstreamHost: null,
   },
   data: {
     upstreamPrefix: '/api/',
@@ -23,8 +26,27 @@ const DJANGO_NAMESPACES = {
   },
 } as const;
 
-export function getDjangoNamespace(namespace: string) {
+type DjangoNamespaceConfig = (typeof DJANGO_NAMESPACES)[keyof typeof DJANGO_NAMESPACES];
+
+export function getDjangoNamespace(namespace: string): DjangoNamespaceConfig | null {
   return DJANGO_NAMESPACES[namespace as keyof typeof DJANGO_NAMESPACES] ?? null;
+}
+
+// Session auth is served by every service host - forward to the respective Django host
+// so the session cookie and Django's CSRF origin check stay aligned with the host the user is on.
+export function resolveUpstreamHost(
+  config: DjangoNamespaceConfig,
+  request: NextRequest,
+): string {
+  if (config.upstreamHost) {
+    return config.upstreamHost;
+  }
+
+  const hostname = hostnameFromHeaders(
+    request.headers.get('host'),
+    request.headers.get('x-forwarded-host'),
+  );
+  return new URL(DJANGO_HOSTS[bodsAreaFromHostname(hostname)]).host;
 }
 
 export function djangoPath(
