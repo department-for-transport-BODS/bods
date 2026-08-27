@@ -101,6 +101,7 @@ function MyAccount() {
                   <tr className="govuk-table__row">
                     <th className="govuk-table__header" scope="col">Organisation</th>
                     <th className="govuk-table__header" scope="col">Account Type</th>
+                    <th className="govuk-table__header" scope="col">Actions</th>
                     <th className="govuk-table__header" scope="col">Status</th>
                   </tr>
                 </thead>
@@ -108,6 +109,9 @@ function MyAccount() {
                   <tr className="govuk-table__row">
                     <td className="govuk-table__cell">{account.organisationName}</td>
                     <td className="govuk-table__cell">{account.prettyAccountName}</td>
+                    <td className="govuk-table__cell">
+                      {/* Python version has nothing here? */}
+                    </td>
                     <td className="govuk-table__cell">
                       <span className={`status-indicator ${statusIndicatorClass(account.isActive)}`}>
                         {account.prettyStatus}
@@ -161,29 +165,13 @@ function MyAccount() {
               </>
             )}
 
-            {!isLoading && !error && !account?.isDeveloper && (
-              <div className="govuk-!-margin-top-4">
+            {!isLoading && !error && !account?.isDeveloper && !account?.isSingleOrgUser && !account?.isAgentUser && (
+              <>
                 <Link className="govuk-link app-nav-bold" href={publishAppPath('/account/settings')}>
                   Account settings
                 </Link>
                 <p className="govuk-body">Edit your account settings and notification preferences.</p>
-                {account?.organisationId && (
-                  <>
-                    <Link className="govuk-link app-nav-bold" href={publishAppPath(`/org/${account.organisationId}/profile`)}>
-                      Organisation profile
-                    </Link>
-                    <p className="govuk-body">View and edit your organisation&apos;s NOC codes and licence numbers.</p>
-                  </>
-                )}
-                {account?.isOrgAdmin && account.organisationId && (
-                  <>
-                    <Link className="govuk-link app-nav-bold" href={publishAppPath(`/org/${account.organisationId}/manage`)}>
-                      User management
-                    </Link>
-                    <p className="govuk-body">Invite, edit, and manage the members of your organisation.</p>
-                  </>
-                )}
-              </div>
+              </>
             )}
           </div>
         </div>

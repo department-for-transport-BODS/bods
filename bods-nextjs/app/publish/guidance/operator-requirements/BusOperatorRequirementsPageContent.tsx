@@ -130,6 +130,7 @@ function BusOperatorRequirementsContent() {
         items={[
           { label: 'Bus Open Data Service', href: HOSTS.www },
           { label: 'Publish Bus Open Data', href: HOSTS.publish },
+          { label: 'Guidance', href: publishAppPath('/guidance') },
           { label: 'Bus operator requirements', current: true },
         ]}
       />
