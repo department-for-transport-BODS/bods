@@ -16,7 +16,7 @@ export default function GuideMeProfileRedirectPage() {
     if (isLoading) return;
 
     if (user?.organisation_id) {
-      router.replace(`/publish/org/${user.organisation_id}/profile`);
+      router.replace(`/publish/account/manage/org-profile/${user.organisation_id}`);
     } else {
       router.replace('/publish/account');
     }

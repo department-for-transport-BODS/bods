@@ -2,6 +2,7 @@
 
 /**
  * Edit a member's username, email, and account type (admin/standard only).
+ * `pk` is the member user id (`/account/manage/<user_id>/edit/`).
  */
 
 import { useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ import { HOSTS } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
+import { useAuth } from '@/hooks/useAuth';
 import { api, getCsrfToken } from '@/lib/api-client';
 
 interface MemberDetail {
@@ -25,10 +27,12 @@ const ORG_STAFF = 3;
 function EditMember() {
   const params = useParams();
   const router = useRouter();
-  const orgId = params.orgId as string;
-  const userId = params.userId as string;
-  const detailUrl = `/publish/org/${orgId}/manage/${userId}`;
-  const manageUrl = `/publish/org/${orgId}/manage`;
+  const { user } = useAuth();
+  const userId = params.pk as string;
+  const detailUrl = `/publish/account/manage/${userId}/detail`;
+  const manageUrl = user?.organisation_id
+    ? `/publish/account/manage/${user.organisation_id}`
+    : '/publish/account';
 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');

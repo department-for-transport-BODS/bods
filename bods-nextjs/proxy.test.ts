@@ -100,6 +100,13 @@ describe('subdomain routing proxy', () => {
       expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/publish/account');
     });
 
+    it('rewrites Django user-management URLs onto the publish account page', () => {
+      const url = 'https://publish.xyz.com/account/manage/12';
+      const response = proxy(request(url, 'publish.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/publish/account/manage/12');
+    });
+
     it('keeps account login on the publish host', () => {
       const response = proxy(request('https://publish.xyz.com/account/login', 'publish.xyz.com'));
 

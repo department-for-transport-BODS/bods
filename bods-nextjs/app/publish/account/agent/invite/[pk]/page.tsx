@@ -1,12 +1,13 @@
 'use client';
 
 /**
- * Org admin: remove an accepted agent from the organisation.
+ * Respond to an agent invite (accept or reject).
+ * Django: `/account/agent/invite/<pk>/`
  */
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { HOSTS } from '@/config/client';
+import { HOSTS, publishAppPath } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
@@ -14,15 +15,15 @@ import { api, getCsrfToken } from '@/lib/api-client';
 
 interface AgentInviteDetail {
   id: number;
+  organisationName: string;
   agentEmail: string;
+  status: string;
 }
 
-function RemoveAgent() {
+function AgentInviteRespond() {
   const params = useParams();
   const router = useRouter();
-  const orgId = params.orgId as string;
-  const inviteId = params.inviteId as string;
-  const manageUrl = `/publish/org/${orgId}/manage`;
+  const inviteId = params.pk as string;
 
   const [invite, setInvite] = useState<AgentInviteDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,27 +50,28 @@ function RemoveAgent() {
     };
   }, [inviteId]);
 
-  const handleConfirm = async () => {
+  const respond = async (status: 'accepted' | 'rejected') => {
     setIsSubmitting(true);
     setError('');
 
     try {
-      const response = await fetch(`/api/publish/agent/invite/${inviteId}/remove/`, {
+      const response = await fetch(`/api/publish/agent/invite/${inviteId}/respond/`, {
         method: 'POST',
         credentials: 'include',
-        headers: { 'X-CSRFToken': getCsrfToken() },
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+        body: JSON.stringify({ status }),
       });
 
       if (!response.ok) {
-        setError('Unable to remove this agent. Please try again.');
+        setError('Unable to respond to this invite. Please try again.');
         setIsSubmitting(false);
         return;
       }
 
-      router.push(manageUrl);
+      router.push(publishAppPath('/account'));
       router.refresh();
     } catch {
-      setError('Unable to remove this agent. Please try again.');
+      setError('Unable to respond to this invite. Please try again.');
       setIsSubmitting(false);
     }
   };
@@ -81,28 +83,40 @@ function RemoveAgent() {
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'User management', href: manageUrl },
-            { label: 'Remove agent', current: true },
+            { label: 'My account', href: publishAppPath('/account') },
+            { label: 'Respond to invite', current: true },
           ]}
         />
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             {isLoading && <p className="govuk-body">Loading...</p>}
-            {!isLoading && error && <ErrorSummary errors={[error]} summaryId="agent-remove-error-title" />}
+            {!isLoading && error && <ErrorSummary errors={[error]} summaryId="agent-respond-error-title" />}
 
             {!isLoading && invite && (
               <>
-                <h1 className="govuk-heading-l">
-                  Are you sure you want to remove {invite.agentEmail} as an agent?
+                <h1 className="govuk-heading-xl">
+                  Respond to an invitation from {invite.organisationName}
                 </h1>
-                <p className="govuk-body">They will no longer be able to publish or review data for your organisation.</p>
+                <p className="govuk-body">
+                  {invite.organisationName} has invited you to act as an agent on their behalf.
+                </p>
                 <div className="govuk-button-group">
-                  <button type="button" className="govuk-button" disabled={isSubmitting} onClick={handleConfirm}>
-                    Confirm
+                  <button
+                    type="button"
+                    className="govuk-button"
+                    disabled={isSubmitting}
+                    onClick={() => respond('accepted')}
+                  >
+                    Accept
                   </button>
-                  <button type="button" className="govuk-button govuk-button--secondary" onClick={() => router.push(manageUrl)}>
-                    Cancel
+                  <button
+                    type="button"
+                    className="govuk-button govuk-button--secondary"
+                    disabled={isSubmitting}
+                    onClick={() => respond('rejected')}
+                  >
+                    Reject
                   </button>
                 </div>
               </>
@@ -114,10 +128,10 @@ function RemoveAgent() {
   );
 }
 
-export default function RemoveAgentPage() {
+export default function AgentInviteRespondPage() {
   return (
     <ProtectedRoute>
-      <RemoveAgent />
+      <AgentInviteRespond />
     </ProtectedRoute>
   );
 }

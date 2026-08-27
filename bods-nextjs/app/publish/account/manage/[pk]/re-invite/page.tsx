@@ -2,6 +2,7 @@
 
 /**
  * Org admin: resend a pending standard (non-agent) invite.
+ * `pk` is the invitation id (`/account/manage/<invite_id>/re-invite/`).
  */
 
 import { useState } from 'react';
@@ -10,14 +11,17 @@ import { HOSTS } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
+import { useAuth } from '@/hooks/useAuth';
 import { getCsrfToken } from '@/lib/api-client';
 
 function ResendInvite() {
   const params = useParams();
   const router = useRouter();
-  const orgId = params.orgId as string;
-  const inviteId = params.inviteId as string;
-  const manageUrl = `/publish/org/${orgId}/manage`;
+  const { user } = useAuth();
+  const inviteId = params.pk as string;
+  const manageUrl = user?.organisation_id
+    ? `/publish/account/manage/${user.organisation_id}`
+    : '/publish/account';
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');

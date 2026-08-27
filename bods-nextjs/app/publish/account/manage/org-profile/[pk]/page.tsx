@@ -3,8 +3,8 @@
 /**
  * Organisation profile (view)
  *
- * Mirrors Django's organisation/org_profile.html: short name, licence
- * requirement, NOC codes, licence numbers, and service code exemptions.
+ * Mirrors Django's organisation/org_profile.html.
+ * `pk` is the organisation id (`/account/manage/org-profile/<org_id>/`).
  */
 
 import { useEffect, useState } from 'react';
@@ -33,7 +33,7 @@ interface OrganisationProfile {
 
 function OrganisationProfileContent() {
   const params = useParams();
-  const orgId = params.orgId as string;
+  const orgId = params.pk as string;
 
   const [profile, setProfile] = useState<OrganisationProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -106,7 +106,7 @@ function OrganisationProfileContent() {
                 </dl>
 
                 {profile.canEdit && (
-                  <Link className="govuk-button" href={publishAppPath(`/org/${orgId}/profile/edit`)}>
+                  <Link className="govuk-button" href={publishAppPath(`/account/manage/org-profile/${orgId}/edit`)}>
                     Edit organisation profile
                   </Link>
                 )}

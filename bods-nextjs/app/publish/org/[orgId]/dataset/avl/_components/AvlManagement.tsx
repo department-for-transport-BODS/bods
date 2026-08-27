@@ -455,7 +455,7 @@ export function AvlManagement() {
           </div>
           <div className="govuk-grid-column-one-third">
             <h3 className="govuk-heading-s">
-              <a className="govuk-link" href={publishAppPath(`/org/${orgId}/profile/`)}>
+              <a className="govuk-link" href={publishAppPath(`/account/manage/org-profile/${orgId}`)}>
                 Set up licence numbers
               </a>
             </h3>
