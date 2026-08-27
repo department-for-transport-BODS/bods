@@ -1,13 +1,13 @@
 'use client';
 
 /**
- * Member detail — mirrors Django's users/users_manage_detail.html.
+ * User detail — mirrors Django's users/users_manage_detail.html.
  */
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { HOSTS } from '@/config/client';
+import { HOSTS, publishAppPath } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
@@ -20,6 +20,8 @@ interface MemberDetail {
   isActive: boolean;
   prettyStatus: string;
   agentInviteId?: number | null;
+  isSingleOrgUser: boolean;
+  agentUser?: boolean;
 }
 
 function MemberDetailContent() {
@@ -59,8 +61,9 @@ function MemberDetailContent() {
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
+            { label: 'My account', href: publishAppPath(`/account`) },
             { label: 'User management', href: manageUrl },
-            { label: 'Member detail', current: true },
+            { label: 'User detail', current: true },
           ]}
         />
 
@@ -71,39 +74,51 @@ function MemberDetailContent() {
 
             {!isLoading && member && (
               <>
-                <h1 className="govuk-heading-xl">{member.username}</h1>
-
+                <h1 className="govuk-heading-xl">{member.email}</h1>
+                <h2 className="govuk-heading-m"> User detail </h2>
                 <dl className="govuk-summary-list">
-                  <div className="govuk-summary-list__row">
-                    <dt className="govuk-summary-list__key">Email</dt>
-                    <dd className="govuk-summary-list__value">{member.email}</dd>
-                  </div>
-                  <div className="govuk-summary-list__row">
-                    <dt className="govuk-summary-list__key">Account type</dt>
-                    <dd className="govuk-summary-list__value">{member.prettyAccountName}</dd>
-                  </div>
-                  <div className="govuk-summary-list__row">
+                <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">Status</dt>
                     <dd className="govuk-summary-list__value">{member.prettyStatus}</dd>
-                  </div>
+                </div>
+                <div className="govuk-summary-list__row">
+                    <dt className="govuk-summary-list__key">Username</dt>
+                    <dd className="govuk-summary-list__value">{member.username}</dd>
+                </div>
+                <div className="govuk-summary-list__row">
+                    <dt className="govuk-summary-list__key">User type</dt>
+                    <dd className="govuk-summary-list__value">{member.prettyAccountName}</dd>
+                </div>
+
                 </dl>
 
                 <div className="govuk-button-group">
-                  {member.agentInviteId ? (
-                    <Link
-                      className="govuk-button govuk-button--secondary"
-                      href={`/publish/org/${orgId}/manage/agent-invite/${member.agentInviteId}/remove`}
-                    >
-                      Remove agent
-                    </Link>
+                {member.isSingleOrgUser ? (
+                  member.isActive ? (
+                    <div className="govuk-button-group">
+                      <Link className="govuk-button govuk-button--secondary" href={`/publish/org/${orgId}/manage/${member.id}/edit`}>
+                        Edit
+                      </Link>
+                      <Link className="govuk-button govuk-button--secondary" href={`/publish/org/${orgId}/manage/${member.id}/archive`}>
+                        Deactivate
+                      </Link>
+                    </div>
                   ) : (
-                    <Link className="govuk-button" href={`/publish/org/${orgId}/manage/${member.id}/edit`}>
-                      Edit
+                    <Link className="govuk-button govuk-button--secondary" href={`/publish/org/${orgId}/manage/${member.id}/activate`}>
+                      Activate
                     </Link>
-                  )}
-                  <Link className="govuk-button govuk-button--secondary" href={`/publish/org/${orgId}/manage/${member.id}/archive`}>
-                    {member.isActive ? 'Deactivate' : 'Reactivate'}
-                  </Link>
+                )) : member.agentUser ? (
+                      member.agentInviteId ? (
+                        <Link
+                          className="govuk-button govuk-button--secondary"
+                          href={`/publish/org/${orgId}/manage/agent-invite/${member.agentInviteId}/remove`}
+                        >
+                          Remove
+                        </Link>
+                      ): (
+                        <p className="govuk-body">No invitation found</p>
+                      )
+                    ) : null }
                 </div>
               </>
             )}

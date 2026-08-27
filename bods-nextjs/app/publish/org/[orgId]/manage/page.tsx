@@ -100,15 +100,12 @@ function ManageUsers() {
 
             {!isLoading && data && (
               <>
-                <Link className="govuk-button" href={inviteUrl}>Invite a new user</Link>
-
-                <h2 className="govuk-heading-m">Members</h2>
+                <h2 className="govuk-heading-m">Manage your team's access</h2>
                 <table className="govuk-table manage-users-table">
                   <thead className="govuk-table__head govuk-body-m">
                     <tr className="govuk-table__row">
-                      <th className="govuk-table__header" scope="col">Username</th>
-                      <th className="govuk-table__header" scope="col">Email</th>
-                      <th className="govuk-table__header" scope="col">Account type</th>
+                      <th className="govuk-table__header" scope="col">User</th>
+                      <th className="govuk-table__header" scope="col">Type</th>
                       <th className="govuk-table__header" scope="col">Status</th>
                       <th className="govuk-table__header" scope="col">Actions</th>
                     </tr>
@@ -116,19 +113,14 @@ function ManageUsers() {
                   <tbody className="govuk-table__body govuk-body-m">
                     {data.members.map((member) => (
                       <tr key={member.id} className="govuk-table__row">
-                        <td className="govuk-table__cell">{member.username}</td>
-                        <td className="govuk-table__cell">{member.email}</td>
-                        <td className="govuk-table__cell">{member.prettyAccountName}</td>
                         <td className="govuk-table__cell">
-                          <span className={`status-indicator ${statusIndicatorClass(member.isActive)}`}>
-                            {member.prettyStatus}
-                          </span>
-                        </td>
-                        <td className="govuk-table__cell">
-                          <Link className="govuk-link" href={`/publish/org/${orgId}/manage/${member.id}`}>
-                            View
+                          <Link className="govuk-link" href={`/publish/org/${orgId}/manage/${member.id}/detail`}>
+                            {member.email}
                           </Link>
                         </td>
+                        <td className="govuk-table__cell">{member.prettyAccountName}</td>
+                        <td className="govuk-table__cell">{member.prettyStatus}</td>
+                        <td className="govuk-table__cell"></td>
                       </tr>
                     ))}
                   </tbody>
@@ -191,6 +183,7 @@ function ManageUsers() {
                 )}
               </>
             )}
+            <Link className="govuk-button" href={inviteUrl}>Add new user</Link>
           </div>
         </div>
       </div>
