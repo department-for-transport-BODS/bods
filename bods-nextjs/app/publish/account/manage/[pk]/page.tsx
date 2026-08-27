@@ -3,8 +3,8 @@
 /**
  * User management (org admin)
  *
- * Mirrors Django's users/users_manage.html: organisation members, pending
- * standard invites, and pending agent invites.
+ * Mirrors Django's users/users_manage.html. `pk` is the organisation id
+ * (`/account/manage/<org_id>/`).
  */
 
 import { useEffect, useState } from 'react';
@@ -52,8 +52,8 @@ function statusIndicatorClass(isActive: boolean): string {
 
 function ManageUsers() {
   const params = useParams();
-  const orgId = params.orgId as string;
-  const inviteUrl = `/publish/org/${orgId}/manage/invite`;
+  const orgId = params.pk as string;
+  const inviteUrl = '/publish/account/manage/invite';
 
   const [data, setData] = useState<MembersResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -114,7 +114,7 @@ function ManageUsers() {
                     {data.members.map((member) => (
                       <tr key={member.id} className="govuk-table__row">
                         <td className="govuk-table__cell">
-                          <Link className="govuk-link" href={`/publish/org/${orgId}/manage/${member.id}/detail`}>
+                          <Link className="govuk-link" href={`/publish/account/manage/${member.id}/detail`}>
                             {member.email}
                           </Link>
                         </td>
@@ -141,7 +141,7 @@ function ManageUsers() {
                           <tr key={invite.id} className="govuk-table__row">
                             <td className="govuk-table__cell">{invite.email}</td>
                             <td className="govuk-table__cell">
-                              <Link className="govuk-link" href={`/publish/org/${orgId}/manage/invites/${invite.id}/resend`}>
+                              <Link className="govuk-link" href={`/publish/account/manage/${invite.id}/re-invite`}>
                                 Resend invite
                               </Link>
                             </td>
@@ -171,7 +171,7 @@ function ManageUsers() {
                               <span className="status-indicator status-indicator--unavailable">{invite.status}</span>
                             </td>
                             <td className="govuk-table__cell">
-                              <Link className="govuk-link" href={`/publish/org/${orgId}/manage/agent-invite/${invite.id}/resend`}>
+                              <Link className="govuk-link" href={`/publish/account/agent/invite/${invite.id}/resend`}>
                                 Resend invite
                               </Link>
                             </td>

@@ -50,8 +50,12 @@ export function Header({ hostname }: { hostname: string }) {
   const guideMeUrl = publishPath('/guide-me');
   const accountUrl = publishPath('/account');
   const accountSettingsUrl = publishPath('/account/settings');
-  const organisationProfileUrl = user?.organisation_id ? publishPath(`/org/${user.organisation_id}/profile`) : null;
-  const userManagementUrl = user?.is_org_admin && user.organisation_id ? publishPath(`/org/${user.organisation_id}/manage`) : null;
+  const organisationProfileUrl = user?.organisation_id
+    ? publishPath(`/account/manage/org-profile/${user.organisation_id}`)
+    : null;
+  const userManagementUrl = user?.is_org_admin && user.organisation_id
+    ? publishPath(`/account/manage/${user.organisation_id}`)
+    : null;
   const loginUrl = '/account/login';
   const logoutUrl = '/account/logout';
 

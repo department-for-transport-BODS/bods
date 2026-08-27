@@ -3,8 +3,8 @@
 /**
  * Organisation profile (edit)
  *
- * Mirrors Django's OrganisationProfileForm: short name, PSV licence
- * requirement, and dynamic lists of NOC codes / licence numbers.
+ * Mirrors Django's OrganisationProfileForm.
+ * `pk` is the organisation id (`/account/manage/org-profile/<org_id>/edit`).
  */
 
 import { useEffect, useState } from 'react';
@@ -73,8 +73,8 @@ function DynamicListField({
 function OrganisationProfileEditContent() {
   const params = useParams();
   const router = useRouter();
-  const orgId = params.orgId as string;
-  const profileUrl = `/publish/org/${orgId}/profile`;
+  const orgId = params.pk as string;
+  const profileUrl = `/publish/account/manage/org-profile/${orgId}`;
 
   const [shortName, setShortName] = useState('');
   const [licenceRequired, setLicenceRequired] = useState(false);

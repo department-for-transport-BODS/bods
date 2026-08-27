@@ -143,12 +143,12 @@ function MyAccount() {
                         <td className="govuk-table__cell">{invite.organisationName}</td>
                         <td className="govuk-table__cell">
                           {invite.isPending && (
-                            <Link className="govuk-link" href={publishAppPath(`/account/agent-invite/${invite.id}/respond`)}>
+                            <Link className="govuk-link" href={publishAppPath(`/account/agent/invite/${invite.id}`)}>
                               Respond
                             </Link>
                           )}
                           {invite.isAccepted && (
-                            <Link className="govuk-link" href={publishAppPath(`/account/agent-invite/${invite.id}/leave`)}>
+                            <Link className="govuk-link" href={publishAppPath(`/account/agent/leave/${invite.id}`)}>
                               Leave organisation
                             </Link>
                           )}

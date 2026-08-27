@@ -2,6 +2,7 @@
 
 /**
  * Org admin: resend a pending agent invite/confirmation email.
+ * Django: `/account/agent/invite/<pk>/resend/`
  */
 
 import { useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ import { HOSTS } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
+import { useAuth } from '@/hooks/useAuth';
 import { api, getCsrfToken } from '@/lib/api-client';
 
 interface AgentInviteDetail {
@@ -20,9 +22,11 @@ interface AgentInviteDetail {
 function ResendAgentInvite() {
   const params = useParams();
   const router = useRouter();
-  const orgId = params.orgId as string;
-  const inviteId = params.inviteId as string;
-  const manageUrl = `/publish/org/${orgId}/manage`;
+  const { user } = useAuth();
+  const inviteId = params.pk as string;
+  const manageUrl = user?.organisation_id
+    ? `/publish/account/manage/${user.organisation_id}`
+    : '/publish/account';
 
   const [invite, setInvite] = useState<AgentInviteDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);

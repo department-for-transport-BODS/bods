@@ -377,6 +377,7 @@ def _serialize_member(member: User) -> dict:
         "isActive": member.is_active,
         "prettyStatus": member.pretty_status,
         "isSingleOrgUser": member.is_single_org_user,
+        "agentUser": member.is_agent_user,
     }
 
 

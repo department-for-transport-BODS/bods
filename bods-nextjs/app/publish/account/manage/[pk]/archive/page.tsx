@@ -1,28 +1,37 @@
 'use client';
 
 /**
- * Leave an organisation you're acting as an agent for.
+ * Deactivate or reactivate a member's account (toggle is_active).
+ * Django used this view for both `/archive/` and `/activate/`.
+ * `pk` is the member user id.
  */
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { HOSTS, publishAppPath } from '@/config/client';
+import { HOSTS } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
+import { useAuth } from '@/hooks/useAuth';
 import { api, getCsrfToken } from '@/lib/api-client';
 
-interface AgentInviteDetail {
+interface MemberDetail {
   id: number;
-  organisationName: string;
+  username: string;
+  isActive: boolean;
 }
 
-function AgentInviteLeave() {
+function ArchiveMember() {
   const params = useParams();
   const router = useRouter();
-  const inviteId = params.inviteId as string;
+  const { user } = useAuth();
+  const userId = params.pk as string;
+  const detailUrl = `/publish/account/manage/${userId}/detail`;
+  const manageUrl = user?.organisation_id
+    ? `/publish/account/manage/${user.organisation_id}`
+    : '/publish/account';
 
-  const [invite, setInvite] = useState<AgentInviteDetail | null>(null);
+  const [member, setMember] = useState<MemberDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -31,12 +40,12 @@ function AgentInviteLeave() {
     let isCancelled = false;
 
     api
-      .get<AgentInviteDetail>(`/api/publish/agent/invite/${inviteId}/`)
+      .get<MemberDetail>(`/api/publish/organisation/members/${userId}/`)
       .then((data) => {
-        if (!isCancelled) setInvite(data);
+        if (!isCancelled) setMember(data);
       })
       .catch(() => {
-        if (!isCancelled) setError('Unable to load this invite.');
+        if (!isCancelled) setError('Unable to load this member.');
       })
       .finally(() => {
         if (!isCancelled) setIsLoading(false);
@@ -45,32 +54,34 @@ function AgentInviteLeave() {
     return () => {
       isCancelled = true;
     };
-  }, [inviteId]);
+  }, [userId]);
 
   const handleConfirm = async () => {
     setIsSubmitting(true);
     setError('');
 
     try {
-      const response = await fetch(`/api/publish/agent/invite/${inviteId}/leave/`, {
+      const response = await fetch(`/api/publish/organisation/members/${userId}/toggle-active/`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'X-CSRFToken': getCsrfToken() },
       });
 
       if (!response.ok) {
-        setError('Unable to leave this organisation. Please try again.');
+        setError('Unable to update this member. Please try again.');
         setIsSubmitting(false);
         return;
       }
 
-      router.push(publishAppPath('/account'));
+      router.push(detailUrl);
       router.refresh();
     } catch {
-      setError('Unable to leave this organisation. Please try again.');
+      setError('Unable to update this member. Please try again.');
       setIsSubmitting(false);
     }
   };
+
+  const action = member?.isActive ? 'deactivate' : 'reactivate';
 
   return (
     <div className="govuk-width-container">
@@ -79,31 +90,26 @@ function AgentInviteLeave() {
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'My account', href: publishAppPath('/account') },
-            { label: 'Leave organisation', current: true },
+            { label: 'User management', href: manageUrl },
+            { label: 'Deactivate/reactivate', current: true },
           ]}
         />
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             {isLoading && <p className="govuk-body">Loading...</p>}
-            {!isLoading && error && <ErrorSummary errors={[error]} summaryId="agent-leave-error-title" />}
+            {!isLoading && error && <ErrorSummary errors={[error]} summaryId="archive-member-error-title" />}
 
-            {!isLoading && invite && (
+            {!isLoading && member && (
               <>
                 <h1 className="govuk-heading-l">
-                  Are you sure you want to leave {invite.organisationName}?
+                  Are you sure you want to {action} {member.username}?
                 </h1>
-                <p className="govuk-body">You will no longer be able to publish or review data for this organisation.</p>
                 <div className="govuk-button-group">
                   <button type="button" className="govuk-button" disabled={isSubmitting} onClick={handleConfirm}>
                     Confirm
                   </button>
-                  <button
-                    type="button"
-                    className="govuk-button govuk-button--secondary"
-                    onClick={() => router.push(publishAppPath('/account'))}
-                  >
+                  <button type="button" className="govuk-button govuk-button--secondary" onClick={() => router.push(detailUrl)}>
                     Cancel
                   </button>
                 </div>
@@ -116,10 +122,10 @@ function AgentInviteLeave() {
   );
 }
 
-export default function AgentInviteLeavePage() {
+export default function ArchiveMemberPage() {
   return (
     <ProtectedRoute>
-      <AgentInviteLeave />
+      <ArchiveMember />
     </ProtectedRoute>
   );
 }

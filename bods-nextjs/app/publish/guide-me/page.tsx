@@ -23,7 +23,7 @@ const STEPS: StepItem[] = [
     links: [
       {
         label: 'Invite members and agents',
-        href: '/account/manage/invite/',
+        href: '/account/manage/invite',
         copy: 'Invite other members from your organisations and / or agents who will act on your behalf to publish data.',
       },
       {

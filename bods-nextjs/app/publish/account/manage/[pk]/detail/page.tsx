@@ -2,6 +2,7 @@
 
 /**
  * User detail — mirrors Django's users/users_manage_detail.html.
+ * `pk` is the member user id (`/account/manage/<user_id>/detail/`).
  */
 
 import { useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ import Link from 'next/link';
 import { HOSTS, publishAppPath } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
+import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api-client';
 
 interface MemberDetail {
@@ -26,9 +28,11 @@ interface MemberDetail {
 
 function MemberDetailContent() {
   const params = useParams();
-  const orgId = params.orgId as string;
-  const userId = params.userId as string;
-  const manageUrl = `/publish/org/${orgId}/manage`;
+  const { user } = useAuth();
+  const userId = params.pk as string;
+  const manageUrl = user?.organisation_id
+    ? `/publish/account/manage/${user.organisation_id}`
+    : '/publish/account';
 
   const [member, setMember] = useState<MemberDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,7 +65,7 @@ function MemberDetailContent() {
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'My account', href: publishAppPath(`/account`) },
+            { label: 'My account', href: publishAppPath('/account') },
             { label: 'User management', href: manageUrl },
             { label: 'User detail', current: true },
           ]}
@@ -96,22 +100,22 @@ function MemberDetailContent() {
                 {member.isSingleOrgUser ? (
                   member.isActive ? (
                     <div className="govuk-button-group">
-                      <Link className="govuk-button govuk-button--secondary" href={`/publish/org/${orgId}/manage/${member.id}/edit`}>
+                      <Link className="govuk-button govuk-button--secondary" href={`/publish/account/manage/${member.id}/edit`}>
                         Edit
                       </Link>
-                      <Link className="govuk-button govuk-button--secondary" href={`/publish/org/${orgId}/manage/${member.id}/archive`}>
+                      <Link className="govuk-button govuk-button--secondary" href={`/publish/account/manage/${member.id}/archive`}>
                         Deactivate
                       </Link>
                     </div>
                   ) : (
-                    <Link className="govuk-button govuk-button--secondary" href={`/publish/org/${orgId}/manage/${member.id}/activate`}>
+                    <Link className="govuk-button govuk-button--secondary" href={`/publish/account/manage/${member.id}/activate`}>
                       Activate
                     </Link>
                 )) : member.agentUser ? (
                       member.agentInviteId ? (
                         <Link
                           className="govuk-button govuk-button--secondary"
-                          href={`/publish/org/${orgId}/manage/agent-invite/${member.agentInviteId}/remove`}
+                          href={`/publish/account/agent/remove/${member.agentInviteId}`}
                         >
                           Remove
                         </Link>
