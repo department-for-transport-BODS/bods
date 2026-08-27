@@ -50,3 +50,16 @@ local-db-backup:
 local-db-restore:
 	docker exec -i bods-postgres-1 psql -U transit_odp -d transit_odp < db_backup.sql
 	rm -rf db_backup.sql
+
+RUN_TASK_MODULE ?= otc
+RUN_TASK_NAME ?= task_refresh_weca_data
+# Example: RUN_TASK_KWARGS="keyword='Value'"
+RUN_TASK_KWARGS ?=
+
+run-task:
+	docker exec -i bods-django-1 python manage.py shell -c \
+	"from transit_odp.${RUN_TASK_MODULE}.tasks import $(RUN_TASK_NAME); \
+	$(RUN_TASK_NAME).run($(RUN_TASK_KWARGS))"
+
+print-env:
+	docker exec -i bods-django-1 printenv

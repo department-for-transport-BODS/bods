@@ -4,6 +4,7 @@ Base settings to build other settings data upon.
 
 # flake8: noqa
 import os
+from urllib.parse import urlencode
 
 import environ
 from dateutil import parser
@@ -505,9 +506,13 @@ FEED_MONITOR_MAX_RETRY_ATTEMPTS = env(
 )
 
 # NAPTAN import URL
-NAPTAN_IMPORT_URL = env(
-    "NAPTAN_IMPORT_URL",
+NAPTAN_XML_IMPORT_URL = env(
+    "NAPTAN_XML_IMPORT_URL",
     default="https://naptan.api.dft.gov.uk/v1/access-nodes?dataFormat=XML",
+)
+NAPTAN_CSV_IMPORT_URL = env(
+    "NAPTAN_CSV_IMPORT_URL",
+    default="https://naptan.api.dft.gov.uk/v1/access-nodes?dataFormat=csv",
 )
 
 # NPTG import URL
@@ -517,6 +522,39 @@ NPTG_IMPORT_URL = env(
 
 BANK_HOLIDAY_API_URL = env(
     "BANK_HOLIDAY_API_URL", default="https://www.gov.uk/bank-holidays.json"
+)
+
+# NOC import URL
+NOC_XML_IMPORT_URL = env(
+    "NOC_XML_IMPORT_URL",
+    default="https://www.travelinedata.org.uk/noc/api/1.0/nocrecords.xml",
+)
+
+noc_domain = "https://www.travelinedata.org.uk"
+noc_endpoint = "/wp-content/themes/desktop/nocadvanced_download.php"
+
+noc_params = {
+    "reportFormat": "csvFlatFile",
+    "allTable[]": [
+        "table_data_owner",
+        "table_groups",
+        "table_licence",
+        "table_management_divisions",
+        "table_noclines",
+        "table_noc_table",
+        "table_operators",
+        "table_public_name",
+    ],
+    "submit": "Submit",
+}
+
+NOC_CSV_TABLE_NAMES = tuple(noc_params["allTable[]"])
+
+NOC_URL = f"{noc_domain}{noc_endpoint}?{urlencode(noc_params, doseq=True)}"
+
+NOC_CSV_IMPORT_URL = env(
+    "NOC_CSV_IMPORT_URL",
+    default=NOC_URL,
 )
 
 # Google Analytics Key
@@ -590,15 +628,12 @@ OTC_API_KEY = env("OTC_API_KEY", default="")
 OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA = env.int(
     "OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA", default=3
 )
-# WECA API
+# WECA DATA LANDING ZONE
 # -------------------------------------------------------------------------------
-WECA_API_URL = env(
-    "WECA_API_URL", default="https://registrations.travelwest.info/agileBase/Public.ab"
+WECA_DLZ_S3_BUCKET = env("WECA_BUCKET_NAME", default=None)
+WECA_DLZ_S3_KEY = env(
+    "WECA_S3_KEY_SERVICES", default="/raw/weca/weca_services_latest.json"
 )
-WECA_AUTH_TOKEN = env("WECA_AUTH_TOKEN", default="WECA_AUTH_TOKEN")
-WECA_PARAM_C = env("WECA_PARAM_C", default="WECA_PARAM_C")
-WECA_PARAM_T = env("WECA_PARAM_T", default="WECA_PARAM_T")
-WECA_PARAM_R = env("WECA_PARAM_R", default="WECA_PARAM_R")
 
 # EP API
 # -------------------------------------------------------------------------------
@@ -638,6 +673,16 @@ AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME = env(
     "AWS_DATASET_MAINTENANCE_STORAGE_BUCKET_NAME",
     default="bodds-dataset-dev-maintenance",
 )
+
+# S3 bucket name for NaPTAN data
+# ------------------------------------------------------------------------------
+AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME = env(
+    "AWS_NAPTAN_RAW_STORAGE_BUCKET_NAME",
+    default=None,
+)
+
+# NPTG bucket name, configured separately from NaPTAN.
+NPTG_BUCKET_NAME = env("NPTG_BUCKET_NAME", default=None)
 
 # S3 bucket name for DQS Report download
 # ------------------------------------------------------------------------------
