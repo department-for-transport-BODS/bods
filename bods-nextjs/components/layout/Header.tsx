@@ -49,6 +49,9 @@ export function Header({ hostname }: { hostname: string }) {
   const homeUrl = serviceHomeUrl(area);
   const guideMeUrl = publishPath('/guide-me');
   const accountUrl = publishPath('/account');
+  const accountSettingsUrl = publishPath('/account/settings');
+  const organisationProfileUrl = user?.organisation_id ? publishPath(`/org/${user.organisation_id}/profile`) : null;
+  const userManagementUrl = user?.is_org_admin && user.organisation_id ? publishPath(`/org/${user.organisation_id}/manage`) : null;
   const loginUrl = '/account/login';
   const logoutUrl = '/account/logout';
 
@@ -113,8 +116,13 @@ export function Header({ hostname }: { hostname: string }) {
                     </button>
                     <div className={`dropdown-content${dropdownOpen ? ' open' : ''}`}>
                       <a className="govuk-link" href={accountUrl}>My account</a>
-                      <a className="govuk-link" href={accountUrl}>Organisation profile</a>
-                      <a className="govuk-link" href={accountUrl}>Account settings</a>
+                      {userManagementUrl && (
+                        <a className="govuk-link" href={userManagementUrl}>User management</a>
+                      )}
+                      {organisationProfileUrl && (
+                        <a className="govuk-link" href={organisationProfileUrl}>Organisation profile</a>
+                      )}
+                      <a className="govuk-link" href={accountSettingsUrl}>Account settings</a>
                       <a className="govuk-link" href={logoutUrl}>Sign out</a>
                     </div>
                   </li>
