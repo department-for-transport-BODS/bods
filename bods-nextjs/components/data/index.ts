@@ -25,3 +25,4 @@ export { StopMap } from './StopMap';
 
 export type { FilterOption, FilterValues } from './DatasetFilters';
 export type { StopPoint } from './StopMap';
+export { DataHelpSidebar } from './DataHelpSidebar';

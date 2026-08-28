@@ -8,29 +8,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
-import { HOSTS, publishPath } from '@/config/client';
-import { bodsAreaFromHostname, type BodsSubdomain } from '@/config/hosts';
+import { HOSTS } from '@/config/client';
+import type { BodsSubdomain } from '@/config/hosts';
 import { useAuth } from '@/hooks/useAuth';
+import { useBodsArea } from '@/lib/bods-host-context';
 import type { User } from '@/types';
 import { AccountIcon } from './icons/AccountIcon';
 import { GovUkLogo } from './icons/GovUkLogo';
-
-function serviceHomeUrl(area: BodsSubdomain): string {
-  switch (area) {
-    case 'publish':
-      return HOSTS.publish;
-    case 'data':
-      return HOSTS.data;
-    case 'admin':
-      return HOSTS.admin;
-    case 'www':
-      return HOSTS.www;
-    default: {
-      const exhaustive: never = area;
-      return exhaustive;
-    }
-  }
-}
 
 function pathFromHref(href: string): string {
   if (href.startsWith('http://') || href.startsWith('https://')) {
@@ -89,15 +73,17 @@ function AccountMenuLinks({ area, user }: { area: 'publish' | 'data'; user: User
   }
 }
 
-export function Header({ hostname }: { hostname: string }) {
+export function Header() {
   const { user } = useAuth();
   const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
-  const area = bodsAreaFromHostname(hostname);
+  const area = useBodsArea();
   const showServiceMenu = isServiceHost(area);
-  const homeUrl = serviceHomeUrl(area);
-  const guideMeUrl = publishPath('/guide-me');
+  const homeUrl = HOSTS[area];
+  // Each service host has its own guide-me page, as in Django's navlinks_publish /
+  // navlinks_data snippets.
+  const guideMeUrl = '/guide-me';
   const loginUrl = '/account/login';
 
   useEffect(() => {
