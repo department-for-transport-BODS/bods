@@ -1,4 +1,5 @@
 import json
+import re
 
 import pytest
 
@@ -119,3 +120,91 @@ def test_password_change_updates_password_and_sends_email(
     session_response = client.get("/api/auth/user/")
     assert session_response.status_code == 200
     assert session_response.json()["id"] == user.id
+
+
+PASSWORD_RESET_URL = "/api/auth/password/reset/"
+PASSWORD_RESET_KEY_URL = "/api/auth/password/reset/key/"
+
+
+def _post_json(client, url, payload):
+    return client.post(url, data=json.dumps(payload), content_type="application/json")
+
+
+def _reset_key_from_mailbox(mailoutbox):
+    match = re.search(
+        r"/account/password/reset/key/([^/\s]+)/?",
+        mailoutbox[0].body,
+    )
+    assert match is not None
+    uidb36, key = match.group(1).split("-", 1)
+    return uidb36, key
+
+
+def test_password_reset_does_not_send_mail_for_unknown_email(
+    client_factory, mailoutbox
+):
+    client = client_factory(host=hosts.DATA_HOST)
+
+    response = _post_json(client, PASSWORD_RESET_URL, {"email": "nobody@example.com"})
+
+    assert response.status_code == 200
+    assert response.json()["email"] == "nobody@example.com"
+    assert mailoutbox == []
+
+
+def test_password_reset_sends_link_and_sets_new_password(
+    user, client_factory, mailoutbox
+):
+    client = client_factory(host=hosts.DATA_HOST)
+    user.set_password("oldpassword")
+    user.save()
+
+    response = _post_json(client, PASSWORD_RESET_URL, {"email": user.email})
+
+    assert response.status_code == 200
+    assert response.json()["email"] == user.email
+    assert mailoutbox[0].to[0] == user.email
+    assert mailoutbox[0].subject == "Change your password on the Bus Open Data Service"
+
+    uidb36, key = _reset_key_from_mailbox(mailoutbox)
+
+    valid = client.get(PASSWORD_RESET_KEY_URL, data={"uidb36": uidb36, "key": key})
+    assert valid.status_code == 200
+    assert valid.json()["valid"] is True
+
+    reset = _post_json(
+        client,
+        PASSWORD_RESET_KEY_URL,
+        {
+            "uidb36": uidb36,
+            "key": key,
+            "password1": NEW_PASSWORD,
+            "password2": NEW_PASSWORD,
+        },
+    )
+
+    assert reset.status_code == 200
+    user.refresh_from_db()
+    assert user.check_password(NEW_PASSWORD)
+
+    session_response = client.get("/api/auth/user/")
+    assert session_response.status_code == 200
+    assert session_response.json()["id"] == user.id
+
+
+def test_password_reset_rejects_an_invalid_key(client_factory):
+    client = client_factory(host=hosts.DATA_HOST)
+
+    response = _post_json(
+        client,
+        PASSWORD_RESET_KEY_URL,
+        {
+            "uidb36": "MQ",
+            "key": "not-a-real-key",
+            "password1": NEW_PASSWORD,
+            "password2": NEW_PASSWORD,
+        },
+    )
+
+    assert response.status_code == 400
+    assert "expired or is invalid" in response.json()["detail"]

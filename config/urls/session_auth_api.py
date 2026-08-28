@@ -7,6 +7,8 @@ from transit_odp.api.views.auth import (
     LoginAPIView,
     LogoutAPIView,
     PasswordChangeAPIView,
+    PasswordResetAPIView,
+    PasswordResetFromKeyAPIView,
     SignupAPIView,
 )
 from transit_odp.users.views.api import (
@@ -39,6 +41,16 @@ urlpatterns = [
         "password/change/",
         PasswordChangeAPIView.as_view(),
         name="api-auth-password-change",
+    ),
+    path(
+        "password/reset/",
+        PasswordResetAPIView.as_view(),
+        name="api-auth-password-reset",
+    ),
+    path(
+        "password/reset/key/",
+        PasswordResetFromKeyAPIView.as_view(),
+        name="api-auth-password-reset-key",
     ),
     path("settings/", get_account_settings_api, name="api-auth-settings"),
     path(

@@ -22,6 +22,8 @@ from django.urls import resolve
         ("/api/auth/user/", "api-auth-user"),
         ("/api/auth/csrf/", "api-auth-csrf"),
         ("/api/auth/password/change/", "api-auth-password-change"),
+        ("/api/auth/password/reset/", "api-auth-password-reset"),
+        ("/api/auth/password/reset/key/", "api-auth-password-reset-key"),
         ("/api/auth/settings/", "api-auth-settings"),
         ("/api/auth/settings/update/", "api-auth-settings-update"),
         ("/api/auth/account/", "api-auth-account"),

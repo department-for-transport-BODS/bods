@@ -97,7 +97,7 @@ function MemberDetailContent() {
                 </dl>
 
                 <div className="govuk-button-group">
-                {member.isSingleOrgUser ? (
+                {member.isSingleOrgUser && user?.id !== member.id ? (
                   member.isActive ? (
                     <div className="govuk-button-group">
                       <Link className="govuk-button govuk-button--secondary" href={`/account/manage/${member.id}/edit`}>

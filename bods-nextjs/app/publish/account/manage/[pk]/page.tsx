@@ -35,6 +35,7 @@ interface PendingInvite {
 interface AgentInvitation {
   id: number;
   organisationName: string;
+  email: string;
   status: string;
   isPending: boolean;
   isAccepted: boolean;
@@ -154,7 +155,7 @@ function ManageUsers() {
                     <table className="govuk-table manage-users-table">
                       <thead className="govuk-table__head govuk-body-m">
                         <tr className="govuk-table__row">
-                          <th className="govuk-table__header" scope="col">Organisation</th>
+                          <th className="govuk-table__header" scope="col">Email</th>
                           <th className="govuk-table__header" scope="col">Status</th>
                           <th className="govuk-table__header" scope="col">Actions</th>
                         </tr>
@@ -162,7 +163,7 @@ function ManageUsers() {
                       <tbody className="govuk-table__body govuk-body-m">
                         {data.pendingAgentInvites.map((invite) => (
                           <tr key={invite.id} className="govuk-table__row">
-                            <td className="govuk-table__cell">{invite.organisationName}</td>
+                            <td className="govuk-table__cell">{invite.email}</td>
                             <td className="govuk-table__cell">
                               <span className="status-indicator status-indicator--unavailable">{invite.status}</span>
                             </td>
