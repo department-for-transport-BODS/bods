@@ -113,7 +113,7 @@ function FaresCreatePageContent() {
   const orgId = params.orgId as string;
   const nextListUrl = `/publish/org/${orgId}/dataset/fares`;
   const supportBusOperatorsUrl = '/publish/guide-me';
-  const contactSupportUrl = '/publish/account';
+  const contactSupportUrl = '/account';
 
   const [step, setStep] = useState<Step>(DESCRIPTION_STEP);
   const [stepBeforeCancel, setStepBeforeCancel] = useState<typeof DESCRIPTION_STEP | typeof UPLOAD_STEP>(DESCRIPTION_STEP);

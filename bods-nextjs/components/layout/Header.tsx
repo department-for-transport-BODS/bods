@@ -1,6 +1,6 @@
 /**
  * Header Component
- * Matches Django header.html + navlinks_publish.html exactly.
+ * Matches Django header.html + navlinks_publish.html / navlinks_data.html.
  */
 
 'use client';
@@ -11,6 +11,7 @@ import { useRef, useState, useEffect } from 'react';
 import { HOSTS, publishPath } from '@/config/client';
 import { bodsAreaFromHostname, type BodsSubdomain } from '@/config/hosts';
 import { useAuth } from '@/hooks/useAuth';
+import type { User } from '@/types';
 import { AccountIcon } from './icons/AccountIcon';
 import { GovUkLogo } from './icons/GovUkLogo';
 
@@ -39,25 +40,65 @@ function pathFromHref(href: string): string {
   return href;
 }
 
+function isServiceHost(area: BodsSubdomain): area is 'publish' | 'data' {
+  return area === 'publish' || area === 'data';
+}
+
+function AccountMenuLinks({ area, user }: { area: 'publish' | 'data'; user: User }) {
+  const accountUrl = '/account';
+  const accountSettingsUrl = '/account/settings';
+  const logoutUrl = '/account/logout';
+
+  switch (area) {
+    case 'publish': {
+      const organisationProfileUrl = user.organisation_id
+        ? `/account/manage/org-profile/${user.organisation_id}`
+        : null;
+      const userManagementUrl =
+        user.is_org_admin && user.organisation_id
+          ? `/account/manage/${user.organisation_id}`
+          : null;
+
+      return (
+        <>
+          <a className="govuk-link" href={accountUrl}>My account</a>
+          {userManagementUrl && (
+            <a className="govuk-link" href={userManagementUrl}>User management</a>
+          )}
+          {organisationProfileUrl && (
+            <a className="govuk-link" href={organisationProfileUrl}>Organisation profile</a>
+          )}
+          <a className="govuk-link" href={accountSettingsUrl}>Account settings</a>
+          <a className="govuk-link" href={logoutUrl}>Sign out</a>
+        </>
+      );
+    }
+    case 'data':
+      return (
+        <>
+          <a className="govuk-link" href={accountUrl}>My account</a>
+          <a className="govuk-link" href="/account/manage">Manage subscriptions</a>
+          <a className="govuk-link" href={accountSettingsUrl}>Account settings</a>
+          <a className="govuk-link" href={logoutUrl}>Sign out</a>
+        </>
+      );
+    default: {
+      const exhaustive: never = area;
+      return exhaustive;
+    }
+  }
+}
+
 export function Header({ hostname }: { hostname: string }) {
   const { user } = useAuth();
   const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
   const area = bodsAreaFromHostname(hostname);
-  const showServiceMenu = area === 'publish' || area === 'data';
+  const showServiceMenu = isServiceHost(area);
   const homeUrl = serviceHomeUrl(area);
   const guideMeUrl = publishPath('/guide-me');
-  const accountUrl = publishPath('/account');
-  const accountSettingsUrl = publishPath('/account/settings');
-  const organisationProfileUrl = user?.organisation_id
-    ? publishPath(`/account/manage/org-profile/${user.organisation_id}`)
-    : null;
-  const userManagementUrl = user?.is_org_admin && user.organisation_id
-    ? publishPath(`/account/manage/${user.organisation_id}`)
-    : null;
   const loginUrl = '/account/login';
-  const logoutUrl = '/account/logout';
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -119,15 +160,7 @@ export function Header({ hostname }: { hostname: string }) {
                       {' '}My account
                     </button>
                     <div className={`dropdown-content${dropdownOpen ? ' open' : ''}`}>
-                      <a className="govuk-link" href={accountUrl}>My account</a>
-                      {userManagementUrl && (
-                        <a className="govuk-link" href={userManagementUrl}>User management</a>
-                      )}
-                      {organisationProfileUrl && (
-                        <a className="govuk-link" href={organisationProfileUrl}>Organisation profile</a>
-                      )}
-                      <a className="govuk-link" href={accountSettingsUrl}>Account settings</a>
-                      <a className="govuk-link" href={logoutUrl}>Sign out</a>
+                      {isServiceHost(area) && <AccountMenuLinks area={area} user={user} />}
                     </div>
                   </li>
                 ) : (

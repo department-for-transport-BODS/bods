@@ -9,7 +9,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { HOSTS, publishAppPath, dataPath } from '@/config/client';
+import { HOSTS, dataPath } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
@@ -48,7 +48,7 @@ function MyAccount() {
     let isCancelled = false;
 
     api
-      .get<AccountData>('/api/publish/account/')
+      .get<AccountData>('/api/auth/account/')
       .then((data) => {
         if (!isCancelled) setAccount(data);
       })
@@ -70,7 +70,6 @@ function MyAccount() {
         <Breadcrumbs
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
             { label: 'My account', current: true },
           ]}
         />
@@ -88,7 +87,7 @@ function MyAccount() {
                   Manage subscriptions
                 </Link>
                 <p className="govuk-body">Manage subscribed data sets and notification preferences.</p>
-                <Link className="govuk-link app-nav-bold" href={publishAppPath('/account/settings')}>
+                <Link className="govuk-link app-nav-bold" href="/account/settings">
                   Account settings
                 </Link>
                 <p className="govuk-body">Edit your account settings and notification preferences.</p>
@@ -143,12 +142,12 @@ function MyAccount() {
                         <td className="govuk-table__cell">{invite.organisationName}</td>
                         <td className="govuk-table__cell">
                           {invite.isPending && (
-                            <Link className="govuk-link" href={publishAppPath(`/account/agent/invite/${invite.id}`)}>
+                            <Link className="govuk-link" href={`/account/agent/invite/${invite.id}`}>
                               Respond
                             </Link>
                           )}
                           {invite.isAccepted && (
-                            <Link className="govuk-link" href={publishAppPath(`/account/agent/leave/${invite.id}`)}>
+                            <Link className="govuk-link" href={`/account/agent/leave/${invite.id}`}>
                               Leave organisation
                             </Link>
                           )}
@@ -167,7 +166,7 @@ function MyAccount() {
 
             {!isLoading && !error && !account?.isDeveloper && !account?.isSingleOrgUser && !account?.isAgentUser && (
               <>
-                <Link className="govuk-link app-nav-bold" href={publishAppPath('/account/settings')}>
+                <Link className="govuk-link app-nav-bold" href="/account/settings">
                   Account settings
                 </Link>
                 <p className="govuk-body">Edit your account settings and notification preferences.</p>

@@ -2,7 +2,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AgentDashboardPage from './page';
 import { api } from '@/lib/api-client';
-import { publishAppPath } from '@/config/client';
 
 jest.mock('@/components/auth/ProtectedRoute', () => ({
   ProtectedRoute: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -27,7 +26,7 @@ describe('Agent Dashboard - Page', () => {
     expect(await screen.findByText(/don't have any operators yet/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Go to My Account' })).toHaveAttribute(
       'href',
-      publishAppPath('/account'),
+      '/account',
     );
   });
 

@@ -10,7 +10,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { HOSTS, publishAppPath } from '@/config/client';
+import { HOSTS } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
@@ -53,7 +53,7 @@ function statusIndicatorClass(isActive: boolean): string {
 function ManageUsers() {
   const params = useParams();
   const orgId = params.pk as string;
-  const inviteUrl = '/publish/account/manage/invite';
+  const inviteUrl = '/account/manage/invite';
 
   const [data, setData] = useState<MembersResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -86,7 +86,7 @@ function ManageUsers() {
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'My account', href: publishAppPath('/account') },
+            { label: 'My account', href: '/account' },
             { label: 'User management', current: true },
           ]}
         />
@@ -114,7 +114,7 @@ function ManageUsers() {
                     {data.members.map((member) => (
                       <tr key={member.id} className="govuk-table__row">
                         <td className="govuk-table__cell">
-                          <Link className="govuk-link" href={`/publish/account/manage/${member.id}/detail`}>
+                          <Link className="govuk-link" href={`/account/manage/${member.id}/detail`}>
                             {member.email}
                           </Link>
                         </td>
@@ -141,7 +141,7 @@ function ManageUsers() {
                           <tr key={invite.id} className="govuk-table__row">
                             <td className="govuk-table__cell">{invite.email}</td>
                             <td className="govuk-table__cell">
-                              <Link className="govuk-link" href={`/publish/account/manage/${invite.id}/re-invite`}>
+                              <Link className="govuk-link" href={`/account/manage/${invite.id}/re-invite`}>
                                 Resend invite
                               </Link>
                             </td>
@@ -171,7 +171,7 @@ function ManageUsers() {
                               <span className="status-indicator status-indicator--unavailable">{invite.status}</span>
                             </td>
                             <td className="govuk-table__cell">
-                              <Link className="govuk-link" href={`/publish/account/agent/invite/${invite.id}/resend`}>
+                              <Link className="govuk-link" href={`/account/agent/invite/${invite.id}/resend`}>
                                 Resend invite
                               </Link>
                             </td>

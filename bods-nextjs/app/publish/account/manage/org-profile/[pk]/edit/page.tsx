@@ -74,7 +74,7 @@ function OrganisationProfileEditContent() {
   const params = useParams();
   const router = useRouter();
   const orgId = params.pk as string;
-  const profileUrl = `/publish/account/manage/org-profile/${orgId}`;
+  const profileUrl = `/account/manage/org-profile/${orgId}`;
 
   const [shortName, setShortName] = useState('');
   const [licenceRequired, setLicenceRequired] = useState(false);

@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
-import { HOSTS, publishPath } from '@/config/client';
+import { HOSTS } from '@/config/client';
 
 interface AgentOrganisation {
   id: number;
@@ -172,7 +172,7 @@ function AgentDashboard() {
                   You don&apos;t have any operators yet to act as an agent on behalf of. Please go to My
                   Account section to set-up an operator
                 </p>
-                <Link href={publishPath('/account')} className="govuk-button govuk-button--start">
+                <Link href="/account" className="govuk-button govuk-button--start">
                   Go to My Account
                 </Link>
               </>

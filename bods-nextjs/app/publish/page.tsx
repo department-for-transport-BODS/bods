@@ -95,7 +95,7 @@ function PublishDashboard() {
               <p className="govuk-body govuk-!-margin-bottom-7">Review the health of your data.</p>
 
               <h2 className="govuk-heading-s">
-                <Link className="govuk-link-bold" href={publishAppPath('/account')}>
+                <Link className="govuk-link-bold" href="/account">
                   Manage your account
                 </Link>
               </h2>
