@@ -20,8 +20,8 @@ function ResendInvite() {
   const { user } = useAuth();
   const inviteId = params.pk as string;
   const manageUrl = user?.organisation_id
-    ? `/publish/account/manage/${user.organisation_id}`
-    : '/publish/account';
+    ? `/account/manage/${user.organisation_id}`
+    : '/account';
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');

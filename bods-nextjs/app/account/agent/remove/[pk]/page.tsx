@@ -25,8 +25,8 @@ function RemoveAgent() {
   const { user } = useAuth();
   const inviteId = params.pk as string;
   const manageUrl = user?.organisation_id
-    ? `/publish/account/manage/${user.organisation_id}`
-    : '/publish/account';
+    ? `/account/manage/${user.organisation_id}`
+    : '/account';
 
   const [invite, setInvite] = useState<AgentInviteDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,7 +37,7 @@ function RemoveAgent() {
     let isCancelled = false;
 
     api
-      .get<AgentInviteDetail>(`/api/publish/agent/invite/${inviteId}/`)
+      .get<AgentInviteDetail>(`/api/auth/agent/invite/${inviteId}/`)
       .then((data) => {
         if (!isCancelled) setInvite(data);
       })
@@ -58,7 +58,7 @@ function RemoveAgent() {
     setError('');
 
     try {
-      const response = await fetch(`/api/publish/agent/invite/${inviteId}/remove/`, {
+      const response = await fetch(`/api/auth/agent/invite/${inviteId}/remove/`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'X-CSRFToken': getCsrfToken() },

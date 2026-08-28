@@ -10,7 +10,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { HOSTS, publishAppPath } from '@/config/client';
+import { HOSTS } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
@@ -66,7 +66,7 @@ function OrganisationProfileContent() {
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'My account', href: publishAppPath('/account') },
+            { label: 'My account', href: '/account' },
             { label: 'Organisation profile', current: true },
           ]}
         />
@@ -106,7 +106,7 @@ function OrganisationProfileContent() {
                 </dl>
 
                 {profile.canEdit && (
-                  <Link className="govuk-button" href={publishAppPath(`/account/manage/org-profile/${orgId}/edit`)}>
+                  <Link className="govuk-button" href={`/account/manage/org-profile/${orgId}/edit`}>
                     Edit organisation profile
                   </Link>
                 )}

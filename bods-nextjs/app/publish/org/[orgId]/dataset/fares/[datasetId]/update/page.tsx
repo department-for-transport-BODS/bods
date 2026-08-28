@@ -245,7 +245,7 @@ function FaresUpdatePageContent() {
                 </Link>
               </li>
               <li>
-                <Link className="govuk-link large-font" href={publishAppPath('/account')}>
+                <Link className="govuk-link large-font" href="/account">
                   Contact support desk
                 </Link>
               </li>

@@ -63,7 +63,7 @@ function TimetableReview() {
   const reviewDetailsUrl = `/publish/org/${orgId}/dataset/data-activity?prev=timetable-feed-list`;
   const operatorRequirementsUrl = '/publish/guide-me';
   const localAuthorityRequirementsUrl = '/publish/guide-me';
-  const setUpLicenceNumbersUrl = '/publish/account';
+  const setUpLicenceNumbersUrl = '/account';
 
   const tab = getTabFromSearchParams(searchParams.get('tab'));
 

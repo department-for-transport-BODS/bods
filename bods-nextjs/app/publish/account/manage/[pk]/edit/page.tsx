@@ -29,10 +29,10 @@ function EditMember() {
   const router = useRouter();
   const { user } = useAuth();
   const userId = params.pk as string;
-  const detailUrl = `/publish/account/manage/${userId}/detail`;
+  const detailUrl = `/account/manage/${userId}/detail`;
   const manageUrl = user?.organisation_id
-    ? `/publish/account/manage/${user.organisation_id}`
-    : '/publish/account';
+    ? `/account/manage/${user.organisation_id}`
+    : '/account';
 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');

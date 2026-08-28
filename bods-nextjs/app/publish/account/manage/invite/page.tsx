@@ -22,7 +22,7 @@ function InviteUser() {
   const { user, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
   const orgId = user?.organisation_id;
-  const manageUrl = orgId ? `/publish/account/manage/${orgId}` : '/publish/account';
+  const manageUrl = orgId ? `/account/manage/${orgId}` : '/account';
 
   const [email, setEmail] = useState('');
   const [accountType, setAccountType] = useState<AccountTypeOption | ''>('');
@@ -32,7 +32,7 @@ function InviteUser() {
   useEffect(() => {
     if (isAuthLoading) return;
     if (!orgId) {
-      router.replace('/publish/account');
+      router.replace('/account');
     }
   }, [isAuthLoading, orgId, router]);
 
@@ -97,7 +97,7 @@ function InviteUser() {
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Invite a new user</h1>
-
+            <p className="govuk-body-m"> Send an email invite to a new user so they can publish and update data sets </p>
             {isAuthLoading && <p className="govuk-body">Loading...</p>}
 
             {!isAuthLoading && orgId && (
@@ -105,7 +105,6 @@ function InviteUser() {
                 {summaryErrors.length > 0 && (
                   <ErrorSummary errors={summaryErrors} summaryId="invite-user-error-title" />
                 )}
-
                 <div className="govuk-form-group">
                   <label className="govuk-label" htmlFor="email">Email</label>
                   <input

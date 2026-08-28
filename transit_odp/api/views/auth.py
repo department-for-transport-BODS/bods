@@ -9,14 +9,16 @@ Allauth's email verification and adapter hooks are respected.
 import re
 
 from allauth.account import app_settings as allauth_settings
+from allauth.account import signals as allauth_signals
 from allauth.account.models import EmailAddress
-from allauth.account.utils import send_email_confirmation
+from allauth.account.utils import logout_on_password_change, send_email_confirmation
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from transit_odp.organisation.models import Organisation
+from transit_odp.users.forms.auth import ChangePasswordForm
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -160,6 +162,33 @@ class CSRFTokenAPIView(APIView):
         return Response({"csrfToken": get_token(request)})
 
 
+@method_decorator(csrf_protect, name="dispatch")
+class PasswordChangeAPIView(APIView):
+    """Change the signed-in user's password using allauth's ChangePasswordForm."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        form = ChangePasswordForm(user=request.user, data=request.data)
+        if not form.is_valid():
+            return Response(
+                {
+                    "error": "Validation failed",
+                    "field_errors": _serialize_form_errors(form),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        form.save()
+        logout_on_password_change(request, request.user)
+        allauth_signals.password_changed.send(
+            sender=request.user.__class__,
+            request=request,
+            user=request.user,
+        )
+        return Response(status=status.HTTP_200_OK)
+
+
 class OrganisationStatsAPIView(APIView):
     """Return consumer activity stats for an organisation available to the user."""
 
@@ -188,6 +217,13 @@ class OrganisationStatsAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+def _serialize_form_errors(form):
+    return {
+        field: [str(message) for message in error_list]
+        for field, error_list in form.errors.items()
+    }
 
 
 def _serialize_user(user):

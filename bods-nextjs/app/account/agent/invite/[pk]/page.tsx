@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { HOSTS, publishAppPath } from '@/config/client';
+import { HOSTS } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
@@ -34,7 +34,7 @@ function AgentInviteRespond() {
     let isCancelled = false;
 
     api
-      .get<AgentInviteDetail>(`/api/publish/agent/invite/${inviteId}/`)
+      .get<AgentInviteDetail>(`/api/auth/agent/invite/${inviteId}/`)
       .then((data) => {
         if (!isCancelled) setInvite(data);
       })
@@ -55,7 +55,7 @@ function AgentInviteRespond() {
     setError('');
 
     try {
-      const response = await fetch(`/api/publish/agent/invite/${inviteId}/respond/`, {
+      const response = await fetch(`/api/auth/agent/invite/${inviteId}/respond/`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
@@ -68,7 +68,7 @@ function AgentInviteRespond() {
         return;
       }
 
-      router.push(publishAppPath('/account'));
+      router.push('/account');
       router.refresh();
     } catch {
       setError('Unable to respond to this invite. Please try again.');
@@ -82,8 +82,7 @@ function AgentInviteRespond() {
         <Breadcrumbs
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'My account', href: publishAppPath('/account') },
+            { label: 'My account', href: '/account' },
             { label: 'Respond to invite', current: true },
           ]}
         />

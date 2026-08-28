@@ -5,6 +5,7 @@
  *
  * Mirrors Django's users/users_settings.html: username/email/api key display,
  * change password link, and (for org users) notification preferences.
+ * Available on every service host, like login and password change.
  */
 
 import { useEffect, useState } from 'react';
@@ -36,7 +37,7 @@ function AccountSettingsContent() {
   useEffect(() => {
     let isCancelled = false;
 
-    fetch('/api/publish/account/settings/', { credentials: 'include' })
+    fetch('/api/auth/settings/', { credentials: 'include' })
       .then((response) => response.json())
       .then((data: AccountSettings) => {
         if (!isCancelled) setSettings(data);
@@ -63,7 +64,7 @@ function AccountSettingsContent() {
 
     try {
       const csrfToken = getCsrfToken();
-      const response = await fetch('/api/publish/account/settings/update/', {
+      const response = await fetch('/api/auth/settings/update/', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
@@ -94,7 +95,6 @@ function AccountSettingsContent() {
         <Breadcrumbs
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
             { label: 'Account settings', current: true },
           ]}
         />
@@ -123,7 +123,7 @@ function AccountSettingsContent() {
                       <td className="govuk-table__cell manage-users-table__key">Password</td>
                       <td className="govuk-table__cell">●●●●●●●●</td>
                       <td className="govuk-table__cell">
-                        <Link className="govuk-link" href={wwwPath('/account/password')}>Change</Link>
+                        <Link className="govuk-link" href="/account/password/change">Change</Link>
                       </td>
                     </tr>
                     <tr className="govuk-table__row">

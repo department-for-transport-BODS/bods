@@ -287,7 +287,7 @@ function FaresDatasetDetailContent() {
                     </Link>
                   </li>
                   <li>
-                    <Link className="govuk-link" href={publishAppPath('/account')}>
+                    <Link className="govuk-link" href="/account">
                       Contact support desk
                     </Link>
                   </li>

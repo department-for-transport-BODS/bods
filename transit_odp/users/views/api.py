@@ -5,6 +5,7 @@ import json
 import re
 
 from django.contrib.auth import get_user
+from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
 from django.utils.crypto import get_random_string
@@ -12,9 +13,10 @@ from django.views.decorators.http import require_GET, require_POST
 from rest_framework.authtoken.models import Token
 
 from transit_odp.notifications import get_notifications
-from transit_odp.organisation.models import Licence, OperatorCode, Organisation
+from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.models import Dataset, Licence, OperatorCode, Organisation
 from transit_odp.organisation.models.data import ServiceCodeExemption
-from transit_odp.users.constants import AccountType
+from transit_odp.users.constants import DATASET_MANAGE_TABLE_PAGINATE_BY, AccountType
 from transit_odp.users.forms.account import PublishAdminNotifications
 from transit_odp.users.models import Invitation, User
 from transit_odp.users.models import AgentUserInvite, UserSettings
@@ -118,10 +120,14 @@ def update_account_settings_api(request):
         return JsonResponse({"error": "Org user access required"}, status=403)
 
     settings, _created = UserSettings.objects.get_or_create(user=user)
-    form = PublishAdminNotifications(data=request.POST or _json_body(request), instance=settings)
+    form = PublishAdminNotifications(
+        data=request.POST or _json_body(request), instance=settings
+    )
 
     if not form.is_valid():
-        return JsonResponse({"error": "Validation failed", "field_errors": form.errors}, status=400)
+        return JsonResponse(
+            {"error": "Validation failed", "field_errors": form.errors}, status=400
+        )
 
     form.save()
 
@@ -131,6 +137,105 @@ def update_account_settings_api(request):
             "notifyAvlUnavailable": settings.notify_avl_unavailable,
             "dailyComplianceCheckAlert": settings.daily_compliance_check_alert,
         },
+        status=200,
+    )
+
+
+def _dataset_type_name(dataset_type: int) -> str:
+    if dataset_type == DatasetType.AVL.value:
+        return "AVL"
+    if dataset_type == DatasetType.FARES.value:
+        return "FARES"
+    return "TIMETABLE"
+
+
+def _subscription_status_display(
+    status: str | None, dataset_type: int
+) -> tuple[str, str]:
+    """Labels from organisation/snippets/status_indicator.html."""
+    if status == "live":
+        return ("Published", "status-indicator--success")
+    if status in ("indexing", "pending"):
+        return ("Processing", "status-indicator--indexing")
+    if status == "warning":
+        return ("Warning", "status-indicator--warning")
+    if status == "expiring":
+        return ("Soon to expire", "status-indicator--warning")
+    if status == "error":
+        if dataset_type == DatasetType.AVL.value:
+            return ("Published", "status-indicator--success")
+        return ("Error", "status-indicator--error")
+    if status in ("draft", "success"):
+        return ("Draft", "status-indicator--draft")
+    if status == "expired":
+        return ("Expired", "status-indicator--inactive")
+    if status == "inactive":
+        return ("Inactive", "status-indicator--inactive")
+    if status == "deleted":
+        return ("Deleted", "status-indicator--error")
+    return (status or "", "")
+
+
+def _serialize_subscription(dataset: Dataset) -> dict:
+    status_label, status_class = _subscription_status_display(
+        getattr(dataset, "status", None),
+        dataset.dataset_type,
+    )
+    return {
+        "id": dataset.id,
+        "name": getattr(dataset, "name", None) or "",
+        "datasetType": _dataset_type_name(dataset.dataset_type),
+        "statusLabel": status_label,
+        "statusClass": status_class,
+    }
+
+
+@require_GET
+def get_subscriptions_api(request):
+    """Return the signed-in user's dataset subscriptions (users/feeds_manage.html)."""
+    user = _authenticate_user(request)
+    if user is None:
+        return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+
+    settings, _created = UserSettings.objects.get_or_create(user=user)
+    queryset = Dataset.objects.filter(subscribers=user).add_live_data().order_by("id")
+    paginator = Paginator(queryset, DATASET_MANAGE_TABLE_PAGINATE_BY)
+    page = paginator.get_page(request.GET.get("page"))
+
+    return JsonResponse(
+        {
+            "muteNotifications": settings.mute_all_dataset_notifications,
+            "count": paginator.count,
+            "page": page.number,
+            "pageSize": DATASET_MANAGE_TABLE_PAGINATE_BY,
+            "totalPages": paginator.num_pages,
+            "results": [
+                _serialize_subscription(dataset) for dataset in page.object_list
+            ],
+        },
+        status=200,
+    )
+
+
+@require_POST
+def update_subscriptions_mute_api(request):
+    user = _authenticate_user(request)
+    if user is None:
+        return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
+
+    mute = _json_body(request).get("muteNotifications")
+    if not isinstance(mute, bool):
+        return JsonResponse(
+            {"error": "muteNotifications must be true or false"},
+            status=400,
+        )
+
+    settings, _created = UserSettings.objects.get_or_create(user=user)
+    settings.mute_all_dataset_notifications = mute
+    settings.save(update_fields=["mute_all_dataset_notifications"])
+
+    return JsonResponse(
+        {"muteNotifications": settings.mute_all_dataset_notifications},
         status=200,
     )
 
@@ -158,7 +263,9 @@ def get_agent_invite_api(request, pk):
         return JsonResponse({"error": "Invite not found"}, status=404)
 
     is_invited_agent = invite.agent_id == user.id
-    is_inviting_org_admin = user.is_org_admin and user.organisation_id == invite.organisation_id
+    is_inviting_org_admin = (
+        user.is_org_admin and user.organisation_id == invite.organisation_id
+    )
     if not (is_invited_agent or is_inviting_org_admin):
         return JsonResponse({"error": "Not found"}, status=404)
 
@@ -172,7 +279,9 @@ def respond_agent_invite_api(request, pk):
     if user is None:
         return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
 
-    invite = user.agent_invitations.filter(pk=pk, status=AgentUserInvite.PENDING).first()
+    invite = user.agent_invitations.filter(
+        pk=pk, status=AgentUserInvite.PENDING
+    ).first()
     if invite is None:
         return JsonResponse({"error": "Invite not found"}, status=404)
 
@@ -182,7 +291,9 @@ def respond_agent_invite_api(request, pk):
     elif status == AgentUserInvite.REJECTED:
         invite.reject_invite()
     else:
-        return JsonResponse({"error": "status must be 'accepted' or 'rejected'"}, status=400)
+        return JsonResponse(
+            {"error": "status must be 'accepted' or 'rejected'"}, status=400
+        )
 
     return JsonResponse(_serialize_agent_invite_detail(invite), status=200)
 
@@ -194,7 +305,9 @@ def leave_agent_organisation_api(request, pk):
     if user is None:
         return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
 
-    invite = user.agent_invitations.filter(pk=pk, status=AgentUserInvite.ACCEPTED).first()
+    invite = user.agent_invitations.filter(
+        pk=pk, status=AgentUserInvite.ACCEPTED
+    ).first()
     if invite is None:
         return JsonResponse({"error": "Invite not found"}, status=404)
 
@@ -248,7 +361,9 @@ def resend_agent_invite_api(request, pk):
 
 LICENCE_NUMBER_RE = re.compile(r"^[A-Za-z]{2}\d{7}$")
 LICENCE_FORMAT_ERROR = "Enter a valid PSV licence number, like AB1234567"
-LICENCE_REQUIRED_ERROR = "Untick 'I do not have a PSV licence number' to add licence numbers"
+LICENCE_REQUIRED_ERROR = (
+    "Untick 'I do not have a PSV licence number' to add licence numbers"
+)
 INVITE_ACCOUNT_TYPES = {
     "admin": AccountType.org_admin.value,
     "staff": AccountType.org_staff.value,
@@ -259,10 +374,14 @@ INVITE_ACCOUNT_TYPES = {
 def _notify_noc_changed(organisation: Organisation) -> None:
     notifier = get_notifications()
     account_types = [AccountType.org_admin.value, AccountType.agent_user.value]
-    recipients = organisation.users.filter(account_type__in=account_types, is_active=True)
+    recipients = organisation.users.filter(
+        account_type__in=account_types, is_active=True
+    )
     for recipient in recipients:
         if recipient.is_agent_user:
-            notifier.send_agent_noc_changed_notification(organisation.name, recipient.email)
+            notifier.send_agent_noc_changed_notification(
+                organisation.name, recipient.email
+            )
         else:
             notifier.send_operator_noc_changed_notification(recipient.email)
 
@@ -311,7 +430,10 @@ def update_organisation_profile_api(request, pk):
     if user is None:
         return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
 
-    if not (user.organisations.filter(pk=pk).exists() and (user.is_org_admin or user.is_agent_user)):
+    if not (
+        user.organisations.filter(pk=pk).exists()
+        and (user.is_org_admin or user.is_agent_user)
+    ):
         return JsonResponse({"error": "Org admin or agent access required"}, status=403)
 
     try:
@@ -323,19 +445,25 @@ def update_organisation_profile_api(request, pk):
     short_name = (body.get("shortName") or "").strip()
     licence_required = bool(body.get("licenceRequired"))
     nocs = [noc.strip() for noc in body.get("nocs", []) if noc.strip()]
-    licence_numbers = [num.strip().upper() for num in body.get("licenceNumbers", []) if num.strip()]
+    licence_numbers = [
+        num.strip().upper() for num in body.get("licenceNumbers", []) if num.strip()
+    ]
 
     field_errors = {}
     if not short_name:
         field_errors["shortName"] = ["Enter a short name"]
     if licence_numbers and not licence_required:
         field_errors["licenceRequired"] = [LICENCE_REQUIRED_ERROR]
-    invalid_licences = [num for num in licence_numbers if not LICENCE_NUMBER_RE.match(num)]
+    invalid_licences = [
+        num for num in licence_numbers if not LICENCE_NUMBER_RE.match(num)
+    ]
     if invalid_licences:
         field_errors["licenceNumbers"] = [LICENCE_FORMAT_ERROR]
 
     if field_errors:
-        return JsonResponse({"error": "Validation failed", "field_errors": field_errors}, status=400)
+        return JsonResponse(
+            {"error": "Validation failed", "field_errors": field_errors}, status=400
+        )
 
     noc_changed = set(organisation.nocs.values_list("noc", flat=True)) != set(nocs)
 
@@ -353,11 +481,16 @@ def update_organisation_profile_api(request, pk):
             organisation.licences.all().delete()
             if licence_required:
                 Licence.objects.bulk_create(
-                    [Licence(organisation=organisation, number=num) for num in licence_numbers]
+                    [
+                        Licence(organisation=organisation, number=num)
+                        for num in licence_numbers
+                    ]
                 )
     except IntegrityError:
         return JsonResponse(
-            {"error": "One of the NOC codes or licence numbers is already registered to another organisation."},
+            {
+                "error": "One of the NOC codes or licence numbers is already registered to another organisation."
+            },
             status=400,
         )
 
@@ -403,7 +536,9 @@ def get_organisation_members_api(request, pk):
 
     return JsonResponse(
         {
-            "members": [_serialize_member(member) for member in organisation.users.all()],
+            "members": [
+                _serialize_member(member) for member in organisation.users.all()
+            ],
             "pendingInvites": [
                 _serialize_pending_invite(invite)
                 for invite in organisation.invitation_set.filter(
@@ -440,7 +575,9 @@ def create_organisation_invite_api(request, pk):
     if account_type is None:
         field_errors["accountType"] = ["Choose the account type"]
     if field_errors:
-        return JsonResponse({"error": "Validation failed", "field_errors": field_errors}, status=400)
+        return JsonResponse(
+            {"error": "Validation failed", "field_errors": field_errors}, status=400
+        )
 
     organisation = user.organisation
 
@@ -453,7 +590,11 @@ def create_organisation_invite_api(request, pk):
                 return JsonResponse(
                     {
                         "error": "Validation failed",
-                        "field_errors": {"email": ["This agent is already active for this organisation"]},
+                        "field_errors": {
+                            "email": [
+                                "This agent is already active for this organisation"
+                            ]
+                        },
                     },
                     status=400,
                 )
@@ -468,13 +609,17 @@ def create_organisation_invite_api(request, pk):
                 agent_invite.status = AgentUserInvite.PENDING
                 agent_invite.save()
             agent_invite.send_confirmation()
-            return JsonResponse({"email": email, "accountType": account_type}, status=201)
+            return JsonResponse(
+                {"email": email, "accountType": account_type}, status=201
+            )
 
     if User.objects.filter(email__iexact=email).exists():
         return JsonResponse(
             {
                 "error": "Validation failed",
-                "field_errors": {"email": ["A user with this email address already has an account"]},
+                "field_errors": {
+                    "email": ["A user with this email address already has an account"]
+                },
             },
             status=400,
         )
@@ -525,7 +670,9 @@ def get_organisation_member_api(request, pk):
         AccountType.org_staff.value,
         AccountType.agent_user.value,
     ]
-    member = user.organisation.users.filter(pk=pk, account_type__in=allowed_accounts).first()
+    member = user.organisation.users.filter(
+        pk=pk, account_type__in=allowed_accounts
+    ).first()
     if member is None:
         return JsonResponse({"error": "User not found"}, status=404)
 
@@ -567,7 +714,9 @@ def update_organisation_member_api(request, pk):
     if account_type not in (AccountType.org_admin.value, AccountType.org_staff.value):
         field_errors["accountType"] = ["Choose the account type"]
     if field_errors:
-        return JsonResponse({"error": "Validation failed", "field_errors": field_errors}, status=400)
+        return JsonResponse(
+            {"error": "Validation failed", "field_errors": field_errors}, status=400
+        )
 
     member.username = username
     member.email = email
