@@ -80,6 +80,7 @@ def _serialize_agent_invitation(invite: AgentUserInvite) -> dict:
     return {
         "id": invite.id,
         "organisationName": invite.organisation.name,
+        "email": invite.email,
         "status": invite.status,
         "isPending": invite.is_pending,
         "isAccepted": invite.is_accepted,

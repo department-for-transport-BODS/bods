@@ -11,7 +11,7 @@ import re
 from allauth.account import app_settings as allauth_settings
 from allauth.account import signals as allauth_signals
 from allauth.account.adapter import get_adapter
-from allauth.account.forms import SignupForm
+from allauth.account.forms import SignupForm, default_token_generator
 from allauth.account.models import (
     EmailAddress,
     EmailConfirmation,
@@ -21,15 +21,20 @@ from allauth.account.utils import (
     complete_signup,
     logout_on_password_change,
     send_email_confirmation,
+    url_str_to_user_pk,
 )
 from allauth.utils import get_form_class
 from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from transit_odp.organisation.models import Organisation
-from transit_odp.users.forms.auth import ChangePasswordForm
+from transit_odp.users.forms.auth import (
+    ChangePasswordForm,
+    ResetPasswordForm,
+    ResetPasswordKeyForm,
+)
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -37,6 +42,7 @@ from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.views import APIView
 
 EMAIL_CONFIRMATION_INVALID = "This email confirmation link expired or is invalid."
+PASSWORD_RESET_INVALID = "This password reset link expired or is invalid."
 
 
 class LoginRateThrottle(AnonRateThrottle):
@@ -72,6 +78,10 @@ class EmailConfirmationRateThrottle(AnonRateThrottle):
 
 class PasswordChangeRateThrottle(UserRateThrottle):
     scope = "account-password-change"
+
+
+class PasswordResetRateThrottle(AnonRateThrottle):
+    scope = "account-password-reset"
 
 
 class LoginSerializer(serializers.Serializer):
@@ -314,6 +324,89 @@ class PasswordChangeAPIView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+@method_decorator(csrf_protect, name="dispatch")
+class PasswordResetAPIView(APIView):
+    """Request a password reset email using BODS' ResetPasswordForm."""
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [PasswordResetRateThrottle]
+
+    def post(self, request):
+        django_request = request._request
+        form = ResetPasswordForm(data=request.data)
+        if not form.is_valid():
+            return Response(
+                {
+                    "error": "Validation failed",
+                    "field_errors": _serialize_form_errors(form),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        email = form.save(django_request)
+        return Response({"email": email}, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class PasswordResetFromKeyAPIView(APIView):
+    """Set a new password from the uidb36+key in the reset email."""
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [PasswordResetRateThrottle]
+
+    def get(self, request):
+        user = _user_from_reset_key(
+            request.query_params.get("uidb36"),
+            request.query_params.get("key"),
+        )
+        if user is None:
+            return Response(
+                {"detail": PASSWORD_RESET_INVALID},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response({"valid": True}, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        user = _user_from_reset_key(request.data.get("uidb36"), request.data.get("key"))
+        if user is None:
+            return Response(
+                {"detail": PASSWORD_RESET_INVALID},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        form = ResetPasswordKeyForm(user=user, data=request.data)
+        if not form.is_valid():
+            return Response(
+                {
+                    "error": "Validation failed",
+                    "field_errors": _serialize_form_errors(form),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        form.save()
+        django_request = request._request
+        allauth_signals.password_reset.send(
+            sender=user.__class__,
+            request=django_request,
+            user=user,
+        )
+
+        if allauth_settings.LOGIN_ON_PASSWORD_RESET:
+            login(
+                django_request,
+                user,
+                backend="django.contrib.auth.backends.ModelBackend",
+            )
+            get_token(django_request)
+            return Response({"user": _serialize_user(user)}, status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_200_OK)
+
+
 class OrganisationStatsAPIView(APIView):
     """Return consumer activity stats for an organisation available to the user."""
 
@@ -359,6 +452,21 @@ def _signup_form_class(request):
         )
 
     return get_form_class(allauth_settings.FORMS, form_id, SignupForm)
+
+
+def _user_from_reset_key(uidb36, key):
+    if not uidb36 or not key:
+        return None
+
+    try:
+        user = get_user_model().objects.get(pk=url_str_to_user_pk(uidb36))
+    except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+        return None
+
+    if not default_token_generator.check_token(user, key):
+        return None
+
+    return user
 
 
 def _find_email_confirmation(key):
