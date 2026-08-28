@@ -1,30 +1,38 @@
 /**
  * Protected Route Component
- * 
- * Wraps pages that require authentication
- * Redirects to login if not authenticated
+ *
+ * Wraps pages that require authentication.
+ * Redirects to login if not authenticated, preserving the intended destination.
  */
 
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import { loginUrlWithNext } from '@/lib/auth/post-login-redirect';
 import { useEffect, type ReactNode } from 'react';
 
 interface ProtectedRouteProps {
   children: ReactNode;
+  /**
+   * Base login URL. Relative by default so sign-in stays on the current host.
+   * A next= return URL is appended automatically.
+   */
   redirectTo?: string;
 }
 
-export function ProtectedRoute({ children, redirectTo = '/account/login' }: ProtectedRouteProps) {
+export function ProtectedRoute({
+  children,
+  redirectTo = '/account/login',
+}: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push(redirectTo);
+    if (isLoading || isAuthenticated) {
+      return;
     }
-  }, [isAuthenticated, isLoading, router, redirectTo]);
+
+    window.location.assign(loginUrlWithNext(redirectTo, window.location.href));
+  }, [isAuthenticated, isLoading, redirectTo]);
 
   if (isLoading) {
     return (
@@ -42,4 +50,3 @@ export function ProtectedRoute({ children, redirectTo = '/account/login' }: Prot
 
   return <>{children}</>;
 }
-

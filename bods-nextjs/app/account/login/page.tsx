@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
-import { HOSTS } from '@/config/client';
+import { useBodsArea } from '@/lib/bods-host-context';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
+import { resolvePostLoginRedirect } from '@/lib/auth/post-login-redirect';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -15,6 +17,8 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const area = useBodsArea();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +27,12 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      router.push('/');
+      const destination = resolvePostLoginRedirect(searchParams.get('next'));
+      if (destination.startsWith('http://') || destination.startsWith('https://')) {
+        window.location.assign(destination);
+        return;
+      }
+      router.push(destination);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid email or password');
@@ -34,13 +43,7 @@ export default function LoginPage() {
 
   return (
     <div className="govuk-width-container">
-      <Breadcrumbs
-        items={[
-          { label: 'Bus Open Data Service', href: HOSTS.www },
-          { label: 'Publish Bus Open Data', href: '/' },
-          { label: 'Sign in', current: true },
-        ]}
-      />
+      <Breadcrumbs items={hostBreadcrumbs(area, { label: 'Sign in', current: true })} />
 
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
