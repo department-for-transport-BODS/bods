@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { HOSTS } from '@/config/client';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { OrgAdminRoute } from '@/components/auth/OrgAdminRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
 
@@ -44,10 +44,6 @@ interface MembersResponse {
   members: Member[];
   pendingInvites: PendingInvite[];
   pendingAgentInvites: AgentInvitation[];
-}
-
-function statusIndicatorClass(isActive: boolean): string {
-  return isActive ? 'status-indicator--success' : 'status-indicator--inactive';
 }
 
 function ManageUsers() {
@@ -193,8 +189,8 @@ function ManageUsers() {
 
 export default function ManageUsersPage() {
   return (
-    <ProtectedRoute>
+    <OrgAdminRoute>
       <ManageUsers />
-    </ProtectedRoute>
+    </OrgAdminRoute>
   );
 }

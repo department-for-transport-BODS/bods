@@ -7,11 +7,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { HOSTS } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
-import { api, getCsrfToken } from '@/lib/api-client';
+import { api } from '@/lib/api-client';
+import { useBodsArea } from '@/lib/bods-host-context';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 interface AgentInviteDetail {
   id: number;
@@ -23,6 +24,7 @@ interface AgentInviteDetail {
 function AgentInviteRespond() {
   const params = useParams();
   const router = useRouter();
+  const area = useBodsArea();
   const inviteId = params.pk as string;
 
   const [invite, setInvite] = useState<AgentInviteDetail | null>(null);
@@ -55,18 +57,7 @@ function AgentInviteRespond() {
     setError('');
 
     try {
-      const response = await fetch(`/api/auth/agent/invite/${inviteId}/respond/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
-        body: JSON.stringify({ status }),
-      });
-
-      if (!response.ok) {
-        setError('Unable to respond to this invite. Please try again.');
-        setIsSubmitting(false);
-        return;
-      }
+      await api.post(`/api/auth/agent/invite/${inviteId}/respond/`, { status });
 
       router.push('/account');
       router.refresh();
@@ -80,11 +71,11 @@ function AgentInviteRespond() {
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
+          items={hostBreadcrumbs(
+            area,
             { label: 'My account', href: '/account' },
             { label: 'Respond to invite', current: true },
-          ]}
+          )}
         />
 
         <div className="govuk-grid-row">

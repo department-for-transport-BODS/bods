@@ -8,11 +8,11 @@
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { HOSTS } from '@/config/client';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { OrgAdminRoute } from '@/components/auth/OrgAdminRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
 import { useAuth } from '@/hooks/useAuth';
-import { getCsrfToken } from '@/lib/api-client';
+import { api } from '@/lib/api-client';
 
 function ResendInvite() {
   const params = useParams();
@@ -31,17 +31,7 @@ function ResendInvite() {
     setError('');
 
     try {
-      const response = await fetch(`/api/publish/organisation/invites/${inviteId}/resend/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'X-CSRFToken': getCsrfToken() },
-      });
-
-      if (!response.ok) {
-        setError('Unable to resend this invite. Please try again.');
-        setIsSubmitting(false);
-        return;
-      }
+      await api.post(`/api/publish/organisation/invites/${inviteId}/resend/`);
 
       router.push(manageUrl);
       router.refresh();
@@ -84,8 +74,8 @@ function ResendInvite() {
 
 export default function ResendInvitePage() {
   return (
-    <ProtectedRoute>
+    <OrgAdminRoute>
       <ResendInvite />
-    </ProtectedRoute>
+    </OrgAdminRoute>
   );
 }

@@ -48,7 +48,7 @@ describe('PublishPage', () => {
         organisation_id: 123,
       },
       publishAppPath('/org/123/dataset'),
-      publishAppPath('/org/123/dataset/fares'),
+      publishAppPath('/org/123/dataset/timetable'),
     ],
     [
       'single-organisation users without an organisation id',

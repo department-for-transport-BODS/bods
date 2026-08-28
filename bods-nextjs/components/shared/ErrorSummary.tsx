@@ -1,4 +1,4 @@
-type ErrorSummaryItem =
+export type ErrorSummaryItem =
   | string
   | {
       text: string;

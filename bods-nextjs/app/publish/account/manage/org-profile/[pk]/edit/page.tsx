@@ -13,7 +13,13 @@ import { HOSTS } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
-import { api, getCsrfToken } from '@/lib/api-client';
+import { api, ApiError } from '@/lib/api-client';
+import { errorSummaryItems } from '@/lib/form-errors';
+
+const FIELD_ANCHORS = {
+  shortName: '#short_name',
+  licenceRequired: '#licence_not_required',
+};
 
 interface OrganisationProfile {
   id: number;
@@ -81,6 +87,7 @@ function OrganisationProfileEditContent() {
   const [nocs, setNocs] = useState<string[]>([]);
   const [licenceNumbers, setLicenceNumbers] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -95,6 +102,7 @@ function OrganisationProfileEditContent() {
         setLicenceRequired(Boolean(data.licenceRequired));
         setNocs(data.nocs);
         setLicenceNumbers(data.licenceNumbers);
+        setIsLoaded(true);
       })
       .catch(() => {
         if (!isCancelled) setErrors({ form: 'Unable to load this organisation profile.' });
@@ -114,40 +122,26 @@ function OrganisationProfileEditContent() {
     setErrors({});
 
     try {
-      const response = await fetch(`/api/publish/organisation/profile/${orgId}/update/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
-        body: JSON.stringify({
-          shortName,
-          licenceRequired,
-          nocs: nocs.filter((noc) => noc.trim()),
-          licenceNumbers: licenceNumbers.filter((num) => num.trim()),
-        }),
+      await api.post(`/api/publish/organisation/profile/${orgId}/update/`, {
+        shortName,
+        licenceRequired,
+        nocs: nocs.filter((noc) => noc.trim()),
+        licenceNumbers: licenceNumbers.filter((num) => num.trim()),
       });
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        const fieldErrors = data.field_errors || {};
-        setErrors({
-          shortName: fieldErrors.shortName?.[0],
-          licenceRequired: fieldErrors.licenceRequired?.[0],
-          licenceNumbers: fieldErrors.licenceNumbers?.[0],
-          form: !data.field_errors ? data.error || 'Unable to save this profile.' : '',
-        });
-        setIsSubmitting(false);
-        return;
-      }
 
       router.push(profileUrl);
       router.refresh();
-    } catch {
-      setErrors({ form: 'Unable to save this profile.' });
+    } catch (error) {
+      setErrors(
+        error instanceof ApiError && error.hasFieldErrors
+          ? error.firstFieldErrors()
+          : { form: 'Unable to save this profile.' },
+      );
       setIsSubmitting(false);
     }
   };
 
-  const summaryErrors = Object.values(errors).filter(Boolean) as string[];
+  const summaryErrors = errorSummaryItems(errors, FIELD_ANCHORS);
 
   return (
     <div className="govuk-width-container">
@@ -167,20 +161,30 @@ function OrganisationProfileEditContent() {
 
             {isLoading && <p className="govuk-body">Loading...</p>}
 
-            {!isLoading && (
+            {!isLoading && !isLoaded && summaryErrors.length > 0 && (
+              <ErrorSummary errors={summaryErrors} summaryId="org-profile-edit-error-title" />
+            )}
+
+            {isLoaded && (
               <form onSubmit={handleSubmit} noValidate>
                 {summaryErrors.length > 0 && (
                   <ErrorSummary errors={summaryErrors} summaryId="org-profile-edit-error-title" />
                 )}
 
-                <div className="govuk-form-group">
+                <div className={`govuk-form-group ${errors.shortName ? 'govuk-form-group--error' : ''}`}>
                   <label className="govuk-label" htmlFor="short_name">Organisation short name</label>
+                  {errors.shortName && (
+                    <p className="govuk-error-message" id="short_name-error">
+                      <span className="govuk-visually-hidden">Error:</span> {errors.shortName}
+                    </p>
+                  )}
                   <input
-                    className="govuk-input"
+                    className={`govuk-input ${errors.shortName ? 'govuk-input--error' : ''}`}
                     id="short_name"
                     type="text"
                     value={shortName}
                     onChange={(e) => setShortName(e.target.value)}
+                    aria-describedby={errors.shortName ? 'short_name-error' : undefined}
                   />
                 </div>
 

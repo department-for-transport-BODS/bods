@@ -10,18 +10,25 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { HOSTS } from '@/config/client';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { OrgAdminRoute } from '@/components/auth/OrgAdminRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
 import { useAuth } from '@/hooks/useAuth';
-import { getCsrfToken } from '@/lib/api-client';
+import { api, ApiError } from '@/lib/api-client';
+import { errorSummaryItems } from '@/lib/form-errors';
 
 type AccountTypeOption = 'admin' | 'staff' | 'agent';
+
+const FIELD_ANCHORS = {
+  email: '#email',
+  accountType: '#account-type-admin',
+};
 
 function InviteUser() {
   const { user, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
   const orgId = user?.organisation_id;
+  const canInvite = Boolean(user?.is_org_admin && orgId);
   const manageUrl = orgId ? `/account/manage/${orgId}` : '/account';
 
   const [email, setEmail] = useState('');
@@ -30,17 +37,18 @@ function InviteUser() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (isAuthLoading) return;
-    if (!orgId) {
-      router.replace('/account');
+    if (isAuthLoading || canInvite) {
+      return;
     }
-  }, [isAuthLoading, orgId, router]);
+
+    router.replace('/account');
+  }, [isAuthLoading, canInvite, router]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrors({});
 
-    if (!orgId) {
+    if (!canInvite) {
       setErrors({ form: 'Unable to send this invitation.' });
       return;
     }
@@ -53,34 +61,21 @@ function InviteUser() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`/api/publish/organisation/${orgId}/invite/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
-        body: JSON.stringify({ email, accountType }),
-      });
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        const fieldErrors = data.field_errors || {};
-        setErrors({
-          email: fieldErrors.email?.[0],
-          accountType: fieldErrors.accountType?.[0],
-          form: !data.field_errors ? data.error || 'Unable to send this invitation.' : '',
-        });
-        setIsSubmitting(false);
-        return;
-      }
+      await api.post(`/api/publish/organisation/${orgId}/invite/`, { email, accountType });
 
       router.push(manageUrl);
       router.refresh();
-    } catch {
-      setErrors({ form: 'Unable to send this invitation.' });
+    } catch (error) {
+      setErrors(
+        error instanceof ApiError && error.hasFieldErrors
+          ? error.firstFieldErrors()
+          : { form: 'Unable to send this invitation.' },
+      );
       setIsSubmitting(false);
     }
   };
 
-  const summaryErrors = Object.values(errors).filter(Boolean) as string[];
+  const summaryErrors = errorSummaryItems(errors, FIELD_ANCHORS);
 
   return (
     <div className="govuk-width-container">
@@ -100,19 +95,25 @@ function InviteUser() {
             <p className="govuk-body-m"> Send an email invite to a new user so they can publish and update data sets </p>
             {isAuthLoading && <p className="govuk-body">Loading...</p>}
 
-            {!isAuthLoading && orgId && (
+            {!isAuthLoading && canInvite && (
               <form onSubmit={handleSubmit} noValidate>
                 {summaryErrors.length > 0 && (
                   <ErrorSummary errors={summaryErrors} summaryId="invite-user-error-title" />
                 )}
-                <div className="govuk-form-group">
+                <div className={`govuk-form-group ${errors.email ? 'govuk-form-group--error' : ''}`}>
                   <label className="govuk-label" htmlFor="email">Email</label>
+                  {errors.email && (
+                    <p className="govuk-error-message" id="email-error">
+                      <span className="govuk-visually-hidden">Error:</span> {errors.email}
+                    </p>
+                  )}
                   <input
-                    className="govuk-input"
+                    className={`govuk-input ${errors.email ? 'govuk-input--error' : ''}`}
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
                     required
                   />
                 </div>
@@ -121,6 +122,11 @@ function InviteUser() {
                   <legend className="govuk-fieldset__legend govuk-fieldset__legend--s">
                     Choose the account type
                   </legend>
+                  {errors.accountType && (
+                    <p className="govuk-error-message">
+                      <span className="govuk-visually-hidden">Error:</span> {errors.accountType}
+                    </p>
+                  )}
                   <div className="govuk-radios">
                     <div className="govuk-radios__item">
                       <input
@@ -183,8 +189,8 @@ function InviteUser() {
 
 export default function InviteUserPage() {
   return (
-    <ProtectedRoute>
+    <OrgAdminRoute>
       <InviteUser />
-    </ProtectedRoute>
+    </OrgAdminRoute>
   );
 }

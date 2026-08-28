@@ -36,6 +36,60 @@ export async function ensureCsrfToken(): Promise<string> {
   return payload?.csrfToken || '';
 }
 
+/**
+ * Thrown for any non-2xx response. Carries the field errors Django's forms
+ * return so pages can drive a GOV.UK error summary without their own fetch.
+ */
+export class ApiError extends Error {
+  readonly status: number;
+  readonly fieldErrors: Record<string, string[]>;
+
+  constructor(message: string, status: number, fieldErrors: Record<string, string[]>) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.fieldErrors = fieldErrors;
+  }
+
+  get hasFieldErrors(): boolean {
+    return Object.keys(this.fieldErrors).length > 0;
+  }
+
+  /** The first message per field, which is all the form templates render. */
+  firstFieldErrors(): Record<string, string> {
+    return Object.fromEntries(
+      Object.entries(this.fieldErrors)
+        .map(([field, messages]) => [field, messages[0]])
+        .filter(([, message]) => Boolean(message)),
+    );
+  }
+}
+
+function extractFieldErrors(payload: unknown): Record<string, string[]> {
+  if (!payload || typeof payload !== 'object' || !('field_errors' in payload)) {
+    return {};
+  }
+
+  const raw = (payload as { field_errors?: unknown }).field_errors;
+  if (!raw || typeof raw !== 'object') {
+    return {};
+  }
+
+  const fieldErrors: Record<string, string[]> = {};
+  for (const [field, messages] of Object.entries(raw)) {
+    if (Array.isArray(messages)) {
+      const strings = messages.filter((message): message is string => typeof message === 'string');
+      if (strings.length > 0) {
+        fieldErrors[field] = strings;
+      }
+    } else if (typeof messages === 'string') {
+      fieldErrors[field] = [messages];
+    }
+  }
+
+  return fieldErrors;
+}
+
 function isFormData(body: ApiRequestOptions['body']): body is FormData {
   return typeof FormData !== 'undefined' && body instanceof FormData;
 }
@@ -123,7 +177,11 @@ async function request<T>(method: string, path: string, options: ApiRequestOptio
     : ((await response.text().catch(() => '')) as T | string);
 
   if (!response.ok) {
-    throw new Error(getErrorMessage(payload, `Request failed with status ${response.status}`));
+    throw new ApiError(
+      getErrorMessage(payload, `Request failed with status ${response.status}`),
+      response.status,
+      extractFieldErrors(payload),
+    );
   }
 
   return payload as T;

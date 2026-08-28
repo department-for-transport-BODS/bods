@@ -79,7 +79,8 @@ export function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
   const area = useBodsArea();
-  const showServiceMenu = isServiceHost(area);
+  // Narrowed once so the account menu can be typed without re-checking the host.
+  const serviceArea = isServiceHost(area) ? area : null;
   const homeUrl = HOSTS[area];
   // Each service host has its own guide-me page, as in Django's navlinks_publish /
   // navlinks_data snippets.
@@ -111,7 +112,7 @@ export function Header() {
           <Link href={homeUrl} className="govuk-header__link govuk-header__service-name">
             {serviceName}
           </Link>
-          {showServiceMenu && (
+          {serviceArea && (
             <nav className="govuk-header__navigation" aria-label="Menu">
               <button
                 type="button"
@@ -146,7 +147,7 @@ export function Header() {
                       {' '}My account
                     </button>
                     <div className={`dropdown-content${dropdownOpen ? ' open' : ''}`}>
-                      {isServiceHost(area) && <AccountMenuLinks area={area} user={user} />}
+                      <AccountMenuLinks area={serviceArea} user={user} />
                     </div>
                   </li>
                 ) : (

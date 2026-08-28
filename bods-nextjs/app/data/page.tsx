@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { dataPath, HOSTS, wwwPath } from '@/config/client';
+import { dataPath, wwwPath } from '@/config/client';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 export const metadata = {
   title: 'Find bus open data - Bus Open Data Service',
@@ -12,15 +13,11 @@ export default function DataHomePage() {
   return (
     <>
       <div className="govuk-width-container">
-          <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
-            <Breadcrumbs
-              items={[
-                { label: 'Bus Open Data Service', href: HOSTS.www },
-                { label: 'Find Bus Open Data', current: true },
-              ]}
-            />
-          </div>
+        <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
+          <Breadcrumbs items={hostBreadcrumbs('data', { label: 'Find Bus Open Data', current: true })} />
         </div>
+      </div>
+
       <div className="app-masthead">
         <div className="govuk-width-container">
           <div className="govuk-grid-row govuk-!-margin-top-5">

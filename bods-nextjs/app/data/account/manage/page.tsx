@@ -37,28 +37,11 @@ interface SubscriptionsResponse {
   results: Subscription[];
 }
 
-function datasetSubscriptionPaths(
-  datasetType: SubscriptionDatasetType,
-  id: number,
-): { detailUrl: string; unsubscribeUrl: string } {
-  switch (datasetType) {
-    case 'TIMETABLE':
-      return { detailUrl: `/${id}`, unsubscribeUrl: `/${id}/subscription` };
-    case 'AVL':
-      return {
-        detailUrl: `/avl/dataset/${id}`,
-        unsubscribeUrl: `/avl/dataset/${id}/subscription`,
-      };
-    case 'FARES':
-      return {
-        detailUrl: `/fares/dataset/${id}`,
-        unsubscribeUrl: `/fares/dataset/${id}/subscription`,
-      };
-    default: {
-      const exhaustive: never = datasetType;
-      return exhaustive;
-    }
-  }
+function datasetSubscriptionPaths(id: number): {
+  detailUrl: string;
+  unsubscribeUrl: string;
+} {
+  return { detailUrl: `/${id}`, unsubscribeUrl: `/${id}/subscription` };
 }
 
 function ManageSubscriptions() {
@@ -152,10 +135,7 @@ function ManageSubscriptions() {
                   </thead>
                   <tbody className="govuk-table__body">
                     {data.results.map((subscription) => {
-                      const paths = datasetSubscriptionPaths(
-                        subscription.datasetType,
-                        subscription.id,
-                      );
+                      const paths = datasetSubscriptionPaths(subscription.id);
 
                       return (
                         <tr className="govuk-table__row" key={subscription.id}>

@@ -7,11 +7,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { HOSTS } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
-import { api, getCsrfToken } from '@/lib/api-client';
+import { api } from '@/lib/api-client';
+import { useBodsArea } from '@/lib/bods-host-context';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 interface AgentInviteDetail {
   id: number;
@@ -21,6 +22,7 @@ interface AgentInviteDetail {
 function AgentInviteLeave() {
   const params = useParams();
   const router = useRouter();
+  const area = useBodsArea();
   const inviteId = params.pk as string;
 
   const [invite, setInvite] = useState<AgentInviteDetail | null>(null);
@@ -53,17 +55,7 @@ function AgentInviteLeave() {
     setError('');
 
     try {
-      const response = await fetch(`/api/auth/agent/invite/${inviteId}/leave/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'X-CSRFToken': getCsrfToken() },
-      });
-
-      if (!response.ok) {
-        setError('Unable to leave this organisation. Please try again.');
-        setIsSubmitting(false);
-        return;
-      }
+      await api.post(`/api/auth/agent/invite/${inviteId}/leave/`);
 
       router.push('/account');
       router.refresh();
@@ -77,11 +69,11 @@ function AgentInviteLeave() {
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
+          items={hostBreadcrumbs(
+            area,
             { label: 'My account', href: '/account' },
             { label: 'Leave organisation', current: true },
-          ]}
+          )}
         />
 
         <div className="govuk-grid-row">
