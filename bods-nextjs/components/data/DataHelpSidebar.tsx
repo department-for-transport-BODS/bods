@@ -21,3 +21,7 @@ export function DataHelpSidebar() {
             Contact us for technical issues
           </Link>
         </li>
+      </ul>
+    </div>
+  );
+}
