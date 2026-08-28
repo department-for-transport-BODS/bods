@@ -8,7 +8,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
-import { HOSTS, publishPath, wwwPath } from '@/config/client';
+import { HOSTS, publishPath } from '@/config/client';
 import { bodsAreaFromHostname, type BodsSubdomain } from '@/config/hosts';
 import { useAuth } from '@/hooks/useAuth';
 import { AccountIcon } from './icons/AccountIcon';
@@ -49,8 +49,8 @@ export function Header({ hostname }: { hostname: string }) {
   const homeUrl = serviceHomeUrl(area);
   const guideMeUrl = publishPath('/guide-me');
   const accountUrl = publishPath('/account');
-  const loginUrl = wwwPath('/account/login');
-  const logoutUrl = wwwPath('/account/logout');
+  const loginUrl = '/account/login';
+  const logoutUrl = '/account/logout';
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

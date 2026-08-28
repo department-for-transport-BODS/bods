@@ -62,8 +62,8 @@ function FaresPublish() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orgId = params.orgId as string;
-  const nextCreateUrl = `/publish/org/${orgId}/dataset/fares/create`;
-  const reviewDetailsUrl = '/publish/review';
+  const nextCreateUrl = `/publish/org/${orgId}/dataset/fares/new`;
+  const reviewDetailsUrl = `/publish/org/${orgId}/dataset/data-activity?prev=fares-feed-list`;
   const operatorRequirementsUrl = '/publish/guide-me';
   const localAuthorityRequirementsUrl = '/publish/guide-me';
   const setUpLicenceNumbersUrl = '/publish/account';
@@ -125,7 +125,7 @@ function FaresPublish() {
         <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
           <Breadcrumbs
             items={[
-              { label: 'Bus Open Data Service', href: HOSTS.data },
+              { label: 'Bus Open Data Service', href: HOSTS.www },
               { label: 'Publish Bus Open Data', href: HOSTS.publish },
               { label: 'Review My Fares Data', current: true },
             ]}

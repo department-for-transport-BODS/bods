@@ -99,7 +99,7 @@ export function AvlFeedDetailContent() {
     <div className="govuk-width-container">
       <Breadcrumbs
         items={[
-          { label: 'Bus Open Data Service', href: '/' },
+          { label: 'Bus Open Data Service', href: HOSTS.www },
           { label: 'Publish Bus Open Data', href: HOSTS.publish },
           {
             label: 'Choose data type',

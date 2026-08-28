@@ -24,6 +24,8 @@ function PublishDashboard() {
   let reviewView = publishAppPath('/org');
   if (user?.is_single_org_user && user.organisation_id) {
     reviewView = publishAppPath(`/org/${user.organisation_id}/dataset/fares`);
+  } else if (user?.is_agent_user) {
+    reviewView = publishAppPath('/agent-dashboard');
   }
 
   return (
@@ -32,7 +34,7 @@ function PublishDashboard() {
         <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
           <Breadcrumbs
             items={[
-              { label: 'Bus Open Data Service', href: HOSTS.data },
+              { label: 'Bus Open Data Service', href: HOSTS.www },
               { label: 'Publish Bus Open Data', current: true },
             ]}
           />

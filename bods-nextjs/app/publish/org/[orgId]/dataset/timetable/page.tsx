@@ -1,196 +1,312 @@
-/**
- * Timetable Publishing Page
- *
- * Multi-step timetable publish flow.
- */
+'use client';
 
-"use client";
-
-import { useState } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay } from '@fortawesome/free-solid-svg-icons';
+import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { useParams, useRouter } from "next/navigation";
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
-import { api } from "@/lib/api-client";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
-import { PublishStepper, DatasetDescriptionFields, DataProviderRadioGroup, URL_LINK_ITEM_ID, UPLOAD_FILE_ITEM_ID } from '@/components/publish';
-import type { StepState } from '@/components/publish';
-import {
-  validateTimetableStep1,
-  validateTimetableStep2,
-  validateTimetableStep3,
-} from '@/lib/validation/timetable-publish';
+import { api } from '@/lib/api-client';
+import { formatDate } from '@/lib/utils/date';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { HOSTS } from '@/config/client';
 
+type TimetableTab = 'active' | 'draft' | 'archive';
 
-function TimetablePublish() {
+interface TimetableDataset {
+  id: number;
+  name?: string;
+  modified?: string;
+  shortDescription?: string;
+  status?: string;
+}
+
+interface TimetableListResponse {
+  tab: TimetableTab;
+  results: TimetableDataset[];
+}
+
+function getTabFromSearchParams(value: string | null): TimetableTab {
+  if (value === 'draft' || value === 'archive') {
+    return value;
+  }
+
+  return 'active';
+}
+
+function statusLabel(status?: string): string {
+  if (!status) {
+    return 'Unknown';
+  }
+
+  if (status === 'published' || status === 'live') {
+    return 'Published';
+  }
+
+  if (status === 'draft' || status === 'success') {
+    return 'Draft';
+  }
+
+  if (status === 'inactive' || status === 'expired') {
+    return 'Inactive';
+  }
+
+  return status.charAt(0).toUpperCase() + status.slice(1);
+}
+
+function TimetableReview() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const orgId = params.orgId as string;
+  const nextCreateUrl = `/publish/org/${orgId}/dataset/timetable/new`;
+  const reviewDetailsUrl = `/publish/org/${orgId}/dataset/data-activity?prev=timetable-feed-list`;
+  const operatorRequirementsUrl = '/publish/guide-me';
+  const localAuthorityRequirementsUrl = '/publish/guide-me';
+  const setUpLicenceNumbersUrl = '/publish/account';
 
-  const [dataSetDesc, setDataSetDesc] = useState('');
-  const [shortDesc, setShortDesc] = useState('');
-  const [step, setStep] = useState(1);
-  const [selectedMethod, setSelectedMethod] = useState<'link' | 'file' | ''>('');
-  const [link, setLink] = useState('');
-  const [file, setFile] = useState<File | null>(null);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [consentChecked, setConsentChecked] = useState(false);
-  const { isSubmitting, submitError, handleSubmit: onSubmit, clearError } = useFormSubmit();
+  const tab = getTabFromSearchParams(searchParams.get('tab'));
 
-  const validateStep1 = () => {
-    const newErrors = validateTimetableStep1({ dataSetDesc, shortDesc });
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const [datasets, setDatasets] = useState<TimetableDataset[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const validateStep2 = () => {
-    const newErrors = validateTimetableStep2({ selectedMethod, link, file });
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  useEffect(() => {
+    let isCancelled = false;
 
-  const validateStep3 = () => {
-    const newErrors = validateTimetableStep3(consentChecked);
-    if (Object.keys(newErrors).length === 0) {
-      return true;
-    }
-    setErrors(newErrors);
-    return false;
-  };
+    const loadDatasets = async () => {
+      setIsLoading(true);
+      setError('');
 
-  const handleNext = () => {
-    if ((step === 1 && !validateStep1()) || (step === 2 && !validateStep2())) {
-      return;
-    }
-    setErrors({});
-    setStep(step + 1);
-  };
+      try {
+        const data = await api.get<TimetableListResponse>(`/api/publish/timetables/list/${orgId}/?tab=${tab}`);
 
-  const handleSubmit = async () => {
-    if (!validateStep3()) {
-      return;
-    }
-
-    setErrors({});
-    clearError();
-
-    await onSubmit(async () => {
-      const formData = new FormData();
-      formData.append('description', dataSetDesc);
-      formData.append('short_description', shortDesc);
-      formData.append(
-        'selected_item',
-        selectedMethod === 'link' ? URL_LINK_ITEM_ID : UPLOAD_FILE_ITEM_ID,
-      );
-
-      if (selectedMethod === 'link') {
-        formData.append('url_link', link);
-      } else if (selectedMethod === 'file' && file) {
-        formData.append('upload_file', file);
-      }
-
-      const response = await api.post<{ redirect?: string }>(
-        `/api/publish/timetables/create/${orgId}/`,
-        formData,
-      );
-
-      if (response.redirect) {
-        if (response.redirect.startsWith('/')) {
-          router.push(response.redirect);
-        } else {
-          globalThis.location.href = response.redirect;
+        if (!isCancelled) {
+          setDatasets(Array.isArray(data.results) ? data.results : []);
         }
-        return;
+      } catch {
+        if (!isCancelled) {
+          setError('Unable to load timetable datasets here. You can continue in the Django list view.');
+          setDatasets([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
       }
+    };
 
-      router.push(`/publish/org/${orgId}/dataset/timetable/success`);
-    });
+    loadDatasets();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [orgId, tab]);
+
+  const tabLinks = useMemo(
+    () => ({
+      active: `/publish/org/${orgId}/dataset/timetable?tab=active`,
+      draft: `/publish/org/${orgId}/dataset/timetable?tab=draft`,
+      archive: `/publish/org/${orgId}/dataset/timetable?tab=archive`,
+    }),
+    [orgId],
+  );
+
+  const handleDataTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    router.push(event.target.value);
   };
-
-  const stepLabels = ['1. Describe your data set', '2. Provide data', '3. Set licence'];
-  const steps = stepLabels.map((label, i) => {
-    const stepNum = i + 1;
-    let state: StepState = 'next';
-    if (stepNum < step) state = 'previous';
-    else if (stepNum === step) state = 'selected';
-    return { label, state };
-  });
 
   return (
-    <div className="govuk-width-container">
-      <div className="govuk-main-wrapper">
-        <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.data },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'Review My Timetables Data', current: true },
-          ]}
-        />
-
-        <div className="govuk-grid-row">
-          <PublishStepper steps={steps} />
-
-          <hr className="govuk-section-break govuk-section-break--visible" />
-
-          {step === 1 && (
-            <div className="govuk-grid-column-two-thirds">
-              <h1 className="govuk-heading-xl">Describe your data set</h1>
-              <DatasetDescriptionFields
-                description={dataSetDesc}
-                shortDescription={shortDesc}
-                errors={{ description: errors.dataSetDesc, shortDescription: errors.shortDesc }}
-                onDescriptionChange={setDataSetDesc}
-                onShortDescriptionChange={setShortDesc}
-              />
-              <button type="button" className="govuk-button" onClick={handleNext}>Continue</button>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="govuk-grid-column-two-thirds">
-              <h1 className="govuk-heading-xl">Choose how to provide your data set</h1>
-              <DataProviderRadioGroup
-                selectedMethod={selectedMethod}
-                link={link}
-                errors={{ method: errors.method, link: errors.link, file: errors.file }}
-                onMethodChange={setSelectedMethod}
-                onLinkChange={setLink}
-                onFileChange={setFile}
-              />
-              <button type="button" className="govuk-button" onClick={handleNext}>Continue</button>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="govuk-grid-column-two-thirds">
-              <h1 className="govuk-heading-xl">Review and publish</h1>
-              {submitError && <p className="govuk-error-message">{submitError}</p>}
-              <dl className="govuk-summary-list">
-                <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Data set description</dt><dd className="govuk-summary-list__value">{dataSetDesc}</dd></div>
-                <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Short description</dt><dd className="govuk-summary-list__value">{shortDesc}</dd></div>
-                <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Data provided via</dt><dd className="govuk-summary-list__value">{selectedMethod === 'link' ? link : file?.name}</dd></div>
-              </dl>
-              <div className="govuk-form-group">
-                <div className="govuk-checkboxes__item">
-                  <input className="govuk-checkboxes__input" id="id_consent" type="checkbox" checked={consentChecked} onChange={(e) => setConsentChecked(e.target.checked)} />
-                  <label className="govuk-label govuk-checkboxes__label" htmlFor="id_consent">I have reviewed the data quality report and wish to publish my data</label>
-                </div>
-                {errors.consent && <p className="govuk-error-message">{errors.consent}</p>}
-              </div>
-              <button type="button" className="govuk-button" disabled={isSubmitting} onClick={handleSubmit}>{isSubmitting ? 'Publishing...' : 'Publish'}</button>
-            </div>
-          )}
+    <>
+      <div className="govuk-width-container">
+        <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
+          <Breadcrumbs
+            items={[
+              { label: 'Bus Open Data Service', href: HOSTS.www },
+              { label: 'Publish Bus Open Data', href: HOSTS.publish },
+              { label: 'Review My Timetables Data', current: true },
+            ]}
+          />
         </div>
       </div>
-    </div>
+
+      <div className="app-masthead">
+        <div className="govuk-width-container">
+          <div className="govuk-!-margin-top-5">
+            <h1 className="govuk-heading-xl app-masthead__title_agent_dashboard">Review my timetables data</h1>
+            <p className="govuk-body">Publish, preview and manage your open data sets</p>
+            <div className="govuk-grid-row govuk-!-margin-top-6">
+              <div className="govuk-grid-column-full">
+                <div className="review-banner">
+                  <div className="review-stat">
+                    <div>
+                      <span className="review-stat__top">0</span>
+                    </div>
+                    <p className="review-stat__description">Total consumer interactions with your data</p>
+                    <FontAwesomeIcon icon={faPlay} className="govuk-!-margin-right-1" aria-hidden="true" />
+                    <a className="review-stat__link" href={reviewDetailsUrl}>
+                      More details
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="govuk-width-container">
+        <div className="govuk-main-wrapper">
+          <div className="govuk-grid-row">
+            <div className="govuk-grid-column-two-thirds">
+              <h2 className="govuk-heading-m">Choose data type</h2>
+              <div className="select-wrapper govuk-!-width-one-third govuk-!-margin-bottom-7">
+                <select
+                  className="govuk-!-width-full govuk-select"
+                  id="data-type-select"
+                  name="data-type"
+                  aria-label="Select data type"
+                  value={`/publish/org/${orgId}/dataset/timetable`}
+                  onChange={handleDataTypeChange}
+                >
+                  <option value={`/publish/org/${orgId}/dataset/timetable`}>Timetables data</option>
+                  <option value={`/publish/org/${orgId}/dataset/avl`}>Bus location data</option>
+                  <option value={`/publish/org/${orgId}/dataset/fares`}>Fares data</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
+
+          <div className="govuk-tabs app-!-mb-1">
+            <h2 className="govuk-tabs__title">Contents</h2>
+            <ul className="govuk-tabs__list">
+              <li className={`govuk-tabs__list-item ${tab === 'active' ? 'govuk-tabs__list-item--selected' : ''}`}>
+                <Link className="govuk-tabs__tab" href={tabLinks.active}>
+                  Active
+                </Link>
+              </li>
+              <li className={`govuk-tabs__list-item ${tab === 'draft' ? 'govuk-tabs__list-item--selected' : ''}`}>
+                <Link className="govuk-tabs__tab" href={tabLinks.draft}>
+                  Draft
+                </Link>
+              </li>
+              <li className={`govuk-tabs__list-item ${tab === 'archive' ? 'govuk-tabs__list-item--selected' : ''}`}>
+                <Link className="govuk-tabs__tab" href={tabLinks.archive}>
+                  Inactive
+                </Link>
+              </li>
+            </ul>
+
+            <section className="govuk-tabs__panel" id="active-feeds">
+              <div className="govuk-grid-row">
+                {isLoading && <p className="govuk-body">Loading data sets...</p>}
+
+                {error && <p className="govuk-body-m">No data sets found</p>}
+
+                {!isLoading && !error && datasets.length === 0 && (
+                  <p className="govuk-body-m">No data sets found</p>
+                )}
+
+                {!isLoading && !error && datasets.length > 0 && (
+                  <table className="custom_govuk_table govuk-table">
+                    <thead className="govuk-table__head">
+                      <tr className="govuk-table__row">
+                        <th className="govuk-table__header" scope="col">
+                          Status
+                        </th>
+                        <th className="govuk-table__header app-table-col--20" scope="col">
+                          Data set name
+                        </th>
+                        <th className="govuk-table__header" scope="col">
+                          Data set ID
+                        </th>
+                        <th className="govuk-table__header app-table-col--25" scope="col">
+                          Last updated
+                        </th>
+                        <th className="govuk-table__header app-table-col--20" scope="col">
+                          Short description
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="govuk-table__body">
+                      {datasets.map((dataset) => (
+                        <tr key={dataset.id} className="govuk-table__row">
+                          <td className="govuk-table__cell">
+                            <span className="status-indicator status-indicator--success">
+                              {statusLabel(dataset.status)}
+                            </span>
+                          </td>
+                          <td className="govuk-table__cell">
+                            {/* Only draft datasets have a Next.js detail page today; others stay text-only. */}
+                            {tab === 'draft' ? (
+                              <Link
+                                className="govuk-link"
+                                href={`/publish/org/${orgId}/dataset/timetable/${dataset.id}/review`}
+                              >
+                                {dataset.name || '-'}
+                              </Link>
+                            ) : (
+                              dataset.name || '-'
+                            )}
+                          </td>
+                          <td className="govuk-table__cell">{dataset.id}</td>
+                          <td className="govuk-table__cell">{formatDate(dataset.modified)}</td>
+                          <td className="govuk-table__cell">{dataset.shortDescription || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </section>
+          </div>
+
+          <div className="govuk-grid-row">
+            <div className="govuk-grid-column-two-thirds">
+              <Link className="govuk-button govuk-!-margin-top-5" href={nextCreateUrl}>
+                Publish new data feeds
+              </Link>
+            </div>
+          </div>
+
+          <div className="govuk-grid-row">
+            <div className="govuk-grid-column-one-third">
+              <h3 className="govuk-heading-s">
+                <a className="govuk-link" href={operatorRequirementsUrl}>
+                  Bus operator requirements
+                </a>
+              </h3>
+              <p className="govuk-body">Guidance and support for English bus operators.</p>
+            </div>
+            <div className="govuk-grid-column-one-third">
+              <h3 className="govuk-heading-s">
+                <a className="govuk-link" href={localAuthorityRequirementsUrl}>
+                  Local authority requirements
+                </a>
+              </h3>
+              <p className="govuk-body">Guidance and support for English local authorities.</p>
+            </div>
+            <div className="govuk-grid-column-one-third">
+              <h3 className="govuk-heading-s">
+                <a className="govuk-link" href={setUpLicenceNumbersUrl}>
+                  Set up licence numbers
+                </a>
+              </h3>
+              <p className="govuk-body">Visit accounts settings to ensure licence numbers are set up correctly.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
-export default function TimetablePublishPage() {
+export default function TimetableReviewPage() {
   return (
     <ProtectedRoute>
-      <TimetablePublish />
+      <TimetableReview />
     </ProtectedRoute>
   );
 }
-

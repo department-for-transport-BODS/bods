@@ -113,7 +113,7 @@ function DeveloperDocumentationContent() {
     <div className="govuk-width-container">
       <Breadcrumbs
         items={[
-          { label: 'Bus Open Data Service', href: '/' },
+          { label: 'Bus Open Data Service', href: HOSTS.www },
           { label: 'Find Bus Open Data', href: HOSTS.data },
           { label: 'Guide Me', href: `${HOSTS.publish}/guide-me` },
           { label: 'Developer documentation', current: true },

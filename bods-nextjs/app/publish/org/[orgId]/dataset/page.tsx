@@ -24,16 +24,7 @@ function SelectDatasetTypePageContent() {
       return;
     }
 
-    let targetPath: string;
-    if (selectedType === 'fares') {
-      targetPath = `/publish/org/${orgId}/dataset/fares/create`;
-    } else if (selectedType === 'avl') {
-      targetPath = `/publish/org/${orgId}/dataset/avl/new`;
-    } else {
-      targetPath = `/publish/org/${orgId}/dataset/${selectedType}`;
-    }
-
-    router.push(targetPath);
+    router.push(`/publish/org/${orgId}/dataset/${selectedType}/new`);
   };
 
   return (
@@ -41,9 +32,9 @@ function SelectDatasetTypePageContent() {
       <div className="govuk-main-wrapper">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: HOSTS.data },
+            { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'Choose data type', current: true },
+            { label: 'Publish a Dataset or Data Feed', current: true },
           ]}
         />
 

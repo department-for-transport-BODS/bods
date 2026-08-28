@@ -66,11 +66,11 @@ describe('PublishPage', () => {
       {
         is_org_user: true,
         is_single_org_user: false,
-        is_agent_user: false,
+        is_agent_user: true,
         organisation_id: 123,
       },
       publishAppPath('/org'),
-      publishAppPath('/org'),
+      publishAppPath('/agent-dashboard'),
     ],
   ])(
     'uses the expected dashboard links for %s',

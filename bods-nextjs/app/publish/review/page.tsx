@@ -1,15 +1,21 @@
+'use client';
+
 import Link from 'next/link';
 import { HOSTS, publishAppPath, wwwPath } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
+import { useAuth } from '@/hooks/useAuth';
 
 function ReviewMyDataPageContent() {
+  const { user } = useAuth();
+  const selectOrgUrl = user?.is_agent_user ? publishAppPath('/agent-dashboard') : publishAppPath('/org');
+
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <Breadcrumbs
           items={[
-            { label: 'Bus Open Data Service', href: HOSTS.data },
+            { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
             { label: 'Review my data', current: true },
           ]}
@@ -21,7 +27,7 @@ function ReviewMyDataPageContent() {
             <p className="govuk-body">
               Select an organisation to review existing data sets, drafts and publishing status.
             </p>
-            <Link href={publishAppPath('/org')} className="govuk-button">
+            <Link href={selectOrgUrl} className="govuk-button">
               Select organisation
             </Link>
           </div>

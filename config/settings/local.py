@@ -66,10 +66,16 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
 # Allow the Next.js dev server as a trusted CSRF origin / Trust local frontend dev servers that post forms to Django publish endpoints.
+# Account routes (login/logout) are served from every subdomain, so each Next.js
+# service host needs to be trusted here too.
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
     "http://127.0.0.1:3000",
+    "http://www.localhost:3001",
+    "http://data.localhost:3000",
+    "http://data.localhost:3001",
+    "http://data.localhost:3002",
     "http://publish.localhost:3000",
     "http://publish.localhost:3001",
     "http://publish.localhost:3002",
