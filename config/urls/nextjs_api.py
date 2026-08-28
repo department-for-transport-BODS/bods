@@ -43,7 +43,7 @@ from transit_odp.users.views.api import (
     get_organisation_members_api,
     get_organisation_profile_api,
     resend_organisation_invite_api,
-    toggle_organisation_member_active_api,
+    set_organisation_member_active_api,
     update_organisation_member_api,
     update_organisation_profile_api,
 )
@@ -81,9 +81,9 @@ urlpatterns = [
         name="nextjs-organisation-member-update",
     ),
     path(
-        "organisation/members/<int:pk>/toggle-active/",
-        toggle_organisation_member_active_api,
-        name="nextjs-organisation-member-toggle-active",
+        "organisation/members/<int:pk>/set-active/",
+        set_organisation_member_active_api,
+        name="nextjs-organisation-member-set-active",
     ),
     path(
         "organisation/invites/<int:pk>/resend/",

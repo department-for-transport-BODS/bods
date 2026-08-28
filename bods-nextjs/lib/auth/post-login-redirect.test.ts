@@ -21,6 +21,13 @@ describe('post-login-redirect', () => {
     expect(resolvePostLoginRedirect('https://evil.example/phish')).toBe(HOSTS.www);
   });
 
+  it.each(['//evil.example', '/\\evil.example', '/\\/evil.example'])(
+    'rejects %s, which browsers resolve to another origin',
+    (next) => {
+      expect(resolvePostLoginRedirect(next)).toBe(HOSTS.www);
+    },
+  );
+
   it('adds next to the login URL', () => {
     const url = loginUrlWithNext(wwwish(), `${HOSTS.data}/api`);
     expect(url).toContain('next=');

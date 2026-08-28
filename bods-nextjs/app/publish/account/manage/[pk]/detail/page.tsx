@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { HOSTS } from '@/config/client';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { OrgAdminRoute } from '@/components/auth/OrgAdminRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api-client';
@@ -135,8 +135,8 @@ function MemberDetailContent() {
 
 export default function MemberDetailPage() {
   return (
-    <ProtectedRoute>
+    <OrgAdminRoute>
       <MemberDetailContent />
-    </ProtectedRoute>
+    </OrgAdminRoute>
   );
 }

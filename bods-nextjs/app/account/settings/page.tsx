@@ -10,11 +10,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { HOSTS, wwwPath } from '@/config/client';
+import { wwwPath } from '@/config/client';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
-import { getCsrfToken } from '@/lib/api-client';
+import { api } from '@/lib/api-client';
+import { useBodsArea } from '@/lib/bods-host-context';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 interface AccountSettings {
   username: string;
@@ -28,6 +30,7 @@ interface AccountSettings {
 }
 
 function AccountSettingsContent() {
+  const area = useBodsArea();
   const [settings, setSettings] = useState<AccountSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -37,9 +40,9 @@ function AccountSettingsContent() {
   useEffect(() => {
     let isCancelled = false;
 
-    fetch('/api/auth/settings/', { credentials: 'include' })
-      .then((response) => response.json())
-      .then((data: AccountSettings) => {
+    api
+      .get<AccountSettings>('/api/auth/settings/')
+      .then((data) => {
         if (!isCancelled) setSettings(data);
       })
       .catch(() => {
@@ -63,23 +66,11 @@ function AccountSettingsContent() {
     setSaved(false);
 
     try {
-      const csrfToken = getCsrfToken();
-      const response = await fetch('/api/auth/settings/update/', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-        body: JSON.stringify({
-          notify_invitation_accepted: settings.notifyInvitationAccepted,
-          notify_avl_unavailable: settings.notifyAvlUnavailable,
-          daily_compliance_check_alert: settings.dailyComplianceCheckAlert,
-        }),
+      await api.post('/api/auth/settings/update/', {
+        notify_invitation_accepted: settings.notifyInvitationAccepted,
+        notify_avl_unavailable: settings.notifyAvlUnavailable,
+        daily_compliance_check_alert: settings.dailyComplianceCheckAlert,
       });
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        setError(data.error || 'Unable to save your settings.');
-        return;
-      }
 
       setSaved(true);
     } catch {
@@ -93,10 +84,7 @@ function AccountSettingsContent() {
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Account settings', current: true },
-          ]}
+          items={hostBreadcrumbs(area, { label: 'Account settings', current: true })}
         />
 
         <div className="govuk-grid-row">

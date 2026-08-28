@@ -12,13 +12,20 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ErrorSummary } from '@/components/shared';
-import { getCsrfToken } from '@/lib/api-client';
+import { api, ApiError } from '@/lib/api-client';
+import { errorSummaryItems } from '@/lib/form-errors';
 
 type FieldErrors = {
   oldpassword?: string;
   password1?: string;
   password2?: string;
   form?: string;
+};
+
+const FIELD_ANCHORS = {
+  oldpassword: '#id_oldpassword',
+  password1: '#id_password1',
+  password2: '#id_password2',
 };
 
 type PasswordFieldProps = {
@@ -55,13 +62,6 @@ function PasswordField({ id, label, autoComplete, value, error, onChange }: Pass
   );
 }
 
-function firstFieldError(
-  fieldErrors: Record<string, string[] | undefined>,
-  field: string,
-): string {
-  return fieldErrors[field]?.[0] || '';
-}
-
 function ChangePasswordContent() {
   const router = useRouter();
   const settingsUrl = '/account/settings';
@@ -78,45 +78,22 @@ function ChangePasswordContent() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/auth/password/change/', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCsrfToken(),
-        },
-        body: JSON.stringify({ oldpassword, password1, password2 }),
-      });
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        const fieldErrors = (data.field_errors || {}) as Record<string, string[] | undefined>;
-        setErrors({
-          oldpassword: firstFieldError(fieldErrors, 'oldpassword'),
-          password1: firstFieldError(fieldErrors, 'password1'),
-          password2: firstFieldError(fieldErrors, 'password2'),
-          form:
-            firstFieldError(fieldErrors, '__all__') ||
-            (!data.field_errors ? data.error || 'Unable to change your password.' : ''),
-        });
-        setIsSubmitting(false);
-        return;
-      }
+      await api.post('/api/auth/password/change/', { oldpassword, password1, password2 });
 
       router.push('/account/password/change/done');
       router.refresh();
-    } catch {
-      setErrors({ form: 'Unable to change your password.' });
+    } catch (error) {
+      if (error instanceof ApiError && error.hasFieldErrors) {
+        const { __all__: nonFieldError, ...fields } = error.firstFieldErrors();
+        setErrors({ ...fields, form: nonFieldError });
+      } else {
+        setErrors({ form: 'Unable to change your password.' });
+      }
       setIsSubmitting(false);
     }
   };
 
-  const summaryErrors = [
-    errors.oldpassword ? { text: errors.oldpassword, href: '#id_oldpassword' } : '',
-    errors.password1 ? { text: errors.password1, href: '#id_password1' } : '',
-    errors.password2 ? { text: errors.password2, href: '#id_password2' } : '',
-    errors.form || '',
-  ].filter(Boolean);
+  const summaryErrors = errorSummaryItems(errors, FIELD_ANCHORS);
 
   return (
     <div className="govuk-width-container">

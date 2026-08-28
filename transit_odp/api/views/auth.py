@@ -33,7 +33,7 @@ from transit_odp.users.forms.auth import ChangePasswordForm
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.views import APIView
 
 EMAIL_CONFIRMATION_INVALID = "This email confirmation link expired or is invalid."
@@ -41,6 +41,8 @@ EMAIL_CONFIRMATION_INVALID = "This email confirmation link expired or is invalid
 
 class LoginRateThrottle(AnonRateThrottle):
     """Throttle login attempts by IP to match allauth's rate limiting."""
+
+    scope = "login"
 
     def get_rate(self):
         limit = getattr(settings, "ACCOUNT_LOGIN_ATTEMPTS_LIMIT", 5)
@@ -58,6 +60,18 @@ class LoginRateThrottle(AnonRateThrottle):
         duration = {"s": 1, "m": 60, "h": 3600, "d": 86400}[unit]
         duration *= int(multiplier or 1)
         return int(num_requests), duration
+
+
+class SignupRateThrottle(AnonRateThrottle):
+    scope = "account-signup"
+
+
+class EmailConfirmationRateThrottle(AnonRateThrottle):
+    scope = "account-email-confirmation"
+
+
+class PasswordChangeRateThrottle(UserRateThrottle):
+    scope = "account-password-change"
 
 
 class LoginSerializer(serializers.Serializer):
@@ -130,6 +144,7 @@ class SignupAPIView(APIView):
 
     permission_classes = [AllowAny]
     authentication_classes = []
+    throttle_classes = [SignupRateThrottle]
 
     def post(self, request):
         # allauth mutates the session and calls django.contrib.auth, so it needs
@@ -179,6 +194,7 @@ class ConfirmEmailAPIView(APIView):
 
     permission_classes = [AllowAny]
     authentication_classes = []
+    throttle_classes = [EmailConfirmationRateThrottle]
 
     def post(self, request):
         serializer = ConfirmEmailSerializer(data=request.data)
@@ -275,6 +291,7 @@ class PasswordChangeAPIView(APIView):
     """Change the signed-in user's password using allauth's ChangePasswordForm."""
 
     permission_classes = [IsAuthenticated]
+    throttle_classes = [PasswordChangeRateThrottle]
 
     def post(self, request):
         form = ChangePasswordForm(user=request.user, data=request.data)

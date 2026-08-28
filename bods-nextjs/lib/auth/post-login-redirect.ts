@@ -23,8 +23,8 @@ export function resolvePostLoginRedirect(next: string | null | undefined): strin
     return HOSTS.www;
   }
 
-  // Relative path on the current (www) host – keep local.
-  if (next.startsWith('/') && !next.startsWith('//')) {
+  // Relative path on the current host - keep local.
+  if (next.startsWith('/') && !next.startsWith('//') && !next.includes('\\')) {
     return next;
   }
 

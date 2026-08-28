@@ -79,13 +79,10 @@ describe('Manage subscriptions page', () => {
       'href',
       '/41/subscription',
     );
-    expect(screen.getByRole('link', { name: 'AVL feed' })).toHaveAttribute(
-      'href',
-      '/avl/dataset/77',
-    );
+    expect(screen.getByRole('link', { name: 'AVL feed' })).toHaveAttribute('href', '/77');
     expect(screen.getAllByRole('link', { name: 'Unsubscribe' })[1]).toHaveAttribute(
       'href',
-      '/avl/dataset/77/subscription',
+      '/77/subscription',
     );
     expect(screen.getByRole('link', { name: 'View our guidelines here' })).toHaveAttribute(
       'href',

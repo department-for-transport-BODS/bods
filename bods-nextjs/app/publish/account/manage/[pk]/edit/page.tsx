@@ -8,11 +8,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { HOSTS } from '@/config/client';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { OrgAdminRoute } from '@/components/auth/OrgAdminRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
 import { useAuth } from '@/hooks/useAuth';
-import { api, getCsrfToken } from '@/lib/api-client';
+import { api, ApiError } from '@/lib/api-client';
+import { errorSummaryItems } from '@/lib/form-errors';
 
 interface MemberDetail {
   id: number;
@@ -23,6 +24,12 @@ interface MemberDetail {
 
 const ORG_ADMIN = 2;
 const ORG_STAFF = 3;
+
+const FIELD_ANCHORS = {
+  username: '#username',
+  email: '#email',
+  accountType: '#account-type-admin',
+};
 
 function EditMember() {
   const params = useParams();
@@ -38,6 +45,7 @@ function EditMember() {
   const [email, setEmail] = useState('');
   const [accountType, setAccountType] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -51,6 +59,7 @@ function EditMember() {
         setUsername(data.username);
         setEmail(data.email);
         setAccountType(data.accountType);
+        setIsLoaded(true);
       })
       .catch(() => {
         if (!isCancelled) setErrors({ form: 'Unable to load this member.' });
@@ -70,35 +79,25 @@ function EditMember() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`/api/publish/organisation/members/${userId}/update/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
-        body: JSON.stringify({ username, email, accountType }),
+      await api.post(`/api/publish/organisation/members/${userId}/update/`, {
+        username,
+        email,
+        accountType,
       });
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        const fieldErrors = data.field_errors || {};
-        setErrors({
-          username: fieldErrors.username?.[0],
-          email: fieldErrors.email?.[0],
-          accountType: fieldErrors.accountType?.[0],
-          form: !data.field_errors ? data.error || 'Unable to save this member.' : '',
-        });
-        setIsSubmitting(false);
-        return;
-      }
 
       router.push(detailUrl);
       router.refresh();
-    } catch {
-      setErrors({ form: 'Unable to save this member.' });
+    } catch (error) {
+      setErrors(
+        error instanceof ApiError && error.hasFieldErrors
+          ? error.firstFieldErrors()
+          : { form: 'Unable to save this member.' },
+      );
       setIsSubmitting(false);
     }
   };
 
-  const summaryErrors = Object.values(errors).filter(Boolean) as string[];
+  const summaryErrors = errorSummaryItems(errors, FIELD_ANCHORS);
 
   return (
     <div className="govuk-width-container">
@@ -118,36 +117,57 @@ function EditMember() {
 
             {isLoading && <p className="govuk-body">Loading...</p>}
 
-            {!isLoading && (
+            {!isLoading && !isLoaded && summaryErrors.length > 0 && (
+              <ErrorSummary errors={summaryErrors} summaryId="edit-member-error-title" />
+            )}
+
+            {isLoaded && (
               <form onSubmit={handleSubmit} noValidate>
                 {summaryErrors.length > 0 && (
                   <ErrorSummary errors={summaryErrors} summaryId="edit-member-error-title" />
                 )}
 
-                <div className="govuk-form-group">
+                <div className={`govuk-form-group ${errors.username ? 'govuk-form-group--error' : ''}`}>
                   <label className="govuk-label" htmlFor="username">Username</label>
+                  {errors.username && (
+                    <p className="govuk-error-message" id="username-error">
+                      <span className="govuk-visually-hidden">Error:</span> {errors.username}
+                    </p>
+                  )}
                   <input
-                    className="govuk-input"
+                    className={`govuk-input ${errors.username ? 'govuk-input--error' : ''}`}
                     id="username"
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    aria-describedby={errors.username ? 'username-error' : undefined}
                   />
                 </div>
 
-                <div className="govuk-form-group">
+                <div className={`govuk-form-group ${errors.email ? 'govuk-form-group--error' : ''}`}>
                   <label className="govuk-label" htmlFor="email">Email</label>
+                  {errors.email && (
+                    <p className="govuk-error-message" id="email-error">
+                      <span className="govuk-visually-hidden">Error:</span> {errors.email}
+                    </p>
+                  )}
                   <input
-                    className="govuk-input"
+                    className={`govuk-input ${errors.email ? 'govuk-input--error' : ''}`}
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
                   />
                 </div>
 
                 <fieldset className="govuk-fieldset">
                   <legend className="govuk-fieldset__legend govuk-fieldset__legend--s">User type</legend>
+                  {errors.accountType && (
+                    <p className="govuk-error-message">
+                      <span className="govuk-visually-hidden">Error:</span> {errors.accountType}
+                    </p>
+                  )}
                   <div className="govuk-radios">
                     <div className="govuk-radios__item">
                       <input
@@ -193,8 +213,8 @@ function EditMember() {
 
 export default function EditMemberPage() {
   return (
-    <ProtectedRoute>
+    <OrgAdminRoute>
       <EditMember />
-    </ProtectedRoute>
+    </OrgAdminRoute>
   );
 }

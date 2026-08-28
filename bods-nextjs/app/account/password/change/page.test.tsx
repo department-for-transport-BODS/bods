@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { api, ApiError } from '@/lib/api-client';
 import ChangePasswordPage from './page';
 
 const mockPush = jest.fn();
@@ -33,14 +34,14 @@ jest.mock('@/components/auth/ProtectedRoute', () => ({
   ProtectedRoute: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-jest.mock('@/lib/api-client', () => ({
-  getCsrfToken: () => 'csrf-token',
-}));
+jest.mock('@/lib/api-client', () => {
+  const actual = jest.requireActual('@/lib/api-client');
+  return { ...actual, api: { get: jest.fn(), post: jest.fn() } };
+});
 
 describe('Change password page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    global.fetch = jest.fn();
   });
 
   it('renders the Django change-password copy and settings links', () => {
@@ -58,10 +59,7 @@ describe('Change password page', () => {
   });
 
   it('posts the form and goes to the done page', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: async () => ({}),
-    });
+    (api.post as jest.Mock).mockResolvedValue({});
 
     render(<ChangePasswordPage />);
 
@@ -71,34 +69,22 @@ describe('Change password page', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Reset password' }));
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/api/auth/password/change/', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': 'csrf-token',
-        },
-        body: JSON.stringify({
-          oldpassword: 'oldpassword',
-          password1: 'newPassword_34324()()',
-          password2: 'newPassword_34324()()',
-        }),
+      expect(api.post).toHaveBeenCalledWith('/api/auth/password/change/', {
+        oldpassword: 'oldpassword',
+        password1: 'newPassword_34324()()',
+        password2: 'newPassword_34324()()',
       });
     });
 
     expect(mockPush).toHaveBeenCalledWith('/account/password/change/done');
   });
 
-  it('shows field errors from the API', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: false,
-      json: async () => ({
-        error: 'Validation failed',
-        field_errors: {
-          oldpassword: ['Please type your current password.'],
-        },
+  it('shows field errors from the API against the right field', async () => {
+    (api.post as jest.Mock).mockRejectedValue(
+      new ApiError('Validation failed', 400, {
+        oldpassword: ['Please type your current password.'],
       }),
-    });
+    );
 
     render(<ChangePasswordPage />);
 
@@ -108,6 +94,23 @@ describe('Change password page', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Reset password' }));
 
     expect(await screen.findAllByText('Please type your current password.')).not.toHaveLength(0);
+    expect(screen.getByRole('link', { name: 'Please type your current password.' })).toHaveAttribute(
+      'href',
+      '#id_oldpassword',
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it('shows a non-field error from the form on the summary', async () => {
+    (api.post as jest.Mock).mockRejectedValue(
+      new ApiError('Validation failed', 400, { __all__: ['Please type your new password twice.'] }),
+    );
+
+    render(<ChangePasswordPage />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Reset password' }));
+
+    expect(await screen.findByText('Please type your new password twice.')).toBeInTheDocument();
     expect(mockPush).not.toHaveBeenCalled();
   });
 });

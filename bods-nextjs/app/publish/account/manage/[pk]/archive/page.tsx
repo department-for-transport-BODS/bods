@@ -8,12 +8,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { HOSTS } from '@/config/client';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { OrgAdminRoute } from '@/components/auth/OrgAdminRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
 import { useAuth } from '@/hooks/useAuth';
-import { api, getCsrfToken } from '@/lib/api-client';
+import { api } from '@/lib/api-client';
+import { useBodsArea } from '@/lib/bods-host-context';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 interface MemberDetail {
   id: number;
@@ -25,6 +26,7 @@ function ArchiveMember() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
+  const area = useBodsArea();
   const userId = params.pk as string;
   const detailUrl = `/account/manage/${userId}/detail`;
   const manageUrl = user?.organisation_id
@@ -57,21 +59,19 @@ function ArchiveMember() {
   }, [userId]);
 
   const handleConfirm = async () => {
+    if (!member) {
+      return;
+    }
+
     setIsSubmitting(true);
     setError('');
 
     try {
-      const response = await fetch(`/api/publish/organisation/members/${userId}/toggle-active/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'X-CSRFToken': getCsrfToken() },
+      // Send the state we are moving to, not a toggle, so a stale page cannot
+      // flip the member the wrong way.
+      await api.post(`/api/publish/organisation/members/${userId}/set-active/`, {
+        isActive: !member.isActive,
       });
-
-      if (!response.ok) {
-        setError('Unable to update this member. Please try again.');
-        setIsSubmitting(false);
-        return;
-      }
 
       router.push(detailUrl);
       router.refresh();
@@ -87,12 +87,11 @@ function ArchiveMember() {
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
+          items={hostBreadcrumbs(
+            area,
             { label: 'User management', href: manageUrl },
             { label: 'Deactivate/reactivate', current: true },
-          ]}
+          )}
         />
 
         <div className="govuk-grid-row">
@@ -124,8 +123,8 @@ function ArchiveMember() {
 
 export default function ArchiveMemberPage() {
   return (
-    <ProtectedRoute>
+    <OrgAdminRoute>
       <ArchiveMember />
-    </ProtectedRoute>
+    </OrgAdminRoute>
   );
 }

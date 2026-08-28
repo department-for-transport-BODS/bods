@@ -7,12 +7,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { HOSTS } from '@/config/client';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { OrgAdminRoute } from '@/components/auth/OrgAdminRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
 import { useAuth } from '@/hooks/useAuth';
-import { api, getCsrfToken } from '@/lib/api-client';
+import { api } from '@/lib/api-client';
+import { useBodsArea } from '@/lib/bods-host-context';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 interface AgentInviteDetail {
   id: number;
@@ -23,6 +24,7 @@ function ResendAgentInvite() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
+  const area = useBodsArea();
   const inviteId = params.pk as string;
   const manageUrl = user?.organisation_id
     ? `/account/manage/${user.organisation_id}`
@@ -58,17 +60,7 @@ function ResendAgentInvite() {
     setError('');
 
     try {
-      const response = await fetch(`/api/auth/agent/invite/${inviteId}/resend/`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'X-CSRFToken': getCsrfToken() },
-      });
-
-      if (!response.ok) {
-        setError('Unable to resend this invite. Please try again.');
-        setIsSubmitting(false);
-        return;
-      }
+      await api.post(`/api/auth/agent/invite/${inviteId}/resend/`);
 
       router.push(manageUrl);
       router.refresh();
@@ -82,12 +74,11 @@ function ResendAgentInvite() {
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
+          items={hostBreadcrumbs(
+            area,
             { label: 'User management', href: manageUrl },
             { label: 'Resend invite', current: true },
-          ]}
+          )}
         />
 
         <div className="govuk-grid-row">
@@ -119,8 +110,8 @@ function ResendAgentInvite() {
 
 export default function ResendAgentInvitePage() {
   return (
-    <ProtectedRoute>
+    <OrgAdminRoute>
       <ResendAgentInvite />
-    </ProtectedRoute>
+    </OrgAdminRoute>
   );
 }
