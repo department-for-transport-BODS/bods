@@ -129,7 +129,7 @@ function OrganisationProfileEditContent() {
         licenceNumbers: licenceNumbers.filter((num) => num.trim()),
       });
 
-      router.push(profileUrl);
+      router.push(`/account/manage/org-profile/${orgId}/edit/success`);
       router.refresh();
     } catch (error) {
       setErrors(

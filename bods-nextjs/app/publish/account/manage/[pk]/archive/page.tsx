@@ -73,7 +73,7 @@ function ArchiveMember() {
         isActive: !member.isActive,
       });
 
-      router.push(detailUrl);
+      router.push(`/account/manage/${userId}/archive-success`);
       router.refresh();
     } catch {
       setError('Unable to update this member. Please try again.');

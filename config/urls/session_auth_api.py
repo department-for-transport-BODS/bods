@@ -4,6 +4,7 @@ from transit_odp.api.views.auth import (
     ConfirmEmailAPIView,
     CSRFTokenAPIView,
     CurrentUserAPIView,
+    InviteAcceptAPIView,
     LoginAPIView,
     LogoutAPIView,
     PasswordChangeAPIView,
@@ -30,6 +31,11 @@ urlpatterns = [
     path("login/", LoginAPIView.as_view(), name="api-auth-login"),
     path("logout/", LogoutAPIView.as_view(), name="api-auth-logout"),
     path("signup/", SignupAPIView.as_view(), name="api-auth-signup"),
+    path(
+        "invite/accept/",
+        InviteAcceptAPIView.as_view(),
+        name="api-auth-invite-accept",
+    ),
     path(
         "confirm-email/",
         ConfirmEmailAPIView.as_view(),

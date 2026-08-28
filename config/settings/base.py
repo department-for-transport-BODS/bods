@@ -500,6 +500,7 @@ REST_FRAMEWORK = {
         "account-email-confirmation": "20/hour",
         "account-password-change": "10/hour",
         "account-password-reset": "10/hour",
+        "account-invite-accept": "20/hour",
     },
 }
 

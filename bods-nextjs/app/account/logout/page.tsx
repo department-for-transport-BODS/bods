@@ -21,11 +21,11 @@ export default function LogoutPage() {
 
     if (isAuthenticated) {
       signOut().then(() => {
-        router.push('/');
+        router.push('/account/logout-success');
         router.refresh();
       });
     } else {
-      router.push('/');
+      router.push('/account/logout-success');
     }
   }, [isAuthenticated, isLoading, signOut, router]);
 

@@ -30,11 +30,14 @@ const wwwOnlyRoutePrefixes = [
 const sharedRoutePrefixes = [
   '/account/login',
   '/account/logout',
+  '/account/logout-success',
   '/account/signup',
+  '/account/account-exists',
   '/account/password',
   '/account/confirm-email',
   '/account/settings',
   '/account/agent',
+  '/invitations/accept-invite',
 ];
 
 function hasRoutePrefix(pathname: string, routePrefix: string): boolean {

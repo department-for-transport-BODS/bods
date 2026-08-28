@@ -85,7 +85,7 @@ function EditMember() {
         accountType,
       });
 
-      router.push(detailUrl);
+      router.push(`/account/manage/${userId}/edit-success`);
       router.refresh();
     } catch (error) {
       setErrors(

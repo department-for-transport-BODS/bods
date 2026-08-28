@@ -59,7 +59,7 @@ function AgentInviteRespond() {
     try {
       await api.post(`/api/auth/agent/invite/${inviteId}/respond/`, { status });
 
-      router.push('/account');
+      router.push(`/account/agent/invite/${inviteId}/${status}`);
       router.refresh();
     } catch {
       setError('Unable to respond to this invite. Please try again.');

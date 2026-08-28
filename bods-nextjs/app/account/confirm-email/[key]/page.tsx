@@ -19,7 +19,6 @@ export default function ConfirmEmailPage() {
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl">Confirm email address</h1>
             <ConfirmEmailContent confirmationKey={confirmationKey} />
           </div>
         </div>

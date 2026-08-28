@@ -13,6 +13,7 @@ pytestmark = pytest.mark.django_db
 
 SIGNUP_URL = "/api/auth/signup/"
 CONFIRM_EMAIL_URL = "/api/auth/confirm-email/"
+LOGIN_URL = "/api/auth/login/"
 PASSWORD = "a very Long and compl1c@ted phrase"
 
 
@@ -119,6 +120,22 @@ def test_confirm_email_verifies_the_address(client_factory):
     assert response.status_code == 200
     assert response.json() == {"email": "consumer@example.com"}
     assert EmailAddress.objects.get(user=user).verified
+
+
+def test_login_get_returns_the_email_stashed_by_confirm(client_factory):
+    user = UserFactory(email="consumer@example.com")
+    confirmation = _unverified_confirmation(user)
+    client = client_factory(host=hosts.DATA_HOST)
+
+    assert (
+        _post(client, CONFIRM_EMAIL_URL, {"key": confirmation.key}).status_code == 200
+    )
+
+    response = client.get(LOGIN_URL)
+
+    assert response.status_code == 200
+    assert response.json() == {"verifiedEmail": "consumer@example.com"}
+    assert client.get(LOGIN_URL).json() == {"verifiedEmail": None}
 
 
 def test_confirm_email_rejects_a_key_that_has_already_been_used(client_factory):

@@ -62,7 +62,7 @@ function RemoveAgent() {
     try {
       await api.post(`/api/auth/agent/invite/${inviteId}/remove/`);
 
-      router.push(manageUrl);
+      router.push(`/account/agent/remove/${inviteId}/success`);
       router.refresh();
     } catch {
       setError('Unable to remove this agent. Please try again.');
