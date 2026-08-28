@@ -15,6 +15,7 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
 import { useAuth } from '@/hooks/useAuth';
 import { api, ApiError } from '@/lib/api-client';
+import { rememberInviteEmail } from '@/lib/auth/invite-email';
 import { errorSummaryItems } from '@/lib/form-errors';
 
 type AccountTypeOption = 'admin' | 'staff' | 'agent';
@@ -63,7 +64,8 @@ function InviteUser() {
     try {
       await api.post(`/api/publish/organisation/${orgId}/invite/`, { email, accountType });
 
-      router.push(manageUrl);
+      rememberInviteEmail(email);
+      router.push('/account/manage/invite/success');
       router.refresh();
     } catch (error) {
       setErrors(

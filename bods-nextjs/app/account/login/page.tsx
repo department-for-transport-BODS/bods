@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
+import { api } from '@/lib/api-client';
 import { useBodsArea } from '@/lib/bods-host-context';
 import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 import { resolvePostLoginRedirect } from '@/lib/auth/post-login-redirect';
@@ -15,10 +16,33 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
   const { login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const area = useBodsArea();
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    api
+      .get<{ verifiedEmail?: string | null }>('/api/auth/login/')
+      .then((data) => {
+        if (isCancelled || !data.verifiedEmail) {
+          return;
+        }
+
+        setVerifiedEmail(data.verifiedEmail);
+        setEmail(data.verifiedEmail);
+      })
+      .catch(() => {
+        // Sign-in still works without the confirmation banner.
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +72,16 @@ export default function LoginPage() {
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl">Sign in</h1>
+            <h1 className="govuk-heading-xl">
+              {verifiedEmail ? 'Email address confirmed' : 'Sign in'}
+            </h1>
+
+            {verifiedEmail && (
+              <>
+                <p className="govuk-body">Your email address has been confirmed.</p>
+                <p className="govuk-body">You can now sign in to your account.</p>
+              </>
+            )}
 
             {error && <ErrorSummary errors={[error]} />}
 

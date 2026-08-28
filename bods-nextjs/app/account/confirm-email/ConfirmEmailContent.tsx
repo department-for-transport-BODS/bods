@@ -2,7 +2,9 @@
  * Confirm Email Content Component
  *
  * Confirms the address behind a verification key, mirroring Django's
- * ConfirmEmailView, which confirms as soon as the link is opened.
+ * ConfirmEmailView with ACCOUNT_CONFIRM_EMAIL_ON_GET. A valid key confirms
+ * and redirects to login. An invalid or already-used key stays here with
+ * the expired copy from email_confirm.html.
  */
 
 'use client';
@@ -12,15 +14,13 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api-client';
 import { ErrorSummary } from '@/components/shared';
 
-const REDIRECT_DELAY_MS = 3000;
-
 interface ConfirmEmailContentProps {
   confirmationKey: string;
 }
 
 export function ConfirmEmailContent({ confirmationKey }: ConfirmEmailContentProps) {
   const router = useRouter();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'error'>('loading');
 
   useEffect(() => {
     let isCancelled = false;
@@ -28,7 +28,9 @@ export function ConfirmEmailContent({ confirmationKey }: ConfirmEmailContentProp
     api
       .post('/api/auth/confirm-email/', { key: confirmationKey })
       .then(() => {
-        if (!isCancelled) setStatus('success');
+        if (!isCancelled) {
+          router.replace('/account/login');
+        }
       })
       .catch(() => {
         if (!isCancelled) setStatus('error');
@@ -37,36 +39,19 @@ export function ConfirmEmailContent({ confirmationKey }: ConfirmEmailContentProp
     return () => {
       isCancelled = true;
     };
-  }, [confirmationKey]);
-
-  useEffect(() => {
-    if (status !== 'success') {
-      return;
-    }
-
-    const timer = setTimeout(() => router.push('/account/login'), REDIRECT_DELAY_MS);
-    return () => clearTimeout(timer);
-  }, [status, router]);
+  }, [confirmationKey, router]);
 
   if (status === 'loading') {
-    return <p className="govuk-body">Confirming your email address...</p>;
-  }
-
-  if (status === 'success') {
-    return (
-      <div className="govuk-panel govuk-panel--confirmation">
-        <h2 className="govuk-panel__title">Email confirmed</h2>
-        <div className="govuk-panel__body">
-          Your email has been confirmed. You can now sign in.
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <ErrorSummary
-      title="This email confirmation link expired or is invalid."
-      errors={[{ text: 'Issue a new email confirmation request', href: '/account/login' }]}
-    />
+    <>
+      <h1 className="govuk-heading-xl">Confirm email address</h1>
+      <ErrorSummary
+        title="This email confirmation link expired or is invalid."
+        errors={[{ text: 'Issue a new email confirmation request', href: '/account/login' }]}
+      />
+    </>
   );
 }

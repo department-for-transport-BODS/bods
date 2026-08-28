@@ -144,6 +144,42 @@ describe('subdomain routing proxy', () => {
       expect(response.headers.get('x-middleware-rewrite')).toBeNull();
     });
 
+    it('keeps account-exists on the publish host', () => {
+      const response = proxy(
+        request('https://publish.xyz.com/account/account-exists', 'publish.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps logout-success on the data host', () => {
+      const response = proxy(
+        request('https://data.xyz.com/account/logout-success', 'data.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps invitation accept links on the publish host', () => {
+      const response = proxy(
+        request('https://publish.xyz.com/invitations/accept-invite/abc123', 'publish.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps invitation accept links on the data host', () => {
+      const response = proxy(
+        request('https://data.xyz.com/invitations/accept-invite/abc123', 'data.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
     it('keeps account settings on the data host', () => {
       const response = proxy(request('https://data.xyz.com/account/settings', 'data.xyz.com'));
 

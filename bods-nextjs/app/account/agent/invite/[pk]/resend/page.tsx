@@ -62,7 +62,7 @@ function ResendAgentInvite() {
     try {
       await api.post(`/api/auth/agent/invite/${inviteId}/resend/`);
 
-      router.push(manageUrl);
+      router.push(`/account/agent/invite/${inviteId}/resend/success`);
       router.refresh();
     } catch {
       setError('Unable to resend this invite. Please try again.');

@@ -13,6 +13,7 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
 import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api-client';
+import { rememberInviteEmail } from '@/lib/auth/invite-email';
 
 function ResendInvite() {
   const params = useParams();
@@ -31,9 +32,12 @@ function ResendInvite() {
     setError('');
 
     try {
-      await api.post(`/api/publish/organisation/invites/${inviteId}/resend/`);
+      const invitation = await api.post<{ email: string }>(
+        `/api/publish/organisation/invites/${inviteId}/resend/`,
+      );
 
-      router.push(manageUrl);
+      rememberInviteEmail(invitation.email);
+      router.push(`/account/manage/${inviteId}/re-invite/success`);
       router.refresh();
     } catch {
       setError('Unable to resend this invite. Please try again.');

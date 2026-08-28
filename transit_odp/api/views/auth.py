@@ -26,6 +26,7 @@ from allauth.account.utils import (
 from allauth.utils import get_form_class
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.sessions.exceptions import InvalidSessionKey
 from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -35,6 +36,7 @@ from transit_odp.users.forms.auth import (
     ResetPasswordForm,
     ResetPasswordKeyForm,
 )
+from transit_odp.users.models import Invitation
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -43,6 +45,7 @@ from rest_framework.views import APIView
 
 EMAIL_CONFIRMATION_INVALID = "This email confirmation link expired or is invalid."
 PASSWORD_RESET_INVALID = "This password reset link expired or is invalid."
+INVITE_EXPIRED = "This invitation link has already been accepted or has expired."
 
 
 class LoginRateThrottle(AnonRateThrottle):
@@ -84,6 +87,10 @@ class PasswordResetRateThrottle(AnonRateThrottle):
     scope = "account-password-reset"
 
 
+class InviteAcceptRateThrottle(AnonRateThrottle):
+    scope = "account-invite-accept"
+
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
@@ -100,6 +107,23 @@ class LoginAPIView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
     throttle_classes = [LoginRateThrottle]
+
+    def get_throttles(self):
+        if self.request.method == "GET":
+            return []
+        return super().get_throttles()
+
+    def get(self, request):
+        """Return the email ConfirmEmailView stashed, then clear it.
+
+        Django's LoginView unstashes this to show "Your email address has been
+        confirmed." and pre-fill the sign-in form.
+        """
+        django_request = request._request
+        verified_email = get_adapter(django_request).unstash_verified_email(
+            django_request
+        )
+        return Response({"verifiedEmail": verified_email}, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -156,6 +180,16 @@ class SignupAPIView(APIView):
     authentication_classes = []
     throttle_classes = [SignupRateThrottle]
 
+    def get_throttles(self):
+        if self.request.method == "GET":
+            return []
+        return super().get_throttles()
+
+    def get(self, request):
+        """Tell the signup page whether this session is an invitation."""
+        django_request = request._request
+        return Response(_signup_session_state(django_request))
+
     def post(self, request):
         # allauth mutates the session and calls django.contrib.auth, so it needs
         # the underlying HttpRequest rather than the DRF wrapper.
@@ -168,7 +202,13 @@ class SignupAPIView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        form = _signup_form_class(django_request)(data=request.data)
+        payload = dict(request.data)
+        invitation = _invitation_from_session(django_request)
+        if invitation is not None:
+            # Organisation and account type come from the invite, not the form.
+            payload["email"] = invitation.email
+
+        form = _signup_form_class(django_request)(data=payload)
         if not form.is_valid():
             return Response(
                 {
@@ -185,12 +225,57 @@ class SignupAPIView(APIView):
             return Response({"account_exists": True}, status=status.HTTP_200_OK)
 
         # Sends the verification email and, because verification is mandatory,
-        # leaves the user signed out until they confirm.
+        # leaves the user signed out until they confirm. Invited emails are
+        # already verified via the invite link, so complete_signup logs them in.
         complete_signup(django_request, user, allauth_settings.EMAIL_VERIFICATION, None)
 
+        body = {"account_exists": False, "email": user.email}
+        if django_request.user.is_authenticated:
+            body["user"] = _serialize_user(user)
+
+        return Response(body, status=status.HTTP_201_CREATED)
+
+
+class InviteAcceptSerializer(serializers.Serializer):
+    key = serializers.CharField()
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class InviteAcceptAPIView(APIView):
+    """Stash a valid invitation so signup can create an operator or agent."""
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [InviteAcceptRateThrottle]
+
+    def post(self, request):
+        serializer = InviteAcceptSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        key = serializer.validated_data["key"].lower()
+        invitation = Invitation.objects.filter(key=key).first()
+        if invitation is None or invitation.accepted or invitation.key_expired():
+            return Response(
+                {"expired": True, "detail": INVITE_EXPIRED},
+                status=status.HTTP_410_GONE,
+            )
+
+        django_request = request._request
+        adapter = get_adapter(django_request)
+        adapter.unstash_invitation_started(django_request)
+        adapter.stash_account_verified_email(django_request, invitation.email)
+
+        organisation_name = ""
+        if invitation.organisation is not None:
+            organisation_name = invitation.organisation.name
+
         return Response(
-            {"account_exists": False, "email": user.email},
-            status=status.HTTP_201_CREATED,
+            {
+                "email": invitation.email,
+                "isAgent": invitation.is_agent_user,
+                "organisationName": organisation_name,
+            },
+            status=status.HTTP_200_OK,
         )
 
 
@@ -437,19 +522,42 @@ class OrganisationStatsAPIView(APIView):
         )
 
 
+def _invitation_from_session(request):
+    adapter = get_adapter(request)
+    if not adapter.stash_contains_account_verified_email(request):
+        return None
+
+    try:
+        return adapter.invitation
+    except InvalidSessionKey:
+        return None
+
+
+def _signup_session_state(request):
+    invitation = _invitation_from_session(request)
+    if invitation is None:
+        return {"mode": "developer"}
+
+    organisation_name = ""
+    if invitation.organisation is not None:
+        organisation_name = invitation.organisation.name
+
+    return {
+        "mode": "agent" if invitation.is_agent_user else "operator",
+        "email": invitation.email,
+        "organisationName": organisation_name,
+    }
+
+
 def _signup_form_class(request):
     """Pick the signup form Django's SignupView would use for this session."""
-    adapter = get_adapter(request)
-
-    if not adapter.stash_contains_account_verified_email(request):
+    invitation = _invitation_from_session(request)
+    if invitation is None:
         form_id = "developer_signup"
+    elif invitation.is_agent_user:
+        form_id = "agent_signup"
     else:
-        invitation = adapter.invitation
-        form_id = (
-            "agent_signup"
-            if invitation is not None and invitation.is_agent_user
-            else "operator_signup"
-        )
+        form_id = "operator_signup"
 
     return get_form_class(allauth_settings.FORMS, form_id, SignupForm)
 

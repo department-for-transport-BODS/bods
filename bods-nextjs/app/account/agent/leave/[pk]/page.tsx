@@ -57,7 +57,7 @@ function AgentInviteLeave() {
     try {
       await api.post(`/api/auth/agent/invite/${inviteId}/leave/`);
 
-      router.push('/account');
+      router.push(`/account/agent/leave/${inviteId}/success`);
       router.refresh();
     } catch {
       setError('Unable to leave this organisation. Please try again.');

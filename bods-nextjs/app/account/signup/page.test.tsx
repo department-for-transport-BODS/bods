@@ -1,9 +1,11 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { api, ApiError } from '@/lib/api-client';
 import { HostProvider } from '@/lib/bods-host-context';
 import SignupPage from './page';
 
 const mockPush = jest.fn();
+const mockGoHome = jest.fn();
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockPush }),
@@ -26,8 +28,13 @@ jest.mock('next/link', () => {
   };
 });
 
-jest.mock('@/lib/api-client', () => ({
-  ensureCsrfToken: async () => 'csrf-token',
+jest.mock('@/lib/api-client', () => {
+  const actual = jest.requireActual('@/lib/api-client');
+  return { ...actual, api: { get: jest.fn(), post: jest.fn() } };
+});
+
+jest.mock('@/lib/auth/post-signup-redirect', () => ({
+  goToSignedInHome: (...args: unknown[]) => mockGoHome(...args),
 }));
 
 function renderSignupPage() {
@@ -38,7 +45,7 @@ function renderSignupPage() {
   );
 }
 
-async function completeForm() {
+async function completeDeveloperForm() {
   await userEvent.type(screen.getByLabelText('First Name'), 'Ada');
   await userEvent.type(screen.getByLabelText('Last Name'), 'Lovelace');
   await userEvent.type(screen.getByLabelText('Organisation'), 'Analytical Engines');
@@ -67,12 +74,13 @@ describe('Signup page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     window.sessionStorage.clear();
-    global.fetch = jest.fn();
+    (api.get as jest.Mock).mockResolvedValue({ mode: 'developer' });
   });
 
-  it('renders the fields Django asks developers for, and no account type choice', () => {
+  it('renders the fields Django asks developers for, and no account type choice', async () => {
     renderSignupPage();
 
+    expect(await screen.findByLabelText('First Name')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Create account' })).toBeInTheDocument();
     expect(
       screen.getByText('Enter your details to create an account and start using bus open data.'),
@@ -92,21 +100,19 @@ describe('Signup page', () => {
   });
 
   it('posts the developer signup payload and goes to the verify email page', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: async () => ({ account_exists: false, email: 'consumer@example.com' }),
+    (api.post as jest.Mock).mockResolvedValue({
+      account_exists: false,
+      email: 'consumer@example.com',
     });
 
     renderSignupPage();
-    await completeForm();
+    await screen.findByLabelText('First Name');
+    await completeDeveloperForm();
     await userEvent.click(screen.getByRole('button', { name: 'Create account' }));
 
-    await waitFor(() => expect(global.fetch).toHaveBeenCalled());
+    await waitFor(() => expect(api.post).toHaveBeenCalled());
 
-    const [path, init] = (global.fetch as jest.Mock).mock.calls[0];
-    expect(path).toBe('/api/auth/signup/');
-    expect(init.headers['X-CSRFToken']).toBe('csrf-token');
-    expect(JSON.parse(init.body)).toEqual({
+    expect(api.post).toHaveBeenCalledWith('/api/auth/signup/', {
       first_name: 'Ada',
       last_name: 'Lovelace',
       dev_organisation: 'Analytical Engines',
@@ -126,41 +132,132 @@ describe('Signup page', () => {
   });
 
   it('shows field errors from the API', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: false,
-      json: async () => ({
-        error: 'Validation failed',
-        field_errors: { dev_organisation: ['Please provide an Organisation'] },
+    (api.post as jest.Mock).mockRejectedValue(
+      new ApiError('Validation failed', 400, {
+        dev_organisation: ['Please provide an Organisation'],
       }),
-    });
+    );
 
     renderSignupPage();
-    await completeForm();
+    await screen.findByLabelText('First Name');
+    await completeDeveloperForm();
     await userEvent.click(screen.getByRole('button', { name: 'Create account' }));
 
     expect(await screen.findAllByText('Please provide an Organisation')).not.toHaveLength(0);
     expect(mockPush).not.toHaveBeenCalled();
   });
 
-  it('tells the user to sign in when the account already exists', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: async () => ({ account_exists: true }),
+  it('goes to account-exists when the account is already registered', async () => {
+    (api.post as jest.Mock).mockResolvedValue({ account_exists: true });
+
+    renderSignupPage();
+    await screen.findByLabelText('First Name');
+    await completeDeveloperForm();
+    await userEvent.click(screen.getByRole('button', { name: 'Create account' }));
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/account/account-exists');
+    });
+    expect(
+      screen.queryByText(
+        'An account with this email address has already been registered on BODS. Please click below to sign in.',
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders the operator invite form with a readonly email', async () => {
+    (api.get as jest.Mock).mockResolvedValue({
+      mode: 'operator',
+      email: 'new.operator@example.com',
+      organisationName: 'Acme Buses',
     });
 
     renderSignupPage();
-    await completeForm();
-    await userEvent.click(screen.getByRole('button', { name: 'Create account' }));
 
+    const email = await screen.findByLabelText('Email*');
+    expect(email).toHaveValue('new.operator@example.com');
+    expect(email).toHaveAttribute('readOnly');
+    expect(screen.getByLabelText('Password*')).toHaveAttribute('id', 'password1');
+    expect(screen.getByLabelText('Confirm new password*')).toHaveAttribute('id', 'password2');
     expect(
-      await screen.findByText(
-        'An account with this email address has already been registered on BODS. Please click below to sign in.',
+      screen.getByLabelText(
+        'If you are willing to be contacted as part of user research, please tick this box.*',
       ),
     ).toBeInTheDocument();
-    const signInButton = screen
-      .getAllByRole('link', { name: 'Sign in' })
-      .find((link) => link.classList.contains('govuk-button'));
-    expect(signInButton).toHaveAttribute('href', '/account/login');
+    expect(screen.queryByLabelText('First Name')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Organisation*')).not.toBeInTheDocument();
+  });
+
+  it('posts the operator payload and goes home when the API signs the user in', async () => {
+    (api.get as jest.Mock).mockResolvedValue({
+      mode: 'operator',
+      email: 'new.operator@example.com',
+      organisationName: 'Acme Buses',
+    });
+    (api.post as jest.Mock).mockResolvedValue({
+      account_exists: false,
+      email: 'new.operator@example.com',
+      user: { id: 9 },
+    });
+
+    renderSignupPage();
+
+    await screen.findByLabelText('Email*');
+    await userEvent.type(screen.getByLabelText('Password*'), 'a very Long and compl1c@ted phrase');
+    await userEvent.type(
+      screen.getByLabelText('Confirm new password*'),
+      'a very Long and compl1c@ted phrase',
+    );
+    await userEvent.click(
+      screen.getByLabelText(
+        'If you are willing to be contacted as part of user research, please tick this box.*',
+      ),
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Create account' }));
+
+    await waitFor(() => {
+      expect(api.post).toHaveBeenCalledWith('/api/auth/signup/', {
+        email: 'new.operator@example.com',
+        password1: 'a very Long and compl1c@ted phrase',
+        password2: 'a very Long and compl1c@ted phrase',
+        opt_in_user_research: true,
+      });
+    });
+    expect(mockGoHome).toHaveBeenCalled();
     expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it('renders the agent organisation field and includes it in the payload', async () => {
+    (api.get as jest.Mock).mockResolvedValue({
+      mode: 'agent',
+      email: 'new.agent@example.com',
+      organisationName: 'Acme Buses',
+    });
+    (api.post as jest.Mock).mockResolvedValue({
+      account_exists: false,
+      email: 'new.agent@example.com',
+      user: { id: 10 },
+    });
+
+    renderSignupPage();
+
+    await screen.findByLabelText('Organisation*');
+    await userEvent.type(screen.getByLabelText('Organisation*'), 'Coach Consultants');
+    await userEvent.type(screen.getByLabelText('Password*'), 'a very Long and compl1c@ted phrase');
+    await userEvent.type(
+      screen.getByLabelText('Confirm new password*'),
+      'a very Long and compl1c@ted phrase',
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Create account' }));
+
+    await waitFor(() => {
+      expect(api.post).toHaveBeenCalledWith('/api/auth/signup/', {
+        email: 'new.agent@example.com',
+        agent_organisation: 'Coach Consultants',
+        password1: 'a very Long and compl1c@ted phrase',
+        password2: 'a very Long and compl1c@ted phrase',
+        opt_in_user_research: false,
+      });
+    });
   });
 });

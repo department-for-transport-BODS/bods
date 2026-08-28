@@ -18,6 +18,7 @@ from django.urls import resolve
         ("/api/auth/login/", "api-auth-login"),
         ("/api/auth/logout/", "api-auth-logout"),
         ("/api/auth/signup/", "api-auth-signup"),
+        ("/api/auth/invite/accept/", "api-auth-invite-accept"),
         ("/api/auth/confirm-email/", "api-auth-confirm-email"),
         ("/api/auth/user/", "api-auth-user"),
         ("/api/auth/csrf/", "api-auth-csrf"),
