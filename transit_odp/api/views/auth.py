@@ -10,8 +10,19 @@ import re
 
 from allauth.account import app_settings as allauth_settings
 from allauth.account import signals as allauth_signals
-from allauth.account.models import EmailAddress
-from allauth.account.utils import logout_on_password_change, send_email_confirmation
+from allauth.account.adapter import get_adapter
+from allauth.account.forms import SignupForm
+from allauth.account.models import (
+    EmailAddress,
+    EmailConfirmation,
+    EmailConfirmationHMAC,
+)
+from allauth.account.utils import (
+    complete_signup,
+    logout_on_password_change,
+    send_email_confirmation,
+)
+from allauth.utils import get_form_class
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
@@ -24,6 +35,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
+
+EMAIL_CONFIRMATION_INVALID = "This email confirmation link expired or is invalid."
 
 
 class LoginRateThrottle(AnonRateThrottle):
@@ -105,6 +118,101 @@ class LoginAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class SignupAPIView(APIView):
+    """Register an account using the same allauth forms as Django's SignupView.
+
+    Developer sign up is self-service. Operator and agent sign up is only
+    reachable from an invitation, which stashes the invited email in the session.
+    """
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        # allauth mutates the session and calls django.contrib.auth, so it needs
+        # the underlying HttpRequest rather than the DRF wrapper.
+        django_request = request._request
+        adapter = get_adapter(django_request)
+
+        if not adapter.is_open_for_signup(django_request):
+            return Response(
+                {"detail": "Registration is closed."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        form = _signup_form_class(django_request)(data=request.data)
+        if not form.is_valid():
+            return Response(
+                {
+                    "error": "Validation failed",
+                    "field_errors": _serialize_form_errors(form),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # try_save emails the existing account holder instead of creating a
+        # duplicate, which is what Django's account_exists page reports.
+        user = form.try_save(django_request)[0]
+        if user is None:
+            return Response({"account_exists": True}, status=status.HTTP_200_OK)
+
+        # Sends the verification email and, because verification is mandatory,
+        # leaves the user signed out until they confirm.
+        complete_signup(django_request, user, allauth_settings.EMAIL_VERIFICATION, None)
+
+        return Response(
+            {"account_exists": False, "email": user.email},
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class ConfirmEmailSerializer(serializers.Serializer):
+    key = serializers.CharField()
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class ConfirmEmailAPIView(APIView):
+    """Confirm an email address from the key in the verification email."""
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        serializer = ConfirmEmailSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        confirmation = _find_email_confirmation(serializer.validated_data["key"])
+        if confirmation is None:
+            return Response(
+                {"detail": EMAIL_CONFIRMATION_INVALID},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        django_request = request._request
+        email_address = confirmation.email_address
+
+        if confirmation.confirm(django_request) is None:
+            return Response(
+                {"detail": EMAIL_CONFIRMATION_INVALID},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Confirming one account while signed in as another ends the current
+        # session, as allauth's ConfirmEmailView does.
+        if (
+            django_request.user.is_authenticated
+            and django_request.user.pk != email_address.user_id
+        ):
+            logout(django_request)
+
+        get_adapter(django_request).stash_verified_email(
+            django_request, email_address.email
+        )
+
+        return Response({"email": email_address.email}, status=status.HTTP_200_OK)
 
 
 class LogoutAPIView(APIView):
@@ -217,6 +325,31 @@ class OrganisationStatsAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+def _signup_form_class(request):
+    """Pick the signup form Django's SignupView would use for this session."""
+    adapter = get_adapter(request)
+
+    if not adapter.stash_contains_account_verified_email(request):
+        form_id = "developer_signup"
+    else:
+        invitation = adapter.invitation
+        form_id = (
+            "agent_signup"
+            if invitation is not None and invitation.is_agent_user
+            else "operator_signup"
+        )
+
+    return get_form_class(allauth_settings.FORMS, form_id, SignupForm)
+
+
+def _find_email_confirmation(key):
+    confirmation = EmailConfirmationHMAC.from_key(key)
+    if confirmation is not None:
+        return confirmation
+
+    return EmailConfirmation.objects.all_valid().filter(key=key.lower()).first()
 
 
 def _serialize_form_errors(form):

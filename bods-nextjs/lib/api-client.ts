@@ -15,6 +15,27 @@ export function getCsrfToken(): string {
   return match ? decodeURIComponent(match[1]) : '';
 }
 
+/**
+ * Django's CSRF cookie is only set once a page has called an API, so requests
+ * made before that (for example confirming an email straight from a link) have
+ * to ask for a token first.
+ */
+export async function ensureCsrfToken(): Promise<string> {
+  const existingToken = getCsrfToken();
+  if (existingToken) {
+    return existingToken;
+  }
+
+  const response = await fetch('/api/auth/csrf/', {
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
+  });
+  const payload = (await response.json().catch(() => null)) as { csrfToken?: string } | null;
+
+  return payload?.csrfToken || '';
+}
+
 function isFormData(body: ApiRequestOptions['body']): body is FormData {
   return typeof FormData !== 'undefined' && body instanceof FormData;
 }
@@ -81,7 +102,7 @@ async function request<T>(method: string, path: string, options: ApiRequestOptio
   }
 
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && !headers.has('X-CSRFToken')) {
-    const csrfToken = getCsrfToken();
+    const csrfToken = await ensureCsrfToken();
     if (csrfToken) {
       headers.set('X-CSRFToken', csrfToken);
     }

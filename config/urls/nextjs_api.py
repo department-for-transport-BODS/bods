@@ -39,57 +39,17 @@ from transit_odp.timetables.views.api import (
 )
 from transit_odp.users.views.api import (
     create_organisation_invite_api,
-    get_account_api,
-    get_account_settings_api,
-    get_agent_invite_api,
     get_organisation_member_api,
     get_organisation_members_api,
     get_organisation_profile_api,
-    leave_agent_organisation_api,
-    remove_agent_from_organisation_api,
-    resend_agent_invite_api,
     resend_organisation_invite_api,
-    respond_agent_invite_api,
     toggle_organisation_member_active_api,
-    update_account_settings_api,
     update_organisation_member_api,
     update_organisation_profile_api,
 )
 
 urlpatterns = [
     path("auth/", include("config.urls.session_auth_api")),
-    path("account/", get_account_api, name="nextjs-account"),
-    path("account/settings/", get_account_settings_api, name="nextjs-account-settings"),
-    path(
-        "account/settings/update/",
-        update_account_settings_api,
-        name="nextjs-account-settings-update",
-    ),
-    path(
-        "agent/invite/<int:pk>/",
-        get_agent_invite_api,
-        name="nextjs-agent-invite",
-    ),
-    path(
-        "agent/invite/<int:pk>/respond/",
-        respond_agent_invite_api,
-        name="nextjs-agent-invite-respond",
-    ),
-    path(
-        "agent/invite/<int:pk>/leave/",
-        leave_agent_organisation_api,
-        name="nextjs-agent-invite-leave",
-    ),
-    path(
-        "agent/invite/<int:pk>/remove/",
-        remove_agent_from_organisation_api,
-        name="nextjs-agent-invite-remove",
-    ),
-    path(
-        "agent/invite/<int:pk>/resend/",
-        resend_agent_invite_api,
-        name="nextjs-agent-invite-resend",
-    ),
     path(
         "organisation/profile/<int:pk>/",
         get_organisation_profile_api,
