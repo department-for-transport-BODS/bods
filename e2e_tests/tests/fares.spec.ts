@@ -11,7 +11,7 @@ async function goToFaresCreateFromPublishData(authenticatedPage: any) {
   await expect(authenticatedPage).toHaveURL(/\/publish\/org\/\d+\/dataset$/);
   await authenticatedPage.getByLabel('Fares').check();
   await authenticatedPage.getByRole('button', { name: 'Continue' }).click();
-  await expect(authenticatedPage).toHaveURL(/\/publish\/org\/\d+\/dataset\/fares\/create$/);
+  await expect(authenticatedPage).toHaveURL(/\/publish\/org\/\d+\/dataset\/fares\/new$/);
 }
 
 async function goToFaresList(authenticatedPage: any) {

@@ -59,7 +59,7 @@ function TimetableReview() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orgId = params.orgId as string;
-  const nextCreateUrl = `/publish/org/${orgId}/dataset/timetable/create`;
+  const nextCreateUrl = `/publish/org/${orgId}/dataset/timetable/new`;
   const reviewDetailsUrl = `/publish/org/${orgId}/dataset/data-activity?prev=timetable-feed-list`;
   const operatorRequirementsUrl = '/publish/guide-me';
   const localAuthorityRequirementsUrl = '/publish/guide-me';

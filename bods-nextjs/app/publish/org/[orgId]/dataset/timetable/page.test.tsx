@@ -38,7 +38,7 @@ describe('Timetable - Review - Page', () => {
 
     expect(screen.getByRole('link', { name: 'Publish new data feeds' })).toHaveAttribute(
       'href',
-      '/publish/org/123/dataset/timetable/create',
+      '/publish/org/123/dataset/timetable/new',
     );
   });
 

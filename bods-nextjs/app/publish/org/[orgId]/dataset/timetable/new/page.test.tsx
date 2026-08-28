@@ -90,7 +90,7 @@ describe('Timetable - Publish - Page', () => {
       apiResponse: {},
       expectedSelectedItem: 'upload_file-conditional',
       expectedPayload: { upload_file: xmlFile },
-      expectedRedirect: '/publish/org/123/dataset/timetable/create/success',
+      expectedRedirect: '/publish/org/123/dataset/timetable/new/success',
     },
   ])('$name', async ({ provideData, apiResponse, expectedSelectedItem, expectedPayload, expectedRedirect }) => {
     (api.post as jest.Mock).mockResolvedValue(apiResponse);

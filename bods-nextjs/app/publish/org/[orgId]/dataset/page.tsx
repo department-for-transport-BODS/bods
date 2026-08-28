@@ -24,18 +24,7 @@ function SelectDatasetTypePageContent() {
       return;
     }
 
-    let targetPath: string;
-    if (selectedType === 'fares') {
-      targetPath = `/publish/org/${orgId}/dataset/fares/create`;
-    } else if (selectedType === 'avl') {
-      targetPath = `/publish/org/${orgId}/dataset/avl/new`;
-    } else if (selectedType === 'timetable') {
-      targetPath = `/publish/org/${orgId}/dataset/timetable/create`;
-    } else {
-      targetPath = `/publish/org/${orgId}/dataset/${selectedType}`;
-    }
-
-    router.push(targetPath);
+    router.push(`/publish/org/${orgId}/dataset/${selectedType}/new`);
   };
 
   return (

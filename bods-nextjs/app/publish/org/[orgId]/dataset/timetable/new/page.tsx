@@ -102,7 +102,7 @@ function TimetablePublish() {
         return;
       }
 
-      router.push(`/publish/org/${orgId}/dataset/timetable/create/success`);
+      router.push(`/publish/org/${orgId}/dataset/timetable/new/success`);
     });
   };
 
