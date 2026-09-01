@@ -317,4 +317,3 @@ def test_summer_bank_holiday_disambiguated_by_division(mrequests):
 
     assert england_dates == [date(2026, 8, 31)]
     assert scotland_dates == [date(2026, 8, 3)]
-

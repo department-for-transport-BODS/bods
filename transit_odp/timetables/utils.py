@@ -104,7 +104,8 @@ def get_holiday_substitute(holiday, division, is_substitute):
         if is_substitute:
             day_enum = HolidaysSubstituteEnum(holiday_title)
         elif (
-            holiday_title == HolidaysNonSubstituteEnum.LateSummerBankHolidayNotScotland.value
+            holiday_title
+            == HolidaysNonSubstituteEnum.LateSummerBankHolidayNotScotland.value
             and division == "scotland"
         ):
             # Disambiguate the two "Summer bank holiday" titles by division
