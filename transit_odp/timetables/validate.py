@@ -74,15 +74,15 @@ class DatasetTXCValidator:
                 for index, name in enumerate(names, 1):
                     adapter.info(f"Validating file {index} of {total_files} - {name}.")
                     with zf.open(name) as f:
-                        yield f
+                        yield name, f
         else:
             adapter.info(f"Getting file 1 of 1 - {file_.name}.")
             file_.seek(0)
-            yield file_
+            yield file_.name, file_
 
     def get_violations(self):
         violations = []
-        for file_ in self.iter_get_files():
+        for name, file_ in self.iter_get_files():
             error = XMLValidator(file_).dangerous_xml_check()
             if error:
                 violations.append(BaseSchemaViolation.from_error(error[0]))
