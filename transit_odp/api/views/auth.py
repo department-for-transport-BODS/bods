@@ -9,23 +9,49 @@ Allauth's email verification and adapter hooks are respected.
 import re
 
 from allauth.account import app_settings as allauth_settings
-from allauth.account.models import EmailAddress
-from allauth.account.utils import send_email_confirmation
+from allauth.account import signals as allauth_signals
+from allauth.account.adapter import get_adapter
+from allauth.account.forms import SignupForm, default_token_generator
+from allauth.account.models import (
+    EmailAddress,
+    EmailConfirmation,
+    EmailConfirmationHMAC,
+)
+from allauth.account.utils import (
+    complete_signup,
+    logout_on_password_change,
+    send_email_confirmation,
+    url_str_to_user_pk,
+)
+from allauth.utils import get_form_class
 from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.sessions.exceptions import InvalidSessionKey
 from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from transit_odp.organisation.models import Organisation
+from transit_odp.users.forms.auth import (
+    ChangePasswordForm,
+    ResetPasswordForm,
+    ResetPasswordKeyForm,
+)
+from transit_odp.users.models import Invitation
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.views import APIView
+
+EMAIL_CONFIRMATION_INVALID = "This email confirmation link expired or is invalid."
+PASSWORD_RESET_INVALID = "This password reset link expired or is invalid."
+INVITE_EXPIRED = "This invitation link has already been accepted or has expired."
 
 
 class LoginRateThrottle(AnonRateThrottle):
     """Throttle login attempts by IP to match allauth's rate limiting."""
+
+    scope = "login"
 
     def get_rate(self):
         limit = getattr(settings, "ACCOUNT_LOGIN_ATTEMPTS_LIMIT", 5)
@@ -45,6 +71,26 @@ class LoginRateThrottle(AnonRateThrottle):
         return int(num_requests), duration
 
 
+class SignupRateThrottle(AnonRateThrottle):
+    scope = "account-signup"
+
+
+class EmailConfirmationRateThrottle(AnonRateThrottle):
+    scope = "account-email-confirmation"
+
+
+class PasswordChangeRateThrottle(UserRateThrottle):
+    scope = "account-password-change"
+
+
+class PasswordResetRateThrottle(AnonRateThrottle):
+    scope = "account-password-reset"
+
+
+class InviteAcceptRateThrottle(AnonRateThrottle):
+    scope = "account-invite-accept"
+
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
@@ -61,6 +107,23 @@ class LoginAPIView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
     throttle_classes = [LoginRateThrottle]
+
+    def get_throttles(self):
+        if self.request.method == "GET":
+            return []
+        return super().get_throttles()
+
+    def get(self, request):
+        """Return the email ConfirmEmailView stashed, then clear it.
+
+        Django's LoginView unstashes this to show "Your email address has been
+        confirmed." and pre-fill the sign-in form.
+        """
+        django_request = request._request
+        verified_email = get_adapter(django_request).unstash_verified_email(
+            django_request
+        )
+        return Response({"verifiedEmail": verified_email}, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -103,6 +166,164 @@ class LoginAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class SignupAPIView(APIView):
+    """Register an account using the same allauth forms as Django's SignupView.
+
+    Developer sign up is self-service. Operator and agent sign up is only
+    reachable from an invitation, which stashes the invited email in the session.
+    """
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [SignupRateThrottle]
+
+    def get_throttles(self):
+        if self.request.method == "GET":
+            return []
+        return super().get_throttles()
+
+    def get(self, request):
+        """Tell the signup page whether this session is an invitation."""
+        django_request = request._request
+        return Response(_signup_session_state(django_request))
+
+    def post(self, request):
+        # allauth mutates the session and calls django.contrib.auth, so it needs
+        # the underlying HttpRequest rather than the DRF wrapper.
+        django_request = request._request
+        adapter = get_adapter(django_request)
+
+        if not adapter.is_open_for_signup(django_request):
+            return Response(
+                {"detail": "Registration is closed."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        payload = dict(request.data)
+        invitation = _invitation_from_session(django_request)
+        if invitation is not None:
+            # Organisation and account type come from the invite, not the form.
+            payload["email"] = invitation.email
+
+        form = _signup_form_class(django_request)(data=payload)
+        if not form.is_valid():
+            return Response(
+                {
+                    "error": "Validation failed",
+                    "field_errors": _serialize_form_errors(form),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # try_save emails the existing account holder instead of creating a
+        # duplicate, which is what Django's account_exists page reports.
+        user = form.try_save(django_request)[0]
+        if user is None:
+            return Response({"account_exists": True}, status=status.HTTP_200_OK)
+
+        # Sends the verification email and, because verification is mandatory,
+        # leaves the user signed out until they confirm. Invited emails are
+        # already verified via the invite link, so complete_signup logs them in.
+        complete_signup(django_request, user, allauth_settings.EMAIL_VERIFICATION, None)
+
+        body = {"account_exists": False, "email": user.email}
+        if django_request.user.is_authenticated:
+            body["user"] = _serialize_user(user)
+
+        return Response(body, status=status.HTTP_201_CREATED)
+
+
+class InviteAcceptSerializer(serializers.Serializer):
+    key = serializers.CharField()
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class InviteAcceptAPIView(APIView):
+    """Stash a valid invitation so signup can create an operator or agent."""
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [InviteAcceptRateThrottle]
+
+    def post(self, request):
+        serializer = InviteAcceptSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        key = serializer.validated_data["key"].lower()
+        invitation = Invitation.objects.filter(key=key).first()
+        if invitation is None or invitation.accepted or invitation.key_expired():
+            return Response(
+                {"expired": True, "detail": INVITE_EXPIRED},
+                status=status.HTTP_410_GONE,
+            )
+
+        django_request = request._request
+        adapter = get_adapter(django_request)
+        adapter.unstash_invitation_started(django_request)
+        adapter.stash_account_verified_email(django_request, invitation.email)
+
+        organisation_name = ""
+        if invitation.organisation is not None:
+            organisation_name = invitation.organisation.name
+
+        return Response(
+            {
+                "email": invitation.email,
+                "isAgent": invitation.is_agent_user,
+                "organisationName": organisation_name,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class ConfirmEmailSerializer(serializers.Serializer):
+    key = serializers.CharField()
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class ConfirmEmailAPIView(APIView):
+    """Confirm an email address from the key in the verification email."""
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [EmailConfirmationRateThrottle]
+
+    def post(self, request):
+        serializer = ConfirmEmailSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        confirmation = _find_email_confirmation(serializer.validated_data["key"])
+        if confirmation is None:
+            return Response(
+                {"detail": EMAIL_CONFIRMATION_INVALID},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        django_request = request._request
+        email_address = confirmation.email_address
+
+        if confirmation.confirm(django_request) is None:
+            return Response(
+                {"detail": EMAIL_CONFIRMATION_INVALID},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Confirming one account while signed in as another ends the current
+        # session, as allauth's ConfirmEmailView does.
+        if (
+            django_request.user.is_authenticated
+            and django_request.user.pk != email_address.user_id
+        ):
+            logout(django_request)
+
+        get_adapter(django_request).stash_verified_email(
+            django_request, email_address.email
+        )
+
+        return Response({"email": email_address.email}, status=status.HTTP_200_OK)
 
 
 class LogoutAPIView(APIView):
@@ -160,6 +381,117 @@ class CSRFTokenAPIView(APIView):
         return Response({"csrfToken": get_token(request)})
 
 
+@method_decorator(csrf_protect, name="dispatch")
+class PasswordChangeAPIView(APIView):
+    """Change the signed-in user's password using allauth's ChangePasswordForm."""
+
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [PasswordChangeRateThrottle]
+
+    def post(self, request):
+        form = ChangePasswordForm(user=request.user, data=request.data)
+        if not form.is_valid():
+            return Response(
+                {
+                    "error": "Validation failed",
+                    "field_errors": _serialize_form_errors(form),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        form.save()
+        logout_on_password_change(request, request.user)
+        allauth_signals.password_changed.send(
+            sender=request.user.__class__,
+            request=request,
+            user=request.user,
+        )
+        return Response(status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class PasswordResetAPIView(APIView):
+    """Request a password reset email using BODS' ResetPasswordForm."""
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [PasswordResetRateThrottle]
+
+    def post(self, request):
+        django_request = request._request
+        form = ResetPasswordForm(data=request.data)
+        if not form.is_valid():
+            return Response(
+                {
+                    "error": "Validation failed",
+                    "field_errors": _serialize_form_errors(form),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        email = form.save(django_request)
+        return Response({"email": email}, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class PasswordResetFromKeyAPIView(APIView):
+    """Set a new password from the uidb36+key in the reset email."""
+
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [PasswordResetRateThrottle]
+
+    def get(self, request):
+        user = _user_from_reset_key(
+            request.query_params.get("uidb36"),
+            request.query_params.get("key"),
+        )
+        if user is None:
+            return Response(
+                {"detail": PASSWORD_RESET_INVALID},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response({"valid": True}, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        user = _user_from_reset_key(request.data.get("uidb36"), request.data.get("key"))
+        if user is None:
+            return Response(
+                {"detail": PASSWORD_RESET_INVALID},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        form = ResetPasswordKeyForm(user=user, data=request.data)
+        if not form.is_valid():
+            return Response(
+                {
+                    "error": "Validation failed",
+                    "field_errors": _serialize_form_errors(form),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        form.save()
+        django_request = request._request
+        allauth_signals.password_reset.send(
+            sender=user.__class__,
+            request=django_request,
+            user=user,
+        )
+
+        if allauth_settings.LOGIN_ON_PASSWORD_RESET:
+            login(
+                django_request,
+                user,
+                backend="django.contrib.auth.backends.ModelBackend",
+            )
+            get_token(django_request)
+            return Response({"user": _serialize_user(user)}, status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_200_OK)
+
+
 class OrganisationStatsAPIView(APIView):
     """Return consumer activity stats for an organisation available to the user."""
 
@@ -190,6 +522,76 @@ class OrganisationStatsAPIView(APIView):
         )
 
 
+def _invitation_from_session(request):
+    adapter = get_adapter(request)
+    if not adapter.stash_contains_account_verified_email(request):
+        return None
+
+    try:
+        return adapter.invitation
+    except InvalidSessionKey:
+        return None
+
+
+def _signup_session_state(request):
+    invitation = _invitation_from_session(request)
+    if invitation is None:
+        return {"mode": "developer"}
+
+    organisation_name = ""
+    if invitation.organisation is not None:
+        organisation_name = invitation.organisation.name
+
+    return {
+        "mode": "agent" if invitation.is_agent_user else "operator",
+        "email": invitation.email,
+        "organisationName": organisation_name,
+    }
+
+
+def _signup_form_class(request):
+    """Pick the signup form Django's SignupView would use for this session."""
+    invitation = _invitation_from_session(request)
+    if invitation is None:
+        form_id = "developer_signup"
+    elif invitation.is_agent_user:
+        form_id = "agent_signup"
+    else:
+        form_id = "operator_signup"
+
+    return get_form_class(allauth_settings.FORMS, form_id, SignupForm)
+
+
+def _user_from_reset_key(uidb36, key):
+    if not uidb36 or not key:
+        return None
+
+    try:
+        user = get_user_model().objects.get(pk=url_str_to_user_pk(uidb36))
+    except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
+        return None
+
+    if not default_token_generator.check_token(user, key):
+        return None
+
+    return user
+
+
+def _find_email_confirmation(key):
+    confirmation = EmailConfirmationHMAC.from_key(key)
+    if confirmation is not None:
+        return confirmation
+
+    return EmailConfirmation.objects.all_valid().filter(key=key.lower()).first()
+
+
+def _serialize_form_errors(form):
+    return {
+        field: [str(message) for message in error_list]
+        for field, error_list in form.errors.items()
+    }
+
+
 def _serialize_user(user):
     return {
         "id": user.id,
@@ -203,4 +605,5 @@ def _serialize_user(user):
         "is_org_user": user.is_org_user,
         "is_single_org_user": user.is_single_org_user,
         "is_agent_user": user.is_agent_user,
+        "is_org_admin": user.is_org_admin,
     }

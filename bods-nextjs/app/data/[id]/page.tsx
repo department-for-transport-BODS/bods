@@ -94,7 +94,7 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
       <Breadcrumbs
         items={[
           { label: 'Home', href: HOSTS.data },
-          { label: 'Browse', href: HOSTS.data },
+          { label: 'Browse', href: dataPath('/search') },
           { label: 'Timetables Data', href: dataPath('/timetables?status=live') },
           { label: dataset.name, current: true, truncateAt: 19 },
         ]}

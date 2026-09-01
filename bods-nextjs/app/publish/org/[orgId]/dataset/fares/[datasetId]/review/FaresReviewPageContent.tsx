@@ -389,7 +389,7 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
   const modifyDraftUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/update?modifyDraft=true`;
   const supportBusOperatorsUrl = '/publish/guide-me';
   const dataQualityGuidanceUrl = `${supportBusOperatorsUrl}?section=dataquality`;
-  const contactSupportUrl = '/publish/account';
+  const contactSupportUrl = '/account';
 
   const {
     statusData,

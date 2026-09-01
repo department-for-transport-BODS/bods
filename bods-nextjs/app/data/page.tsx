@@ -1,31 +1,52 @@
 import Link from 'next/link';
+import { dataPath, wwwPath } from '@/config/client';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
-import { HOSTS, dataPath, wwwPath } from '@/config/client';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
-export default function DataBrowsePage() {
+export const metadata = {
+  title: 'Find bus open data - Bus Open Data Service',
+  description:
+    'The Bus Open Data Service provides bus timetable, vehicle location and fares data for every local bus service in England.',
+};
+
+export default function DataHomePage() {
   return (
     <>
       <div className="govuk-width-container">
-        <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Find Bus Open Data', href: '/' },
-            { label: 'Browse', current: true },
-          ]}
-        />
+        <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
+          <Breadcrumbs items={hostBreadcrumbs('data', { label: 'Find Bus Open Data', current: true })} />
+        </div>
       </div>
 
       <div className="app-masthead">
         <div className="govuk-width-container">
           <div className="govuk-grid-row govuk-!-margin-top-5">
-            <div className="govuk-grid-column-two-thirds govuk-!-padding-left-0 govuk-!-padding-right-9">
-              <h1 className="govuk-heading-xl app-masthead__title">Browse bus open data</h1>
+            <div className="govuk-grid-column-two-thirds govuk-!-padding-right-9">
+              <h1 className="govuk-heading-xl app-masthead__title">Find bus open data</h1>
               <p className="govuk-body">
-                You can browse the individual data sets or data feeds provided by the publishers.
-                By clicking on a data set or data feed you can see its metadata, description and
-                more information. You can also subscribe, download or use the API for specific data
-                from the browse section with a registered account.
+                The Bus Open Data Service provides bus timetable, vehicle location and fares data for
+                every local bus service in England.
               </p>
+              <Link
+                href={dataPath('/guide-me')}
+                role="button"
+                draggable={false}
+                className="govuk-button app-button--inverted govuk-!-margin-bottom-0 govuk-button--start"
+                data-module="govuk-button"
+              >
+                Guide Me
+                <svg
+                  className="govuk-button__start-icon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="17.5"
+                  height="19"
+                  viewBox="0 0 33 40"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
+                </svg>
+              </Link>
             </div>
           </div>
         </div>
@@ -36,83 +57,86 @@ export default function DataBrowsePage() {
           <div className="govuk-grid-row">
             <div className="govuk-grid-column-two-thirds">
               <div className="govuk-!-padding-right-9">
-                <div className="govuk-grid-row">
-                  <Link className="govuk-link-bold govuk-body" href={dataPath('/timetables?status=live')}>
-                    Timetables data
+                <p className="govuk-body">
+                  <Link className="govuk-link-bold" href={dataPath('/search')}>
+                    Browse data
                   </Link>
-                  <p className="govuk-body govuk-!-padding-top-3">
-                    You can filter and browse specific timetables data on the service.
-                  </p>
-                  <ul className="govuk-list">
-                    <li><strong>Format:</strong> TXC 2.4 PTI 1.1.A</li>
-                    <li><strong>File type:</strong> XML file</li>
-                    <li><strong>Data type:</strong> Static</li>
-                    <li><strong>Data source:</strong> BODS</li>
-                  </ul>
-                </div>
+                </p>
+                <p className="govuk-body">
+                  View and download open data published by operators of local bus and coach services.
+                </p>
+                <hr className="govuk-section-break govuk-section-break--xl" />
 
-                <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <Link className="govuk-link-bold govuk-body" href={dataPath('/avl?status=live')}>
-                    Location data
+                <p className="govuk-body">
+                  <Link className="govuk-link-bold" href={dataPath('/api')}>
+                    API services
                   </Link>
-                  <p className="govuk-body govuk-!-padding-top-3">
-                    You can filter and browse the live locations of buses at a specific point in
-                    time.
-                  </p>
-                  <ul className="govuk-list">
-                    <li><strong>Format:</strong> SIRI-VM</li>
-                    <li><strong>File type:</strong> XML file</li>
-                    <li><strong>Data type:</strong> Real-time</li>
-                    <li><strong>Data source:</strong> BODS</li>
-                  </ul>
-                </div>
+                </p>
+                <p className="govuk-body">
+                  Experiment with our interactive API services to familiarise yourself with data sets.
+                </p>
+                <hr className="govuk-section-break govuk-section-break--xl" />
 
-                <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <Link className="govuk-link-bold govuk-body" href={dataPath('/fares?status=live')}>
-                    Fares data
+                <p className="govuk-body">
+                  <Link className="govuk-link-bold" href={dataPath('/downloads')}>
+                    Download data
                   </Link>
-                  <p className="govuk-body govuk-!-padding-top-3">
-                    You can filter and browse specific fares data on the service.
-                  </p>
-                  <ul className="govuk-list">
-                    <li><strong>Format:</strong> NeTEx</li>
-                    <li><strong>File type:</strong> XML file</li>
-                    <li><strong>Data type:</strong> Static</li>
-                    <li><strong>Data source:</strong> BODS</li>
-                  </ul>
-                </div>
+                </p>
+                <p className="govuk-body">
+                  Download updates or all of the data published on BODS with a registered account.
+                </p>
+                <hr className="govuk-section-break govuk-section-break--xl" />
 
-                <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <Link className="govuk-link-bold govuk-body" href={dataPath('/disruptions')}>
-                    Disruption data
+                <p className="govuk-body">
+                  <Link className="govuk-link-bold" href={dataPath('/operators')}>
+                    View operator profiles
                   </Link>
-                  <p className="govuk-body govuk-!-padding-top-3">
-                    You can browse specific disruption data.
-                  </p>
-                  <ul className="govuk-list">
-                    <li><strong>Format:</strong> SIRI-SX</li>
-                    <li><strong>File type:</strong> XML file</li>
-                    <li><strong>Data type:</strong> Real-time</li>
-                    <li><strong>Data source:</strong> Local authorities</li>
-                  </ul>
-                </div>
+                </p>
+                <p className="govuk-body">
+                  Search all operator profiles available on BODS to view associated data, NOC codes and
+                  licence numbers.
+                </p>
+                <hr className="govuk-section-break govuk-section-break--xl" />
+
+                <p className="govuk-body">
+                  <Link className="govuk-link-bold" href={dataPath('/catalogue')}>
+                    Download the data catalogue
+                  </Link>
+                </p>
+                <p className="govuk-body">
+                  Data catalogue will provide you with a comprehensive view of all data published on BODS
+                  and provide matching information between different dataset types.
+                </p>
+                <hr className="govuk-section-break govuk-section-break--xl" />
+
+                <p className="govuk-body">
+                  <Link className="govuk-link-bold" href={dataPath('/local-authority')}>
+                    View local transport authority details
+                  </Link>
+                </p>
+                <p className="govuk-body">
+                  Search all Local Transport Authority profiles to review the quality of published data.
+                </p>
               </div>
             </div>
 
             <div className="govuk-grid-column-one-third">
               <h2 className="govuk-heading-m">Need further help?</h2>
-              <ul className="govuk-list">
-                <li className="govuk-!-margin-bottom-3">
-                  <Link className="govuk-link" href={dataPath('/guidance/requirements')}>
-                    Guide me
+              <ul className="govuk-list app-list--nav govuk-!-font-size-19">
+                <li>
+                  <Link
+                    className="govuk-link"
+                    href={dataPath('/guidance/requirements?section=datacatalogue')}
+                  >
+                    Data catalogue field definitions
                   </Link>
                 </li>
-                <li className="govuk-!-margin-bottom-3">
+                <li>
                   <Link className="govuk-link" href={wwwPath('/changelog')}>
                     Service changelog
                   </Link>
                 </li>
-                <li className="govuk-!-margin-bottom-3">
+                <li>
                   <Link className="govuk-link" href={wwwPath('/contact')}>
                     Contact us for technical issues
                   </Link>
@@ -125,11 +149,3 @@ export default function DataBrowsePage() {
     </>
   );
 }
-
-/**
- * Metadata for the page
- */
-export const metadata = {
-  title: 'Browse - Bus Open Data Service',
-  description: 'Browse bus open data by type, including timetables, location, fares and disruption data.',
-};

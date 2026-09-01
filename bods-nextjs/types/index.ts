@@ -15,6 +15,7 @@ export interface User {
   is_org_user?: boolean;
   is_single_org_user?: boolean;
   is_agent_user?: boolean;
+  is_org_admin?: boolean;
 }
 
 export interface AuthToken {

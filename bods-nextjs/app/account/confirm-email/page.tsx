@@ -1,22 +1,20 @@
 /**
- * Email Confirmation Page
- * 
- * Handles email verification links from Django
+ * Verify Your Email Page
+ *
+ * Landing page after signup. The verification link in the email points at
+ * /account/confirm-email/<key>/, which is handled by the [key] route.
  */
 
-import { Suspense } from 'react';
-import { ConfirmEmailContent } from './ConfirmEmailContent';
+import { VerificationSentContent } from './VerificationSentContent';
 
-export default function ConfirmEmailPage() {
+export default function VerifyEmailPage() {
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl">Confirm your email</h1>
-            <Suspense fallback={<p className="govuk-body">Loading...</p>}>
-              <ConfirmEmailContent />
-            </Suspense>
+            <h1 className="govuk-heading-xl">Verify your email</h1>
+            <VerificationSentContent />
           </div>
         </div>
       </div>

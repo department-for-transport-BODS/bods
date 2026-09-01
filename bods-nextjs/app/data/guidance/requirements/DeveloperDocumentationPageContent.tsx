@@ -115,7 +115,7 @@ function DeveloperDocumentationContent() {
         items={[
           { label: 'Bus Open Data Service', href: HOSTS.www },
           { label: 'Find Bus Open Data', href: HOSTS.data },
-          { label: 'Guide Me', href: `${HOSTS.publish}/guide-me` },
+          { label: 'Guide Me', href: `${HOSTS.data}/guide-me` },
           { label: 'Developer documentation', current: true },
         ]}
       />

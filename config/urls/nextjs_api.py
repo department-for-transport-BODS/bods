@@ -37,9 +37,59 @@ from transit_odp.timetables.views.api import (
     get_timetables_review_status_api,
     publish_timetables_dataset_api,
 )
+from transit_odp.users.views.api import (
+    create_organisation_invite_api,
+    get_organisation_member_api,
+    get_organisation_members_api,
+    get_organisation_profile_api,
+    resend_organisation_invite_api,
+    set_organisation_member_active_api,
+    update_organisation_member_api,
+    update_organisation_profile_api,
+)
 
 urlpatterns = [
     path("auth/", include("config.urls.session_auth_api")),
+    path(
+        "organisation/profile/<int:pk>/",
+        get_organisation_profile_api,
+        name="nextjs-organisation-profile",
+    ),
+    path(
+        "organisation/profile/<int:pk>/update/",
+        update_organisation_profile_api,
+        name="nextjs-organisation-profile-update",
+    ),
+    path(
+        "organisation/<int:pk>/members/",
+        get_organisation_members_api,
+        name="nextjs-organisation-members",
+    ),
+    path(
+        "organisation/<int:pk>/invite/",
+        create_organisation_invite_api,
+        name="nextjs-organisation-invite",
+    ),
+    path(
+        "organisation/members/<int:pk>/",
+        get_organisation_member_api,
+        name="nextjs-organisation-member",
+    ),
+    path(
+        "organisation/members/<int:pk>/update/",
+        update_organisation_member_api,
+        name="nextjs-organisation-member-update",
+    ),
+    path(
+        "organisation/members/<int:pk>/set-active/",
+        set_organisation_member_active_api,
+        name="nextjs-organisation-member-set-active",
+    ),
+    path(
+        "organisation/invites/<int:pk>/resend/",
+        resend_organisation_invite_api,
+        name="nextjs-organisation-invite-resend",
+    ),
     path(
         "agent-dashboard/organisations/",
         get_agent_dashboard_organisations_api,

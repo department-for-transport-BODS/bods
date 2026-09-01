@@ -30,13 +30,26 @@ const wwwOnlyRoutePrefixes = [
 const sharedRoutePrefixes = [
   '/account/login',
   '/account/logout',
+  '/account/logout-success',
   '/account/signup',
+  '/account/account-exists',
   '/account/password',
   '/account/confirm-email',
+  '/account/settings',
+  '/account/agent',
+  '/invitations/accept-invite',
 ];
 
 function hasRoutePrefix(pathname: string, routePrefix: string): boolean {
   return pathname === routePrefix || pathname.startsWith(`${routePrefix}/`);
+}
+
+function isSharedAccountPath(pathname: string): boolean {
+  if (pathname === '/account' || pathname === '/account/') {
+    return true;
+  }
+
+  return sharedRoutePrefixes.some((prefix) => hasRoutePrefix(pathname, prefix));
 }
 
 function publicPath(pathname: string, routePrefix: string): string | null {
@@ -114,10 +127,6 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  if (pathname === '/account' && subdomain !== 'publish' && subdomain !== 'www') {
-    return redirectToSubdomain(request, hostname, 'publish', '/account');
-  }
-
   if (
     subdomain !== 'www' &&
     wwwOnlyRoutePrefixes.some((prefix) => hasRoutePrefix(pathname, prefix))
@@ -125,7 +134,7 @@ export function proxy(request: NextRequest) {
     return redirectToSubdomain(request, hostname, 'www', pathname);
   }
 
-  if (sharedRoutePrefixes.some((prefix) => hasRoutePrefix(pathname, prefix))) {
+  if (isSharedAccountPath(pathname)) {
     return NextResponse.next();
   }
 

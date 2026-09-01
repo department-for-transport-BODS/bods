@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./govuk.scss";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth/session-auth";
+import { HostProvider } from "@/lib/bods-host-context";
 import { GDSProvider } from "@/components/gds/GDSProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -33,19 +34,21 @@ export default async function RootLayout({
       </head>
       <body className="govuk-template__body js-enabled govuk-frontend-supported">
         <AuthProvider>
-          <GDSProvider>
-            <a href="#main-content" className="govuk-skip-link" data-module="govuk-skip-link">
-              Skip to main content
-            </a>
-            <Header hostname={hostname} />
-            <main id="main-content" role="main">
-              <div className="govuk-width-container">
-                <PhaseBanner />
-              </div>
-              {children}
-            </main>
-            <Footer />
-          </GDSProvider>
+          <HostProvider hostname={hostname}>
+            <GDSProvider>
+              <a href="#main-content" className="govuk-skip-link" data-module="govuk-skip-link">
+                Skip to main content
+              </a>
+              <Header />
+              <main id="main-content" role="main">
+                <div className="govuk-width-container">
+                  <PhaseBanner />
+                </div>
+                {children}
+              </main>
+              <Footer />
+            </GDSProvider>
+          </HostProvider>
         </AuthProvider>
       </body>
     </html>

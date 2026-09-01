@@ -1,6 +1,6 @@
 /**
  * Header Component
- * Matches Django header.html + navlinks_publish.html exactly.
+ * Matches Django header.html + navlinks_publish.html / navlinks_data.html.
  */
 
 'use client';
@@ -8,28 +8,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
-import { HOSTS, publishPath } from '@/config/client';
-import { bodsAreaFromHostname, type BodsSubdomain } from '@/config/hosts';
+import { HOSTS } from '@/config/client';
+import type { BodsSubdomain } from '@/config/hosts';
 import { useAuth } from '@/hooks/useAuth';
+import { useBodsArea } from '@/lib/bods-host-context';
+import type { User } from '@/types';
 import { AccountIcon } from './icons/AccountIcon';
 import { GovUkLogo } from './icons/GovUkLogo';
-
-function serviceHomeUrl(area: BodsSubdomain): string {
-  switch (area) {
-    case 'publish':
-      return HOSTS.publish;
-    case 'data':
-      return HOSTS.data;
-    case 'admin':
-      return HOSTS.admin;
-    case 'www':
-      return HOSTS.www;
-    default: {
-      const exhaustive: never = area;
-      return exhaustive;
-    }
-  }
-}
 
 function pathFromHref(href: string): string {
   if (href.startsWith('http://') || href.startsWith('https://')) {
@@ -39,18 +24,68 @@ function pathFromHref(href: string): string {
   return href;
 }
 
-export function Header({ hostname }: { hostname: string }) {
+function isServiceHost(area: BodsSubdomain): area is 'publish' | 'data' {
+  return area === 'publish' || area === 'data';
+}
+
+function AccountMenuLinks({ area, user }: { area: 'publish' | 'data'; user: User }) {
+  const accountUrl = '/account';
+  const accountSettingsUrl = '/account/settings';
+  const logoutUrl = '/account/logout';
+
+  switch (area) {
+    case 'publish': {
+      const organisationProfileUrl = user.organisation_id
+        ? `/account/manage/org-profile/${user.organisation_id}`
+        : null;
+      const userManagementUrl =
+        user.is_org_admin && user.organisation_id
+          ? `/account/manage/${user.organisation_id}`
+          : null;
+
+      return (
+        <>
+          <a className="govuk-link" href={accountUrl}>My account</a>
+          {userManagementUrl && (
+            <a className="govuk-link" href={userManagementUrl}>User management</a>
+          )}
+          {organisationProfileUrl && (
+            <a className="govuk-link" href={organisationProfileUrl}>Organisation profile</a>
+          )}
+          <a className="govuk-link" href={accountSettingsUrl}>Account settings</a>
+          <a className="govuk-link" href={logoutUrl}>Sign out</a>
+        </>
+      );
+    }
+    case 'data':
+      return (
+        <>
+          <a className="govuk-link" href={accountUrl}>My account</a>
+          <a className="govuk-link" href="/account/manage">Manage subscriptions</a>
+          <a className="govuk-link" href={accountSettingsUrl}>Account settings</a>
+          <a className="govuk-link" href={logoutUrl}>Sign out</a>
+        </>
+      );
+    default: {
+      const exhaustive: never = area;
+      return exhaustive;
+    }
+  }
+}
+
+export function Header() {
   const { user } = useAuth();
   const pathname = usePathname();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLLIElement>(null);
-  const area = bodsAreaFromHostname(hostname);
-  const showServiceMenu = area === 'publish' || area === 'data';
-  const homeUrl = serviceHomeUrl(area);
-  const guideMeUrl = publishPath('/guide-me');
-  const accountUrl = publishPath('/account');
+  const area = useBodsArea();
+  // Narrowed once so the account menu can be typed without re-checking the host.
+  const serviceArea = isServiceHost(area) ? area : null;
+  const homeUrl = HOSTS[area];
+  // Each service host has its own guide-me page, as in Django's navlinks_publish /
+  // navlinks_data snippets.
+  const guideMeUrl = '/guide-me';
   const loginUrl = '/account/login';
-  const logoutUrl = '/account/logout';
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -77,7 +112,7 @@ export function Header({ hostname }: { hostname: string }) {
           <Link href={homeUrl} className="govuk-header__link govuk-header__service-name">
             {serviceName}
           </Link>
-          {showServiceMenu && (
+          {serviceArea && (
             <nav className="govuk-header__navigation" aria-label="Menu">
               <button
                 type="button"
@@ -112,10 +147,7 @@ export function Header({ hostname }: { hostname: string }) {
                       {' '}My account
                     </button>
                     <div className={`dropdown-content${dropdownOpen ? ' open' : ''}`}>
-                      <a className="govuk-link" href={accountUrl}>My account</a>
-                      <a className="govuk-link" href={accountUrl}>Organisation profile</a>
-                      <a className="govuk-link" href={accountUrl}>Account settings</a>
-                      <a className="govuk-link" href={logoutUrl}>Sign out</a>
+                      <AccountMenuLinks area={serviceArea} user={user} />
                     </div>
                   </li>
                 ) : (

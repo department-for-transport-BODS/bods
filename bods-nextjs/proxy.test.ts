@@ -93,11 +93,34 @@ describe('subdomain routing proxy', () => {
       expect(response.headers.get('location')).toBeNull();
     });
 
-    it('rewrites publish account to the internal publish account page', () => {
-      const url = 'https://publish.xyz.com/account';
+    it('keeps my account on the publish host', () => {
+      const response = proxy(request('https://publish.xyz.com/account', 'publish.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps my account on the data host', () => {
+      const response = proxy(request('https://data.xyz.com/account', 'data.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('rewrites Django user-management URLs onto the publish account page', () => {
+      const url = 'https://publish.xyz.com/account/manage/12';
       const response = proxy(request(url, 'publish.xyz.com'));
 
-      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/publish/account');
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/publish/account/manage/12');
+    });
+
+    it('rewrites manage subscriptions on the data host', () => {
+      const url = 'https://data.xyz.com/account/manage';
+      const response = proxy(request(url, 'data.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(
+        '/data/account/manage',
+      );
     });
 
     it('keeps account login on the publish host', () => {
@@ -121,16 +144,68 @@ describe('subdomain routing proxy', () => {
       expect(response.headers.get('x-middleware-rewrite')).toBeNull();
     });
 
+    it('keeps account-exists on the publish host', () => {
+      const response = proxy(
+        request('https://publish.xyz.com/account/account-exists', 'publish.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps logout-success on the data host', () => {
+      const response = proxy(
+        request('https://data.xyz.com/account/logout-success', 'data.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps invitation accept links on the publish host', () => {
+      const response = proxy(
+        request('https://publish.xyz.com/invitations/accept-invite/abc123', 'publish.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps invitation accept links on the data host', () => {
+      const response = proxy(
+        request('https://data.xyz.com/invitations/accept-invite/abc123', 'data.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps account settings on the data host', () => {
+      const response = proxy(request('https://data.xyz.com/account/settings', 'data.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps account settings on the publish host', () => {
+      const url = 'https://publish.xyz.com/account/settings';
+      const response = proxy(request(url, 'publish.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
+    it('keeps agent invite pages on the data host', () => {
+      const response = proxy(request('https://data.xyz.com/account/agent/invite/4', 'data.xyz.com'));
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
     it('still redirects genuinely www-only routes from the publish host to WWW', () => {
       const response = proxy(request('https://publish.xyz.com/cookie', 'publish.xyz.com'));
 
       expect(response.headers.get('location')).toBe('https://www.xyz.com/cookie');
-    });
-
-    it('redirects data /account to the publish account page', () => {
-      const response = proxy(request('https://data.xyz.com/account', 'data.xyz.com'));
-
-      expect(response.headers.get('location')).toBe('https://publish.xyz.com/account');
     });
 
     it('does not redirect using an untrusted host', () => {

@@ -48,7 +48,7 @@ describe('PublishPage', () => {
         organisation_id: 123,
       },
       publishAppPath('/org/123/dataset'),
-      publishAppPath('/org/123/dataset/fares'),
+      publishAppPath('/org/123/dataset/timetable'),
     ],
     [
       'single-organisation users without an organisation id',
@@ -90,7 +90,7 @@ describe('PublishPage', () => {
     render(<PublishPage />);
 
     expect(screen.getByRole('link', { name: 'Guide me' })).toHaveAttribute('href', publishAppPath('/guide-me'));
-    expect(screen.getByRole('link', { name: 'Manage your account' })).toHaveAttribute('href', publishAppPath('/account'));
+    expect(screen.getByRole('link', { name: 'Manage your account' })).toHaveAttribute('href', '/account');
     expect(screen.getByRole('link', { name: 'Service changelog' })).toHaveAttribute('href', wwwPath('/changelog'));
     expect(screen.getByRole('link', { name: 'Contact us for technical issues' })).toHaveAttribute('href', wwwPath('/contact'));
   });

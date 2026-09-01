@@ -1,79 +1,57 @@
 /**
  * Confirm Email Content Component
- * 
- * NextJS component to run in the browser to handle the user clicking a 
- * link to trigger an email to be sent to confirm their email address
+ *
+ * Confirms the address behind a verification key, mirroring Django's
+ * ConfirmEmailView with ACCOUNT_CONFIRM_EMAIL_ON_GET. A valid key confirms
+ * and redirects to login. An invalid or already-used key stays here with
+ * the expired copy from email_confirm.html.
  */
 
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api-client';
+import { ErrorSummary } from '@/components/shared';
 
-export function ConfirmEmailContent() {
-  const searchParams = useSearchParams();
+interface ConfirmEmailContentProps {
+  confirmationKey: string;
+}
+
+export function ConfirmEmailContent({ confirmationKey }: ConfirmEmailContentProps) {
   const router = useRouter();
-  const key = searchParams.get('key');
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState<'loading' | 'error'>('loading');
 
   useEffect(() => {
-    if (!key) {
-      return;
-    }
+    let isCancelled = false;
 
-    api.post('/api/auth/confirm-email/', { key })
+    api
+      .post('/api/auth/confirm-email/', { key: confirmationKey })
       .then(() => {
-        setStatus('success');
-        setMessage('Your email has been confirmed. You can now sign in.');
-        setTimeout(() => {
-          router.push('/account/login');
-        }, 3000);
+        if (!isCancelled) {
+          router.replace('/account/login');
+        }
       })
       .catch(() => {
-        setStatus('error');
-        setMessage('This email confirmation link expired or is invalid.');
+        if (!isCancelled) setStatus('error');
       });
-  }, [key, router]);
 
-  if (!key) {
-    return (
-      <div className="govuk-error-summary" role="alert">
-        <h2 className="govuk-error-summary__title">
-          Confirmation failed
-        </h2>
-        <div className="govuk-error-summary__body">
-          <p className="govuk-body">This email confirmation link expired or is invalid.</p>
-        </div>
-      </div>
-    );
-  }
+    return () => {
+      isCancelled = true;
+    };
+  }, [confirmationKey, router]);
 
   if (status === 'loading') {
-    return <p className="govuk-body">Confirming your email address...</p>;
-  }
-
-  if (status === 'success') {
-    return (
-      <div className="govuk-panel govuk-panel--confirmation">
-        <h2 className="govuk-panel__title">Email confirmed</h2>
-        <div className="govuk-panel__body">
-          {message}
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className="govuk-error-summary" role="alert">
-      <h2 className="govuk-error-summary__title">
-        Confirmation failed
-      </h2>
-      <div className="govuk-error-summary__body">
-        <p className="govuk-body">{message}</p>
-      </div>
-    </div>
+    <>
+      <h1 className="govuk-heading-xl">Confirm email address</h1>
+      <ErrorSummary
+        title="This email confirmation link expired or is invalid."
+        errors={[{ text: 'Issue a new email confirmation request', href: '/account/login' }]}
+      />
+    </>
   );
 }
-

@@ -1,5 +1,9 @@
+import json
+import re
+
 import pytest
 
+from config import hosts
 from transit_odp.api.views.auth import _serialize_user
 from transit_odp.organisation.factories import OrganisationFactory
 from transit_odp.users.constants import AccountType
@@ -7,6 +11,8 @@ from transit_odp.users.factories import AgentUserFactory, UserFactory
 
 
 pytestmark = pytest.mark.django_db
+
+NEW_PASSWORD = "newPassword_34324()()"
 
 
 def test_serialize_user_includes_routing_fields_for_org_user():
@@ -36,3 +42,169 @@ def test_serialize_user_includes_routing_fields_for_agent_user():
     assert payload["is_org_user"] is True
     assert payload["is_single_org_user"] is False
     assert payload["is_agent_user"] is True
+
+
+PASSWORD_CHANGE_URL = "/api/auth/password/change/"
+
+
+def _post_password_change(client, payload):
+    return client.post(
+        PASSWORD_CHANGE_URL,
+        data=json.dumps(payload),
+        content_type="application/json",
+    )
+
+
+def test_password_change_requires_authentication(client_factory):
+    client = client_factory(host=hosts.PUBLISH_HOST)
+
+    response = _post_password_change(
+        client,
+        {
+            "oldpassword": "oldpassword",
+            "password1": NEW_PASSWORD,
+            "password2": NEW_PASSWORD,
+        },
+    )
+
+    assert response.status_code == 403
+
+
+def test_password_change_rejects_incorrect_current_password(user, client_factory):
+    user.set_password("oldpassword")
+    user.save()
+    client = client_factory(host=hosts.PUBLISH_HOST)
+    client.force_login(user=user)
+
+    response = _post_password_change(
+        client,
+        {
+            "oldpassword": "not-the-password",
+            "password1": NEW_PASSWORD,
+            "password2": NEW_PASSWORD,
+        },
+    )
+
+    assert response.status_code == 400
+    assert "oldpassword" in response.json()["field_errors"]
+    user.refresh_from_db()
+    assert user.check_password("oldpassword")
+
+
+def test_password_change_updates_password_and_sends_email(
+    user, client_factory, mailoutbox
+):
+    user.set_password("oldpassword")
+    user.save()
+    client = client_factory(host=hosts.PUBLISH_HOST)
+    client.force_login(user=user)
+
+    response = _post_password_change(
+        client,
+        {
+            "oldpassword": "oldpassword",
+            "password1": NEW_PASSWORD,
+            "password2": NEW_PASSWORD,
+        },
+    )
+
+    assert response.status_code == 200
+    user.refresh_from_db()
+    assert user.check_password(NEW_PASSWORD)
+    assert mailoutbox[0].to[0] == user.email
+    assert (
+        mailoutbox[0].subject
+        == "You have changed your password on the Bus Open Data Service"
+    )
+
+    session_response = client.get("/api/auth/user/")
+    assert session_response.status_code == 200
+    assert session_response.json()["id"] == user.id
+
+
+PASSWORD_RESET_URL = "/api/auth/password/reset/"
+PASSWORD_RESET_KEY_URL = "/api/auth/password/reset/key/"
+
+
+def _post_json(client, url, payload):
+    return client.post(url, data=json.dumps(payload), content_type="application/json")
+
+
+def _reset_key_from_mailbox(mailoutbox):
+    match = re.search(
+        r"/account/password/reset/key/([^/\s]+)/?",
+        mailoutbox[0].body,
+    )
+    assert match is not None
+    uidb36, key = match.group(1).split("-", 1)
+    return uidb36, key
+
+
+def test_password_reset_does_not_send_mail_for_unknown_email(
+    client_factory, mailoutbox
+):
+    client = client_factory(host=hosts.DATA_HOST)
+
+    response = _post_json(client, PASSWORD_RESET_URL, {"email": "nobody@example.com"})
+
+    assert response.status_code == 200
+    assert response.json()["email"] == "nobody@example.com"
+    assert mailoutbox == []
+
+
+def test_password_reset_sends_link_and_sets_new_password(
+    user, client_factory, mailoutbox
+):
+    client = client_factory(host=hosts.DATA_HOST)
+    user.set_password("oldpassword")
+    user.save()
+
+    response = _post_json(client, PASSWORD_RESET_URL, {"email": user.email})
+
+    assert response.status_code == 200
+    assert response.json()["email"] == user.email
+    assert mailoutbox[0].to[0] == user.email
+    assert mailoutbox[0].subject == "Change your password on the Bus Open Data Service"
+
+    uidb36, key = _reset_key_from_mailbox(mailoutbox)
+
+    valid = client.get(PASSWORD_RESET_KEY_URL, data={"uidb36": uidb36, "key": key})
+    assert valid.status_code == 200
+    assert valid.json()["valid"] is True
+
+    reset = _post_json(
+        client,
+        PASSWORD_RESET_KEY_URL,
+        {
+            "uidb36": uidb36,
+            "key": key,
+            "password1": NEW_PASSWORD,
+            "password2": NEW_PASSWORD,
+        },
+    )
+
+    assert reset.status_code == 200
+    user.refresh_from_db()
+    assert user.check_password(NEW_PASSWORD)
+
+    session_response = client.get("/api/auth/user/")
+    assert session_response.status_code == 200
+    assert session_response.json()["id"] == user.id
+
+
+def test_password_reset_rejects_an_invalid_key(client_factory):
+    client = client_factory(host=hosts.DATA_HOST)
+
+    response = _post_json(
+        client,
+        PASSWORD_RESET_KEY_URL,
+        {
+            "uidb36": "MQ",
+            "key": "not-a-real-key",
+            "password1": NEW_PASSWORD,
+            "password2": NEW_PASSWORD,
+        },
+    )
+
+    assert response.status_code == 400
+    assert "expired or is invalid" in response.json()["detail"]

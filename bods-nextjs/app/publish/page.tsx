@@ -23,7 +23,7 @@ function PublishDashboard() {
 
   let reviewView = publishAppPath('/org');
   if (user?.is_single_org_user && user.organisation_id) {
-    reviewView = publishAppPath(`/org/${user.organisation_id}/dataset/fares`);
+    reviewView = publishAppPath(`/org/${user.organisation_id}/dataset/timetable`);
   } else if (user?.is_agent_user) {
     reviewView = publishAppPath('/agent-dashboard');
   }
@@ -95,7 +95,7 @@ function PublishDashboard() {
               <p className="govuk-body govuk-!-margin-bottom-7">Review the health of your data.</p>
 
               <h2 className="govuk-heading-s">
-                <Link className="govuk-link-bold" href={publishAppPath('/account')}>
+                <Link className="govuk-link-bold" href="/account">
                   Manage your account
                 </Link>
               </h2>
