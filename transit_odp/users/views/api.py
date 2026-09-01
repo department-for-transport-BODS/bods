@@ -15,7 +15,7 @@ from django.views.decorators.http import require_GET, require_POST
 from rest_framework.authtoken.models import Token
 
 from transit_odp.notifications import get_notifications
-from transit_odp.organisation.constants import DatasetType
+from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.forms.management import UserEditForm
 from transit_odp.organisation.models import Dataset, Licence, OperatorCode, Organisation
 from transit_odp.organisation.models.data import ServiceCodeExemption
@@ -193,25 +193,25 @@ def _subscription_status_display(
     status: str | None, dataset_type: int
 ) -> tuple[str, str]:
     """Labels from organisation/snippets/status_indicator.html."""
-    if status == "live":
+    if status == FeedStatus.live.value:
         return ("Published", "status-indicator--success")
-    if status in ("indexing", "pending"):
+    if status in (FeedStatus.indexing.value, FeedStatus.pending.value):
         return ("Processing", "status-indicator--indexing")
-    if status == "warning":
+    if status == FeedStatus.warning.value:
         return ("Warning", "status-indicator--warning")
-    if status == "expiring":
+    if status == FeedStatus.expiring.value:
         return ("Soon to expire", "status-indicator--warning")
-    if status == "error":
+    if status == FeedStatus.error.value:
         if dataset_type == DatasetType.AVL.value:
             return ("Published", "status-indicator--success")
         return ("Error", "status-indicator--error")
-    if status in ("draft", "success"):
+    if status in (FeedStatus.draft.value, FeedStatus.success.value):
         return ("Draft", "status-indicator--draft")
-    if status == "expired":
+    if status == FeedStatus.expired.value:
         return ("Expired", "status-indicator--inactive")
-    if status == "inactive":
+    if status == FeedStatus.inactive.value:
         return ("Inactive", "status-indicator--inactive")
-    if status == "deleted":
+    if status == FeedStatus.deleted.value:
         return ("Deleted", "status-indicator--error")
     return (status or "", "")
 
