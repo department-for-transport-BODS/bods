@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
 
+from datetime import date
 from unittest.mock import MagicMock, patch
 from requests import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
@@ -263,3 +264,57 @@ def test_eve_records_from_api(mrequests):
         "NewYearsDayHoliday",
         "ChristmasDayHoliday",
     }
+
+
+@patch("transit_odp.timetables.utils.requests")
+def test_summer_bank_holiday_disambiguated_by_division(mrequests):
+    """
+    GOV.UK uses the identical title "Summer bank holiday" for both the
+    England/Wales late-summer bank holiday and the Scotland August bank
+    holiday. Regression test for BODS incorrectly grouping both dates
+    under the same txc_element.
+    """
+    json_content = {
+        "england-and-wales": {
+            "division": "england-and-wales",
+            "events": [
+                {
+                    "title": "Summer bank holiday",
+                    "date": "2026-08-31",
+                    "notes": "",
+                    "bunting": True,
+                },
+            ],
+        },
+        "scotland": {
+            "division": "scotland",
+            "events": [
+                {
+                    "title": "Summer bank holiday",
+                    "date": "2026-08-03",
+                    "notes": "",
+                    "bunting": True,
+                }
+            ],
+        },
+    }
+
+    mresponse = MagicMock(status_code=HTTP_200_OK)
+    mresponse.json.return_value = json_content
+    mrequests.get.return_value = mresponse
+    column_names = [field.name for field in BankHolidays._meta.fields]
+
+    holidays = get_bank_holidays()
+
+    df_holidays = pd.DataFrame(holidays, columns=column_names)
+
+    england_dates = df_holidays.loc[
+        df_holidays["txc_element"] == "LateSummerBankHolidayNotScotland", "date"
+    ].tolist()
+    scotland_dates = df_holidays.loc[
+        df_holidays["txc_element"] == "AugustBankHolidayScotland", "date"
+    ].tolist()
+
+    assert england_dates == [date(2026, 8, 31)]
+    assert scotland_dates == [date(2026, 8, 3)]
+
