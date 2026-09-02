@@ -7,12 +7,10 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
-import { useBodsArea } from '@/lib/bods-host-context';
-import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 interface AgentInviteDetail {
   id: number;
@@ -22,7 +20,6 @@ interface AgentInviteDetail {
 function AgentInviteLeave() {
   const params = useParams();
   const router = useRouter();
-  const area = useBodsArea();
   const inviteId = params.pk as string;
 
   const [invite, setInvite] = useState<AgentInviteDetail | null>(null);
@@ -67,15 +64,10 @@ function AgentInviteLeave() {
 
   return (
     <div className="govuk-width-container">
+      <Link className="govuk-back-link" href="/account">
+        Back
+      </Link>
       <div className="govuk-main-wrapper">
-        <Breadcrumbs
-          items={hostBreadcrumbs(
-            area,
-            { label: 'My account', href: '/account' },
-            { label: 'Leave organisation', current: true },
-          )}
-        />
-
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             {isLoading && <p className="govuk-body">Loading...</p>}
@@ -83,10 +75,11 @@ function AgentInviteLeave() {
 
             {!isLoading && invite && (
               <>
-                <h1 className="govuk-heading-l">
-                  Are you sure you want to leave {invite.organisationName}?
+                <h1 className="govuk-heading-xl">
+                  Are you sure you would like to stop being an agent on behalf of{' '}
+                  {invite.organisationName}?
                 </h1>
-                <p className="govuk-body">You will no longer be able to publish or review data for this organisation.</p>
+                <p className="govuk-body-m govuk-!-margin-bottom-6">Please confirm your choice</p>
                 <div className="govuk-button-group">
                   <button type="button" className="govuk-button" disabled={isSubmitting} onClick={handleConfirm}>
                     Confirm
