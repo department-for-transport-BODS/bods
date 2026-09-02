@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TimetableReviewPage from './page';
 import { api } from '@/lib/api-client';
+import { useAuth } from '@/hooks/useAuth';
 
 const mockPush = jest.fn();
 let mockSearchParams = new URLSearchParams();
@@ -22,11 +23,16 @@ jest.mock('@/lib/api-client', () => ({
   },
 }));
 
+jest.mock('@/hooks/useAuth', () => ({
+  useAuth: jest.fn(),
+}));
+
 describe('Timetable - Review - Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockSearchParams = new URLSearchParams();
     (api.get as jest.Mock).mockResolvedValue({ tab: 'active', results: [] });
+    (useAuth as jest.Mock).mockReturnValue({ user: { is_agent_user: false } });
   });
 
   it('loads the active tab by default and links to the create wizard', async () => {

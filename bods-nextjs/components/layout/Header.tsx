@@ -12,6 +12,7 @@ import { HOSTS } from '@/config/client';
 import type { BodsSubdomain } from '@/config/hosts';
 import { useAuth } from '@/hooks/useAuth';
 import { useBodsArea } from '@/lib/bods-host-context';
+import { serviceHomeName } from '@/lib/host-breadcrumbs';
 import type { User } from '@/types';
 import { AccountIcon } from './icons/AccountIcon';
 import { GovUkLogo } from './icons/GovUkLogo';
@@ -97,7 +98,7 @@ export function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const serviceName = area === 'publish' ? 'Publish Bus Open Data' : 'Bus Open Data Service';
+  const serviceName = serviceHomeName(area) + " next.js";
   const isActive = (href: string) => pathname === pathFromHref(href) ? 'govuk-header__navigation-item--active' : '';
 
   return (
