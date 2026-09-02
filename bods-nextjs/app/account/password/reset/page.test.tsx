@@ -49,9 +49,9 @@ describe('Password reset request page', () => {
   it('renders the Django reset-password copy', () => {
     renderPage();
 
-    expect(screen.getByRole('heading', { name: 'Reset password' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Forgot your password?' })).toBeInTheDocument();
     expect(screen.getByText('Enter your email address to reset your password.')).toBeInTheDocument();
-    expect(screen.getByLabelText('Email')).toHaveAttribute('id', 'email');
+    expect(screen.getByLabelText(/Email/)).toHaveAttribute('id', 'email');
     expect(screen.getByRole('link', { name: 'Create account' })).toHaveAttribute('href', '/account/signup');
   });
 
@@ -60,7 +60,7 @@ describe('Password reset request page', () => {
 
     renderPage();
 
-    await userEvent.type(screen.getByLabelText('Email'), 'user@example.com');
+    await userEvent.type(screen.getByLabelText(/Email/), 'user@example.com');
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
     await waitFor(() => {
@@ -80,7 +80,7 @@ describe('Password reset request page', () => {
 
     renderPage();
 
-    await userEvent.type(screen.getByLabelText('Email'), 'not-an-email');
+    await userEvent.type(screen.getByLabelText(/Email/), 'not-an-email');
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
     expect(await screen.findAllByText('Enter a valid email address.')).not.toHaveLength(0);

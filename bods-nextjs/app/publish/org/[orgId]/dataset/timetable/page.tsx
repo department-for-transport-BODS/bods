@@ -9,7 +9,8 @@ import { api } from '@/lib/api-client';
 import { formatDate } from '@/lib/utils/date';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
-import { HOSTS } from '@/config/client';
+import { HOSTS, publishAppPath } from '@/config/client';
+import { useAuth } from '@/hooks/useAuth';
 
 type TimetableTab = 'active' | 'draft' | 'archive';
 
@@ -58,6 +59,7 @@ function TimetableReview() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useAuth();
   const orgId = params.orgId as string;
   const nextCreateUrl = `/publish/org/${orgId}/dataset/timetable/new`;
   const reviewDetailsUrl = `/publish/org/${orgId}/dataset/data-activity?prev=timetable-feed-list`;
@@ -124,6 +126,9 @@ function TimetableReview() {
             items={[
               { label: 'Bus Open Data Service', href: HOSTS.www },
               { label: 'Publish Bus Open Data', href: HOSTS.publish },
+              ...(user?.is_agent_user
+                ? [{ label: 'Agent Dashboard', href: publishAppPath('/agent-dashboard') }]
+                : []),
               { label: 'Review My Timetables Data', current: true },
             ]}
           />
