@@ -4,6 +4,7 @@ from logging import getLogger
 from typing import List, Optional
 
 from lxml import etree
+from pathlib import Path
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.data_quality.pti.models import Observation, Violation
@@ -14,6 +15,7 @@ from transit_odp.timetables.transxchange import BaseSchemaViolation
 from transit_odp.timetables.utils import get_transxchange_schema
 from transit_odp.validate.xml import FileValidator, XMLValidator
 from transit_odp.validate.zip import ZippedValidator
+
 
 logger = getLogger(__name__)
 
@@ -89,8 +91,21 @@ class DatasetTXCValidator:
                 continue
 
             file_.seek(0)
-            doc = etree.parse(file_)
+            try:
+                doc = etree.parse(file_)
+            except etree.XMLSyntaxError as exc:
+                violations.append(
+                    BaseSchemaViolation(
+                        filename=Path(name).name,
+                        line=exc.lineno or 0,
+                        details=exc.msg,
+                    )
+                )
+                self._failed_violation_filenames.append(name)
+                continue
+
             is_valid = self._schema.validate(doc)
+
             if not is_valid:
                 for error in self._schema.error_log:
                     violations.append(BaseSchemaViolation.from_error(error))
