@@ -70,6 +70,7 @@ function MyAccount() {
         <Breadcrumbs
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
+            { label: 'Publish Bus Open Data', href: HOSTS.publish },
             { label: 'My account', current: true },
           ]}
         />
