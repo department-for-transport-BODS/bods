@@ -52,7 +52,6 @@ class DatasetTXCValidator:
     def __init__(self, revision: DatasetRevision):
         self._schema = get_transxchange_schema()
         self._revision = revision
-        self._failed_violation_filenames = []
 
     def get_number_of_files_uploaded(self):
         file_ = self._revision.upload_file
@@ -101,7 +100,6 @@ class DatasetTXCValidator:
                         details=getattr(exc, "msg", None) or str(exc),
                     )
                 )
-                self._failed_violation_filenames.append(name)
                 continue
 
             is_valid = self._schema.validate(doc)
@@ -109,11 +107,7 @@ class DatasetTXCValidator:
             if not is_valid:
                 for error in self._schema.error_log:
                     violations.append(BaseSchemaViolation.from_error(error))
-                    self._failed_violation_filenames.append(error.filename)
         return violations
-
-    def get_failed_violations_filenames(self):
-        return set(self._failed_violation_filenames)
 
 
 class TimetableFileValidator:
