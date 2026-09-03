@@ -496,7 +496,8 @@ CLAMAV_HOST = env("CLAMAV_HOST", default="clamav")
 CLAMAV_PORT = env.int("CLAMAV_PORT", default=3310)
 # Local dev escape hatch: skip virus scan entirely (e.g. when ClamAV is rate-limited).
 DISABLE_ANTIVIRUS_CHECK = env.bool("DISABLE_ANTIVIRUS_CHECK", default=False)
-
+# Local dev escape hatch: skip DQS submission (SQS / Step Functions unavailable).
+DISABLE_DQS_CHECK = env.bool("DISABLE_DQS_CHECK", default=False)
 
 # Internal settings
 # ------------------------------------------------------------------------------
