@@ -84,15 +84,15 @@ class DatasetTXCValidator:
     def get_violations(self):
         violations = []
         for name, file_ in self.iter_get_files():
-            error = XMLValidator(file_).dangerous_xml_check()
-            if error:
-                violations.append(BaseSchemaViolation.from_error(error[0]))
-                continue
-
-            file_.seek(0)
             try:
+                error = XMLValidator(file_).dangerous_xml_check()
+                if error:
+                    violations.append(BaseSchemaViolation.from_error(error[0]))
+                    continue
+
+                file_.seek(0)
                 doc = etree.parse(file_)
-            except etree.LxmlError as exc:
+            except Exception as exc:
                 violations.append(
                     BaseSchemaViolation(
                         filename=Path(name).name,
