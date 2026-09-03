@@ -4,6 +4,7 @@ from logging import getLogger
 from typing import List, Optional
 
 from lxml import etree
+from pathlib import Path
 
 from transit_odp.common.loggers import DatasetPipelineLoggerContext, PipelineAdapter
 from transit_odp.data_quality.pti.models import Observation, Violation
@@ -14,6 +15,7 @@ from transit_odp.timetables.transxchange import BaseSchemaViolation
 from transit_odp.timetables.utils import get_transxchange_schema
 from transit_odp.validate.xml import FileValidator, XMLValidator
 from transit_odp.validate.zip import ZippedValidator
+
 
 logger = getLogger(__name__)
 
@@ -50,7 +52,6 @@ class DatasetTXCValidator:
     def __init__(self, revision: DatasetRevision):
         self._schema = get_transxchange_schema()
         self._revision = revision
-        self._failed_violation_filenames = []
 
     def get_number_of_files_uploaded(self):
         file_ = self._revision.upload_file
@@ -74,31 +75,39 @@ class DatasetTXCValidator:
                 for index, name in enumerate(names, 1):
                     adapter.info(f"Validating file {index} of {total_files} - {name}.")
                     with zf.open(name) as f:
-                        yield f
+                        yield name, f
         else:
             adapter.info(f"Getting file 1 of 1 - {file_.name}.")
             file_.seek(0)
-            yield file_
+            yield file_.name, file_
 
     def get_violations(self):
         violations = []
-        for file_ in self.iter_get_files():
-            error = XMLValidator(file_).dangerous_xml_check()
-            if error:
-                violations.append(BaseSchemaViolation.from_error(error[0]))
+        for name, file_ in self.iter_get_files():
+            try:
+                error = XMLValidator(file_).dangerous_xml_check()
+                if error:
+                    violations.append(BaseSchemaViolation.from_error(error[0]))
+                    continue
+
+                file_.seek(0)
+                doc = etree.parse(file_)
+            except Exception as exc:
+                violations.append(
+                    BaseSchemaViolation(
+                        filename=Path(name).name,
+                        line=getattr(exc, "lineno", 0) or 0,
+                        details=getattr(exc, "msg", None) or str(exc),
+                    )
+                )
                 continue
 
-            file_.seek(0)
-            doc = etree.parse(file_)
             is_valid = self._schema.validate(doc)
+
             if not is_valid:
                 for error in self._schema.error_log:
                     violations.append(BaseSchemaViolation.from_error(error))
-                    self._failed_violation_filenames.append(error.filename)
         return violations
-
-    def get_failed_violations_filenames(self):
-        return set(self._failed_violation_filenames)
 
 
 class TimetableFileValidator:
