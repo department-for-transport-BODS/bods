@@ -496,7 +496,6 @@ CLAMAV_HOST = env("CLAMAV_HOST", default="clamav")
 CLAMAV_PORT = env.int("CLAMAV_PORT", default=3310)
 
 
-
 # Internal settings
 # ------------------------------------------------------------------------------
 
