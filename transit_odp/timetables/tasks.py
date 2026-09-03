@@ -545,11 +545,6 @@ def task_data_quality_service(revision_id: int, task_id: int) -> int:
     adapter = get_dataset_adapter_from_revision(logger=logger, revision=revision)
     adapter.info("Starting DQS checks initiation task.")
 
-    if getattr(settings, "DISABLE_DQS_CHECK", False):
-        adapter.warning("DQS: SKIPPED (DISABLE_DQS_CHECK is enabled).")
-        task.update_progress(95)
-        return revision_id
-
     try:
         task.update_progress(95)
         if is_using_step_function_for_dqs:
