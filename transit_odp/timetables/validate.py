@@ -93,12 +93,12 @@ class DatasetTXCValidator:
             file_.seek(0)
             try:
                 doc = etree.parse(file_)
-            except etree.XMLSyntaxError as exc:
+            except etree.LxmlError as exc:
                 violations.append(
                     BaseSchemaViolation(
                         filename=Path(name).name,
-                        line=exc.lineno or 0,
-                        details=exc.msg,
+                        line=getattr(exc, "lineno", 0) or 0,
+                        details=getattr(exc, "msg", None) or str(exc),
                     )
                 )
                 self._failed_violation_filenames.append(name)
