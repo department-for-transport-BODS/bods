@@ -1,21 +1,14 @@
-import os
-
-import pandas as pd
 import pytest
-from config.settings.base import APPS_DIR
 from django.core.exceptions import ValidationError
 
+from transit_odp.common import validators
 from transit_odp.common.validators import check_banned_words, validate_profanity
 
 
 class TestValidateProfanity:
-    swears = pd.read_csv(
-        os.path.join(APPS_DIR, "common/swear_word_list.csv"), names=["word"]
-    )
-
     def test_profanity_error_raised(self):
         # Setup
-        text = "Shit"
+        text = "ar5e"
 
         # Test
         with pytest.raises(ValidationError) as e:
@@ -23,8 +16,19 @@ class TestValidateProfanity:
         assert e.value.message == "Profane words are not allowed"
         assert e.value.code == "profanity"
 
+    def test_common_profanity_is_rejected(self):
+        with pytest.raises(ValidationError, match="Profane words are not allowed"):
+            validate_profanity("This is ar5e")
+
+    def test_allowlisted_word_is_accepted(self, monkeypatch):
+        monkeypatch.setattr(validators, "ALLOWED_PROFANITY_WORDS", {"shit"})
+        monkeypatch.setattr(validators, "_profanity_configured", False)
+        monkeypatch.setattr(validators, "_profanity_whitelist", None)
+
+        validate_profanity("This is shit")
+
     def test_check_banned_words_called(self, mocker):
-        """Tests banned_words are checked for less obvious profanities"""
+        """Tests profanities are checked by the library."""
         # Setup
         mocked = mocker.patch(
             "transit_odp.common.validators.check_banned_words", return_value=False
@@ -37,5 +41,4 @@ class TestValidateProfanity:
         mocked.assert_called_once_with("ar5e")
 
     def test_check_banned_words(self):
-        # Test
         assert check_banned_words("ar5e") is True
