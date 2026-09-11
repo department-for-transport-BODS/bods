@@ -3,10 +3,12 @@ import userEvent from '@testing-library/user-event';
 import TimetableCreateCancelPage from './page';
 
 const mockUseParams = jest.fn();
+const mockUseSearchParams = jest.fn();
 const mockPush = jest.fn();
 
 jest.mock('next/navigation', () => ({
   useParams: () => mockUseParams(),
+  useSearchParams: () => mockUseSearchParams(),
   useRouter: () => ({
     push: mockPush,
   }),
@@ -28,6 +30,7 @@ describe('TimetableCreateCancelPage', () => {
     mockUseParams.mockReturnValue({
       orgId: 'org-123',
     });
+    mockUseSearchParams.mockReturnValue({ get: () => null });
   });
 
   it('renders links back to form and list page', () => {
@@ -47,5 +50,15 @@ describe('TimetableCreateCancelPage', () => {
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
     expect(mockPush).toHaveBeenCalledWith('/publish/org/org-123/dataset/timetable/new', { scroll: true });
+  });
+
+  it('returns to the provide-data step when cancelling from that step', async () => {
+    const user = userEvent.setup();
+    mockUseSearchParams.mockReturnValue({ get: () => 'provide-data' });
+    render(<TimetableCreateCancelPage />);
+
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(mockPush).toHaveBeenCalledWith('/publish/org/org-123/dataset/timetable/new?step=provide-data', { scroll: true });
   });
 });

@@ -8,6 +8,7 @@ const mockPush = jest.fn();
 jest.mock('next/navigation', () => ({
   useParams: () => ({ orgId: '123' }),
   useRouter: () => ({ push: mockPush }),
+  useSearchParams: () => ({ get: () => null }),
 }));
 
 jest.mock('@/components/auth/ProtectedRoute', () => ({
@@ -30,7 +31,7 @@ const xmlFile = new File(['<xml />'], 'timetable.xml', { type: 'text/xml' });
 
 const provideViaLink = async () => {
   await userEvent.click(screen.getByLabelText('Provide a link to your data set'));
-  await userEvent.type(screen.getByLabelText('URL link'), 'https://example.com/timetable.xml');
+  await userEvent.type(screen.getByLabelText('URL Link'), 'https://example.com/timetable.xml');
   await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 };
 
@@ -87,6 +88,48 @@ describe('Timetable - Publish - Page', () => {
       screen.getByText('You must confirm you have reviewed the data quality report before publishing'),
     ).toBeInTheDocument();
     expect(api.post).not.toHaveBeenCalled();
+  });
+
+  it('shows URL guidance in a conditional section when link upload is selected', async () => {
+    render(<TimetablePublishPage />);
+
+    await fillDescriptionStep();
+    await userEvent.click(screen.getByLabelText('Provide a link to your data set'));
+
+    expect(screen.getByText('Please provide data set URI that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files')).toBeInTheDocument();
+    const urlInput = screen.getByLabelText('URL Link');
+    expect(urlInput).toHaveClass('govuk-!-width-three-quarters');
+    expect(urlInput.closest('.govuk-radios__conditional')).not.toBeNull();
+  });
+
+  it('shows file guidance and confirmation in a conditional section when a file is selected', async () => {
+    render(<TimetablePublishPage />);
+
+    await fillDescriptionStep();
+    await userEvent.click(screen.getByLabelText('Upload data set to Bus Open Data Service'));
+
+    const fileInput = screen.getByLabelText('Upload file');
+    expect(screen.getByText('Please provide data set file that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files')).toBeInTheDocument();
+    expect(fileInput.closest('.govuk-radios__conditional')).not.toBeNull();
+    expect(fileInput).toHaveClass('govuk-!-width-three-quarters');
+
+    await userEvent.upload(fileInput, xmlFile);
+
+    expect(screen.getByText('Your file has been selected').closest('.govuk-radios__conditional')).toBeNull();
+  });
+
+  it('shows an error summary and allows cancellation from the provide-data step', async () => {
+    render(<TimetablePublishPage />);
+
+    await fillDescriptionStep();
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+    expect(screen.getByRole('heading', { name: 'There is a problem' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Select how you want to provide your data set' })).toHaveAttribute('href', '#method-link');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(mockPush).toHaveBeenCalledWith('/publish/org/123/dataset/timetable/new/cancel?step=provide-data');
   });
 
   it.each([
