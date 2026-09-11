@@ -8,7 +8,7 @@
     {% url 'guidance:support-bus_operators' host 'publish' as support_dataquality %}
     {% filter force_escape %}
       {% blocktrans %}
-        BODS recommends that all publishers use the TransXChange 2.4 PTI 1.1. A PTI profile to publish their timetables data. More information on the profile can be found
+        BODS recommends that all publishers use the TransXChange {{ TXC_VERSION }} PTI 1.1. A PTI profile to publish their timetables data. More information on the profile can be found
     {% endblocktrans %}
     {% endfilter %}
     <a class="govuk-link" rel="noopener noreferrer" target="_blank" href="{{ support_dataquality }}?section=dataquality">

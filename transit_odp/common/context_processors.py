@@ -53,9 +53,12 @@ def js_bundle_init(request):
 
 def global_settings(request):
     # return any necessary values
+    from transit_odp.timetables.constants import TXC_VERSION
+
     return {
         "GOOGLE_ANALYTICS_KEY": settings.GOOGLE_ANALYTICS_KEY,
         "MAPBOX_KEY": settings.MAPBOX_KEY,
         "SUPPORT_EMAIL": settings.SUPPORT_EMAIL,
         "SUPPORT_PHONE": settings.SUPPORT_PHONE,
+        "TXC_VERSION": TXC_VERSION,
     }
