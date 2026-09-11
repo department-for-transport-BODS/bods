@@ -22,7 +22,7 @@ jest.mock('@/lib/api-client', () => ({
 
 const fillDescriptionStep = async () => {
   await userEvent.type(screen.getByLabelText('Data set description'), 'A useful timetable');
-  await userEvent.type(screen.getByLabelText('Dataset short description'), 'Timetable');
+  await userEvent.type(screen.getByLabelText('Data set short description'), 'Timetable');
   await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 };
 
@@ -60,6 +60,17 @@ describe('Timetable - Publish - Page', () => {
 
     expect(screen.getByRole('heading', { name: 'Describe your data set' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Choose how to provide your data set' })).not.toBeInTheDocument();
+  });
+
+  it('renders user guidance and routes cancellation to its confirmation page', async () => {
+    render(<TimetablePublishPage />);
+
+    expect(screen.getByText('This information will give context to data consumers. Please be descriptive, but do not use personally identifiable information.')).toBeInTheDocument();
+    expect(screen.getByText('This info will be displayed on your published data set dashboard to identify this data set and will not be visible to data set users. The maximum number of characters (with spaces) is 30 characters.')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(mockPush).toHaveBeenCalledWith('/publish/org/123/dataset/timetable/new/cancel');
   });
 
   it('does not submit until the data quality confirmation is checked', async () => {

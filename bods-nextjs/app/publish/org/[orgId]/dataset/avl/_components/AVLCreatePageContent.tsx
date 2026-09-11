@@ -192,7 +192,6 @@ export function AVLCreatePageContent({ avlIpAllowList }: { avlIpAllowList: strin
                   shortDescription={shortDescription}
                   descriptionLabel="Data feed description"
                   shortDescriptionLabel="Data feed short description"
-                  showShortDescriptionCounter={false}
                   errors={{ description: errors.description, shortDescription: errors.shortDescription }}
                   descriptionHint="The info will give context to data feed users. Please be descriptive but do not use personally identifiable information. Information you may wish to include: time & date of feed connection, reason for updating feed, OpCo/region/zone of feed, services included in feed."
                   shortDescriptionHint="This info will be displayed on your published data feed dashboard to identify this feed and will not be visible to data feed users. The maximum number of characters (with spaces) is 30 characters."

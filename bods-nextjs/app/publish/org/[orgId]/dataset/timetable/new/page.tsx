@@ -106,7 +106,7 @@ function TimetablePublish() {
     });
   };
 
-  const stepLabels = ['1. Describe your data set', '2. Provide data', '3. Set licence'];
+  const stepLabels = ['1. Describe data', '2. Provide data', '3. Review and publish'];
   const steps = stepLabels.map((label, i) => {
     const stepNum = i + 1;
     let state: StepState = 'next';
@@ -120,13 +120,11 @@ function TimetablePublish() {
 
   return (
     <div className="govuk-width-container">
-      <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <div className="govuk-breadcrumbs">
-            <PublishStepper steps={steps} />
-          </div>
-        </div>
+      <div className="govuk-breadcrumbs">
+        <PublishStepper steps={steps} />
+      </div>
 
+      <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds indented-text">
             {step === 1 && (
@@ -135,11 +133,23 @@ function TimetablePublish() {
                 <DatasetDescriptionFields
                   description={dataSetDesc}
                   shortDescription={shortDesc}
+                  shortDescriptionLabel="Data set short description"
+                  descriptionHint={
+                    <>This information will give context to data consumers. Please be descriptive, but do not use personally identifiable information.</>
+                  }
+                  shortDescriptionHint={
+                    <>This info will be displayed on your published data set dashboard to identify this data set and will not be visible to data set users. The maximum number of characters (with spaces) is 30 characters.</>
+                  }
+                  descriptionClassName="govuk-!-width-three-quarters"
+                  shortDescriptionClassName="govuk-!-width-three-quarters"
                   errors={{ description: errors.dataSetDesc, shortDescription: errors.shortDesc }}
                   onDescriptionChange={setDataSetDesc}
                   onShortDescriptionChange={setShortDesc}
                 />
-                <button type="button" className="govuk-button" onClick={handleNext}>Continue</button>
+                <div className="govuk-button-group">
+                  <button type="button" className="govuk-button" onClick={handleNext}>Continue</button>
+                  <button type="button" className="govuk-button govuk-button--secondary" onClick={() => router.push(`/publish/org/${orgId}/dataset/timetable/new/cancel`)}>Cancel</button>
+                </div>
               </div>
             )}
 
