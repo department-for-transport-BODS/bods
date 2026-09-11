@@ -22,6 +22,8 @@ DD_TRACE_ENABLED = env.bool("DD_TRACE_ENABLED", default=False)
 # ------------------------------------------------------------------------------
 # https://django-hosts.readthedocs.io/en/latest/index.html#
 
+USE_X_FORWARDED_HOST = True
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [
     "*",
