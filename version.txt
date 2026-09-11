@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-v1.54.58
-=======
-v1.54.51
->>>>>>> parent of 3fa7643b (Revert "DBODS-2378 Added migration for new stop activity row (#2478)")
+v1.54.59
