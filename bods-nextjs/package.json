@@ -22,12 +22,14 @@
     "@hookform/resolvers": "^5.2.2",
     "@swc/core": "^1.15.13",
     "@types/mapbox-gl": "^3.5.0",
+    "@types/swagger-ui-react": "^5.18.0",
     "govuk-frontend": "5.14.0",
     "mapbox-gl": "^3.19.0",
     "next": "16.2.10",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.71.2",
+    "swagger-ui-react": "^5.32.15",
     "zod": "^4.3.6"
   },
   "devDependencies": {
