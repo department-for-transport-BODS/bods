@@ -1,14 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 export function TimetableCreateCancelContent() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const orgId = params.orgId as string;
 
-  const formUrl = `/publish/org/${orgId}/dataset/timetable/new`;
+  const step = searchParams.get('step') === 'provide-data' ? '?step=provide-data' : '';
+  const formUrl = `/publish/org/${orgId}/dataset/timetable/new${step}`;
   const listUrl = `/publish/org/${orgId}/dataset/timetable`;
 
   const goBackOrFallback = () => {

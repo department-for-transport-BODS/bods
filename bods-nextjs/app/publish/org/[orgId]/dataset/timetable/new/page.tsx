@@ -8,7 +8,7 @@
 
 import { useState } from "react";
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api-client";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { PublishStepper, DatasetDescriptionFields, DataProviderRadioGroup, URL_LINK_ITEM_ID, UPLOAD_FILE_ITEM_ID } from '@/components/publish';
@@ -25,11 +25,12 @@ import { publishAppPath, wwwPath } from '@/config/client';
 function TimetablePublish() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const orgId = params.orgId as string;
 
   const [dataSetDesc, setDataSetDesc] = useState('');
   const [shortDesc, setShortDesc] = useState('');
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(searchParams.get('step') === 'provide-data' ? 2 : 1);
   const [selectedMethod, setSelectedMethod] = useState<'link' | 'file' | ''>('');
   const [link, setLink] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -118,6 +119,13 @@ function TimetablePublish() {
 
   const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
   const contactSupportUrl = wwwPath('/contact');
+  const uploadValidationSummaryErrors = step === 2
+    ? [
+        errors.method ? { text: errors.method, href: '#method-link' } : null,
+        errors.link ? { text: errors.link, href: '#id_url_link' } : null,
+        errors.file ? { text: errors.file, href: '#id_upload_file' } : null,
+      ].filter((error): error is { text: string; href: string } => error !== null)
+    : [];
   const descriptionValidationSummaryErrors = step === 1
     ? [
         errors.dataSetDesc ? { text: errors.dataSetDesc, href: '#id_description' } : null,
@@ -164,15 +172,22 @@ function TimetablePublish() {
             {step === 2 && (
               <div>
                 <h1 className="govuk-heading-xl">Choose how to provide your data set</h1>
+                <ErrorSummary errors={uploadValidationSummaryErrors} summaryId="timetable-upload-error-title" />
                 <DataProviderRadioGroup
                   selectedMethod={selectedMethod}
                   link={link}
+                  urlHint="Please provide data set URI that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files"
+                  fileHint="Please provide data set file that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files"
+                  fileSelected={file !== null}
                   errors={{ method: errors.method, link: errors.link, file: errors.file }}
                   onMethodChange={setSelectedMethod}
                   onLinkChange={setLink}
                   onFileChange={setFile}
                 />
-                <button type="button" className="govuk-button" onClick={handleNext}>Continue</button>
+                <div className="govuk-button-group govuk-!-margin-top-5">
+                  <button type="button" className="govuk-button" onClick={handleNext}>Continue</button>
+                  <button type="button" className="govuk-button govuk-button--secondary" onClick={() => router.push(`/publish/org/${orgId}/dataset/timetable/new/cancel?step=provide-data`)}>Cancel</button>
+                </div>
               </div>
             )}
 
