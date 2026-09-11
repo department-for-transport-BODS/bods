@@ -60,6 +60,9 @@ describe('Timetable - Publish - Page', () => {
 
     expect(screen.getByRole('heading', { name: 'Describe your data set' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Choose how to provide your data set' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'There is a problem' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Enter a description in the data set description box below' })).toHaveAttribute('href', '#id_description');
+    expect(screen.getByRole('link', { name: 'Enter a short description in the data set short description box below' })).toHaveAttribute('href', '#id_short_description');
   });
 
   it('renders user guidance and routes cancellation to its confirmation page', async () => {

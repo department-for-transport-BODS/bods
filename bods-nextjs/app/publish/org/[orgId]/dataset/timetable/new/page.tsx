@@ -12,6 +12,7 @@ import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api-client";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
 import { PublishStepper, DatasetDescriptionFields, DataProviderRadioGroup, URL_LINK_ITEM_ID, UPLOAD_FILE_ITEM_ID } from '@/components/publish';
+import { ErrorSummary } from '@/components/shared';
 import type { StepState } from '@/components/publish';
 import {
   validateTimetableStep1,
@@ -117,6 +118,12 @@ function TimetablePublish() {
 
   const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
   const contactSupportUrl = wwwPath('/contact');
+  const descriptionValidationSummaryErrors = step === 1
+    ? [
+        errors.dataSetDesc ? { text: errors.dataSetDesc, href: '#id_description' } : null,
+        errors.shortDesc ? { text: errors.shortDesc, href: '#id_short_description' } : null,
+      ].filter((error): error is { text: string; href: string } => error !== null)
+    : [];
 
   return (
     <div className="govuk-width-container">
@@ -130,6 +137,7 @@ function TimetablePublish() {
             {step === 1 && (
               <div>
                 <h1 className="govuk-heading-xl">Describe your data set</h1>
+                <ErrorSummary errors={descriptionValidationSummaryErrors} summaryId="timetable-description-error-title" />
                 <DatasetDescriptionFields
                   description={dataSetDesc}
                   shortDescription={shortDesc}
