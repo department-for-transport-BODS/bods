@@ -9,6 +9,7 @@ import { api } from '@/lib/api-client';
 import { PublishStepper } from '@/components/publish';
 import { formatDateTime } from '@/lib/utils/date';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
+import { TimetableHelpAside } from '../../_components/TimetableHelpAside';
 
 type TimetableMetadata = {
   filename?: string;
@@ -94,27 +95,36 @@ function TimetableReviewPageContent() {
 
   return (
     <div className="govuk-width-container">
-      <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <PublishStepper
-            steps={[
-              { label: '1. Describe data', state: 'previous' },
-              { label: '2. Provide data', state: 'previous' },
-              { label: '3. Review and publish', state: 'selected' },
-            ]}
-          />
-        </div>
+      <div className="govuk-breadcrumbs">
+        <PublishStepper
+          steps={[
+            { label: '1. Describe data', state: 'previous' },
+            { label: '2. Provide data', state: loading ? 'selected' : 'previous' },
+            { label: '3. Review and publish', state: loading ? 'next' : 'selected' },
+          ]}
+        />
+      </div>
 
+      <div className="govuk-main-wrapper">
         <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="timetable-review-error-title" />
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-l">Review and publish</h1>
+            {!loading && <h1 className="govuk-heading-l">Review and publish</h1>}
 
             {isInitialLoading || loading ? (
-              <div className="govuk-panel govuk-panel--confirmation bods-bg-blue-light">
-                <h2 className="govuk-panel__title govuk-!-font-size-36">Your data is being processed</h2>
-                <div className="govuk-panel__body">{progress}%</div>
+              <div className="govuk-panel govuk-panel--confirmation timetable-validation-panel">
+                <h1 className="govuk-panel__title govuk-!-font-size-36">Validating data sets</h1>
+                <div className="govuk-panel__body govuk-!-font-size-19">
+                  <div className="pb3-l">
+                    <p>Once successfully processed, the data set will be published, and you will be able to view the details here.</p>
+                    <p>Please expect a temporary delay in processing time as we work to bring you new and enhanced features.</p>
+                  </div>
+                  <div id="progressOuterDiv" className="progress-bar-outer">
+                    <div id="progressInnerDiv" className="progress-bar-inner" style={{ width: `${progress}%` }} />
+                  </div>
+                  <span id="progressSpan" className="progress-bar-text">{progress}%</span>
+                </div>
               </div>
             ) : (
               <>
@@ -192,6 +202,8 @@ function TimetableReviewPageContent() {
               </>
             )}
           </div>
+
+          <TimetableHelpAside />
         </div>
       </div>
     </div>

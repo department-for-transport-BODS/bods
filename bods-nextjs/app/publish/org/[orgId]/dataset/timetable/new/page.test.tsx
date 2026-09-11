@@ -41,13 +41,6 @@ const provideViaFile = async () => {
   await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 };
 
-const giveConsentAndPublish = async () => {
-  await userEvent.click(
-    screen.getByLabelText('I have reviewed the data quality report and wish to publish my data'),
-  );
-  await userEvent.click(screen.getByRole('button', { name: 'Publish' }));
-};
-
 describe('Timetable - Publish - Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -77,16 +70,13 @@ describe('Timetable - Publish - Page', () => {
     expect(mockPush).toHaveBeenCalledWith('/publish/org/123/dataset/timetable/new/cancel');
   });
 
-  it('does not submit until the data quality confirmation is checked', async () => {
+  it('does not submit until the provide-data step is valid', async () => {
     render(<TimetablePublishPage />);
 
     await fillDescriptionStep();
-    await provideViaLink();
-    await userEvent.click(screen.getByRole('button', { name: 'Publish' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
-    expect(
-      screen.getByText('You must confirm you have reviewed the data quality report before publishing'),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Select how you want to provide your data set' })).toBeInTheDocument();
     expect(api.post).not.toHaveBeenCalled();
   });
 
@@ -134,7 +124,7 @@ describe('Timetable - Publish - Page', () => {
 
   it.each([
     {
-      name: 'posts link data and follows an internal redirect from the API response',
+      name: 'posts link data and redirects to validation from the API response',
       provideData: provideViaLink,
       apiResponse: { redirect: '/publish/org/123/dataset/timetable/456/review' },
       expectedSelectedItem: 'url_link-conditional',
@@ -156,7 +146,6 @@ describe('Timetable - Publish - Page', () => {
 
     await fillDescriptionStep();
     await provideData();
-    await giveConsentAndPublish();
 
     await waitFor(() => expect(api.post).toHaveBeenCalled());
     const submittedFormData = (api.post as jest.Mock).mock.calls[0][1] as FormData;

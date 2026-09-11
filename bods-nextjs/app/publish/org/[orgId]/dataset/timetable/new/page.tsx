@@ -17,9 +17,8 @@ import type { StepState } from '@/components/publish';
 import {
   validateTimetableStep1,
   validateTimetableStep2,
-  validateTimetableStep3,
 } from '@/lib/validation/timetable-publish';
-import { publishAppPath, wwwPath } from '@/config/client';
+import { TimetableHelpAside } from '../_components/TimetableHelpAside';
 
 
 function TimetablePublish() {
@@ -35,7 +34,6 @@ function TimetablePublish() {
   const [link, setLink] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [consentChecked, setConsentChecked] = useState(false);
   const { isSubmitting, submitError, handleSubmit: onSubmit, clearError } = useFormSubmit();
 
   const validateStep1 = () => {
@@ -50,17 +48,12 @@ function TimetablePublish() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const validateStep3 = () => {
-    const newErrors = validateTimetableStep3(consentChecked);
-    if (Object.keys(newErrors).length === 0) {
-      return true;
-    }
-    setErrors(newErrors);
-    return false;
-  };
-
   const handleNext = () => {
-    if ((step === 1 && !validateStep1()) || (step === 2 && !validateStep2())) {
+    if (step === 1 && !validateStep1()) {
+      return;
+    }
+    if (step === 2) {
+      void handleSubmit();
       return;
     }
     setErrors({});
@@ -68,7 +61,7 @@ function TimetablePublish() {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep3()) {
+    if (!validateStep2()) {
       return;
     }
 
@@ -117,8 +110,6 @@ function TimetablePublish() {
     return { label, state };
   });
 
-  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
-  const contactSupportUrl = wwwPath('/contact');
   const uploadValidationSummaryErrors = step === 2
     ? [
         errors.method ? { text: errors.method, href: '#method-link' } : null,
@@ -191,49 +182,12 @@ function TimetablePublish() {
               </div>
             )}
 
-            {step === 3 && (
-              <div>
-                <h1 className="govuk-heading-xl">Review and publish</h1>
-                {submitError && <p className="govuk-error-message">{submitError}</p>}
-                <dl className="govuk-summary-list">
-                  <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Data set description</dt><dd className="govuk-summary-list__value">{dataSetDesc}</dd></div>
-                  <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Short description</dt><dd className="govuk-summary-list__value">{shortDesc}</dd></div>
-                  <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Data provided via</dt><dd className="govuk-summary-list__value">{selectedMethod === 'link' ? link : file?.name}</dd></div>
-                </dl>
-                <div className="govuk-form-group">
-                  <div className="govuk-checkboxes__item">
-                    <input className="govuk-checkboxes__input" id="id_consent" type="checkbox" checked={consentChecked} onChange={(e) => setConsentChecked(e.target.checked)} />
-                    <label className="govuk-label govuk-checkboxes__label" htmlFor="id_consent">I have reviewed the data quality report and wish to publish my data</label>
-                  </div>
-                  {errors.consent && <p className="govuk-error-message">{errors.consent}</p>}
-                </div>
-                <button type="button" className="govuk-button" disabled={isSubmitting} onClick={handleSubmit}>{isSubmitting ? 'Publishing...' : 'Publish'}</button>
-              </div>
-            )}
+            {submitError && <p className="govuk-error-message">{submitError}</p>}
 
             <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />
           </div>
 
-          <div className="govuk-grid-column-one-third">
-            <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
-            <ul className="govuk-list app-list--nav govuk-!-font-size-19">
-              <li>
-                <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={`${supportBusOperatorsUrl}?section=dataquality`}>
-                  View the Txc 2.4 schema and profile requirement
-                </a>
-              </li>
-              <li>
-                <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={supportBusOperatorsUrl}>
-                  View our guidelines here
-                </a>
-              </li>
-              <li>
-                <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={contactSupportUrl}>
-                  Contact support desk
-                </a>
-              </li>
-            </ul>
-          </div>
+          <TimetableHelpAside />
         </div>
       </div>
     </div>
