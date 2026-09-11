@@ -49,7 +49,7 @@ ERROR_CODE_LOOKUP = {
     },
     DatasetETLTaskResult.SCHEMA_VERSION_NOT_SUPPORTED: {
         "description": "Schema version not supported. Document must define a "
-        "valid SchemaVersion attribute of 2.1 or 2.4."
+        "valid SchemaVersion attribute of 2.1, 2.4 or 2.4.1."
     },
     DatasetETLTaskResult.SCHEMA_ERROR: {
         "description": "The dataset contained an XML file not compliant with "
