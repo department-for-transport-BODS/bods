@@ -90,18 +90,27 @@ class DatasetTXCValidator:
     def get_violations(self):
         violations = []
         for name, file_ in self.iter_get_files():
-            error = XMLValidator(file_).dangerous_xml_check()
-            if error:
-                violations.append(BaseSchemaViolation.from_error(error[0]))
+            try:
+                error = XMLValidator(file_).dangerous_xml_check()
+                if error:
+                    violations.append(BaseSchemaViolation.from_error(error[0]))
+                    continue
+
+                file_.seek(0)
+                doc = etree.parse(file_)
+            except Exception as exc:
+                violations.append(
+                    BaseSchemaViolation(
+                        filename=Path(name).name,
+                        line=getattr(exc, "lineno", 0) or 0,
+                        details=getattr(exc, "msg", None) or str(exc),
+                    )
+                )
                 continue
 
-            file_.seek(0)
-            doc = etree.parse(file_)
             version = doc.getroot().get("SchemaVersion")
             validated_against = (
-                version
-                if version in self._schemas
-                else DEFAULT_TXC_SCHEMA_VERSION
+                version if version in self._schemas else DEFAULT_TXC_SCHEMA_VERSION
             )
             schema = self._schemas[validated_against]
 

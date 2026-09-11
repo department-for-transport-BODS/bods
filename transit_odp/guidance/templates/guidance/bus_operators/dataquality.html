@@ -25,7 +25,7 @@
           Timetable
         </td>
         <td class="govuk-table__cell">
-          TransXChange Version 2.4 profile v1.1a
+          TransXChange Version {{ TXC_VERSION }} profile v1.1a
         </td>
         <td class="govuk-table__cell">
           <p class="govuk-body">
@@ -74,7 +74,7 @@
           Matching bus Location to timetables data
         </td>
         <td class="govuk-table__cell">
-          DfT BODS SIRI-VM profile and its corresponding TransXChange Version 2.4 TxC-PTI 1.1.a data
+          DfT BODS SIRI-VM profile and its corresponding TransXChange Version {{ TXC_VERSION }} TxC-PTI 1.1.a data
         </td>
         <td class="govuk-table__cell">
           Validation against SIRI-VM PTI and data matching v1.1
@@ -98,13 +98,13 @@
   <p class="govuk-body">
     {% blocktrans %}
       TransXChange data undergoes two sets of checks. In the first validation stage,
-      it is checked that it adheres to the TxC 2.4 schema and the PTI profile v1.1.
-      The TxC 2.4 schema is the basic data standard mandated by DfT, and the PTI profile
+      it is checked that it adheres to the TxC {{ TXC_VERSION }} schema and the PTI profile v1.1.
+      The TxC {{ TXC_VERSION }} schema is the basic data standard mandated by DfT, and the PTI profile
       v1.1 is an additional mandate for the TransxChange data that will be expected
       from operators. The PTI profile 1.1 clarifies the standards even further, making
       the industry unified with a common, unambiguous data standard. Find out more about
     {% endblocktrans %}
-    <a class="govuk-link" href="{{ pti_link_on_bods }}" target="_blank">the differences between the TxC 2.4 schema and the PTI profile v1.1</a>.
+    <a class="govuk-link" href="{{ pti_link_on_bods }}" target="_blank">the differences between the TxC {{ TXC_VERSION }} schema and the PTI profile v1.1</a>.
   </p>
   <p class="govuk-body">
     {% trans "From" %}
