@@ -18,6 +18,10 @@ body {
   margin: 0;
 }
 
+#swagger-ui .wrapper {
+  padding: 0;
+}
+
 .justify-center-l {
   justify-content: center;
 }
