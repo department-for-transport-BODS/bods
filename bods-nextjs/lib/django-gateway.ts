@@ -20,6 +20,14 @@ const DJANGO_NAMESPACES = {
     upstreamPrefix: '/api/',
     upstreamHost: new URL(DJANGO_HOSTS.data).host,
   },
+  v1: {
+    upstreamPrefix: '/api/v1/',
+    upstreamHost: new URL(DJANGO_HOSTS.data).host,
+  },
+  v2: {
+    upstreamPrefix: '/api/v2/',
+    upstreamHost: new URL(DJANGO_HOSTS.data).host,
+  },
   publish: {
     upstreamPrefix: '/api/',
     upstreamHost: new URL(DJANGO_HOSTS.publish).host,
