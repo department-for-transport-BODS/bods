@@ -4,6 +4,7 @@ from typing import BinaryIO, Optional
 
 from clamd import BufferTooLongError, ClamdNetworkSocket
 from clamd import ConnectionError as ClamdConnectionError
+from django.conf import settings
 from tenacity import (
     before_log,
     retry,
@@ -88,6 +89,12 @@ class FileScanner:
         Args:
             file_: File being scanned
         """
+        if getattr(settings, "DISABLE_ANTIVIRUS_CHECK", False):
+            logger.warning(
+                "Antivirus scan: SKIPPED (DISABLE_ANTIVIRUS_CHECK is enabled)."
+            )
+            return
+
         try:
             result = self._perform_scan(file_)
         except ClamdConnectionError as exc:
