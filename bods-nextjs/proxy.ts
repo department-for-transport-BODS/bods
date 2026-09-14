@@ -15,6 +15,23 @@ const subdomainRoutes: Record<string, string> = {
   admin: '/admin',
 };
 
+const dataApiPageRoutes: Record<string, string> = {
+  '/api': '/data/api/',
+  '/api/timetable-openapi': '/data/timetable-openapi/',
+  '/api/buslocation-api': '/data/buslocation-api/',
+  '/api/buslocation-api/openapi': '/data/buslocation-api/openapi/',
+  '/api/fares-openapi': '/data/fares-openapi/',
+  '/api/disruptions-api-overview': '/data/disruptions-api-overview/',
+  '/api/disruptions-openapi': '/data/disruptions-openapi/',
+  '/api/cancellations-api-overview': '/data/cancellations-api-overview/',
+  '/api/cancellations-openapi': '/data/cancellations-openapi/',
+};
+
+const djangoDataPagePrefixes = [
+  '/api/buslocation-api/subscribe',
+  '/api/buslocation-api/manage-subscriptions',
+];
+
 const wwwOnlyRoutePrefixes = [
   '/accessibility',
   '/changelog',
@@ -99,7 +116,7 @@ function redirectToSubdomain(
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  if (pathname.startsWith('/api/') || pathname.startsWith('/_next')) {
+  if (pathname.startsWith('/_next') || pathname.startsWith('/openapi/')) {
     return NextResponse.next();
   }
 
@@ -115,6 +132,27 @@ export function proxy(request: NextRequest) {
 
   const subdomain = bodsAreaFromHostname(hostname);
   const routePrefix = subdomainRoutes[subdomain];
+
+  const pathWithoutTrailingSlash = pathname.replace(/\/$/, '');
+  const dataApiPageRoute = dataApiPageRoutes[pathWithoutTrailingSlash];
+  if (subdomain === 'data' && dataApiPageRoute) {
+    const url = request.nextUrl.clone();
+    url.pathname = dataApiPageRoute;
+    return NextResponse.rewrite(url);
+  }
+
+  if (
+    subdomain === 'data' &&
+    djangoDataPagePrefixes.some((prefix) => hasRoutePrefix(pathWithoutTrailingSlash, prefix))
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/api/data/${pathname.slice('/api/'.length)}`;
+    return NextResponse.rewrite(url);
+  }
+
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next();
+  }
 
   for (const [ownedSubdomain, ownedPrefix] of Object.entries(subdomainRoutes)) {
     if (ownedPrefix !== '/' && hasRoutePrefix(pathname, ownedPrefix) && ownedSubdomain !== subdomain) {
