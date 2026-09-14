@@ -10,6 +10,7 @@ import { PublishStepper } from '@/components/publish';
 import { formatDateTime } from '@/lib/utils/date';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
 import { TimetableHelpAside } from '../../_components/TimetableHelpAside';
+import { TimetableReviewMap } from '../../_components/TimetableReviewMap';
 
 type TimetableMetadata = {
   filename?: string;
@@ -42,6 +43,25 @@ type TimetableReviewStatusResponse = {
   lastModifiedUser?: string;
   metadata?: TimetableMetadata[];
   error?: string | null;
+  errorDescription?: string | null;
+  validationState?: 'passed' | 'passed-with-issues' | 'failed';
+  validationReportUrl?: string;
+  hasSchemaViolation?: boolean;
+  hasPostSchemaViolation?: boolean;
+  hasPtiObservations?: boolean;
+  transxchangeVersion?: string | null;
+  publisherUrl?: string | null;
+  distinctAttributes?: Record<string, Record<string, Record<string, string[]>>>;
+  dataQuality?: {
+    status: string;
+    score?: number | null;
+    ragLevel?: string | null;
+    criticalCount?: number;
+    advisoryCount?: number;
+    reportUrl?: string;
+    reportCsvUrl?: string | null;
+    showUpdate?: boolean;
+  };
 };
 
 type PublishResponse = {
@@ -92,6 +112,91 @@ function TimetableReviewPageContent() {
     0,
     Math.min(100, statusData?.progress ?? processingProgress),
   );
+  const hasValidationIssues = statusData?.validationState === 'passed-with-issues';
+  const dataQuality = statusData?.dataQuality;
+  const noValidFile = statusData?.error === 'NO_VALID_FILE_TO_PROCESS';
+
+  const updateUrl = `/publish/org/${orgId}/dataset/timetable/new?step=provide-data`;
+
+  const renderValidationPanel = () => {
+    return (
+      <section className="timetable-review-panel">
+        <h2 className="govuk-heading-m">
+          3a Validation check - {hasValidationIssues ? 'Passed with issues' : 'Passed'}
+        </h2>
+        {hasValidationIssues ? (
+          <>
+            <p className="govuk-body">The validation report checks for compliance against the mandated TxC 2.4 v1.1 profile.</p>
+            <a className="govuk-link" href={statusData?.validationReportUrl}>Download validation report</a>
+            <p className="govuk-body">Some of the files in the data supplied are non-compliant and cannot be submitted to BODS as per the guidance. To pass the validation please address all outstanding issues in the validation report.</p>
+          </>
+        ) : null}
+      </section>
+    );
+  };
+
+  const renderDataQualityPanel = () => {
+    if (!dataQuality || dataQuality.status === 'PENDING') {
+      return (
+        <section className="timetable-review-panel">
+          <p className="govuk-body">Your data set has been uploaded as a draft.</p>
+          <p className="govuk-body">A data quality report is being generated.</p>
+          <p className="govuk-body">You can wait or close the browser. You can publish your data once the report is ready.</p>
+        </section>
+      );
+    }
+    if (dataQuality.status === 'FAILURE') {
+      return (
+        <section className="timetable-review-panel timetable-review-panel--error">
+          <h2 className="govuk-heading-m">Supplied data set has failed to upload</h2>
+          <p className="govuk-body">The data quality service is currently unavailable, please try again later.</p>
+          <Link className="govuk-link" href="/contact">Contact support</Link>
+          <br />
+          <Link className="govuk-button govuk-button--secondary" href={updateUrl}>Update data</Link>
+        </section>
+      );
+    }
+    return (
+      <section className="timetable-review-panel">
+        <h2 className="govuk-heading-m">
+          3b Data quality check{dataQuality.ragLevel ? ` - ${dataQuality.ragLevel}` : ''}
+        </h2>
+        <p className="govuk-body">The data quality report identifies data quality issues beyond the validation checks. Please review any raised issues.</p>
+        <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={dataQuality.reportUrl}>View data quality report</a>
+        {dataQuality.reportCsvUrl ? (
+          <>
+            <br />
+            <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={dataQuality.reportCsvUrl}>Download data quality report.csv</a>
+          </>
+        ) : null}
+        <table className="govuk-table govuk-!-margin-top-2">
+          <tbody className="govuk-table__body">
+            <tr className="govuk-table__row"><td className="govuk-table__cell">{dataQuality.criticalCount || 0}</td><td className="govuk-table__cell">Critical data quality observations</td></tr>
+            <tr className="govuk-table__row"><td className="govuk-table__cell">{dataQuality.advisoryCount || 0}</td><td className="govuk-table__cell">Advisory data quality observations</td></tr>
+          </tbody>
+        </table>
+        {dataQuality.showUpdate ? <Link className="govuk-button govuk-button--secondary" href={updateUrl}>Update data</Link> : null}
+      </section>
+    );
+  };
+
+  const renderNoValidFileState = () => (
+    <>
+      <section className="timetable-review-panel">
+        <h2 className="govuk-heading-m">Validation check - Failed</h2>
+        <p className="govuk-body">The validation report checks for compliance against the mandated TxC 2.4 v1.1 profile.</p>
+        <a className="govuk-link" href={statusData?.validationReportUrl}>Download validation report</a>
+        <p className="govuk-body">The timetables data supplied is non-compliant and cannot be submitted to BODS. To pass the validation please address all outstanding issues in the validation report.</p>
+      </section>
+      <Link className="govuk-button govuk-!-margin-top-3" href={updateUrl}>Update data</Link>
+      <h2 className="govuk-heading-l govuk-!-padding-top-5">{statusData?.name || 'Timetable data set'}</h2>
+      <dl className="govuk-summary-list">
+        <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Name</dt><dd className="govuk-summary-list__value">{statusData?.name || '-'}</dd></div>
+        <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Owner</dt><dd className="govuk-summary-list__value">{statusData?.ownerName || '-'}</dd></div>
+        <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Last updated</dt><dd className="govuk-summary-list__value">by System</dd></div>
+      </dl>
+    </>
+  );
 
   return (
     <div className="govuk-width-container">
@@ -108,10 +213,19 @@ function TimetableReviewPageContent() {
       <div className="govuk-main-wrapper">
         <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="timetable-review-error-title" />
 
+        {!loading && (
+          <>
+            <div className="govuk-grid-row">
+              <div className="govuk-grid-column-two-thirds">
+                <h1 className="govuk-heading-xl">Review and publish</h1>
+              </div>
+            </div>
+            <hr className="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+          </>
+        )}
+
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            {!loading && <h1 className="govuk-heading-l">Review and publish</h1>}
-
             {isInitialLoading || loading ? (
               <div className="govuk-panel govuk-panel--confirmation timetable-validation-panel">
                 <h1 className="govuk-panel__title govuk-!-font-size-36">Validating data sets</h1>
@@ -126,15 +240,45 @@ function TimetableReviewPageContent() {
                   <span id="progressSpan" className="progress-bar-text">{progress}%</span>
                 </div>
               </div>
+            ) : noValidFile ? (
+              renderNoValidFileState()
+            ) : statusData?.error ? (
+              <>
+                <h2 className="govuk-heading-l govuk-!-padding-top-5">{statusData.name || 'Timetable data set'}</h2>
+                <ErrorSummary
+                  errors={[statusData.errorDescription || 'Something went wrong and we could not process your data set. Please try again later.']}
+                  title="Supplied data set has failed to upload"
+                  summaryId="timetable-upload-error-title"
+                  className="govuk-!-margin-bottom-0"
+                  titleClassName="govuk-!-margin-bottom-2"
+                  itemClassName="app-error-summary__item"
+                  tabIndex={-1}
+                />
+                <div className="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
+                  <Link className="govuk-button" href={updateUrl}>Publish correct data set</Link>
+                </div>
+                <dl className="govuk-summary-list">
+                  <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Name</dt><dd className="govuk-summary-list__value">{statusData.name || '-'}</dd></div>
+                  <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Owner</dt><dd className="govuk-summary-list__value">{statusData.ownerName || '-'}</dd></div>
+                  <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Last updated</dt><dd className="govuk-summary-list__value">by System</dd></div>
+                </dl>
+                <h3 className="govuk-heading-m">What should I do next?</h3>
+                <p className="govuk-body">You can re-upload a different dataset file again. Please ensure that your provided data format is correct and that your dataset file contains valid data.</p>
+                <p className="govuk-body app-!-text-muted govuk-!-font-size-19">Accepted file formats include .xml (TransXChange).</p>
+              </>
             ) : (
               <>
+                {renderValidationPanel()}
+                {renderDataQualityPanel()}
+                <h2 className="govuk-heading-l">{statusData?.name || 'Timetable data set'}</h2>
+                {statusData?.revisionId ? <TimetableReviewMap revisionId={statusData.revisionId} /> : null}
                 <dl className="govuk-summary-list">
                   <div className="govuk-summary-list__row">
-                    <dt className="govuk-summary-list__key">Status</dt>
-                    <dd className="govuk-summary-list__value">{statusData?.status || '-'}</dd>
+                    <dt className="govuk-summary-list__key">Name</dt>
+                    <dd className="govuk-summary-list__value">{statusData?.name || '-'}</dd>
                   </div>
                   <div className="govuk-summary-list__row">
-                    <dt className="govuk-summary-list__key">Data set description</dt>
+                    <dt className="govuk-summary-list__key">Description</dt>
                     <dd className="govuk-summary-list__value">{statusData?.description || '-'}</dd>
                   </div>
                   <div className="govuk-summary-list__row">
@@ -142,10 +286,47 @@ function TimetableReviewPageContent() {
                     <dd className="govuk-summary-list__value">{statusData?.shortDescription || '-'}</dd>
                   </div>
                   <div className="govuk-summary-list__row">
+                    <dt className="govuk-summary-list__key">Status</dt>
+                    <dd className="govuk-summary-list__value">{statusData?.status || '-'}</dd>
+                  </div>
+                  <div className="govuk-summary-list__row">
+                    <dt className="govuk-summary-list__key">Owner</dt>
+                    <dd className="govuk-summary-list__value">{statusData?.ownerName || '-'}</dd>
+                  </div>
+                  <div className="govuk-summary-list__row">
+                    <dt className="govuk-summary-list__key">TransXChange version</dt>
+                    <dd className="govuk-summary-list__value">{statusData?.transxchangeVersion || '-'}</dd>
+                  </div>
+                  <div className="govuk-summary-list__row">
+                    <dt className="govuk-summary-list__key">URL link</dt>
+                    <dd className="govuk-summary-list__value">{statusData?.publisherUrl ? <a className="govuk-link" href={statusData.publisherUrl}>Publisher URL</a> : '-'}</dd>
+                  </div>
+                  <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">Last modified</dt>
                     <dd className="govuk-summary-list__value">{formatDateTime(statusData?.lastModified)}</dd>
                   </div>
                 </dl>
+
+                {statusData?.distinctAttributes ? (
+                  <>
+                    <h2 className="govuk-heading-l">Review Service Numbers</h2>
+                    <div className="govuk-accordion">
+                      {Object.entries(statusData.distinctAttributes).map(([licence, nocs]) => (
+                        <details className="govuk-details" key={licence}>
+                          <summary className="govuk-details__summary"><span className="govuk-details__summary-text">{licence}</span></summary>
+                          <div className="govuk-details__text">
+                            {Object.entries(nocs).map(([noc, lines]) => (
+                              <div key={noc}>
+                                <h3 className="govuk-heading-s">{noc}</h3>
+                                {Object.entries(lines).map(([line, serviceCodes]) => serviceCodes.map((serviceCode) => <p className="govuk-body" key={`${line}-${serviceCode}`}><a className="govuk-link" href={`/publish/org/${orgId}/dataset/timetable/${datasetId}/review/detail?line=${encodeURIComponent(line)}&revision_id=${statusData.revisionId}&service=${encodeURIComponent(serviceCode)}`}>{line} - {serviceCode}</a></p>))}
+                              </div>
+                            ))}
+                          </div>
+                        </details>
+                      ))}
+                    </div>
+                  </>
+                ) : null}
 
                 {statusData?.metadata && statusData.metadata.length > 0 ? (
                   <>
