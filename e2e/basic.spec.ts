@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { config } from '../config';
-import { HomePage } from '../pages/HomePage';
+import { config } from './config';
+import { HomePage } from './pages/HomePage';
 
 test.describe('Basic Functionality', () => {
     /*

@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 import { config } from './config';
 import { AUTH_STATE_PATH } from './global-setup';
 
+const hasTestCredentials = Boolean(config.testUser.username && config.testUser.password);
+
 export default defineConfig({
   testDir: './',
   testMatch: '*.spec.ts',
@@ -14,7 +16,7 @@ export default defineConfig({
   globalSetup: './global-setup.ts',
   use: {
     baseURL: config.baseUrl,
-    storageState: AUTH_STATE_PATH,
+    storageState: hasTestCredentials ? AUTH_STATE_PATH : undefined,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

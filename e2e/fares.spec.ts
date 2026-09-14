@@ -1,11 +1,11 @@
 import path from 'path';
 import { test, expect } from './fixtures';
-import { config } from '../config';
+import { config } from './config';
 
-const FARES_SAMPLE_FILE = path.resolve(__dirname, '../../transit_odp/fares/tests/fixtures/sample.zip');
+const FARES_SAMPLE_FILE = path.resolve(__dirname, '../transit_odp/fares/tests/fixtures/sample.zip');
 
 async function goToFaresCreateFromPublishData(authenticatedPage: any) {
-  await authenticatedPage.goto(`${config.publishUrl}/publish`);
+  await authenticatedPage.goto(`${config.baseUrl}/publish`);
   await expect(authenticatedPage.getByRole('heading', { name: /publish bus open data/i })).toBeVisible();
   await authenticatedPage.getByRole('link', { name: /publish data/i }).click();
   await expect(authenticatedPage).toHaveURL(/\/publish\/org\/\d+\/dataset$/);
@@ -15,14 +15,14 @@ async function goToFaresCreateFromPublishData(authenticatedPage: any) {
 }
 
 async function goToFaresList(authenticatedPage: any) {
-  await authenticatedPage.goto(`${config.publishUrl}/publish`);
+  await authenticatedPage.goto(`${config.baseUrl}/publish`);
   await authenticatedPage.getByRole('link', { name: /review my data/i }).click();
 
   // route to an intermediate dataset page or back to the
   const currentUrl = authenticatedPage.url();
   const orgMatch = currentUrl.match(/\/publish\/org\/(\d+)/);
   if (orgMatch && !/\/dataset\/fares(\?|$)/.test(currentUrl)) {
-    await authenticatedPage.goto(`${config.publishUrl}/publish/org/${orgMatch[1]}/dataset/fares`);
+    await authenticatedPage.goto(`${config.baseUrl}/publish/org/${orgMatch[1]}/dataset/fares`);
   }
 
   await expect(authenticatedPage).toHaveURL(/\/publish\/org\/\d+\/dataset\/fares(\?tab=active)?$/);

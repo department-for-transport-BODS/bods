@@ -1,11 +1,11 @@
 import { test, expect } from './fixtures';
-import { config } from '../config';
-import { TimetablePublishPage } from '../pages/TimetablePublishPage';
-import { TimetableReviewPage } from '../pages/TimetableReviewPage';
+import { config } from './config';
+import { TimetablePublishPage } from './pages/TimetablePublishPage';
+import { TimetableReviewPage } from './pages/TimetableReviewPage';
 
 /*
   Each test uses the authenticatedPage fixture, so the user is logged in before each test runs.
-  The login logic is handled by AuthHelper in helpers/auth.ts.
+  Login is performed once in global setup and reused through Playwright's saved storage state.
 */
 test.describe('Timetable Publish Flow (Authenticated)', () => {
 
