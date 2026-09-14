@@ -1,7 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { RouteMap } from '@/components/data/RouteMap';
+import dynamic from 'next/dynamic';
+
+const RouteMap = dynamic(
+  () => import('@/components/data/RouteMap').then((module) => module.RouteMap),
+  { ssr: false },
+);
 
 export function TimetableReviewMap({ revisionId }: { revisionId: number }) {
   const [token, setToken] = useState('');
