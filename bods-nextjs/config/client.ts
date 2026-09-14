@@ -7,6 +7,8 @@ const bodsPort = process.env.NEXT_PUBLIC_BODS_PORT || (isLocalDomain ? '3000' : 
 
 export const HOSTS = buildBodsHosts(bodsBaseDomain, bodsPort);
 
+export const TRANSXCHANGE_VERSION = '2.4.1';
+
 export { hostPath };
 
 export function wwwPath(path = '/'): string {

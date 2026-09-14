@@ -1,11 +1,11 @@
 /**
  * Dataset Detail Content Component Tests
- * 
+ *
  */
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { DatasetDetailContent } from './DatasetDetailContent';
-import { dataPath } from '@/config/client';
+import { dataPath, TRANSXCHANGE_VERSION } from '@/config/client';
 import type { ReactNode } from 'react';
 import type { Dataset } from '@/types';
 
@@ -95,6 +95,12 @@ describe('DatasetDetailContent', () => {
     const statusBadge = screen.getByText('Published');
     expect(statusBadge).toBeInTheDocument();
     expect(statusBadge).toHaveClass('govuk-tag--green');
+  });
+
+  it('renders the configured TransXChange version', () => {
+    render(<DatasetDetailContent dataset={mockDataset} formattedLastUpdated="15 Jan 2024 14:30" />);
+
+    expect(screen.getByText(TRANSXCHANGE_VERSION)).toBeInTheDocument();
   });
 
   it('renders data quality score and RAG', () => {

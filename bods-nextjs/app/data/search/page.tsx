@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { TRANSXCHANGE_VERSION } from '@/config/client';
 import { DataHelpSidebar } from '@/components/data/DataHelpSidebar';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { HOSTS, dataPath } from '@/config/client';
@@ -45,7 +46,7 @@ export default function DataSearchSelectPage() {
                     You can filter and browse specific timetables data on the service.
                   </p>
                   <ul className="govuk-list">
-                    <li><strong>Format:</strong> TXC 2.4 PTI 1.1.A</li>
+                    <li><strong>Format:</strong> TXC {TRANSXCHANGE_VERSION} PTI 1.1.A</li>
                     <li><strong>File type:</strong> XML file</li>
                     <li><strong>Data type:</strong> Static</li>
                     <li><strong>Data source:</strong> BODS</li>
