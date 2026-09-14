@@ -167,8 +167,8 @@ function TimetablePublish() {
                 <DataProviderRadioGroup
                   selectedMethod={selectedMethod}
                   link={link}
-                  urlHint="Please provide data set URI that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files"
-                  fileHint="Please provide data set file that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files"
+                  urlHint="Please provide data set URI that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files."
+                  fileHint="Please provide data set file that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files."
                   fileSelected={file !== null}
                   errors={{ method: errors.method, link: errors.link, file: errors.file }}
                   onMethodChange={setSelectedMethod}
