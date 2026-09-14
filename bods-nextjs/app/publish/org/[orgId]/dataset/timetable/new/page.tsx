@@ -18,7 +18,7 @@ import {
   validateTimetableStep2,
   validateTimetableStep3,
 } from '@/lib/validation/timetable-publish';
-import { publishAppPath, wwwPath } from '@/config/client';
+import { publishAppPath, wwwPath, TRANSXCHANGE_VERSION } from '@/config/client';
 
 
 function TimetablePublish() {
@@ -186,7 +186,7 @@ function TimetablePublish() {
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
                 <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={`${supportBusOperatorsUrl}?section=dataquality`}>
-                  View the Txc 2.4 schema and profile requirement
+                  View the Txc {TRANSXCHANGE_VERSION} schema and profile requirement
                 </a>
               </li>
               <li>

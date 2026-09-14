@@ -26,7 +26,7 @@ import { DataQualityBadge } from './DataQualityBadge';
 import { DownloadSubscribePanel } from './DownloadSubscribePanel';
 import { ApiUrlPanel } from './ApiUrlPanel';
 import { RouteMap } from './RouteMap';
-import { dataPath, publishAppPath } from '@/config/client';
+import { dataPath, publishAppPath, TRANSXCHANGE_VERSION } from '@/config/client';
 
 interface DatasetDetailContentProps {
   dataset: Dataset;
@@ -125,7 +125,7 @@ export function DatasetDetailContent({
               TransXChange version
             </th>
             <td colSpan={2} className="govuk-table__cell">
-              2.4
+              {TRANSXCHANGE_VERSION}
             </td>
           </tr>
 

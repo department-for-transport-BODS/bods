@@ -3,6 +3,8 @@
  * Source: transit_odp/guidance/templates/guidance/snippets/requirements_table.html
  */
 
+import { TRANSXCHANGE_VERSION } from '@/config/client';
+
 export function RequirementsTable() {
   return (
     <table data-qa="requirements-table" className="govuk-table">
@@ -17,7 +19,7 @@ export function RequirementsTable() {
       <tbody className="govuk-table__body">
         <tr data-qa="timetable-row" className="govuk-table__row">
           <td className="govuk-table__cell">Timetable</td>
-          <td className="govuk-table__cell">TransXChange Version 2.4</td>
+          <td className="govuk-table__cell">TransXChange Version {TRANSXCHANGE_VERSION}</td>
           <td className="govuk-table__cell">31st December 2020</td>
           <td className="govuk-table__cell">Operator</td>
         </tr>
