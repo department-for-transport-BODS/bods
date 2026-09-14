@@ -967,7 +967,7 @@ a.review-stat__link:visited {
 
 .progress-bar-outer {
   width: 100%;
-  background-color: var(--govuk-colour-dark-blue);
+  background-color: #005ea5;
 }
 
 .progress-bar-inner {

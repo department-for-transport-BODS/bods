@@ -86,7 +86,7 @@ describe('Timetable - Publish - Page', () => {
     await fillDescriptionStep();
     await userEvent.click(screen.getByLabelText('Provide a link to your data set'));
 
-    expect(screen.getByText('Please provide data set URI that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files')).toBeInTheDocument();
+    expect(screen.getByText('Please provide data set URI that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files.')).toBeInTheDocument();
     const urlInput = screen.getByLabelText('URL Link');
     expect(urlInput).toHaveClass('govuk-!-width-three-quarters');
     expect(urlInput.closest('.govuk-radios__conditional')).not.toBeNull();
@@ -99,7 +99,7 @@ describe('Timetable - Publish - Page', () => {
     await userEvent.click(screen.getByLabelText('Upload data set to Bus Open Data Service'));
 
     const fileInput = screen.getByLabelText('Upload file');
-    expect(screen.getByText('Please provide data set file that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files')).toBeInTheDocument();
+    expect(screen.getByText('Please provide data set file that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files.')).toBeInTheDocument();
     expect(fileInput.closest('.govuk-radios__conditional')).not.toBeNull();
     expect(fileInput).toHaveClass('govuk-!-width-three-quarters');
 
