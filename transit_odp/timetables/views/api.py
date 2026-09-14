@@ -8,7 +8,15 @@ from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.publish.forms import FeedDescriptionForm, FeedUploadForm
+from transit_odp.publish.views.utils import get_distinct_dataset_txc_attributes
+from transit_odp.data_quality.models import SchemaViolation
+from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
+from transit_odp.data_quality.report_summary import Summary
+from transit_odp.data_quality.scoring import get_data_quality_rag
+from transit_odp.dqs.constants import ReportStatus
+from transit_odp.dqs.models import Report
 from transit_odp.timetables.tasks import task_dataset_pipeline
+from transit_odp.timetables.views.constants import ERROR_CODE_LOOKUP
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
 from transit_odp.publish.views.trigger_state_machine import trigger_state_machine
@@ -151,6 +159,16 @@ def _iso_or_none(value):
     return value.isoformat()
 
 
+def _serialise_txc_attributes(attributes):
+    return {
+        licence_number: {
+            noc: {line_name: sorted(service_codes) for line_name, service_codes in lines.items()}
+            for noc, lines in nocs.items()
+        }
+        for licence_number, nocs in attributes.items()
+    }
+
+
 def _get_request_context(request, org_id, dataset_id=None):
     user = _authenticate_user(request)
     if user is None or not user.is_authenticated:
@@ -256,6 +274,65 @@ def get_timetables_review_status_api(request, pk1, pk):
     status = revision.status
     is_loading = _is_loading_status(status)
 
+    has_schema_violation = SchemaViolation.objects.filter(revision=revision.id).exists()
+    has_post_schema_violation = PostSchemaViolation.objects.filter(revision=revision.id).exists()
+    has_pti_observations = PTIObservation.objects.filter(revision=revision.id).exists()
+    validation_report_url = f"/org/{pk1}/dataset/timetable/{pk}/review/pti-csv"
+
+    validation_state = "passed"
+    if has_schema_violation or has_post_schema_violation or has_pti_observations:
+        validation_state = "passed-with-issues"
+    if error_code:
+        validation_state = "failed"
+
+    data_quality_status = "PENDING"
+    data_quality_score = None
+    data_quality_rag = None
+    critical_count = 0
+    advisory_count = 0
+    data_quality_report_url = f"/org/{pk1}/dataset/timetable/{pk}/report/draft/"
+    data_quality_report_csv_url = None
+    show_update = False
+
+    tasks = revision.data_quality_tasks
+    if flag_is_active("", "is_new_data_quality_service_active"):
+        report = (
+            Report.objects.filter(revision_id=revision.id)
+            .order_by("-created")
+            .filter(
+                status__in=[
+                    ReportStatus.REPORT_GENERATED.value,
+                    ReportStatus.REPORT_GENERATION_FAILED.value,
+                ]
+            )
+            .first()
+        )
+        if report:
+            data_quality_status = "SUCCESS"
+            summary = Summary.get_report(report.id, revision.id)
+            data_quality_score = getattr(report, "score", None)
+            data_quality_rag = get_data_quality_rag(report)
+            critical_count = summary.data.get("Critical", {}).get("count", 0)
+            advisory_count = summary.data.get("Advisory", {}).get("count", 0)
+            data_quality_report_csv_url = f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
+            show_update = True
+    else:
+        task_status = tasks.get_latest_status()
+        data_quality_status = task_status or "PENDING"
+        if task_status == "SUCCESS":
+            report = tasks.latest().report
+            summary = Summary.from_report_summary(report.summary)
+            data_quality_score = getattr(report, "score", None)
+            data_quality_rag = get_data_quality_rag(report)
+            critical_count = summary.data.get("Critical", {}).get("count", 0)
+            advisory_count = summary.data.get("Advisory", {}).get("count", 0)
+            data_quality_report_csv_url = f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
+            show_update = revision.is_pti_compliant()
+
+    error_description = None
+    if error_code:
+        error_description = ERROR_CODE_LOOKUP.get(error_code, ERROR_CODE_LOOKUP.get("SYSTEM_ERROR"))["description"]
+
     txc_attributes = revision.txc_file_attributes.all()
     metadata = [
         {
@@ -307,6 +384,28 @@ def get_timetables_review_status_api(request, pk1, pk):
             "lastModifiedUser": last_modified_user,
             "metadata": metadata,
             "error": error_code,
+            "errorDescription": error_description,
+            "validationState": validation_state,
+            "validationReportUrl": validation_report_url,
+            "hasSchemaViolation": has_schema_violation,
+            "hasPostSchemaViolation": has_post_schema_violation,
+            "hasPtiObservations": has_pti_observations,
+            "dataQuality": {
+                "status": data_quality_status,
+                "score": data_quality_score,
+                "ragLevel": data_quality_rag.rag_level if data_quality_rag else None,
+                "criticalCount": critical_count,
+                "advisoryCount": advisory_count,
+                "reportUrl": data_quality_report_url,
+                "reportCsvUrl": data_quality_report_csv_url,
+                "showUpdate": show_update,
+            },
+            "ownerName": revision.dataset.organisation.name,
+            "transxchangeVersion": getattr(revision, "transxchange_version", None),
+            "publisherUrl": revision.url_link or download_url,
+            "distinctAttributes": _serialise_txc_attributes(
+                get_distinct_dataset_txc_attributes(revision.id)
+            ),
         },
         status=200,
     )
