@@ -15,7 +15,7 @@ from transit_odp.data_quality.report_summary import Summary
 from transit_odp.data_quality.scoring import get_data_quality_rag
 from transit_odp.dqs.constants import ReportStatus
 from transit_odp.dqs.models import Report
-from transit_odp.timetables.tasks import task_dataset_pipeline
+from transit_odp.timetables.tasks import delete_dataset_revision, task_dataset_pipeline
 from transit_odp.timetables.views.constants import ERROR_CODE_LOOKUP
 from transit_odp.organisation.constants import DatasetType, FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
@@ -440,6 +440,25 @@ def publish_timetables_dataset_api(request, pk1, pk):
         {
             "redirect": f"/publish/org/{pk1}/dataset/timetable",
             "published": True,
+        },
+        status=200,
+    )
+
+
+@require_POST
+def delete_timetables_dataset_api(request, pk1, pk):
+    _, _, revision, error_response = _get_request_context(request, pk1, pk)
+    if error_response is not None:
+        return error_response
+
+    delete_queued = not revision.is_published
+    if delete_queued:
+        delete_dataset_revision.delay(revision.id)
+
+    return JsonResponse(
+        {
+            "redirect": f"/publish/org/{pk1}/dataset/timetable/delete-success",
+            "delete_queued": delete_queued,
         },
         status=200,
     )

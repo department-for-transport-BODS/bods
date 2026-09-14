@@ -33,6 +33,7 @@ from transit_odp.publish.views.api import (
 )
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
+    delete_timetables_dataset_api,
     get_timetables_list_api,
     get_timetables_review_status_api,
     publish_timetables_dataset_api,
@@ -216,6 +217,11 @@ urlpatterns = [
         "timetables/publish/<int:pk1>/<int:pk>/",
         publish_timetables_dataset_api,
         name="nextjs-timetables-publish",
+    ),
+    path(
+        "timetables/delete/<int:pk1>/<int:pk>/",
+        delete_timetables_dataset_api,
+        name="nextjs-timetables-delete",
     ),
     path(
         "org/<int:pk1>/dataset/timetable/upload/",
