@@ -79,7 +79,6 @@ function TimetableReviewPageContent() {
   const {
     statusData,
     processingProgress,
-    isInitialLoading,
     errorMessage,
     setErrorMessage,
   } = useDatasetReview<TimetableReviewStatusResponse>(
@@ -117,6 +116,7 @@ function TimetableReviewPageContent() {
   const noValidFile = statusData?.error === 'NO_VALID_FILE_TO_PROCESS';
 
   const updateUrl = `/publish/org/${orgId}/dataset/timetable/new?step=provide-data`;
+  const deleteUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/delete`;
 
   const renderValidationPanel = () => {
     return (
@@ -153,6 +153,7 @@ function TimetableReviewPageContent() {
           <Link className="govuk-link" href="/contact">Contact support</Link>
           <br />
           <Link className="govuk-button govuk-button--secondary" href={updateUrl}>Update data</Link>
+          <Link className="govuk-button govuk-button--secondary" href={deleteUrl}>Delete data</Link>
         </section>
       );
     }
@@ -189,6 +190,7 @@ function TimetableReviewPageContent() {
         <p className="govuk-body">The timetables data supplied is non-compliant and cannot be submitted to BODS. To pass the validation please address all outstanding issues in the validation report.</p>
       </section>
       <Link className="govuk-button govuk-!-margin-top-3" href={updateUrl}>Update data</Link>
+      <Link className="govuk-button govuk-button--secondary govuk-!-margin-top-3 govuk-!-margin-left-2" href={deleteUrl}>Delete data</Link>
       <h2 className="govuk-heading-l govuk-!-padding-top-5">{statusData?.name || 'Timetable data set'}</h2>
       <dl className="govuk-summary-list">
         <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Name</dt><dd className="govuk-summary-list__value">{statusData?.name || '-'}</dd></div>
@@ -226,7 +228,7 @@ function TimetableReviewPageContent() {
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            {isInitialLoading || loading ? (
+            {statusData?.loading ? (
               <div className="govuk-panel govuk-panel--confirmation timetable-validation-panel">
                 <h1 className="govuk-panel__title govuk-!-font-size-36">Validating data sets</h1>
                 <div className="govuk-panel__body govuk-!-font-size-19">
@@ -240,7 +242,7 @@ function TimetableReviewPageContent() {
                   <span id="progressSpan" className="progress-bar-text">{progress}%</span>
                 </div>
               </div>
-            ) : noValidFile ? (
+            ) : statusData === null ? null : noValidFile ? (
               renderNoValidFileState()
             ) : statusData?.error ? (
               <>
@@ -265,6 +267,7 @@ function TimetableReviewPageContent() {
                 <h3 className="govuk-heading-m">What should I do next?</h3>
                 <p className="govuk-body">You can re-upload a different dataset file again. Please ensure that your provided data format is correct and that your dataset file contains valid data.</p>
                 <p className="govuk-body app-!-text-muted govuk-!-font-size-19">Accepted file formats include .xml (TransXChange).</p>
+                <Link className="govuk-button govuk-button--secondary" href={deleteUrl}>Delete data</Link>
               </>
             ) : (
               <>
@@ -380,6 +383,9 @@ function TimetableReviewPageContent() {
                     Back to data sets
                   </Link>
                 </div>
+                <Link className="govuk-button govuk-button--secondary" href={deleteUrl}>
+                  Delete data
+                </Link>
               </>
             )}
           </div>
