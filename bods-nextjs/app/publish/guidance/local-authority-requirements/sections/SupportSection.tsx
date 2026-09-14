@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { publishAppPath } from '@/config/client';
+import { publishAppPath, TRANSXCHANGE_VERSION } from '@/config/client';
 import { useSupportConfig } from '@/components/shared/SupportConfigProvider';
 
 export function SupportSection() {
@@ -19,8 +19,8 @@ export function SupportSection() {
         operators or support them in producing their TransXChange files for the service.
       </p>
       <p className="govuk-body">
-        Methods of producing TransXChange 2.4 include procuring scheduling software or using the
-        free TxC 2.4 tool provided by DfT, from the following website:
+        Methods of producing TransXChange {TRANSXCHANGE_VERSION} include procuring scheduling software or using the
+        free TxC {TRANSXCHANGE_VERSION} tool provided by DfT, from the following website:
       </p>
       <p className="govuk-body">
         <a className="govuk-link" href="https://www.gov.uk/guidance/publish-bus-open-data" target="_blank" rel="noopener noreferrer">
@@ -32,7 +32,7 @@ export function SupportSection() {
         For more information please contact{' '}
         <a className="govuk-link" href={`mailto:${supportEmail}`}>{supportEmail}</a>.
       </p>
-      <p className="govuk-body">Please ensure the timetables data provided aligns with TransXChange version 2.4.</p>
+      <p className="govuk-body">Please ensure the timetables data provided aligns with TransXChange version {TRANSXCHANGE_VERSION}.</p>
 
       <h2 className="govuk-heading-l">Bus location data support</h2>
       <p className="govuk-body">
