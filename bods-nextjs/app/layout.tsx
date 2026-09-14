@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./govuk.scss";
 import "./globals.css";
 import "swagger-ui-react/swagger-ui.css";
+import "./swagger.scss";
 import { AuthProvider } from "@/lib/auth/session-auth";
 import { HostProvider } from "@/lib/bods-host-context";
 import { GDSProvider } from "@/components/gds/GDSProvider";
