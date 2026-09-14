@@ -72,7 +72,7 @@ class SchemaVersionMissing(FileError):
             filename,
             message=(
                 "Missing schema. Document must define a valid "
-                "SchemaVersion attribute. Valid values = 2.1 or 2.4."
+                "SchemaVersion attribute. Valid values = 2.1, 2.4 or 2.4.1."
             ),
         )
 
@@ -87,7 +87,7 @@ class SchemaVersionNotSupported(FileError):
             filename,
             message=(
                 f"Invalid schema version '{schema_version}'. Document must "
-                f"define a valid SchemaVersion attribute with a value = 2.1 or 2.4."
+                f"define a valid SchemaVersion attribute with a value = 2.1, 2.4 or 2.4.1."
             ),
         )
         self.schema_version = schema_version
