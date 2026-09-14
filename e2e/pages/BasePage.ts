@@ -26,7 +26,7 @@ export class BasePage {
 
   async waitForSelector(selector: string, timeout?: number): Promise<this> {
     await this.page.waitForSelector(selector, {
-      timeout: timeout || config.defaultTimeout
+      timeout: timeout || config.defaultTimeoutMs
     });
     return this;
   }

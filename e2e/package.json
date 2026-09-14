@@ -8,7 +8,13 @@
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
     "test:ui": "playwright test --ui",
-    "show-report": "playwright show-report"
+    "test:chrome": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:ci": "playwright test --reporter=html,github",
+    "test:local": "playwright test --headed --workers=1",
+    "show-report": "playwright show-report",
+    "codegen": "playwright codegen"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

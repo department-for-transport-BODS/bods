@@ -1,11 +1,10 @@
 import { test, expect } from './fixtures';
-import { config } from '../config';
-import { OrganisationProfilePage } from '../pages/OrganisationProfilePage';
+import { config } from './config';
+import { OrganisationProfilePage } from './pages/OrganisationProfilePage';
 
 /*
   Each of these tests uses the authenticatedPage fixture, which means that the logic is that everything here happens after login.
-  The actual login logic is encapsulated in the AuthHelper class in helpers/auth.ts, promoting reuse and maintainability.
-  For the time being that pattern should be kept to avoid duplicating login logic across multiple test files/ making easy maintainability across different services.
+  Login is performed once in global setup and reused through Playwright's saved storage state.
 */
 test.describe('Authenticated User Tests', () => {
 
