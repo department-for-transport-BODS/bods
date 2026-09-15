@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DataProviderRadioGroup, PublishStepper, UPLOAD_FILE_ITEM_ID, URL_LINK_ITEM_ID } from '@/components/publish';
@@ -23,6 +23,10 @@ function TimetableUpdateContent() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+
+  useEffect(() => {
+    document.title = 'Update data set: upload';
+  }, []);
 
   const handleSubmit = async () => {
     const validationErrors = validateTimetableStep2({ selectedMethod, link, file });

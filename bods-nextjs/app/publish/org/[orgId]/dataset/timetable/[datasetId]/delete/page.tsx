@@ -19,6 +19,10 @@ function TimetableDeleteContent() {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
+    document.title = 'Delete data set';
+  }, []);
+
+  useEffect(() => {
     api.get<{ name?: string }>(`/api/publish/timetables/review-status/${orgId}/${datasetId}/`)
       .then((data) => setDatasetName(data.name || ''))
       .catch(() => undefined);

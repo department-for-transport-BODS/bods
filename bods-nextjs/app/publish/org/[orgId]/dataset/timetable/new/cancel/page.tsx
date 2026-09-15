@@ -3,7 +3,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { TimetableCreateCancelContent } from '../../_components/TimetableCreateCancelContent';
 
 export const metadata: Metadata = {
-  title: 'Publish new data set',
+  title: 'Publish new data set: cancel',
 };
 
 export default function TimetableCreateCancelPage() {
