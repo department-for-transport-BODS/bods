@@ -73,17 +73,33 @@ function TimetableReviewPageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
+  const reviewCacheKey = `timetable-review:${orgId}:${datasetId}`;
+  const [cachedReview] = useState<TimetableReviewStatusResponse | null>(() => {
+    const cached = globalThis.sessionStorage?.getItem(reviewCacheKey);
+    if (!cached) return null;
+    globalThis.sessionStorage.removeItem(reviewCacheKey);
+    try {
+      return JSON.parse(cached) as TimetableReviewStatusResponse;
+    } catch {
+      return null;
+    }
+  });
 
   const timetablesListUrl = `/publish/org/${orgId}/dataset/timetable`;
 
   const {
     statusData,
     processingProgress,
+    isInitialLoading,
     errorMessage,
     setErrorMessage,
   } = useDatasetReview<TimetableReviewStatusResponse>(
     datasetId,
     `/api/publish/timetables/review-status/${orgId}/${datasetId}/`,
+    undefined,
+    '',
+    cachedReview,
+    cachedReview === null,
   );
   const [isPublishing, setIsPublishing] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
@@ -115,8 +131,13 @@ function TimetableReviewPageContent() {
   const dataQuality = statusData?.dataQuality;
   const noValidFile = statusData?.error === 'NO_VALID_FILE_TO_PROCESS';
 
-  const updateUrl = `/publish/org/${orgId}/dataset/timetable/new?step=provide-data`;
+  const updateUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/update`;
   const deleteUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/delete`;
+  const preserveReviewForReturn = () => {
+    if (statusData) {
+      globalThis.sessionStorage.setItem(reviewCacheKey, JSON.stringify(statusData));
+    }
+  };
 
   const renderValidationPanel = () => {
     return (
@@ -152,8 +173,8 @@ function TimetableReviewPageContent() {
           <p className="govuk-body">The data quality service is currently unavailable, please try again later.</p>
           <Link className="govuk-link" href="/contact">Contact support</Link>
           <br />
-          <Link className="govuk-button govuk-button--secondary" href={updateUrl}>Update data</Link>
-          <Link className="govuk-button govuk-button--secondary" href={deleteUrl}>Delete data</Link>
+          <Link className="govuk-button govuk-button--secondary" href={updateUrl} onClick={preserveReviewForReturn}>Update data</Link>
+          <Link className="govuk-button govuk-button--secondary" href={deleteUrl} onClick={preserveReviewForReturn}>Delete data</Link>
         </section>
       );
     }
@@ -176,7 +197,7 @@ function TimetableReviewPageContent() {
             <tr className="govuk-table__row"><td className="govuk-table__cell">{dataQuality.advisoryCount || 0}</td><td className="govuk-table__cell">Advisory data quality observations</td></tr>
           </tbody>
         </table>
-        {dataQuality.showUpdate ? <Link className="govuk-button govuk-button--secondary" href={updateUrl}>Update data</Link> : null}
+        {dataQuality.showUpdate ? <Link className="govuk-button govuk-button--secondary" href={updateUrl} onClick={preserveReviewForReturn}>Update data</Link> : null}
       </section>
     );
   };
@@ -189,8 +210,8 @@ function TimetableReviewPageContent() {
         <a className="govuk-link" href={statusData?.validationReportUrl}>Download validation report</a>
         <p className="govuk-body">The timetables data supplied is non-compliant and cannot be submitted to BODS. To pass the validation please address all outstanding issues in the validation report.</p>
       </section>
-      <Link className="govuk-button govuk-!-margin-top-3" href={updateUrl}>Update data</Link>
-      <Link className="govuk-button govuk-button--secondary govuk-!-margin-top-3 govuk-!-margin-left-2" href={deleteUrl}>Delete data</Link>
+      <Link className="govuk-button govuk-!-margin-top-3" href={updateUrl} onClick={preserveReviewForReturn}>Update data</Link>
+      <Link className="govuk-button govuk-button--secondary govuk-!-margin-top-3 govuk-!-margin-left-2" href={deleteUrl} onClick={preserveReviewForReturn}>Delete data</Link>
       <h2 className="govuk-heading-l govuk-!-padding-top-5">{statusData?.name || 'Timetable data set'}</h2>
       <dl className="govuk-summary-list">
         <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Name</dt><dd className="govuk-summary-list__value">{statusData?.name || '-'}</dd></div>
@@ -228,7 +249,7 @@ function TimetableReviewPageContent() {
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            {statusData?.loading ? (
+            {isInitialLoading || loading ? (
               <div className="govuk-panel govuk-panel--confirmation timetable-validation-panel">
                 <h1 className="govuk-panel__title govuk-!-font-size-36">Validating data sets</h1>
                 <div className="govuk-panel__body govuk-!-font-size-19">
@@ -257,7 +278,7 @@ function TimetableReviewPageContent() {
                   tabIndex={-1}
                 />
                 <div className="govuk-!-padding-bottom-7 govuk-!-padding-top-5">
-                  <Link className="govuk-button" href={updateUrl}>Publish correct data set</Link>
+                  <Link className="govuk-button" href={updateUrl} onClick={preserveReviewForReturn}>Publish correct data set</Link>
                 </div>
                 <dl className="govuk-summary-list">
                   <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Name</dt><dd className="govuk-summary-list__value">{statusData.name || '-'}</dd></div>
@@ -267,7 +288,7 @@ function TimetableReviewPageContent() {
                 <h3 className="govuk-heading-m">What should I do next?</h3>
                 <p className="govuk-body">You can re-upload a different dataset file again. Please ensure that your provided data format is correct and that your dataset file contains valid data.</p>
                 <p className="govuk-body app-!-text-muted govuk-!-font-size-19">Accepted file formats include .xml (TransXChange).</p>
-                <Link className="govuk-button govuk-button--secondary" href={deleteUrl}>Delete data</Link>
+                <Link className="govuk-button govuk-button--secondary" href={deleteUrl} onClick={preserveReviewForReturn}>Delete data</Link>
               </>
             ) : (
               <>
@@ -383,7 +404,7 @@ function TimetableReviewPageContent() {
                     Back to data sets
                   </Link>
                 </div>
-                <Link className="govuk-button govuk-button--secondary" href={deleteUrl}>
+                <Link className="govuk-button govuk-button--secondary" href={deleteUrl} onClick={preserveReviewForReturn}>
                   Delete data
                 </Link>
               </>
