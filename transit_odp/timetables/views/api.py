@@ -7,7 +7,11 @@ from django_hosts import reverse
 from waffle import flag_is_active
 
 import config.hosts
-from transit_odp.publish.forms import EditFeedDescriptionForm, FeedDescriptionForm, FeedUploadForm
+from transit_odp.publish.forms import (
+    EditFeedDescriptionForm,
+    FeedDescriptionForm,
+    FeedUploadForm,
+)
 from transit_odp.publish.views.utils import get_distinct_dataset_txc_attributes
 from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
