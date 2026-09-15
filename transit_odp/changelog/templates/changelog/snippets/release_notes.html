@@ -1,5 +1,66 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "September 2026 (1.64.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.64.0 (Sep 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Resolved an issue where validation ZIP file downloads could be empty, even when the download completed successfully.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue affecting bank holiday rules for Scotland and the rest of the UK.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Improved the reliability of timetable and fares data processing.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue that prevented some BODS service updates from being applied.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue where some ABODS links were not working correctly.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Improved the way the Disruptions service handles reference data errors.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Updated the way BODS checks for inappropriate language.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Upgraded supporting software used by BODS services to improve resilience and maintain security updates.
+    {% endblocktrans %}
+  </li>
+    <li>
+    {% blocktrans %}
+      Upgraded supporting software used by data creation services to improve resilience and maintain security updates.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved a security vulnerability in one of the supporting components used by data creation services.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "September 2026 (1.63.0)" %}
 </h3>
 <h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.63.0 (Sep 2026)</h4>
