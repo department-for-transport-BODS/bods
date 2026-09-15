@@ -34,6 +34,8 @@ from transit_odp.publish.views.api import (
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
     delete_timetables_dataset_api,
+    edit_timetables_dataset_description_api,
+    get_timetables_dataset_edit_api,
     get_timetables_list_api,
     get_timetables_review_status_api,
     publish_timetables_dataset_api,
@@ -228,6 +230,16 @@ urlpatterns = [
         "timetables/update/<int:pk1>/<int:pk>/",
         update_timetables_dataset_api,
         name="nextjs-timetables-update",
+    ),
+    path(
+        "timetables/dataset-edit/<int:pk1>/<int:pk>/",
+        get_timetables_dataset_edit_api,
+        name="nextjs-timetables-dataset-edit-get",
+    ),
+    path(
+        "timetables/dataset-edit/<int:pk1>/<int:pk>/save/",
+        edit_timetables_dataset_description_api,
+        name="nextjs-timetables-dataset-edit-save",
     ),
     path(
         "org/<int:pk1>/dataset/timetable/upload/",
