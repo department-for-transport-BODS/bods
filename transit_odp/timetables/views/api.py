@@ -87,6 +87,15 @@ def _trigger_timetables_processing(revision: DatasetRevision) -> None:
         trigger_state_machine(revision, "timetables")
 
 
+def _delete_timetable_review_data(revision: DatasetRevision) -> None:
+    revision.schema_violations.all().delete()
+    revision.post_schema_violations.all().delete()
+    revision.txc_file_attributes.all().delete()
+    revision.pti_observations.all().delete()
+    revision.service_patterns.all().delete()
+    revision.dqs_report.all().delete()
+
+
 def _get_revision_progress(revision: DatasetRevision):
     progress = 0
     latest_task = revision.etl_results.order_by("-id").first()
@@ -162,7 +171,10 @@ def _iso_or_none(value):
 def _serialise_txc_attributes(attributes):
     return {
         licence_number: {
-            noc: {line_name: sorted(service_codes) for line_name, service_codes in lines.items()}
+            noc: {
+                line_name: sorted(service_codes)
+                for line_name, service_codes in lines.items()
+            }
             for noc, lines in nocs.items()
         }
         for licence_number, nocs in attributes.items()
@@ -263,6 +275,38 @@ def create_timetables_dataset_api(request, pk1):
     return JsonResponse({"redirect": review_url}, status=201)
 
 
+@require_POST
+def update_timetables_dataset_api(request, pk1, pk):
+    user, _, revision, error_response = _get_request_context(request, pk1, pk)
+    if error_response is not None:
+        return error_response
+
+    upload_form = FeedUploadForm(
+        data=request.POST,
+        files=request.FILES,
+        instance=revision,
+        is_revision_modify=True,
+    )
+    if not upload_form.is_valid():
+        return JsonResponse(
+            {"error": "Upload validation failed", "field_errors": upload_form.errors},
+            status=400,
+        )
+
+    with transaction.atomic():
+        _delete_timetable_review_data(revision)
+        for key, value in upload_form.cleaned_data.items():
+            setattr(revision, key, value)
+        revision.last_modified_user = user
+        revision.save()
+        _trigger_timetables_processing(revision)
+
+    return JsonResponse(
+        {"redirect": f"/publish/org/{pk1}/dataset/timetable/{pk}/review"},
+        status=201,
+    )
+
+
 @require_GET
 def get_timetables_review_status_api(request, pk1, pk):
     _, _, revision, error_response = _get_request_context(request, pk1, pk)
@@ -275,7 +319,9 @@ def get_timetables_review_status_api(request, pk1, pk):
     is_loading = _is_loading_status(status)
 
     has_schema_violation = SchemaViolation.objects.filter(revision=revision.id).exists()
-    has_post_schema_violation = PostSchemaViolation.objects.filter(revision=revision.id).exists()
+    has_post_schema_violation = PostSchemaViolation.objects.filter(
+        revision=revision.id
+    ).exists()
     has_pti_observations = PTIObservation.objects.filter(revision=revision.id).exists()
     validation_report_url = f"/org/{pk1}/dataset/timetable/{pk}/review/pti-csv"
 
@@ -314,7 +360,9 @@ def get_timetables_review_status_api(request, pk1, pk):
             data_quality_rag = get_data_quality_rag(report)
             critical_count = summary.data.get("Critical", {}).get("count", 0)
             advisory_count = summary.data.get("Advisory", {}).get("count", 0)
-            data_quality_report_csv_url = f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
+            data_quality_report_csv_url = (
+                f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
+            )
             show_update = True
     else:
         task_status = tasks.get_latest_status()
@@ -326,12 +374,16 @@ def get_timetables_review_status_api(request, pk1, pk):
             data_quality_rag = get_data_quality_rag(report)
             critical_count = summary.data.get("Critical", {}).get("count", 0)
             advisory_count = summary.data.get("Advisory", {}).get("count", 0)
-            data_quality_report_csv_url = f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
+            data_quality_report_csv_url = (
+                f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
+            )
             show_update = revision.is_pti_compliant()
 
     error_description = None
     if error_code:
-        error_description = ERROR_CODE_LOOKUP.get(error_code, ERROR_CODE_LOOKUP.get("SYSTEM_ERROR"))["description"]
+        error_description = ERROR_CODE_LOOKUP.get(
+            error_code, ERROR_CODE_LOOKUP.get("SYSTEM_ERROR")
+        )["description"]
 
     txc_attributes = revision.txc_file_attributes.all()
     metadata = [
