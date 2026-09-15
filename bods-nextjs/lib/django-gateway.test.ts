@@ -18,6 +18,14 @@ describe('getDjangoNamespace', () => {
       upstreamPrefix: '/api/',
       upstreamHost: 'data.localhost:8000',
     });
+    expect(getDjangoNamespace('v1')).toEqual({
+      upstreamPrefix: '/api/v1/',
+      upstreamHost: 'data.localhost:8000',
+    });
+    expect(getDjangoNamespace('v2')).toEqual({
+      upstreamPrefix: '/api/v2/',
+      upstreamHost: 'data.localhost:8000',
+    });
     expect(getDjangoNamespace('publish')).toEqual({
       upstreamPrefix: '/api/',
       upstreamHost: 'publish.localhost:8000',
@@ -51,12 +59,14 @@ describe('resolveUpstreamHost', () => {
     expect(resolveUpstreamHost(getDjangoNamespace('auth')!, request)).toBe('localhost:8000');
   });
 
-  it('keeps the static upstream for the data and publish namespaces', () => {
+  it('keeps the static upstream for data API namespaces', () => {
     const request = new NextRequest('http://localhost:3000/api/data/v1/dataset/', {
       headers: { host: 'localhost:3000' },
     });
 
     expect(resolveUpstreamHost(getDjangoNamespace('data')!, request)).toBe('data.localhost:8000');
+    expect(resolveUpstreamHost(getDjangoNamespace('v1')!, request)).toBe('data.localhost:8000');
+    expect(resolveUpstreamHost(getDjangoNamespace('v2')!, request)).toBe('data.localhost:8000');
     expect(resolveUpstreamHost(getDjangoNamespace('publish')!, request)).toBe('publish.localhost:8000');
   });
 });
@@ -90,7 +100,7 @@ describe('forwardToDjango', () => {
     const response = await forwardToDjango(
       request,
       '/api/v1/dataset/',
-      'data.localhost:8000',
+      'data.bods.local:8000',
     );
 
     expect(response).toBe(upstreamResponse);
@@ -104,7 +114,7 @@ describe('forwardToDjango', () => {
     );
     const init = (global.fetch as jest.Mock).mock.calls[0][1] as RequestInit;
     const headers = new Headers(init.headers);
-    expect(headers.get('host')).toBe('data.localhost:8000');
+    expect(headers.get('host')).toBe('data.bods.local:8000');
     expect(headers.get('cookie')).toBe('sessionid=session-value');
   });
 

@@ -2,11 +2,13 @@ describe('public BODS hosts', () => {
   const originalBaseDomain = process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN;
   const originalPort = process.env.NEXT_PUBLIC_BODS_PORT;
   const originalDjangoOrigin = process.env.DJANGO_INTERNAL_ORIGIN;
+  const originalDjangoHostDomain = process.env.DJANGO_HOST_DOMAIN;
 
   afterEach(() => {
     process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN = originalBaseDomain;
     process.env.NEXT_PUBLIC_BODS_PORT = originalPort;
     process.env.DJANGO_INTERNAL_ORIGIN = originalDjangoOrigin;
+    process.env.DJANGO_HOST_DOMAIN = originalDjangoHostDomain;
     jest.resetModules();
   });
 
@@ -55,6 +57,7 @@ describe('public BODS hosts', () => {
     process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN = 'localhost';
     process.env.NEXT_PUBLIC_BODS_PORT = '3000';
     process.env.DJANGO_INTERNAL_ORIGIN = 'http://localhost:8000';
+    delete process.env.DJANGO_HOST_DOMAIN;
     jest.resetModules();
 
     const { DJANGO_HOSTS } = await import('./config/server');
@@ -65,5 +68,16 @@ describe('public BODS hosts', () => {
       publish: 'http://publish.localhost:8000',
       admin: 'http://admin.localhost:8000',
     });
+  });
+
+  it('supports an explicit Django host-routing domain', async () => {
+    process.env.NEXT_PUBLIC_BODS_BASE_DOMAIN = 'localhost';
+    process.env.DJANGO_INTERNAL_ORIGIN = 'http://django:8000';
+    process.env.DJANGO_HOST_DOMAIN = 'internal.example';
+    jest.resetModules();
+
+    const { DJANGO_HOSTS } = await import('./config/server');
+
+    expect(DJANGO_HOSTS.data).toBe('https://data.internal.example:8000');
   });
 });
