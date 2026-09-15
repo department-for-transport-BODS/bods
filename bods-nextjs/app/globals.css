@@ -991,8 +991,11 @@ a.review-stat__link:visited {
   border-color: var(--govuk-error-colour);
 }
 
-.app-\!-text-muted {
-  color: var(--govuk-colour-dark-grey);
+.app-dqs-panel__loading__progress {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  margin-bottom: 15px;
 }
 
 .app-error-summary__item {

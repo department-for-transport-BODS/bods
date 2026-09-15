@@ -7,7 +7,7 @@ from django_hosts import reverse
 from waffle import flag_is_active
 
 import config.hosts
-from transit_odp.publish.forms import FeedDescriptionForm, FeedUploadForm
+from transit_odp.publish.forms import EditFeedDescriptionForm, FeedDescriptionForm, FeedUploadForm
 from transit_odp.publish.views.utils import get_distinct_dataset_txc_attributes
 from transit_odp.data_quality.models import SchemaViolation
 from transit_odp.data_quality.models.report import PostSchemaViolation, PTIObservation
@@ -459,6 +459,46 @@ def get_timetables_review_status_api(request, pk1, pk):
                 get_distinct_dataset_txc_attributes(revision.id)
             ),
         },
+        status=200,
+    )
+
+
+@require_GET
+def get_timetables_dataset_edit_api(request, pk1, pk):
+    _, _, revision, error_response = _get_request_context(request, pk1, pk)
+    if error_response is not None:
+        return error_response
+
+    return JsonResponse(
+        {
+            "datasetId": revision.dataset_id,
+            "name": revision.name or "",
+            "description": revision.description or "",
+            "shortDescription": revision.short_description or "",
+        },
+        status=200,
+    )
+
+
+@require_POST
+def edit_timetables_dataset_description_api(request, pk1, pk):
+    _, _, revision, error_response = _get_request_context(request, pk1, pk)
+    if error_response is not None:
+        return error_response
+
+    form = EditFeedDescriptionForm(data=request.POST, instance=revision)
+    if not form.is_valid():
+        return JsonResponse(
+            {"error": "Description validation failed", "field_errors": form.errors},
+            status=400,
+        )
+
+    revision.description = form.cleaned_data["description"]
+    revision.short_description = form.cleaned_data["short_description"]
+    revision.save()
+
+    return JsonResponse(
+        {"redirect": f"/publish/org/{pk1}/dataset/timetable/{pk}/review"},
         status=200,
     )
 
