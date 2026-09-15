@@ -6,7 +6,6 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django_hosts import host as Host
 from django_hosts import reverse
-from transit_odp.timetables.constants import TXC_VERSION
 
 logger = logging.getLogger(__name__)
 
@@ -59,5 +58,4 @@ def global_settings(request):
         "MAPBOX_KEY": settings.MAPBOX_KEY,
         "SUPPORT_EMAIL": settings.SUPPORT_EMAIL,
         "SUPPORT_PHONE": settings.SUPPORT_PHONE,
-        "TXC_VERSION": TXC_VERSION,
     }
