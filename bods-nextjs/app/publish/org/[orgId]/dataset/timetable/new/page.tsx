@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api-client";
@@ -35,6 +35,10 @@ function TimetablePublish() {
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { isSubmitting, submitError, handleSubmit: onSubmit, clearError } = useFormSubmit();
+
+  useEffect(() => {
+    document.title = `Publish new data set: ${step === 1 ? 'description' : 'upload'}`;
+  }, [step]);
 
   const validateStep1 = () => {
     const newErrors = validateTimetableStep1({ dataSetDesc, shortDesc });
@@ -176,7 +180,7 @@ function TimetablePublish() {
                   onFileChange={setFile}
                 />
                 <div className="govuk-button-group govuk-!-margin-top-5">
-                  <button type="button" className="govuk-button" onClick={handleNext}>Continue</button>
+                  <button type="button" className="govuk-button" onClick={handleNext} disabled={isSubmitting}>Continue</button>
                   <button type="button" className="govuk-button govuk-button--secondary" onClick={() => router.push(`/publish/org/${orgId}/dataset/timetable/new/cancel?step=provide-data`)}>Cancel</button>
                 </div>
               </div>
