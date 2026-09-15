@@ -38,12 +38,7 @@ class HolidaysNonSubstituteEnum(Enum):
     LateSummerBankHolidayNotScotland = "Summer bank holiday"
     Jan2ndScotland = "2nd January"
     StAndrewsDay = "St Andrew's Day"
-    # GOV.UK uses the same title ("Summer bank holiday") for both the
-    # England/Wales and Scotland August bank holidays, so this value is
-    # deliberately distinct to avoid becoming an Enum alias of
-    # LateSummerBankHolidayNotScotland. Division is used to disambiguate
-    # which one applies - see get_holiday_substitute().
-    AugustBankHolidayScotland = "Summer bank holiday (Scotland)"
+    AugustBankHolidayScotland = "Summer bank holiday"
 
 
 class HolidaysSubstituteEnum(Enum):
@@ -97,21 +92,12 @@ def get_json_data(url):
         raise
 
 
-def get_holiday_substitute(holiday, division, is_substitute):
+def get_holiday_substitute(holiday, is_substitute):
     try:
-        holiday_title = holiday.replace("’", "'")
-
         if is_substitute:
-            day_enum = HolidaysSubstituteEnum(holiday_title)
-        elif (
-            holiday_title
-            == HolidaysNonSubstituteEnum.LateSummerBankHolidayNotScotland.value
-            and division == "scotland"
-        ):
-            # Disambiguate the two "Summer bank holiday" titles by division
-            day_enum = HolidaysNonSubstituteEnum.AugustBankHolidayScotland
+            day_enum = HolidaysSubstituteEnum(holiday.replace("’", "'"))
         else:
-            day_enum = HolidaysNonSubstituteEnum(holiday_title)
+            day_enum = HolidaysNonSubstituteEnum(holiday.replace("’", "'"))
 
         return day_enum.name
     except ValueError as e:
@@ -139,7 +125,7 @@ def get_holiday_obj(division, date, holiday):
             txc_element = "ChristmasEve"
         else:
             txc_element = get_holiday_substitute(
-                holiday["title"], division, bool(holiday["notes"])
+                holiday["title"], bool(holiday["notes"])
             )
 
         return {
