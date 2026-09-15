@@ -2,11 +2,16 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function TimetableDeleteSuccessPage() {
   const params = useParams();
   const orgId = params.orgId as string;
+
+  useEffect(() => {
+    document.title = 'Data set deleted';
+  }, []);
 
   return (
     <ProtectedRoute>

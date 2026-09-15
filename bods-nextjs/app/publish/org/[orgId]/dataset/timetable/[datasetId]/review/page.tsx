@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
@@ -127,6 +127,15 @@ function TimetableReviewPageContent() {
     0,
     Math.min(100, statusData?.progress ?? processingProgress),
   );
+  const pageTitle = loading
+    ? 'Validating data set'
+    : statusData?.error
+      ? 'Error: Review and publish'
+      : 'Review and publish';
+
+  useEffect(() => {
+    document.title = pageTitle;
+  }, [pageTitle]);
   const hasValidationIssues = statusData?.validationState === 'passed-with-issues';
   const dataQuality = statusData?.dataQuality;
   const noValidFile = statusData?.error === 'NO_VALID_FILE_TO_PROCESS';
