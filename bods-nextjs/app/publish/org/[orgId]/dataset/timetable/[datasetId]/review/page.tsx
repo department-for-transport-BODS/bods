@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -138,10 +140,12 @@ function TimetableReviewPageContent() {
   }, [pageTitle]);
   const hasValidationIssues = statusData?.validationState === 'passed-with-issues';
   const dataQuality = statusData?.dataQuality;
+  const isDataQualityReady = dataQuality?.status === 'SUCCESS';
   const noValidFile = statusData?.error === 'NO_VALID_FILE_TO_PROCESS';
 
   const updateUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/update`;
   const deleteUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/delete`;
+  const editUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/dataset-edit`;
   const preserveReviewForReturn = () => {
     if (statusData) {
       globalThis.sessionStorage.setItem(reviewCacheKey, JSON.stringify(statusData));
@@ -171,6 +175,12 @@ function TimetableReviewPageContent() {
         <section className="timetable-review-panel">
           <p className="govuk-body">Your data set has been uploaded as a draft.</p>
           <p className="govuk-body">A data quality report is being generated.</p>
+          <div className="app-dqs-panel__loading__progress">
+            <span className="govuk-hint govuk-!-margin-bottom-0">Generating data quality report</span>
+            <div className="govuk-!-margin-left-2 govuk-hint govuk-!-margin-bottom-0">
+              <FontAwesomeIcon icon={faSpinner} pulse />
+            </div>
+          </div>
           <p className="govuk-body">You can wait or close the browser. You can publish your data once the report is ready.</p>
         </section>
       );
@@ -223,8 +233,8 @@ function TimetableReviewPageContent() {
       <Link className="govuk-button govuk-button--secondary govuk-!-margin-top-3 govuk-!-margin-left-2" href={deleteUrl} onClick={preserveReviewForReturn}>Delete data</Link>
       <h2 className="govuk-heading-l govuk-!-padding-top-5">{statusData?.name || 'Timetable data set'}</h2>
       <dl className="govuk-summary-list">
-        <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Name</dt><dd className="govuk-summary-list__value">{statusData?.name || '-'}</dd></div>
-        <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Owner</dt><dd className="govuk-summary-list__value">{statusData?.ownerName || '-'}</dd></div>
+        <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Name</dt><dd className="govuk-summary-list__value">{statusData?.name || ''}</dd></div>
+        <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Owner</dt><dd className="govuk-summary-list__value">{statusData?.ownerName || ''}</dd></div>
         <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Last updated</dt><dd className="govuk-summary-list__value">by System</dd></div>
       </dl>
     </>
@@ -290,8 +300,8 @@ function TimetableReviewPageContent() {
                   <Link className="govuk-button" href={updateUrl} onClick={preserveReviewForReturn}>Publish correct data set</Link>
                 </div>
                 <dl className="govuk-summary-list">
-                  <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Name</dt><dd className="govuk-summary-list__value">{statusData.name || '-'}</dd></div>
-                  <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Owner</dt><dd className="govuk-summary-list__value">{statusData.ownerName || '-'}</dd></div>
+                  <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Name</dt><dd className="govuk-summary-list__value">{statusData.name || ''}</dd></div>
+                  <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Owner</dt><dd className="govuk-summary-list__value">{statusData.ownerName || ''}</dd></div>
                   <div className="govuk-summary-list__row"><dt className="govuk-summary-list__key">Last updated</dt><dd className="govuk-summary-list__value">by System</dd></div>
                 </dl>
                 <h3 className="govuk-heading-m">What should I do next?</h3>
@@ -308,35 +318,47 @@ function TimetableReviewPageContent() {
                 <dl className="govuk-summary-list">
                   <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">Name</dt>
-                    <dd className="govuk-summary-list__value">{statusData?.name || '-'}</dd>
+                    <dd className="govuk-summary-list__value">{statusData?.name || ''}</dd>
                   </div>
                   <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">Description</dt>
-                    <dd className="govuk-summary-list__value">{statusData?.description || '-'}</dd>
+                    <dd className="govuk-summary-list__value">
+                      <div className="flex-between"><span>{statusData?.description || ''}</span><Link className="govuk-link" href={editUrl}>Edit</Link></div>
+                    </dd>
                   </div>
                   <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">Short description</dt>
-                    <dd className="govuk-summary-list__value">{statusData?.shortDescription || '-'}</dd>
+                    <dd className="govuk-summary-list__value">
+                      <div className="flex-between"><span>{statusData?.shortDescription || ''}</span><Link className="govuk-link" href={editUrl}>Edit</Link></div>
+                    </dd>
                   </div>
                   <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">Status</dt>
-                    <dd className="govuk-summary-list__value">{statusData?.status || '-'}</dd>
+                    <dd className="govuk-summary-list__value"><span className="status-indicator status-indicator--draft">Draft</span></dd>
+                  </div>
+                  <div className="govuk-summary-list__row">
+                    <dt className="govuk-summary-list__key">Data quality report</dt>
+                    <dd className="govuk-summary-list__value">
+                      {dataQuality?.status === 'SUCCESS' ? <a className="govuk-link" href={dataQuality.reportUrl}>View data quality report</a> : 'Generating...'}
+                    </dd>
                   </div>
                   <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">Owner</dt>
-                    <dd className="govuk-summary-list__value">{statusData?.ownerName || '-'}</dd>
+                    <dd className="govuk-summary-list__value">{statusData?.ownerName || ''}</dd>
                   </div>
                   <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">TransXChange version</dt>
-                    <dd className="govuk-summary-list__value">{statusData?.transxchangeVersion || '-'}</dd>
+                    <dd className="govuk-summary-list__value">
+                      <div className="flex-between"><span>{statusData?.transxchangeVersion || ''}</span>{statusData?.downloadUrl ? <a className="govuk-link" href={statusData.downloadUrl}>Download .xml (TxC)</a> : null}</div>
+                    </dd>
                   </div>
                   <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">URL link</dt>
-                    <dd className="govuk-summary-list__value">{statusData?.publisherUrl ? <a className="govuk-link" href={statusData.publisherUrl}>Publisher URL</a> : '-'}</dd>
+                    <dd className="govuk-summary-list__value">{statusData?.publisherUrl ? <a className="govuk-link" href={statusData.publisherUrl}>Publisher URL</a> : ''}</dd>
                   </div>
                   <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">Last modified</dt>
-                    <dd className="govuk-summary-list__value">{formatDateTime(statusData?.lastModified)}</dd>
+                    <dd className="govuk-summary-list__value">{formatDateTime(statusData?.lastModified)} by {statusData?.lastModifiedUser || 'System'}</dd>
                   </div>
                 </dl>
 
@@ -361,58 +383,35 @@ function TimetableReviewPageContent() {
                   </>
                 ) : null}
 
-                {statusData?.metadata && statusData.metadata.length > 0 ? (
+                {isDataQualityReady ? (
                   <>
-                    <h2 className="govuk-heading-m">Detected services</h2>
-                    <table className="govuk-table">
-                      <thead className="govuk-table__head">
-                        <tr className="govuk-table__row">
-                          <th className="govuk-table__header">Filename</th>
-                          <th className="govuk-table__header">Service code</th>
-                          <th className="govuk-table__header">Line names</th>
-                        </tr>
-                      </thead>
-                      <tbody className="govuk-table__body">
-                        {statusData.metadata.map((item, index) => (
-                          <tr key={`${item.filename || 'file'}-${index}`} className="govuk-table__row">
-                            <td className="govuk-table__cell">{item.filename || '-'}</td>
-                            <td className="govuk-table__cell">{item.serviceCode || '-'}</td>
-                            <td className="govuk-table__cell">{item.lineNames || '-'}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    <div className="govuk-form-group">
+                      <div className="govuk-checkboxes__item">
+                        <input
+                          className="govuk-checkboxes__input"
+                          id="id_has_reviewed"
+                          type="checkbox"
+                          checked={hasReviewed}
+                          onChange={(event) => setHasReviewed(event.target.checked)}
+                        />
+                        <label className="govuk-label govuk-checkboxes__label" htmlFor="id_has_reviewed">
+                          I have reviewed the data quality report and wish to publish my data
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="govuk-button-group">
+                      <button
+                        type="button"
+                        className="govuk-button"
+                        disabled={!hasReviewed || isPublishing || loading}
+                        onClick={handlePublish}
+                      >
+                        {isPublishing ? 'Publishing...' : 'Publish'}
+                      </button>
+                    </div>
                   </>
                 ) : null}
-
-                <div className="govuk-form-group">
-                  <div className="govuk-checkboxes__item">
-                    <input
-                      className="govuk-checkboxes__input"
-                      id="id_has_reviewed"
-                      type="checkbox"
-                      checked={hasReviewed}
-                      onChange={(event) => setHasReviewed(event.target.checked)}
-                    />
-                    <label className="govuk-label govuk-checkboxes__label" htmlFor="id_has_reviewed">
-                      I have reviewed the data quality report and wish to publish my data
-                    </label>
-                  </div>
-                </div>
-
-                <div className="govuk-button-group">
-                  <button
-                    type="button"
-                    className="govuk-button"
-                    disabled={!hasReviewed || isPublishing || loading}
-                    onClick={handlePublish}
-                  >
-                    {isPublishing ? 'Publishing...' : 'Publish'}
-                  </button>
-                  <Link className="govuk-link" href={timetablesListUrl}>
-                    Back to data sets
-                  </Link>
-                </div>
                 <Link className="govuk-button govuk-button--secondary" href={deleteUrl} onClick={preserveReviewForReturn}>
                   Delete data
                 </Link>
