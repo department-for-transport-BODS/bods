@@ -1,29 +1,30 @@
 import Link from 'next/link';
+import { dataPath } from '@/config/client';
 
 export function DataByOperatorSection() {
   return (
     <>
-      <h1 className="govuk-heading-l">Data by operator or location</h1>
-      <h2 className="govuk-heading-m">Getting data by operator</h2>
+      <h2 data-qa="operator-header" className="govuk-heading-l">Getting data by operator</h2>
       <p className="govuk-body">
-        Use the NOC query parameter to limit results to data published by an operator.
-      </p>
-      <p className="govuk-body">
-        Download the data catalogue to see the relationship between operators and NOC values on
+        For all data types you can apply the NOC query parameter. This will limit results to data
+        published by that operator, including any other NOC associated with that operator on
         this service.
       </p>
-      <h2 className="govuk-heading-m">Getting data by location</h2>
       <p className="govuk-body">
-        Use the bounding box query parameter for geographic filtering. For location data this
-        returns vehicles within the area at that time; for static data, matching data sets are
-        returned.
+        Download the{' '}
+        <Link className="govuk-link" href={dataPath('/catalogue')}>data catalogue</Link> to see
+        the relationship between operators and NOC on this service.
+      </p>
+      <h2 data-qa="operator-header" className="govuk-heading-l">Getting data by location</h2>
+      <p className="govuk-body">
+        To get data for a specific location you can use the boundingBox parameter. For bus
+        location data this will limit the data to vehicles within the prescribed area at that
+        point in time. For timetables are fares if any data is within the boundingBox, the whole
+        data set will be returned.
       </p>
       <p className="govuk-body">
-        For query parameter details see the{' '}
-        <Link className="govuk-link" href="?section=apireference">
-          API reference
-        </Link>
-        .
+        For more information on API query parameters please go to the{' '}
+        <Link className="govuk-link" href="?section=apireference">API reference</Link>.
       </p>
     </>
   );

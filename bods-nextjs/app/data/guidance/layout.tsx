@@ -7,7 +7,10 @@ export default async function DataGuidanceLayout({ children }: { children: React
   await connection();
 
   return (
-    <SupportConfigProvider supportEmail={serverConfig.supportEmail}>
+    <SupportConfigProvider
+      supportEmail={serverConfig.supportEmail}
+      ptiPdfUrl={serverConfig.ptiPdfUrl}
+    >
       {children}
     </SupportConfigProvider>
   );

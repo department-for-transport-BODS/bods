@@ -7,7 +7,10 @@ export default async function PublishGuidanceLayout({ children }: { children: Re
   await connection();
 
   return (
-    <SupportConfigProvider supportEmail={serverConfig.supportEmail}>
+    <SupportConfigProvider
+      supportEmail={serverConfig.supportEmail}
+      ptiPdfUrl={serverConfig.ptiPdfUrl}
+    >
       {children}
     </SupportConfigProvider>
   );
