@@ -1,8 +1,9 @@
-import { publishAppPath, wwwPath } from '@/config/client';
+import { publishAppPath, TRANSXCHANGE_VERSION, wwwPath } from '@/config/client';
 
 export function TimetableHelpAside() {
   const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
   const contactSupportUrl = wwwPath('/contact');
+  const txcSchemaVersion = TRANSXCHANGE_VERSION.split('.').slice(0, 2).join('.');
 
   return (
     <div className="govuk-grid-column-one-third">
@@ -10,7 +11,7 @@ export function TimetableHelpAside() {
       <ul className="govuk-list app-list--nav govuk-!-font-size-19">
         <li>
           <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={`${supportBusOperatorsUrl}?section=dataquality`}>
-            View the Txc 2.4 schema and profile requirement
+            View the Txc {txcSchemaVersion} schema and profile requirement
           </a>
         </li>
         <li>
