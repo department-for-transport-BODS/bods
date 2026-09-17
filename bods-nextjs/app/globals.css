@@ -946,3 +946,61 @@ a.review-stat__link:visited {
 .bods-bg-blue-light .govuk-panel__body {
   color: #ffffff;
 }
+
+/* Timetable upload validation panel */
+.timetable-validation-panel {
+  background-color: var(--govuk-colour-green) !important;
+}
+
+.timetable-validation-panel .govuk-panel__title,
+.timetable-validation-panel .govuk-panel__body {
+  color: var(--govuk-colour-white);
+}
+
+.timetable-validation-panel .govuk-panel__body p {
+  margin-top: 0;
+}
+
+.progress-bar-outer {
+  width: 100%;
+  background-color: #005ea5;
+}
+
+.progress-bar-inner {
+  height: 30px;
+  background-color: var(--govuk-colour-white);
+}
+
+.progress-bar-text {
+  display: inline-block;
+  width: 4rem;
+  height: 2.56rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--govuk-colour-white);
+  align-content: center;
+}
+
+.timetable-review-panel {
+  border: 3px solid var(--govuk-colour-black);
+  margin-bottom: 15px;
+  padding: 20px;
+}
+
+.timetable-review-panel--error {
+  border-color: var(--govuk-error-colour);
+}
+
+.app-dqs-panel__loading__progress {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  margin-bottom: 15px;
+}
+
+.app-error-summary__item {
+  color: var(--govuk-error-colour);
+  font-size: 19px;
+  font-weight: 700;
+  text-decoration: underline;
+}
