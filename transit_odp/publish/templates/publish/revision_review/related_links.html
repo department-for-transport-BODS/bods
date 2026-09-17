@@ -8,7 +8,7 @@
       <a class="govuk-link"
          target="_blank"
          href="{% url 'guidance:support-bus_operators' host hosts.publish %}?section=dataquality">
-        {{ _("View the Txc 2.4 schema and profile requirement") }}
+        {% blocktrans %}View the Txc {{ TXC_VERSION }} schema and profile requirement{% endblocktrans %}
       </a>
     </li>
   {% endif %}
