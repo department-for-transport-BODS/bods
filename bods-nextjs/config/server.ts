@@ -5,6 +5,7 @@ const djangoInternalOrigin = process.env.DJANGO_INTERNAL_ORIGIN || 'http://local
 const mapboxToken = process.env.MAPBOX_KEY || '';
 const supportPhone = process.env.SUPPORT_PHONE || '0808 172 4134';
 const supportEmail = process.env.SUPPORT_EMAIL || 'support@busopendataservice.atlassian.net';
+const ptiPdfUrl = process.env.PTI_PDF_URL || 'https://pti.org.uk/system/files/files/TransXChange_UK_PTI_Profile_v1.1.A.pdf';
 const avlIpAllowList = process.env.AVL_IP_ADDRESS_LIST || '';
 
 function djangoPublicPort(): string {
@@ -28,5 +29,6 @@ export const serverConfig = {
   mapboxToken,
   supportPhone,
   supportEmail,
+  ptiPdfUrl,
   avlIpAllowList,
 } as const;

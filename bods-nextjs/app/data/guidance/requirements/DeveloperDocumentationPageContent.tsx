@@ -114,7 +114,7 @@ function DeveloperDocumentationContent() {
       <Breadcrumbs
         items={[
           { label: 'Bus Open Data Service', href: HOSTS.www },
-          { label: 'Find Bus Open Data', href: HOSTS.data },
+          { label: 'Find Bus Open Data Service', href: HOSTS.data },
           { label: 'Guide Me', href: `${HOSTS.data}/guide-me` },
           { label: 'Developer documentation', current: true },
         ]}
@@ -127,7 +127,7 @@ function DeveloperDocumentationContent() {
             <ul className="govuk-body dashed">
               {SECTIONS.map((s) => (
                 <li key={s.name} className="govuk-!-padding-bottom-1">
-                  <Link className={`govuk-link ${s.name === section ? 'govuk-!-font-weight-bold' : ''}`} href={`?section=${s.name}`}>
+                  <Link className={`govuk-link ${s.name === section ? 'link-dark' : ''}`} href={`?section=${s.name}`}>
                     {s.title}
                   </Link>
                 </li>
