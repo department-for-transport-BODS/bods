@@ -1,9 +1,9 @@
 /**
  * Bus Operator Requirements Page
- * 
+ *
  * Source: transit_odp/guidance/templates/guidance/bus_operators/base.html
  * View: transit_odp/guidance/views.py - BusOperatorReqView
- * 
+ *
  * This is a sectioned guidance page with navigation between sections.
  * Sections are defined in the sections/ directory, each corresponding
  * to a Django template file.
@@ -131,7 +131,11 @@ function BusOperatorRequirementsContent() {
           { label: 'Bus Open Data Service', href: HOSTS.www },
           { label: 'Publish Bus Open Data', href: HOSTS.publish },
           { label: 'Guidance', href: publishAppPath('/guidance') },
-          { label: 'Bus operator requirements', current: true },
+          {
+            label: 'Bus operator requirements',
+            href: publishAppPath('/guidance/operator-requirements'),
+            current: true,
+          },
         ]}
       />
 
@@ -143,11 +147,11 @@ function BusOperatorRequirementsContent() {
               What you need to know to get started. Find guidance and support
               material tailored to your needs.
             </p>
-            <ul className="govuk-list">
+            <ul className="govuk-body dashed">
               {SECTIONS.map((s) => (
                 <li key={s.name} className="govuk-!-padding-bottom-1">
                   <Link
-                    className={`govuk-link ${s.name === section ? 'govuk-!-font-weight-bold' : ''}`}
+                    className={`govuk-link ${s.name === section ? 'link-dark' : ''}`}
                     href={`?section=${s.name}`}
                   >
                     {s.title}
