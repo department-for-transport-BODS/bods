@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { config } from '../config';
-import { TimetablesDataPage } from '../pages/TimetablesDataPage';
+import { config } from './config';
+import { TimetablesDataPage } from './pages/TimetablesDataPage';
 
 test.describe('Timetables Data Page (Unauthenticated)', () => {
 

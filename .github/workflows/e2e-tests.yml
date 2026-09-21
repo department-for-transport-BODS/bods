@@ -21,25 +21,25 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: e2e_tests/package-lock.json
+          cache-dependency-path: e2e/package-lock.json
 
       - name: Install dependencies
-        working-directory: e2e_tests
+        working-directory: e2e
         run: npm ci
 
       - name: Install Playwright browsers
-        working-directory: e2e_tests
+        working-directory: e2e
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E tests
-        working-directory: e2e_tests
+        working-directory: e2e
         run: npm run test:ci
         env:
           TEST_BASE_URL: ${{ secrets.TEST_BASE_URL }}
           TEST_DATA_URL: ${{ secrets.TEST_DATA_URL }}
           TEST_PUBLISH_URL: ${{ secrets.TEST_PUBLISH_URL }}
-          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          TEST_USERNAME: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
           TEST_ORGANISATION_NAME: ${{ secrets.TEST_ORGANISATION_NAME }}
           DEFAULT_TIMEOUT: 30000
           NAVIGATION_TIMEOUT: 30000
@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: e2e_tests/playwright-report/
+          path: e2e/playwright-report/
           retention-days: 2
 
       - name: Upload test results
@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: e2e_tests/test-results/
+          path: e2e/test-results/
           retention-days: 2
 
       - name: Generate test summary

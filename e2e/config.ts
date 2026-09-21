@@ -12,6 +12,9 @@ export interface E2EConfig {
     username: string;
     password: string;
   };
+  testOrganisation: {
+    name: string;
+  };
   avlFeed: {
     url: string;
   };
@@ -25,6 +28,9 @@ export const config: E2EConfig = {
   testUser: {
     username: process.env.TEST_USERNAME || '',
     password: process.env.TEST_PASSWORD || '',
+  },
+  testOrganisation: {
+    name: process.env.TEST_ORGANISATION_NAME || 'Test Organisation',
   },
   avlFeed: {
     url: process.env.TEST_AVL_FEED_URL || 'https://example.com/avl.xml',
