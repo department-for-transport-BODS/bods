@@ -21,13 +21,19 @@ export function useDatasetReview<T extends ReviewStatus>(
   reviewPath: string,
   requestErrorMessage?: string,
   refreshKey = '',
+  initialStatusData: T | null = null,
+  enabled = true,
 ) {
-  const [statusData, setStatusData] = useState<T | null>(null);
-  const [processingProgress, setProcessingProgress] = useState(0);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [statusData, setStatusData] = useState<T | null>(initialStatusData);
+  const [processingProgress, setProcessingProgress] = useState(initialStatusData?.progress ?? 0);
+  const [isInitialLoading, setIsInitialLoading] = useState(initialStatusData === null);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     let isCancelled = false;
 
     const fetchReview = async () => {
@@ -78,7 +84,7 @@ export function useDatasetReview<T extends ReviewStatus>(
       window.removeEventListener('pageshow', fetchProgress);
       window.removeEventListener('focus', fetchProgress);
     };
-  }, [datasetId, refreshKey, requestErrorMessage, reviewPath]);
+  }, [datasetId, enabled, refreshKey, requestErrorMessage, reviewPath]);
 
   return {
     statusData,
