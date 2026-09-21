@@ -67,6 +67,71 @@ describe('subdomain routing proxy', () => {
       expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/data/dataset');
     });
 
+    it('serves the API services index at its legacy URL', () => {
+      const url = 'https://data.xyz.com/api/';
+      const response = proxy(request(url, 'data.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(
+        '/data/api/',
+      );
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it.each([
+      ['/api/timetable-openapi/', '/data/timetable-openapi/'],
+      ['/api/buslocation-api/', '/data/buslocation-api/'],
+      ['/api/buslocation-api/openapi/', '/data/buslocation-api/openapi/'],
+      ['/api/fares-openapi/', '/data/fares-openapi/'],
+      ['/api/disruptions-api-overview/', '/data/disruptions-api-overview/'],
+      ['/api/disruptions-openapi/', '/data/disruptions-openapi/'],
+      ['/api/cancellations-api-overview/', '/data/cancellations-api-overview/'],
+      ['/api/cancellations-openapi/', '/data/cancellations-openapi/'],
+    ])('serves the legacy API page URL %s from %s', (publicPath, internalPath) => {
+      const url = `https://data.xyz.com${publicPath}`;
+      const response = proxy(request(url, 'data.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(
+        internalPath,
+      );
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it('leaves versioned public APIs with the Django gateway', () => {
+      const response = proxy(
+        request('https://data.xyz.com/api/v1/dataset/', 'data.xyz.com'),
+      );
+
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it.each([
+      [
+        '/api/buslocation-api/subscribe/',
+        '/api/data/buslocation-api/subscribe/',
+      ],
+      [
+        '/api/buslocation-api/subscribe/success/',
+        '/api/data/buslocation-api/subscribe/success/',
+      ],
+      [
+        '/api/buslocation-api/manage-subscriptions/',
+        '/api/data/buslocation-api/manage-subscriptions/',
+      ],
+      [
+        '/api/buslocation-api/manage-subscriptions/subscription-id/',
+        '/api/data/buslocation-api/manage-subscriptions/subscription-id/',
+      ],
+    ])('forwards the legacy subscription URL %s to Django', (publicPath, internalPath) => {
+      const url = `https://data.xyz.com${publicPath}`;
+      const response = proxy(request(url, 'data.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(
+        internalPath,
+      );
+      expect(response.headers.get('location')).toBeNull();
+    });
+
     it('redirects a legacy publish path from the data host to publish', () => {
       const response = proxy(request('https://data.xyz.com/publish/org/42', 'data.xyz.com'));
 
@@ -81,6 +146,15 @@ describe('subdomain routing proxy', () => {
 
     it('leaves www pages on their existing route', () => {
       const response = proxy(request('https://www.xyz.com/contact', 'www.xyz.com'));
+
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it('serves OpenAPI specifications without a data route rewrite', () => {
+      const response = proxy(
+        request('https://data.xyz.com/openapi/timetables.yml', 'data.xyz.com'),
+      );
 
       expect(response.headers.get('x-middleware-rewrite')).toBeNull();
       expect(response.headers.get('location')).toBeNull();
