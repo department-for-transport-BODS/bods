@@ -18,6 +18,9 @@ export interface E2EConfig {
   avlFeed: {
     url: string;
   };
+  timetableFeed: {
+    url: string;
+  };
 }
 
 export const config: E2EConfig = {
@@ -34,5 +37,8 @@ export const config: E2EConfig = {
   },
   avlFeed: {
     url: process.env.TEST_AVL_FEED_URL || 'https://example.com/avl.xml',
+  },
+  timetableFeed: {
+    url: process.env.TEST_TIMETABLE_URL || 'https://example.com/timetable.xml',
   },
 };

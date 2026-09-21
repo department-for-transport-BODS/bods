@@ -6,6 +6,7 @@ type DataProviderRadioGroupProps = {
   fileAccept?: string;
   urlHint?: string;
   fileHint?: string;
+  fileSelected?: boolean;
   errors?: { link?: string; file?: string; method?: string };
   onMethodChange: (method: 'link' | 'file') => void;
   onLinkChange: (value: string) => void;
@@ -26,6 +27,7 @@ export function DataProviderRadioGroup({
   fileAccept = '.xml,.zip',
   urlHint,
   fileHint,
+  fileSelected = false,
   errors,
   onMethodChange,
   onLinkChange,
@@ -49,19 +51,21 @@ export function DataProviderRadioGroup({
           </label>
         </div>
         {isLinkSelected(selectedMethod) && (
-          <div className="govuk-form-group">
-            <label className="govuk-label" htmlFor="id_url_link">
-              URL link
-            </label>
-            {urlHint && <div className="govuk-hint">{urlHint}</div>}
-            {errors?.link && <p className="govuk-error-message">{errors.link}</p>}
-            <input
-              className="govuk-input"
-              id="id_url_link"
-              type="url"
-              value={link}
-              onChange={(e) => onLinkChange(e.target.value)}
-            />
+          <div className="govuk-radios__conditional">
+            <div className="govuk-form-group">
+              <label className="govuk-label" htmlFor="id_url_link">
+                URL Link
+              </label>
+              {urlHint && <div className="govuk-hint">{urlHint}</div>}
+              {errors?.link && <p className="govuk-error-message">{errors.link}</p>}
+              <input
+                className="govuk-input govuk-!-width-three-quarters"
+                id="id_url_link"
+                type="url"
+                value={link}
+                onChange={(e) => onLinkChange(e.target.value)}
+              />
+            </div>
           </div>
         )}
         <div className="govuk-radios__item">
@@ -78,22 +82,27 @@ export function DataProviderRadioGroup({
           </label>
         </div>
         {isFileSelected(selectedMethod) && (
-          <div className="govuk-form-group">
-            <label className="govuk-label" htmlFor="id_upload_file">
-              Upload file
-            </label>
-            {fileHint && <div className="govuk-hint">{fileHint}</div>}
-            {errors?.file && <p className="govuk-error-message">{errors.file}</p>}
-            <input
-              className="govuk-file-upload"
-              id="id_upload_file"
-              type="file"
-              accept={fileAccept}
-              onChange={(e) => onFileChange(e.target.files?.[0] || null)}
-            />
+          <div className="govuk-radios__conditional">
+            <div className="govuk-form-group">
+              <label className="govuk-label" htmlFor="id_upload_file">
+                Upload file
+              </label>
+              {fileHint && <div className="govuk-hint">{fileHint}</div>}
+              {errors?.file && <p className="govuk-error-message">{errors.file}</p>}
+              <input
+                className="govuk-file-upload govuk-!-width-three-quarters"
+                id="id_upload_file"
+                type="file"
+                accept={fileAccept}
+                onChange={(e) => onFileChange(e.target.files?.[0] || null)}
+              />
+            </div>
           </div>
         )}
       </div>
+      {isFileSelected(selectedMethod) && fileSelected && (
+        <span className="govuk-hint">Your file has been selected</span>
+      )}
     </>
   );
 }
