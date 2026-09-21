@@ -18,13 +18,15 @@ from transit_odp.data_quality.pti.constants import (
     get_important_note,
 )
 from transit_odp.organisation.models import Dataset
+from transit_odp.timetables.constants import TXC_VERSION
 from transit_odp.timetables.views.post_schema import PostSchemaCSV
 
 TXC_NOTE = (
-    "You need to update your data to 2.4 TxC schema in order to upload data to BODS."
+    f"You need to update your data to {TXC_VERSION} TxC schema in order to upload data "
+    "to BODS."
 )
 TXC_URL = "http://naptan.dft.gov.uk/transxchange/schema/schemas.html"
-TXC_REF = f"Please refer to the 2.4 TxC schema document: {TXC_URL}"
+TXC_REF = f"Please refer to the {TXC_VERSION} TxC schema document: {TXC_URL}"
 
 
 class TXCSchemaCSV(CSVBuilder):
