@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { PaginationPrevIcon, PaginationNextIcon } from '@/components/shared/PaginationIcons';
 import {
@@ -71,6 +71,7 @@ function SectionContent({ section }: { section: string }) {
 }
 
 function PaginationNav({ currentSection }: { currentSection: string }) {
+  const pathname = usePathname();
   const currentIndex = SECTIONS.findIndex((s) => s.name === currentSection);
   const prevSection = currentIndex > 0 ? SECTIONS[currentIndex - 1] : null;
   const nextSection = currentIndex >= 0 && currentIndex < SECTIONS.length - 1 ? SECTIONS[currentIndex + 1] : null;
@@ -80,7 +81,7 @@ function PaginationNav({ currentSection }: { currentSection: string }) {
       {prevSection && (
         <nav className="govuk-pagination govuk-pagination--block govuk-!-margin-bottom-1" role="navigation" aria-label="Pagination Prev">
           <div className="govuk-pagination__prev">
-            <Link className="govuk-link govuk-pagination__link" href={`?section=${prevSection.name}`} rel="prev">
+            <Link className="govuk-link govuk-pagination__link" href={`${pathname}?section=${prevSection.name}`} rel="prev">
               {PaginationPrevIcon}
               <span className="govuk-pagination__link-title">Previous<span className="govuk-visually-hidden"> page</span></span>
               <span className="govuk-visually-hidden">:</span>
@@ -92,7 +93,7 @@ function PaginationNav({ currentSection }: { currentSection: string }) {
       {nextSection && (
         <nav className="govuk-pagination govuk-pagination--block govuk-!-margin-bottom-1" role="navigation" aria-label="Pagination Next">
           <div className="govuk-pagination__next">
-            <Link className="govuk-link govuk-pagination__link" href={`?section=${nextSection.name}`} rel="next">
+            <Link className="govuk-link govuk-pagination__link" href={`${pathname}?section=${nextSection.name}`} rel="next">
               {PaginationNextIcon}
               <span className="govuk-pagination__link-title">Next<span className="govuk-visually-hidden"> page</span></span>
               <span className="govuk-visually-hidden">:</span>
@@ -106,6 +107,7 @@ function PaginationNav({ currentSection }: { currentSection: string }) {
 }
 
 function DeveloperDocumentationContent() {
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const section = searchParams.get('section') || 'overview';
 
@@ -127,7 +129,11 @@ function DeveloperDocumentationContent() {
             <ul className="govuk-body dashed">
               {SECTIONS.map((s) => (
                 <li key={s.name} className="govuk-!-padding-bottom-1">
-                  <Link className={`govuk-link ${s.name === section ? 'link-dark' : ''}`} href={`?section=${s.name}`}>
+                  <Link
+                    className={`govuk-link ${s.name === section ? 'link-dark' : ''}`}
+                    href={`${pathname}?section=${s.name}`}
+                    aria-current={s.name === section ? 'page' : undefined}
+                  >
                     {s.title}
                   </Link>
                 </li>
