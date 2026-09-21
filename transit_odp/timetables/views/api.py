@@ -322,12 +322,21 @@ def get_timetables_review_status_api(request, pk1, pk):
     status = revision.status
     is_loading = _is_loading_status(status)
 
-    has_schema_violation = SchemaViolation.objects.filter(revision=revision.id).exists()
-    has_post_schema_violation = PostSchemaViolation.objects.filter(
-        revision=revision.id
-    ).exists()
-    has_pti_observations = PTIObservation.objects.filter(revision=revision.id).exists()
+    has_schema_violation = False
+    has_post_schema_violation = False
+    has_pti_observations = False
     validation_report_url = f"/org/{pk1}/dataset/timetable/{pk}/review/pti-csv"
+
+    if not is_loading:
+        has_schema_violation = SchemaViolation.objects.filter(
+            revision=revision.id
+        ).exists()
+        has_post_schema_violation = PostSchemaViolation.objects.filter(
+            revision=revision.id
+        ).exists()
+        has_pti_observations = PTIObservation.objects.filter(
+            revision=revision.id
+        ).exists()
 
     validation_state = "passed"
     if has_schema_violation or has_post_schema_violation or has_pti_observations:
@@ -344,44 +353,45 @@ def get_timetables_review_status_api(request, pk1, pk):
     data_quality_report_csv_url = None
     show_update = False
 
-    tasks = revision.data_quality_tasks
-    if flag_is_active("", "is_new_data_quality_service_active"):
-        report = (
-            Report.objects.filter(revision_id=revision.id)
-            .order_by("-created")
-            .filter(
-                status__in=[
-                    ReportStatus.REPORT_GENERATED.value,
-                    ReportStatus.REPORT_GENERATION_FAILED.value,
-                ]
+    if not is_loading:
+        if flag_is_active("", "is_new_data_quality_service_active"):
+            report = (
+                Report.objects.filter(revision_id=revision.id)
+                .order_by("-created")
+                .filter(
+                    status__in=[
+                        ReportStatus.REPORT_GENERATED.value,
+                        ReportStatus.REPORT_GENERATION_FAILED.value,
+                    ]
+                )
+                .first()
             )
-            .first()
-        )
-        if report:
-            data_quality_status = "SUCCESS"
-            summary = Summary.get_report(report.id, revision.id)
-            data_quality_score = getattr(report, "score", None)
-            data_quality_rag = get_data_quality_rag(report)
-            critical_count = summary.data.get("Critical", {}).get("count", 0)
-            advisory_count = summary.data.get("Advisory", {}).get("count", 0)
-            data_quality_report_csv_url = (
-                f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
-            )
-            show_update = True
-    else:
-        task_status = tasks.get_latest_status()
-        data_quality_status = task_status or "PENDING"
-        if task_status == "SUCCESS":
-            report = tasks.latest().report
-            summary = Summary.from_report_summary(report.summary)
-            data_quality_score = getattr(report, "score", None)
-            data_quality_rag = get_data_quality_rag(report)
-            critical_count = summary.data.get("Critical", {}).get("count", 0)
-            advisory_count = summary.data.get("Advisory", {}).get("count", 0)
-            data_quality_report_csv_url = (
-                f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
-            )
-            show_update = revision.is_pti_compliant()
+            if report:
+                data_quality_status = "SUCCESS"
+                summary = Summary.get_report(report.id, revision.id)
+                data_quality_score = getattr(report, "score", None)
+                data_quality_rag = get_data_quality_rag(report)
+                critical_count = summary.data.get("Critical", {}).get("count", 0)
+                advisory_count = summary.data.get("Advisory", {}).get("count", 0)
+                data_quality_report_csv_url = (
+                    f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
+                )
+                show_update = True
+        else:
+            tasks = revision.data_quality_tasks
+            task_status = tasks.get_latest_status()
+            data_quality_status = task_status or "PENDING"
+            if task_status == "SUCCESS":
+                report = tasks.latest().report
+                summary = Summary.from_report_summary(report.summary)
+                data_quality_score = getattr(report, "score", None)
+                data_quality_rag = get_data_quality_rag(report)
+                critical_count = summary.data.get("Critical", {}).get("count", 0)
+                advisory_count = summary.data.get("Advisory", {}).get("count", 0)
+                data_quality_report_csv_url = (
+                    f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
+                )
+                show_update = revision.is_pti_compliant()
 
     error_description = None
     if error_code:
@@ -389,7 +399,7 @@ def get_timetables_review_status_api(request, pk1, pk):
             error_code, ERROR_CODE_LOOKUP.get("SYSTEM_ERROR")
         )["description"]
 
-    txc_attributes = revision.txc_file_attributes.all()
+    txc_attributes = revision.txc_file_attributes.all() if not is_loading else []
     metadata = [
         {
             "filename": attr.filename,
@@ -456,11 +466,14 @@ def get_timetables_review_status_api(request, pk1, pk):
                 "reportCsvUrl": data_quality_report_csv_url,
                 "showUpdate": show_update,
             },
-            "ownerName": revision.dataset.organisation.name,
             "transxchangeVersion": getattr(revision, "transxchange_version", None),
             "publisherUrl": revision.url_link or download_url,
-            "distinctAttributes": _serialise_txc_attributes(
-                get_distinct_dataset_txc_attributes(revision.id)
+            "distinctAttributes": (
+                _serialise_txc_attributes(
+                    get_distinct_dataset_txc_attributes(revision.id)
+                )
+                if not is_loading
+                else {}
             ),
         },
         status=200,
