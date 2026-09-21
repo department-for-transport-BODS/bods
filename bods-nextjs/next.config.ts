@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   transpilePackages: ['govuk-frontend'],
 
   turbopack: {
-    root: path.join(__dirname, '..'),
+    root: path.join(__dirname),
   },
 
   skipTrailingSlashRedirect: true,
