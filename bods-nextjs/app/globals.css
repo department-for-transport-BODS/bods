@@ -34,6 +34,28 @@ body {
   flex: 1;
 }
 
+/* Mirrors transit_odp/frontend/assets/sass/common.scss .link-dark */
+.govuk-link.link-dark {
+  text-decoration: none !important;
+  color: var(--govuk-colour-black) !important;
+}
+
+/* Mirrors transit_odp/frontend/assets/sass/common.scss .bg-light-p-font-lg */
+.bg-light-p-font-lg {
+  background-color: var(--govuk-colour-light-grey);
+  text-align: left;
+  vertical-align: middle;
+  padding: 20px 40px;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+}
+
+/* Mirrors transit_odp/frontend/assets/sass/components/guidance/_guidance.scss .guidance-text-highlight */
+.guidance-text-highlight {
+  background-color: #ddd;
+}
+
+
 /**
  * GOV.UK colour palette exposed as CSS custom properties.
  * Values mirror the Sass colours in govuk-frontend/settings/_colours-palette.scss

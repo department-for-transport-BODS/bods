@@ -4,6 +4,7 @@ import { createContext, useContext, type ReactNode } from 'react';
 
 type SupportConfig = {
   supportEmail: string;
+  ptiPdfUrl: string;
 };
 
 const SupportConfigContext = createContext<SupportConfig | null>(null);
@@ -11,9 +12,10 @@ const SupportConfigContext = createContext<SupportConfig | null>(null);
 export function SupportConfigProvider({
   children,
   supportEmail,
+  ptiPdfUrl,
 }: SupportConfig & { children: ReactNode }) {
   return (
-    <SupportConfigContext value={{ supportEmail }}>
+    <SupportConfigContext value={{ supportEmail, ptiPdfUrl }}>
       {children}
     </SupportConfigContext>
   );
