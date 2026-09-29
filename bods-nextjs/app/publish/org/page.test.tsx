@@ -39,6 +39,21 @@ describe('SelectOrgPage routing', () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams('dataType=timetable'));
   });
 
+  it('renders the operator dashboard heading, breadcrumb, and helper text', async () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      user: { is_single_org_user: false, is_agent_user: true },
+    });
+    (getPaginated as jest.Mock).mockResolvedValue({
+      results: [{ id: 123, name: 'OrganisationOne' }],
+    });
+
+    render(<SelectOrgPage />);
+
+    expect(screen.getByRole('heading', { name: 'Operator Dashboard' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Operator Dashboard' })).toBeInTheDocument();
+    expect(await screen.findByText('Choose an operator to view or publish data')).toBeInTheDocument();
+  });
+
   it('keeps non-single organisation users on organisation selection', async () => {
     (useAuth as jest.Mock).mockReturnValue({
       user: {
