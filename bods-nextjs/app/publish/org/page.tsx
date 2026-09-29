@@ -12,7 +12,7 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { getPaginated } from '@/lib/api-client';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { HOSTS } from '@/config/client';
+import { HOSTS, publishAppPath } from '@/config/client';
 
 interface Organisation {
   id: number;
@@ -94,25 +94,35 @@ function SelectOrg() {
   };
 
   return (
-    <div className="govuk-width-container">
-      <div className="govuk-main-wrapper">
-        <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'Select organisation', current: true },
-          ]}
-        />
+    <>
+      <div className="govuk-width-container">
+        <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
+          <Breadcrumbs
+            items={[
+              { label: 'Bus Open Data Service', href: HOSTS.www },
+              { label: 'Publish Bus Open Data', href: HOSTS.publish },
+              { label: 'Operator Dashboard', href: publishAppPath('/org'), current: true },
+            ]}
+          />
+        </div>
+      </div>
 
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl">Select organisation</h1>
+      <div className="govuk-width-container">
+        <div className="govuk-main-wrapper">
+          <div className="govuk-grid-row">
+            <div className="govuk-grid-column-two-thirds">
+              <h1 className="govuk-heading-xl">Operator Dashboard</h1>
 
-            {renderOrganisations()}
+              {orgs.length > 0 && (
+                <p className="govuk-body-l">Choose an operator to view or publish data</p>
+              )}
+
+              {renderOrganisations()}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
