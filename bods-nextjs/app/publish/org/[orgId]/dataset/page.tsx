@@ -5,13 +5,15 @@ import { useParams, useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ErrorSummary } from '@/components/shared';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
-import { HOSTS } from '@/config/client';
+import { HOSTS, publishAppPath } from '@/config/client';
+import { useAuth } from '@/hooks/useAuth';
 
 type DatasetType = 'timetable' | 'avl' | 'fares';
 
 function SelectDatasetTypePageContent() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useAuth();
   const orgId = params.orgId as string;
   const [selectedType, setSelectedType] = useState<DatasetType | ''>('');
   const [showError, setShowError] = useState(false);
@@ -28,16 +30,28 @@ function SelectDatasetTypePageContent() {
   };
 
   return (
-    <div className="govuk-width-container">
-      <div className="govuk-main-wrapper">
+    <>
+      <div className="govuk-width-container">
+        <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
         <Breadcrumbs
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'Publish a Dataset or Data Feed', current: true },
+            ...(user?.is_agent_user
+              ? [{ label: 'Operator Dashboard', href: publishAppPath('/org') }]
+              : []),
+            {
+              label: 'Publish a Dataset or Data Feed',
+              href: publishAppPath(`/org/${orgId}/dataset`),
+              current: true,
+            },
           ]}
         />
+        </div>
+      </div>
 
+      <div className="govuk-width-container">
+        <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds govuk-!-padding-right-9">
             <ErrorSummary errors={showError ? ['Please select a data type'] : []} summaryId="dataset-type-error-title" />
@@ -48,9 +62,9 @@ function SelectDatasetTypePageContent() {
                   <legend className="govuk-fieldset__legend govuk-fieldset__legend--l">
                     <h1 className="govuk-fieldset__heading">Choose data type</h1>
                   </legend>
-                  <div id="dataset-type-hint" className="govuk-hint">
+                  <p id="dataset-type-hint" className="govuk-body govuk-!-font-weight-bold">
                     Please choose the type of data you would like to publish.
-                  </div>
+                  </p>
                   {showError ? (
                     <p id="dataset-type-error" className="govuk-error-message">
                       <span className="govuk-visually-hidden">Error:</span> Please select a data type
@@ -122,7 +136,8 @@ function SelectDatasetTypePageContent() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
