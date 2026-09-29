@@ -35,7 +35,6 @@ function TimetableUpdateContent() {
 
     setIsSubmitting(true);
     setSubmitError('');
-    globalThis.sessionStorage.removeItem(`timetable-review:${orgId}:${datasetId}`);
     const formData = new FormData();
     formData.set('selected_item', selectedMethod === 'link' ? URL_LINK_ITEM_ID : UPLOAD_FILE_ITEM_ID);
     if (selectedMethod === 'link') formData.set('url_link', link);

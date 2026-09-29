@@ -109,7 +109,7 @@ export function RouteMap({
     if (revisionId) params.append('revision', revisionId.toString());
     if (lineName) params.append('line_name', lineName);
     if (serviceCodes) params.append('service_codes', serviceCodes);
-    const path = '/api/v1/service_pattern/';
+    const path = '/api/app/service_pattern/';
     const endpoint = apiRoot ? `${apiRoot}${path}` : dataApiPath(path);
     return `${endpoint}?${params.toString()}`;
   };
