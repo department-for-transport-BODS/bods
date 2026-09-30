@@ -193,6 +193,7 @@ body {
 /* Bold links */
 .govuk-link-bold {
   font-weight: 700;
+  color: #1d70b8 /* govuk-colour - "blue" */
 }
 
 /* Navigation list */
