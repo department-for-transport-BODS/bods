@@ -65,7 +65,7 @@ export default function DataHomePage() {
                 <p className="govuk-body">
                   View and download open data published by operators of local bus and coach services.
                 </p>
-                <hr className="govuk-section-break govuk-section-break--xl" />
+                <hr className="govuk-section-break govuk-section-break--l" />
 
                 <p className="govuk-body">
                   <Link className="govuk-link-bold" href={dataPath('/api')}>
@@ -75,7 +75,7 @@ export default function DataHomePage() {
                 <p className="govuk-body">
                   Experiment with our interactive API services to familiarise yourself with data sets.
                 </p>
-                <hr className="govuk-section-break govuk-section-break--xl" />
+                <hr className="govuk-section-break govuk-section-break--l" />
 
                 <p className="govuk-body">
                   <Link className="govuk-link-bold" href={dataPath('/downloads')}>
@@ -85,7 +85,7 @@ export default function DataHomePage() {
                 <p className="govuk-body">
                   Download updates or all of the data published on BODS with a registered account.
                 </p>
-                <hr className="govuk-section-break govuk-section-break--xl" />
+                <hr className="govuk-section-break govuk-section-break--l" />
 
                 <p className="govuk-body">
                   <Link className="govuk-link-bold" href={dataPath('/operators')}>
@@ -96,7 +96,7 @@ export default function DataHomePage() {
                   Search all operator profiles available on BODS to view associated data, NOC codes and
                   licence numbers.
                 </p>
-                <hr className="govuk-section-break govuk-section-break--xl" />
+                <hr className="govuk-section-break govuk-section-break--l" />
 
                 <p className="govuk-body">
                   <Link className="govuk-link-bold" href={dataPath('/catalogue')}>
@@ -107,7 +107,7 @@ export default function DataHomePage() {
                   Data catalogue will provide you with a comprehensive view of all data published on BODS
                   and provide matching information between different dataset types.
                 </p>
-                <hr className="govuk-section-break govuk-section-break--xl" />
+                <hr className="govuk-section-break govuk-section-break--l" />
 
                 <p className="govuk-body">
                   <Link className="govuk-link-bold" href={dataPath('/local-authority')}>
@@ -123,7 +123,7 @@ export default function DataHomePage() {
             <div className="govuk-grid-column-one-third">
               <h2 className="govuk-heading-m">Need further help?</h2>
               <ul className="govuk-list app-list--nav govuk-!-font-size-19">
-                <li>
+                <li className="govuk-!-margin-bottom-3">
                   <Link
                     className="govuk-link"
                     href={dataPath('/guidance/requirements?section=datacatalogue')}
@@ -131,12 +131,12 @@ export default function DataHomePage() {
                     Data catalogue field definitions
                   </Link>
                 </li>
-                <li>
+                <li className="govuk-!-margin-bottom-3">
                   <Link className="govuk-link" href={wwwPath('/changelog')}>
                     Service changelog
                   </Link>
                 </li>
-                <li>
+                <li className="govuk-!-margin-bottom-3">
                   <Link className="govuk-link" href={wwwPath('/contact')}>
                     Contact us for technical issues
                   </Link>
