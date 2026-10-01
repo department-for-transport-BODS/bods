@@ -196,6 +196,17 @@ body {
   color: #1d70b8 /* govuk-colour - "blue" */
 }
 
+/* Bold links on hover */
+.govuk-link-bold:hover {
+  color: #003078; /* govuk-color - "dark blue" */
+  text-decoration-thickness: max(3px, .1875rem, .12em);
+}
+
+/* TODO */
+/* .govuk-link-bold:visited {
+  color: #4c2c92;
+} */
+
 /* Navigation list */
 .app-list--nav {
   margin-top: 0;
