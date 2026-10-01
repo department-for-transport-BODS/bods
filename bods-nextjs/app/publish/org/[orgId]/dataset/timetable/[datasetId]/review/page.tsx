@@ -83,7 +83,7 @@ function TimetableReviewPageContent() {
 
   const {
     statusData,
-    processingProgress,
+    progress,
     isInitialLoading,
     errorMessage,
     setErrorMessage,
@@ -94,6 +94,7 @@ function TimetableReviewPageContent() {
     '',
     {
       fetchReviewFirst: true,
+      progressSource: 'polled',
       keepPollingReview: isDataQualityPending,
       reviewStatusPath: `/api/publish/timetables/data-quality-status/${orgId}/${datasetId}/`,
     },
@@ -120,7 +121,6 @@ function TimetableReviewPageContent() {
   };
 
   const loading = statusData?.loading ?? true;
-  const progress = Math.max(0, Math.min(100, processingProgress));
   const pageTitle = loading
     ? 'Validating data set'
     : statusData?.error
@@ -228,7 +228,13 @@ function TimetableReviewPageContent() {
   );
 
   if (isInitialLoading) {
-    return <div className="govuk-width-container" aria-busy="true" />;
+    return (
+      <div className="govuk-width-container">
+        <div className="govuk-main-wrapper">
+          <p className="govuk-body">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

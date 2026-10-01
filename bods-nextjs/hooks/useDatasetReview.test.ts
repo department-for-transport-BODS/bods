@@ -51,13 +51,14 @@ describe('useDatasetReview', () => {
     mockResponses([{ loading: false, progress: 100 }]);
 
     const { result } = renderHook(() =>
-      useDatasetReview<Review>('2', REVIEW_PATH, undefined, '', { fetchReviewFirst: true }),
+      useDatasetReview<Review>('2', REVIEW_PATH, undefined, '', { fetchReviewFirst: true, progressSource: 'polled' }),
     );
     await flush();
     await flush(5000);
 
     expect(result.current.isInitialLoading).toBe(false);
     expect(result.current.statusData?.loading).toBe(false);
+    expect(result.current.progress).toBe(0);
     expect(callsTo(PROGRESS_PATH)).toBe(0);
     expect(callsTo(REVIEW_PATH)).toBe(1);
   });
@@ -65,17 +66,18 @@ describe('useDatasetReview', () => {
   it('keeps polling when progress is 100 but the review is still loading', async () => {
     mockResponses([
       { loading: true, progress: 0 },
-      { loading: true, progress: 100 },
+      { loading: true, progress: 0 },
       { loading: false, progress: 100 },
     ]);
 
     const { result } = renderHook(() =>
-      useDatasetReview<Review>('2', REVIEW_PATH, undefined, '', { fetchReviewFirst: true }),
+      useDatasetReview<Review>('2', REVIEW_PATH, undefined, '', { fetchReviewFirst: true, progressSource: 'polled' }),
     );
     await flush();
     expect(result.current.statusData?.loading).toBe(true);
+    expect(result.current.progress).toBe(100);
+    expect(result.current.statusData?.progress).toBe(0);
 
-    await flush(1000);
     await flush(1000);
     expect(result.current.statusData?.loading).toBe(false);
 
@@ -145,12 +147,13 @@ describe('useDatasetReview', () => {
   });
 
   it('polls progress before fetching the review by default', async () => {
-    mockResponses([{ loading: false, progress: 100 }]);
+    mockResponses([{ loading: false, progress: 42 }]);
 
     const { result } = renderHook(() => useDatasetReview<Review>('2', REVIEW_PATH));
     await flush();
 
     expect(mockApiGet.mock.calls[0][0]).toBe(PROGRESS_PATH);
     expect(result.current.statusData?.loading).toBe(false);
+    expect(result.current.progress).toBe(42);
   });
 });

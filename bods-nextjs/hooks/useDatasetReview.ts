@@ -18,6 +18,7 @@ export type DatasetReviewOptions<T> = {
   fetchReviewFirst?: boolean;
   keepPollingReview?: (data: T) => boolean;
   reviewStatusPath?: string;
+  progressSource?: 'review' | 'polled';
 };
 
 const POLL_INTERVAL_MS = 1000;
@@ -31,7 +32,7 @@ export function useDatasetReview<T extends ReviewStatus>(
   refreshKey = '',
   options: DatasetReviewOptions<T> = {},
 ) {
-  const { fetchReviewFirst = false, reviewStatusPath } = options;
+  const { fetchReviewFirst = false, reviewStatusPath, progressSource = 'review' } = options;
   const keepPollingReviewRef = useRef(options.keepPollingReview);
   keepPollingReviewRef.current = options.keepPollingReview;
 
@@ -171,9 +172,14 @@ export function useDatasetReview<T extends ReviewStatus>(
     };
   }, [datasetId, fetchReviewFirst, refreshKey, requestErrorMessage, reviewPath, reviewStatusPath]);
 
+  const progress = Math.max(0, Math.min(100,
+    progressSource === 'polled' ? processingProgress : statusData?.progress ?? processingProgress,
+  ));
+
   return {
     statusData,
     processingProgress,
+    progress,
     isInitialLoading,
     errorMessage,
     setErrorMessage,
