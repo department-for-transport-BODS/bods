@@ -158,7 +158,7 @@ describe('RouteMap', () => {
       
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/api/v1/service_pattern/?revision=456')
+          expect.stringContaining('/api/app/service_pattern/?revision=456')
         );
       });
     });

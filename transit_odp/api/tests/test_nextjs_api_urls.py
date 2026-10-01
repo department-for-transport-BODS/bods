@@ -50,6 +50,10 @@ def test_session_auth_api_is_available_on_every_nextjs_host(urlconf, path, view_
             "/api/timetables/review-status/1/2/",
             "nextjs-timetables-review-status",
         ),
+        (
+            "/api/timetables/data-quality-status/1/2/",
+            "nextjs-timetables-data-quality-status",
+        ),
     ],
 )
 def test_application_api_is_shared_by_www_and_publish(urlconf, path, view_name):
