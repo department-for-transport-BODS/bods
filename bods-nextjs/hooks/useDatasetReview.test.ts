@@ -51,7 +51,7 @@ describe('useDatasetReview', () => {
     mockResponses([{ loading: false, progress: 100 }]);
 
     const { result } = renderHook(() =>
-      useDatasetReview<Review>('2', REVIEW_PATH, undefined, '', { fetchReviewFirst: true, progressSource: 'polled' }),
+      useDatasetReview<Review>('2', REVIEW_PATH, undefined, '', { fetchReviewFirst: true }),
     );
     await flush();
     await flush(5000);
@@ -71,7 +71,7 @@ describe('useDatasetReview', () => {
     ]);
 
     const { result } = renderHook(() =>
-      useDatasetReview<Review>('2', REVIEW_PATH, undefined, '', { fetchReviewFirst: true, progressSource: 'polled' }),
+      useDatasetReview<Review>('2', REVIEW_PATH, undefined, '', { fetchReviewFirst: true }),
     );
     await flush();
     expect(result.current.statusData?.loading).toBe(true);

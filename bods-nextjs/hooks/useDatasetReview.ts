@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import { api } from '@/lib/api-client';
 
 type ReviewStatus = {
@@ -18,7 +18,6 @@ export type DatasetReviewOptions<T> = {
   fetchReviewFirst?: boolean;
   keepPollingReview?: (data: T) => boolean;
   reviewStatusPath?: string;
-  progressSource?: 'review' | 'polled';
 };
 
 const POLL_INTERVAL_MS = 1000;
@@ -32,9 +31,10 @@ export function useDatasetReview<T extends ReviewStatus>(
   refreshKey = '',
   options: DatasetReviewOptions<T> = {},
 ) {
-  const { fetchReviewFirst = false, reviewStatusPath, progressSource = 'review' } = options;
-  const keepPollingReviewRef = useRef(options.keepPollingReview);
-  keepPollingReviewRef.current = options.keepPollingReview;
+  const { fetchReviewFirst = false, reviewStatusPath } = options;
+  const shouldKeepPollingReview = useEffectEvent(
+    (data: T) => options.keepPollingReview?.(data) ?? false,
+  );
 
   const [statusData, setStatusData] = useState<T | null>(null);
   const [processingProgress, setProcessingProgress] = useState(0);
@@ -86,7 +86,7 @@ export function useDatasetReview<T extends ReviewStatus>(
           if (isCancelled || status === 'PENDING') return;
         }
         const data = await fetchReview();
-        if (data && !keepPollingReviewRef.current?.(data)) {
+        if (data && !shouldKeepPollingReview(data)) {
           stopReviewPolling();
         }
       } catch {
@@ -98,7 +98,7 @@ export function useDatasetReview<T extends ReviewStatus>(
 
     const handleProcessingComplete = (data: T) => {
       stopProgressPolling();
-      if (keepPollingReviewRef.current?.(data)) {
+      if (shouldKeepPollingReview(data)) {
         reviewIntervalId ??= setInterval(pollReview, REVIEW_POLL_INTERVAL_MS);
       } else {
         stopReviewPolling();
@@ -173,7 +173,7 @@ export function useDatasetReview<T extends ReviewStatus>(
   }, [datasetId, fetchReviewFirst, refreshKey, requestErrorMessage, reviewPath, reviewStatusPath]);
 
   const progress = Math.max(0, Math.min(100,
-    progressSource === 'polled' ? processingProgress : statusData?.progress ?? processingProgress,
+    fetchReviewFirst ? processingProgress : statusData?.progress ?? processingProgress,
   ));
 
   return {

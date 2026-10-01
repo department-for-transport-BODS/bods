@@ -94,7 +94,6 @@ function TimetableReviewPageContent() {
     '',
     {
       fetchReviewFirst: true,
-      progressSource: 'polled',
       keepPollingReview: isDataQualityPending,
       reviewStatusPath: `/api/publish/timetables/data-quality-status/${orgId}/${datasetId}/`,
     },
