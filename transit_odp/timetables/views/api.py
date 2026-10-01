@@ -118,6 +118,27 @@ def _is_loading_status(status: str) -> bool:
     return status in LOADING_STATUSES
 
 
+@require_GET
+def get_timetables_data_quality_status_api(request, pk1, pk):
+    _, _, revision, error_response = _get_request_context(request, pk1, pk)
+    if error_response is not None:
+        return error_response
+
+    if flag_is_active("", "is_new_data_quality_service_active"):
+        has_report = Report.objects.filter(
+            revision_id=revision.id,
+            status__in=[
+                ReportStatus.REPORT_GENERATED.value,
+                ReportStatus.REPORT_GENERATION_FAILED.value,
+            ],
+        ).exists()
+        status = "SUCCESS" if has_report else "PENDING"
+    else:
+        status = revision.data_quality_tasks.get_latest_status() or "PENDING"
+
+    return JsonResponse(status, safe=False)
+
+
 def _get_timetables_list_section(request):
     section = request.GET.get("tab", ACTIVE_LIST_SECTION)
     if section not in LIST_SECTIONS:

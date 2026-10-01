@@ -35,6 +35,7 @@ from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
     delete_timetables_dataset_api,
     edit_timetables_dataset_description_api,
+    get_timetables_data_quality_status_api,
     get_timetables_dataset_edit_api,
     get_timetables_list_api,
     get_timetables_review_status_api,
@@ -205,6 +206,11 @@ urlpatterns = [
         "timetables/review-status/<int:pk1>/<int:pk>/",
         get_timetables_review_status_api,
         name="nextjs-timetables-review-status",
+    ),
+    path(
+        "timetables/data-quality-status/<int:pk1>/<int:pk>/",
+        get_timetables_data_quality_status_api,
+        name="nextjs-timetables-data-quality-status",
     ),
     path(
         "timetables/list/<int:pk1>/",

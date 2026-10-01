@@ -43,7 +43,7 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
 
   const {
     statusData,
-    processingProgress,
+    progress,
     isInitialLoading,
     errorMessage,
     setErrorMessage,
@@ -96,7 +96,6 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
   };
 
   const loading = statusData?.loading ?? true;
-  const progress = Math.max(0, Math.min(100, statusData?.progress ?? processingProgress));
   const reviewErrorMessage = statusData?.error || '';
 
   return (

@@ -393,7 +393,7 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
 
   const {
     statusData,
-    processingProgress,
+    progress,
     isInitialLoading,
     errorMessage,
     setErrorMessage,
@@ -404,7 +404,6 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
   const [isPublishing, setIsPublishing] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const loading = statusData?.loading ?? true;
-  const progress = Math.max(0, Math.min(100, statusData?.progress ?? processingProgress));
   const hasBlockingError = Boolean(statusData?.error) || statusData?.status === 'error';
   const canPublish = !hasBlockingError;
   const isUpdate = statusData?.hasLiveRevision ?? false;
