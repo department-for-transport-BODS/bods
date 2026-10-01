@@ -74,11 +74,6 @@ type PublishResponse = {
 const isDataQualityPending = (data: TimetableReviewStatusResponse) =>
   !data.error && (!data.dataQuality || data.dataQuality.status === 'PENDING');
 
-const REVIEW_OPTIONS = {
-  fetchReviewFirst: true,
-  keepPollingReview: isDataQualityPending,
-};
-
 function TimetableReviewPageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
@@ -97,7 +92,11 @@ function TimetableReviewPageContent() {
     `/api/publish/timetables/review-status/${orgId}/${datasetId}/`,
     undefined,
     '',
-    REVIEW_OPTIONS,
+    {
+      fetchReviewFirst: true,
+      keepPollingReview: isDataQualityPending,
+      reviewStatusPath: `/api/publish/timetables/data-quality-status/${orgId}/${datasetId}/`,
+    },
   );
   const [isPublishing, setIsPublishing] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);

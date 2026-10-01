@@ -17,6 +17,7 @@ type Review = {
 
 const REVIEW_PATH = '/api/publish/timetables/review-status/1/2/';
 const PROGRESS_PATH = '/api/publish/dataset/2/progress/';
+const STATUS_PATH = '/api/publish/timetables/data-quality-status/1/2/';
 
 const callsTo = (path: string) => mockApiGet.mock.calls.filter(([p]) => p === path).length;
 
@@ -107,6 +108,40 @@ describe('useDatasetReview', () => {
 
     await flush(REVIEW_POLL_INTERVAL_MS * 3);
     expect(callsTo(REVIEW_PATH)).toBe(3);
+  });
+
+  it('checks lightweight status while pending and fetches the review only when ready', async () => {
+    const statuses = ['PENDING', 'PENDING', 'SUCCESS'];
+    mockApiGet.mockImplementationOnce(() => Promise.resolve({ loading: false, progress: 100, dqStatus: 'PENDING' }));
+    mockApiGet.mockImplementation((path: string) => {
+      if (path === STATUS_PATH) return Promise.resolve(statuses.shift());
+      return Promise.resolve({ loading: false, progress: 100, dqStatus: 'SUCCESS' });
+    });
+
+    const { result } = renderHook(() =>
+      useDatasetReview<Review>('2', REVIEW_PATH, undefined, '', {
+        fetchReviewFirst: true,
+        reviewStatusPath: STATUS_PATH,
+        keepPollingReview: (data) => data.dqStatus === 'PENDING',
+      }),
+    );
+    await flush();
+
+    await flush(REVIEW_POLL_INTERVAL_MS);
+    expect(callsTo(REVIEW_PATH)).toBe(1);
+    expect(result.current.statusData?.dqStatus).toBe('PENDING');
+
+    await act(async () => window.dispatchEvent(new Event('focus')));
+    expect(callsTo(REVIEW_PATH)).toBe(1);
+    expect(callsTo(PROGRESS_PATH)).toBe(0);
+
+    await flush(REVIEW_POLL_INTERVAL_MS);
+    expect(callsTo(REVIEW_PATH)).toBe(2);
+    expect(result.current.statusData?.dqStatus).toBe('SUCCESS');
+
+    await flush(REVIEW_POLL_INTERVAL_MS);
+    expect(callsTo(STATUS_PATH)).toBe(3);
+    expect(callsTo(REVIEW_PATH)).toBe(2);
   });
 
   it('polls progress before fetching the review by default', async () => {

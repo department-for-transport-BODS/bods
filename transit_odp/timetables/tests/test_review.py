@@ -3,21 +3,84 @@ from datetime import datetime
 import pytest
 from django.utils.timezone import now
 from django_hosts import reverse
+from waffle.testutils import override_flag
 
 from config.hosts import PUBLISH_HOST
 from transit_odp.data_quality.factories import DataQualityReportFactory
 from transit_odp.data_quality.factories.report import PTIObservationFactory
+from transit_odp.dqs.constants import ReportStatus
+from transit_odp.dqs.factories import ReportFactory
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.factories import (
     DatasetRevisionFactory,
     DatasetSubscriptionFactory,
 )
 from transit_odp.organisation.models import Dataset
+from transit_odp.pipelines.factories import DataQualityTaskFactory
+from transit_odp.pipelines.models import DataQualityTask
 from transit_odp.users.constants import AgentUserType, OrgAdminType
 from transit_odp.users.factories import AgentUserInviteFactory, UserFactory
 from transit_odp.users.models import AgentUserInvite
 
 pytestmark = pytest.mark.django_db
+
+
+@pytest.fixture
+def timetable_status_request(client_factory):
+    user = UserFactory(account_type=OrgAdminType)
+    revision = DatasetRevisionFactory(
+        dataset__organisation=user.organisations.first(),
+        dataset__dataset_type=TimetableType,
+        is_published=False,
+    )
+    url = reverse(
+        "nextjs-timetables-data-quality-status",
+        host=PUBLISH_HOST,
+        kwargs={"pk1": revision.dataset.organisation_id, "pk": revision.dataset_id},
+    )
+    return client_factory(host=PUBLISH_HOST), user, revision, url
+
+
+@pytest.mark.parametrize(
+    "report_status, expected",
+    [
+        (None, "PENDING"),
+        (ReportStatus.PIPELINE_PENDING.value, "PENDING"),
+        (ReportStatus.REPORT_GENERATED.value, "SUCCESS"),
+        (ReportStatus.REPORT_GENERATION_FAILED.value, "SUCCESS"),
+    ],
+)
+@override_flag("is_new_data_quality_service_active", active=True)
+def test_timetable_data_quality_status_for_new_service(
+    timetable_status_request, report_status, expected
+):
+    client, user, revision, url = timetable_status_request
+    if report_status is not None:
+        ReportFactory(revision=revision, status=report_status)
+
+    client.force_login(user)
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert response.json() == expected
+
+
+@override_flag("is_new_data_quality_service_active", active=False)
+def test_timetable_data_quality_status_for_legacy_service(timetable_status_request):
+    client, user, revision, url = timetable_status_request
+    client.force_login(user)
+
+    assert client.get(url).json() == "PENDING"
+    DataQualityTaskFactory(revision=revision, status=DataQualityTask.FAILURE)
+    assert client.get(url).json() == "FAILURE"
+
+
+def test_timetable_data_quality_status_requires_org_access(timetable_status_request):
+    client, _, _, url = timetable_status_request
+
+    assert client.get(url).status_code == 401
+    client.force_login(UserFactory(account_type=OrgAdminType))
+    assert client.get(url).status_code == 404
 
 
 class TestPublishReview:

@@ -16,8 +16,8 @@ type ProgressResponse = {
 export type DatasetReviewOptions<T> = {
   // Render straight from the review status when processing has already finished.
   fetchReviewFirst?: boolean;
-  // Keep re-fetching the review status after processing, e.g. while a DQ report is pending.
   keepPollingReview?: (data: T) => boolean;
+  reviewStatusPath?: string;
 };
 
 const POLL_INTERVAL_MS = 1000;
@@ -31,7 +31,7 @@ export function useDatasetReview<T extends ReviewStatus>(
   refreshKey = '',
   options: DatasetReviewOptions<T> = {},
 ) {
-  const { fetchReviewFirst = false } = options;
+  const { fetchReviewFirst = false, reviewStatusPath } = options;
   const keepPollingReviewRef = useRef(options.keepPollingReview);
   keepPollingReviewRef.current = options.keepPollingReview;
 
@@ -43,6 +43,7 @@ export function useDatasetReview<T extends ReviewStatus>(
   useEffect(() => {
     let isCancelled = false;
     let isFetchingProgress = false;
+    let isFetchingReviewStatus = false;
     let progressIntervalId: ReturnType<typeof setInterval> | undefined;
     let reviewIntervalId: ReturnType<typeof setInterval> | undefined;
 
@@ -76,13 +77,21 @@ export function useDatasetReview<T extends ReviewStatus>(
     };
 
     const pollReview = async () => {
+      if (isFetchingReviewStatus) return;
+      isFetchingReviewStatus = true;
       try {
+        if (reviewStatusPath) {
+          const status = await api.get<string>(reviewStatusPath);
+          if (isCancelled || status === 'PENDING') return;
+        }
         const data = await fetchReview();
         if (data && !keepPollingReviewRef.current?.(data)) {
           stopReviewPolling();
         }
       } catch {
         // Matches legacy dqs-review-panel.js, which ignores failed status checks and retries.
+      } finally {
+        isFetchingReviewStatus = false;
       }
     };
 
@@ -144,18 +153,23 @@ export function useDatasetReview<T extends ReviewStatus>(
       if (!isCancelled) startProgressPolling();
     };
 
+    const refreshOnReturn = () => {
+      if (progressIntervalId !== undefined) fetchProgress();
+      else if (reviewIntervalId !== undefined) pollReview();
+    };
+
     start();
-    window.addEventListener('pageshow', fetchProgress);
-    window.addEventListener('focus', fetchProgress);
+    window.addEventListener('pageshow', refreshOnReturn);
+    window.addEventListener('focus', refreshOnReturn);
 
     return () => {
       isCancelled = true;
       stopProgressPolling();
       stopReviewPolling();
-      window.removeEventListener('pageshow', fetchProgress);
-      window.removeEventListener('focus', fetchProgress);
+      window.removeEventListener('pageshow', refreshOnReturn);
+      window.removeEventListener('focus', refreshOnReturn);
     };
-  }, [datasetId, fetchReviewFirst, refreshKey, requestErrorMessage, reviewPath]);
+  }, [datasetId, fetchReviewFirst, refreshKey, requestErrorMessage, reviewPath, reviewStatusPath]);
 
   return {
     statusData,
