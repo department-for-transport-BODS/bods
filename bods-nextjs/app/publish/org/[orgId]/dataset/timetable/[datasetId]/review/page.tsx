@@ -60,6 +60,7 @@ type TimetableReviewStatusResponse = {
     ragLevel?: string | null;
     criticalCount?: number;
     advisoryCount?: number;
+    hasCriticalIssues?: boolean | null;
     reportUrl?: string;
     reportCsvUrl?: string | null;
     showUpdate?: boolean;
@@ -133,6 +134,11 @@ function TimetableReviewPageContent() {
   const dataQuality = statusData?.dataQuality;
   const isDataQualityReady = dataQuality?.status === 'SUCCESS';
   const noValidFile = statusData?.error === 'NO_VALID_FILE_TO_PROCESS';
+  const criticalIssuesTag = dataQuality?.hasCriticalIssues == null ? null : (
+    <span className={`govuk-tag govuk-tag--${dataQuality.hasCriticalIssues ? 'red' : 'green'} govuk-!-margin-left-3 govuk-!-font-size-16 govuk-!-text-align-centre`}>
+      {dataQuality.hasCriticalIssues ? 'CRITICAL ISSUES' : 'NO CRITICAL ISSUES'}
+    </span>
+  );
 
   const updateUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/update`;
   const deleteUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/delete`;
@@ -187,6 +193,7 @@ function TimetableReviewPageContent() {
       <section className="timetable-review-panel">
         <h2 className="govuk-heading-m">
           3b Data quality check{dataQuality.ragLevel ? ` - ${dataQuality.ragLevel}` : ''}
+          {criticalIssuesTag ? <> - {criticalIssuesTag}</> : null}
         </h2>
         <p className="govuk-body">The data quality report identifies data quality issues beyond the validation checks. Please review any raised issues.</p>
         <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={dataQuality.reportUrl}>View data quality report</a>
@@ -335,6 +342,7 @@ function TimetableReviewPageContent() {
                   <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">Data quality report</dt>
                     <dd className="govuk-summary-list__value">
+                      {criticalIssuesTag ? <p className="govuk-body govuk-!-margin-bottom-2">{criticalIssuesTag}</p> : null}
                       {dataQuality?.status === 'SUCCESS' ? <a className="govuk-link" href={dataQuality.reportUrl}>View data quality report</a> : 'Generating...'}
                     </dd>
                   </div>
