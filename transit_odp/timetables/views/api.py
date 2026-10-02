@@ -370,6 +370,7 @@ def get_timetables_review_status_api(request, pk1, pk):
     data_quality_rag = None
     critical_count = 0
     advisory_count = 0
+    has_critical_issues = None
     data_quality_report_url = f"/org/{pk1}/dataset/timetable/{pk}/report/draft/"
     data_quality_report_csv_url = None
     show_update = False
@@ -390,10 +391,9 @@ def get_timetables_review_status_api(request, pk1, pk):
             if report:
                 data_quality_status = "SUCCESS"
                 summary = Summary.get_report(report.id, revision.id)
-                data_quality_score = getattr(report, "score", None)
-                data_quality_rag = get_data_quality_rag(report)
                 critical_count = summary.data.get("Critical", {}).get("count", 0)
                 advisory_count = summary.data.get("Advisory", {}).get("count", 0)
+                has_critical_issues = critical_count > 0
                 data_quality_report_csv_url = (
                     f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
                 )
@@ -483,6 +483,7 @@ def get_timetables_review_status_api(request, pk1, pk):
                 "ragLevel": data_quality_rag.rag_level if data_quality_rag else None,
                 "criticalCount": critical_count,
                 "advisoryCount": advisory_count,
+                "hasCriticalIssues": has_critical_issues,
                 "reportUrl": data_quality_report_url,
                 "reportCsvUrl": data_quality_report_csv_url,
                 "showUpdate": show_update,
