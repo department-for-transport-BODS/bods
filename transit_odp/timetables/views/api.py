@@ -371,8 +371,7 @@ def get_timetables_review_status_api(request, pk1, pk):
     critical_count = 0
     advisory_count = 0
     has_critical_issues = None
-    data_quality_report_url = f"/org/{pk1}/dataset/timetable/{pk}/report/draft/"
-    data_quality_report_csv_url = None
+    data_quality_report_id = None
     show_update = False
 
     if not is_loading:
@@ -391,12 +390,11 @@ def get_timetables_review_status_api(request, pk1, pk):
             if report:
                 data_quality_status = "SUCCESS"
                 summary = Summary.get_report(report.id, revision.id)
-                critical_count = summary.data.get("Critical", {}).get("count", 0)
-                advisory_count = summary.data.get("Advisory", {}).get("count", 0)
+                # Counts are numpy ints from pandas, which JsonResponse can't serialise.
+                critical_count = int(summary.data.get("Critical", {}).get("count", 0))
+                advisory_count = int(summary.data.get("Advisory", {}).get("count", 0))
                 has_critical_issues = critical_count > 0
-                data_quality_report_csv_url = (
-                    f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
-                )
+                data_quality_report_id = report.id
                 show_update = True
         else:
             tasks = revision.data_quality_tasks
@@ -407,11 +405,8 @@ def get_timetables_review_status_api(request, pk1, pk):
                 summary = Summary.from_report_summary(report.summary)
                 data_quality_score = getattr(report, "score", None)
                 data_quality_rag = get_data_quality_rag(report)
-                critical_count = summary.data.get("Critical", {}).get("count", 0)
-                advisory_count = summary.data.get("Advisory", {}).get("count", 0)
-                data_quality_report_csv_url = (
-                    f"/org/{pk1}/dataset/timetable/{pk}/report/{report.id}/csv/"
-                )
+                critical_count = int(summary.data.get("Critical", {}).get("count", 0))
+                advisory_count = int(summary.data.get("Advisory", {}).get("count", 0))
                 show_update = revision.is_pti_compliant()
 
     error_description = None
@@ -484,8 +479,7 @@ def get_timetables_review_status_api(request, pk1, pk):
                 "criticalCount": critical_count,
                 "advisoryCount": advisory_count,
                 "hasCriticalIssues": has_critical_issues,
-                "reportUrl": data_quality_report_url,
-                "reportCsvUrl": data_quality_report_csv_url,
+                "reportId": data_quality_report_id,
                 "showUpdate": show_update,
             },
             "transxchangeVersion": getattr(revision, "transxchange_version", None),

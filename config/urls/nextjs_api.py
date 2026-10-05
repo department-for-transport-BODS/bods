@@ -42,6 +42,17 @@ from transit_odp.timetables.views.api import (
     publish_timetables_dataset_api,
     update_timetables_dataset_api,
 )
+from transit_odp.timetables.views.data_quality_api import (
+    download_timetables_data_quality_report_csv_api,
+    get_data_quality_definitions_api,
+    get_timetables_data_quality_observation_api,
+    get_timetables_data_quality_observation_detail_api,
+    get_timetables_data_quality_report_api,
+    suppress_timetables_data_quality_observation_api,
+)
+from transit_odp.timetables.views.line_detail_api import (
+    get_timetables_line_detail_api,
+)
 from transit_odp.users.views.api import (
     create_organisation_invite_api,
     get_organisation_member_api,
@@ -211,6 +222,44 @@ urlpatterns = [
         "timetables/data-quality-status/<int:pk1>/<int:pk>/",
         get_timetables_data_quality_status_api,
         name="nextjs-timetables-data-quality-status",
+    ),
+    path(
+        "timetables/data-quality-report/<int:pk1>/<int:pk>/",
+        get_timetables_data_quality_report_api,
+        name="nextjs-timetables-data-quality-report",
+    ),
+    path(
+        "timetables/data-quality-report/<int:pk1>/<int:pk>/<int:report_id>/csv/",
+        download_timetables_data_quality_report_csv_api,
+        name="nextjs-timetables-data-quality-report-csv",
+    ),
+    path(
+        "timetables/data-quality-report/<int:pk1>/<int:pk>/<int:report_id>/"
+        "observations/<slug:slug>/",
+        get_timetables_data_quality_observation_api,
+        name="nextjs-timetables-data-quality-observation",
+    ),
+    path(
+        "timetables/data-quality-report/<int:pk1>/<int:pk>/<int:report_id>/"
+        "observations/<slug:slug>/detail/",
+        get_timetables_data_quality_observation_detail_api,
+        name="nextjs-timetables-data-quality-observation-detail",
+    ),
+    path(
+        "timetables/data-quality-report/<int:pk1>/<int:pk>/<int:report_id>/"
+        "observations/<slug:slug>/suppress/",
+        suppress_timetables_data_quality_observation_api,
+        name="nextjs-timetables-data-quality-observation-suppress",
+    ),
+    path(
+        "timetables/line-detail/<int:pk1>/<int:pk>/",
+        get_timetables_line_detail_api,
+        name="nextjs-timetables-line-detail",
+    ),
+    path(
+        "data-quality/definitions/",
+        get_data_quality_definitions_api,
+        name="nextjs-data-quality-definitions",
     ),
     path(
         "timetables/list/<int:pk1>/",
