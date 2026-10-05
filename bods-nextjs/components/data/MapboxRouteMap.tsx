@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import type { RouteMapProps } from './RouteMap';
 
-const RouteMap = dynamic(
-  () => import('@/components/data/RouteMap').then((module) => module.RouteMap),
-  { ssr: false },
-);
+const RouteMap = dynamic(() => import('./RouteMap').then((module) => module.RouteMap), { ssr: false });
 
-export function TimetableReviewMap({ revisionId }: { revisionId: number }) {
+export function MapboxRouteMap(props: Omit<RouteMapProps, 'mapboxToken'>) {
   const [token, setToken] = useState('');
 
   useEffect(() => {
@@ -25,7 +23,7 @@ export function TimetableReviewMap({ revisionId }: { revisionId: number }) {
     };
   }, []);
 
-  if (!token) return null;
+  if (!token) return <div className="disruptions-width" />;
 
-  return <RouteMap revisionId={revisionId} mapboxToken={token} ariaLabel="Interactive map showing timetable routes" />;
+  return <RouteMap {...props} mapboxToken={token} />;
 }

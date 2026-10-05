@@ -12,7 +12,7 @@ import { PublishStepper } from '@/components/publish';
 import { formatDateTime } from '@/lib/utils/date';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
 import { TimetableHelpAside } from '../../_components/TimetableHelpAside';
-import { TimetableReviewMap } from '../../_components/TimetableReviewMap';
+import { MapboxRouteMap } from '@/components/data/MapboxRouteMap';
 
 type TimetableMetadata = {
   filename?: string;
@@ -61,8 +61,7 @@ type TimetableReviewStatusResponse = {
     criticalCount?: number;
     advisoryCount?: number;
     hasCriticalIssues?: boolean | null;
-    reportUrl?: string;
-    reportCsvUrl?: string | null;
+    reportId?: number | null;
     showUpdate?: boolean;
   };
 };
@@ -91,7 +90,7 @@ function TimetableReviewPageContent() {
   } = useDatasetReview<TimetableReviewStatusResponse>(
     datasetId,
     `/api/publish/timetables/review-status/${orgId}/${datasetId}/`,
-    undefined,
+    'Unable to check processing status. Please refresh and try again.',
     '',
     {
       fetchReviewFirst: true,
@@ -120,10 +119,10 @@ function TimetableReviewPageContent() {
     }
   };
 
-  const loading = statusData?.loading ?? true;
+  const loading = statusData ? statusData.loading : !errorMessage;
   const pageTitle = loading
     ? 'Validating data set'
-    : statusData?.error
+    : statusData?.error || errorMessage
       ? 'Error: Review and publish'
       : 'Review and publish';
 
@@ -142,6 +141,11 @@ function TimetableReviewPageContent() {
 
   const updateUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/update`;
   const deleteUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/delete`;
+  const reportId = statusData?.dataQuality?.reportId;
+  const reportUrl = reportId ? `/publish/org/${orgId}/dataset/timetable/${datasetId}/report/draft` : null;
+  const reportCsvUrl = reportId
+    ? `/api/publish/timetables/data-quality-report/${orgId}/${datasetId}/${reportId}/csv/`
+    : null;
   const editUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/dataset-edit`;
 
   const renderValidationPanel = () => {
@@ -196,11 +200,13 @@ function TimetableReviewPageContent() {
           {criticalIssuesTag ? <> - {criticalIssuesTag}</> : null}
         </h2>
         <p className="govuk-body">The data quality report identifies data quality issues beyond the validation checks. Please review any raised issues.</p>
-        <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={dataQuality.reportUrl}>View data quality report</a>
-        {dataQuality.reportCsvUrl ? (
+        {reportUrl ? (
+          <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={reportUrl}>View data quality report</a>
+        ) : null}
+        {reportCsvUrl ? (
           <>
             <br />
-            <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={dataQuality.reportCsvUrl}>Download data quality report.csv</a>
+            <a className="govuk-link" href={reportCsvUrl} download>Download data quality report.csv</a>
           </>
         ) : null}
         <table className="govuk-table govuk-!-margin-top-2">
@@ -317,7 +323,7 @@ function TimetableReviewPageContent() {
                 {renderValidationPanel()}
                 {renderDataQualityPanel()}
                 <h2 className="govuk-heading-l">{statusData?.name || 'Timetable data set'}</h2>
-                {statusData?.revisionId ? <TimetableReviewMap revisionId={statusData.revisionId} /> : null}
+                {statusData?.revisionId ? <MapboxRouteMap revisionId={statusData.revisionId} ariaLabel="Interactive map showing timetable routes" /> : null}
                 <dl className="govuk-summary-list">
                   <div className="govuk-summary-list__row">
                     <dt className="govuk-summary-list__key">Name</dt>
@@ -343,7 +349,7 @@ function TimetableReviewPageContent() {
                     <dt className="govuk-summary-list__key">Data quality report</dt>
                     <dd className="govuk-summary-list__value">
                       {criticalIssuesTag ? <p className="govuk-body govuk-!-margin-bottom-2">{criticalIssuesTag}</p> : null}
-                      {dataQuality?.status === 'SUCCESS' ? <a className="govuk-link" href={dataQuality.reportUrl}>View data quality report</a> : 'Generating...'}
+                      {dataQuality?.status === 'SUCCESS' && reportUrl ? <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={reportUrl}>View data quality report</a> : 'Generating...'}
                     </dd>
                   </div>
                   <div className="govuk-summary-list__row">

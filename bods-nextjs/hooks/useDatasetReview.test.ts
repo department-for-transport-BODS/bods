@@ -156,4 +156,61 @@ describe('useDatasetReview', () => {
     expect(result.current.statusData?.loading).toBe(false);
     expect(result.current.progress).toBe(42);
   });
+
+  it('stops polling and reports an error when the review fails after processing completes', async () => {
+    mockApiGet.mockImplementationOnce(() => Promise.resolve({ loading: true, progress: 0 }));
+    mockApiGet.mockImplementation((path: string) => {
+      if (path === PROGRESS_PATH) return Promise.resolve({ progress: 100, status: 'success' });
+      return Promise.reject(new Error('Request failed with status 500'));
+    });
+
+    const { result } = renderHook(() =>
+      useDatasetReview<Review>('2', REVIEW_PATH, 'Unable to check processing status.', '', {
+        fetchReviewFirst: true,
+      }),
+    );
+    await flush();
+
+    expect(result.current.statusData).toBeNull();
+    expect(result.current.errorMessage).toBe('Unable to check processing status.');
+
+    const progressCalls = callsTo(PROGRESS_PATH);
+    const reviewCalls = callsTo(REVIEW_PATH);
+    await flush(5000);
+    expect(callsTo(PROGRESS_PATH)).toBe(progressCalls);
+    expect(callsTo(REVIEW_PATH)).toBe(reviewCalls);
+  });
+
+  it('ignores failed status checks but stops polling when the ready review fails to load', async () => {
+    const statuses: Array<() => Promise<string>> = [
+      () => Promise.reject(new Error('Network error')),
+      () => Promise.resolve('SUCCESS'),
+    ];
+    mockApiGet.mockImplementationOnce(() => Promise.resolve({ loading: false, progress: 100, dqStatus: 'PENDING' }));
+    mockApiGet.mockImplementation((path: string) => {
+      if (path === STATUS_PATH) return (statuses.shift() ?? (() => Promise.resolve('SUCCESS')))();
+      return Promise.reject(new Error('Request failed with status 500'));
+    });
+
+    const { result } = renderHook(() =>
+      useDatasetReview<Review>('2', REVIEW_PATH, 'Unable to check processing status.', '', {
+        fetchReviewFirst: true,
+        reviewStatusPath: STATUS_PATH,
+        keepPollingReview: (data) => data.dqStatus === 'PENDING',
+      }),
+    );
+    await flush();
+
+    await flush(REVIEW_POLL_INTERVAL_MS);
+    expect(result.current.errorMessage).toBe('');
+    expect(result.current.statusData?.dqStatus).toBe('PENDING');
+
+    await flush(REVIEW_POLL_INTERVAL_MS);
+    expect(result.current.statusData).toBeNull();
+    expect(result.current.errorMessage).toBe('Unable to check processing status.');
+
+    await flush(REVIEW_POLL_INTERVAL_MS * 3);
+    expect(callsTo(STATUS_PATH)).toBe(2);
+    expect(callsTo(REVIEW_PATH)).toBe(2);
+  });
 });

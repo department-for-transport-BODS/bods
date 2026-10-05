@@ -30,6 +30,10 @@ body {
   display: flex;
 }
 
+.content-center {
+  align-content: center;
+}
+
 .flexfill {
   flex: 1;
 }
@@ -877,6 +881,148 @@ a.review-stat__link:visited {
 .custom_govuk_table .govuk-table__body .govuk-table__row:last-child .govuk-table__cell,
 .custom_govuk_table .govuk-table__body .govuk-table__row:last-child .govuk-table__header {
   border-bottom: 1px solid #b1b4b6;
+}
+
+/* Data quality tables keep Django's bold headers; other custom_govuk_table users have sortable link headers */
+.custom_govuk_table--dqs .govuk-table__header {
+  font-weight: 700;
+}
+
+.custom_govuk_table--dqs .govuk-table__cell {
+  font-size: 18px;
+}
+
+/* Ported from transit_odp/frontend/assets/sass/components/data_quality/_data_quality.scss */
+.total_vehicles {
+  width: 23%;
+  margin-bottom: 25px;
+}
+
+/* Ported from transit_odp/frontend/assets/sass/components/tooltip/_tooltip.scss */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  color: #1d70b8;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  text-align: left;
+  padding: 10px 10px;
+  border-radius: 10px;
+  background-color: white;
+  position: absolute;
+  bottom: 70%;
+  cursor: auto;
+  opacity: 0;
+  transition: opacity 0.3s;
+  border: 2px solid black;
+  color: #0b0c0c;
+  width: 300px;
+  box-sizing: content-box;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip .tooltiptext::before,
+.tooltip .tooltiptext::after {
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  content: " ";
+  position: absolute;
+  top: 100%;
+  left: 5%;
+  border-width: 10px;
+  width: 0;
+  border-style: solid;
+  border-color: #b1b4b6 transparent transparent transparent;
+}
+
+.tooltip .tooltiptext::before {
+  border-top: 10px solid black;
+  margin-top: 1px;
+}
+
+.tooltip .tooltiptext::after {
+  border-top: 10px solid white;
+  margin-top: -2px;
+  z-index: 1;
+}
+
+.showtooltip {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.tooltip div.tooltiptext {
+  bottom: 130%;
+}
+
+.timetable_govuk_body {
+  overflow: visible !important;
+}
+
+#timetable_tooltip > div > div.govuk-accordion__section-header > span > button {
+  padding-bottom: 0;
+}
+
+span.text-color-red {
+  color: #d4351c;
+}
+
+/* Ported from transit_odp/frontend/assets/sass/components/table/_table.scss */
+.timetables_govuk_table .govuk-table__header:first-child,
+.timetables_govuk_table .govuk-table__cell:first-child {
+  width: 25%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Ported from transit_odp/frontend/assets/sass/common.scss */
+.w-90-l {
+  width: 90%;
+}
+
+.end-justified {
+  justify-content: end;
+}
+
+.shifted-text {
+  position: relative;
+  top: 5px;
+}
+
+.disruptions-width {
+  width: 100% !important;
+  height: 25rem !important;
+}
+
+.position-relative {
+  position: relative;
+}
+
+#map-updated-timestamp {
+  position: absolute;
+  bottom: 0;
+  right: 50px;
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.1428571429;
+  background: #f3f2f1;
+  color: #0b0c0c;
+  padding: 5px;
+  opacity: 0.6;
+}
+
+@media (min-width: 40.0625em) {
+  #map-updated-timestamp {
+    font-size: 1rem;
+    line-height: 1.25;
+  }
 }
 
 .avl-changelog-page__back-link {
