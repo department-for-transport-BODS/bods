@@ -22,6 +22,7 @@ export interface RouteMapProps {
   serviceCodes?: string;
   ariaLabel?: string;
   showTimestamp?: boolean;
+  containerClassName?: string;
 }
 
 interface ServicePatternFeature {
@@ -52,6 +53,7 @@ export function RouteMap({
   serviceCodes,
   ariaLabel = 'Interactive map showing bus route lines',
   showTimestamp = false,
+  containerClassName,
 }: RouteMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -264,7 +266,7 @@ export function RouteMap({
   };
 
   return (
-    <div className={styles.routeMapContainer}>
+    <div className={containerClassName ?? styles.routeMapContainer}>
       {/* Accessibility: Screen reader description */}
       <div className="govuk-visually-hidden" role="status" aria-live="polite">
         {error

@@ -77,20 +77,35 @@ export function useDatasetReview<T extends ReviewStatus>(
       reviewIntervalId = undefined;
     };
 
+    // Review failures are terminal, matching the legacy page reload.
+    const failReview = (error: unknown) => {
+      stopProgressPolling();
+      stopReviewPolling();
+      if (isCancelled) return;
+      setStatusData(null);
+      setRequestError(error);
+    };
+
     const pollReview = async () => {
       if (isFetchingReviewStatus) return;
       isFetchingReviewStatus = true;
       try {
         if (reviewStatusPath) {
-          const status = await api.get<string>(reviewStatusPath);
+          let status: string;
+          try {
+            status = await api.get<string>(reviewStatusPath);
+          } catch {
+            // Matches legacy dqs-review-panel.js, which ignores failed status checks and retries.
+            return;
+          }
           if (isCancelled || status === 'PENDING') return;
         }
         const data = await fetchReview();
         if (data && !shouldKeepPollingReview(data)) {
           stopReviewPolling();
         }
-      } catch {
-        // Matches legacy dqs-review-panel.js, which ignores failed status checks and retries.
+      } catch (error) {
+        failReview(error);
       } finally {
         isFetchingReviewStatus = false;
       }
@@ -119,7 +134,13 @@ export function useDatasetReview<T extends ReviewStatus>(
         setIsInitialLoading(false);
 
         if (data.progress === 100 && data.status !== PENDING_STATUS) {
-          const review = await fetchReview();
+          let review: T | null;
+          try {
+            review = await fetchReview();
+          } catch (error) {
+            failReview(error);
+            return;
+          }
           // Progress can reach 100 before the revision leaves a loading status, so keep polling.
           if (review && !review.loading) {
             handleProcessingComplete(review);

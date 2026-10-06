@@ -30,7 +30,7 @@ export const API_DOCUMENTATION = {
   },
   disruptions: {
     title: 'Disruptions data API',
-    schemaFile: 'disruptions-with-gtfs-service-alerts.yml',
+    schemaFile: 'disruptions.yml',
     schemaLabel: 'disruptions',
     overview: {
       title: 'Disruptions data API',
