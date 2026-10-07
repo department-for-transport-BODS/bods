@@ -14,7 +14,7 @@ export default function DataHomePage() {
     <>
       <div className="govuk-width-container">
         <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
-          <Breadcrumbs items={hostBreadcrumbs('data', { label: 'Find Bus Open Data', current: true })} />
+          <Breadcrumbs items={hostBreadcrumbs('data')} />
         </div>
       </div>
 
