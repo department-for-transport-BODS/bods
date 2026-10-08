@@ -17,8 +17,6 @@ from transit_odp.otc.loaderslta import LoaderLTA
 from transit_odp.otc.models import LocalAuthority as OTCLocalAuthority, UILta
 from transit_odp.otc.populate_lta import PopulateLTA
 from transit_odp.otc.registry import Registry
-from transit_odp.otc.weca.loaders import Loader as WecaLoader
-from transit_odp.otc.weca.registry import Registry as WecaRegistry
 
 from .utils import (
     check_missing_csv_lta_names,
@@ -53,11 +51,11 @@ def task_get_all_otc_data():
     task_populate_lta_data.delay()
 
 
-@shared_task()
-def task_refresh_weca_data():
-    registry = WecaRegistry()
-    loader = WecaLoader(registry)
-    loader.load()
+# @shared_task()
+# def task_refresh_weca_data():
+#     registry = WecaRegistry()
+#     loader = WecaLoader(registry)
+#     loader.load()
 
 
 @shared_task(ignore_errors=True)
