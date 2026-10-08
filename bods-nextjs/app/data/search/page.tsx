@@ -12,7 +12,7 @@ export default function DataSearchSelectPage() {
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Find Bus Open Data', href: HOSTS.data },
-            { label: 'Browse', current: true },
+            { label: 'Browse', href: dataPath('/search'), current: true },
           ]}
         />
       </div>
