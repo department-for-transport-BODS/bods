@@ -1188,3 +1188,7 @@ span.text-color-red {
   font-weight: 700;
   text-decoration: underline;
 }
+/* add the yellow box around the red error summary box which appears when the error is focused */
+.app-error-summary--highlighted{
+  outline: 3px solid #ffdd00;
+}

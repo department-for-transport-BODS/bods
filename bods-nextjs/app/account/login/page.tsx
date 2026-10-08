@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,6 +17,12 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{        // used to identify field validation errors - different from the above error for API authentication errors
+    email?: string;
+    password?: string;
+  }>({});
+  const [isSummaryHighlighted, setIsSummaryHighlighted] = useState(false);
+  const summaryRef = useRef<HTMLDivElement>(null);
   const { login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -44,9 +50,47 @@ export default function LoginPage() {
     };
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!isSummaryHighlighted) return;
+    summaryRef.current?.focus();
+    const handleDocumentClick = (event: MouseEvent) => {
+      const target = event.target;
+
+      if (target instanceof Node && !summaryRef.current?.contains(target)) {
+        setIsSummaryHighlighted(false);
+      }
+    };
+
+    document.addEventListener('click', handleDocumentClick);
+
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, [isSummaryHighlighted]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setIsSummaryHighlighted(true);
+    const emailInput =  e.currentTarget.elements.namedItem('email') as HTMLInputElement;
+    const nextFieldErrors: { email?: string; password?: string } = {};
+
+    if (!email.trim()) {
+      nextFieldErrors.email = 'Please provide an email';
+    }
+    else if (emailInput.validity.typeMismatch) {
+      nextFieldErrors.email = 'Enter an email address in the right format, like name@example.com';
+    }
+    if (!password) {
+      nextFieldErrors.password = 'Please provide a password';
+    }
+
+    setFieldErrors(nextFieldErrors);
+
+    if (Object.keys(nextFieldErrors).length > 0){
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -72,6 +116,42 @@ export default function LoginPage() {
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
+            <h1 className="govuk-heading-xl">Sign in</h1>
+
+            {(error || fieldErrors.email || fieldErrors.password) && (
+              <div
+                ref={summaryRef}
+                tabIndex={-1}
+                className={`govuk-error-summary ${
+                  isSummaryHighlighted ? 'app-error-summary--highlighted' : ''
+                }`}
+                aria-labelledby="error-summary-title"
+                role="alert"
+              >
+                <h2 className="govuk-error-summary__title" id="error-summary-title">
+                  There is a problem
+                </h2>
+                <div className="govuk-error-summary__body">
+                  <ul className="govuk-list govuk-error-summary__list">
+                    {fieldErrors.email && (
+                      <li>
+                        <a className="govuk-link" href="#email">
+                          {fieldErrors.email}
+                        </a>
+                      </li>
+                    )}
+                    {fieldErrors.password && (
+                      <li>
+                        <a className="govuk-link" href="#password">
+                          {fieldErrors.password}
+                        </a>
+                      </li>
+                    )}
+                    {error && <li>{error}</li>}
+                  </ul>
+                </div>
+              </div>
+            )}
             <h1 className="govuk-heading-xl">
               {verifiedEmail ? 'Email address confirmed' : 'Sign in'}
             </h1>
@@ -85,13 +165,13 @@ export default function LoginPage() {
 
             {error && <ErrorSummary errors={[error]} />}
 
-            <form onSubmit={handleSubmit}>
-              <div className={`govuk-form-group ${error ? 'govuk-form-group--error' : ''}`}>
+            <form onSubmit={handleSubmit} noValidate>
+              <div className={`govuk-form-group ${fieldErrors.email ? 'govuk-form-group--error' : ''}`}>
                 <label className="govuk-label" htmlFor="email">
                   Email<span className="govuk-visually-hidden"> (required)</span>*
                 </label>
                 <input
-                  className={`govuk-input ${error ? 'govuk-input--error' : ''}`}
+                  className={`govuk-input ${fieldErrors.email ? 'govuk-input--error' : ''}`}
                   id="email"
                   name="email"
                   type="email"
@@ -99,15 +179,22 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   autoComplete="email"
+                  aria-invalid={Boolean(fieldErrors.email)}
+                  aria-describedby={fieldErrors.email ? 'email-error' : undefined}
                 />
+                {fieldErrors.email && (
+                  <p className="govuk-error-message" id="email-error">
+                    {fieldErrors.email}
+                  </p>
+                )}
               </div>
 
-              <div className={`govuk-form-group ${error ? 'govuk-form-group--error' : ''}`}>
+              <div className={`govuk-form-group ${fieldErrors.password ? 'govuk-form-group--error' : ''}`}>
                 <label className="govuk-label" htmlFor="password">
                   Password<span className="govuk-visually-hidden"> (required)</span>*
                 </label>
                 <input
-                  className={`govuk-input ${error ? 'govuk-input--error' : ''}`}
+                  className={`govuk-input ${fieldErrors.password ? 'govuk-input--error' : ''}`}
                   id="password"
                   name="password"
                   type="password"
@@ -115,7 +202,14 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete="current-password"
+                  aria-invalid={Boolean(fieldErrors.password)}
+                  aria-describedby={fieldErrors.password ? 'password-error' : undefined}
                 />
+                {fieldErrors.password && (
+                  <p className="govuk-error-message" id="password-error">
+                    {fieldErrors.password}
+                  </p>
+                )}
               </div>
 
               <button
