@@ -1,1 +1,6 @@
 @import "govuk-frontend/dist/govuk/index";
+
+.govuk-link-bold {
+	@extend .govuk-link;
+	font-weight: 700;
+}
