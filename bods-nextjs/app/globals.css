@@ -194,23 +194,6 @@ body {
   outline-offset: 0;
 }
 
-/* Bold links */
-.govuk-link-bold {
-  font-weight: 700;
-  color: #1d70b8 /* govuk-colour - "blue" */
-}
-
-/* Bold links on hover */
-.govuk-link-bold:hover {
-  color: #003078; /* govuk-color - "dark blue" */
-  text-decoration-thickness: max(3px, .1875rem, .12em);
-}
-
-/* TODO */
-/* .govuk-link-bold:visited {
-  color: #4c2c92;
-} */
-
 /* Navigation list */
 .app-list--nav {
   margin-top: 0;
@@ -339,16 +322,15 @@ body {
 }
 
 .app-data-browser__status-dot {
-  width: 10px;
-  height: 10px;
+  width: 1.125rem;
+  height: 1.125rem;
   border-radius: 50%;
   display: inline-block;
-  margin-right: 6px;
-  vertical-align: middle;
+  margin: 0 0.4rem 0 0.2rem;
 }
 
 .app-data-browser__status-dot--live {
-  background-color: #00703c;
+  background-color: #006435;
 }
 
 .app-data-browser__status-dot--inactive {
@@ -360,7 +342,9 @@ body {
 }
 
 .app-data-browser__status-text {
-  font-size: 16px;
+  font-family: "GDS Transport", Arial, sans-serif;
+  font-size: inherit;
+  white-space: pre;
 }
 
 .app-data-browser__key-value-list {
