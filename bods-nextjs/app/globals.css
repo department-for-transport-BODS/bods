@@ -363,7 +363,8 @@ body {
 }
 
 .app-data-browser__item-key {
-  width: 170px;
+  width: 35%;
+  flex-shrink: 0;
   font-weight: 700;
 }
 
