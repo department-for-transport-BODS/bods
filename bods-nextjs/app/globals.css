@@ -314,6 +314,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-family: "GDS Transport", arial, sans-serif;
   font-size: 1.125rem;
 }
 
@@ -351,6 +352,9 @@ body {
   list-style: none;
   padding: 0;
   margin: 12px 0 8px;
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 25px;
 }
 
 .app-data-browser__key-value-item {
