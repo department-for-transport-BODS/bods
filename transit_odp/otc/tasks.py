@@ -51,13 +51,6 @@ def task_get_all_otc_data():
     task_populate_lta_data.delay()
 
 
-# @shared_task()
-# def task_refresh_weca_data():
-#     registry = WecaRegistry()
-#     loader = WecaLoader(registry)
-#     loader.load()
-
-
 @shared_task(ignore_errors=True)
 def task_populate_lta_data():
     populate_lta = PopulateLTA()
