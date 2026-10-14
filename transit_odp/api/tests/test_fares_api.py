@@ -1,9 +1,18 @@
+from types import SimpleNamespace
+from unittest.mock import Mock
+
 from django.contrib.gis.geos import Point, Polygon
+from django.test import SimpleTestCase
 from django_hosts.resolvers import reverse, reverse_host
 from rest_framework.test import APITestCase
 
 import config.hosts
 from transit_odp.api.serializers import FaresDatasetSerializer
+from transit_odp.api.views.browser import (
+    BrowseDatasetSerializer,
+    BrowseFaresListView,
+    BrowseFaresSerializer,
+)
 from transit_odp.fares.factories import FaresMetadataFactory
 from transit_odp.naptan.factories import StopPointFactory
 from transit_odp.organisation.constants import DatasetType
@@ -12,6 +21,34 @@ from transit_odp.organisation.models import Dataset
 from transit_odp.users.constants import AccountType
 from transit_odp.users.factories import UserFactory
 from transit_odp.users.utils import create_verified_org_user
+
+
+class FaresBrowserSerializerTests(SimpleTestCase):
+    def test_compliance_is_exposed_only_for_fares(self):
+        self.assertIs(BrowseFaresListView.serializer_class, BrowseFaresSerializer)
+        for compliance in (True, False):
+            with self.subTest(compliance=compliance):
+                dataset = SimpleNamespace(
+                    id=83504,
+                    live_revision=SimpleNamespace(
+                        name="Arriva UK Bus",
+                        description="Playwright test desc",
+                        status="live",
+                        modified=None,
+                        first_service_start=None,
+                        admin_areas=Mock(all=Mock(return_value=[])),
+                    ),
+                    organisation=SimpleNamespace(name="Arriva UK Bus"),
+                    avl_feed_last_checked=None,
+                    is_fares_compliant=compliance,
+                )
+
+                data = BrowseFaresSerializer(dataset).data
+
+                self.assertIs(data["bodsCompliance"], compliance)
+                self.assertNotIn(
+                    "bodsCompliance", BrowseDatasetSerializer(dataset).data
+                )
 
 
 class FaresAPITests(APITestCase):

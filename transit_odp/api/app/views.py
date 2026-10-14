@@ -128,6 +128,17 @@ class FareStopsViewSet(viewsets.ReadOnlyModelViewSet):
             return StopPoint.objects.none()
 
 
+class DisruptionsOrganisationsView(viewsets.ViewSet):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def list(self, request):
+        url = f"{settings.DISRUPTIONS_API_BASE_URL}/organisations"
+        headers = {"x-api-key": settings.DISRUPTIONS_API_KEY}
+        content, response_status = _get_disruptions_organisation_data(url, headers)
+
+        return Response(content, status=response_status)
+
+
 class DisruptionsInOrganisationView(viewsets.ViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 

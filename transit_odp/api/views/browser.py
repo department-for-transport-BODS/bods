@@ -40,6 +40,13 @@ class BrowseDatasetSerializer(serializers.ModelSerializer):
         ]
 
 
+class BrowseFaresSerializer(BrowseDatasetSerializer):
+    bodsCompliance = serializers.BooleanField(source="is_fares_compliant")
+
+    class Meta(BrowseDatasetSerializer.Meta):
+        fields = BrowseDatasetSerializer.Meta.fields + ("bodsCompliance",)
+
+
 class BrowsePagination(LimitOffsetPagination):
     default_limit = 500
     max_limit = 500
@@ -75,6 +82,7 @@ class BrowseAVLListView(BrowseDatasetListView):
 
 
 class BrowseFaresListView(BrowseDatasetListView):
+    serializer_class = BrowseFaresSerializer
     dataset_type = FaresType
 
     def get_queryset(self):

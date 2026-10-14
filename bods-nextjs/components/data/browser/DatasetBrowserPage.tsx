@@ -22,6 +22,7 @@ interface BrowserDatasetItem {
   first_service_start?: string | null;
   avl_feed_last_checked?: string | null;
   adminAreas?: Array<{ name: string }>;
+  bodsCompliance?: boolean | null;
 }
 
 interface DatasetBrowserPageProps {
@@ -36,6 +37,7 @@ interface DatasetBrowserPageProps {
   includeAreaFilter?: boolean;
   includeDateFilters?: boolean;
   includeStartDateInResult?: boolean;
+  includeComplianceInResult?: boolean;
 }
 
 interface ApiPaginated<T> {
@@ -82,6 +84,7 @@ function DatasetBrowserPageInner({
   includeAreaFilter = false,
   includeDateFilters = false,
   includeStartDateInResult = false,
+  includeComplianceInResult = false,
 }: DatasetBrowserPageProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -224,7 +227,7 @@ function DatasetBrowserPageInner({
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Find Bus Open Data', href: '/' },
-            { label: 'Browse', href: HOSTS.data },
+            { label: 'Browse', href: dataPath('/search') },
             { label: breadcrumbLabel, current: true },
           ]}
         />
@@ -321,6 +324,12 @@ function DatasetBrowserPageInner({
                     keyValues.push({ key: 'Timetable start date:', value: formatDate(dataset.firstStartDate || dataset.first_service_start) });
                   }
                   keyValues.push({ key: lastUpdatedLabel, value: formatDate(lastUpdatedValue) });
+                  if (includeComplianceInResult && typeof dataset.bodsCompliance === 'boolean') {
+                    keyValues.push({
+                      key: 'BODS compliant data:',
+                      value: dataset.bodsCompliance ? 'Compliant' : 'Non compliant',
+                    });
+                  }
                   return (
                     <div className="app-data-browser__result-item" key={dataset.id}>
                       {index > 0 && <hr className="app-data-browser__result-divider" />}
