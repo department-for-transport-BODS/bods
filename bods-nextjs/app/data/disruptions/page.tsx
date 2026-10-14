@@ -7,7 +7,7 @@ export default function DisruptionsPage() {
       breadcrumbLabel="Disruption Data"
       description="Search for a specific Local Transport Authority"
       placeholder="Enter Local Transport Authority name"
-      endpointPath="/api/v1/siri-sx/"
+      endpointPath="/api/app/disruption_organisations/"
     />
   );
 }

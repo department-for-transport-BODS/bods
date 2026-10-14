@@ -134,7 +134,14 @@ function AlertsBrowserPageInner({
           : Array.isArray(data)
             ? data
             : [];
-        setRawItems(list.map((item, index) => toAlertItem(item, index)));
+        setRawItems(
+          list
+            .filter((item) => {
+              const stats = asRecord(asRecord(item).stats);
+              return Boolean(stats.lastUpdated || stats.totalDisruptionsCount);
+            })
+            .map((item, index) => toAlertItem(item, index)),
+        );
       } catch {
         setError('Failed to load results');
       } finally {
