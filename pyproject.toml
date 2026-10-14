@@ -13,7 +13,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.10"
 
-argon2-cffi = "~=23.1.0"
+argon2-cffi = ">=23.1,<25.2"
 celery = "~=5.3.6"
 clamd = "~=1.0.2"
 ddtrace = "~=2.4.0"
