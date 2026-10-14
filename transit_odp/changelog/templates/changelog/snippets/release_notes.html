@@ -1,5 +1,51 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "October 2026 (1.65.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.65.0 (Oct 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Resolved an issue where the Integrated Data processing workflow could fail during execution, improving reliability and resilience of downstream data processing.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Reduced excessive logging within the Integrated Data service to improve performance, lower operational overheads and enhance monitoring effectiveness.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Added enhanced logging for invalid records received through the PDBRD CSV Upload API and PDBRD WECA API, providing better visibility of data quality issues and supporting troubleshooting.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Updated the PDBRD database schema to align registration number field lengths across services, improving consistency when processing registration data.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Removed legacy ABODS front-end code that is no longer required, reducing technical debt and simplifying future development.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Continued migration of the Create Data administrative interface by modernising supporting front-end components and dependencies.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Upgraded supporting software components across services to improve resilience, maintainability and application of security updates.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "September 2026 (1.64.0)" %}
 </h3>
 <h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.64.0 (Sep 2026)</h4>

@@ -20,17 +20,9 @@ from transit_odp.transmodel.models import BankHolidays
 
 logger = logging.getLogger(__name__)
 
-TXC_VERSION_TO_CATEGORY = {
-    "2.4": SchemaCategory.TXC,
-    "2.4.1": SchemaCategory.TXC_2_4_1,
-}
 
-
-def get_transxchange_schema(version: str = "2.4"):
-    category = TXC_VERSION_TO_CATEGORY.get(version)
-    if category is None:
-        raise ValueError(f"Unsupported TransXChange schema version: {version!r}")
-    definition = SchemaDefinition.objects.get(category=category)
+def get_transxchange_schema():
+    definition = SchemaDefinition.objects.get(category=SchemaCategory.TXC)
     schema_loader = SchemaLoader(definition, TXC_XSD_PATH)
     return schema_loader.schema
 
