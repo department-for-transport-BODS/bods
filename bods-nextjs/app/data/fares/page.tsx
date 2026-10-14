@@ -1,4 +1,5 @@
 import { DatasetBrowserPage } from '@/components/data/browser';
+import { featureFlags } from '@/config/feature-flags';
 
 export default function FaresPage() {
   return (
@@ -12,6 +13,7 @@ export default function FaresPage() {
       idLabel="Data set ID:"
       lastUpdatedLabel="Last updated:"
       includeAreaFilter
+      includeComplianceInResult={featureFlags.isFaresValidatorActive}
     />
   );
 }
