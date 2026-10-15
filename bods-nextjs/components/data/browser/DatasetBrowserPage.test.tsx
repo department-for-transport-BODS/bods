@@ -57,7 +57,7 @@ describe('dataset browser compliance', () => {
     );
 
     await screen.findByText('83504');
-    expect(screen.getByRole('link', { name: 'Browse', exact: true })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Browse' })).toHaveAttribute(
       'href', dataPath('/search'),
     );
   });
