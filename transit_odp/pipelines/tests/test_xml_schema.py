@@ -75,5 +75,5 @@ def test_schema_loader_can_unzip(tmp_path):
     )
     loader = SchemaLoader(schema, TXC_XSD_PATH)
     loader._schema_dir = tmp_path
-    assert loader.path == tmp_path / "TxC" / Path(TXC_XSD_PATH)
+    assert loader.path == tmp_path / schema.category / Path(TXC_XSD_PATH)
     assert loader.path.exists()

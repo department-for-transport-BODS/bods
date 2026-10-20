@@ -5,6 +5,7 @@ from transit_odp.common.enums import FeedErrorCategory, FeedErrorSeverity
 from transit_odp.common.utils import sha1sum
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.factories import DatasetRevisionFactory
+from transit_odp.pipelines.constants import SchemaCategory
 from transit_odp.pipelines.models import (
     BulkDataArchive,
     ChangeDataArchive,
@@ -83,7 +84,7 @@ class SchemaDefinitionFactory(DjangoModelFactory):
     class Meta:
         model = SchemaDefinition
 
-    category = "TxC"
+    category = SchemaCategory.TXC
     schema = factory.django.FileField(
         filename="TransXChange_schema_2.4.zip", data=b"old data"
     )
