@@ -19,7 +19,6 @@ from enum import Enum, IntEnum
 from typing import Callable, Dict, Mapping, Optional, Tuple, TypeVar
 
 from django.db import IntegrityError, OperationalError, transaction
-from psycopg2 import sql
 
 INT_MAX = 2_147_483_647
 PG_NAME_MAX = 63
@@ -322,9 +321,8 @@ class _Run:
             "check": names.check,
             "index": names.shadow_index,
         }
-        query = sql.SQL(template).format(
-            **{key: sql.Identifier(value) for key, value in identifiers.items()},
-            **parts,
+        query = template.format(
+            **{key: _q(value) for key, value in identifiers.items()}, **parts
         )
         with self.connection.cursor() as c:
             c.execute(query, params)
@@ -435,8 +433,8 @@ def _check_preconditions(spec: PkSpec, cat: Catalog) -> None:
 
 def _describe(cursor, spec: PkSpec, cat: Catalog, phase: Phase) -> str:
     cursor.execute(
-        sql.SQL("SELECT min({col}), max({col}) FROM {table}").format(
-            table=sql.Identifier(spec.table), col=sql.Identifier(spec.column)
+        "SELECT min({col}), max({col}) FROM {table}".format(
+            table=_q(spec.table), col=_q(spec.column)
         )
     )
     min_id, max_id = cursor.fetchone()
@@ -448,7 +446,7 @@ def _describe(cursor, spec: PkSpec, cat: Catalog, phase: Phase) -> str:
     est_rows, size = cursor.fetchone()
     next_id = None
     if cat.sequence:
-        cursor.execute(sql.SQL(SEQUENCE_NEXT).format(seq=sql.SQL(cat.sequence)))
+        cursor.execute(SEQUENCE_NEXT.format(seq=cat.sequence))
         (next_id,) = cursor.fetchone()
     utilisation = f"{100 * (next_id - 1) / INT_MAX:.2f}%" if next_id else "-"
     return (
@@ -464,7 +462,7 @@ def _check_converted(run: _Run) -> int:
     ((max_id,),) = run.execute("SELECT max({col}) FROM {table}")
     next_id = None
     if cat.sequence:
-        ((next_id,),) = run.execute(SEQUENCE_NEXT, seq=sql.SQL(cat.sequence))
+        ((next_id,),) = run.execute(SEQUENCE_NEXT, seq=cat.sequence)
     if cat.sequence_type != "bigint" or next_id is None or next_id <= (max_id or 0):
         raise InconsistentState(
             f"converted column has sequence {cat.sequence}({cat.sequence_type}) "
@@ -672,22 +670,20 @@ def _swap(run: _Run) -> None:
             raise InconsistentState(
                 f"swap expected SHADOW_INDEXED, got {cat.phase()!r}"
             )
-        ((sequence_next,),) = run.execute(SEQUENCE_NEXT, seq=sql.SQL(cat.sequence))
+        ((sequence_next,),) = run.execute(SEQUENCE_NEXT, seq=cat.sequence)
         ((max_id,),) = run.execute("SELECT max({shadow}) FROM {table}")
         kind = cat.kind()
         swap_column = (
             SWAP_SERIAL_COLUMN if kind is IdKind.SERIAL else SWAP_IDENTITY_COLUMN
         )
-        pk = sql.Identifier(cat.pk_constraint)
+        pk = _q(cat.pk_constraint)
         run.execute(DROP_MIRROR, pk=pk)
         run.execute(
             swap_column,
-            seq=sql.SQL(cat.sequence),
-            seq_name=sql.Literal(cat.sequence),
-            next_id=sql.Literal(max(sequence_next, (max_id or 0) + 1)),
-            generated=sql.SQL(
-                "ALWAYS" if kind is IdKind.IDENTITY_ALWAYS else "BY DEFAULT"
-            ),
+            seq=cat.sequence,
+            seq_name=_literal(cat.sequence),
+            next_id=int(max(sequence_next, (max_id or 0) + 1)),
+            generated="ALWAYS" if kind is IdKind.IDENTITY_ALWAYS else "BY DEFAULT",
         )
         run.execute(ATTACH_PK, pk=pk)
 
@@ -705,3 +701,7 @@ STEPS: Tuple[Step, ...] = (
 def _q(name: str) -> str:
     """Quote an identifier as text, for catalog functions that take a name."""
     return '"' + name.replace('"', '""') + '"'
+
+
+def _literal(value: str) -> str:
+    return "'" + value.replace("'", "''") + "'"
