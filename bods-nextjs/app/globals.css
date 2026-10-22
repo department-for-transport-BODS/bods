@@ -397,6 +397,7 @@ body {
   align-items: center;
   background-color: #ffffff;
   font-size: 16px;
+  font-family: GDS Transport, arial, sans-serif;
 }
 
 .app-data-browser__pill-remove {
