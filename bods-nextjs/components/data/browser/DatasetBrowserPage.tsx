@@ -64,6 +64,11 @@ function formatCompactDateTime(dateValue?: string | null): string {
   return `${yyyy}${mm}${dd} ${hh}:${mi}:${ss}`;
 }
 
+function normaliseStatus(status: string | null): string {
+  if (!status || status === 'live') return 'published';
+  return status;
+} 
+
 export function DatasetBrowserPage(props: DatasetBrowserPageProps) {
   return (
     <Suspense fallback={null}>
@@ -100,7 +105,7 @@ function DatasetBrowserPageInner({
       q: searchParams.get('q') || '',
       area: searchParams.get('area') || '',
       organisation: searchParams.get('organisation') || '',
-      status: searchParams.get('status') || 'published',
+      status: normaliseStatus(searchParams.get('status')),
       start: searchParams.get('start') || '',
       publishedAt: searchParams.get('published_at') || '',
       ordering: searchParams.get('ordering') || '-modified',
