@@ -392,7 +392,7 @@ body {
 .app-data-browser__filter-pill {
   border: 1px solid #505a5f;
   border-radius: 4px;
-  padding: 6px 10px;
+  padding: 5px 10px;
   display: inline-flex;
   align-items: center;
   background-color: #ffffff;
@@ -407,6 +407,9 @@ body {
   margin-right: 4px;
   font-size: 16px;
   line-height: 1;
+  padding: 5px;
+  overflow-clip-margin: content-box;
+  overflow: clip;
 }
 
 .app-data-browser__sort-control {
