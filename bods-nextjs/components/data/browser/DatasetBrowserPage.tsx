@@ -9,6 +9,7 @@ import { dataApiPath } from '@/lib/api-paths';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
+import Image from 'next/image'
 
 interface BrowserDatasetItem {
   id: number;
@@ -64,6 +65,11 @@ function formatCompactDateTime(dateValue?: string | null): string {
   return `${yyyy}${mm}${dd} ${hh}:${mi}:${ss}`;
 }
 
+function normaliseStatus(status: string | null): string {
+  if (!status || status === 'live') return 'published';
+  return status;
+} 
+
 export function DatasetBrowserPage(props: DatasetBrowserPageProps) {
   return (
     <Suspense fallback={null}>
@@ -100,7 +106,7 @@ function DatasetBrowserPageInner({
       q: searchParams.get('q') || '',
       area: searchParams.get('area') || '',
       organisation: searchParams.get('organisation') || '',
-      status: searchParams.get('status') || 'published',
+      status: normaliseStatus(searchParams.get('status')),
       start: searchParams.get('start') || '',
       publishedAt: searchParams.get('published_at') || '',
       ordering: searchParams.get('ordering') || '-modified',
@@ -293,7 +299,7 @@ function DatasetBrowserPageInner({
               {status && (
                 <div className="app-data-browser__filter-pillbox">
                   <span className="app-data-browser__filter-pill">
-                    <button type="button" className="app-data-browser__pill-remove" onClick={() => updateQuery({ status: '' })}>×</button>
+                    <button type="button" className="app-data-browser__pill-remove" onClick={() => updateQuery({ status: '' })}><Image src="/assets/images/icon-cross.png" alt="" width={18} height={19}/></button>
                     {status === 'published' ? 'Published' : 'Inactive'}
                   </span>
                 </div>
