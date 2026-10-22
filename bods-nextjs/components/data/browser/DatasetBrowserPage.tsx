@@ -9,6 +9,7 @@ import { dataApiPath } from '@/lib/api-paths';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
+import Image from 'next/image'
 
 interface BrowserDatasetItem {
   id: number;
@@ -298,7 +299,7 @@ function DatasetBrowserPageInner({
               {status && (
                 <div className="app-data-browser__filter-pillbox">
                   <span className="app-data-browser__filter-pill">
-                    <button type="button" className="app-data-browser__pill-remove" onClick={() => updateQuery({ status: '' })}>×</button>
+                    <button type="button" className="app-data-browser__pill-remove" onClick={() => updateQuery({ status: '' })}><Image src="/assets/images/icon-cross.png" alt="" width={18} height={19}/></button>
                     {status === 'published' ? 'Published' : 'Inactive'}
                   </span>
                 </div>
