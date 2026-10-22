@@ -57,6 +57,7 @@ class OperationalStats(models.Model):
 
 
 class APIRequest(TimeStampedModel):
+    id = models.BigAutoField(primary_key=True)
     requestor = models.ForeignKey(User, on_delete=models.CASCADE)
     path_info = models.CharField(max_length=CHAR_LEN)
     query_string = models.CharField(max_length=CHAR_LEN)
