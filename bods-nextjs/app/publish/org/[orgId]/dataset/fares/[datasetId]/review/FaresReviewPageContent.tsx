@@ -7,11 +7,13 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import type { Map as MapboxMap } from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import type { StopPoint } from '@/components/data/StopMap';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
+import { dataApiPath } from '@/lib/api-paths';
 import { publishAppPath } from '@/config/client';
 import { formatDateTime } from '@/lib/utils/date';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
@@ -43,6 +45,10 @@ type ReviewStatusResponse = {
   error?: string | null;
   errorDescription?: string | null;
   schemaValidationReportUrl?: string | null;
+  isFaresValidatorActive?: boolean;
+  validatorError?: boolean;
+  schemaError?: boolean;
+  validationReportUrl?: string | null;
   hasLiveRevision?: boolean;
 };
 
@@ -100,6 +106,91 @@ type FaresStopMapPreviewProps = {
   mapboxToken: string;
 };
 
+type ValidationCheckPanelProps = {
+  validatorError: boolean;
+  schemaError: boolean;
+  schemaValidationReportUrl?: string | null;
+  validationReportUrl?: string | null;
+  guidanceUrl: string;
+};
+
+const NON_COMPLIANT_PUBLISH_TEXT =
+  'The fares data supplied is non-compliant. You can publish this dataset now, however it is ' +
+  'important to address the issues highlighted in the report with your supplier. Please contact ' +
+  'the helpdesk if there are any items on the report which your supplier cannot help you with.';
+
+function ValidationCheckPanelContent({
+  validatorError,
+  schemaError,
+  schemaValidationReportUrl,
+  validationReportUrl,
+  guidanceUrl,
+}: Readonly<ValidationCheckPanelProps>) {
+  const hasIssues = validatorError || schemaError;
+  const heading = validatorError
+    ? `${schemaError ? 'Validation check' : 'Validation Check'} - Failed`
+    : `Validation Check - ${schemaError ? 'Passed with issues' : 'Passed'}`;
+
+  return (
+    <>
+      <h2 className={`govuk-heading-m${hasIssues ? '' : ' govuk-!-margin-bottom-0'}`}>
+        {heading}
+      </h2>
+      {schemaError ? (
+        <>
+          <ValidationReportIntro schema reportUrl={schemaValidationReportUrl} />
+          <p className={`govuk-body${validatorError ? '' : ' govuk-!-margin-bottom-0'}`}>
+            Some of the files in the data supplied is non-compliant and cannot be submitted to BODS as per the{' '}
+            <a className="govuk-link" href={guidanceUrl}>
+              guidance.
+            </a>{' '}
+            To pass the validation please address all outstanding issues in the validation report.
+          </p>
+        </>
+      ) : null}
+      {validatorError ? (
+        <>
+          <ValidationReportIntro reportUrl={validationReportUrl} />
+          <p className="govuk-body govuk-!-margin-bottom-0">{NON_COMPLIANT_PUBLISH_TEXT}</p>
+        </>
+      ) : null}
+    </>
+  );
+}
+
+function ValidationReportIntro({
+  schema = false,
+  reportUrl,
+}: Readonly<{ schema?: boolean; reportUrl?: string | null }>) {
+  return (
+    <p className="govuk-body">
+      The validation report checks for compliance against the {schema ? 'NeTEx schema' : 'mandated NeTEx Profile'}.
+      <br />
+      <br />
+      {reportUrl ? (
+        <a className="govuk-link" href={reportUrl}>
+          Download {schema ? 'schema validation' : 'validation'} report
+        </a>
+      ) : null}
+      <br />
+    </p>
+  );
+}
+
+function ValidationCheckPanel(props: Readonly<ValidationCheckPanelProps>) {
+  return (
+    <div className="govuk-!-margin-top-6" id="preview-section">
+      <div className="app-dqs-panel govuk-!-margin-bottom-7">
+        <div className="app-dqs-panel__body">
+          <div className="app-dqs-panel__success">
+            <ValidationCheckPanelContent {...props} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type ValidationFailurePanelProps = {
   errorCode?: string | null;
   errorDescription?: string | null;
@@ -108,6 +199,32 @@ type ValidationFailurePanelProps = {
   guidanceUrl: string;
   updateUrl: string;
 };
+
+function ErrorDescription({
+  errorCode,
+  errorDescription,
+  contactSupportUrl,
+}: Readonly<{ errorCode?: string | null; errorDescription?: string | null; contactSupportUrl: string }>) {
+  // Without a stored pipeline message, Django falls back to an HTML template with an
+  // unfilled {support_url} placeholder, so render that message with a working link instead.
+  const isSuspiciousFileFallback =
+    errorCode === 'SUSPICIOUS_FILE' && (!errorDescription || errorDescription.includes('{support_url}'));
+
+  if (isSuspiciousFileFallback) {
+    return (
+      <>
+        Our antivirus scan detected an issue with your dataset. If you believe this to be wrong,
+        please{' '}
+        <Link className="govuk-link" href={contactSupportUrl}>
+          contact support
+        </Link>
+        .
+      </>
+    );
+  }
+
+  return <span dangerouslySetInnerHTML={{ __html: errorDescription ?? '' }} />;
+}
 
 function ValidationFailurePanel({
   errorCode,
@@ -118,7 +235,6 @@ function ValidationFailurePanel({
   updateUrl,
 }: Readonly<ValidationFailurePanelProps>) {
   const isSchemaError = errorCode === 'SCHEMA_ERROR';
-  const descriptionParts = errorDescription?.split(/<\/?br\s*\/?>/i) ?? [];
 
   return (
     <>
@@ -127,17 +243,7 @@ function ValidationFailurePanel({
           <div className="app-dqs-panel__body">
             <div className="app-dqs-panel__success">
               <h2 className="govuk-heading-m">3a Validation Check - Failed</h2>
-              <p className="govuk-body">
-                The validation report checks for compliance against the NeTEx schema.
-                <br />
-                <br />
-                {schemaValidationReportUrl ? (
-                  <a className="govuk-link" href={schemaValidationReportUrl}>
-                    Download schema validation report
-                  </a>
-                ) : null}
-                <br />
-              </p>
+              <ValidationReportIntro schema reportUrl={schemaValidationReportUrl} />
               <p className="govuk-body govuk-!-margin-bottom-0">
                 The fares data supplied is non-compliant and cannot be submitted to BODS as per the{' '}
                 <a className="govuk-link" href={guidanceUrl}>
@@ -165,23 +271,11 @@ function ValidationFailurePanel({
           <div className="govuk-error-summary__body">
             <ul className="govuk-list govuk-error-summary__list">
               <li className="app-error-summary__item dont-break-out no-underline-l">
-                {errorCode === 'SUSPICIOUS_FILE' ? (
-                  <>
-                    Our antivirus scan detected an issue with your dataset. If you believe this to be
-                    wrong, please{' '}
-                    <Link className="govuk-link" href={contactSupportUrl}>
-                      contact support
-                    </Link>
-                    .
-                  </>
-                ) : (
-                  descriptionParts.map((part, index) => (
-                    <span key={`${index}-${part}`}>
-                      {index > 0 ? <br /> : null}
-                      {part}
-                    </span>
-                  ))
-                )}
+                <ErrorDescription
+                  errorCode={errorCode}
+                  errorDescription={errorDescription}
+                  contactSupportUrl={contactSupportUrl}
+                />
               </li>
             </ul>
           </div>
@@ -243,7 +337,7 @@ function FaresStopMapPreview({ revisionId, mapboxToken }: Readonly<FaresStopMapP
       setHasLoadedStops(false);
       try {
         const payload = await api.get<FareStopsApiResponse>(
-          `/api/publish/app/fare_stops/?revision=${revisionId}`,
+          `${dataApiPath('/api/app/fare_stops/')}?revision=${revisionId}`,
         );
         if (!isCancelled) {
           setFareStops(parseFareStops(payload));
@@ -337,6 +431,25 @@ function FaresStopMapPreview({ revisionId, mapboxToken }: Readonly<FaresStopMapP
         }
       });
 
+      const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+      });
+
+      map.on('mouseenter', 'stop-points', (event) => {
+        map.getCanvas().style.cursor = 'pointer';
+        const properties = event.features?.[0]?.properties;
+        popup
+          .setLngLat(event.lngLat)
+          .setText(`Atco: ${properties?.atco_code}, Name: ${properties?.common_name}`)
+          .addTo(map);
+      });
+
+      map.on('mouseleave', 'stop-points', () => {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+      });
+
       mapRef.current = map;
     };
 
@@ -388,8 +501,9 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
   const faresListUrl = `/publish/org/${orgId}/dataset/fares`;
   const modifyDraftUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/update?modifyDraft=true`;
   const supportBusOperatorsUrl = '/publish/guide-me';
-  const dataQualityGuidanceUrl = `${supportBusOperatorsUrl}?section=dataquality`;
+  const dataQualityGuidanceUrl = publishAppPath('/guidance/operator-requirements?section=dataquality');
   const contactSupportUrl = '/account';
+  const errorContactSupportUrl = '/contact';
 
   const {
     statusData,
@@ -500,7 +614,14 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
             <h1 className="govuk-heading-xl app-!-mb-0 dont-break-out govuk-!-padding-top-3 govuk-!-padding-bottom-3">
               Review and publish
             </h1>
+          </div>
+        </div>
+        {!isInitialLoading && !loading ? (
+          <hr className="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+        ) : null}
 
+        <div className="govuk-grid-row">
+          <div className="govuk-grid-column-two-thirds">
             {isInitialLoading || loading ? (
               <div className="govuk-panel govuk-panel--confirmation bods-bg-blue-light">
                 <h2 className="govuk-panel__title govuk-!-font-size-36">Your data is being processed</h2>
@@ -531,9 +652,19 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
                     errorCode={statusData?.error}
                     errorDescription={statusData?.errorDescription}
                     schemaValidationReportUrl={statusData?.schemaValidationReportUrl}
-                    contactSupportUrl={contactSupportUrl}
+                    contactSupportUrl={errorContactSupportUrl}
                     guidanceUrl={dataQualityGuidanceUrl}
                     updateUrl={modifyDraftUrl}
+                  />
+                ) : null}
+
+                {canPublish && statusData?.isFaresValidatorActive ? (
+                  <ValidationCheckPanel
+                    validatorError={statusData.validatorError ?? false}
+                    schemaError={statusData.schemaError ?? false}
+                    schemaValidationReportUrl={statusData.schemaValidationReportUrl}
+                    validationReportUrl={statusData.validationReportUrl}
+                    guidanceUrl={dataQualityGuidanceUrl}
                   />
                 ) : null}
 
