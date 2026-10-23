@@ -238,7 +238,17 @@ function ValidationFailurePanel({
           <div className="app-dqs-panel__body">
             <div className="app-dqs-panel__success">
               <h2 className="govuk-heading-m">3a Validation Check - Failed</h2>
-              <ValidationReportIntro schema reportUrl={schemaValidationReportUrl} />
+              <p className="govuk-body">
+                The validation report checks for compliance against the NeTEx schema.
+                <br />
+                <br />
+                {schemaValidationReportUrl ? (
+                  <a className="govuk-link" href={schemaValidationReportUrl}>
+                    Download schema validation report
+                  </a>
+                ) : null}
+                <br />
+              </p>
               <p className="govuk-body govuk-!-margin-bottom-0">
                 The fares data supplied is non-compliant and cannot be submitted to BODS as per the{' '}
                 <a className="govuk-link" href={guidanceUrl}>
@@ -496,9 +506,8 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
   const faresListUrl = `/publish/org/${orgId}/dataset/fares`;
   const modifyDraftUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/update?modifyDraft=true`;
   const supportBusOperatorsUrl = '/publish/guide-me';
-  const dataQualityGuidanceUrl = publishAppPath('/guidance/operator-requirements?section=dataquality');
+  const dataQualityGuidanceUrl = `${supportBusOperatorsUrl}?section=dataquality`;
   const contactSupportUrl = '/account';
-  const errorContactSupportUrl = '/contact';
 
   const {
     statusData,
@@ -647,7 +656,7 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
                     errorCode={statusData?.error}
                     errorDescription={statusData?.errorDescription}
                     schemaValidationReportUrl={statusData?.schemaValidationReportUrl}
-                    contactSupportUrl={errorContactSupportUrl}
+                    contactSupportUrl={contactSupportUrl}
                     guidanceUrl={dataQualityGuidanceUrl}
                     updateUrl={modifyDraftUrl}
                   />

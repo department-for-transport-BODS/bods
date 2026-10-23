@@ -202,7 +202,7 @@ describe('FaresReviewPage', () => {
     );
     expect(screen.getByRole('link', { name: 'guidance.' })).toHaveAttribute(
       'href',
-      expect.stringContaining('/guidance/operator-requirements?section=dataquality'),
+      '/publish/guide-me?section=dataquality',
     );
     expect(screen.queryByText('Supplied data set has failed to upload')).not.toBeInTheDocument();
   });
@@ -216,7 +216,7 @@ describe('FaresReviewPage', () => {
     });
 
     expect(screen.getByText(/Our antivirus scan detected an issue with your dataset/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'contact support' })).toHaveAttribute('href', '/contact');
+    expect(screen.getByRole('link', { name: 'contact support' })).toHaveAttribute('href', '/account');
   });
 
   it('links the suspicious file fallback message to the contact page', () => {
@@ -228,7 +228,7 @@ describe('FaresReviewPage', () => {
         'Our antivirus scan detected an issue with your dataset. If you believe this to be wrong, please contact support.',
     });
 
-    expect(screen.getByRole('link', { name: 'contact support' })).toHaveAttribute('href', '/contact');
+    expect(screen.getByRole('link', { name: 'contact support' })).toHaveAttribute('href', '/account');
     expect(screen.queryByText(/\{support_url\}/)).not.toBeInTheDocument();
   });
 });
