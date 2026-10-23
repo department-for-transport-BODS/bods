@@ -1,14 +1,17 @@
 import logging
+import re
 
 from django.contrib.auth import get_user
 from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
+from django.utils.html import strip_tags
 from django.views.decorators.http import require_GET, require_POST
 from django_hosts import reverse
 from waffle import flag_is_active
 
 import config.hosts
+from transit_odp.data_quality.models.report import SchemaViolation
 from transit_odp.fares.constants import ERROR_CODE_MAP
 from transit_odp.fares.forms import (
     FaresFeedCommentForm,
@@ -16,6 +19,7 @@ from transit_odp.fares.forms import (
     FaresFeedUploadForm,
 )
 from transit_odp.fares.tasks import task_run_fares_pipeline
+from transit_odp.fares_validator.models import FaresValidation
 from transit_odp.organisation.constants import DatasetType
 from transit_odp.organisation.constants import FeedStatus
 from transit_odp.organisation.models import Dataset, DatasetRevision, Organisation
@@ -113,11 +117,12 @@ def _get_error_description(revision: DatasetRevision, error_code):
             latest_task.additional_info,
             error_code=latest_task.error_code,
         )
-        return renderer.get_message()
+        message = renderer.get_message()
+        return re.sub(r"</?br\s*/?>", "\n", message, flags=re.IGNORECASE)
 
     mapped_error = ERROR_CODE_MAP.get(error_code)
     if mapped_error:
-        return mapped_error.get("description")
+        return strip_tags(mapped_error.get("description"))
 
     return None
 
@@ -308,8 +313,27 @@ def get_fares_review_status_api(request, pk1, pk):
 
     progress, error_code = _get_revision_progress(revision)
     error_description = _get_error_description(revision, error_code)
+
+    is_fares_validator_active = False
+    validator_error = False
+    schema_error = False
+    validation_report_url = None
+    if not is_live_detail:
+        is_fares_validator_active = flag_is_active(request, "is_fares_validator_active")
+        validator_error = FaresValidation.objects.filter(
+            revision_id=revision.id, organisation_id=pk1
+        ).exists()
+        schema_error = SchemaViolation.objects.filter(revision_id=revision.id).exists()
+        validation_report_url = reverse(
+            "transit_odp.fares_exporter",
+            kwargs={"pk1": pk1, "pk2": revision.id},
+            host=config.hosts.PUBLISH_HOST,
+        )
+
     schema_validation_report_url = None
-    if not is_live_detail and error_code == DatasetETLTaskResult.SCHEMA_ERROR:
+    if not is_live_detail and (
+        schema_error or error_code == DatasetETLTaskResult.SCHEMA_ERROR
+    ):
         schema_validation_report_url = reverse(
             "fares:review-fares-csv",
             kwargs={"pk1": pk1, "pk": pk},
@@ -386,6 +410,10 @@ def get_fares_review_status_api(request, pk1, pk):
             "error": error_code,
             "errorDescription": error_description,
             "schemaValidationReportUrl": schema_validation_report_url,
+            "isFaresValidatorActive": is_fares_validator_active,
+            "validatorError": validator_error,
+            "schemaError": schema_error,
+            "validationReportUrl": validation_report_url,
             "hasLiveRevision": has_live_revision,
         },
         status=200,
