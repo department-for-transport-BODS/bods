@@ -1,9 +1,11 @@
 import logging
+import re
 
 from django.contrib.auth import get_user
 from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
+from django.utils.html import strip_tags
 from django.views.decorators.http import require_GET, require_POST
 from django_hosts import reverse
 from waffle import flag_is_active
@@ -115,11 +117,12 @@ def _get_error_description(revision: DatasetRevision, error_code):
             latest_task.additional_info,
             error_code=latest_task.error_code,
         )
-        return renderer.get_message()
+        message = renderer.get_message()
+        return re.sub(r"</?br\s*/?>", "\n", message, flags=re.IGNORECASE)
 
     mapped_error = ERROR_CODE_MAP.get(error_code)
     if mapped_error:
-        return mapped_error.get("description")
+        return strip_tags(mapped_error.get("description"))
 
     return None
 

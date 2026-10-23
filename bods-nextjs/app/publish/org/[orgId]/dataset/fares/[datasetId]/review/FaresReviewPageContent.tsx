@@ -205,12 +205,7 @@ function ErrorDescription({
   errorDescription,
   contactSupportUrl,
 }: Readonly<{ errorCode?: string | null; errorDescription?: string | null; contactSupportUrl: string }>) {
-  // Without a stored pipeline message, Django falls back to an HTML template with an
-  // unfilled {support_url} placeholder, so render that message with a working link instead.
-  const isSuspiciousFileFallback =
-    errorCode === 'SUSPICIOUS_FILE' && (!errorDescription || errorDescription.includes('{support_url}'));
-
-  if (isSuspiciousFileFallback) {
+  if (errorCode === 'SUSPICIOUS_FILE') {
     return (
       <>
         Our antivirus scan detected an issue with your dataset. If you believe this to be wrong,
@@ -223,7 +218,7 @@ function ErrorDescription({
     );
   }
 
-  return <span dangerouslySetInnerHTML={{ __html: errorDescription ?? '' }} />;
+  return <span style={{ whiteSpace: 'pre-line' }}>{errorDescription}</span>;
 }
 
 function ValidationFailurePanel({

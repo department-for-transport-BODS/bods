@@ -163,13 +163,14 @@ describe('FaresReviewPage', () => {
       ...baseStatus,
       status: 'error',
       error: 'XML_SYNTAX_ERROR',
-      errorDescription: "The dataset contains an XML file which couldn't be parsed <strong>Invalid elements</strong>",
+      errorDescription: "The dataset contains an XML file which couldn't be parsed\n - Invalid elements",
     });
 
     const errorSummary = screen.getByRole('alert');
     expect(within(errorSummary).getByText('Supplied data set has failed to upload')).toBeInTheDocument();
     expect(within(errorSummary).getByText(/couldn't be parsed/)).toBeInTheDocument();
-    expect(within(errorSummary).getByText('Invalid elements').tagName).toBe('STRONG');
+    expect(within(errorSummary).getByText(/couldn't be parsed/)).toHaveStyle({ whiteSpace: 'pre-line' });
+    expect(errorSummary.textContent).toContain('\n - Invalid elements');
 
     const datasetName = screen.getByRole('heading', { level: 2, name: 'Fares data set' });
     expect(errorSummary.compareDocumentPosition(datasetName) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
@@ -206,7 +207,7 @@ describe('FaresReviewPage', () => {
     expect(screen.queryByText('Supplied data set has failed to upload')).not.toBeInTheDocument();
   });
 
-  it('shows the stored antivirus message for suspicious files', () => {
+  it('shows the standard antivirus message even when a pipeline message is stored', () => {
     renderPage({
       ...baseStatus,
       status: 'error',
@@ -214,8 +215,8 @@ describe('FaresReviewPage', () => {
       errorDescription: 'Anti-Virus Alert Triggered For File Fares.Xml.',
     });
 
-    expect(screen.getByText('Anti-Virus Alert Triggered For File Fares.Xml.')).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'contact support' })).not.toBeInTheDocument();
+    expect(screen.getByText(/Our antivirus scan detected an issue with your dataset/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'contact support' })).toHaveAttribute('href', '/contact');
   });
 
   it('links the suspicious file fallback message to the contact page', () => {
@@ -224,7 +225,7 @@ describe('FaresReviewPage', () => {
       status: 'error',
       error: 'SUSPICIOUS_FILE',
       errorDescription:
-        'Our antivirus scan detected an issue with your dataset. If you believe this to be wrong, please <a class="govuk-link" href="{support_url}">contact support</a>.',
+        'Our antivirus scan detected an issue with your dataset. If you believe this to be wrong, please contact support.',
     });
 
     expect(screen.getByRole('link', { name: 'contact support' })).toHaveAttribute('href', '/contact');
