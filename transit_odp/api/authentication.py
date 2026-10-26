@@ -13,7 +13,7 @@ class TokenAuthSupportQueryString(TokenAuthentication):
         API_KEY_PARAM = "api_key"
         if (
             API_KEY_PARAM in request.query_params
-            and "HTTP_AUTHORIZATION" not in request.META
+            and "authorization" not in request.headers
         ):
             return self.authenticate_credentials(
                 request.query_params.get(API_KEY_PARAM)
