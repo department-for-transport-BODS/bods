@@ -72,7 +72,7 @@ legacy-cgi = "^2.6"
 
 
 [tool.poetry.group.dev.dependencies]
-black = { version = "22.3.0", extras = ["colorama"] }
+black = { version = "24.4.2", extras = ["colorama"] }
 coverage = "~=7.10"
 ddt = "~=1.7.1"
 django-debug-toolbar = "~=4.2.0"
