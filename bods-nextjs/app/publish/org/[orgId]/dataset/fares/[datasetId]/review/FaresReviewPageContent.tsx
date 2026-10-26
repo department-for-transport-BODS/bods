@@ -755,13 +755,9 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
                         URL link
                       </th>
                       <td className="govuk-table__cell">
-                        {statusData?.urlLink ? (
-                          <a className="govuk-link" href={statusData.urlLink}>
-                            Publisher URL
-                          </a>
-                        ) : (
-                          '-'
-                        )}
+                        <a className="govuk-link" href={statusData?.urlLink ?? ''}>
+                          Publisher URL
+                        </a>
                       </td>
                     </tr>
                     <tr className="govuk-table__row">

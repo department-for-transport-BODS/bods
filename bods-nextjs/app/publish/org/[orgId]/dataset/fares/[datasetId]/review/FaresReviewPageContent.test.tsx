@@ -133,6 +133,20 @@ describe('FaresReviewPage', () => {
     expect(screen.queryByRole('heading', { name: /Validation Check/i })).not.toBeInTheDocument();
   });
 
+  it('matches the legacy publisher and uploaded-file download links', () => {
+    renderPage({
+      ...baseStatus,
+      urlLink: '',
+      downloadUrl: '//publish.example/org/1/dataset/fares/9/download?is_review=true',
+    });
+
+    expect(screen.getByText('Publisher URL').closest('a')).toHaveAttribute('href', '');
+    expect(screen.getByText('Download .xml (NeTEx)').closest('a')).toHaveAttribute(
+      'href',
+      '//publish.example/org/1/dataset/fares/9/download?is_review=true',
+    );
+  });
+
   it.each([
     { validatorError: false, schemaError: false, isFaresValidatorActive: true },
     { validatorError: false, schemaError: true, isFaresValidatorActive: true },
@@ -154,6 +168,10 @@ describe('FaresReviewPage', () => {
   it.each([false, true])('shows legacy recommended actions for profile violations (schemaError=%s)', (schemaError) => {
     renderPage({ ...baseStatus, validatorError: true, schemaError });
 
+    expect(screen.getByRole('link', { name: 'Download validation report' })).toHaveAttribute(
+      'href',
+      '//publish.example/org/1/dataset/fares-validator/42/export/',
+    );
     expect(screen.getByRole('heading', { name: 'Recommended actions' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Update data' })).toHaveAttribute(
       'href', '/publish/org/1/dataset/fares/9/update?modifyDraft=true',
