@@ -15,7 +15,7 @@ import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 import { dataApiPath } from '@/lib/api-paths';
 import { publishAppPath } from '@/config/client';
-import { formatDateTime } from '@/lib/utils/date';
+import { formatDateTime, formatDateTimeWithAbbreviatedMonth } from '@/lib/utils/date';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
 
 type ReviewStatusResponse = {
@@ -851,13 +851,17 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
                       <th scope="row" className="govuk-table__header">
                         Earliest start date
                       </th>
-                      <td className="govuk-table__cell">{formatDateTime(statusData?.metadata?.validFrom)}</td>
+                      <td className="govuk-table__cell">
+                        {formatDateTimeWithAbbreviatedMonth(statusData?.metadata?.validFrom)}
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">
                         Earliest end date
                       </th>
-                      <td className="govuk-table__cell">{formatDateTime(statusData?.metadata?.validTo)}</td>
+                      <td className="govuk-table__cell">
+                        {formatDateTimeWithAbbreviatedMonth(statusData?.metadata?.validTo)}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
