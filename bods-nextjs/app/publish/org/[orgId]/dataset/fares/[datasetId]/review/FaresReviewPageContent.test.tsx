@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import mapboxgl from 'mapbox-gl';
 import { api } from '@/lib/api-client';
@@ -131,6 +131,48 @@ describe('FaresReviewPage', () => {
     renderPage({ ...baseStatus, isFaresValidatorActive: false });
 
     expect(screen.queryByRole('heading', { name: /Validation Check/i })).not.toBeInTheDocument();
+  });
+
+  it.each([
+    { validatorError: false, schemaError: false, isFaresValidatorActive: true },
+    { validatorError: false, schemaError: true, isFaresValidatorActive: true },
+    { validatorError: true, schemaError: false, isFaresValidatorActive: false },
+  ])('keeps the standard publish form when profile violations are not active: %o', (flags) => {
+    renderPage({ ...baseStatus, ...flags });
+
+    expect(screen.queryByRole('heading', { name: 'Recommended actions' })).not.toBeInTheDocument();
+    const checkbox = screen.getByRole('checkbox', {
+      name: 'I have reviewed the submission and wish to publish my data',
+    });
+    expect(checkbox.closest('.govuk-checkboxes')).toHaveClass('govuk-checkboxes--small');
+    expect(checkbox.closest('.govuk-form-group')).toBeInTheDocument();
+    const button = screen.getByRole('button', { name: 'Publish data' });
+    expect(button).toBeDisabled();
+    expect(button).not.toHaveClass('govuk-button--secondary');
+  });
+
+  it.each([false, true])('shows legacy recommended actions for profile violations (schemaError=%s)', (schemaError) => {
+    renderPage({ ...baseStatus, validatorError: true, schemaError });
+
+    expect(screen.getByRole('heading', { name: 'Recommended actions' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Update data' })).toHaveAttribute(
+      'href', '/publish/org/1/dataset/fares/9/update?modifyDraft=true',
+    );
+    expect(screen.getByRole('link', { name: 'Delete data' })).toHaveAttribute(
+      'href', expect.stringContaining('/org/1/dataset/fares/9/delete'),
+    );
+    expect(screen.getByText(
+      'Your data needs to be improved, and we do not recommend publishing non-compliant data.',
+    )).toBeInTheDocument();
+    const checkbox = screen.getByRole('checkbox', {
+      name: 'I acknowledge my data does not meet the required standard, as detailed in the validation report, and I am publishing non-compliant data to the Bus Open Data Service.',
+    });
+    expect(checkbox.closest('.govuk-checkboxes')).toHaveClass('govuk-checkboxes--small');
+    const button = screen.getByRole('button', { name: 'Publish non-compliant data' });
+    expect(button).toHaveClass('govuk-button--secondary');
+    expect(button).toBeDisabled();
+    fireEvent.click(checkbox);
+    expect(button).toBeEnabled();
   });
 
   it('loads fare stops from the data host and shows stop details on hover', async () => {

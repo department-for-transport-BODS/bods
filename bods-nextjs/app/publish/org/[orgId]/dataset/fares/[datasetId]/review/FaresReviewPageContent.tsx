@@ -180,8 +180,8 @@ function ValidationReportIntro({
 function ValidationCheckPanel(props: Readonly<ValidationCheckPanelProps>) {
   return (
     <div className="govuk-!-margin-top-6" id="preview-section">
-      <div className="app-dqs-panel govuk-!-margin-bottom-7">
-        <div className="app-dqs-panel__body">
+      <div className="govuk-panel app-dqs-panel govuk-!-padding-6 govuk-!-margin-bottom-7">
+        <div className="app-dqs-panel__body govuk-!-font-size-19">
           <div className="app-dqs-panel__success">
             <ValidationCheckPanelContent {...props} />
           </div>
@@ -524,6 +524,9 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
   const loading = statusData?.loading ?? true;
   const hasBlockingError = Boolean(statusData?.error) || statusData?.status === 'error';
   const canPublish = !hasBlockingError;
+  const hasProfileViolations = Boolean(
+    statusData?.isFaresValidatorActive && statusData?.validatorError,
+  );
   const isUpdate = statusData?.hasLiveRevision ?? false;
 
   const handlePublish = async () => {
@@ -592,25 +595,25 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
 
   return (
     <div className="govuk-width-container">
-      <div className="govuk-main-wrapper">
-        <div className="govuk-breadcrumbs">
-          <PublishStepper
-            steps={
-              isUpdate
-                ? [
-                    { label: '1. Comment', state: 'previous' },
-                    { label: '2. Update', state: 'previous' },
-                    { label: '3. Review and publish', state: 'selected' },
-                  ]
-                : [
-                    { label: '1. Describe data', state: 'previous' },
-                    { label: '2. Provide data', state: 'previous' },
-                    { label: '3. Review and publish', state: 'selected' },
-                  ]
-            }
-          />
-        </div>
+      <div className="govuk-breadcrumbs">
+        <PublishStepper
+          steps={
+            isUpdate
+              ? [
+                  { label: '1. Comment', state: 'previous' },
+                  { label: '2. Update', state: 'previous' },
+                  { label: '3. Review and publish', state: 'selected' },
+                ]
+              : [
+                  { label: '1. Describe data', state: 'previous' },
+                  { label: '2. Provide data', state: 'previous' },
+                  { label: '3. Review and publish', state: 'selected' },
+                ]
+          }
+        />
+      </div>
 
+      <div className="govuk-main-wrapper">
         <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="fares-review-error-title" />
 
         <div className="govuk-grid-row">
@@ -674,30 +677,54 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
 
                 {canPublish ? (
                   <div className="govuk-!-margin-bottom-6">
-                    <div className="govuk-checkboxes" data-module="govuk-checkboxes">
-                      <div className="govuk-checkboxes__item">
-                        <input
-                          className="govuk-checkboxes__input"
-                          id="publish-review-confirmation"
-                          name="publish-review-confirmation"
-                          type="checkbox"
-                          checked={hasReviewed}
-                          onChange={(event) => setHasReviewed(event.target.checked)}
-                        />
-                        <label className="govuk-label govuk-checkboxes__label" htmlFor="publish-review-confirmation">
-                          I have reviewed the submission and wish to publish my data
-                        </label>
+                    {hasProfileViolations ? (
+                      <>
+                        <h3 className="govuk-heading-m govuk-!-margin-top-6">Recommended actions</h3>
+                        <div className="button-holder">
+                          <Link className="govuk-button" href={modifyDraftUrl} style={{ marginRight: '1.5rem' }}>
+                            Update data
+                          </Link>
+                          <Link
+                            className="govuk-button govuk-button--secondary"
+                            href={publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/delete`)}
+                          >
+                            Delete data
+                          </Link>
+                        </div>
+                        <p className="govuk-body-m govuk-!-font-weight-bold">
+                          Your data needs to be improved, and we do not recommend publishing non-compliant data.
+                        </p>
+                      </>
+                    ) : null}
+
+                    <div className="govuk-form-group">
+                      <div className="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                        <div className="govuk-checkboxes__item">
+                          <input
+                            className="govuk-checkboxes__input"
+                            id="publish-review-confirmation"
+                            name="publish-review-confirmation"
+                            type="checkbox"
+                            checked={hasReviewed}
+                            onChange={(event) => setHasReviewed(event.target.checked)}
+                          />
+                          <label className="govuk-label govuk-checkboxes__label" htmlFor="publish-review-confirmation">
+                            {hasProfileViolations
+                              ? 'I acknowledge my data does not meet the required standard, as detailed in the validation report, and I am publishing non-compliant data to the Bus Open Data Service.'
+                              : 'I have reviewed the submission and wish to publish my data'}
+                          </label>
+                        </div>
                       </div>
                     </div>
 
                     <button
                       type="button"
-                      className="govuk-button"
+                      className={`govuk-button${hasProfileViolations ? ' govuk-button--secondary' : ''}`}
                       onClick={handlePublish}
                       disabled={isPublishing || !hasReviewed}
                       aria-disabled={isPublishing || !hasReviewed}
                     >
-                      {isPublishing ? 'Publishing...' : 'Publish data'}
+                      {isPublishing ? 'Publishing...' : hasProfileViolations ? 'Publish non-compliant data' : 'Publish data'}
                     </button>
                   </div>
                 ) : null}
