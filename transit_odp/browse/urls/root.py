@@ -186,7 +186,6 @@ urlpatterns = [
     path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
     path("version/", VersionView.as_view(), name="version"),
     path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
-    path("django_axe/", include("django_axe.urls")),
     path(
         "robots.txt",
         TemplateView.as_view(

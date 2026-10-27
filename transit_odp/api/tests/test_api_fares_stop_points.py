@@ -48,7 +48,7 @@ class FareStopsAPITests(APITestCase):
 
     def test_permissions__unauth_can_access(self):
         # Test
-        response = self.client.get(self.feed_list_url, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, headers={"host": self.hostname})
         # Assert
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -64,7 +64,7 @@ class FareStopsAPITests(APITestCase):
             self.feed_list_url,
             {"name": "Some data"},
             format="json",
-            HTTP_HOST=self.hostname,
+            headers={"host": self.hostname},
         )
 
         # Assert
@@ -85,7 +85,7 @@ class FareStopsAPITests(APITestCase):
         expected = serializer.data
 
         # Test - Get response from API
-        response = self.client.get(self.feed_list_url, HTTP_HOST=self.hostname)
+        response = self.client.get(self.feed_list_url, headers={"host": self.hostname})
         actual = response.data["features"]
 
         # Assert

@@ -167,7 +167,7 @@ class PostPublishingCheckReport(models.Model):
     created = models.DateField(_("Creation date"))
     granularity = models.CharField(
         _("Daily or weekly"),
-        choices=PPCReportType.choices,
+        choices=PPCReportType,
         max_length=6,
     )
     file = models.FileField(_("PPC report"))
