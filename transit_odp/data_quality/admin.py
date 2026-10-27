@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import F
 from django.http import FileResponse, HttpResponseForbidden
-from django.urls import re_path, reverse
+from django.urls import path, reverse
 from django.utils.html import format_html
 
 from transit_odp.data_quality.models import DataQualityReport, StopPoint
@@ -26,8 +26,8 @@ class DataQualityReportAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            re_path(
-                r"^download-file/(?P<pk>\d+)$",
+            path(
+                "download-file/<int:pk>",
                 self.download_file,
                 name="data_quality_report_download-file",
             ),
@@ -44,20 +44,21 @@ class DataQualityReportAdmin(admin.ModelAdmin):
             )
         )
 
+    @admin.display(ordering="dataset_id")
     def dataset_id(self, instance):
         return instance.dataset_id
 
+    @admin.display(ordering="organisation_name")
     def organisation_name(self, instance):
         return instance.organisation_name
 
+    @admin.display(description="Download file")
     def download_link(self, instance):
         return format_html(
             '<a href="{}">{}</a>',
             reverse("admin:data_quality_report_download-file", args=[instance.pk]),
             instance.file.name,
         )
-
-    download_link.short_description = "Download file"
 
     def download_file(self, request, pk):
         if request.user.is_anonymous or not request.user.is_superuser:
@@ -66,9 +67,6 @@ class DataQualityReportAdmin(admin.ModelAdmin):
         response = FileResponse(report.file.open("rb"), as_attachment=True)
         response["Content-Disposition"] = f"attachment; filename={report.file.name}"
         return response
-
-    dataset_id.admin_order_field = "dataset_id"
-    organisation_name.admin_order_field = "organisation_name"
 
     def data_quality_input_counts(self, obj):
         return DataQualityCounts.from_report_id(obj.id)

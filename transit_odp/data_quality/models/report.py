@@ -35,7 +35,7 @@ class DataQualityReport(models.Model):
         constraints = [
             models.CheckConstraint(
                 name="dq_score_must_be_between_0_and_1",
-                check=Q(score__gte=0.0) & Q(score__lte=1.0),
+                condition=Q(score__gte=0.0) & Q(score__lte=1.0),
             )
         ]
 
@@ -223,7 +223,7 @@ class PostSchemaViolation(models.Model):
     )
     details = models.CharField(
         max_length=1024,
-        choices=PostSchemaErrorType.choices,
+        choices=PostSchemaErrorType,
         help_text=_("Details of the observation."),
         default=PostSchemaErrorType.PII_ERROR,
     )

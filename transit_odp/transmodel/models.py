@@ -266,7 +266,7 @@ class BookingArrangements(models.Model):
         ordering = ("service_id", "last_updated")
         constraints = [
             models.CheckConstraint(
-                check=(
+                condition=(
                     (models.Q(email__isnull=False) & ~models.Q(email=""))
                     | (
                         models.Q(phone_number__isnull=False)

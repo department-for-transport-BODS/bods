@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.14-slim
 
 RUN apt-get update && apt-get install -y g++
-RUN pip install pandas==2.1.4 numpy==1.26.2
+RUN pip install pandas==2.3.3 numpy==2.5.4
