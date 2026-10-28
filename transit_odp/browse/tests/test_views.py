@@ -942,6 +942,34 @@ class TestDataDownloadCatalogueView:
             "data-catalogue/bodsdatacatalogue.zip"
         )
 
+    def test_data_catalogue_download_redirects_to_signed_url_when_direct_s3_is_enabled(
+        self, client_factory
+    ):
+        org = OrganisationFactory.create()
+        DatasetFactory.create(organisation=org)
+
+        task_create_data_catalogue_archive()
+
+        client = client_factory(host=self.host)
+        url = reverse("download-catalogue", host=self.host)
+        signed_url = "https://example.test/signed-url"
+
+        with patch(
+            "transit_odp.browse.views.data_catalogue.flag_is_active",
+            return_value=True,
+        ) as mocked_flag_is_active, patch(
+            "transit_odp.browse.views.data_catalogue.generate_signed_url",
+            return_value=signed_url,
+        ) as mocked_generate_signed_url:
+            response = client.get(url)
+
+        assert response.status_code == 302
+        assert response["Location"] == signed_url
+        mocked_flag_is_active.assert_called_once_with("", "is_direct_s3_url_active")
+        mocked_generate_signed_url.assert_called_once_with(
+            "data-catalogue/bodsdatacatalogue.zip"
+        )
+
     def test_operator_noc_download(self, client_factory):
         org = OrganisationFactory.create()
         OrganisationFactory.create(nocs=4)
