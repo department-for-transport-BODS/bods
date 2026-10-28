@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=python:3.10-slim
+ARG BASE_IMAGE=python:3.14-slim
 
 # Step 1 - Build frontend assets
 FROM node:24-slim

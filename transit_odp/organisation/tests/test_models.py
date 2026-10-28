@@ -1,5 +1,6 @@
 import hashlib
 from datetime import datetime, timedelta
+from datetime import timezone as dt_timezone
 
 import pytest
 from django.core.exceptions import ValidationError
@@ -160,7 +161,7 @@ class TestDatasetRevision:
         )
 
     def test_publish_revision(self):
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.now(tz=dt_timezone.utc)
         user = UserFactory(account_type=AccountType.org_admin.value)
         revision = DatasetRevisionFactory(
             is_published=False, status=FeedStatus.success.value

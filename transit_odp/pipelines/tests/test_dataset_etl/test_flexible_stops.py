@@ -118,7 +118,7 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
         transformed = self.feed_parser.transform(extracted)
 
         transformed_service_pattern_stops = transformed.service_pattern_stops
-        self.assertEquals(
+        self.assertEqual(
             sorted(list(transformed_service_pattern_stops.columns)),
             sorted(
                 [
@@ -141,7 +141,7 @@ class ExtractFlexibleStops(ExtractBaseTestCase):
             ),
         )
         transformed_service_patterns = transformed.service_patterns
-        self.assertEquals(
+        self.assertEqual(
             sorted(list(transformed_service_patterns.columns)),
             sorted(
                 [

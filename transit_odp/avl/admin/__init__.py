@@ -3,7 +3,7 @@ from django.contrib.admin.widgets import AdminFileWidget
 from django.db import models
 from django.http import FileResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.urls import re_path, reverse
+from django.urls import path, reverse
 from django.utils.html import format_html
 
 from transit_odp.avl.admin.forms import (
@@ -59,8 +59,8 @@ class AVLValidationReportAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            re_path(
-                r"^download-avl-validation-report/(?P<pk>\d+)$",
+            path(
+                "download-avl-validation-report/<int:pk>",
                 self.download_validation_report,
                 name="avl-validation-report",
             ),
@@ -74,12 +74,15 @@ class AVLValidationReportAdmin(admin.ModelAdmin):
             .select_related("revision", "revision__dataset__organisation")
         )
 
+    @admin.display(ordering="revision__dataset__id")
     def dataset_id(self, instance):
         return instance.revision.dataset_id
 
+    @admin.display(ordering="revision__dataset__organisation__name")
     def organisation_name(self, instance):
         return instance.revision.dataset.organisation.name
 
+    @admin.display(description="Download AVL validation report file")
     def download_report(self, instance):
         if instance.pk is None:
             return "Not available"
@@ -99,10 +102,6 @@ class AVLValidationReportAdmin(admin.ModelAdmin):
         response = FileResponse(report.file.open("rb"), as_attachment=True)
         response["Content-Disposition"] = f"attachment; filename={report.file.name}"
         return response
-
-    dataset_id.admin_order_field = "revision__dataset__id"
-    organisation_name.admin_order_field = "revision__dataset__organisation__name"
-    download_report.short_description = "Download AVL validation report file"
 
 
 @admin.register(AVLDataset)
@@ -166,8 +165,8 @@ class PostPublishingCheckReportAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         urls += [
-            re_path(
-                r"^download-ppc-report/(?P<pk>\d+)$",
+            path(
+                "download-ppc-report/<int:pk>",
                 self.download_ppc_report,
                 name="post-publishing-check-report",
             ),

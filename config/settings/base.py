@@ -43,8 +43,7 @@ ROOT_SITE_ID = (
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
 USE_I18N = True
-# https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
-# USE_L10N = True #The USE_L10N setting is deprecated. Starting with Django 5.0, localized formatting of data will always be enabled.
+# https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
 
 
@@ -142,7 +141,6 @@ THIRD_PARTY_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "waffle",
-    "django_axe.apps.DjangoAxeConfig",
     "csp",
 ]
 LOCAL_APPS = [
@@ -743,10 +741,6 @@ MAPBOX_KEY = env("MAPBOX_KEY", default=None)
 SUPPORT_EMAIL = env("SUPPORT_EMAIL")
 SUPPORT_PHONE = env("SUPPORT_PHONE")
 
-DJANGO_AXE_REPORT_PATH = os.path.join(
-    str(APPS_DIR.path("static")), "accessibility_report.json"
-)
-DJANGO_AXE_ENABLED = env.bool("DJANGO_AXE_ENABLED", default=False)
 DD_DBM_PROPAGATION_MODE = "full"
 
 # below environment variables are added for allauth library

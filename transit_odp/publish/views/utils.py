@@ -1,6 +1,7 @@
 import logging
 import math
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
+from datetime import timezone as dt_timezone
 from enum import Enum
 from typing import Optional
 
@@ -332,7 +333,7 @@ def get_vehicle_activity_dict(
             activities within the last 10 minutes.
     """
     vehicle_dict = {}
-    current_time = datetime.now(timezone.utc)
+    current_time = datetime.now(dt_timezone.utc)
     journey_codes_list = tt_journey_codes[0].split(",")
 
     for vehicle_activity in vehicle_activities_list:
