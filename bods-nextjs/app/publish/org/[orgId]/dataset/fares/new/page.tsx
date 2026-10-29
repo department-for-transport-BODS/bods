@@ -1,12 +1,12 @@
-// create flow: keeps form state in-page and submits via fetch
-// cancel is handled as an in-page step; successful submit redirects to the next route
+// Create flow keeps form state in-page and waits for processing before opening review.
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
+import { useDatasetReview } from '@/hooks/useDatasetReview';
 import { api } from '@/lib/api-client';
 import {
   FaresUploadItem,
@@ -20,6 +20,20 @@ const CANCEL_STEP = 'cancel';
 const UPLOAD_STEP = 'upload';
 
 type Step = typeof DESCRIPTION_STEP | typeof CANCEL_STEP | typeof UPLOAD_STEP;
+
+type FaresProcessingStatus = {
+  loading: boolean;
+  progress: number;
+};
+
+function getDatasetIdFromReviewRedirect(redirect: string, orgId: string): string | null {
+  const prefix = `/publish/org/${orgId}/dataset/fares/`;
+  if (!redirect.startsWith(prefix)) {
+    return null;
+  }
+
+  return redirect.slice(prefix.length).match(/^(\d+)\/review\/?$/)?.[1] ?? null;
+}
 
 function CancelStepView({ onConfirm, onBack }: Readonly<{ onConfirm: () => void; onBack: () => void }>) {
   return (
@@ -124,6 +138,29 @@ function FaresCreatePageContent() {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [processingDataset, setProcessingDataset] = useState<{
+    datasetId: string;
+    reviewUrl: string;
+  } | null>(null);
+  const {
+    statusData: processingStatus,
+    progress,
+    errorMessage: processingError,
+  } = useDatasetReview<FaresProcessingStatus>(
+    processingDataset?.datasetId ?? '',
+    processingDataset
+      ? `/api/publish/fares/review-status/${orgId}/${processingDataset.datasetId}/`
+      : '',
+    'Unable to check processing status. Please refresh and try again.',
+    '',
+    { enabled: processingDataset !== null },
+  );
+
+  useEffect(() => {
+    if (processingDataset && processingStatus && !processingStatus.loading) {
+      globalThis.location.href = processingDataset.reviewUrl;
+    }
+  }, [processingDataset, processingStatus]);
 
   const handleDescriptionSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -185,14 +222,15 @@ function FaresCreatePageContent() {
 
       const data = await api.post<{ redirect?: string }>(`/api/publish/fares/create/${orgId}/`, formData);
 
-      if (!data.redirect) {
+      const datasetId = data.redirect ? getDatasetIdFromReviewRedirect(data.redirect, orgId) : null;
+      if (!data.redirect || !datasetId) {
         setErrorMessage('Unexpected response from server.');
         setIsSubmitting(false);
         return;
       }
 
-      // Navigate within Next.js (the bridge rewrites Django URLs to Next.js paths)
-      globalThis.location.href = data.redirect;
+      setProcessingDataset({ datasetId, reviewUrl: data.redirect });
+      setIsSubmitting(false);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred while submitting. Please try again.');
       setIsSubmitting(false);
@@ -233,20 +271,48 @@ function FaresCreatePageContent() {
               />
             ) : null}
             {step === UPLOAD_STEP ? (
-              <FaresUploadStep
-                selectedItem={selectedItem}
-                urlLink={urlLink}
-                isSubmitting={isSubmitting}
-                errorMessage={errorMessage}
-                heading="Choose how to provide your data set"
-                submitButtonText={isSubmitting ? 'Submitting...' : 'Continue'}
-                errorTitleId="fares-upload-error-title"
-                onSelectedItemChange={setSelectedItem}
-                onUrlLinkChange={setUrlLink}
-                onUploadFileChange={setUploadFile}
-                onSubmit={handleUploadSubmit}
-                onCancel={() => handleClickCancel(UPLOAD_STEP)}
-              />
+              processingDataset ? (
+                <>
+                  <ErrorSummary errors={processingError ? [processingError] : []} summaryId="fares-processing-error-title" />
+                  <div className="govuk-panel govuk-panel--confirmation bods-bg-blue-light">
+                    <h2 className="govuk-panel__title govuk-!-font-size-36">Your data is being processed</h2>
+                    <div className="govuk-panel__body govuk-!-font-size-19">
+                      <div className="pb3-l">
+                        The data format is being checked to confirm it is NeTEx.
+                        <br />
+                        Once successfully validated the data set details will
+                        <br />
+                        be shown here.
+                      </div>
+                      <div id="progressOuterDiv" className="progress-bar-outer">
+                        <div
+                          className="loading-white"
+                          id="progressInnerDiv"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                      <span className="loading-white-lg" id="progressSpan">
+                        {progress}%
+                      </span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <FaresUploadStep
+                  selectedItem={selectedItem}
+                  urlLink={urlLink}
+                  isSubmitting={isSubmitting}
+                  errorMessage={errorMessage}
+                  heading="Choose how to provide your data set"
+                  submitButtonText={isSubmitting ? 'Submitting...' : 'Continue'}
+                  errorTitleId="fares-upload-error-title"
+                  onSelectedItemChange={setSelectedItem}
+                  onUrlLinkChange={setUrlLink}
+                  onUploadFileChange={setUploadFile}
+                  onSubmit={handleUploadSubmit}
+                  onCancel={() => handleClickCancel(UPLOAD_STEP)}
+                />
+              )
             ) : null}
             <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />
           </div>
