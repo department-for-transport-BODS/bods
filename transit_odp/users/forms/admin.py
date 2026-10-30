@@ -80,12 +80,40 @@ class UserChangeForm(auth_forms.UserChangeForm):
         self.fields["last_name"].required = True
         self.fields["dev_organisation"].required = False
         self.fields["description"].required = False
+        self.fields["organisations"].required = False
 
         self.fields[
             "opt_in_user_research"
         ].initial = self.instance.settings.opt_in_user_research
 
         self.fields["share_app_usage"].initial = self.instance.settings.share_app_usage
+
+    def clean(self):
+        # Mirrors the m2m_changed guard in users/receivers.py, which runs after
+        # form validation and would otherwise surface as a 500.
+        cleaned_data = super().clean()
+        account_type = cleaned_data.get("account_type")
+        organisations = cleaned_data.get("organisations")
+        if account_type is None or organisations is None:
+            return cleaned_data
+
+        role = User(account_type=account_type)
+        if role.is_org_user and not organisations:
+            self.add_error(
+                "organisations",
+                _("This account type must belong to an organisation."),
+            )
+        elif not role.is_org_user and organisations:
+            self.add_error(
+                "organisations",
+                _("This account type cannot belong to an organisation."),
+            )
+        elif role.is_single_org_user and len(organisations) > 1:
+            self.add_error(
+                "organisations",
+                _("This account type can only belong to one organisation."),
+            )
+        return cleaned_data
 
     def save(self, commit=True):
         user = super().save(commit=commit)
