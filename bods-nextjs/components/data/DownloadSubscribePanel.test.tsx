@@ -79,7 +79,16 @@ describe('DownloadSubscribePanel', () => {
       
       const subscribeLink = screen.getByText('Subscribe to this data set');
       expect(subscribeLink.tagName).toBe('A');
-      expect(subscribeLink).toHaveAttribute('href', dataPath('/123/subscription'));
+      expect(subscribeLink).toHaveAttribute('href', dataPath('/timetable/dataset/123/subscription/'));
+    });
+
+    it.each([
+      ['AVL', '/avl/dataset/123/subscription/'],
+      ['FARES', '/fares/dataset/123/subscription/'],
+    ] as const)('uses the %s Django subscription URL', (datasetType, path) => {
+      render(<DownloadSubscribePanel {...defaultProps} datasetType={datasetType} />);
+
+      expect(screen.getByText('Subscribe to this data set')).toHaveAttribute('href', dataPath(path));
     });
 
     it('renders as button when onSubscribeToggle provided', () => {

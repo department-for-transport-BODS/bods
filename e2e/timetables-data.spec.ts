@@ -46,6 +46,6 @@ test.describe('Timetables Data Page (Unauthenticated)', () => {
     await expect(timetablesLink).toBeVisible();
     await timetablesLink.click();
     await page.waitForLoadState('networkidle');
-    expect(page.url()).toContain('/data/timetables');
+    expect(page.url()).toContain('/data/timetable');
   });
 });

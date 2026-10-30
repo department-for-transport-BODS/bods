@@ -3,7 +3,7 @@
  *
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { DatasetDetailContent } from './DatasetDetailContent';
 import { dataPath, TRANSXCHANGE_VERSION } from '@/config/client';
 import type { ReactNode } from 'react';
@@ -86,7 +86,7 @@ describe('DatasetDetailContent', () => {
 
     const operatorLink = screen.getByRole('link', { name: /Test Operator Ltd/i });
     expect(operatorLink).toBeInTheDocument();
-    expect(operatorLink).toHaveAttribute('href', dataPath('?organisation=456&status=live'));
+    expect(operatorLink).toHaveAttribute('href', dataPath('/timetable?organisation=456&status=live'));
   });
 
   it('renders status badge correctly', () => {
@@ -146,17 +146,13 @@ describe('DatasetDetailContent', () => {
     expect(downloadButton).toHaveAttribute('href', mockDataset.url);
   });
 
-  it('toggles subscription state', async () => {
+  it('links to the Django-matching subscription URL', () => {
     render(<DatasetDetailContent dataset={mockDataset} formattedLastUpdated="15 Jan 2024 14:30" />);
 
-    const subscribeButton = screen.getByRole('button', { name: /Subscribe to this data set/i });
-    expect(subscribeButton).toBeInTheDocument();
-
-    fireEvent.click(subscribeButton);
-
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Unsubscribe from this data set/i })).toBeInTheDocument();
-    });
+    expect(screen.getByRole('link', { name: /Subscribe to this data set/i })).toHaveAttribute(
+      'href',
+      dataPath(`/timetable/dataset/${mockDataset.id}/subscription/`),
+    );
   });
 
   it('handles missing description gracefully', () => {
@@ -187,7 +183,7 @@ describe('DatasetDetailContent', () => {
 
     const changeLogLink = screen.getByRole('link', { name: /View change log/i });
     expect(changeLogLink).toBeInTheDocument();
-    expect(changeLogLink).toHaveAttribute('href', dataPath(`/${mockDataset.id}/changelog`));
+    expect(changeLogLink).toHaveAttribute('href', dataPath(`/timetable/dataset/${mockDataset.id}/changelog/`));
   });
 
   it('passes the live revision ID to the route map', () => {

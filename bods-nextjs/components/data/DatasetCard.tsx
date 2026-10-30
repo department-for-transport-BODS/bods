@@ -14,7 +14,7 @@
 'use client';
 
 import Link from 'next/link';
-import { dataPath } from '@/config/client';
+import { datasetDetailPath } from '@/lib/dataset-paths';
 import type { DatasetListItem, DatasetType } from '@/types';
 import { DataQualityBadge } from './DataQualityBadge';
 import styles from './DatasetCard.module.css';
@@ -82,7 +82,7 @@ export function DatasetCard({ dataset }: DatasetCardProps) {
         <div className="govuk-summary-card__title-wrapper">
           <h2 className="govuk-summary-card__title">
             <Link
-              href={dataPath(`/${dataset.id}`)}
+              href={datasetDetailPath(dataset.dataType ?? 'TIMETABLE', dataset.id)}
               className="govuk-link"
               aria-label={`View details for ${dataset.name}`}
             >

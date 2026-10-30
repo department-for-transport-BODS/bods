@@ -21,6 +21,7 @@ import { TimetableVisualiser } from '@/components/timetables/TimetableVisualiser
 import { dataPath } from '@/config/client';
 import { ApiError, api } from '@/lib/api-client';
 import { dataApiPath } from '@/lib/api-paths';
+import { datasetDetailPath, datasetListPath } from '@/lib/dataset-paths';
 import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 // Django's truncatechars: keep the result within `length` characters, ending in "…".
@@ -91,8 +92,8 @@ function LineDetail({ isTimetableVisualiserActive, isSpecificFeedback }: Flags) 
         items={hostBreadcrumbs(
           'data',
           { label: 'Browse', href: dataPath('/search') },
-          { label: 'Timetables Data', href: dataPath('/timetables?status=live') },
-          { label: truncateChars(line.datasetName, 19), href: dataPath(`/${datasetId}`) },
+          { label: 'Timetables Data', href: datasetListPath('TIMETABLE', { status: 'live' }) },
+          { label: truncateChars(line.datasetName, 19), href: datasetDetailPath('TIMETABLE', datasetId) },
           { label: line.lineName, href: dataPath(`/timetable/dataset/${datasetId}/detail?${selfQuery.toString()}`) },
         )}
       />

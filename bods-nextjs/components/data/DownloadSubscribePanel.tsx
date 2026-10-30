@@ -16,11 +16,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { dataPath } from '@/config/client';
+import type { DatasetType } from '@/types';
+import { datasetSubpagePath } from '@/lib/dataset-paths';
 import styles from './DownloadSubscribePanel.module.css';
 
 export interface DownloadSubscribePanelProps {
   datasetId: number;
+  /** Dataset type for building Django-matching sub-page URLs. Defaults to TIMETABLE. */
+  datasetType?: DatasetType;
   downloadUrl: string;
   fileExtension: string;
   fileSize?: string | number;
@@ -49,6 +52,7 @@ function formatFileSize(fileSize?: string | number): string {
 
 export function DownloadSubscribePanel({
   datasetId,
+  datasetType = 'TIMETABLE',
   downloadUrl,
   fileExtension,
   fileSize,
@@ -92,7 +96,7 @@ export function DownloadSubscribePanel({
             </button>
           ) : (
             <Link
-              href={dataPath(`/${datasetId}/subscription`)}
+              href={datasetSubpagePath(datasetType, datasetId, 'subscription')}
               className="govuk-link"
             >
               {subscribed ? 'Unsubscribe from this data set' : 'Subscribe to this data set'}

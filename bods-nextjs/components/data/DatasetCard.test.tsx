@@ -33,7 +33,16 @@ describe('DatasetCard', () => {
     
     const link = screen.getByRole('link', { name: /view details for test bus routes dataset/i });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute('href', dataPath('/123'));
+    expect(link).toHaveAttribute('href', dataPath('/timetable/dataset/123'));
+  });
+
+  it.each([
+    ['AVL', '/avl/dataset/123'],
+    ['FARES', '/fares/dataset/123'],
+  ] as const)('links %s datasets to their Django-matching detail URL', (dataType, path) => {
+    render(<DatasetCard dataset={{ ...mockDataset, dataType }} />);
+
+    expect(screen.getByRole('link', { name: /view details for/i })).toHaveAttribute('href', dataPath(path));
   });
 
   it('displays operator name', () => {

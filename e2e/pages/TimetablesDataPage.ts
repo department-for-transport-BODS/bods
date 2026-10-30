@@ -1,6 +1,6 @@
 /**
  * Timetables Data browsing page object
- * Route: /data/timetables
+ * Route: /data/timetable
  */
 import { Page, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
@@ -11,17 +11,17 @@ export class TimetablesDataPage extends BasePage {
   }
 
   async navigate(): Promise<this> {
-    return await this.navigateTo('/data/timetables?status=live');
+    return await this.navigateTo('/data/timetable?status=live');
   }
 
   async verifyOnPage(): Promise<this> {
-    expect(this.page.url()).toContain('/data/timetables');
+    expect(this.page.url()).toContain('/data/timetable');
     return this;
   }
 
   async hasLoaded(): Promise<boolean> {
     await this.page.waitForLoadState('networkidle');
-    return this.page.url().includes('/data/timetables');
+    return this.page.url().includes('/data/timetable');
   }
 
   async getHeading(): Promise<string | null> {

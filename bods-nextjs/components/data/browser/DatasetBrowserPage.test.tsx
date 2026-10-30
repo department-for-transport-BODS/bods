@@ -18,6 +18,7 @@ jest.mock('@/hooks/useFilterOptions', () => ({
 }));
 
 const props = {
+  datasetType: 'FARES' as const,
   title: 'Fares data',
   breadcrumbLabel: 'Fares Data',
   description: 'Search for a specific operator or NOC',
@@ -49,6 +50,7 @@ describe('dataset browser compliance', () => {
     render(
       <DatasetBrowserPage
         {...props}
+        datasetType="TIMETABLE"
         title="Timetable data"
         breadcrumbLabel="Timetable Data"
         endpointPath="/api/browser/timetables/"
@@ -59,6 +61,20 @@ describe('dataset browser compliance', () => {
     await screen.findByText('83504');
     expect(screen.getByRole('link', { name: 'Browse' })).toHaveAttribute(
       'href', dataPath('/search'),
+    );
+  });
+
+  it.each([
+    ['TIMETABLE', '/timetable/dataset/83504'],
+    ['AVL', '/avl/dataset/83504'],
+    ['FARES', '/fares/dataset/83504'],
+  ] as const)('links %s results to the Django-matching detail URL', async (datasetType, path) => {
+    mockDataset();
+    render(<DatasetBrowserPage {...props} datasetType={datasetType} />);
+
+    expect(await screen.findByRole('link', { name: /Arriva UK Bus/ })).toHaveAttribute(
+      'href',
+      dataPath(path),
     );
   });
 

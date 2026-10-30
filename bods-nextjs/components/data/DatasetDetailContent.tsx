@@ -19,14 +19,14 @@
 
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import type { Dataset } from '@/types';
 import { DataQualityBadge } from './DataQualityBadge';
 import { DownloadSubscribePanel } from './DownloadSubscribePanel';
 import { ApiUrlPanel } from './ApiUrlPanel';
 import { RouteMap } from './RouteMap';
-import { dataPath, publishAppPath, TRANSXCHANGE_VERSION } from '@/config/client';
+import { publishAppPath, TRANSXCHANGE_VERSION } from '@/config/client';
+import { datasetListPath, datasetSubpagePath } from '@/lib/dataset-paths';
 
 interface DatasetDetailContentProps {
   dataset: Dataset;
@@ -39,8 +39,6 @@ export function DatasetDetailContent({
   formattedLastUpdated,
   mapboxToken = '',
 }: DatasetDetailContentProps) {
-  const [isSubscribed, setIsSubscribed] = useState(false);
-
   return (
     <div className="dataset-detail-content">
       {/* Property table - matches Django browse/base/property_table.html */}
@@ -89,7 +87,7 @@ export function DatasetDetailContent({
             <td colSpan={2} className="govuk-table__cell dont-break-out">
               <div className="stacked">
                 <Link
-                  href={dataPath(`?organisation=${dataset.organisationId}&status=live`)}
+                  href={datasetListPath('TIMETABLE', { organisation: dataset.organisationId, status: 'live' })}
                   className="govuk-link"
                 >
                   {dataset.operatorName}
@@ -164,7 +162,7 @@ export function DatasetDetailContent({
             </td>
             <td className="govuk-table__cell">
               <Link
-                href={dataPath(`/${dataset.id}/changelog`)}
+                href={datasetSubpagePath('TIMETABLE', dataset.id, 'changelog')}
                 className="govuk-link"
               >
                 View change log
@@ -220,14 +218,9 @@ export function DatasetDetailContent({
 
       <DownloadSubscribePanel
         datasetId={dataset.id}
+        datasetType="TIMETABLE"
         downloadUrl={dataset.url}
         fileExtension={dataset.extension}
-        isSubscribed={isSubscribed}
-        onSubscribeToggle={async (subscribed) => {
-          // TODO: Implement actual subscription API call
-          setIsSubscribed(subscribed);
-          console.log('Subscribe toggle:', subscribed);
-        }}
       />
     </div>
   );

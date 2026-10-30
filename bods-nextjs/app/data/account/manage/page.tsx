@@ -17,6 +17,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { Pagination } from '@/components/shared/Pagination';
 import { api } from '@/lib/api-client';
+import { datasetDetailPath, datasetSubpagePath } from '@/lib/dataset-paths';
 
 type SubscriptionDatasetType = 'TIMETABLE' | 'AVL' | 'FARES';
 
@@ -37,11 +38,17 @@ interface SubscriptionsResponse {
   results: Subscription[];
 }
 
-function datasetSubscriptionPaths(id: number): {
+function datasetSubscriptionPaths(
+  type: SubscriptionDatasetType,
+  id: number,
+): {
   detailUrl: string;
   unsubscribeUrl: string;
 } {
-  return { detailUrl: `/${id}`, unsubscribeUrl: `/${id}/subscription` };
+  return {
+    detailUrl: datasetDetailPath(type, id),
+    unsubscribeUrl: datasetSubpagePath(type, id, 'subscription'),
+  };
 }
 
 function ManageSubscriptions() {
@@ -135,7 +142,7 @@ function ManageSubscriptions() {
                   </thead>
                   <tbody className="govuk-table__body">
                     {data.results.map((subscription) => {
-                      const paths = datasetSubscriptionPaths(subscription.id);
+                      const paths = datasetSubscriptionPaths(subscription.datasetType, subscription.id);
 
                       return (
                         <tr className="govuk-table__row" key={subscription.id}>

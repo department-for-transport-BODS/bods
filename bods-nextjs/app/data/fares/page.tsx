@@ -4,6 +4,7 @@ import { featureFlags } from '@/config/feature-flags';
 export default function FaresPage() {
   return (
     <DatasetBrowserPage
+        datasetType="FARES"
       title="Fares data"
       breadcrumbLabel="Fares Data"
       description="Search for a specific operator or NOC"
