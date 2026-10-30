@@ -23,11 +23,7 @@ import { ApiError, api } from '@/lib/api-client';
 import { dataApiPath } from '@/lib/api-paths';
 import { datasetDetailPath, datasetListPath } from '@/lib/dataset-paths';
 import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
-
-// Django's truncatechars: keep the result within `length` characters, ending in "…".
-function truncateChars(value: string, length: number): string {
-  return value.length > length ? `${value.slice(0, length - 1)}…` : value;
-}
+import { truncateChars } from '@/lib/utils/truncate-chars';
 
 type Flags = { isTimetableVisualiserActive: boolean; isSpecificFeedback: boolean };
 
