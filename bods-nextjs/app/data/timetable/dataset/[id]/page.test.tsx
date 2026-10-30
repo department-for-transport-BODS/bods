@@ -128,7 +128,7 @@ describe('app/data/timetable/dataset/[id] (/timetable/dataset/<pk>/)', () => {
   it('throws (a 500, like Django) instead of a 404 when Django fails', async () => {
     mockFetch.mockResolvedValue(new Response('boom', { status: 500 }));
 
-    await expect(DatasetDetailPage(params('60'))).rejects.toThrow('Failed to fetch timetable dataset 60: 500');
+    await expect(DatasetDetailPage(params('60'))).rejects.toThrow('Failed to fetch timetables dataset 60: 500');
   });
 
   it('uses Django’s "Data set details" title for an existing dataset', async () => {

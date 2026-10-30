@@ -46,6 +46,8 @@ from transit_odp.api.views.browser import (
     BrowseOrganisationListView,
     BrowseTimetableListView,
 )
+from transit_odp.avl.views.dataset_detail_api import get_browse_avl_detail_api
+from transit_odp.fares.views.dataset_detail_api import get_browse_fares_detail_api
 from transit_odp.timetables.views.dataset_detail_api import (
     get_browse_timetable_detail_api,
 )
@@ -88,7 +90,17 @@ urlpatterns = [
         name="browser-timetable-line-detail",
     ),
     path("browser/avl/", BrowseAVLListView.as_view(), name="browser-avl"),
+    path(
+        "browser/avl/<int:pk>/",
+        get_browse_avl_detail_api,
+        name="browser-avl-detail",
+    ),
     path("browser/fares/", BrowseFaresListView.as_view(), name="browser-fares"),
+    path(
+        "browser/fares/<int:pk>/",
+        get_browse_fares_detail_api,
+        name="browser-fares-detail",
+    ),
     path(
         "browser/admin-areas/",
         BrowseAdminAreaListView.as_view(),
