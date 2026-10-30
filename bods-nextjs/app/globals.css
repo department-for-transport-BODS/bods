@@ -1185,3 +1185,36 @@ span.text-color-red {
 .app-error-summary--highlighted{
   outline: 3px solid #ffdd00;
 }
+
+/* Dataset detail: error panel, API URL panel (transit_odp/frontend/assets/sass) */
+.app-panel--error {
+  background: #d4351c;
+}
+
+.app-panel--error .govuk-panel__title {
+  font-size: 2rem;
+  color: #ffffff;
+}
+
+.app-panel--error .govuk-panel__body {
+  font-size: 1.5rem;
+}
+
+.api-url-panel {
+  display: flex;
+  justify-content: space-between;
+  border: 0.15rem solid #f3f2f1;
+  padding: 25px;
+}
+
+.api-url-panel__url {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+  color: #505a5f;
+}
+
+.no-wrap {
+  white-space: nowrap;
+  overflow: hidden;
+}

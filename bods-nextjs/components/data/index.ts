@@ -16,10 +16,8 @@ export { DatasetSearch } from './DatasetSearch';
 export { DatasetListWithSearch } from './DatasetListWithSearch';
 export { DatasetFilters } from './DatasetFilters';
 export { ActiveFilterTags } from './ActiveFilterTags';
-export { DatasetDetailContent } from './DatasetDetailContent';
 export { DataQualityBadge } from './DataQualityBadge';
-export { DownloadSubscribePanel } from './DownloadSubscribePanel';
-export { ApiUrlPanel } from './ApiUrlPanel';
+export * from './dataset-detail';
 export { RouteMap } from './RouteMap';
 export { StopMap } from './StopMap';
 
