@@ -450,7 +450,9 @@ def licence_line_detail_api(request, number):
             **booking,
             "fares": {
                 "datasetId": context.get("fares_dataset_id"),
-                "tariffBasis": [str(item) for item in context.get("fares_tariff_basis", [])],
+                "tariffBasis": [
+                    str(item) for item in context.get("fares_tariff_basis", [])
+                ],
                 "products": [str(item) for item in context.get("fares_products", [])],
                 "validFiles": _serialize_files(context.get("fares_valid_files")),
                 "futureDatedFiles": _serialize_files(
@@ -459,7 +461,8 @@ def licence_line_detail_api(request, number):
                 "expiredFiles": _serialize_files(context.get("fares_expired_files")),
             },
             "timetableFiles": {
-                # `{{ timetables_dataset_id }}` (link text); the link targets `object.id`.
+                # `{{ timetables_dataset_id }}` is the link text; the link
+                # targets `object.id`.
                 "datasetId": context.get("timetables_dataset_id"),
                 "validFiles": _serialize_files(context.get("timetables_valid_files")),
                 "futureDatedFiles": _serialize_files(
