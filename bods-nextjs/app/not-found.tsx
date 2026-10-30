@@ -1,20 +1,26 @@
 /**
  * 404 Not Found Page
  *
+ * Source: transit_odp/templates/404.html (extends error_base.html)
  *
- * Displays a GDS-styled 404 page when a user navigates to a non-existent page.
+ * Shown for every unknown path on every host, and for resources that don't exist
+ * (e.g. a dataset id that isn't found). Django's version has no breadcrumbs.
  */
 
 import Link from 'next/link';
 import { wwwPath } from '@/config/client';
 
+export const metadata = {
+  title: 'Page not found - Bus Open Data Service',
+};
+
 export default function NotFound() {
   return (
     <div className="govuk-width-container">
-      <main className="govuk-main-wrapper" id="main-content" role="main">
-        <div className="govuk-grid-row">
+      <div className="govuk-main-wrapper app-main-class">
+        <div className="govuk-grid-row govuk-!-margin-top-9 govuk-!-margin-bottom-9">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl">Page not found</h1>
+            <h1 className="govuk-heading-l">Page not found</h1>
 
             <p className="govuk-body">
               If you typed the web address, check it is correct.
@@ -29,11 +35,11 @@ export default function NotFound() {
               <Link href={wwwPath('/contact')} className="govuk-link">
                 contact Bus open data support line
               </Link>{' '}
-              if you need to speak to someone about the service.
+              if you need to speak to someone about this service.
             </p>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

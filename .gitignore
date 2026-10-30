@@ -233,6 +233,8 @@ lib-cov
 lib/
 !bods-nextjs/lib/
 !bods-nextjs/lib/**
+!bods-nextjs/app/data/downloads/
+!bods-nextjs/app/data/downloads/**
 lib64/
 logs
 node_modules/
