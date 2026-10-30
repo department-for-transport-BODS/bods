@@ -6,6 +6,8 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
 import { HOSTS, dataPath } from '@/config/client';
 import { dataApiPath } from '@/lib/api-paths';
+import { datasetDetailPath } from '@/lib/dataset-paths';
+import type { DatasetType } from '@/types';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
@@ -27,6 +29,7 @@ interface BrowserDatasetItem {
 }
 
 interface DatasetBrowserPageProps {
+  datasetType: DatasetType;
   title: string;
   breadcrumbLabel: string;
   description: string;
@@ -79,6 +82,7 @@ export function DatasetBrowserPage(props: DatasetBrowserPageProps) {
 }
 
 function DatasetBrowserPageInner({
+  datasetType,
   title,
   breadcrumbLabel,
   description,
@@ -341,7 +345,7 @@ function DatasetBrowserPageInner({
                       {index > 0 && <hr className="app-data-browser__result-divider" />}
                       <DataBrowserResultCard
                         title={titleValue}
-                        href={dataPath(`/${dataset.id}`)}
+                        href={datasetDetailPath(datasetType, dataset.id)}
                         status={statusValue}
                         statusLabel={statusValue === 'inactive' ? 'Inactive' : 'Published'}
                         keyValues={keyValues}

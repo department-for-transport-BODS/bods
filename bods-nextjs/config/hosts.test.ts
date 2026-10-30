@@ -25,8 +25,8 @@ describe('host helpers', () => {
 
   it('joins an origin and path without duplicating slashes', () => {
     expect(hostPath('http://localhost:3000', '/')).toBe('http://localhost:3000');
-    expect(hostPath('http://data.localhost:3000', '/timetables?status=live')).toBe(
-      'http://data.localhost:3000/timetables?status=live',
+    expect(hostPath('http://data.localhost:3000', '/timetable?status=live')).toBe(
+      'http://data.localhost:3000/timetable?status=live',
     );
     expect(hostPath('https://www.example.com', '?status=live')).toBe(
       'https://www.example.com?status=live',
