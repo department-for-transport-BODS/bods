@@ -7,6 +7,7 @@ from transit_odp.avl.views.archive import PPCArchiveView
 from transit_odp.common.utils.custom_error_handlers import (
     page_not_found,
     permission_denied,
+    server_error,
 )
 from transit_odp.common.views import ComingSoonView, VersionView
 from transit_odp.publish.views.api import ProgressAPIView
@@ -36,6 +37,7 @@ from transit_odp.users.views.auth import InviteOnlySignupView
 
 handler404 = "transit_odp.common.utils.custom_error_handlers.page_not_found"
 handler403 = "transit_odp.common.utils.custom_error_handlers.permission_denied"
+handler500 = "transit_odp.common.utils.custom_error_handlers.server_error"
 
 urlpatterns = [
     path("", view=PublishHomeView.as_view(), name="home"),
@@ -174,7 +176,7 @@ if settings.DEBUG:
             page_not_found,
             kwargs={"exception": Exception("Page not Found")},
         ),
-        path("500/", default_views.server_error),
+        path("500/", server_error),
     ]
     if "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar
