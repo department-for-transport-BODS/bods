@@ -1,6 +1,10 @@
 from urllib.parse import quote
 
-from django.http import HttpResponseForbidden, HttpResponseNotFound
+from django.http import (
+    HttpResponseForbidden,
+    HttpResponseNotFound,
+    HttpResponseServerError,
+)
 from django.template import loader
 from django.views.decorators.csrf import requires_csrf_token
 
@@ -71,3 +75,20 @@ def permission_denied(request, exception, template_name="403.html"):
     content_type = None  # Django will use DEFAULT_CONTENT_TYPE
 
     return HttpResponseForbidden(body, content_type=content_type)
+
+
+@requires_csrf_token
+def server_error(request, template_name="500.html"):
+    """
+    Custom 500 handler. Django's default renders without the request, so the
+    host context processor never runs and the {% url ... host %} tags in the
+    base layout raise NoReverseMatch, masking the original error.
+    """
+    try:
+        body = loader.get_template(template_name).render({}, request)
+    except Exception:
+        # A 500 handler must not raise; fall back to Django's bare response.
+        return HttpResponseServerError(
+            "<h1>Server Error (500)</h1>", content_type="text/html"
+        )
+    return HttpResponseServerError(body)

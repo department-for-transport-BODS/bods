@@ -12,6 +12,7 @@ from transit_odp.changelog.views import ChangelogView
 from transit_odp.common.utils.custom_error_handlers import (
     page_not_found,
     permission_denied,
+    server_error,
 )
 from transit_odp.common.views import (
     CookieDetailView,
@@ -19,6 +20,8 @@ from transit_odp.common.views import (
     PrivacyPolicyView,
     VersionView,
 )
+
+handler500 = "transit_odp.common.utils.custom_error_handlers.server_error"
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -85,7 +88,7 @@ if settings.DEBUG:
             page_not_found,
             kwargs={"exception": Exception("Page not Found")},
         ),
-        path("500/", default_views.server_error),
+        path("500/", server_error),
     ]
     if "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar
