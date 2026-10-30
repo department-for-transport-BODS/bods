@@ -42,6 +42,10 @@ from transit_odp.api.views.browser import (
     BrowseTimetableListView,
 )
 from transit_odp.avl.views.dataset_detail_api import get_browse_avl_detail_api
+from transit_odp.browse.views.api import (
+    local_authority_detail_api,
+    local_authority_list_api,
+)
 from transit_odp.browse.views.dataset_subpages_api import (
     dataset_feedback_api,
     dataset_subscription_api,
@@ -202,6 +206,16 @@ urlpatterns = [
         "browser/avl-feed/real-time-bus-location/",
         AVLRealTimeDataView.as_view(),
         name="browser-avl-real-time-bus-location",
+    ),
+    path(
+        "browser/local-authority/",
+        local_authority_list_api,
+        name="browser-local-authority",
+    ),
+    path(
+        "browser/local-authority/detail/",
+        local_authority_detail_api,
+        name="browser-local-authority-detail",
     ),
     # Authentication endpoints for NextJS
     path("user/", CurrentUserAPIView.as_view(), name="current-user"),
