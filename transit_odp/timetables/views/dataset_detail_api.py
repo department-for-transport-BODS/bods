@@ -22,11 +22,14 @@ DATASET_NOT_FOUND_ERROR = "Dataset not found"
 LAST_UPDATED_FORMAT = "j M Y H:i"
 
 
-def _format_published_at(published_at) -> Optional[str]:
-    """Same output as the template's ``published_at|date:"j M Y H:i"``."""
-    if not published_at:
+def format_last_updated(value) -> Optional[str]:
+    """Same output as the template's ``value|localtime|date:"j M Y H:i"``.
+
+    Shared with the AVL and fares detail endpoints.
+    """
+    if not value:
         return None
-    return dateformat.format(timezone.localtime(published_at), LAST_UPDATED_FORMAT)
+    return dateformat.format(timezone.localtime(value), LAST_UPDATED_FORMAT)
 
 
 def _serialize_service_numbers(distinct_attributes: Dict) -> List[dict]:
@@ -112,7 +115,7 @@ def get_browse_timetable_detail_api(request, pk):
             "revisionId": live_revision.id,
             "transxchangeVersion": dataset.transxchange_version,
             "uploadFileExtension": live_revision.upload_file_extension,
-            "lastUpdated": _format_published_at(dataset.published_at),
+            "lastUpdated": format_last_updated(dataset.published_at),
             "publishedBy": published_by.username if published_by else None,
             "error": context["error"],
             "dataQuality": _serialize_data_quality(context),

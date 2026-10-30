@@ -58,3 +58,15 @@ def test_session_auth_api_is_available_on_every_nextjs_host(urlconf, path, view_
 )
 def test_application_api_is_shared_by_www_and_publish(urlconf, path, view_name):
     assert resolve(path, urlconf=urlconf).view_name == view_name
+
+
+@pytest.mark.parametrize(
+    ("path", "view_name"),
+    [
+        ("/api/browser/timetables/1/", "api:browser-timetable-detail"),
+        ("/api/browser/avl/1/", "api:browser-avl-detail"),
+        ("/api/browser/fares/1/", "api:browser-fares-detail"),
+    ],
+)
+def test_dataset_detail_browser_api_is_served_on_the_data_host(path, view_name):
+    assert resolve(path, urlconf=settings.DATA_URLCONF).view_name == view_name
