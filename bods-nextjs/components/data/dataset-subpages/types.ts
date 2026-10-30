@@ -1,4 +1,4 @@
-/** Payloads of transit_odp/browse/views/api.py */
+/** Payloads of transit_odp/browse/views/dataset_subpages_api.py */
 
 export interface ChangelogDataQuality {
   /** "Not available", "Generating..." or "" - shown instead of a score. */
