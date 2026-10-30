@@ -56,6 +56,11 @@ from transit_odp.browse.views.download_api import (
     get_download_fares_api,
     get_download_timetables_api,
 )
+from transit_odp.browse.views.operators_api import (
+    operator_contact_api,
+    operator_detail_api,
+    operators_list_api,
+)
 from transit_odp.fares.views.dataset_detail_api import get_browse_fares_detail_api
 from transit_odp.timetables.views.dataset_detail_api import (
     get_browse_timetable_detail_api,
@@ -168,6 +173,17 @@ urlpatterns = [
         "browser/downloads/coach/",
         get_download_coach_api,
         name="browser-download-coach",
+    ),
+    path("browser/operators/", operators_list_api, name="browser-operators"),
+    path(
+        "browser/operators/<int:pk>/",
+        operator_detail_api,
+        name="browser-operator-detail",
+    ),
+    path(
+        "browser/operators/<int:pk>/contact/",
+        operator_contact_api,
+        name="browser-operator-contact",
     ),
     # Authentication endpoints for NextJS
     path("user/", CurrentUserAPIView.as_view(), name="current-user"),
