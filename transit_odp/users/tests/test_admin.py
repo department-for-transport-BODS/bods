@@ -113,3 +113,51 @@ def test_site_admin_with_stray_organisation_can_clear_it(admin_client):
 
     assert response.status_code == 302
     assert user.organisations.count() == 0
+
+
+@pytest.mark.parametrize("flag", ["is_staff", "is_superuser"])
+def test_promoting_to_staff_without_organisation_saves_as_site_admin(
+    admin_client, flag
+):
+    user = UserFactory(account_type=AccountType.developer.value)
+    url = reverse("admin:users_user_change", args=[user.id], host=ADMIN_HOST)
+
+    response = admin_client.post(
+        url,
+        change_form_data(
+            user,
+            account_type=AccountType.org_admin.value,
+            organisations=[],
+            **{flag: "on"},
+        ),
+    )
+
+    assert response.status_code == 302
+    user.refresh_from_db()
+    assert user.account_type == AccountType.site_admin.value
+    assert user.organisations.count() == 0
+
+
+@pytest.mark.parametrize("flag", ["is_staff", "is_superuser"])
+def test_promoting_to_staff_with_organisation_shows_form_error_not_500(
+    admin_client, flag
+):
+    user = UserFactory(account_type=AccountType.developer.value)
+    org = OrganisationFactory()
+    url = reverse("admin:users_user_change", args=[user.id], host=ADMIN_HOST)
+
+    response = admin_client.post(
+        url,
+        change_form_data(
+            user,
+            account_type=AccountType.org_staff.value,
+            organisations=[org.id],
+            **{flag: "on"},
+        ),
+    )
+
+    assert response.status_code == 200
+    assert "organisations" in response.context["adminform"].form.errors
+    user.refresh_from_db()
+    assert user.account_type == AccountType.developer.value
+    assert user.organisations.count() == 0

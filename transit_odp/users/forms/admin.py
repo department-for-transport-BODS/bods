@@ -88,32 +88,36 @@ class UserChangeForm(auth_forms.UserChangeForm):
 
         self.fields["share_app_usage"].initial = self.instance.settings.share_app_usage
 
-    def clean(self):
+    def _post_clean(self):
         # Mirrors the m2m_changed guard in users/receivers.py, which runs after
-        # form validation and would otherwise surface as a 500.
-        cleaned_data = super().clean()
-        account_type = cleaned_data.get("account_type")
-        organisations = cleaned_data.get("organisations")
-        if account_type is None or organisations is None:
-            return cleaned_data
+        # form validation and would otherwise surface as a 500. Runs after
+        # super() so the instance's account_type includes User.clean()'s
+        # promotion of staff/superusers to site_admin.
+        super()._post_clean()
+        organisations = self.cleaned_data.get("organisations")
+        if "account_type" not in self.cleaned_data or organisations is None:
+            return
 
-        role = User(account_type=account_type)
-        if role.is_org_user and not organisations:
+        user = self.instance
+        if user.is_org_user and not organisations:
             self.add_error(
                 "organisations",
                 _("This account type must belong to an organisation."),
             )
-        elif not role.is_org_user and organisations:
-            self.add_error(
-                "organisations",
-                _("This account type cannot belong to an organisation."),
-            )
-        elif role.is_single_org_user and len(organisations) > 1:
+        elif not user.is_org_user and organisations:
+            if user.is_staff or user.is_superuser:
+                message = _(
+                    "Staff and superusers are site admins and cannot belong to "
+                    "an organisation."
+                )
+            else:
+                message = _("This account type cannot belong to an organisation.")
+            self.add_error("organisations", message)
+        elif user.is_single_org_user and len(organisations) > 1:
             self.add_error(
                 "organisations",
                 _("This account type can only belong to one organisation."),
             )
-        return cleaned_data
 
     def save(self, commit=True):
         user = super().save(commit=commit)
