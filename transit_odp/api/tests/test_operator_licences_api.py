@@ -221,7 +221,10 @@ class TestLicenceLineDetail:
 
         payload = data_client.get(line_url(LICENCE), self.params()).json()
 
-        assert payload["organisation"] == {"id": organisation.id, "name": "Alpha Travel"}
+        assert payload["organisation"] == {
+            "id": organisation.id,
+            "name": "Alpha Travel",
+        }
 
     @pytest.mark.parametrize("pf", ["1", "0", "anything"])
     def test_passenger_facing_flag_hides_licence_page_content(self, data_client, pf):
@@ -256,9 +259,7 @@ class TestLicenceLineDetail:
         }
         assert payload["timetable"] is None
 
-    def test_flexible_booking_methods_follow_django_template_mapping(
-        self, data_client
-    ):
+    def test_flexible_booking_methods_follow_django_template_mapping(self, data_client):
         dataset = DatasetFactory(dataset_type=TimetableType)
         service, _, _ = build_line(dataset.live_revision, service_type="flexible")
         BookingArrangements.objects.create(
@@ -321,9 +322,11 @@ class TestLicenceLineDetail:
     @override_flag(FARES_RA, active=True)
     def test_complete_service_pages_compliance(self, data_client):
         dataset = build_live_line()
-        with mock.patch(
-            "transit_odp.browse.views.operators.get_vehicle_activity_operatorref_linename"
-        ) as activity, mock.patch(
+        activity_path = (
+            "transit_odp.browse.views.operators."
+            "get_vehicle_activity_operatorref_linename"
+        )
+        with mock.patch(activity_path) as activity, mock.patch(
             "transit_odp.browse.views.operators.AbodsRegistery"
         ) as registry:
             import pandas as pd
