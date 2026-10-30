@@ -8,7 +8,7 @@
  *         (and the browse/avl overrides)
  * View: transit_odp/browse/views/{timetable,avl,fares}_views.py - *SubscriptionView,
  *       *SubscriptionSuccessView
- * API: transit_odp/browse/views/api.py - dataset_subscription_api,
+ * API: transit_odp/browse/views/dataset_subpages_api.py - dataset_subscription_api,
  *      get_dataset_subscription_success_api
  */
 
