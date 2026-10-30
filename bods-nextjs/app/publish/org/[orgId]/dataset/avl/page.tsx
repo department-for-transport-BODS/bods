@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { AvlManagement } from './_components/AvlManagement';
+import { ReviewListPage } from '@/components/publish/review-list/ReviewListPage';
 
 export const metadata: Metadata = {
   title: 'Review my bus location data',
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function AVLPage() {
   return (
     <ProtectedRoute>
-      <AvlManagement />
+      <ReviewListPage kind="avl" />
     </ProtectedRoute>
   );
 }
