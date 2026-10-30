@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ReviewListPage } from './ReviewListPage';
 import { api } from '@/lib/api-client';
@@ -138,8 +138,21 @@ function response(
   };
 }
 
+const PROGRESS_URL = /^\/api\/publish\/dataset\/(\d+)\/progress\/$/;
+let progressResponder: (datasetId: string) => Promise<unknown> = async () => ({
+  progress: 0,
+  status: 'indexing',
+});
+
+function mockApi(list: ReviewListResponse) {
+  mockGet.mockImplementation((url: string) => {
+    const progress = PROGRESS_URL.exec(url);
+    return progress ? progressResponder(progress[1]) : Promise.resolve(list);
+  });
+}
+
 async function renderPage(kind: ReviewListKind, overrides: Partial<ReviewListResponse> = {}) {
-  mockGet.mockResolvedValue(response(kind, overrides));
+  mockApi(response(kind, overrides));
   render(<ReviewListPage kind={kind} />);
   return screen.findByRole('heading', { level: 1 });
 }
@@ -149,6 +162,7 @@ describe('ReviewListPage', () => {
     jest.clearAllMocks();
     mockSearch = '';
     mockOrgId = '7';
+    progressResponder = async () => ({ progress: 0, status: 'indexing' });
   });
 
   describe('data fetching (filters, sorting and paging)', () => {
@@ -524,6 +538,174 @@ describe('ReviewListPage', () => {
       const cell = await statusText('avl', { status: 'error', datasetType: 2 });
 
       expect(cell).toHaveTextContent('Published');
+    });
+  });
+
+  describe('processing progress polling (feed-list-progress.js)', () => {
+    const progressCalls = () =>
+      mockGet.mock.calls.filter(([url]) => PROGRESS_URL.test(url as string));
+
+    const renderProcessing = async (overrides: Partial<ReviewListRow> = { status: 'indexing' }) => {
+      mockApi(response('timetable', { results: [row(overrides)] }));
+      render(<ReviewListPage kind="timetable" />);
+      await screen.findByRole('table');
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(0);
+      });
+    };
+
+    const tick = (ms: number) =>
+      act(async () => {
+        await jest.advanceTimersByTimeAsync(ms);
+      });
+
+    const cell = () => within(screen.getAllByRole('row')[1]).getAllByRole('cell')[0];
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('queries the dataset progress endpoint straight away and then every 10 seconds', async () => {
+      await renderProcessing();
+
+      expect(progressCalls()).toEqual([['/api/publish/dataset/11/progress/']]);
+
+      await tick(9999);
+      expect(progressCalls()).toHaveLength(1);
+      await tick(1);
+      expect(progressCalls()).toHaveLength(2);
+      await tick(10000);
+      expect(progressCalls()).toHaveLength(3);
+    });
+
+    it('updates the pie arc and percentage while the revision is indexing', async () => {
+      progressResponder = async () => ({ progress: 40, status: 'indexing' });
+      await renderProcessing();
+
+      expect(cell()).toHaveTextContent('40%');
+      expect(cell()).toHaveTextContent('Processing');
+      const arc = cell().querySelector('path')?.getAttribute('d') ?? '';
+      expect(arc).toMatch(/^M [\d.-]+ [\d.-]+ A 4\.5 4\.5 0 0 0 [\d.-]+ [\d.-]+$/);
+
+      progressResponder = async () => ({ progress: 80, status: 'indexing' });
+      await tick(10000);
+
+      expect(cell()).toHaveTextContent('80%');
+      // 81% of a circle is more than half, so the large-arc flag is set.
+      expect(cell().querySelector('path')?.getAttribute('d')).toContain('A 4.5 4.5 0 1 0');
+      expect(progressCalls()).toHaveLength(2);
+    });
+
+    it('swaps to Draft with a View link on the active tab and stops polling', async () => {
+      progressResponder = async () => ({ progress: 100, status: 'success' });
+      await renderProcessing();
+
+      expect(cell().querySelector('.status-indicator--draft')).toHaveTextContent('Draft');
+      expect(cell().querySelector('.pie-progress')).toBeNull();
+      expect(within(cell()).getByRole('link', { name: 'View' })).toHaveAttribute(
+        'href',
+        expect.stringMatching(/\/org\/7\/dataset\/timetable\/11\/update\/review$/),
+      );
+
+      await tick(60000);
+      expect(progressCalls()).toHaveLength(1);
+    });
+
+    it('swaps to Error and stops polling', async () => {
+      progressResponder = async () => ({ progress: 100, status: 'error' });
+      await renderProcessing();
+
+      expect(cell().querySelector('.status-indicator--error')).toHaveTextContent('Error');
+      await tick(30000);
+      expect(progressCalls()).toHaveLength(1);
+    });
+
+    it.each([
+      ['pending', 30],
+      ['live', 100],
+      ['indexing', 100],
+    ])('falls back to the success-styled "Processing" for %s at %i%% and stops', async (status, progress) => {
+      progressResponder = async () => ({ progress, status });
+      await renderProcessing();
+
+      expect(cell().querySelector('.status-indicator--success')).toHaveTextContent('Processing');
+      await tick(30000);
+      expect(progressCalls()).toHaveLength(1);
+    });
+
+    it('gives up and shows the fallback indicator when the request fails', async () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+      progressResponder = async () => {
+        throw new Error('503');
+      };
+      await renderProcessing();
+
+      expect(cell().querySelector('.status-indicator--success')).toHaveTextContent('Processing');
+      expect(consoleError).toHaveBeenCalledWith(expect.stringContaining('Cannot contact API, giving up'));
+      await tick(30000);
+      expect(progressCalls()).toHaveLength(1);
+      consoleError.mockRestore();
+    });
+
+    it('does not add the View link on the draft tab', async () => {
+      mockSearch = 'tab=draft';
+      progressResponder = async () => ({ progress: 100, status: 'success' });
+      await renderProcessing();
+
+      expect(cell()).toHaveTextContent('Draft');
+      expect(within(cell()).queryByRole('link', { name: 'View' })).not.toBeInTheDocument();
+    });
+
+    it('polls the draft revision of a published dataset and keeps its Published badge', async () => {
+      progressResponder = async () => ({ progress: 100, status: 'success' });
+      await renderProcessing({ status: 'live', hasDraftRevision: true, draftStatus: 'indexing' });
+
+      expect(cell()).toHaveTextContent('Published');
+      expect(cell().querySelector('.status-indicator--draft')).toHaveTextContent('Draft');
+      expect(within(cell()).getAllByRole('link', { name: 'View' })).toHaveLength(2);
+      expect(progressCalls()).toEqual([['/api/publish/dataset/11/progress/']]);
+    });
+
+    it('does not poll rows that are not processing', async () => {
+      await renderProcessing({ status: 'draft' });
+      await tick(30000);
+
+      expect(progressCalls()).toHaveLength(0);
+    });
+
+    it('polls each processing row independently', async () => {
+      mockApi(
+        response('timetable', {
+          results: [row({ id: 11, status: 'indexing' }), row({ id: 12, status: 'pending' })],
+        }),
+      );
+      progressResponder = async (id) =>
+        id === '11' ? { progress: 100, status: 'success' } : { progress: 25, status: 'indexing' };
+      render(<ReviewListPage kind="timetable" />);
+      await screen.findByRole('table');
+      await tick(0);
+
+      const rows = screen.getAllByRole('row');
+      expect(rows[1]).toHaveTextContent('Draft');
+      expect(rows[2]).toHaveTextContent('25%');
+      await tick(10000);
+      expect(progressCalls().filter(([url]) => url === '/api/publish/dataset/11/progress/')).toHaveLength(1);
+      expect(progressCalls().filter(([url]) => url === '/api/publish/dataset/12/progress/')).toHaveLength(2);
+    });
+
+    it('stops polling when the page is left', async () => {
+      mockApi(response('timetable', { results: [row({ status: 'indexing' })] }));
+      const { unmount } = render(<ReviewListPage kind="timetable" />);
+      await screen.findByRole('table');
+      await tick(0);
+      unmount();
+
+      await tick(30000);
+      expect(progressCalls()).toHaveLength(1);
     });
   });
 
