@@ -16,6 +16,7 @@ import { DatasetDetailContent } from '@/components/data/DatasetDetailContent';
 import type { Dataset } from '@/types';
 import { HOSTS, dataPath, wwwPath } from '@/config/client';
 import { DJANGO_HOSTS, serverConfig } from '@/config/server';
+import { isNumericId } from '@/lib/utils/numeric-id';
 
 interface DatasetDetailPageProps {
   params: Promise<{ id: string }>;
@@ -80,7 +81,13 @@ async function getDataset(id: string): Promise<Dataset | null> {
 
 export default async function DatasetDetailPage({ params }: DatasetDetailPageProps) {
   const { id } = await params;
-  
+
+  // This dynamic segment catches every unknown single-segment data-host path
+  // (e.g. /foo). Only numeric ids can be datasets; anything else is a plain 404.
+  if (!isNumericId(id)) {
+    notFound();
+  }
+
   const dataset = await getDataset(id);
 
   if (!dataset) {
@@ -159,11 +166,11 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
  */
 export async function generateMetadata({ params }: DatasetDetailPageProps) {
   const { id } = await params;
-  const dataset = await getDataset(id);
+  const dataset = isNumericId(id) ? await getDataset(id) : null;
 
   if (!dataset) {
     return {
-      title: 'Dataset Not Found - Bus Open Data Service',
+      title: 'Page not found - Bus Open Data Service',
     };
   }
 
