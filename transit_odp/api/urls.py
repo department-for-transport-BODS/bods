@@ -18,12 +18,7 @@ from transit_odp.api.views import (
     TimetablesViewSet,
     v2,
 )
-from transit_odp.api.views.auth import (
-    CSRFTokenAPIView,
-    CurrentUserAPIView,
-    LoginAPIView,
-    LogoutAPIView,
-)
+from transit_odp.api.views.auth import CurrentUserAPIView
 from transit_odp.api.views.avl import (
     AVLManageSubscriptionsView,
     AVLManageSubscriptionDetailView,
@@ -46,11 +41,41 @@ from transit_odp.api.views.browser import (
     BrowseOrganisationListView,
     BrowseTimetableListView,
 )
+from transit_odp.browse.views.api import (
+    dataset_feedback_api,
+    dataset_subscription_api,
+    get_dataset_changelog_api,
+    get_dataset_feedback_success_api,
+    get_dataset_subscription_success_api,
+)
 from transit_odp.timetables.views.line_detail_api import (
     get_browse_timetable_line_detail_api,
 )
 
 app_name = "api"
+
+# Data host dataset sub-pages (changelog, subscription, feedback), one set per
+# dataset type: browser/<timetables|avl|fares>/<pk>/<sub-page>/
+DATASET_SUBPAGE_PATTERNS = [
+    path(
+        f"browser/{kind}/<int:pk>/{route}",
+        view,
+        {"kind": kind},
+        name=f"browser-{kind}-{name}",
+    )
+    for kind in ("timetables", "avl", "fares")
+    for route, view, name in (
+        ("changelog/", get_dataset_changelog_api, "changelog"),
+        ("subscription/", dataset_subscription_api, "subscription"),
+        (
+            "subscription/success/",
+            get_dataset_subscription_success_api,
+            "subscription-success",
+        ),
+        ("feedback/", dataset_feedback_api, "feedback"),
+        ("feedback/success/", get_dataset_feedback_success_api, "feedback-success"),
+    )
+]
 
 # TODO - refactor into api_v1,
 router_v1 = DefaultRouter()
@@ -79,6 +104,7 @@ urlpatterns = [
         get_browse_timetable_line_detail_api,
         name="browser-timetable-line-detail",
     ),
+    *DATASET_SUBPAGE_PATTERNS,
     path("browser/avl/", BrowseAVLListView.as_view(), name="browser-avl"),
     path("browser/fares/", BrowseFaresListView.as_view(), name="browser-fares"),
     path(
