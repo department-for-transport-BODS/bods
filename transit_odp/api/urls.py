@@ -46,6 +46,13 @@ from transit_odp.api.views.browser import (
     BrowseOrganisationListView,
     BrowseTimetableListView,
 )
+from transit_odp.browse.views.download_api import (
+    get_download_avl_api,
+    get_download_coach_api,
+    get_download_disruptions_api,
+    get_download_fares_api,
+    get_download_timetables_api,
+)
 from transit_odp.timetables.views.line_detail_api import (
     get_browse_timetable_line_detail_api,
 )
@@ -90,6 +97,31 @@ urlpatterns = [
         "browser/organisations/",
         BrowseOrganisationListView.as_view(),
         name="browser-organisations",
+    ),
+    path(
+        "browser/downloads/timetables/",
+        get_download_timetables_api,
+        name="browser-download-timetables",
+    ),
+    path(
+        "browser/downloads/avl/",
+        get_download_avl_api,
+        name="browser-download-avl",
+    ),
+    path(
+        "browser/downloads/fares/",
+        get_download_fares_api,
+        name="browser-download-fares",
+    ),
+    path(
+        "browser/downloads/disruptions/",
+        get_download_disruptions_api,
+        name="browser-download-disruptions",
+    ),
+    path(
+        "browser/downloads/coach/",
+        get_download_coach_api,
+        name="browser-download-coach",
     ),
     # Authentication endpoints for NextJS
     path("user/", CurrentUserAPIView.as_view(), name="current-user"),
