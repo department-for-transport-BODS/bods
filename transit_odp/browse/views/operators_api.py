@@ -1,7 +1,8 @@
 """JSON APIs backing the Next.js operator profile pages (data host).
 
-Mirrors ``OperatorsView``, ``OperatorDetailView`` and ``ContactOperatorView`` in
-``operators.py`` / ``contact_operator.py``. The list shares its queryset helper
+Mirrors ``OperatorsView``, ``OperatorDetailView``, ``ContactOperatorView``,
+``LicenceDetailView`` and ``LicenceLineMetadataDetailView`` in ``operators.py`` /
+``contact_operator.py``. The list shares its queryset helper
 with the HTML view and the detail endpoint runs ``OperatorDetailView``'s own
 ``get_context_data`` so the compliance numbers cannot drift between frontends.
 
@@ -10,11 +11,16 @@ payload, so Next.js renders exactly the branch Django would have rendered.
 """
 
 import json
+from typing import Optional
+
+import pandas as pd
 from django.core.paginator import EmptyPage, Paginator
 from django.db import transaction
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import floatformat
+from django.utils import formats
+from django.utils.timezone import template_localtime
 from django.views.decorators.http import require_GET, require_http_methods
 
 from transit_odp.browse.forms import ConsumerFeedbackForm
@@ -22,11 +28,18 @@ from transit_odp.browse.views.contact_operator import (
     send_operator_feedback_notifications,
 )
 from transit_odp.browse.views.operators import (
+    LicenceDetailView,
+    LicenceLineMetadataDetailView,
     OperatorDetailView,
     get_active_operators_queryset,
 )
 from transit_odp.common.templatetags.paginator_range import paginator_range
 from transit_odp.organisation.models import Organisation
+from transit_odp.otc.models import Licence as OTCLicence
+from transit_odp.timetables.views.line_detail_api import (
+    _serialize_booking,
+    _serialize_direction,
+)
 
 OPERATORS_PAGE_SIZE = 10
 DEFAULT_ORDERING = "name"
@@ -34,6 +47,7 @@ ORDERING_FIELDS = {"name", "-name", "created", "-created"}
 
 AUTH_REQUIRED_ERROR = "Authentication required"
 ORGANISATION_NOT_FOUND_ERROR = "Operator not found"
+LICENCE_NOT_FOUND_ERROR = "Licence not found"
 INVALID_PAGE_ERROR = "Invalid page"
 VALIDATION_ERROR = "Validation failed"
 
@@ -235,3 +249,232 @@ def operator_contact_api(request, pk):
         send_operator_feedback_notifications(organisation, feedback, request.user)
 
     return JsonResponse({"success": True})
+
+
+def _optional_int(value) -> Optional[int]:
+    return None if value is None or pd.isna(value) else int(value)
+
+
+def _render_date(value) -> Optional[str]:
+    """A date as ``{{ value }}`` prints it in a template (localised, tz-converted)."""
+    if value is None or pd.isnull(value):
+        return None
+    return formats.localize(template_localtime(value))
+
+
+def _serialize_files(files) -> list:
+    return [
+        {
+            "filename": file["filename"],
+            "startDate": _render_date(file["start_date"]),
+            "endDate": _render_date(file["end_date"]),
+        }
+        for file in files or []
+    ]
+
+
+def _serialize_licence_service(service: dict) -> dict:
+    """One row of ``licence_services`` (prefetched compliance report or legacy map)."""
+    return {
+        "serviceNumber": service.get("service_number"),
+        "registrationNumber": service.get("registration_number"),
+        "fullRegistrationNumber": service.get("full_registration_number"),
+        "licenceOrganisationId": _optional_int(service.get("licence_organisation_id")),
+        # Comma separated UILta ids, matching the template's data-local-authority.
+        "localAuthorityIds": service.get("local_authorities_ids_strs") or "",
+        "isInScope": bool(service.get("is_in_scope")),
+        "isInSeason": bool(service.get("is_in_season")),
+        "requiresAttention": service.get("requires_attention") == "Yes",
+        "avlRequiresAttention": service.get("avl_requires_attention") == "Yes",
+        "faresRequiresAttention": service.get("fares_requires_attention") == "Yes",
+        "isLabelGreen": bool(service.get("is_label_green")),
+        "labelStr": service.get("label_str") or "",
+    }
+
+
+@require_GET
+def licence_detail_api(request, number):
+    """GET ``/api/browser/operators/licence/<number>/`` for ``LicenceDetailView``.
+
+    The HTML view reads ``org_id`` from the URL kwargs, which the URLconf never
+    supplies, so the ``?org_id=`` in its links is ignored. The API does the same.
+    """
+    view = LicenceDetailView()
+    view.setup(request, number=number)
+    try:
+        view.object = view.get_object()
+    except OTCLicence.DoesNotExist:
+        return JsonResponse({"error": LICENCE_NOT_FOUND_ERROR}, status=404)
+
+    context = view.get_context_data(object=view.object)
+
+    return JsonResponse(
+        {
+            "licenceNumber": context["licence_number"],
+            "organisationId": context["organisation_id"],
+            "organisationName": context["organisation_name"],
+            "isPrefetchComplianceReportActive": bool(
+                context["is_prefetch_compliance_report_active"]
+            ),
+            "hasFranchise": bool(context["has_frencise"]),
+            "hasNullLocalAuthority": bool(context.get("has_null_local_authority")),
+            "localAuthorities": [
+                {"id": int(row["id"]), "name": str(row["name"])}
+                for row in context.get("local_authorities_list", [])
+            ],
+            "franchises": [
+                {
+                    "id": int(row["organisation_id"]),
+                    "name": str(row["organisation_name"]),
+                }
+                for row in context.get("frencise_list", [])
+            ],
+            "operators": [
+                {
+                    "id": int(row["licence_organisation_id"]),
+                    "name": str(row["licence_organisation_name"]),
+                }
+                for row in context.get("organisations_list", [])
+            ],
+            "services": [
+                _serialize_licence_service(service)
+                for service in context["licence_services"]
+            ],
+        }
+    )
+
+
+def _serialize_licence_timetable(context) -> Optional[dict]:
+    """The context's visualiser data, shaped like ``line_detail_api``'s payload."""
+    timetable = context.get("timetable")
+    if timetable is None:
+        return None
+
+    directions = []
+    for direction, details in timetable.items():
+        directions.append(
+            _serialize_direction(
+                direction,
+                {
+                    "stops": details["stops"],
+                    "observations": details["observations"],
+                    "description": details["start_and_end"],
+                },
+                {
+                    "df_timetable": details["df"],
+                    "total_page": details["total_page"],
+                    "curr_page": details["curr_page"],
+                    "show_all": details["show_all"],
+                    "total_row_count": details["total_row_count"],
+                },
+            )
+        )
+    return {
+        "currDate": context["curr_date"],
+        "isTimetableInfoAvailable": bool(context["is_timetable_info_available"]),
+        "directions": directions,
+    }
+
+
+@require_GET
+def licence_line_detail_api(request, number):
+    """GET ``/api/browser/operators/licence/<number>/line/details/`` for
+    ``LicenceLineMetadataDetailView``.
+
+    Takes the view's query parameters (``line``, ``service``, ``pf``, ``date``,
+    ``outboundPage``...). Like the HTML view it never 404s: an unknown licence or
+    service renders with "Organisation not yet created" and no data.
+    """
+    view = LicenceLineMetadataDetailView()
+    view.setup(request, number=number)
+    view.object = view.get_object()
+    context = view.get_context_data(object=view.object)
+
+    dataset = view.object
+    live_revision = dataset.live_revision if dataset else None
+    organisation = context["organisation"]
+
+    booking = {"bookingArrangements": None, "bookingMethods": None}
+    if context.get("booking_methods"):
+        booking = _serialize_booking(
+            context["service_type"],
+            [(context.get("booking_arrangements"), *context["booking_methods"])],
+        )
+
+    timetable = _serialize_licence_timetable(context)
+    outbound = (context.get("timetable") or {}).get("outbound") or {}
+
+    def optional_bool(key):
+        value = context.get(key)
+        return None if value is None else bool(value)
+
+    return JsonResponse(
+        {
+            "licenceNumber": context["licence_number"],
+            "lineName": context["line_name"],
+            "serviceCode": context["service_code"],
+            "isLicencePage": bool(context["licence_page"]),
+            "organisation": (
+                {"id": organisation.id, "name": organisation.name}
+                if organisation
+                else None
+            ),
+            "datasetId": dataset.id if dataset else None,
+            "revisionId": live_revision.id if live_revision else None,
+            "flags": {
+                "isCompleteServicePagesActive": bool(
+                    context["is_complete_service_pages_active"]
+                ),
+                "isCompleteServicePagesRealTimeDataActive": bool(
+                    context["is_complete_service_pages_real_time_data_active"]
+                ),
+                "isAvlRequireAttentionActive": bool(
+                    context["is_avl_require_attention_active"]
+                ),
+                "isFaresRequireAttentionActive": bool(
+                    context["is_fares_require_attention_active"]
+                ),
+                "isTimetableVisualiserActive": bool(
+                    context["is_timetable_visualiser_active"]
+                ),
+                "isSpecificFeedback": bool(context["is_specific_feedback"]),
+            },
+            # The service_in* and is_*_compliant values are only computed when the
+            # dataset has a live revision, so they are null (not false) otherwise.
+            "serviceInScope": optional_bool("service_inscope"),
+            "serviceInSeason": optional_bool("service_inseason"),
+            "isAvlCompliant": optional_bool("is_avl_compliant"),
+            "isFaresCompliant": optional_bool("is_fares_compliant"),
+            "isTimetableCompliant": optional_bool("is_timetable_compliant"),
+            "serviceType": context["service_type"],
+            **booking,
+            "fares": {
+                "datasetId": context.get("fares_dataset_id"),
+                "tariffBasis": [str(item) for item in context.get("fares_tariff_basis", [])],
+                "products": [str(item) for item in context.get("fares_products", [])],
+                "validFiles": _serialize_files(context.get("fares_valid_files")),
+                "futureDatedFiles": _serialize_files(
+                    context.get("fares_future_dated_files")
+                ),
+                "expiredFiles": _serialize_files(context.get("fares_expired_files")),
+            },
+            "timetableFiles": {
+                # `{{ timetables_dataset_id }}` (link text); the link targets `object.id`.
+                "datasetId": context.get("timetables_dataset_id"),
+                "validFiles": _serialize_files(context.get("timetables_valid_files")),
+                "futureDatedFiles": _serialize_files(
+                    context.get("timetables_future_dated_files")
+                ),
+                "expiredFiles": _serialize_files(
+                    context.get("timetables_expired_files")
+                ),
+            },
+            "timetable": timetable,
+            # `{{ timetable.outbound.start_and_end }}` in the passenger facing heading.
+            "outboundStartAndEnd": outbound.get("start_and_end"),
+            "realTime": {
+                "nationalOperatorCode": context.get("national_operator_code", ""),
+                "vehicleJourneyCodes": context.get("vehicle_journey_codes", ""),
+            },
+        }
+    )

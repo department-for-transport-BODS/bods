@@ -57,11 +57,14 @@ from transit_odp.browse.views.download_api import (
     get_download_timetables_api,
 )
 from transit_odp.browse.views.operators_api import (
+    licence_detail_api,
+    licence_line_detail_api,
     operator_contact_api,
     operator_detail_api,
     operators_list_api,
 )
 from transit_odp.fares.views.dataset_detail_api import get_browse_fares_detail_api
+from transit_odp.publish.views.api import AVLRealTimeDataView
 from transit_odp.timetables.views.dataset_detail_api import (
     get_browse_timetable_detail_api,
 )
@@ -184,6 +187,21 @@ urlpatterns = [
         "browser/operators/<int:pk>/contact/",
         operator_contact_api,
         name="browser-operator-contact",
+    ),
+    path(
+        "browser/operators/licence/<slug:number>/",
+        licence_detail_api,
+        name="browser-operator-licence-detail",
+    ),
+    path(
+        "browser/operators/licence/<slug:number>/line/details/",
+        licence_line_detail_api,
+        name="browser-operator-licence-line-detail",
+    ),
+    path(
+        "browser/avl-feed/real-time-bus-location/",
+        AVLRealTimeDataView.as_view(),
+        name="browser-avl-real-time-bus-location",
     ),
     # Authentication endpoints for NextJS
     path("user/", CurrentUserAPIView.as_view(), name="current-user"),
