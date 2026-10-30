@@ -6,6 +6,7 @@ from django.views import defaults as default_views
 from transit_odp.common.utils.custom_error_handlers import (
     page_not_found,
     permission_denied,
+    server_error,
 )
 from transit_odp.common.views import ComingSoonView
 from transit_odp.site_admin.urls import (
@@ -17,6 +18,8 @@ from transit_odp.site_admin.urls import (
 )
 from transit_odp.site_admin.views import AdminHomeView
 from transit_odp.users.views.auth import InviteOnlySignupView
+
+handler500 = "transit_odp.common.utils.custom_error_handlers.server_error"
 
 urlpatterns = [
     path("", AdminHomeView.as_view(), name="home"),
@@ -82,7 +85,7 @@ if settings.DEBUG:
             page_not_found,
             kwargs={"exception": Exception("Page not Found")},
         ),
-        path("500/", default_views.server_error),
+        path("500/", server_error),
         path("docs/", include("django.contrib.admindocs.urls")),
     ]
     if "debug_toolbar" in settings.INSTALLED_APPS:
