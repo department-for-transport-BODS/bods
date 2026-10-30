@@ -8,8 +8,9 @@ interface KeyValue {
 interface DataBrowserResultCardProps {
   title: string;
   href: string;
-  status: string;
-  statusLabel: string;
+  /** Omit (with `statusLabel`) for results that have no status, e.g. operators. */
+  status?: string;
+  statusLabel?: string;
   keyValues: KeyValue[];
   description?: string;
 }
@@ -38,10 +39,12 @@ export function DataBrowserResultCard({
         <Link className="govuk-link app-data-browser__title-link" href={href}>
           {title}
         </Link>
-        <span className="app-data-browser__status-text">
-          <span className={`app-data-browser__status-dot ${getStatusClass(status)}`} />
-          {statusLabel}
-        </span>
+        {status !== undefined && (
+          <span className="app-data-browser__status-text">
+            <span className={`app-data-browser__status-dot ${getStatusClass(status)}`} />
+            {statusLabel}
+          </span>
+        )}
       </div>
       <ul className="app-data-browser__key-value-list">
         {keyValues.map((item) => (

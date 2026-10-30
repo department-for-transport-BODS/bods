@@ -1185,3 +1185,89 @@ span.text-color-red {
 .app-error-summary--highlighted{
   outline: 3px solid #ffdd00;
 }
+
+/* Operator profiles (data host): autocomplete, licence list, compliance indicators, feed URL panel */
+.autocomplete {
+  position: relative;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 3px solid var(--govuk-colour-black);
+  z-index: 99;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #c5c7c8;
+  color: var(--govuk-colour-black);
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 1.1875rem;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: var(--govuk-colour-white);
+  border-bottom: 1px solid #b1b4b6;
+}
+
+.autocomplete-items div:hover,
+.autocomplete-active {
+  background-color: #003078 !important;
+  color: var(--govuk-colour-white);
+}
+
+ul.licence-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul.licence-list .compliance-indicator {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #b1b4b6;
+}
+
+ul.licence-list .compliance-indicator.compliant {
+  background-color: #00703c;
+}
+
+ul.licence-list .compliance-indicator.non-compliant {
+  background-color: #d4351c;
+}
+
+ul.licence-list a {
+  padding-left: 30px;
+}
+
+.compliance-indicator-help-icon {
+  position: relative;
+}
+
+.csp-total-inscope-inseason {
+  font-weight: 400;
+  font-size: 1.6875rem;
+  line-height: 1.1111111111;
+}
+
+.csp-inline {
+  display: inline !important;
+}
+
+.api-url-panel {
+  display: flex;
+  justify-content: space-between;
+  border: 0.15rem solid #b1b4b6;
+  padding: 20px;
+}
+
+.api-url-panel__url {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+  color: #505a5f;
+}
