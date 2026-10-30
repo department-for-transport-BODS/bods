@@ -1,94 +1,85 @@
 /**
  * Timetable Dataset Detail Page
  *
- * Public URL: /timetable/dataset/<pk>/ (Django "feed-detail").
+ * Public URL: /timetable/dataset/<pk>/ (Django "feed-detail"). The page is
+ * public, like Django's: anonymous users see everything except the API URL
+ * panel, which needs their API key.
  * AVL (/avl/dataset/<pk>/) and fares (/fares/dataset/<pk>/) detail pages are not
  * ported yet.
  *
  * Source: transit_odp/browse/templates/browse/timetables/dataset_detail/index.html
  * View: transit_odp/browse/views/timetable_views.py - DatasetDetailView
- * 
- * Server Component for optimal SEO and initial data fetch
+ * API: transit_odp/timetables/views/dataset_detail_api.py - get_browse_timetable_detail_api
+ *
+ * Server Component: the dataset is fetched on the server with the visitor's
+ * session cookie, so an unknown / hidden / wrong-type id is a real HTTP 404.
  */
 
+import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
-import Link from 'next/link';
-import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
-import { DatasetDetailContent } from '@/components/data/DatasetDetailContent';
-import type { Dataset } from '@/types';
-import { HOSTS, dataPath, wwwPath } from '@/config/client';
-import { datasetListPath } from '@/lib/dataset-paths';
+import { connection } from 'next/server';
+import { TimetableDatasetDetailContent } from '@/components/data/dataset-detail/TimetableDatasetDetailContent';
+import type { TimetableDatasetDetail } from '@/components/data/dataset-detail/types';
+import { DatasetDetailLayout } from '@/components/data/dataset-detail/DatasetDetailLayout';
+import { dataPath } from '@/config/client';
+import { featureFlags } from '@/config/feature-flags';
 import { DJANGO_HOSTS, serverConfig } from '@/config/server';
+import { datasetDetailPath, datasetListPath } from '@/lib/dataset-paths';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 import { isNumericId } from '@/lib/utils/numeric-id';
+import { truncateChars } from '@/lib/utils/truncate-chars';
 
 interface DatasetDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-function formatDatasetTimestamp(dateString: string): string {
-  const formatter = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/London',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
-
-  const parts = formatter.formatToParts(new Date(dateString));
-  const getPart = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? '';
-
-  return `${getPart('day')} ${getPart('month')} ${getPart('year')} ${getPart('hour')}:${getPart('minute')}`;
-}
+const PAGE_TITLE = 'Data set details';
 
 /**
- * Fetch dataset from Django API (server-side)
+ * Fetch the dataset from Django (server-side). Resolves to null only when
+ * Django says 404 (unknown, not live/inactive, inactive publisher, or not a
+ * timetable). Any other failure throws, so it surfaces as a 500 like Django's.
+ * Memoised per request so the page and `generateMetadata` share one call.
  */
-async function getDataset(id: string): Promise<Dataset | null> {
-  try {
-    const url = new URL(
-      `/api/v1/dataset/${encodeURIComponent(id)}/`,
-      serverConfig.djangoInternalOrigin,
-    );
-    const requestHeaders = await headers();
-    const upstreamHeaders = new Headers();
-    const cookie = requestHeaders.get('cookie');
-    if (cookie) {
-      upstreamHeaders.set('cookie', cookie);
-    }
-    const dataHost = new URL(DJANGO_HOSTS.data).host;
-    upstreamHeaders.set('host', dataHost);
-    upstreamHeaders.set('x-forwarded-host', dataHost);
+const getDataset = cache(async (id: string): Promise<TimetableDatasetDetail | null> => {
+  const url = new URL(
+    `/api/browser/timetables/${encodeURIComponent(id)}/`,
+    serverConfig.djangoInternalOrigin,
+  );
+  const requestHeaders = await headers();
+  const upstreamHeaders = new Headers();
+  const cookie = requestHeaders.get('cookie');
+  if (cookie) {
+    upstreamHeaders.set('cookie', cookie);
+  }
+  const dataHost = new URL(DJANGO_HOSTS.data).host;
+  upstreamHeaders.set('host', dataHost);
+  upstreamHeaders.set('x-forwarded-host', dataHost);
 
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: upstreamHeaders,
-    });
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: upstreamHeaders,
+    cache: 'no-store',
+  });
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      console.error(`Failed to fetch dataset: ${response.status} ${response.statusText}`);
-      return null;
-    }
-
-    const data = await response.json();
-    return data as Dataset;
-  } catch (error) {
-    console.error('Error fetching dataset:', error);
+  if (response.status === 404) {
     return null;
   }
-}
+  if (!response.ok) {
+    throw new Error(`Failed to fetch timetable dataset ${id}: ${response.status} ${response.statusText}`);
+  }
+
+  return (await response.json()) as TimetableDatasetDetail;
+});
 
 export default async function DatasetDetailPage({ params }: DatasetDetailPageProps) {
+  // The feature flags are runtime (ECS) values, so render per request.
+  await connection();
+
   const { id } = await params;
 
-  // Django's route is <int:pk>, so a non-numeric id is a plain 404. A numeric id
-  // that is not a live/inactive timetable dataset (e.g. an AVL or fares id) is
-  // rejected by the dataset API's timetable-only queryset, matching Django's 404.
+  // Django's route is <int:pk>, so a non-numeric id is a plain 404.
   if (!isNumericId(id)) {
     notFound();
   }
@@ -99,88 +90,32 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
     notFound();
   }
 
-  const formattedLastUpdated = formatDatasetTimestamp(dataset.modified);
-
   return (
-    <div className="govuk-width-container">
-      <Breadcrumbs
-        items={[
-          { label: 'Home', href: HOSTS.data },
-          { label: 'Browse', href: dataPath('/search') },
-          { label: 'Timetables Data', href: datasetListPath('TIMETABLE', { status: 'live' }) },
-          { label: dataset.name, current: true, truncateAt: 19 },
-        ]}
-      />
-
-      <main className="govuk-main-wrapper" id="main-content" role="main">
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-l app-mb-4 dont-break-out">
-              {dataset.name}
-            </h1>
-            <p className="govuk-body app-mb-sm-0">
-              Overview of the available bus open data
-            </p>
-          </div>
-        </div>
-
-        <hr className="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
-
-        <div className="govuk-grid-row">
-          <div className="govuk-grid-column-two-thirds">
-            <DatasetDetailContent
-              dataset={dataset}
-              formattedLastUpdated={formattedLastUpdated}
-              mapboxToken={serverConfig.mapboxToken}
-            />
-          </div>
-
-          <div className="govuk-grid-column-one-third">
-            <h2 className="govuk-heading-m">What you need to know</h2>
-            <ul className="govuk-list app-list--nav govuk-!-font-size-19">
-              <li>
-                <Link href={dataPath('/guidance/requirements')} className="govuk-link">
-                  View developer documentation
-                </Link>
-              </li>
-              <li>
-                <a
-                  className="govuk-link"
-                  href="https://www.gov.uk/government/consultations/bus-services-act-2017-bus-open-data"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Find out more about bus open data
-                </a>
-              </li>
-              <li>
-                <Link href={wwwPath('/contact')} className="govuk-link">
-                  Contact us for technical issues
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </main>
-    </div>
+    <DatasetDetailLayout
+      name={dataset.name}
+      breadcrumbs={hostBreadcrumbs(
+        'data',
+        { label: 'Browse', href: dataPath('/search') },
+        { label: 'Timetables Data', href: datasetListPath('TIMETABLE', { status: 'live' }) },
+        { label: truncateChars(dataset.name, 19), href: datasetDetailPath('TIMETABLE', dataset.id) },
+      )}
+    >
+      <TimetableDatasetDetailContent dataset={dataset} isSpecificFeedback={featureFlags.isSpecificFeedback} />
+    </DatasetDetailLayout>
   );
 }
 
-/**
- * Generate metadata for the page
- */
 export async function generateMetadata({ params }: DatasetDetailPageProps) {
   const { id } = await params;
-  const dataset = isNumericId(id) ? await getDataset(id) : null;
 
-  if (!dataset) {
-    return {
-      title: 'Page not found - Bus Open Data Service',
-    };
+  try {
+    const dataset = isNumericId(id) ? await getDataset(id) : null;
+    if (!dataset) {
+      return { title: 'Page not found - Bus Open Data Service' };
+    }
+  } catch {
+    // The page itself reports the failure; keep the metadata render quiet.
   }
 
-  return {
-    title: `${dataset.name} - Bus Open Data Service`,
-    description: dataset.description || `View details for ${dataset.name} dataset`,
-  };
+  return { title: PAGE_TITLE };
 }

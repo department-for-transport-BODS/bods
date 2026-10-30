@@ -46,6 +46,9 @@ from transit_odp.api.views.browser import (
     BrowseOrganisationListView,
     BrowseTimetableListView,
 )
+from transit_odp.timetables.views.dataset_detail_api import (
+    get_browse_timetable_detail_api,
+)
 from transit_odp.timetables.views.line_detail_api import (
     get_browse_timetable_line_detail_api,
 )
@@ -73,6 +76,11 @@ urlpatterns = [
         "browser/timetables/",
         BrowseTimetableListView.as_view(),
         name="browser-timetables",
+    ),
+    path(
+        "browser/timetables/<int:pk>/",
+        get_browse_timetable_detail_api,
+        name="browser-timetable-detail",
     ),
     path(
         "browser/timetables/<int:pk>/line-detail/",
