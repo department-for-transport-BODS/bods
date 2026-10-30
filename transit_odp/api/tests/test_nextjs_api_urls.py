@@ -58,3 +58,15 @@ def test_session_auth_api_is_available_on_every_nextjs_host(urlconf, path, view_
 )
 def test_application_api_is_shared_by_www_and_publish(urlconf, path, view_name):
     assert resolve(path, urlconf=urlconf).view_name == view_name
+
+
+@pytest.mark.parametrize(
+    ("path", "view_name"),
+    [
+        ("/api/browser/operators/", "api:browser-operators"),
+        ("/api/browser/operators/1/", "api:browser-operator-detail"),
+        ("/api/browser/operators/1/contact/", "api:browser-operator-contact"),
+    ],
+)
+def test_operator_browser_api_is_available_on_data_host(path, view_name):
+    assert resolve(path, urlconf=settings.DATA_URLCONF).view_name == view_name

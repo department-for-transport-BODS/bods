@@ -46,6 +46,11 @@ from transit_odp.api.views.browser import (
     BrowseOrganisationListView,
     BrowseTimetableListView,
 )
+from transit_odp.browse.views.operators_api import (
+    operator_contact_api,
+    operator_detail_api,
+    operators_list_api,
+)
 from transit_odp.timetables.views.line_detail_api import (
     get_browse_timetable_line_detail_api,
 )
@@ -90,6 +95,17 @@ urlpatterns = [
         "browser/organisations/",
         BrowseOrganisationListView.as_view(),
         name="browser-organisations",
+    ),
+    path("browser/operators/", operators_list_api, name="browser-operators"),
+    path(
+        "browser/operators/<int:pk>/",
+        operator_detail_api,
+        name="browser-operator-detail",
+    ),
+    path(
+        "browser/operators/<int:pk>/contact/",
+        operator_contact_api,
+        name="browser-operator-contact",
     ),
     # Authentication endpoints for NextJS
     path("user/", CurrentUserAPIView.as_view(), name="current-user"),
