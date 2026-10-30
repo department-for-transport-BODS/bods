@@ -1271,3 +1271,41 @@ ul.licence-list a {
   line-height: 1.3157894737;
   color: #505a5f;
 }
+
+/* Operator licence services table (common.scss in the Django frontend) */
+.js-hidden {
+  display: none;
+}
+
+.sra-dot {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.sra-dot-red {
+  background-color: #d4351c;
+}
+
+.sra-dot-green {
+  background-color: #00703c;
+}
+
+.sort-column > .sort-icon {
+  margin-left: 5px;
+}
+
+.sort-column > .fa-sort-asc,
+.sort-column > .sort-icon.fa-sort-up {
+  position: relative;
+  top: 6px;
+}
+
+#licence-services-table th {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+  color: #1d70b8;
+}

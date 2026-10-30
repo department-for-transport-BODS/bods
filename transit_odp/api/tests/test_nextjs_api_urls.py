@@ -66,6 +66,18 @@ def test_application_api_is_shared_by_www_and_publish(urlconf, path, view_name):
         ("/api/browser/operators/", "api:browser-operators"),
         ("/api/browser/operators/1/", "api:browser-operator-detail"),
         ("/api/browser/operators/1/contact/", "api:browser-operator-contact"),
+        (
+            "/api/browser/operators/licence/PD0000042/",
+            "api:browser-operator-licence-detail",
+        ),
+        (
+            "/api/browser/operators/licence/PD0000042/line/details/",
+            "api:browser-operator-licence-line-detail",
+        ),
+        (
+            "/api/browser/avl-feed/real-time-bus-location/",
+            "api:browser-avl-real-time-bus-location",
+        ),
     ],
 )
 def test_operator_browser_api_is_available_on_data_host(path, view_name):
