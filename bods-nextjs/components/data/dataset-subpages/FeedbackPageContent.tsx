@@ -7,7 +7,7 @@
  *         user_feedback_success.html (also used by AVL and fares)
  * Form: transit_odp/browse/forms.py - ConsumerFeedbackForm
  * View: transit_odp/browse/views/timetable_views.py - UserFeedbackView (+ AVL, fares)
- * API: transit_odp/browse/views/api.py - dataset_feedback_api,
+ * API: transit_odp/browse/views/dataset_subpages_api.py - dataset_feedback_api,
  *      get_dataset_feedback_success_api
  */
 

@@ -42,7 +42,7 @@ from transit_odp.api.views.browser import (
     BrowseTimetableListView,
 )
 from transit_odp.avl.views.dataset_detail_api import get_browse_avl_detail_api
-from transit_odp.browse.views.api import (
+from transit_odp.browse.views.dataset_subpages_api import (
     dataset_feedback_api,
     dataset_subscription_api,
     get_dataset_changelog_api,

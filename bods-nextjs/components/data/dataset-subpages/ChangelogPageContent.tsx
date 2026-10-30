@@ -6,7 +6,7 @@
  * Source: transit_odp/browse/templates/browse/{timetables,avl,fares}/feed_change_log.html
  *         transit_odp/publish/templates/publish/snippets/feed_change_log_table.html
  * View: transit_odp/browse/views/{timetable,avl,fares}_views.py - ChangeLogView
- * API: transit_odp/browse/views/api.py - get_dataset_changelog_api
+ * API: transit_odp/browse/views/dataset_subpages_api.py - get_dataset_changelog_api
  */
 
 import { useParams, useSearchParams } from 'next/navigation';
