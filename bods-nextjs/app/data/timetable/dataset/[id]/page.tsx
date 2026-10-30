@@ -1,7 +1,10 @@
 /**
- * Dataset Detail Page
- * 
- * 
+ * Timetable Dataset Detail Page
+ *
+ * Public URL: /timetable/dataset/<pk>/ (Django "feed-detail").
+ * AVL (/avl/dataset/<pk>/) and fares (/fares/dataset/<pk>/) detail pages are not
+ * ported yet.
+ *
  * Source: transit_odp/browse/templates/browse/timetables/dataset_detail/index.html
  * View: transit_odp/browse/views/timetable_views.py - DatasetDetailView
  * 
@@ -15,6 +18,7 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { DatasetDetailContent } from '@/components/data/DatasetDetailContent';
 import type { Dataset } from '@/types';
 import { HOSTS, dataPath, wwwPath } from '@/config/client';
+import { datasetListPath } from '@/lib/dataset-paths';
 import { DJANGO_HOSTS, serverConfig } from '@/config/server';
 import { isNumericId } from '@/lib/utils/numeric-id';
 
@@ -82,8 +86,9 @@ async function getDataset(id: string): Promise<Dataset | null> {
 export default async function DatasetDetailPage({ params }: DatasetDetailPageProps) {
   const { id } = await params;
 
-  // This dynamic segment catches every unknown single-segment data-host path
-  // (e.g. /foo). Only numeric ids can be datasets; anything else is a plain 404.
+  // Django's route is <int:pk>, so a non-numeric id is a plain 404. A numeric id
+  // that is not a live/inactive timetable dataset (e.g. an AVL or fares id) is
+  // rejected by the dataset API's timetable-only queryset, matching Django's 404.
   if (!isNumericId(id)) {
     notFound();
   }
@@ -102,7 +107,7 @@ export default async function DatasetDetailPage({ params }: DatasetDetailPagePro
         items={[
           { label: 'Home', href: HOSTS.data },
           { label: 'Browse', href: dataPath('/search') },
-          { label: 'Timetables Data', href: dataPath('/timetables?status=live') },
+          { label: 'Timetables Data', href: datasetListPath('TIMETABLE', { status: 'live' }) },
           { label: dataset.name, current: true, truncateAt: 19 },
         ]}
       />

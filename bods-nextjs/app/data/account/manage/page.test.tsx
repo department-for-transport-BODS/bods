@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { api } from '@/lib/api-client';
+import { dataPath } from '@/config/client';
 import ManageSubscriptionsPage from './page';
 
 jest.mock('@/components/auth/ProtectedRoute', () => ({
@@ -72,17 +73,26 @@ describe('Manage subscriptions page', () => {
     render(<ManageSubscriptionsPage />);
 
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: 'Timetable feed' })).toHaveAttribute('href', '/41');
+      expect(screen.getByRole('link', { name: 'Timetable feed' })).toHaveAttribute(
+        'href',
+        dataPath('/timetable/dataset/41'),
+      );
     });
-    expect(screen.getByRole('link', { name: '41' })).toHaveAttribute('href', '/41');
+    expect(screen.getByRole('link', { name: '41' })).toHaveAttribute(
+      'href',
+      dataPath('/timetable/dataset/41'),
+    );
     expect(screen.getAllByRole('link', { name: 'Unsubscribe' })[0]).toHaveAttribute(
       'href',
-      '/41/subscription',
+      dataPath('/timetable/dataset/41/subscription/'),
     );
-    expect(screen.getByRole('link', { name: 'AVL feed' })).toHaveAttribute('href', '/77');
+    expect(screen.getByRole('link', { name: 'AVL feed' })).toHaveAttribute(
+      'href',
+      dataPath('/avl/dataset/77'),
+    );
     expect(screen.getAllByRole('link', { name: 'Unsubscribe' })[1]).toHaveAttribute(
       'href',
-      '/77/subscription',
+      dataPath('/avl/dataset/77/subscription/'),
     );
     expect(screen.getByRole('link', { name: 'View our guidelines here' })).toHaveAttribute(
       'href',

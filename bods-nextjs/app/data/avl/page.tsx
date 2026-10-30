@@ -3,6 +3,7 @@ import { DatasetBrowserPage } from '@/components/data/browser';
 export default function AvlPage() {
   return (
     <DatasetBrowserPage
+        datasetType="AVL"
       title="Location data"
       breadcrumbLabel="Location Data"
       description="Search for a specific operator or NOC"

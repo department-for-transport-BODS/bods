@@ -306,9 +306,9 @@ describe('subdomain routing proxy', () => {
     });
 
     it('routes legacy local data paths to the local data hostname', () => {
-      const response = proxy(request('http://localhost:3000/data/timetables', 'localhost:3000'));
+      const response = proxy(request('http://localhost:3000/data/timetable', 'localhost:3000'));
 
-      expect(response.headers.get('location')).toBe('http://data.localhost:3000/timetables');
+      expect(response.headers.get('location')).toBe('http://data.localhost:3000/timetable');
     });
 
     it('keeps login on the local publish hostname', () => {
