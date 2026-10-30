@@ -9,6 +9,7 @@
 
 import { dataPath, publishPath } from '@/config/client';
 import { dataApiPath } from '@/lib/api-paths';
+import type { BookingMethods, Timetable } from '@/components/timetables/line-detail-types';
 
 export const OPERATORS_API_PATH = dataApiPath('/api/browser/operators/');
 
@@ -87,6 +88,117 @@ export function operatorContactApiPath(operatorId: string | number): string {
 
 export function operatorsListUrl(): string {
   return dataPath('/operators/');
+}
+
+/** Licence page payloads, from transit_odp/browse/views/operators_api.py (`licence_detail_api`). */
+export interface LicenceService {
+  serviceNumber: string;
+  /** Registration number with "/" replaced by ":", as used in links and map filters. */
+  registrationNumber: string;
+  fullRegistrationNumber: string;
+  licenceOrganisationId: number | null;
+  /** Comma separated UI LTA ids; empty when the service has none. */
+  localAuthorityIds: string;
+  isInScope: boolean;
+  isInSeason: boolean;
+  requiresAttention: boolean;
+  avlRequiresAttention: boolean;
+  faresRequiresAttention: boolean;
+  isLabelGreen: boolean;
+  labelStr: string;
+}
+
+export interface LicenceDetail {
+  licenceNumber: string;
+  organisationId: number | null;
+  organisationName: string;
+  isPrefetchComplianceReportActive: boolean;
+  hasFranchise: boolean;
+  hasNullLocalAuthority: boolean;
+  localAuthorities: Array<{ id: number; name: string }>;
+  franchises: Array<{ id: number; name: string }>;
+  operators: Array<{ id: number; name: string }>;
+  services: LicenceService[];
+}
+
+/** `licence_line_detail_api`: the licence line page, `/operators/licence/<n>/line/details/`. */
+export interface LicenceLineFile {
+  filename: string;
+  startDate: string | null;
+  endDate: string | null;
+}
+
+export interface LicenceLineDetail {
+  licenceNumber: string;
+  lineName: string;
+  serviceCode: string;
+  /** False for the passenger facing variant (any `?pf=` value). */
+  isLicencePage: boolean;
+  organisation: { id: number; name: string } | null;
+  datasetId: number | null;
+  revisionId: number | null;
+  flags: {
+    isCompleteServicePagesActive: boolean;
+    isCompleteServicePagesRealTimeDataActive: boolean;
+    isAvlRequireAttentionActive: boolean;
+    isFaresRequireAttentionActive: boolean;
+    isTimetableVisualiserActive: boolean;
+    isSpecificFeedback: boolean;
+  };
+  /** Null when the dataset has no live revision (Django never computes them then). */
+  serviceInScope: boolean | null;
+  serviceInSeason: boolean | null;
+  isAvlCompliant: boolean | null;
+  isFaresCompliant: boolean | null;
+  isTimetableCompliant: boolean | null;
+  serviceType: string;
+  bookingArrangements: string | null;
+  bookingMethods: BookingMethods | null;
+  fares: {
+    datasetId: number | null;
+    tariffBasis: string[];
+    products: string[];
+    validFiles: LicenceLineFile[];
+    futureDatedFiles: LicenceLineFile[];
+    expiredFiles: LicenceLineFile[];
+  };
+  timetableFiles: {
+    datasetId: number | null;
+    validFiles: LicenceLineFile[];
+    futureDatedFiles: LicenceLineFile[];
+    expiredFiles: LicenceLineFile[];
+  };
+  timetable: Timetable | null;
+  outboundStartAndEnd: string | null;
+  realTime: { nationalOperatorCode: string; vehicleJourneyCodes: string };
+}
+
+export function operatorLicenceApiPath(licenceNumber: string): string {
+  return `${OPERATORS_API_PATH}licence/${licenceNumber}/`;
+}
+
+export function operatorLicenceLineApiPath(licenceNumber: string, query: { toString(): string }): string {
+  const queryString = query.toString();
+  return `${OPERATORS_API_PATH}licence/${licenceNumber}/line/details/${queryString ? `?${queryString}` : ''}`;
+}
+
+/** Django `licence-line-detail` plus `?org_id=<id|None>&line=&service=` (as the templates build it). */
+export function operatorLicenceLineUrl(
+  licenceNumber: string,
+  organisationId: number | null | undefined,
+  lineName: string,
+  serviceCode: string,
+): string {
+  return dataPath(
+    `/operators/licence/${licenceNumber}/line/details/?org_id=${djangoValue(organisationId)}&line=${lineName}&service=${serviceCode}`,
+  );
+}
+
+/** Live vehicle positions (Django `avldetaildatafeedapirealtime`) via the data API namespace. */
+export function liveVehicleLocationApiPath(lineName: string, nationalOperatorCode: string, journeyCodes: string): string {
+  return dataApiPath(
+    `/api/browser/avl-feed/real-time-bus-location/?lineRef=${lineName}&operatorRef=${nationalOperatorCode}&journey_code=${journeyCodes}`,
+  );
 }
 
 export function operatorDetailUrl(operatorId: string | number): string {
