@@ -5,10 +5,13 @@ import { dataPath, publishPath } from '@/config/client';
 import type { OperatorDetail } from '@/lib/operators';
 
 const mockNotFound = jest.fn();
+const mockAccordionConstructor = jest.fn();
 
 jest.mock('next/navigation', () => ({
   notFound: () => mockNotFound(),
 }));
+
+jest.mock('govuk-frontend', () => ({ Accordion: mockAccordionConstructor }), { virtual: true });
 
 jest.mock('@/lib/api-client', () => {
   class MockApiError extends Error {
@@ -229,6 +232,17 @@ describe('OperatorDetailContent', () => {
         dataPath('/operators/licence/PD0000001/?org_id=12'),
       );
       expect(screen.queryByText('Organisation detail')).not.toBeInTheDocument();
+    });
+
+    it('initialises the GOV.UK licence accordion after the operator data loads', async () => {
+      load(complete());
+      await screen.findByText('Review data accuracy');
+
+      const accordion = document.getElementById('accordion-default');
+      expect(accordion).toHaveAttribute('data-module', 'govuk-accordion');
+      expect(accordion?.querySelector('#accordion-default-heading-1')).toHaveTextContent('Licence number');
+      expect(accordion?.querySelector('#accordion-default-content-1')).toBeInTheDocument();
+      await waitFor(() => expect(mockAccordionConstructor).toHaveBeenCalledWith(accordion));
     });
 
     it('falls back to the detailed export when the AVL attention flag is off', async () => {
