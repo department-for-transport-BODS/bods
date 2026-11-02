@@ -58,8 +58,19 @@ describe('dataset browser compliance', () => {
     render(<DatasetBrowserPage {...props} />);
 
     await screen.findByText('83504');
+    expect(screen.queryByText('Having trouble finding what you want?')).not.toBeInTheDocument();
     expect(screen.getByLabelText('Status')).toHaveValue('');
     expect(screen.getByRole('region', { name: 'Search filters' })).toBeEmptyDOMElement();
+  });
+
+  it('shows the Django no-results help when nothing matches', async () => {
+    jest.mocked(api.get).mockResolvedValue({ results: [] });
+    render(<DatasetBrowserPage {...props} />);
+
+    expect(
+      await screen.findByRole('heading', { name: 'Having trouble finding what you want?' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Check your spelling and try again')).toBeInTheDocument();
   });
 
   it('displays the Django choice label for an active status filter', async () => {
