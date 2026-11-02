@@ -86,7 +86,7 @@ export default function DataSearchSelectPage() {
                 </div>
 
                 <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <Link className="govuk-link-bold govuk-body" href={dataPath('/disruptions')}>
+                  <Link className="govuk-link-bold govuk-body" href={dataPath('/disruptions/organisations/')}>
                     Disruption data
                   </Link>
                   <p className="govuk-body govuk-!-padding-top-3">

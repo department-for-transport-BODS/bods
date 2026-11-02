@@ -4,7 +4,7 @@ export default function DisruptionsPage() {
   return (
     <AlertsBrowserPage
       title="Disruption data"
-      breadcrumbLabel="Disruption Data"
+      breadcrumbLabel="Disruption data"
       description="Search for a specific Local Transport Authority"
       placeholder="Enter Local Transport Authority name"
       endpointPath="/api/app/disruption_organisations/"
