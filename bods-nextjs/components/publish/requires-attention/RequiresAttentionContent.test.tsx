@@ -83,7 +83,7 @@ describe('RequiresAttentionContent', () => {
     const breadcrumb = await screen.findByRole('navigation', { name: 'Breadcrumb' });
     expect(within(breadcrumb).getAllByRole('link').map((link) => link.textContent)).toEqual([
       'Bus Open Data Service',
-      'Publish Open Data Service',
+      'Publish Bus Open Data',
       'Review My Timetables Data',
       'Service Codes Requiring Attention',
     ]);
