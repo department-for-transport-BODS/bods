@@ -38,18 +38,18 @@ export function TimetableDownloadContent() {
               compressed ZIP file.
             </p>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
-              <li>
-                {showBulkArchiveUrl ? (
+              {showBulkArchiveUrl ? (
+                <li>
                   <a
                     className="govuk-link"
                     href={dataPath('/timetable/download/bulk_archive')}
                   >
                     All - Download timetables data in TransXChange format
                   </a>
-                ) : (
-                  BULK_DOWNLOAD_UNAVAILABLE
-                )}
-              </li>
+                </li>
+              ) : (
+                BULK_DOWNLOAD_UNAVAILABLE
+              )}
               {regions
                 .filter((region) => region.exists && region.regionCode !== 'ALL')
                 .map((region) => (

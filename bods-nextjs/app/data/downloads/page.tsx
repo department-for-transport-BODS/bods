@@ -4,7 +4,7 @@ import { serverConfig } from '@/config/server';
 import { DownloadsContent } from './_components/DownloadsContent';
 
 export const metadata = {
-  title: 'Download all data - Bus Open Data Service',
+  title: { absolute: 'Download all data' },
   description: 'Download all data published on the Bus Open Data Service.',
 };
 

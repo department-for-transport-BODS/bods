@@ -64,6 +64,9 @@ describe('Timetable download page', () => {
       await screen.findByText('Bulk download is not yet available. Please check back later.'),
     ).toBeInTheDocument();
     expect(
+      screen.getByText('Bulk download is not yet available. Please check back later.').closest('li'),
+    ).toBeNull();
+    expect(
       screen.getByText('There have been no updates in the last 7 days. Please check back later.'),
     ).toBeInTheDocument();
     expect(
