@@ -32,6 +32,10 @@ from transit_odp.publish.views.api import (
     ProgressAPIView,
     get_agent_dashboard_organisations_api,
 )
+from transit_odp.publish.views.timetable_feed_detail_api import (
+    get_timetables_feed_detail_api,
+    get_timetables_feed_line_detail_api,
+)
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
     delete_timetables_dataset_api,
@@ -256,6 +260,16 @@ urlpatterns = [
         "timetables/line-detail/<int:pk1>/<int:pk>/",
         get_timetables_line_detail_api,
         name="nextjs-timetables-line-detail",
+    ),
+    path(
+        "timetables/feed-detail/<int:pk1>/<int:pk>/",
+        get_timetables_feed_detail_api,
+        name="nextjs-timetables-feed-detail",
+    ),
+    path(
+        "timetables/feed-line-detail/<int:pk1>/<int:pk>/",
+        get_timetables_feed_line_detail_api,
+        name="nextjs-timetables-feed-line-detail",
     ),
     path(
         "data-quality/definitions/",
