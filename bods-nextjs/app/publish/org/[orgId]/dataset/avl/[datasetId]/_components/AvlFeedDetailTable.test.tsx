@@ -213,6 +213,14 @@ describe('AvlFeedDetailTable', () => {
     expect(href).not.toMatch(/\/publish\/org/);
   });
 
+  it('links to the change log with a trailing slash like Django', () => {
+    render(<AvlFeedDetailTable feedDetail={mockFeedDetail} orgId="org-123" />);
+
+    const href = screen.getByRole('link', { name: 'View change log' }).getAttribute('href');
+    expect(href).toMatch(/\/org\/org-123\/dataset\/avl\/456\/changelog\/$/);
+    expect(href).not.toMatch(/\/publish\/org/);
+  });
+
   it('does not show edit links for dummy feeds', () => {
     const dummyFeed = { ...mockFeedDetail, isDummy: true };
 

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
+import { publishAppPath } from '@/config/client';
 
 export function AvlArchiveSuccessContent() {
   const params = useParams();
@@ -9,7 +10,7 @@ export function AvlArchiveSuccessContent() {
 
   const orgId = params.orgId as string;
   const datasetName = searchParams.get('name');
-  const listUrl = `/publish/org/${orgId}/dataset/avl`;
+  const listUrl = publishAppPath(`/org/${orgId}/dataset/avl/`);
 
   return (
     <div className="govuk-width-container">
