@@ -10,8 +10,9 @@
 
 import Link from 'next/link';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
-import { HOSTS, dataPath, publishPath } from '@/config/client';
+import { dataPath, publishPath } from '@/config/client';
 import { useAuth } from '@/hooks/useAuth';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 // Mirrors transit_odp.users.constants.AccountType
 const SITE_ADMIN_ACCOUNT_TYPE = 1;
@@ -39,12 +40,7 @@ export function PublishGatekeeperContent() {
   return (
     <>
       <div className="govuk-width-container">
-        <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Open Data Service', href: HOSTS.publish },
-          ]}
-        />
+        <Breadcrumbs items={hostBreadcrumbs('publish')} />
       </div>
       <div className="govuk-width-container">
         <div className="govuk-main-wrapper app-main-class">

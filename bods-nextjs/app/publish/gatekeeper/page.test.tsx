@@ -26,7 +26,7 @@ describe('PublishGatekeeperPage', () => {
       screen.getByText('Only bus operators and local authorities are able to provide their data.'),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Bus Open Data Service' })).toHaveAttribute('href', HOSTS.www);
-    expect(screen.getByRole('link', { name: 'Publish Open Data Service' })).toHaveAttribute('href', HOSTS.publish);
+    expect(screen.getByRole('link', { name: 'Publish Bus Open Data' })).toHaveAttribute('href', HOSTS.publish);
     expect(screen.getByRole('button', { name: 'Find open data' })).toHaveAttribute('href', dataPath('/'));
   });
 
