@@ -119,6 +119,21 @@ describe('Publish line detail page', () => {
     expect(screen.queryByRole('heading', { name: 'Filter by' })).not.toBeInTheDocument();
   });
 
+  it('uses the live-revision endpoint and feed-detail breadcrumb for the published variant', async () => {
+    mockGet.mockResolvedValue(line);
+    render(<LineDetailPageContent isTimetableVisualiserActive published />);
+
+    expect(await screen.findByRole('heading', { name: 'line1', level: 1 })).toBeInTheDocument();
+    expect(mockGet).toHaveBeenCalledWith(
+      '/api/publish/timetables/feed-line-detail/1/9/?line=line1&revision_id=10&service=PB0000000%3A1&includeTimetable=true',
+    );
+    const feedCrumb = screen.getByRole('link', { name: 'A very long publish...' });
+    expect(new URL(feedCrumb.getAttribute('href') as string).pathname).toBe('/org/1/dataset/timetable/9');
+    const lineCrumb = screen.getByRole('link', { name: 'line1' });
+    expect(lineCrumb.getAttribute('href')).toContain('/org/1/dataset/timetable/9/detail?line=line1&service=PB0000000%3A1');
+    expect(lineCrumb.getAttribute('href')).not.toContain('revision_id');
+  });
+
   it('calls notFound when the API returns 404', async () => {
     mockGet.mockRejectedValue(new ApiError('Not found', 404, {}));
     renderPage();
