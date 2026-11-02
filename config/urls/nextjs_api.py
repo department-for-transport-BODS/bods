@@ -28,9 +28,15 @@ from transit_odp.fares.views.api import (
     publish_fares_dataset_api,
     update_fares_dataset_api,
 )
+from transit_odp.fares.views.requires_attention_api import (
+    get_fares_requires_attention_api,
+)
 from transit_odp.publish.views.api import (
     ProgressAPIView,
     get_agent_dashboard_organisations_api,
+)
+from transit_odp.publish.views.requires_attention_api import (
+    get_timetable_requires_attention_api,
 )
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
@@ -189,6 +195,16 @@ urlpatterns = [
         name="nextjs-fares-create",
     ),
     path("fares/list/<int:pk1>/", get_fares_list_api, name="nextjs-fares-list"),
+    path(
+        "fares/requires-attention/<int:pk1>/",
+        get_fares_requires_attention_api,
+        name="nextjs-fares-requires-attention",
+    ),
+    path(
+        "timetables/requires-attention/<int:pk1>/",
+        get_timetable_requires_attention_api,
+        name="nextjs-timetables-requires-attention",
+    ),
     path(
         "fares/review-status/<int:pk1>/<int:pk>/",
         get_fares_review_status_api,
