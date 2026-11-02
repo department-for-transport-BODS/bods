@@ -31,3 +31,16 @@ export const AVL_PUBLISH_ERRORS = {
   comment: 'Please provide a comment',
   consent: 'You must confirm you have reviewed the data quality report before publishing',
 } as const;
+
+// Django `FaresFeedDescriptionForm` / `FaresFeedUploadForm` (transit_odp/fares/forms.py).
+// The no-selection error is raised by `clean()` on the `url_link` field. URL and file format
+// errors ("Enter a valid URL to your data set", "The file is not in a correct format") come
+// back from the create API's `field_errors`.
+export const FARES_PUBLISH_ERRORS = {
+  description: 'Enter a description in the data set description box below',
+  shortDescription: 'Enter a short description in the data set short description box below',
+  noSelection: 'Please provide a file or url',
+  urlLink: 'Please provide a URL link',
+  uploadFile: 'Please provide a file',
+  emptyUploadFile: 'Please provide a non-empty file',
+} as const;
