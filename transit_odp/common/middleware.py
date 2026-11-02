@@ -1,12 +1,7 @@
-import logging
-
-from django.db import transaction
 from django.utils.deprecation import MiddlewareMixin
 
 from transit_odp.common.utils import remove_query_string_param
 from transit_odp.site_admin.models import CHAR_LEN, APIRequest
-
-logger = logging.getLogger(__name__)
 
 
 class DefaultHostMiddleware:
@@ -57,18 +52,9 @@ class APILoggerMiddleware:
             path_info = path_info[:CHAR_LEN]
             query_string = query_string[:CHAR_LEN]
 
-            """ 
-            Best effort: a failed audit write (e.g. id sequence exhaustion) must
-            not turn a successful API response into an error. The savepoint
-            keeps a failed INSERT from aborting any enclosing transaction.
-            """
-            try:
-                with transaction.atomic():
-                    APIRequest.objects.create(
-                        requestor=user, path_info=path_info, query_string=query_string
-                    )
-            except Exception:
-                logger.exception("Failed to log API request to %s", path_info)
+            APIRequest.objects.create(
+                requestor=user, path_info=path_info, query_string=query_string
+            )
 
         return response
 

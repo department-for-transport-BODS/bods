@@ -29,7 +29,6 @@ from transit_odp.browse.views.operators import (
     OperatorDetailView,
     OperatorsView,
 )
-from transit_odp.common.utils.custom_error_handlers import server_error
 from transit_odp.common.views import CoachDownloadView, ComingSoonView, VersionView
 from transit_odp.users.urls import AGENT_PATHS
 from transit_odp.users.views.account import (
@@ -38,8 +37,6 @@ from transit_odp.users.views.account import (
     SettingsView,
     UserRedirectView,
 )
-
-handler500 = "transit_odp.common.utils.custom_error_handlers.server_error"
 
 urlpatterns = [
     path("", view=BrowseHomeView.as_view(), name="home"),
@@ -189,6 +186,7 @@ urlpatterns = [
     path("coming_soon/", ComingSoonView.as_view(), name="placeholder"),
     path("version/", VersionView.as_view(), name="version"),
     path("coach/download", CoachDownloadView.as_view(), name="coach-download"),
+    path("django_axe/", include("django_axe.urls")),
     path(
         "robots.txt",
         TemplateView.as_view(
@@ -226,7 +224,7 @@ if settings.DEBUG:
             default_views.page_not_found,
             kwargs={"exception": Exception("Page not Found")},
         ),
-        path("500/", server_error),
+        path("500/", default_views.server_error),
     ]
     if "debug_toolbar" in settings.INSTALLED_APPS:
         import debug_toolbar
