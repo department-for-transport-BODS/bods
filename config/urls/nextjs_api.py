@@ -18,6 +18,7 @@ from transit_odp.avl.views.api import (
     publish_avl_dataset_api,
     update_avl_dataset_api,
 )
+from transit_odp.changelog.views import get_known_issues_api
 from transit_odp.fares.views.api import (
     create_fares_dataset_api,
     deactivate_fares_dataset_api,
@@ -260,6 +261,11 @@ urlpatterns = [
         "data-quality/definitions/",
         get_data_quality_definitions_api,
         name="nextjs-data-quality-definitions",
+    ),
+    path(
+        "changelog/known-issues/",
+        get_known_issues_api,
+        name="nextjs-changelog-known-issues",
     ),
     path(
         "timetables/list/<int:pk1>/",

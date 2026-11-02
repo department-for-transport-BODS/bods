@@ -1,0 +1,543 @@
+{
+  "releases": [
+    {
+      "version": "1.60.0",
+      "date": "2026-06",
+      "summary": "This release deployed the following changes:",
+      "items": [
+        "Improved NaPTAN/NPTG ingestion across BODS and ABODS, with enhanced alerting to support quicker issue identification and resolution.",
+        "Resolved an issue in the Create Disruptions tool so that all bus services serving a stop are returned when creating a disruption with a service consequence.",
+        "Optimised queries in BODS and ABODS."
+      ]
+    },
+    {
+      "version": "1.59.0",
+      "date": "2026-06",
+      "summary": "This release deployed the following changes:",
+      "items": [
+        "Resolved an issue where the Integrated Data NaPTAN Processor failed due to an invalid ATCO Area Code.",
+        "Upgraded components to address a potential security vulnerability.",
+        "Performance improvements."
+      ]
+    },
+    {
+      "version": "1.58.4",
+      "date": "2026-05",
+      "summary": "This release deployed the following changes:",
+      "items": [
+        "Resolved GTFS Step Function failure where the TxC processor incorrectly rejected empty <VehicleType/> elements."
+      ]
+    },
+    {
+      "version": "1.58.3",
+      "date": "2026-05",
+      "summary": "This release deployed the following changes:",
+      "items": [
+        "Implemented a resillience improvement to GTFS processing."
+      ]
+    },
+    {
+      "version": "1.58.2",
+      "date": "2026-04",
+      "summary": "This release deployed the following changes:",
+      "items": [
+        "Resolved an issue preventing API access."
+      ]
+    },
+    {
+      "version": "1.58.1",
+      "date": "2026-04",
+      "summary": "This release deployed the following changes:",
+      "items": [
+        "Resolved an issue where data stopped displaying in the Incomplete Data tab in Data Monitoring."
+      ]
+    },
+    {
+      "version": "1.58",
+      "date": "2026-04",
+      "summary": "This release deployed the following changes:",
+      "items": [
+        "Resolved an issue where data stopped displaying in the Incomplete Data tab in Data Monitoring.",
+        "Upgraded components to address a potential security vulnerability."
+      ]
+    },
+    {
+      "version": "1.57.1",
+      "date": "2026-04",
+      "summary": "This release deployed the following changes:",
+      "items": [
+        "Resolved an issue preventing timetables from being generated in GTFS format."
+      ]
+    },
+    {
+      "version": "1.57.0",
+      "date": "2026-03",
+      "summary": "This release deployed the following changes:",
+      "items": [
+        "Resolved an issue that prevented disruption icons from displaying on the BODS map.",
+        "Fixed a defect where ABODS occasionally plotted expected routes incorrectly within Vehicle Journeys.",
+        "Added Trackaroo to the list of supported AVL suppliers on BODS.",
+        "Introduced the ability for users to reject analytics cookies, improving privacy‑preference control.",
+        "Released cancellation functionality, enabling operators to publish cancellation data."
+      ]
+    },
+    {
+      "version": "1.56.0",
+      "date": "2026-01",
+      "summary": "This release deployed the following changes:",
+      "items": [
+        "We fixed an issue that was preventing certain operators showing in the Disruptions tool.",
+        "We fixed an issue that shows users the relevant screens when they are locked out of ABODS.",
+        "We made a change to improve specific coach operator’s feeds to BODS.",
+        "We made a change to stop emails for inactive datasets.",
+        "We fixed an issue to handle Unicode characters in the Create Fares Tool."
+      ]
+    },
+    {
+      "version": "1.55.0",
+      "date": "2025-12",
+      "summary": "This release deployed the following changes:",
+      "items": [
+        "Updated support desk contact details on public-facing pages of the service.",
+        "Updated access controls to support management of environments and applications following the supplier transition.",
+        "Fixed an issue where users were shown outdated contact details when attempting to reset their password."
+      ]
+    },
+    {
+      "version": "1.54.0",
+      "date": "2025-11",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "Infrastructure updates to bring the supporting libraries used by BODS.",
+        "An improvement to the licence level page within Find BODS to enable LTAs and operators and other consumers to easily find services owned by that licence which require attention.",
+        "Bug fixes to resolve failures within the admin portal which previously displayed errors to the user."
+      ]
+    },
+    {
+      "version": "1.53.0",
+      "date": "2025-10",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "The re-activation of publish process validation emails.",
+        "An improvement to the way draft datasets are deleted.",
+        "A fix to the way OTC records are represented on the compliance catalogues."
+      ]
+    },
+    {
+      "version": "1.50.0",
+      "date": "2025-06",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An improvement to exclude the AVL to timetable matching logic for routes across split registrations.",
+        "A passenger facing version of the complete service page for operators and local authorities to embed within their websites."
+      ]
+    },
+    {
+      "version": "1.49.0",
+      "date": "2025-06",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "A refresh of the Front End code pack to align with GDS branding standards.",
+        "A bug fix in the compliance reports for Derived termination date logic.",
+        "A new column within the compliance reports (Operating Period Start Date)."
+      ]
+    },
+    {
+      "version": "1.48.0",
+      "date": "2025-06",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An improvement to the way the timetable data is processed to handle large sets of journey patterns.",
+        "A bug fix to the way files are compared during the processing the PTI revision number logic.",
+        "A feature to enable historic tracks data to be captured for use within ABODS.",
+        "A new column within the compliance reports (Derived termination date) to identify where look ahead when data is made invalid due to the revision number."
+      ]
+    },
+    {
+      "version": "1.47.0",
+      "date": "2025-06",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An improvement to the display of the Operator and Local Transport Authority profiles.",
+        "An improvement to the way the AVL to timetable matching logic handles special days of operation and non-operation.",
+        "An improvement to the way the AVL to timetable matching logic handles duplicate journeys for service codes that are present within a single dataset.",
+        "An improvement to the way the AVL to timetable matching reports are generated, so that they reflect analysis done over a 7 day rolling period.",
+        "A feature to enable to re-allocation of franchise services to the franchise organisation.",
+        "A fix to the integration with the Naptan ETL."
+      ]
+    },
+    {
+      "version": "1.46.1",
+      "date": "2025-05",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An improvement to the way web crawlers are guided to scan the service.",
+        "An update to the logic for selecting the fares file used for compliance reporting.",
+        "A replacement to the backend infrastructure used for processing fares files."
+      ]
+    },
+    {
+      "version": "1.46.0",
+      "date": "2025-04",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "A new user type specifically limited to access ABODS.",
+        "A bug fix to the Registration column within the Local Transport Authority compliance reports.",
+        "A bug fix to the way cancelled or expiring services are handled within the compliance reports."
+      ]
+    },
+    {
+      "version": "1.45.0 and Backend V1.01",
+      "date": "2025-04",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "Bug fixes to enable the activation of complete service pages, fares compliance updates and feedback reports.",
+        "Visualisation of real time vehicle locations within the complete service pages.",
+        "An improvement to the way cancelled or expiring services are handled within the compliance reports.",
+        "The switch to a serverless architecture for timetables processing."
+      ]
+    },
+    {
+      "version": "1.44.0",
+      "date": "2025-03",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "Complete service pages to enable key timetable, AVL and fares data for a service to be reviewed for accuracy purposes.",
+        "A fix for the way the Refused state is handled for variations for a registration.",
+        "The deactivation of AVL accessibility notification emails which are not required.",
+        "A change to the feedback feature which ensures that feedback is supplied with the correct context for either the stop, the journey or the service.",
+        "The integration of the critical Data Quality Service reports with the Services Require Attention reports.",
+        "An improvement to the Data Quality Service reports to include the feedback supplied with the required context.",
+        "The addition of the Fares data type to the Services Require Attention reports."
+      ]
+    },
+    {
+      "version": "1.43.0",
+      "date": "2025-01",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An improvement to simplify dataset pages and the browse section regarding the way PTI compliance is displayed for timetables.",
+        "A fix to the way datasets detect updates when hosted via URL and were queried too frequently.",
+        "A fix for the way registrations are imported from the PD BRD API for registrations managed by Enhanced Partnerships and Franchises.",
+        "A fix to the 'No timing point for more than 15 minutes' Data Quality observation logic.",
+        "A fix to the Timetable Visualiser to correctly calculate stop departure time that use Wait Time(s).",
+        "An improvement to the search function when browsing for datasets.",
+        "A fix to the way some services are identified as active or cancelled when these are maintained by the Office of the Traffic Commissioner.",
+        "An enhancement to the line level compliance report which describes the health of data of all registered services.",
+        "An enhancement to the compliance report which describes the health of data belonging to a specific operator or local transport authority.",
+        "An improvement to the way we handle cases where hosted data is temporarily unavailable."
+      ]
+    },
+    {
+      "version": "1.42.0",
+      "date": "2024-11",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "File level processing for Timetable datasets. This will result in published zip files to be restructured to pass successfully processed data to consumers immediately.",
+        "An improvement to the way NaPTAN data is processed overnight to improve resilience of the application.",
+        "A fix for the way locally managed registrations are imported.",
+        "An improvement to handle timetable files that are published that fail the anti-virus checks or are incorrectly structured.",
+        "An improvement to the way live location data supplied via the download all pages are constructed to improve resilience of the application.",
+        "An updated accessibility statement that describes the way BODS has been updated to meet WCAG 2.2 AA requirements."
+      ]
+    },
+    {
+      "version": "1.41.0",
+      "date": "2024-10",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "File level processing for Fares datasets. This will result in published zip files to be restructured to pass successfully processed data to consumers immediately.",
+        "A fix for the way registrations held with the Office of the Traffic Commissioner data is associated with Local Transport Authorities.",
+        "A fix for the way cancelled registrations held with the Office of the Traffic Commissioner data are displayed on BODS."
+      ]
+    },
+    {
+      "version": "1.40.0",
+      "date": "2024-09",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "Security enhancements to limit the length of a session to 10 minutes.",
+        "Enable BODS to ingest locally managed registrations from Enhanced Partnerships.",
+        "The introduction of new checks to the timetables Data Quality Service.",
+        "A fix to allow users to view the data quality report for timetables on the Browse bus open data page."
+      ]
+    },
+    {
+      "version": "1.39.0",
+      "date": "2024-08",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An update to switch to the new IAVL service for the publishing and consumption of location data."
+      ]
+    },
+    {
+      "version": "1.38.0",
+      "date": "2024-07",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "The ability to switch to the new Data Quality Service for timetables.",
+        "A new accessibility package (Frontend v 5.4) and a variety of accessibility improvements.",
+        "An improvement to allow timetable data for Scottish services with only Scottish Bank Holidays.",
+        "The supply of coach data to the download all area.",
+        "An update to the counts of services which require attention to reflect individual lines rather than registrations."
+      ]
+    },
+    {
+      "version": "1.37.0",
+      "date": "2024-06",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "A fix to remove cancelled registrations from the completeness reports.",
+        "Additional logging to help us troubleshoot intermittent publishing issues.",
+        "Line (service) level reports for LTA's and operators.",
+        "A new line (service) level overall compliance catalogue."
+      ]
+    },
+    {
+      "version": "1.36.0",
+      "date": "2024-05",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An improvement to the AVL to timetable matching logic to handle cases where duplicate failures appear in the report.",
+        "An improvement to the AVL to timetable matching logic to handle cases where serviced organisations data is supplied within the service element in a TxC.",
+        "An improvement to the AVL to timetable matching logic to handle cases where out of scope services appear in the report.",
+        "An improvement to the AVL to timetable matching logic to handle cases where data for multiple lines are supplied within a TxC.",
+        "A new feature to visualise timetables so that operators and consumers can inspect the data within a TxC for accuracy."
+      ]
+    },
+    {
+      "version": "1.35.0",
+      "date": "2024-04",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An improvement to the way the new service level pages are organised within each data set which will show information specifically for that service.",
+        "WECA registrations are imported and will be shown alongside OTC registrations on the catalogues and completeness reports.",
+        "A bug fix to improve the way booking arrangements for flexible services are handled.",
+        "An improvement to the validation logic to check for the presence a ServicePeriod for flexible services.",
+        "Various bug fixes to improve the way errors are displayed to users to be inline with GDS guidelines.",
+        "A fix to the link for consumer feedback reports within the Operator Profile pages.",
+        "Functionality to extract additional data that will be used within the upcoming timetable visualiser features."
+      ]
+    },
+    {
+      "version": "1.34.0",
+      "date": "2024-02",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "A new service level page within each data set which will show information specifically for that service.",
+        "An update to the style of map used within the BODS data set pages.",
+        "An improvement to the way data for carnet tickets data is validated.",
+        "A bug fix to the way registrations for some cancelled or expired services are handled."
+      ]
+    },
+    {
+      "version": "1.33.0",
+      "date": "2024-01",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "A variety of bug fixes improving the way pagination and 'sort by' and checkboxes are displayed.",
+        "A bug fix to standardise the number of local transport authorities that appear on each page.",
+        "An improvement to the way flexible services data are validated, to ensure stops for flexible zones are set up as FLX stops within the NaPTAN data set.",
+        "A series of upgrades to the packages that are used by BODS to add resilience and apply security updates.",
+        "Addition of Disruptions data to Browse Bus Open Data Page.",
+        "Overview pages for organisations (LTAs) to show a map of their active disruptions, along with key statistics about the data.",
+        "Detail pages for each disruption to provide additional information to the user."
+      ]
+    },
+    {
+      "version": "1.32.0",
+      "date": "2023-12",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "Functionality to enable flexible services to be published.",
+        "An improvement to the way we measure the 12 month timeliness check and the way this impacts services that require attention.",
+        "An improvement to the naming convention used in the Timetable Data catalogue service completeness report.",
+        "An improvement to the naming convention used in the Operator completeness report.",
+        "A simplification to the way dataset pages are displayed.",
+        "A bug fix to the way the RAG status and score shows for Data Quality Service reports.",
+        "A fix to the way the Data Quality Service monitoring is displayed to the user.",
+        "A fix for line names published in a TxC file within the LTA completeness report.",
+        "Various fixes to grammar across the site."
+      ]
+    },
+    {
+      "version": "1.31.0",
+      "date": "2023-11",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An update to the PTI validation rules for flexible services.",
+        "An improvement to the way the existing PTI validation rules apply to Creation Dates.",
+        "The addition of a data catalogue for disruptions data.",
+        "An improvement to the API documentation especially for bounding boxes.",
+        "An improvement to the way we measure look ahead and the way this impacts services that require attention.",
+        "An improvement to the naming convention used in the LTA service completeness report."
+      ]
+    },
+    {
+      "version": "1.30.0",
+      "date": "2023-10",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "Functionality to remove and block timetable data that may have held PII (Personally Identifiable Information).",
+        "An improvement to simplify the way datasets are displayed with the removal of usernames that published data.",
+        "An enhancement to the way the registrations are imported when the effective date is in the future."
+      ]
+    },
+    {
+      "version": "1.29.0",
+      "date": "2023-09",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An enhancement to the Timetable Data Catalogue and the LTA detailed export to indicate the BODS organisation responsible for unpublished services registered with the OTC.",
+        "An addition of the Disruptions (Siri SX) data within the 'Download All' page on FBODS.",
+        "An addition of the Disruptions (Siri SX) data within the API on BODS."
+      ]
+    },
+    {
+      "version": "1.28.0",
+      "date": "2023-08",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "Application monitoring dashboards and alerts to enable the BODS team to effectively investigate and resolve availability incidents.",
+        "An enhancement to the location data matching algorithm to exclude duplicate journeys due to service codes.",
+        "An enhancement to the logic used to calculate staleness when changes are made to the registration for a service.",
+        "A fix to the way BODS validates fares files for products that grant access to multiple services."
+      ]
+    },
+    {
+      "version": "1.27.0",
+      "date": "2023-07",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An update to manage relationships between data from the Office of the Traffic Commissioner and NaPTAN for Local Transport Authorities and Combined Authorities.",
+        "Removal of compliance labels for location data to more easily find active published data through the browse screens and the API.",
+        "Presenting location data to timetable data matching reports to all users."
+      ]
+    },
+    {
+      "version": "1.26.0",
+      "date": "2023-05",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "A new feature to enable each local transport authority (LTA) to review the completeness of their timetable data.",
+        "An enhancement to the ‘Timetable Data Catalogue’ and the ‘Operator’s Service Code’ report to consistently select the most up to date file for analysis.",
+        "A fix to the fares publish process to enable all fares files to be uploaded (including fares files with missing NaPTAN data)."
+      ]
+    },
+    {
+      "version": "1.25.0",
+      "date": "2023-04",
+      "summary": "This release will deploy the following changes:",
+      "items": [
+        "An enhancement to the logic we use when measuring how well location data matches to timetable data to consider journeys that belong to serviced organisations.",
+        "We are removing inactive data from the Download All function and the API."
+      ]
+    },
+    {
+      "version": "1.24.0",
+      "date": "2023-03",
+      "summary": "This release will deploy updates and bug fixes to the fares validation report and the fares data catalogue and the services require attention count. The updated services require attention count and report are now available through the 'review my published data' pages, and the 'Operator profile' pages.",
+      "items": []
+    },
+    {
+      "version": "1.23.0",
+      "date": "2023-02",
+      "summary": "This release will deploy the fares validation report and the fares data catalogue. This validation report will enable an operator to work with their suppliers to improve the way that fares data is produced. This deployment will result in:",
+      "items": [
+        "A validation report for each fares data set published to BODS describing the compliance of the data within the fares data.",
+        "A data catalogue to enable data consumers to review the fares data that has been published.",
+        "A fix to the AVL matching data quality report to use the appropriate date for when the location data was generated."
+      ]
+    },
+    {
+      "version": "1.22.0",
+      "date": "2023-01",
+      "summary": "This release will deploy a data quality matching report. This report will enable an operator to work with their suppliers to improve the way that location data joins up with timetables data. This integration will result in:",
+      "items": [
+        "A report for each AVL data feed published to BODS describing the quality of the data within the feed.",
+        "A score for an operator that gives a quick view of how each operator is currently performing in terms of data quality.",
+        "An archive of reports for the last month which will enable an operator to look back and see how their quality performance has changed over time."
+      ]
+    },
+    {
+      "version": "1.21.0",
+      "date": "2022-12",
+      "summary": "The team has worked on an important integration to connect the Bus Open Data Service with the Office of Traffic Commissioners database. This integration will result in:",
+      "items": [
+        "Cancelled services no longer included in the list of services that require attention.",
+        "New services registered with the OTC will be quickly included on BODS as a service that requires attention if is not yet published.",
+        "The data catalogues have been updated to ensure service codes that are active will be present, and inactive services will not show as missing."
+      ]
+    },
+    {
+      "version": "1.20.0",
+      "date": "2022-10",
+      "summary": "The team has worked on a number of high-value feature updates that will be available to all publishers and consumers including:",
+      "items": [
+        "A list of your services which are marked as exempt by the BODS admin team so that they do not appear in the 'Service codes requiring attention' section. A publisher can notify the service desk if there are unexpected services so that they are removed from this report.",
+        "Functionality within the DfT Admin Portal has been updated to maintain the service code exemption list.",
+        "The data catalogues have been updated to ensure service codes that are out of scope will not show as missing.",
+        "A fix to the publish process for Fares which were impacting some users and their ability to publish fares data.",
+        "A fix to the publish process for Timetables which were impacting the ability to upload some circular services."
+      ]
+    },
+    {
+      "version": "1.19.0",
+      "date": "2022-08",
+      "summary": "The team has worked on a number of high-value updates that will be available to everyone including:",
+      "items": [
+        "An addition of a feedback page wherein any user can give a rating and a feedback on the user experience of the web pages on BODS. The feedback in turn can be accessed readily by DfT admin users. This will enable our team to continuously improve the BODS website experience. (Note that this is different from the feedback function on specific data sets/feeds on BODS).",
+        "A small update to the PTI logic of BODS where the as is functionality is: Review all files in new zip with same service code that have changed (hash of file changes) → Identify highest revision number from previous zip for that service code → Fail any amended files in new zip that do not have a higher revision number than highest from previous zip. This will be changed to the new updated PTI logic which will be: Review all files in new zip with same service code/line combination that have changed (hash of file changes) → Identify highest revision number from previous zip for that service code/line combination → Fail all new or amended files in new zip (with that service code/line combination) that do not have a higher revision number than highest from previous zip.",
+        "Some generic content updates to the entire website (in particular the guidance section) along with a few other high priority bugs (and some back-end updates) to improve the overall performance of the service."
+      ]
+    },
+    {
+      "version": "1.18.0",
+      "date": "2022-06",
+      "summary": "The team has worked on a number of high-value feature updates that will be available to all publishers including:",
+      "items": [
+        "A new 'Guide Me' section for all publishers which simplifies and puts a step by step guide to how to go about publishing and maintaining data on BODS.",
+        "A new Publisher dashboard. All publishers once logged-in will now be able to view all the different feature options they have on BODS and select their relevant flow. A simplified ‘Review my published data’ dashboard is also now available for Publisher and Agent users, where they can review the status of the different operators that they are agents for.",
+        "A new ‘Data requiring attention’ section for all publishers and agents which highlights to all operators the service codes which are available on the OTC (Office of the Traffic Commissioner) database but have not been found in the BODS data that has been uploaded by publishers. This includes a downloadable CSV.",
+        "A new ‘Data consumer activity’ section showcasing the total consumer interactions with the data for a given operator’s data. This is intended to give the publishers a more granular idea about how their data is being utilized by consumers (e.g. passenger app developers, researchers) on BODS. This section includes two downloadable CSVs: one related to granular data interactions with the operator’s data, and the other relates to the direct feedback that has been received by operators on their published data.",
+        "An additional summarised version of the PTI validation report. This simplifies and gives an overview of the major errors in the data as it passes through our PTI TransXChange validator."
+      ]
+    },
+    {
+      "version": "1.17.0",
+      "date": "2022-04",
+      "items": [
+        "Admin portal pages for DfT have been updated on BODS with functionality including searchable text boxes and sorting functions across organisation management, agent management and consumer management. This will enable easier and more convenient navigation on the admin portal for DfT.",
+        "The team has also worked on updating the download metrics on the platform. This will enable the DfT to truly track the utilisation of BODS and work with consumers to ensure higher adoption/usage of the platform.",
+        "A bulk of technical debts accrued over the past year have now been improved. This means the code base on BODS is cleaned up which will enable a better functioning overall platform.",
+        "Updates have been made to the developer documentation on Find BODS pages which adds more details on GTFS formats available on the platform. The documentation for data quality is now also updated to reflect the accurate description of how data quality is measured on BODS. Both these changes will enable more guidance and transparency on the features available on the platform."
+      ]
+    },
+    {
+      "version": "1.16.0",
+      "date": "2022-02",
+      "items": [
+        "Enhancements to the Find Bus Open Data portal have been added to provide an improved consumer experience, including a new capability of viewing operator profiles and updated dataset detail pages with more relevant information, guidance and links.",
+        "'Download All' data zip file has an updated nested folder structure, where datasets are placed into individualised operator folders. Consumers would be able to select individual operators files as requested.",
+        "Data Catalogue files have been improved with additional information including improved the 'Guide Me' pages."
+      ]
+    },
+    {
+      "version": "1.15.0",
+      "date": "2021-12",
+      "items": [
+        "SIRI-VM Validator will provide users with reports on schema validation checks, with a status of compliant, partially compliant or non-compliant.",
+        "Updates to the BODS PTI validation has been added to check that lines consist of journeys with at least one matching locality (where localities are provided).",
+        "Updates to the validation of BODS PTI StopPoints will look if no OperatingProfile elements are at the VehicleJourney level then use the `Service > OperatingPeriod > EndDate` to check if non-NaPTAN stops are used for more than 2 months."
+      ]
+    },
+    {
+      "version": "1.14.0",
+      "date": "2021-09",
+      "items": [
+        "TransXChange files that are not PTI compliant will no longer be allowed to be published in BODS.",
+        "Users of the service can now keep track of known issues, upcoming changes and release notes through the new Changelog page."
+      ]
+    }
+  ]
+}
