@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     // Defensive fallback for deployments where redirects are auto-followed upstream.
     return NextResponse.json(
-      { redirect: `/publish/org/${orgId}/dataset/avl/${datasetId}/deactivate/success` },
+      { redirect: `/org/${orgId}/dataset/avl/${datasetId}/deactivate/success` },
       { status: 200 },
     );
   } catch (err) {
@@ -69,21 +69,12 @@ function postDeactivate(url: string, sessionHeaders: Headers): Promise<Response>
   });
 }
 
+// Django's redirect target is already the public publish-host path; drop its origin.
 function toNextJsPath(djangoUrl: string, orgId: string, datasetId: string): string {
   if (!djangoUrl) {
-    return `/publish/org/${orgId}/dataset/avl/${datasetId}/deactivate/success`;
+    return `/org/${orgId}/dataset/avl/${datasetId}/deactivate/success`;
   }
 
-  try {
-    const parsed = new URL(djangoUrl, 'http://placeholder');
-    let pathname = parsed.pathname;
-
-    if (pathname.startsWith('/org/')) {
-      pathname = `/publish${pathname}`;
-    }
-
-    return `${pathname}${parsed.search}`;
-  } catch {
-    return djangoUrl.startsWith('/org/') ? `/publish${djangoUrl}` : djangoUrl;
-  }
+  const parsed = new URL(djangoUrl, 'http://placeholder');
+  return `${parsed.pathname}${parsed.search}`;
 }

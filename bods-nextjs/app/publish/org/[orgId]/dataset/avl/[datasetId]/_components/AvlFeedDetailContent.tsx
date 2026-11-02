@@ -51,7 +51,8 @@ export function AvlFeedDetailContent() {
 
   useEffect(() => {
     if (feedDetail?.status === 'draft') {
-      router.replace(`/publish/org/${orgId}/dataset/avl/${datasetId}/review`);
+      // Same-origin public path: proxy.ts rewrites it to the /publish route tree.
+      router.replace(`/org/${orgId}/dataset/avl/${datasetId}/review/`);
     }
   }, [datasetId, feedDetail?.status, orgId, router]);
 
@@ -79,7 +80,7 @@ export function AvlFeedDetailContent() {
                 <h2 className="govuk-error-summary__title">Unable to load feed details</h2>
                 <div className="govuk-error-summary__body">
                   <p className="govuk-body">{error || 'Feed not found'}</p>
-                  <Link className="govuk-link" href={publishAppPath(`/org/${orgId}/dataset/avl`)}>
+                  <Link className="govuk-link" href={publishAppPath(`/org/${orgId}/dataset/avl/`)}>
                     Back to feeds
                   </Link>
                 </div>
@@ -107,11 +108,11 @@ export function AvlFeedDetailContent() {
           },
           {
             label: 'Bus Location Data Feeds',
-            href: publishAppPath(`/org/${orgId}/dataset/avl`),
+            href: publishAppPath(`/org/${orgId}/dataset/avl/`),
           },
           {
             label: feedDetail.name,
-            href: publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}`),
+            href: publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/`),
             current: true,
             truncateAt: 20,
           },

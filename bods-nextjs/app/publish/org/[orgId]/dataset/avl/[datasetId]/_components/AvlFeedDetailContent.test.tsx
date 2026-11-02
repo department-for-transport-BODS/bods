@@ -153,6 +153,19 @@ describe('AvlFeedDetailContent', () => {
     expect(link.getAttribute('href')).not.toMatch(/\/publish\/org/);
   });
 
+  it('links the Bus Location Data Feeds and feed name breadcrumbs with trailing slashes', async () => {
+    mockApiGet.mockResolvedValue(mockFeedDetail);
+
+    render(<AvlFeedDetailContent />);
+
+    const reviewLink = await screen.findByRole('link', { name: 'Bus Location Data Feeds' });
+    expect(reviewLink).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl/'));
+    const feedLink = screen
+      .getAllByRole('link', { name: 'Test AVL Feed' })
+      .find((el) => el.closest('.govuk-breadcrumbs'));
+    expect(feedLink).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl/dataset-456/'));
+  });
+
   it('displays error when API call fails', async () => {
     mockApiGet.mockRejectedValue(new Error('Network error'));
 
@@ -192,7 +205,7 @@ describe('AvlFeedDetailContent', () => {
     await waitFor(() => {
       const backLink = screen.getByRole('link', { name: /Back to feeds/i });
       expect(backLink).toBeInTheDocument();
-      expect(backLink).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl'));
+      expect(backLink).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl/'));
     });
   });
 
@@ -254,7 +267,7 @@ describe('AvlFeedDetailContent', () => {
     render(<AvlFeedDetailContent />);
 
     await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith('/publish/org/org-123/dataset/avl/dataset-456/review');
+      expect(mockReplace).toHaveBeenCalledWith('/org/org-123/dataset/avl/dataset-456/review/');
     });
   });
 
