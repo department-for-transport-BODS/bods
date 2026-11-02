@@ -14,7 +14,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import { notFound } from 'next/navigation';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { dataPath } from '@/config/client';
 import {
   AvlRequireAttentionHelp,
@@ -87,6 +87,41 @@ function UseApiBlock() {
   );
 }
 
+function LicenceAccordion({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    import('govuk-frontend')
+      .then(({ Accordion }) => {
+        try {
+          new Accordion(root);
+        } catch {
+          // Already initialised (React strict mode runs effects twice).
+        }
+      })
+      .catch(() => undefined);
+  }, []);
+
+  return (
+    <div ref={ref} className="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
+      <div className="govuk-accordion__section">
+        <div className="govuk-accordion__section-header">
+          <h2 className="govuk-accordion__section-heading">
+            <span className="govuk-accordion__section-button" id="accordion-default-heading-1">
+              Licence number
+            </span>
+          </h2>
+        </div>
+        <div id="accordion-default-content-1" className="govuk-accordion__section-content">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CompleteServicePagesLayout({ operator }: { operator: OperatorDetail }) {
   const { flags } = operator;
   const id = operator.id;
@@ -155,29 +190,18 @@ function CompleteServicePagesLayout({ operator }: { operator: OperatorDetail }) 
         <tbody className="govuk-table__body">
           <tr className="govuk-table__row">
             <th scope="row" className="govuk-table__header">
-              <div className="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
-                <div className="govuk-accordion__section">
-                  <div className="govuk-accordion__section-header">
-                    <h2 className="govuk-accordion__section-heading">
-                      <span className="govuk-accordion__section-button" id="accordion-default-heading-1">
-                        Licence number
-                      </span>
-                    </h2>
-                  </div>
-                  <div id="accordion-default-content-1" className="govuk-accordion__section-content">
-                    <ul className="govuk-list govuk-!-margin-bottom-1 licence-list">
-                      {operator.operatorLicences.map((licence) => (
-                        <li className="govuk-!-margin-bottom-1" key={licence.licenceNumber}>
-                          <LicenceComplianceHelp nonCompliant={licence.nonCompliant} />
-                          <a className="govuk-link" href={operatorLicenceUrl(licence.licenceNumber, id)}>
-                            {licence.licenceNumber}: {licence.operatorName}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              <LicenceAccordion>
+                <ul className="govuk-list govuk-!-margin-bottom-1 licence-list">
+                  {operator.operatorLicences.map((licence) => (
+                    <li className="govuk-!-margin-bottom-1" key={licence.licenceNumber}>
+                      <LicenceComplianceHelp nonCompliant={licence.nonCompliant} />
+                      <a className="govuk-link" href={operatorLicenceUrl(licence.licenceNumber, id)}>
+                        {licence.licenceNumber}: {licence.operatorName}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </LicenceAccordion>
             </th>
           </tr>
         </tbody>
