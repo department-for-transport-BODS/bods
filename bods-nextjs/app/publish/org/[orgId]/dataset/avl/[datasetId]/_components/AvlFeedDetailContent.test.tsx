@@ -143,6 +143,16 @@ describe('AvlFeedDetailContent', () => {
     });
   });
 
+  it('links the Choose data type breadcrumb to the org dataset page', async () => {
+    mockApiGet.mockResolvedValue(mockFeedDetail);
+
+    render(<AvlFeedDetailContent />);
+
+    const link = await screen.findByRole('link', { name: 'Choose data type' });
+    expect(link.getAttribute('href')).toMatch(/\/org\/org-123\/dataset\/$/);
+    expect(link.getAttribute('href')).not.toMatch(/\/publish\/org/);
+  });
+
   it('displays error when API call fails', async () => {
     mockApiGet.mockRejectedValue(new Error('Network error'));
 

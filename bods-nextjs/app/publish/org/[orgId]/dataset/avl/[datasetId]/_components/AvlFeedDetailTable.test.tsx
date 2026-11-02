@@ -208,10 +208,9 @@ describe('AvlFeedDetailTable', () => {
     );
 
     const editLinks = screen.getAllByRole('link', { name: /Edit/i });
-    expect(editLinks[0]).toHaveAttribute(
-      'href',
-      '/publish/org/org-123/dataset/avl/456/dataset-edit'
-    );
+    const href = editLinks[0].getAttribute('href');
+    expect(href).toMatch(/\/org\/org-123\/dataset\/avl\/456\/dataset-edit\/$/);
+    expect(href).not.toMatch(/\/publish\/org/);
   });
 
   it('does not show edit links for dummy feeds', () => {
