@@ -1,5 +1,15 @@
 
 
+export const LOGIN_ERRORS = {
+  emailRequired: 'Please provide an email',
+  emailInvalid: 'Enter an email address in the right format, like name@example.com',
+  passwordRequired: 'Please provide a password',
+  invalidCredentials: 'The email address and/or password you specified are not correct.',
+  unverifiedEmail: (email: string) =>
+    `The email address ${email} has not yet been verified. We have sent you another confirmation email.`,
+  tooManyAttempts: 'Too many failed login attempts. Try again later.',
+} as const;
+
 export const TIMETABLE_PUBLISH_ERRORS = {
   dataSetDesc: 'Enter a description in the data set description box below',
   shortDesc: 'Enter a short description in the data set short description box below',

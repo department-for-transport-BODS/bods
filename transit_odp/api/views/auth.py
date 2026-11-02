@@ -25,19 +25,22 @@ from allauth.account.utils import (
 )
 from allauth.utils import get_form_class
 from django.conf import settings
-from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth import get_user_model, login, logout
 from django.contrib.sessions.exceptions import InvalidSessionKey
 from django.middleware.csrf import get_token
+from django.utils.html import strip_tags
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from transit_odp.organisation.models import Organisation
 from transit_odp.users.forms.auth import (
     ChangePasswordForm,
+    LoginForm,
     ResetPasswordForm,
     ResetPasswordKeyForm,
 )
 from transit_odp.users.models import Invitation
 from rest_framework import serializers, status
+from rest_framework.exceptions import Throttled
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
@@ -91,11 +94,6 @@ class InviteAcceptRateThrottle(AnonRateThrottle):
     scope = "account-invite-accept"
 
 
-class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField()
-
-
 @method_decorator(csrf_protect, name="dispatch")
 class LoginAPIView(APIView):
     """Authenticate and create a Django session.
@@ -113,6 +111,13 @@ class LoginAPIView(APIView):
             return []
         return super().get_throttles()
 
+    def throttled(self, request, wait):
+        exception = Throttled(
+            detail="Too many failed login attempts. Try again later."
+        )
+        exception.wait = wait
+        raise exception
+
     def get(self, request):
         """Return the email ConfirmEmailView stashed, then clear it.
 
@@ -126,35 +131,48 @@ class LoginAPIView(APIView):
         return Response({"verifiedEmail": verified_email}, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        form = LoginForm(
+            request._request,
+            data={
+                "login": request.data.get("email", ""),
+                "password": request.data.get("password", ""),
+            },
+        )
+        if not form.is_valid():
+            non_field_errors = form.non_field_errors()
+            if non_field_errors:
+                return Response(
+                    {"detail": strip_tags(str(non_field_errors[0]))},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-        email = serializer.validated_data["email"]
-        password = serializer.validated_data["password"]
-
-        user = authenticate(request, username=email, password=password)
-
-        if user is None or not user.is_active:
+            field_errors = {}
+            for form_field, api_field in (
+                ("login", "email"),
+                ("password", "password"),
+            ):
+                if form.errors.get(form_field):
+                    field_errors[api_field] = [
+                        strip_tags(str(error)) for error in form.errors[form_field]
+                    ]
             return Response(
-                {"detail": "Invalid email or password."},
+                {"field_errors": field_errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Respect allauth's mandatory email verification
-        if (
-            allauth_settings.EMAIL_VERIFICATION
-            == allauth_settings.EmailVerificationMethod.MANDATORY
-        ):
-            email_address = EmailAddress.objects.filter(
-                user=user, email__iexact=email
-            ).first()
-
-            if email_address is None or not email_address.verified:
-                send_email_confirmation(request, user)
-                return Response(
-                    {"detail": "Email address not verified."},
-                    status=status.HTTP_403_FORBIDDEN,
-                )
+        user = form.user
+        if not user.is_active:
+            return Response(
+                {
+                    "code": "account_inactive",
+                    "detail": (
+                        "Your account is inactive and you no longer have access to "
+                        "the Bus Open Data Service. If you were not expecting this "
+                        "then please contact us."
+                    ),
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         login(request, user)
 
