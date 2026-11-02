@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
+import { publishPath } from '@/config/client';
 import { getTimetablePublishRedirect, TimetableReviewPageContent } from './TimetableReviewPageContent';
 
 jest.mock('next/navigation', () => ({
@@ -44,8 +45,76 @@ const failedStatus = {
   errorDescription: 'The file is not valid',
 };
 
+const successStatus = {
+  datasetId: 9,
+  revisionId: 42,
+  status: 'success',
+  progress: 100,
+  loading: false,
+  name: 'Draft timetable',
+  description: 'A description',
+  shortDescription: 'Short',
+  ownerName: 'Test Org',
+  downloadUrl: 'https://example.com/feed.xml',
+  publisherUrl: 'https://example.com/feed.xml',
+  transxchangeVersion: '2.4',
+  lastModified: '2026-11-02T12:44:00Z',
+  lastModifiedUser: null,
+  error: null,
+  validationState: 'passed',
+  distinctAttributes: {},
+  dataQuality: { status: 'PENDING' },
+};
+
 describe('TimetableReviewPageContent', () => {
   beforeEach(() => jest.clearAllMocks());
+
+  describe('processed draft', () => {
+    it('renders the Django property table with revision-edit links and Last updated', () => {
+      renderContent(successStatus, true);
+
+      const rowHeaders = screen.getAllByRole('rowheader').map((cell) => cell.textContent);
+      expect(rowHeaders).toEqual([
+        'Name',
+        'Description',
+        'Short description',
+        'Status',
+        'Data quality report',
+        'Owner',
+        'TransXChange version',
+        'URL link',
+        'Last updated',
+      ]);
+      screen.getAllByRole('link', { name: 'Edit' }).forEach((link) =>
+        expect(link).toHaveAttribute('href', publishPath('/org/1/dataset/timetable/9/revision-edit/')),
+      );
+      expect(screen.getByText(/by System/)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Delete data' })).toHaveAttribute(
+        'href',
+        publishPath('/org/1/dataset/timetable/9/delete/'),
+      );
+    });
+
+    it('hides the consent form while the data quality report is generating', () => {
+      renderContent(successStatus);
+
+      expect(screen.getByText('Generating...')).toBeInTheDocument();
+      expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+    });
+
+    it('shows the Django consent form once the data quality report is ready', () => {
+      renderContent({ ...successStatus, dataQuality: { status: 'SUCCESS', reportId: 5, hasCriticalIssues: false, showUpdate: true } });
+
+      const consent = screen.getByLabelText('I have reviewed the data quality report and wish to publish my data');
+      expect(consent).toHaveAttribute('name', 'consent');
+      expect(consent).toHaveAttribute('id', 'id_consent');
+      expect(screen.getByRole('button', { name: 'Publish data' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Update data' })).toHaveAttribute(
+        'href',
+        publishPath('/org/1/dataset/timetable/9/update'),
+      );
+    });
+  });
 
   describe('first publish (review/)', () => {
     it('uses the Describe data / Provide data stepper', () => {
@@ -59,9 +128,9 @@ describe('TimetableReviewPageContent', () => {
     it('links the failed upload back to the update page', () => {
       renderContent(failedStatus);
 
-      expect(screen.getByRole('link', { name: 'Publish correct data set' })).toHaveAttribute(
+      expect(screen.getByRole('button', { name: 'Publish correct data set' })).toHaveAttribute(
         'href',
-        '/publish/org/1/dataset/timetable/9/update',
+        publishPath('/org/1/dataset/timetable/9/update'),
       );
     });
   });
@@ -87,9 +156,9 @@ describe('TimetableReviewPageContent', () => {
     it('links the failed upload to update/review/update', () => {
       renderContent(failedStatus, true);
 
-      expect(screen.getByRole('link', { name: 'Publish correct data set' })).toHaveAttribute(
+      expect(screen.getByRole('button', { name: 'Publish correct data set' })).toHaveAttribute(
         'href',
-        '/publish/org/1/dataset/timetable/9/update/review/update',
+        publishPath('/org/1/dataset/timetable/9/update/review/update'),
       );
     });
   });
@@ -100,7 +169,7 @@ describe('getTimetablePublishRedirect', () => {
 
   it('goes to update/success after publishing an update revision', () => {
     expect(getTimetablePublishRedirect({ ...ids, isUpdate: true }, '/publish/org/1/dataset/timetable')).toBe(
-      '/publish/org/1/dataset/timetable/9/update/success',
+      publishPath('/org/1/dataset/timetable/9/update/success'),
     );
   });
 
@@ -109,6 +178,6 @@ describe('getTimetablePublishRedirect', () => {
   });
 
   it('falls back to the timetable list for a first publish', () => {
-    expect(getTimetablePublishRedirect({ ...ids, isUpdate: false })).toBe('/publish/org/1/dataset/timetable');
+    expect(getTimetablePublishRedirect({ ...ids, isUpdate: false })).toBe(publishPath('/org/1/dataset/timetable'));
   });
 });

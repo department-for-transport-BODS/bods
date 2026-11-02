@@ -6,6 +6,7 @@ import { PublishCancelStep, PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 import { publishAppPath, wwwPath } from '@/config/client';
+import { DATA_SET_UPLOAD_ERRORS } from '@/lib/validation/messages';
 import {
   FaresUploadItem,
   FaresUploadStep,
@@ -67,6 +68,7 @@ function UploadStepView({
   datasetId,
   comment,
   modifyDraft,
+  prefillUrlLink,
   reviewUrl,
   onCancel,
 }: Readonly<{
@@ -74,6 +76,8 @@ function UploadStepView({
   datasetId: string;
   comment: string;
   modifyDraft: boolean;
+  /** Django's `DatasetUpdateModify` binds the form to the draft revision, pre-filling its URL link. */
+  prefillUrlLink: boolean;
   reviewUrl: string;
   onCancel: () => void;
 }>) {
@@ -82,20 +86,30 @@ function UploadStepView({
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ method?: string; link?: string; file?: string }>({});
+
+  useEffect(() => {
+    if (!prefillUrlLink) return;
+    api
+      .get<{ urlLink?: string | null }>(`/api/publish/fares/review-status/${orgId}/${datasetId}/`)
+      .then((data) => setUrlLink((current) => current || data.urlLink || ''))
+      .catch(() => undefined);
+  }, [prefillUrlLink, orgId, datasetId]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage('');
+    setFieldErrors({});
     if (!selectedItem) {
-      setErrorMessage('Please provide a file or url');
+      setFieldErrors({ method: DATA_SET_UPLOAD_ERRORS.noSelection });
       return;
     }
     if (selectedItem === URL_LINK_ITEM_ID && !urlLink.trim()) {
-      setErrorMessage('Please provide a URL link');
+      setFieldErrors({ link: DATA_SET_UPLOAD_ERRORS.link });
       return;
     }
     if (selectedItem === UPLOAD_FILE_ITEM_ID && !uploadFile) {
-      setErrorMessage('Please provide a file');
+      setFieldErrors({ file: DATA_SET_UPLOAD_ERRORS.fileMissing });
       return;
     }
     setIsSubmitting(true);
@@ -129,6 +143,7 @@ function UploadStepView({
       urlLink={urlLink}
       isSubmitting={isSubmitting}
       errorMessage={errorMessage}
+      fieldErrors={fieldErrors}
       heading={modifyDraft ? 'Choose how to provide your data set' : 'Update your published data set'}
       submitButtonText="Continue"
       errorTitleId="upload-error-title"
@@ -235,6 +250,7 @@ export function FaresUpdatePageContent({ isUpdateReview = false }: Readonly<Fare
                 datasetId={datasetId}
                 comment={comment}
                 modifyDraft={modifyDraft}
+                prefillUrlLink={isUpdateReview}
                 reviewUrl={reviewUrl}
                 onCancel={() => handleCancelClick(UPLOAD_STEP)}
               />

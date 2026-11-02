@@ -76,7 +76,7 @@ describe('Timetable - Publish - Page', () => {
     await fillDescriptionStep();
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
-    expect(screen.getByRole('link', { name: 'Select how you want to provide your data set' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Please provide a file or url' })).toBeInTheDocument();
     expect(api.post).not.toHaveBeenCalled();
   });
 
@@ -116,7 +116,7 @@ describe('Timetable - Publish - Page', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
     expect(screen.getByRole('heading', { name: 'There is a problem' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Select how you want to provide your data set' })).toHaveAttribute('href', '#url_link-conditional-radio');
+    expect(screen.getByRole('link', { name: 'Please provide a file or url' })).toHaveAttribute('href', '#id_url_link');
 
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 

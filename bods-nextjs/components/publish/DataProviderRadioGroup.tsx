@@ -52,22 +52,21 @@ export function DataProviderRadioGroup({
   onLinkChange,
   onFileChange,
 }: DataProviderRadioGroupProps) {
-  const linkSelected = isLinkSelected(selectedMethod);
+  // Django's `clean()` adds the no-selection error to `url_link`, and `RadioAccordion` opens the
+  // first group with errors, so the URL group is shown with the error on its input.
+  const noSelectionError = selectedMethod ? undefined : errors?.method;
+  const linkError = errors?.link ?? noSelectionError;
+  const linkSelected = isLinkSelected(selectedMethod) || Boolean(noSelectionError);
   const fileChosen = isFileSelected(selectedMethod);
 
   return (
     <>
-      <div className={formGroupClass(errors?.method)} data-module="app-radio-accordion">
+      <div className="govuk-form-group" data-module="app-radio-accordion">
         <fieldset className="govuk-fieldset">
           {legend && (
             <legend className="govuk-fieldset__legend govuk-fieldset__legend--m">
               <h1 className="govuk-heading-xl">{legend}</h1>
             </legend>
-          )}
-          {errors?.method && (
-            <span id="data-provider-error_1" className="govuk-error-message">
-              {errors.method}
-            </span>
           )}
           <div className="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
             <div className="govuk-radios__item">
@@ -86,7 +85,7 @@ export function DataProviderRadioGroup({
               </label>
             </div>
             <div id={URL_LINK_ITEM_ID} className={conditionalClass(linkSelected)}>
-              <div className={formGroupClass(errors?.link)}>
+              <div className={formGroupClass(linkError)}>
                 <label className="govuk-label" htmlFor="id_url_link">
                   URL Link
                 </label>
@@ -95,9 +94,9 @@ export function DataProviderRadioGroup({
                     {urlHint}
                   </span>
                 )}
-                {errors?.link && (
+                {linkError && (
                   <span id="1_id_url_link-error" className="govuk-error-message">
-                    {errors.link}
+                    {linkError}
                   </span>
                 )}
                 <input
