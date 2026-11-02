@@ -174,7 +174,7 @@ class TestAPIMetricsFileView:
 
     def get_page(self, user):
         hostname = reverse_host(self.host)
-        client = Client(headers={"host": hostname})
+        client = Client(HTTP_HOST=hostname)
         client.force_login(user=user)
         response = client.get(self.url)
         return response
