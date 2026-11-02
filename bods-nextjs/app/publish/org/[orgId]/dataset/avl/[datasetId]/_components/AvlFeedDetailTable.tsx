@@ -12,7 +12,7 @@ interface AvlFeedDetailTableProps {
 }
 
 export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProps) {
-  const editUrl = `/publish/org/${orgId}/dataset/avl/${feedDetail.datasetId}/dataset-edit`;
+  const editUrl = publishAppPath(`/org/${orgId}/dataset/avl/${feedDetail.datasetId}/dataset-edit/`);
   const formattedPublishedAt = formatDateTime(feedDetail.publishedAt);
   const hasPublishedTimestamp = formattedPublishedAt !== '-';
   const publishedByDisplay = feedDetail.publishedBy || 'System';

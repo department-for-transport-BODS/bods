@@ -7,7 +7,7 @@ export function AvlFeedDetailSidebar() {
       <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
       <ul className="govuk-list app-list--nav govuk-!-font-size-19">
         <li>
-          <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements?section=dataquality')}>
+          <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements/')}>
             View our guidelines here
           </Link>
         </li>
@@ -17,14 +17,14 @@ export function AvlFeedDetailSidebar() {
           </Link>
         </li>
         <li>
-          <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements')}>
+          <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements/?section=dataquality')}>
             AVL feed compliance guidance
           </Link>
         </li>
         <li>
           <Link
             className="govuk-link"
-            href={publishAppPath('/guidance/operator-requirements?section=dataquality#avl-to-timetable-matching')}
+            href={publishAppPath('/guidance/operator-requirements/?section=dataquality#avl-to-timetable-matching')}
           >
             AVL to Timetables matching guidance
           </Link>

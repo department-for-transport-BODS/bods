@@ -746,14 +746,10 @@ def get_avl_feed_detail_api(request, pk1, pk):
     except DatasetMetadata.DoesNotExist:
         pass
 
-    # Get last server update (avl_feed_last_checked), fallback to revision modified
+    # Get last server update (avl_feed_last_checked); blank if never checked
     last_server_update = ""
     if dataset.avl_feed_last_checked is not None:
         last_server_update = dataset.avl_feed_last_checked.astimezone(
-            pytz.timezone("Europe/London")
-        ).strftime("%d %b %Y %H:%M")
-    elif revision.modified is not None:
-        last_server_update = revision.modified.astimezone(
             pytz.timezone("Europe/London")
         ).strftime("%d %b %Y %H:%M")
 

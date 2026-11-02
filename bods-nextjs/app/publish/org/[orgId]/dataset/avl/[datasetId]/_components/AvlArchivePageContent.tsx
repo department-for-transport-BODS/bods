@@ -1,23 +1,40 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { ErrorSummary } from '@/components/shared';
-import { getCsrfToken } from '@/lib/api-client';
+import { api, getCsrfToken } from '@/lib/api-client';
+import { publishAppPath } from '@/config/client';
 
 export function AvlArchivePageContent() {
   const params = useParams();
-  const searchParams = useSearchParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [datasetName, setDatasetName] = useState('');
 
-  const datasetName = searchParams.get('name') || '';
-  const detailUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}`;
-  const fallbackSuccessUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/archive/success`;
+  const detailUrl = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/`);
+  const fallbackSuccessUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/deactivate/success`;
+
+  // Django's success page shows the feed name; it is read now because the feed
+  // is no longer published once deactivated.
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .get<{ name?: string }>(`/api/publish/avl/detail/${orgId}/${datasetId}/`)
+      .then((detail) => {
+        if (!cancelled) {
+          setDatasetName(detail.name || '');
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [datasetId, orgId]);
 
   const handleDeactivate = async () => {
     if (isSubmitting) {
