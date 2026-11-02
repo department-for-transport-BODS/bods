@@ -44,6 +44,15 @@ export function TimetableUpdateContent({ isUpdateReview = false }: Readonly<Time
     document.title = `Update data set: ${isCancelling ? 'cancel' : 'upload'}`;
   }, [isCancelling]);
 
+  // Django's `DatasetUpdateModify` binds the form to the draft revision, pre-filling its URL link.
+  useEffect(() => {
+    if (!isUpdateReview) return;
+    api
+      .get<{ urlLink?: string | null }>(`/api/publish/timetables/review-status/${orgId}/${datasetId}/`)
+      .then((data) => setLink((current) => current || data.urlLink || ''))
+      .catch(() => undefined);
+  }, [isUpdateReview, orgId, datasetId]);
+
   const handleSubmit = async () => {
     const validationErrors = validateTimetableStep2({ selectedMethod, link, file });
     setErrors(validationErrors);
@@ -80,7 +89,7 @@ export function TimetableUpdateContent({ isUpdateReview = false }: Readonly<Time
   }
 
   const summaryErrors = [
-    errors.method ? { text: errors.method, href: `#${URL_LINK_ITEM_ID}-radio` } : null,
+    errors.method ? { text: errors.method, href: '#id_url_link' } : null,
     errors.link ? { text: errors.link, href: '#id_url_link' } : null,
     errors.file ? { text: errors.file, href: '#id_upload_file' } : null,
   ].filter((error): error is { text: string; href: string } => error !== null);

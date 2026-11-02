@@ -16,15 +16,35 @@ jest.mock('@/components/auth/ProtectedRoute', () => ({
 }));
 
 jest.mock('@/lib/api-client', () => ({
-  api: { post: jest.fn() },
+  api: { post: jest.fn(), get: jest.fn() },
 }));
 
 describe('TimetableUpdateReviewUpdatePage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (api.get as jest.Mock).mockResolvedValue({ urlLink: 'https://example.com/current.xml' });
     (api.post as jest.Mock).mockResolvedValue({
       redirect: '/publish/org/123/dataset/timetable/456/update/review',
     });
+  });
+
+  it('pre-fills the URL link from the draft revision, like Django', async () => {
+    render(<TimetableUpdateReviewUpdatePage />);
+
+    await waitFor(() => expect(screen.getByLabelText('URL Link')).toHaveValue('https://example.com/current.xml'));
+    expect(api.get).toHaveBeenCalledWith('/api/publish/timetables/review-status/123/456/');
+  });
+
+  it('shows the Django no-selection error on the URL link field', async () => {
+    render(<TimetableUpdateReviewUpdatePage />);
+
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Continue' }));
+
+    expect(screen.getByRole('link', { name: 'Please provide a file or url' })).toHaveAttribute('href', '#id_url_link');
+    expect(screen.getByLabelText('URL Link').closest('#url_link-conditional')).not.toHaveClass(
+      'govuk-radios__conditional--hidden',
+    );
+    expect(api.post).not.toHaveBeenCalled();
   });
 
   it('matches Django DatasetUpdateModify: title, heading and Comment/Update stepper', () => {

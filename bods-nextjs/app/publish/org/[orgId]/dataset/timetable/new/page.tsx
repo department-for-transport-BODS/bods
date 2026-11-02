@@ -116,7 +116,7 @@ function TimetablePublish() {
 
   const uploadValidationSummaryErrors = step === 2
     ? [
-        errors.method ? { text: errors.method, href: `#${URL_LINK_ITEM_ID}-radio` } : null,
+        errors.method ? { text: errors.method, href: '#id_url_link' } : null,
         errors.link ? { text: errors.link, href: '#id_url_link' } : null,
         errors.file ? { text: errors.file, href: '#id_upload_file' } : null,
       ].filter((error): error is { text: string; href: string } => error !== null)

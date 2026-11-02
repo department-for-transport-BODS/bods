@@ -35,6 +35,27 @@ export class PublishUpdateReviewPage {
     await expect(this.page.getByRole('heading', { level: 2, name: datasetName })).toBeVisible();
   }
 
+  async assertTimetablePropertyTable(orgId: string, datasetId: string): Promise<void> {
+    const table = this.page.locator('table.dataset-property-table');
+    for (const header of ['Name', 'Description', 'Short description', 'Status', 'Owner', 'Last updated']) {
+      await expect(table.getByRole('rowheader', { name: header, exact: true })).toHaveCount(1);
+    }
+    const editLinks = table.getByRole('link', { name: /^Edit/ });
+    await expect(editLinks).toHaveCount(2);
+    for (const link of await editLinks.all()) {
+      await expect(link).toHaveAttribute(
+        'href',
+        new RegExp(`/org/${orgId}/dataset/timetable/${datasetId}/revision-edit/$`),
+      );
+    }
+    await expect(
+      this.page.getByRole('checkbox', {
+        name: 'I have reviewed the data quality report and wish to publish my data',
+      }),
+    ).toHaveAttribute('name', 'consent');
+    await expect(this.page.getByRole('button', { name: 'Publish data' })).toBeDisabled();
+  }
+
   async assertFaresConsentAndEditLinks(orgId: string, datasetId: string): Promise<void> {
     const consent = this.page.getByRole('checkbox', {
       name: 'I have reviewed the submission and wish to publish my data',

@@ -52,6 +52,10 @@ test.describe('Publish update review journey', () => {
     await test.step('Verify the update stepper and heading', async () => {
       await page.assertReviewLoaded('Playwright timetable update');
     });
+
+    await test.step('Verify the Django property table, Edit targets and consent form', async () => {
+      await page.assertTimetablePropertyTable(config.organisationId, DATASET_ID);
+    });
   });
 
   test('Fares update review - matches the Django consent field and links', async ({ authenticatedPage }) => {

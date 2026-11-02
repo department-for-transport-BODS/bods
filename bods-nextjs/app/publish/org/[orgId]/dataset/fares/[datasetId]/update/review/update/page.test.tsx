@@ -14,13 +14,35 @@ jest.mock('@/components/auth/ProtectedRoute', () => ({
 }));
 
 jest.mock('@/lib/api-client', () => ({
-  api: { post: jest.fn() },
+  api: { post: jest.fn(), get: jest.fn() },
 }));
 
 describe('FaresUpdateReviewUpdatePage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (api.get as jest.Mock).mockResolvedValue({ urlLink: 'https://example.com/current.xml' });
     (api.post as jest.Mock).mockReturnValue(new Promise(() => {}));
+  });
+
+  it('pre-fills the URL link from the draft revision, like Django', async () => {
+    render(<FaresUpdateReviewUpdatePage />);
+
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: 'url link' })).toHaveValue('https://example.com/current.xml'),
+    );
+    expect(api.get).toHaveBeenCalledWith('/api/publish/fares/review-status/1/9/');
+  });
+
+  it('shows the Django no-selection error on the URL link field', async () => {
+    render(<FaresUpdateReviewUpdatePage />);
+
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Continue' }));
+
+    expect(screen.getByRole('link', { name: 'Please provide a file or url' })).toHaveAttribute('href', '#id_url_link');
+    expect(screen.getByRole('textbox', { name: 'url link' }).closest('#url_link-conditional')).not.toHaveClass(
+      'govuk-radios__conditional--hidden',
+    );
+    expect(api.post).not.toHaveBeenCalled();
   });
 
   it('starts on the upload step of a draft modification with the Comment / Update stepper', () => {
