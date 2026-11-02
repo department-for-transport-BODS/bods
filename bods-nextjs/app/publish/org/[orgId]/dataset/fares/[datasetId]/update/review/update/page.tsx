@@ -6,7 +6,7 @@ import { FaresUpdatePageContent } from '../../../../_components/FaresUpdatePageC
 export default function FaresUpdateReviewUpdatePage() {
   return (
     <ProtectedRoute>
-      <FaresUpdatePageContent isUpdateReview />
+      <FaresUpdatePageContent mode="updateModify" />
     </ProtectedRoute>
   );
 }

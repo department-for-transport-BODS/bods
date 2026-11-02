@@ -294,6 +294,10 @@ describe('FaresReviewPage', () => {
       `${publishPath('/guidance/operator-requirements')}?section=dataquality`,
     );
     expect(screen.queryByText('Supplied data set has failed to upload')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Publish correct data set' })).toHaveAttribute(
+      'href',
+      publishPath('/org/1/dataset/fares/9/review/update'),
+    );
   });
 
   it('shows the standard antivirus message even when a pipeline message is stored', () => {
@@ -362,16 +366,12 @@ describe('getFaresPublishRedirect', () => {
   const ids = { orgId: '1', datasetId: '9' };
 
   it('goes to update/success after publishing an update revision', () => {
-    expect(getFaresPublishRedirect({ ...ids, isUpdate: true }, '/publish/org/1/dataset/fares/9/publish-success')).toBe(
-      '/publish/org/1/dataset/fares/9/update/success',
+    expect(getFaresPublishRedirect({ ...ids, isUpdate: true })).toBe(
+      publishPath('/org/1/dataset/fares/9/update/success'),
     );
   });
 
-  it('follows the server redirect for a first publish', () => {
-    expect(getFaresPublishRedirect({ ...ids, isUpdate: false }, '/somewhere')).toBe('/somewhere');
-  });
-
-  it('falls back to the fares list for a first publish', () => {
-    expect(getFaresPublishRedirect({ ...ids, isUpdate: false })).toBe('/publish/org/1/dataset/fares');
+  it('goes to success after a first publish, like Django ReviewView', () => {
+    expect(getFaresPublishRedirect({ ...ids, isUpdate: false })).toBe(publishPath('/org/1/dataset/fares/9/success'));
   });
 });

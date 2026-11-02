@@ -154,3 +154,34 @@ def test_update_always_redirects_to_update_review(fares_dataset, modify_draft):
             f"{dataset.id}/update/review"
         )
     }
+
+
+@pytest.mark.parametrize(
+    ("has_live_revision", "expected_path"),
+    [(False, "success"), (True, "update/success")],
+)
+def test_publish_redirects_to_the_matching_success_page(
+    client_factory, has_live_revision, expected_path
+):
+    user = UserFactory(account_type=OrgAdminType)
+    factory_kwargs = {} if has_live_revision else {"live_revision": None}
+    dataset = DatasetFactory(
+        organisation=user.organisations.first(),
+        dataset_type=FaresType,
+        **factory_kwargs,
+    )
+    DatasetRevisionFactory(dataset=dataset, is_published=False, status="success")
+    client = client_factory(host=PUBLISH_HOST)
+    client.force_login(user)
+
+    with patch("transit_odp.organisation.models.DatasetRevision.publish"):
+        response = client.post(_url("nextjs-fares-publish", dataset))
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "redirect": (
+            f"/publish/org/{dataset.organisation_id}/dataset/fares/"
+            f"{dataset.id}/{expected_path}"
+        ),
+        "published": True,
+    }

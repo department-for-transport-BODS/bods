@@ -498,14 +498,19 @@ function FaresStopMapPreview({ revisionId, mapboxToken }: Readonly<FaresStopMapP
   );
 }
 
-/** Where to go after publishing: Django's UpdateRevisionPublishView uses `update/success`. */
-export const getFaresPublishRedirect = (
-  { orgId, datasetId, isUpdate }: { orgId: string; datasetId: string; isUpdate: boolean },
-  serverRedirect?: string,
-) =>
-  isUpdate
-    ? `/publish/org/${orgId}/dataset/fares/${datasetId}/update/success`
-    : serverRedirect || `/publish/org/${orgId}/dataset/fares`;
+/**
+ * Where to go after publishing: Django's ReviewView uses `success` and UpdateRevisionPublishView uses
+ * `update/success`.
+ */
+export const getFaresPublishRedirect = ({
+  orgId,
+  datasetId,
+  isUpdate,
+}: {
+  orgId: string;
+  datasetId: string;
+  isUpdate: boolean;
+}) => publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/${isUpdate ? 'update/success' : 'success'}`);
 
 type FaresReviewPageContentProps = {
   mapboxToken: string;
@@ -518,7 +523,8 @@ function FaresReviewPageContent({ mapboxToken, isUpdate = false }: Readonly<Fare
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
 
-  const modifyDraftUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/update?modifyDraft=true`;
+  // Django's fares error and warning panels always link to `fares:upload-modify` (`review/update`).
+  const uploadModifyUrl = publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/review/update`);
   // Django `FaresRevisionPublishFormViolations` always sends "Update data" to `fares:update-modify`.
   const updateModifyUrl = publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/update/review/update`);
   const revisionEditUrl = publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/revision-edit/`);
@@ -558,11 +564,9 @@ function FaresReviewPageContent({ mapboxToken, isUpdate = false }: Readonly<Fare
     setErrorMessage('');
 
     try {
-      const data = await api.post<{
-        redirect?: string;
-      }>(`/api/publish/fares/publish/${orgId}/${datasetId}/`);
+      await api.post(`/api/publish/fares/publish/${orgId}/${datasetId}/`);
 
-      globalThis.location.href = getFaresPublishRedirect({ orgId, datasetId, isUpdate }, data.redirect);
+      globalThis.location.href = getFaresPublishRedirect({ orgId, datasetId, isUpdate });
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred while publishing. Please try again.');
       setIsPublishing(false);
@@ -681,7 +685,7 @@ function FaresReviewPageContent({ mapboxToken, isUpdate = false }: Readonly<Fare
                     schemaValidationReportUrl={statusData?.schemaValidationReportUrl}
                     contactSupportUrl={contactSupportUrl}
                     guidanceUrl={dataQualityGuidanceUrl}
-                    updateUrl={modifyDraftUrl}
+                    updateUrl={uploadModifyUrl}
                   />
                 ) : null}
 

@@ -129,7 +129,9 @@ def test_update_draft_redirects_to_the_matching_review_route(
         host=PUBLISH_HOST,
         kwargs={"pk1": dataset.organisation_id, "pk": dataset.id},
     )
-    data = {"is_update": is_update} if is_update else {}
+    data = {"modify_draft": "true"}
+    if is_update:
+        data["is_update"] = is_update
 
     with patch("transit_odp.timetables.views.api.FeedUploadForm") as form_class, patch(
         "transit_odp.timetables.views.api._trigger_timetables_processing"
@@ -145,4 +147,156 @@ def test_update_draft_redirects_to_the_matching_review_route(
             f"/publish/org/{dataset.organisation_id}/dataset/timetable/"
             f"{dataset.id}/{expected_path}"
         )
+    }
+
+
+def _update_url(dataset):
+    return reverse(
+        "nextjs-timetables-update",
+        host=PUBLISH_HOST,
+        kwargs={"pk1": dataset.organisation_id, "pk": dataset.id},
+    )
+
+
+UPDATE_FROM_LIVE_DATA = {
+    "comment": "New timetables for the summer",
+    "selected_item": "url_link-conditional",
+    "url_link": "https://example.com/timetables.zip",
+}
+
+
+def test_update_from_live_creates_a_draft_revision(update_success):
+    """Django ``FeedUpdateWizard`` starts a new draft from the live data set."""
+    client, user, dataset = update_success
+    client.force_login(user)
+
+    with patch(
+        "transit_odp.timetables.views.api._trigger_timetables_processing"
+    ) as trigger:
+        response = client.post(_update_url(dataset), UPDATE_FROM_LIVE_DATA)
+
+    assert response.status_code == 201
+    assert response.json() == {
+        "redirect": (
+            f"/publish/org/{dataset.organisation_id}/dataset/timetable/"
+            f"{dataset.id}/update/review"
+        )
+    }
+    draft = dataset.revisions.get(is_published=False)
+    assert draft.comment == "New timetables for the summer"
+    assert draft.url_link == "https://example.com/timetables.zip"
+    assert draft.last_modified_user == user
+    assert draft.description == dataset.live_revision.description
+    trigger.assert_called_once_with(draft)
+
+
+def test_update_from_live_requires_a_comment(update_success):
+    client, user, dataset = update_success
+    client.force_login(user)
+
+    response = client.post(
+        _update_url(dataset), {**UPDATE_FROM_LIVE_DATA, "comment": ""}
+    )
+
+    assert response.status_code == 400
+    assert response.json()["field_errors"] == {
+        "comment": ["Enter a comment in the box below"]
+    }
+    assert not dataset.revisions.filter(is_published=False).exists()
+
+
+def test_update_from_live_validates_the_upload(update_success):
+    client, user, dataset = update_success
+    client.force_login(user)
+
+    response = client.post(
+        _update_url(dataset), {**UPDATE_FROM_LIVE_DATA, "url_link": ""}
+    )
+
+    assert response.status_code == 400
+    assert response.json()["field_errors"] == {
+        "url_link": ["Please provide a URL link"]
+    }
+    assert not dataset.revisions.filter(is_published=False).exists()
+
+
+def test_update_from_live_rejects_an_existing_draft(update_success):
+    """Django redirects to ``feed-draft-exists`` instead of starting a second draft."""
+    client, user, dataset = update_success
+    DatasetRevisionFactory(dataset=dataset, is_published=False)
+    client.force_login(user)
+
+    response = client.post(_update_url(dataset), UPDATE_FROM_LIVE_DATA)
+
+    assert response.status_code == 409
+    assert response.json() == {"error": "A draft update already exists"}
+    assert dataset.revisions.filter(is_published=False).count() == 1
+
+
+def test_update_from_live_get_returns_the_live_url_link(update_success):
+    """Django's ``FeedUpdateWizard`` pre-fills the upload from the live revision."""
+    client, user, dataset = update_success
+    dataset.live_revision.url_link = "https://example.com/live.zip"
+    dataset.live_revision.save()
+    client.force_login(user)
+
+    response = client.get(_update_url(dataset))
+
+    assert response.status_code == 200
+    assert response.json() == {"urlLink": "https://example.com/live.zip"}
+    assert not dataset.revisions.filter(is_published=False).exists()
+
+
+def test_update_404_for_dataset_in_another_organisation(update_success):
+    client, user, _ = update_success
+    other_dataset = DatasetFactory(dataset_type=TimetableType)
+    client.force_login(user)
+
+    response = client.post(
+        reverse(
+            "nextjs-timetables-update",
+            host=PUBLISH_HOST,
+            kwargs={"pk1": user.organisations.first().id, "pk": other_dataset.id},
+        ),
+        UPDATE_FROM_LIVE_DATA,
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {"error": "Dataset not found"}
+
+
+@pytest.mark.parametrize(
+    ("has_live_revision", "expected_path"),
+    [(False, "success"), (True, "update/success")],
+)
+def test_publish_redirects_to_the_matching_success_page(
+    client_factory, has_live_revision, expected_path
+):
+    user = UserFactory(account_type=OrgAdminType)
+    factory_kwargs = {} if has_live_revision else {"live_revision": None}
+    dataset = DatasetFactory(
+        organisation=user.organisations.first(),
+        dataset_type=TimetableType,
+        **factory_kwargs,
+    )
+    DatasetRevisionFactory(dataset=dataset, is_published=False, status="success")
+    client = client_factory(host=PUBLISH_HOST)
+    client.force_login(user)
+
+    with patch("transit_odp.organisation.models.DatasetRevision.publish"):
+        response = client.post(
+            reverse(
+                "nextjs-timetables-publish",
+                host=PUBLISH_HOST,
+                kwargs={"pk1": dataset.organisation_id, "pk": dataset.id},
+            )
+        )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "redirect": (
+            f"/publish/org/{dataset.organisation_id}/dataset/timetable/"
+            f"{dataset.id}/{expected_path}"
+        ),
+        "published": True,
     }

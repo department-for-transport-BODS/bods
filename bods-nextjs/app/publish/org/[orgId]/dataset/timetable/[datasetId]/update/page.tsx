@@ -6,7 +6,7 @@ import { TimetableUpdateContent } from '../../_components/TimetableUpdateContent
 export default function TimetableUpdatePage() {
   return (
     <ProtectedRoute>
-      <TimetableUpdateContent />
+      <TimetableUpdateContent mode="update" />
     </ProtectedRoute>
   );
 }

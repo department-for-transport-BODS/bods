@@ -65,11 +65,6 @@ type TimetableReviewStatusResponse = {
   };
 };
 
-type PublishResponse = {
-  redirect?: string;
-  published?: boolean;
-};
-
 const isDataQualityPending = (data: TimetableReviewStatusResponse) =>
   !data.error && (!data.dataQuality || data.dataQuality.status === 'PENDING');
 
@@ -85,14 +80,19 @@ const STEPPER_LABELS = {
 
 const DATA_QUALITY_CONSENT_LABEL = 'I have reviewed the data quality report and wish to publish my data';
 
-/** Where to go after publishing: Django's UpdateRevisionPublishView uses `update/success`. */
-export const getTimetablePublishRedirect = (
-  { orgId, datasetId, isUpdate }: { orgId: string; datasetId: string; isUpdate: boolean },
-  serverRedirect?: string,
-) =>
-  isUpdate
-    ? publishAppPath(`/org/${orgId}/dataset/timetable/${datasetId}/update/success`)
-    : serverRedirect || publishAppPath(`/org/${orgId}/dataset/timetable`);
+/**
+ * Where to go after publishing: Django's `timetables.views.review.PublishRevisionView` uses `success` and
+ * UpdateRevisionPublishView uses `update/success`.
+ */
+export const getTimetablePublishRedirect = ({
+  orgId,
+  datasetId,
+  isUpdate,
+}: {
+  orgId: string;
+  datasetId: string;
+  isUpdate: boolean;
+}) => publishAppPath(`/org/${orgId}/dataset/timetable/${datasetId}/${isUpdate ? 'update/success' : 'success'}`);
 
 /** Django `publish/snippets/pti_panel/base.html`. */
 function PtiPanel({ children }: Readonly<{ children: ReactNode }>) {
@@ -186,8 +186,8 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
     setErrorMessage('');
 
     try {
-      const data = await api.post<PublishResponse>(`/api/publish/timetables/publish/${orgId}/${datasetId}/`);
-      globalThis.location.href = getTimetablePublishRedirect({ orgId, datasetId, isUpdate }, data.redirect);
+      await api.post(`/api/publish/timetables/publish/${orgId}/${datasetId}/`);
+      globalThis.location.href = getTimetablePublishRedirect({ orgId, datasetId, isUpdate });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'An error occurred while publishing.';
       setErrorMessage(message);
@@ -211,8 +211,8 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
 
   const datasetPath = `/org/${orgId}/dataset/timetable/${datasetId}`;
   // Django links to `update-modify` (`update/review/update`) from the update review and
-  // `upload-modify` from the first-publish review (served by `update/` in Next.js).
-  const updateUrl = publishAppPath(isUpdate ? `${datasetPath}/update/review/update` : `${datasetPath}/update`);
+  // `upload-modify` (`review/update`) from the first-publish review.
+  const updateUrl = publishAppPath(isUpdate ? `${datasetPath}/update/review/update` : `${datasetPath}/review/update`);
   const stepperLabels = isUpdate ? STEPPER_LABELS.update : STEPPER_LABELS.publish;
   const deleteUrl = publishAppPath(`${datasetPath}/delete/`);
   const revisionEditUrl = publishAppPath(`${datasetPath}/revision-edit/`);

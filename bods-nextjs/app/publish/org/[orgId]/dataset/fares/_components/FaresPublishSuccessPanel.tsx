@@ -13,8 +13,6 @@ type FaresUpdateSuccessData = {
   validatorError: boolean;
 };
 
-const noContext = async (): Promise<FaresUpdateSuccessData | null> => null;
-
 /**
  * Shared "Data set published" / "Data set updated" panel
  * (Django `fares/revision_publish_success.html`).
@@ -30,14 +28,11 @@ export function FaresPublishSuccessPanel({ update = false }: Readonly<{ update?:
     document.title = update ? 'Data set updated' : 'Data set published';
   }, [update]);
 
-  // Only the update success page needs context: Django's RevisionUpdateSuccessView reads the
-  // live revision's validation result when the fares validator flag is on.
+  // Django's publish and update success views both read the published revision's fares validation
+  // result, shown when the fares validator flag is on.
   const fetchContext = useCallback(
-    () =>
-      update
-        ? api.get<FaresUpdateSuccessData>(`/api/publish/fares/update-success/${orgId}/${datasetId}/`)
-        : noContext(),
-    [update, orgId, datasetId],
+    () => api.get<FaresUpdateSuccessData>(`/api/publish/fares/update-success/${orgId}/${datasetId}/`),
+    [orgId, datasetId],
   );
   const { data, isLoading, error } = useApiResource(fetchContext, 'Failed to load data set');
 
@@ -56,7 +51,8 @@ export function FaresPublishSuccessPanel({ update = false }: Readonly<{ update?:
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <div className="govuk-panel govuk-panel--confirmation govuk-!-margin-top-9">
+            <hr className="govuk-section-break govuk-section-break--m govuk-section-break" />
+            <div className="govuk-panel--confirmation govuk-panel">
               <h1 className="govuk-panel__title">
                 Your data set has been successfully {update ? 'updated' : 'published'}
               </h1>
@@ -90,7 +86,7 @@ export function FaresPublishSuccessPanel({ update = false }: Readonly<{ update?:
 
             <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />
           </div>
-          <div className="govuk-grid-column-one-third"></div>
+          <div className="govuk-!-width-one-third"></div>
         </div>
       </div>
     </div>

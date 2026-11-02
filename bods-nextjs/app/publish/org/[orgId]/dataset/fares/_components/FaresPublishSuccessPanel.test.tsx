@@ -17,18 +17,29 @@ const mockGet = api.get as jest.Mock;
 describe('FaresPublishSuccessPanel', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('renders the published confirmation without calling the API', async () => {
+  it('renders the published confirmation', async () => {
+    mockGet.mockResolvedValue({ isFaresValidatorActive: true, validatorError: false });
+
     render(<FaresPublishSuccessPanel />);
 
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Your data set has been successfully published' }),
     ).toBeInTheDocument();
-    expect(mockGet).not.toHaveBeenCalled();
+    expect(mockGet).toHaveBeenCalledWith('/api/publish/fares/update-success/1/9/');
     expect(document.title).toBe('Data set published');
+    expect(screen.queryByText(/failed the validation set/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'your fares data sets' })).toHaveAttribute(
       'href',
       publishAppPath('/publish/org/1/dataset/fares'),
     );
+  });
+
+  it('shows the validator paragraph after a first publish that failed validation, like Django', async () => {
+    mockGet.mockResolvedValue({ isFaresValidatorActive: true, validatorError: true });
+
+    render(<FaresPublishSuccessPanel />);
+
+    expect(await screen.findByText(/failed the validation set/)).toBeInTheDocument();
   });
 
   describe('update', () => {
