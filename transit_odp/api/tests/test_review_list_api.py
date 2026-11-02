@@ -60,6 +60,20 @@ def _live(organisation, dataset_type, **revision_kwargs):
     return dataset
 
 
+HTML_LIST_URLS = {
+    TimetableType: "/org/{org}/dataset/timetable/",
+    AVLType: "/org/{org}/dataset/avl/",
+    FaresType: "/org/{org}/dataset/fares/",
+}
+
+
+def _get_html(client_factory, user, dataset_type, org_id):
+    client = client_factory(host=hosts.PUBLISH_HOST)
+    if user is not None:
+        client.force_login(user=user)
+    return client.get(HTML_LIST_URLS[dataset_type].format(org=org_id))
+
+
 @ALL_TYPES
 def test_list_requires_authentication(client_factory, dataset_type):
     organisation = OrganisationFactory()
@@ -67,6 +81,10 @@ def test_list_requires_authentication(client_factory, dataset_type):
     response = _get(client_factory, None, dataset_type, organisation.id)
 
     assert response.status_code == 401
+    # Django redirects an anonymous visitor to log in; the Next.js page does the same.
+    html = _get_html(client_factory, None, dataset_type, organisation.id)
+    assert html.status_code == 302
+    assert "/account/login/" in html["Location"]
 
 
 @ALL_TYPES
@@ -77,6 +95,10 @@ def test_list_is_forbidden_for_non_org_users(client_factory, dataset_type):
     response = _get(client_factory, user, dataset_type, organisation.id)
 
     assert response.status_code == 403
+    assert (
+        _get_html(client_factory, user, dataset_type, organisation.id).status_code
+        == 403
+    )
 
 
 @ALL_TYPES
@@ -89,17 +111,40 @@ def test_list_is_forbidden_for_abods_users(client_factory, dataset_type):
     response = _get(client_factory, user, dataset_type, organisation.id)
 
     assert response.status_code == 403
+    assert (
+        _get_html(client_factory, user, dataset_type, organisation.id).status_code
+        == 403
+    )
 
 
 @ALL_TYPES
-def test_list_is_not_found_for_another_organisation(client_factory, dataset_type):
+def test_list_is_forbidden_for_another_organisation_like_django(
+    client_factory, dataset_type
+):
+    """OrgUserViewMixin.has_permission rejects with a 403, not a 404."""
     organisation = OrganisationFactory()
     other = OrganisationFactory()
     user = OrgAdminFactory(organisations=(other,))
 
     response = _get(client_factory, user, dataset_type, organisation.id)
 
-    assert response.status_code == 404
+    assert response.status_code == 403
+    assert (
+        _get_html(client_factory, user, dataset_type, organisation.id).status_code
+        == 403
+    )
+
+
+@ALL_TYPES
+def test_list_is_forbidden_for_an_organisation_that_does_not_exist(
+    client_factory, dataset_type
+):
+    user = OrgAdminFactory()
+
+    response = _get(client_factory, user, dataset_type, 999999)
+
+    assert response.status_code == 403
+    assert _get_html(client_factory, user, dataset_type, 999999).status_code == 403
 
 
 @ALL_TYPES

@@ -18,7 +18,6 @@ from transit_odp.users.constants import AccountType
 
 AUTH_REQUIRED_ERROR = "Authentication required"
 ORG_ACCESS_REQUIRED_ERROR = "Org user access required"
-ORG_NOT_FOUND_ERROR = "Organisation not found"
 
 TIMETABLE = "timetable"
 AVL = "avl"
@@ -140,12 +139,15 @@ def build_review_list_response(request, pk1, view_class, dataset_kind):
     if not user.is_authenticated:
         return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
 
-    # Mirrors OrgUserViewMixin.has_permission: ABODS users never see this page.
-    if not user.is_org_user or user.account_type == AccountType.abods_user.value:
+    # Mirrors OrgUserViewMixin.has_permission. Django answers every failure here with a
+    # 403 page: ABODS users, non-org users and users outside the organisation (even for
+    # an organisation that does not exist), so there is no 404 for the organisation.
+    if (
+        not user.is_org_user
+        or user.account_type == AccountType.abods_user.value
+        or not user.organisations.filter(id=pk1).exists()
+    ):
         return JsonResponse({"error": ORG_ACCESS_REQUIRED_ERROR}, status=403)
-
-    if not user.organisations.filter(id=pk1).exists():
-        return JsonResponse({"error": ORG_NOT_FOUND_ERROR}, status=404)
 
     view = view_class()
     view.setup(request, pk1=pk1)

@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useRef, type ChangeEvent } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { HOSTS, publishAppPath } from '@/config/client';
+import { publishAppPath } from '@/config/client';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 import { useApiResource } from '@/hooks/useApiResource';
 import { api } from '@/lib/api-client';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorDisplay, LoadingSpinner, Pagination } from '@/components/shared';
+import { ForbiddenMessage } from '@/components/shared/ForbiddenMessage';
 import { ReviewBanner } from './ReviewBanner';
 import { ReviewListTable } from './ReviewListTable';
 import {
@@ -58,7 +60,10 @@ export function ReviewListPage({ kind }: ReviewListPageProps) {
     () => api.get<ReviewListResponse>(listApiPath(kind, orgId, new URLSearchParams(searchKey))),
     [kind, orgId, searchKey],
   );
-  const { data, isLoading, error } = useApiResource(fetchList, 'Unable to load your data sets');
+  const { data, isLoading, error, errorStatus } = useApiResource(
+    fetchList,
+    'Unable to load your data sets',
+  );
 
   // Django snaps focus to the selected tab once the list has loaded.
   useEffect(() => {
@@ -73,6 +78,11 @@ export function ReviewListPage({ kind }: ReviewListPageProps) {
   const handleDataTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     router.push(event.target.value);
   };
+
+  // Django's OrgUserViewMixin answers ABODS, non-org and other-organisation users with its 403 page.
+  if (errorStatus === 403) {
+    return <ForbiddenMessage />;
+  }
 
   if (error && !data) {
     return (
@@ -97,9 +107,8 @@ export function ReviewListPage({ kind }: ReviewListPageProps) {
       <div className="govuk-width-container">
         <div className="govuk-main-wrapper govuk-!-padding-top-0 govuk-!-padding-bottom-0">
           <Breadcrumbs
-            items={[
-              { label: 'Bus Open Data Service', href: HOSTS.www },
-              { label: 'Publish Bus Open Data', href: HOSTS.publish },
+            items={hostBreadcrumbs(
+              'publish',
               ...(data.isAgentUser
                 ? [{ label: 'Agent Dashboard', href: publishAppPath('/agent-dashboard') }]
                 : []),
@@ -108,7 +117,7 @@ export function ReviewListPage({ kind }: ReviewListPageProps) {
                 label: djangoTitle(data.pageTitle),
                 href: publishAppPath(`/org/${orgId}/dataset/timetable`),
               },
-            ]}
+            )}
           />
         </div>
       </div>
@@ -189,7 +198,7 @@ export function ReviewListPage({ kind }: ReviewListPageProps) {
                     <Pagination
                       currentPage={data.page}
                       totalPages={data.totalPages}
-                      showSinglePage
+                      variant="table"
                     />
                   </div>
                 ) : (

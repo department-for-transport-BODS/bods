@@ -8,6 +8,7 @@
 import Link from 'next/link';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { PaginationPrevIcon, PaginationNextIcon } from './PaginationIcons';
+import { TablePagination } from './TablePagination';
 
 function PaginationNavButton({
   page,
@@ -63,6 +64,11 @@ interface PaginationProps {
   pageParam?: string;
   baseUrl?: string;
   showSinglePage?: boolean;
+  /**
+   * `table` renders Django's django-tables2 pagination (wider page window, `⋯` gaps, relative
+   * `?page=N` links) and is always shown, even for a single page. `default` is unchanged.
+   */
+  variant?: 'default' | 'table';
 }
 
 export function Pagination({
@@ -74,9 +80,16 @@ export function Pagination({
   pageParam = 'page',
   baseUrl,
   showSinglePage = false,
+  variant = 'default',
 }: PaginationProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  if (variant === 'table') {
+    return (
+      <TablePagination currentPage={currentPage} totalPages={totalPages} pageParam={pageParam} />
+    );
+  }
 
   const isUrlMode = !onPageChange;
   const effectiveBaseUrl = baseUrl || pathname;
