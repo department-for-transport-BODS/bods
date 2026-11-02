@@ -3,8 +3,15 @@ import { DatasetBrowserPage } from './DatasetBrowserPage';
 import { api } from '@/lib/api-client';
 import { dataPath } from '@/config/client';
 
-const searchParams = new URLSearchParams('status=live');
+const searchParams = new URLSearchParams();
 const mockPush = jest.fn();
+
+function setSearchParams(query = '') {
+  for (const key of Array.from(searchParams.keys())) {
+    searchParams.delete(key);
+  }
+  new URLSearchParams(query).forEach((value, key) => searchParams.set(key, value));
+}
 
 jest.mock('next/navigation', () => ({
   usePathname: () => '/fares',
@@ -43,7 +50,27 @@ function mockDataset(bodsCompliance?: boolean | null) {
 }
 
 describe('dataset browser compliance', () => {
+  beforeEach(() => setSearchParams());
   afterEach(() => jest.clearAllMocks());
+
+  it('does not display a published filter when no status filter was requested', async () => {
+    mockDataset();
+    render(<DatasetBrowserPage {...props} />);
+
+    await screen.findByText('83504');
+    expect(screen.getByLabelText('Status')).toHaveValue('');
+    expect(screen.getByRole('region', { name: 'Search filters' })).toBeEmptyDOMElement();
+  });
+
+  it('displays the Django choice label for an active status filter', async () => {
+    setSearchParams('status=live');
+    mockDataset();
+    render(<DatasetBrowserPage {...props} />);
+
+    await screen.findByText('83504');
+    expect(screen.getByLabelText('Status')).toHaveValue('published');
+    expect(screen.getByRole('region', { name: 'Search filters' })).toHaveTextContent('Published');
+  });
 
   it('links the timetable Browse breadcrumb to search', async () => {
     mockDataset();
