@@ -17,7 +17,7 @@ export default function AvlPage() {
 }
 
 export const metadata = {
-  title: 'Browse Location Data - Bus Open Data Service',
+  title: 'Browse Location Data',
   description: 'Search and browse bus location data feeds.',
 };
 

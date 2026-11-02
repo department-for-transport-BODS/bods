@@ -20,7 +20,7 @@ export default function FaresPage() {
 }
 
 export const metadata = {
-  title: 'Browse Fares Data - Bus Open Data Service',
+  title: 'Browse Fares Data',
   description: 'Search and browse fares datasets.',
 };
 
