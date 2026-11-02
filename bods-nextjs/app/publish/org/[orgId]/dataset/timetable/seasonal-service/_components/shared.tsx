@@ -4,7 +4,8 @@ import { useState, type ReactNode } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/shared/Breadcrumbs';
-import { HOSTS, publishAppPath } from '@/config/client';
+import { publishAppPath } from '@/config/client';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 export interface SeasonalServiceOrganisation {
   organisationId: number;
@@ -64,15 +65,12 @@ export function SeasonalServiceBreadcrumbs({ orgId, organisation, extra, stepper
     ? `${djangoTitle(`Review ${organisation.organisationName}`)} Timetables Data`
     : 'Review My Timetables Data';
 
-  const items: BreadcrumbItem[] = [
-    { label: 'Bus Open Data Service', href: HOSTS.www },
-    { label: 'Publish Open Data Service', href: HOSTS.publish },
+  const items = hostBreadcrumbs(
+    'publish',
     { label: reviewLabel, href: reviewTimetablesPath(orgId) },
     { label: 'Manage seasonal services', href: seasonalServicesListPath(orgId) },
-  ];
-  if (extra) {
-    items.push(extra);
-  }
+    ...(extra ? [extra] : []),
+  );
 
   return (
     <div className="govuk-width-container">
