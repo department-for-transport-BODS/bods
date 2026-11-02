@@ -140,6 +140,27 @@ describe('AvlFeedDetailTable', () => {
     expect(tableContent.textContent).toContain('95%');
   });
 
+  it('links to the matching report download as a plain anchor when matching exists', () => {
+    render(<AvlFeedDetailTable feedDetail={mockFeedDetail} orgId="123" />);
+
+    const link = screen.getByRole('link', { name: 'Download matching report' });
+    expect(link.getAttribute('href')).toMatch(
+      /\/org\/123\/dataset\/avl\/456\/download-matching-report\/$/,
+    );
+    expect(link.getAttribute('href')).not.toMatch(/\/publish\/org/);
+  });
+
+  it('hides the matching report link while matching is pending', () => {
+    render(
+      <AvlFeedDetailTable
+        feedDetail={{ ...mockFeedDetail, avlTimetablesMatching: undefined }}
+        orgId="123"
+      />,
+    );
+
+    expect(screen.queryByRole('link', { name: 'Download matching report' })).not.toBeInTheDocument();
+  });
+
   it('provides edit link for description when not dummy', () => {
     render(
       <AvlFeedDetailTable

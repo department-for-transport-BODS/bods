@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import type { AvlFeedDetail } from './AvlFeedDetailContent';
+import { AvlTimetableMatching } from './AvlTimetableMatching';
 import { statusIndicatorClass, statusLabel } from '../../_components/avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
 import { formatDateTime } from '@/lib/utils/date';
@@ -102,7 +101,11 @@ export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProp
           </th>
           <td className="govuk-table__cell govuk-!-padding-3">
             <div className="stacked">
-              <AvlTimetableMatchingSection matching={feedDetail.avlTimetablesMatching} />
+              <AvlTimetableMatching
+                matching={feedDetail.avlTimetablesMatching}
+                datasetId={feedDetail.datasetId}
+                orgId={orgId}
+              />
             </div>
           </td>
         </tr>
@@ -151,23 +154,5 @@ export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProp
         </tr>
       </tbody>
     </table>
-  );
-}
-
-function AvlTimetableMatchingSection({ matching }: { matching?: string }) {
-  return (
-    <p className="govuk-body govuk-!-margin-bottom-0">
-      {!matching || matching === '0%' ? (
-        <>
-          <FontAwesomeIcon icon={faCircleExclamation} aria-hidden="true" />
-          {' Pending '}
-        </>
-      ) : (
-        <>
-          {matching !== '100%' && <FontAwesomeIcon icon={faCircleExclamation} aria-hidden="true" />}
-          {matching} completely matched AVL to Timetables
-        </>
-      )}
-    </p>
   );
 }
