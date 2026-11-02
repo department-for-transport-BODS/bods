@@ -12,7 +12,8 @@ import { statusIndicatorClass, statusLabel } from './avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { Pagination } from '@/components/shared/Pagination';
-import { HOSTS, publishAppPath } from '@/config/client';
+import { publishAppPath } from '@/config/client';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 type AvlTab = 'active' | 'draft' | 'archive';
 
@@ -66,9 +67,9 @@ export function AvlManagement() {
   const searchParams = useSearchParams();
   const orgId = params.orgId as string;
 
-  const nextListUrl = `/publish/org/${orgId}/dataset/avl`;
-  const nextCreateUrl = `/publish/org/${orgId}/dataset/avl/new`;
-  const dataActivityUrl = `/publish/org/${orgId}/dataset/data-activity?prev=avl-feed-list`;
+  const nextListUrl = publishAppPath(`/org/${orgId}/dataset/avl/`);
+  const nextCreateUrl = publishAppPath(`/org/${orgId}/dataset/avl/new/`);
+  const dataActivityUrl = publishAppPath(`/org/${orgId}/dataset/data-activity/?prev=avl-feed-list`);
 
   const tab = getTabFromSearchParams(searchParams.get('tab'));
   const pageParam = searchParams.get('page');
@@ -144,7 +145,7 @@ export function AvlManagement() {
   const currentResponsePage = feedResponse?.page ?? safeCurrentPage;
   const totalPages = feedResponse?.totalPages ?? 1;
   const attentionSummary = attentionSummaryResponse?.summary;
-  const attentionMoreDetailsUrl = `/publish/org/${orgId}/dataset/avl/attention`;
+  const attentionMoreDetailsUrl = publishAppPath(`/org/${orgId}/dataset/avl/attention/`);
   const attentionTopValue = attentionSummary?.servicesRequiringAttention ?? 0;
   const attentionBottomValue = attentionSummary?.totalInScopeInSeasonServices ?? 0;
   const totalConsumerInteractions =
@@ -154,9 +155,9 @@ export function AvlManagement() {
 
   const tabLinks = useMemo(
     () => ({
-      active: `/publish/org/${orgId}/dataset/avl?tab=active`,
-      draft: `/publish/org/${orgId}/dataset/avl?tab=draft`,
-      archive: `/publish/org/${orgId}/dataset/avl?tab=archive`,
+      active: publishAppPath(`/org/${orgId}/dataset/avl/?tab=active`),
+      draft: publishAppPath(`/org/${orgId}/dataset/avl/?tab=draft`),
+      archive: publishAppPath(`/org/${orgId}/dataset/avl/?tab=archive`),
     }),
     [orgId],
   );
@@ -204,30 +205,27 @@ export function AvlManagement() {
   };
 
   const getFeedHref = (feed: AVLFeed): string => {
+    const feedPath = `/org/${orgId}/dataset/avl/${feed.id}/`;
     if (tab !== 'draft') {
-      return `/publish/org/${orgId}/dataset/avl/${feed.id}`;
+      return publishAppPath(feedPath);
     }
 
     if (feed.has_live_revision) {
-      return `/publish/org/${orgId}/dataset/avl/${feed.id}/update/review`;
+      return publishAppPath(`${feedPath}update/review/`);
     }
 
-    return `/publish/org/${orgId}/dataset/avl/${feed.id}/review`;
+    return publishAppPath(`${feedPath}review/`);
   };
 
   return (
     <>
       <div className="govuk-width-container">
         <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            {
-              label: 'Review My Bus Location Data',
-              href: publishAppPath(`/org/${orgId}/dataset/avl`),
-              current: true,
-            },
-          ]}
+          items={hostBreadcrumbs('publish', {
+            label: 'Review My Bus Location Data',
+            href: nextListUrl,
+            current: true,
+          })}
         />
       </div>
 
@@ -301,13 +299,13 @@ export function AvlManagement() {
                 value={nextListUrl}
                 onChange={handleDataTypeChange}
               >
-                <option value={`/publish/org/${orgId}/dataset/timetable`} data-qa="timetable-option">
+                <option value={publishAppPath(`/org/${orgId}/dataset/timetable/`)} data-qa="timetable-option">
                   Timetables data
                 </option>
-                <option value={`/publish/org/${orgId}/dataset/avl`} data-qa="avl-option">
+                <option value={nextListUrl} data-qa="avl-option">
                   Bus location data
                 </option>
-                <option value={`/publish/org/${orgId}/dataset/fares`} data-qa="fares-option">
+                <option value={publishAppPath(`/org/${orgId}/dataset/fares/`)} data-qa="fares-option">
                   Fares data
                 </option>
               </select>
@@ -420,7 +418,7 @@ export function AvlManagement() {
                     totalPages={totalPages}
                     pageParam="page"
                     showSinglePage
-                    baseUrl={`/publish/org/${orgId}/dataset/avl`}
+                    baseUrl={nextListUrl}
                   />
                 </>
               )}
@@ -439,7 +437,7 @@ export function AvlManagement() {
         <div className="govuk-grid-row govuk-!-margin-top-9">
           <div className="govuk-grid-column-one-third">
             <h3 className="govuk-heading-s">
-              <a className="govuk-link" href={publishAppPath('/guidance/operator-requirements')}>
+              <a className="govuk-link" href={publishAppPath('/guidance/operator-requirements/')}>
                 Bus operator requirements
               </a>
             </h3>
@@ -447,7 +445,7 @@ export function AvlManagement() {
           </div>
           <div className="govuk-grid-column-one-third">
             <h3 className="govuk-heading-s">
-              <a className="govuk-link" href={publishAppPath('/guidance/local-authority-requirements')}>
+              <a className="govuk-link" href={publishAppPath('/guidance/local-authority-requirements/')}>
                 Local authority requirements
               </a>
             </h3>
@@ -455,7 +453,7 @@ export function AvlManagement() {
           </div>
           <div className="govuk-grid-column-one-third">
             <h3 className="govuk-heading-s">
-              <a className="govuk-link" href={`/account/manage/org-profile/${orgId}`}>
+              <a className="govuk-link" href={publishAppPath(`/account/manage/org-profile/${orgId}/`)}>
                 Set up licence numbers
               </a>
             </h3>

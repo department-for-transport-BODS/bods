@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import { publishAppPath } from '@/config/client';
 import AVLUpdateCancelPage from './page';
 
 const mockUseParams = jest.fn();
@@ -46,7 +47,7 @@ describe('AVLUpdateCancelPage', () => {
       const confirmLink = screen.getByRole('button', { name: 'Confirm' });
       expect(confirmLink).toHaveAttribute(
         'href',
-        '/publish/org/org-123/dataset/avl/dataset-456/review',
+        publishAppPath('/org/org-123/dataset/avl/dataset-456/review/'),
       );
     });
   });
@@ -60,7 +61,7 @@ describe('AVLUpdateCancelPage', () => {
       const confirmLink = screen.getByRole('button', { name: 'Confirm' });
       expect(confirmLink).toHaveAttribute(
         'href',
-        '/publish/org/org-123/dataset/avl/dataset-456/review',
+        publishAppPath('/org/org-123/dataset/avl/dataset-456/review/'),
       );
     });
   });
@@ -74,7 +75,7 @@ describe('AVLUpdateCancelPage', () => {
       const confirmLink = screen.getByRole('button', { name: 'Confirm' });
       expect(confirmLink).toHaveAttribute(
         'href',
-        '/publish/org/org-123/dataset/avl/dataset-456',
+        publishAppPath('/org/org-123/dataset/avl/dataset-456/'),
       );
     });
   });
@@ -86,7 +87,7 @@ describe('AVLUpdateCancelPage', () => {
 
     expect(backLink).toHaveAttribute(
       'href',
-      '/publish/org/org-123/dataset/avl/dataset-456/update',
+      publishAppPath('/org/org-123/dataset/avl/dataset-456/update/'),
     );
   });
 });

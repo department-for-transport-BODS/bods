@@ -209,7 +209,7 @@ def create_avl_dataset_api(request, pk1):
 
         transaction.on_commit(lambda: task_validate_avl_feed.delay(task_id))
 
-    review_url = f"/publish/org/{organisation.id}/dataset/avl/{dataset.id}/review"
+    review_url = f"/org/{organisation.id}/dataset/avl/{dataset.id}/review/"
 
     return JsonResponse({"redirect": review_url}, status=201)
 
@@ -302,18 +302,22 @@ def publish_avl_dataset_api(request, pk1, pk):
     if error is not None:
         return JsonResponse({"error": error}, status=409)
 
+    # Django sends updates of a live feed to update/success/, first publishes to
+    # success/.
+    is_update = revision.dataset.live_revision_id is not None
     try:
         if not revision.is_published:
             revision.publish(user)
     except Exception:
         return JsonResponse(
-            {"redirect": f"/publish/org/{pk1}/dataset/avl/{pk}/error"},
+            {"redirect": f"/org/{pk1}/dataset/avl/{pk}/error/"},
             status=500,
         )
 
+    success_path = "update/success/" if is_update else "success/"
     return JsonResponse(
         {
-            "redirect": f"/publish/org/{pk1}/dataset/avl/{pk}/success",
+            "redirect": f"/org/{pk1}/dataset/avl/{pk}/{success_path}",
             "published": True,
         },
         status=200,
@@ -331,7 +335,7 @@ def delete_avl_dataset_api(request, pk1, pk):
 
     return JsonResponse(
         {
-            "redirect": f"/publish/org/{pk1}/dataset/avl/{pk}/delete/success",
+            "redirect": f"/org/{pk1}/dataset/avl/{pk}/delete/success/",
             "deleted": True,
         },
         status=200,
@@ -401,9 +405,7 @@ def update_avl_dataset_api(request, pk1, pk):
 
         transaction.on_commit(lambda: task_validate_avl_feed.delay(task_id))
 
-    review_url = (
-        f"/publish/org/{organisation.id}/dataset/avl/{dataset.id}/update/review"
-    )
+    review_url = f"/org/{organisation.id}/dataset/avl/{dataset.id}/update/review/"
 
     return JsonResponse({"redirect": review_url}, status=200)
 
@@ -485,7 +487,7 @@ def edit_avl_dataset_description_api(request, pk1, pk):
 
     return JsonResponse(
         {
-            "redirect": f"/publish/org/{organisation.id}/dataset/avl/{dataset.id}",
+            "redirect": f"/org/{organisation.id}/dataset/avl/{dataset.id}/",
         },
         status=200,
     )
@@ -933,6 +935,7 @@ def get_avl_feed_detail_api(request, pk1, pk):
             or "",
             "avlTimetablesMatching": ppc_weekly_score,
             "isDummy": dataset.is_dummy,
+            "hasLiveRevision": dataset.live_revision_id is not None,
         },
         status=200,
     )
