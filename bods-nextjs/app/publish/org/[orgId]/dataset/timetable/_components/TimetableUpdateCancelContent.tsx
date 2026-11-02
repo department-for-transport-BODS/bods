@@ -3,12 +3,18 @@
 import { useParams } from 'next/navigation';
 import { TimetableCancelContent } from './TimetableCreateCancelContent';
 
-export function TimetableUpdateCancelContent() {
+type TimetableUpdateCancelContentProps = {
+  /** Cancelling from `update/review/update` returns to `update/review`. */
+  isUpdateReview?: boolean;
+};
+
+export function TimetableUpdateCancelContent({ isUpdateReview = false }: Readonly<TimetableUpdateCancelContentProps>) {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
-  const reviewUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/review`;
-  const updateUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}/update`;
+  const datasetUrl = `/publish/org/${orgId}/dataset/timetable/${datasetId}`;
+  const reviewUrl = isUpdateReview ? `${datasetUrl}/update/review` : `${datasetUrl}/review`;
+  const updateUrl = isUpdateReview ? `${datasetUrl}/update/review/update` : `${datasetUrl}/update`;
 
   return (
     <TimetableCancelContent

@@ -274,8 +274,11 @@ def update_timetables_dataset_api(request, pk1, pk):
         revision.save()
         _trigger_timetables_processing(revision)
 
+    # DatasetUpdateModify returns to update/review, TimetableUploadModify to review.
+    is_update = request.POST.get("is_update") == "true"
+    review_path = "update/review" if is_update else "review"
     return JsonResponse(
-        {"redirect": f"/publish/org/{pk1}/dataset/timetable/{pk}/review"},
+        {"redirect": f"/publish/org/{pk1}/dataset/timetable/{pk}/{review_path}"},
         status=201,
     )
 

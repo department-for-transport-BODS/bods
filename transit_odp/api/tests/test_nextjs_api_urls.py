@@ -51,6 +51,11 @@ def test_session_auth_api_is_available_on_every_nextjs_host(urlconf, path, view_
             "/api/timetables/requires-attention/1/",
             "nextjs-timetables-requires-attention",
         ),
+        ("/api/fares/update-success/1/2/", "nextjs-fares-update-success"),
+        (
+            "/api/timetables/update-success/1/2/",
+            "nextjs-timetables-update-success",
+        ),
         (
             "/api/timetables/review-status/1/2/",
             "nextjs-timetables-review-status",

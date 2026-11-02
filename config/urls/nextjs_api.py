@@ -31,6 +31,7 @@ from transit_odp.fares.views.api import (
 from transit_odp.fares.views.requires_attention_api import (
     get_fares_requires_attention_api,
 )
+from transit_odp.fares.views.update_review_api import get_fares_update_success_api
 from transit_odp.publish.views.api import (
     ProgressAPIView,
     get_agent_dashboard_organisations_api,
@@ -72,6 +73,9 @@ from transit_odp.timetables.views.data_quality_api import (
 )
 from transit_odp.timetables.views.line_detail_api import (
     get_timetables_line_detail_api,
+)
+from transit_odp.timetables.views.update_review_api import (
+    get_timetables_update_success_api,
 )
 from transit_odp.users.views.api import (
     create_organisation_invite_api,
@@ -239,6 +243,11 @@ urlpatterns = [
         name="nextjs-fares-update",
     ),
     path(
+        "fares/update-success/<int:pk1>/<int:pk>/",
+        get_fares_update_success_api,
+        name="nextjs-fares-update-success",
+    ),
+    path(
         "fares/deactivate/<int:pk1>/<int:pk>/",
         deactivate_fares_dataset_api,
         name="nextjs-fares-deactivate",
@@ -247,6 +256,11 @@ urlpatterns = [
         "timetables/review-status/<int:pk1>/<int:pk>/",
         get_timetables_review_status_api,
         name="nextjs-timetables-review-status",
+    ),
+    path(
+        "timetables/update-success/<int:pk1>/<int:pk>/",
+        get_timetables_update_success_api,
+        name="nextjs-timetables-update-success",
     ),
     path(
         "timetables/data-quality-status/<int:pk1>/<int:pk>/",

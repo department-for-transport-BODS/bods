@@ -40,6 +40,7 @@ describe('TimetableUpdatePage', () => {
     expect(api.post).toHaveBeenCalledWith('/api/publish/timetables/update/123/456/', expect.any(FormData));
     expect(formData.get('selected_item')).toBe('upload_file-conditional');
     expect(formData.get('upload_file')).toBe(file);
+    expect(formData.get('is_update')).toBeNull();
     expect(mockPush).toHaveBeenCalledWith('/publish/org/123/dataset/timetable/456/review');
   });
 
