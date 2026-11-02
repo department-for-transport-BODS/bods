@@ -8,7 +8,7 @@
 
 import type { Metadata } from 'next';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
-import { HOSTS } from '@/config/client';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'Publish your data',
@@ -18,7 +18,7 @@ export default function PublishAbodsGatekeeperPage() {
   return (
     <>
       <div className="govuk-width-container">
-        <Breadcrumbs items={[{ label: 'Bus Open Data Service', href: HOSTS.www }]} />
+        <Breadcrumbs items={hostBreadcrumbs('www')} />
       </div>
       <div className="govuk-width-container">
         <div className="govuk-main-wrapper app-main-class">

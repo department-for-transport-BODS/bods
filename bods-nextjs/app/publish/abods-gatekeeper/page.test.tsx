@@ -22,6 +22,6 @@ describe('PublishAbodsGatekeeperPage', () => {
     render(<PublishAbodsGatekeeperPage />);
 
     expect(screen.getByRole('link', { name: 'Bus Open Data Service' })).toHaveAttribute('href', HOSTS.www);
-    expect(screen.queryByRole('link', { name: 'Publish Open Data Service' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Publish Bus Open Data' })).not.toBeInTheDocument();
   });
 });
