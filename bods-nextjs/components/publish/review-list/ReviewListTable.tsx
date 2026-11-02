@@ -182,7 +182,7 @@ export function ReviewListTable({ kind, orgId, columns, rows, searchParams }: Re
               >
                 {column.orderable ? (
                   <Link className="column-header-link" role="button" href={sortHref(searchParams, column)}>
-                    {column.label}
+                    {column.label}{' '}
                     <span className="hide-using-position">Sort your data by {column.label}</span>
                   </Link>
                 ) : (

@@ -68,6 +68,9 @@
 .review-list-table .asc .order-up,
 .review-list-table .desc .order-down {
   display: inline-block;
+  /* Same advance as Django's FontAwesome caret glyph (320/512em), not the SVG's 1.25em default */
+  width: 0.625em;
+  height: 1em;
 }
 
 /* Django's status indicator palette */
@@ -147,6 +150,13 @@
 .review-banner.review-list-banner a.review-stat__link {
   font-size: 14px;
   line-height: 16px;
+}
+
+/* Django's play marker is a 0.75em-wide webfont glyph; the SVG defaults to 1.25em, which
+   makes "More details" wrap in the narrow stat columns. */
+.review-banner.review-list-banner .review-stat > svg {
+  width: 0.75em;
+  height: 1em;
 }
 
 @media (min-width: 40.0625em) {

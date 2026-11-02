@@ -455,12 +455,29 @@ describe('ReviewListPage', () => {
       expect(screen.queryByRole('table')).not.toBeInTheDocument();
     });
 
-    it('renders pagination below the table', async () => {
+    it('renders Django table pagination below the table', async () => {
       await renderPage('timetable', { totalPages: 3, count: 25, hasNext: true });
 
       const pagination = screen.getByRole('navigation', { name: 'Pagination' });
-      expect(within(pagination).getByRole('link', { name: 'Go to page 2' })).toBeInTheDocument();
-      expect(within(pagination).getByRole('link', { name: 'Go to next page' })).toBeInTheDocument();
+      expect(pagination.querySelectorAll('li a')).toHaveLength(3);
+      expect(pagination).toHaveTextContent('Next');
+      expect(pagination.querySelector('a[rel="next"]')).toHaveAttribute('href', '?page=2');
+    });
+
+    it('keeps the tab and sort in pagination links, as Django does', async () => {
+      mockSearch = 'tab=draft&sort=-name&page=2';
+
+      await renderPage('timetable', { tab: 'draft', page: 2, totalPages: 3 });
+
+      const pagination = screen.getByRole('navigation', { name: 'Pagination' });
+      expect(pagination.querySelector('a[rel="prev"]')).toHaveAttribute(
+        'href',
+        '?page=1&tab=draft&sort=-name',
+      );
+      expect(pagination.querySelector('a[rel="next"]')).toHaveAttribute(
+        'href',
+        '?page=3&tab=draft&sort=-name',
+      );
     });
   });
 
@@ -742,13 +759,44 @@ describe('ReviewListPage', () => {
   });
 
   describe('errors', () => {
+    const rejectWithStatus = (message: string, status: number) =>
+      mockGet.mockRejectedValue(Object.assign(new Error(message), { status }));
+
     it('shows the API error when the list cannot be loaded', async () => {
-      mockGet.mockRejectedValue(new Error('Org user access required'));
+      rejectWithStatus('Boom', 500);
 
       render(<ReviewListPage kind="timetable" />);
 
-      expect(await screen.findByText('Org user access required')).toBeInTheDocument();
+      expect(await screen.findByText('Boom')).toBeInTheDocument();
       expect(screen.queryByRole('table')).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('heading', { name: /you don’t have permissions/ }),
+      ).not.toBeInTheDocument();
     });
+
+    // OrgUserViewMixin: abods users, non-org users and users from another organisation all get
+    // Django's 403 page, never the list.
+    it.each(['timetable', 'avl', 'fares'] as const)(
+      'shows Django’s 403 page on %s when the API refuses the user',
+      async (kind) => {
+        rejectWithStatus('Org user access required', 403);
+
+        render(<ReviewListPage kind={kind} />);
+
+        expect(
+          await screen.findByRole('heading', {
+            level: 1,
+            name: 'We are sorry but you don’t have permissions to access this.',
+          }),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText("Please liase with your organisation's admin for further information."),
+        ).toBeInTheDocument();
+        expect(screen.queryByText('Org user access required')).not.toBeInTheDocument();
+        expect(screen.queryByRole('table')).not.toBeInTheDocument();
+        expect(screen.queryByText('Contact support')).not.toBeInTheDocument();
+        expect(document.title).toBe('Forbidden (403)');
+      },
+    );
   });
 });

@@ -30,7 +30,7 @@ function ReviewStat({ top, bottom, description, link }: ReviewStatProps) {
       <p className="review-stat__description">{description}</p>
       {link && (
         <>
-          <FontAwesomeIcon icon={faPlay} className="govuk-!-margin-right-1" aria-hidden="true" />
+          <FontAwesomeIcon icon={faPlay} className="govuk-!-margin-right-1" aria-hidden="true" />{' '}
           <a className="review-stat__link" href={link.href}>
             {link.label}
           </a>
