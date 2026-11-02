@@ -38,6 +38,15 @@ from transit_odp.publish.views.api import (
 from transit_odp.publish.views.requires_attention_api import (
     get_timetable_requires_attention_api,
 )
+from transit_odp.publish.views.seasonal_services_api import (
+    create_seasonal_service_api,
+    delete_seasonal_service_api,
+    get_seasonal_service_api,
+    get_seasonal_service_licences_api,
+    list_seasonal_services_api,
+    update_seasonal_service_dates_api,
+    validate_seasonal_service_licence_api,
+)
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
     delete_timetables_dataset_api,
@@ -322,5 +331,40 @@ urlpatterns = [
         "org/<int:pk1>/dataset/timetable/upload/",
         create_timetables_dataset_api,
         name="nextjs-timetables-upload-compat",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/",
+        list_seasonal_services_api,
+        name="nextjs-seasonal-services-list",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/licences/",
+        get_seasonal_service_licences_api,
+        name="nextjs-seasonal-services-licences",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/validate-licence/",
+        validate_seasonal_service_licence_api,
+        name="nextjs-seasonal-services-validate-licence",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/create/",
+        create_seasonal_service_api,
+        name="nextjs-seasonal-services-create",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/delete/",
+        delete_seasonal_service_api,
+        name="nextjs-seasonal-services-delete",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/<int:pk>/",
+        get_seasonal_service_api,
+        name="nextjs-seasonal-services-detail",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/<int:pk>/update/",
+        update_seasonal_service_dates_api,
+        name="nextjs-seasonal-services-update",
     ),
 ]

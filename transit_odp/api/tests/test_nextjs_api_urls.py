@@ -59,6 +59,16 @@ def test_session_auth_api_is_available_on_every_nextjs_host(urlconf, path, view_
             "/api/timetables/data-quality-status/1/2/",
             "nextjs-timetables-data-quality-status",
         ),
+        ("/api/seasonal-services/1/", "nextjs-seasonal-services-list"),
+        ("/api/seasonal-services/1/licences/", "nextjs-seasonal-services-licences"),
+        (
+            "/api/seasonal-services/1/validate-licence/",
+            "nextjs-seasonal-services-validate-licence",
+        ),
+        ("/api/seasonal-services/1/create/", "nextjs-seasonal-services-create"),
+        ("/api/seasonal-services/1/delete/", "nextjs-seasonal-services-delete"),
+        ("/api/seasonal-services/1/2/", "nextjs-seasonal-services-detail"),
+        ("/api/seasonal-services/1/2/update/", "nextjs-seasonal-services-update"),
     ],
 )
 def test_application_api_is_shared_by_www_and_publish(urlconf, path, view_name):
