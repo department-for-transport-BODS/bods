@@ -196,6 +196,15 @@ describe('ReviewListPage', () => {
   });
 
   describe('masthead and breadcrumbs', () => {
+    it('sets the browser title from Django, including the agent organisation name', async () => {
+      await renderPage('timetable', {
+        isAgentUser: true,
+        pageTitle: 'Review Acme Buses timetables data',
+      });
+
+      expect(document.title).toBe('Review Acme Buses timetables data');
+    });
+
     it.each(['timetable', 'avl', 'fares'] as const)(
       'shows the Django title for an org user on %s',
       async (kind) => {

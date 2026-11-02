@@ -75,6 +75,12 @@ export function ReviewListPage({ kind }: ReviewListPageProps) {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (data?.pageTitle) {
+      document.title = data.pageTitle;
+    }
+  }, [data?.pageTitle]);
+
   const handleDataTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     router.push(event.target.value);
   };
