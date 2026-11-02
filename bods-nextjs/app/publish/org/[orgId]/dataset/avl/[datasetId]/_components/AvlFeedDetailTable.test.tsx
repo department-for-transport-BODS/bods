@@ -150,15 +150,41 @@ describe('AvlFeedDetailTable', () => {
     expect(link.getAttribute('href')).not.toMatch(/\/publish\/org/);
   });
 
-  it('hides the matching report link while matching is pending', () => {
+  it.each([undefined, null])(
+    'shows Pending and hides the matching report link when there is no score (%p)',
+    (avlTimetablesMatching) => {
+      render(
+        <AvlFeedDetailTable
+          feedDetail={{
+            ...mockFeedDetail,
+            avlTimetablesMatching: avlTimetablesMatching as string | undefined,
+          }}
+          orgId="123"
+        />,
+      );
+
+      expect(screen.getByText('Pending')).toBeInTheDocument();
+      expect(screen.queryByText(/completely matched AVL to Timetables/)).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('link', { name: 'Download matching report' }),
+      ).not.toBeInTheDocument();
+    },
+  );
+
+  it('shows a 0% score and the matching report link like Django', () => {
     render(
       <AvlFeedDetailTable
-        feedDetail={{ ...mockFeedDetail, avlTimetablesMatching: undefined }}
+        feedDetail={{ ...mockFeedDetail, avlTimetablesMatching: '0%' }}
         orgId="123"
       />,
     );
 
-    expect(screen.queryByRole('link', { name: 'Download matching report' })).not.toBeInTheDocument();
+    expect(screen.getByText('0% completely matched AVL to Timetables')).toBeInTheDocument();
+    expect(screen.queryByText('Pending')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Download matching report' })).toHaveAttribute(
+      'href',
+      expect.stringMatching(/\/org\/123\/dataset\/avl\/456\/download-matching-report\/$/),
+    );
   });
 
   it('provides edit link for description when not dummy', () => {
