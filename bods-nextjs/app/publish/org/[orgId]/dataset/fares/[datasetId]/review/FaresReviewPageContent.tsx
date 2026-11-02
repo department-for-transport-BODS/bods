@@ -498,12 +498,26 @@ function FaresStopMapPreview({ revisionId, mapboxToken }: Readonly<FaresStopMapP
   );
 }
 
-function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
+/** Where to go after publishing: Django's UpdateRevisionPublishView uses `update/success`. */
+export const getFaresPublishRedirect = (
+  { orgId, datasetId, isUpdate }: { orgId: string; datasetId: string; isUpdate: boolean },
+  serverRedirect?: string,
+) =>
+  isUpdate
+    ? `/publish/org/${orgId}/dataset/fares/${datasetId}/update/success`
+    : serverRedirect || `/publish/org/${orgId}/dataset/fares`;
+
+type FaresReviewPageContentProps = {
+  mapboxToken: string;
+  /** Django `fares.views.review.UpdateRevisionPublishView` (`update/review/`). */
+  isUpdate?: boolean;
+};
+
+function FaresReviewPageContent({ mapboxToken, isUpdate = false }: Readonly<FaresReviewPageContentProps>) {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
 
-  const faresListUrl = `/publish/org/${orgId}/dataset/fares`;
   const modifyDraftUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/update?modifyDraft=true`;
   const supportBusOperatorsUrl = '/publish/guide-me';
   const dataQualityGuidanceUrl = `${supportBusOperatorsUrl}?section=dataquality`;
@@ -521,13 +535,16 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
   );
   const [isPublishing, setIsPublishing] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
+
+  useEffect(() => {
+    document.title = 'Review and publish';
+  }, []);
   const loading = statusData?.loading ?? true;
   const hasBlockingError = Boolean(statusData?.error) || statusData?.status === 'error';
   const canPublish = !hasBlockingError;
   const hasProfileViolations = Boolean(
     statusData?.isFaresValidatorActive && statusData?.validatorError,
   );
-  const isUpdate = statusData?.hasLiveRevision ?? false;
 
   const handlePublish = async () => {
     if (isPublishing) {
@@ -542,7 +559,7 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
         redirect?: string;
       }>(`/api/publish/fares/publish/${orgId}/${datasetId}/`);
 
-      globalThis.location.href = data.redirect || faresListUrl;
+      globalThis.location.href = getFaresPublishRedirect({ orgId, datasetId, isUpdate }, data.redirect);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred while publishing. Please try again.');
       setIsPublishing(false);
@@ -903,10 +920,10 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
   );
 }
 
-export default function FaresReviewPage({ mapboxToken }: { mapboxToken: string }) {
+export default function FaresReviewPage({ mapboxToken, isUpdate = false }: Readonly<FaresReviewPageContentProps>) {
   return (
     <ProtectedRoute>
-      <FaresReviewPageContent mapboxToken={mapboxToken} />
+      <FaresReviewPageContent mapboxToken={mapboxToken} isUpdate={isUpdate} />
     </ProtectedRoute>
   );
 }

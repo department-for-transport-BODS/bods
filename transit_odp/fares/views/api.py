@@ -553,8 +553,9 @@ def update_fares_dataset_api(request, pk1, pk):
         revision.save()
         _trigger_fares_processing(revision)
 
+    # Django's FeedUpdateWizard and the modify views all end on update/review.
     return JsonResponse(
-        {"redirect": f"/publish/org/{pk1}/dataset/fares/{pk}/review"},
+        {"redirect": f"/publish/org/{pk1}/dataset/fares/{pk}/update/review"},
         status=201,
     )
 

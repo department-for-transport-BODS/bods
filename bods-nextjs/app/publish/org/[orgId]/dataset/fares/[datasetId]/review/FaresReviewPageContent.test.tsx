@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import mapboxgl from 'mapbox-gl';
 import { api } from '@/lib/api-client';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
-import FaresReviewPage from './FaresReviewPageContent';
+import FaresReviewPage, { getFaresPublishRedirect } from './FaresReviewPageContent';
 
 jest.mock('next/navigation', () => ({
   useParams: () => ({ orgId: '1', datasetId: '9' }),
@@ -290,5 +290,59 @@ describe('FaresReviewPage', () => {
 
     expect(screen.getByRole('link', { name: 'contact support' })).toHaveAttribute('href', '/account');
     expect(screen.queryByText(/\{support_url\}/)).not.toBeInTheDocument();
+  });
+});
+
+describe('FaresReviewPage update mode (update/review/)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGet.mockReturnValue(new Promise(() => {}));
+    mockUseDatasetReview.mockReturnValue({
+      statusData: baseStatus,
+      progress: 50,
+      isInitialLoading: false,
+      errorMessage: '',
+      setErrorMessage: jest.fn(),
+    });
+  });
+
+  it('uses the Comment / Update stepper when isUpdate is set', () => {
+    render(<FaresReviewPage mapboxToken="pk.test" isUpdate />);
+
+    expect(screen.getByText('1. Comment')).toBeInTheDocument();
+    expect(screen.getByText('2. Update')).toBeInTheDocument();
+    expect(screen.queryByText('1. Describe data')).not.toBeInTheDocument();
+  });
+
+  it('uses the Describe data / Provide data stepper on the first-publish route, even with a live revision', () => {
+    mockUseDatasetReview.mockReturnValue({
+      statusData: { ...baseStatus, hasLiveRevision: true },
+      progress: 50,
+      isInitialLoading: false,
+      errorMessage: '',
+      setErrorMessage: jest.fn(),
+    });
+    render(<FaresReviewPage mapboxToken="pk.test" />);
+
+    expect(screen.getByText('1. Describe data')).toBeInTheDocument();
+    expect(screen.queryByText('1. Comment')).not.toBeInTheDocument();
+  });
+});
+
+describe('getFaresPublishRedirect', () => {
+  const ids = { orgId: '1', datasetId: '9' };
+
+  it('goes to update/success after publishing an update revision', () => {
+    expect(getFaresPublishRedirect({ ...ids, isUpdate: true }, '/publish/org/1/dataset/fares/9/publish-success')).toBe(
+      '/publish/org/1/dataset/fares/9/update/success',
+    );
+  });
+
+  it('follows the server redirect for a first publish', () => {
+    expect(getFaresPublishRedirect({ ...ids, isUpdate: false }, '/somewhere')).toBe('/somewhere');
+  });
+
+  it('falls back to the fares list for a first publish', () => {
+    expect(getFaresPublishRedirect({ ...ids, isUpdate: false })).toBe('/publish/org/1/dataset/fares');
   });
 });
