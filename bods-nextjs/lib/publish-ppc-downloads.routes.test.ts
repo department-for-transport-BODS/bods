@@ -3,6 +3,10 @@
 import { NextRequest } from 'next/server';
 import { GET as getMatchingReport, HEAD as headMatchingReport } from '@/app/publish/org/[orgId]/dataset/avl/[datasetId]/download-matching-report/route';
 import { GET as getPpcArchive, HEAD as headPpcArchive } from '@/app/publish/org/[orgId]/dataset/ppc-archive/route';
+import {
+  GET as getValidationReport,
+  HEAD as headValidationReport,
+} from '@/app/publish/org/[orgId]/dataset/avl/[datasetId]/validation-report/route';
 
 const mockFetch = jest.fn();
 
@@ -148,6 +152,74 @@ describe('PPC download route handlers', () => {
       ['abc', '9'],
     ])('does not proxy invalid ids (%s, %s)', async (orgId, datasetId) => {
       const response = await getMatchingReport(request, {
+        params: Promise.resolve({ orgId, datasetId }),
+      });
+
+      expect(response.status).toBe(404);
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('avl validation-report', () => {
+    const request = new NextRequest(
+      'http://publish.localhost:3000/org/1/dataset/avl/9/validation-report/',
+      { headers: { cookie: 'sessionid=abc' } },
+    );
+    const context = { params: Promise.resolve({ orgId: '1', datasetId: '9' }) };
+
+    it('proxies to the Django validation report view and keeps the zip attachment headers', async () => {
+      mockFetch.mockResolvedValue(
+        new Response('zip-bytes', {
+          status: 200,
+          headers: {
+            'content-type': 'application/zip',
+            'content-disposition': 'attachment; filename=BODS_SIRI_validation_Org_02112026.zip',
+          },
+        }),
+      );
+
+      const response = await getValidationReport(request, context);
+
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(new URL(url).pathname).toBe('/org/1/dataset/avl/9/validation-report/');
+      expect(init.redirect).toBe('manual');
+      expect(new Headers(init.headers).get('cookie')).toBe('sessionid=abc');
+      expect(new Headers(init.headers).get('host')).toMatch(/^publish\./);
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-disposition')).toBe(
+        'attachment; filename=BODS_SIRI_validation_Org_02112026.zip',
+      );
+      expect(await response.text()).toBe('zip-bytes');
+    });
+
+    it('passes Django redirects, 404 and the no-report 500 through', async () => {
+      mockFetch.mockResolvedValueOnce(
+        new Response(null, { status: 302, headers: { location: '/account/login/' } }),
+      );
+      const redirect = await getValidationReport(request, context);
+      expect(redirect.status).toBe(302);
+      expect(redirect.headers.get('location')).toBe('/account/login/');
+
+      mockFetch.mockResolvedValueOnce(new Response('missing', { status: 404 }));
+      expect((await getValidationReport(request, context)).status).toBe(404);
+
+      mockFetch.mockResolvedValueOnce(new Response('boom', { status: 500 }));
+      expect((await getValidationReport(request, context)).status).toBe(500);
+    });
+
+    it('supports HEAD requests', async () => {
+      mockFetch.mockResolvedValue(new Response(null, { status: 200 }));
+
+      await headValidationReport(new NextRequest(request.url, { method: 'HEAD' }), context);
+
+      expect(mockFetch.mock.calls[0][1].method).toBe('HEAD');
+    });
+
+    it.each([
+      ['1/../account', '9'],
+      ['1', '9/../x'],
+    ])('does not proxy invalid ids (%s, %s)', async (orgId, datasetId) => {
+      const response = await getValidationReport(request, {
         params: Promise.resolve({ orgId, datasetId }),
       });
 

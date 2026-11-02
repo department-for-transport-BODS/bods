@@ -30,6 +30,7 @@ describe('subdomain routing proxy', () => {
       const paths = [
         '/org/42/dataset/ppc-archive/',
         '/org/42/dataset/avl/7/download-matching-report/',
+        '/org/42/dataset/avl/7/validation-report/',
       ];
 
       paths.forEach((path) => {
