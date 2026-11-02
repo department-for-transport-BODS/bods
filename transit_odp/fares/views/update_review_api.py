@@ -12,11 +12,12 @@ DATASET_NOT_FOUND_ERROR = "Dataset not found"
 
 @require_GET
 def get_fares_update_success_api(request, pk1, pk):
-    """Context for the fares "Data set updated" page.
+    """Context for the fares "Data set published" and "Data set updated" pages.
 
-    Mirrors ``fares.views.update.RevisionUpdateSuccessView``: when the fares
-    validator flag is on, the live revision's validation result decides whether
-    the "failed the validation set" paragraph is shown.
+    Mirrors ``fares.views.review.RevisionPublishSuccessView`` (and its update
+    subclass): when the fares validator flag is on, the live revision's
+    validation result decides whether the "failed the validation set"
+    paragraph is shown.
     """
     _, organisation, _, error_response = _get_request_context(request, pk1)
     if error_response is not None:

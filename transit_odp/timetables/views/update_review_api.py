@@ -16,10 +16,11 @@ DATASET_NOT_FOUND_ERROR = "Dataset not found"
 
 @require_GET
 def get_timetables_update_success_api(request, pk1, pk):
-    """Context for the timetable "Data set updated" page.
+    """Context for the timetable "Data set published" and "Data set updated" pages.
 
-    Mirrors ``publish.views.timetable.update.RevisionUpdateSuccessView``: PTI
-    compliance is taken from the live revision of the dataset.
+    Mirrors ``RevisionPublishSuccessView`` and ``RevisionUpdateSuccessView``,
+    which share a template and queryset: PTI compliance is taken from the live
+    revision of the dataset.
     """
     user = _authenticate_user(request)
     if user is None:

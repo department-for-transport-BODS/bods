@@ -1,12 +1,11 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
-import { PublishCancelStep, PublishStepper } from '@/components/publish';
-import { ErrorSummary } from '@/components/shared';
-import { api } from '@/lib/api-client';
+import { useParams } from 'next/navigation';
+import { PublishCancelStep, PublishCommentStep, PublishStepper, type PublishStep } from '@/components/publish';
+import { ApiError, api } from '@/lib/api-client';
 import { publishAppPath, wwwPath } from '@/config/client';
-import { DATA_SET_UPLOAD_ERRORS } from '@/lib/validation/messages';
+import { DATA_SET_UPLOAD_ERRORS, REQUIRED_COMMENT_ERROR } from '@/lib/validation/messages';
 import {
   FaresUploadItem,
   FaresUploadStep,
@@ -20,48 +19,8 @@ const CANCEL_STEP = 'cancel';
 
 type Step = typeof COMMENT_STEP | typeof UPLOAD_STEP | typeof CANCEL_STEP;
 
-function CommentStepView({
-  comment,
-  errorMessage,
-  onChange,
-  onSubmit,
-  onCancel,
-}: Readonly<{
-  comment: string;
-  errorMessage: string;
-  onChange: (v: string) => void;
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
-  onCancel: () => void;
-}>) {
-  return (
-    <form onSubmit={onSubmit} noValidate>
-      <h1 className="govuk-heading-l">Provide a comment on what has been updated</h1>
-      <ErrorSummary errors={errorMessage ? [errorMessage] : []} summaryId="comment-error-title" />
-      <div className="govuk-form-group">
-        <label className="govuk-label" htmlFor="comment">Comment on data set updates</label>
-        <div className="govuk-hint">
-          This information will give context to data set users. Please be descriptive but do not
-          include personally identifiable information. You may wish to include: The original file
-          name, start date of data, description of the fares, products, OpCo, locations/region,
-          routes/service numbers for which the data applies, or any other useful high level
-          information. The description should reflect the data included at a high level.
-        </div>
-        <textarea
-          className="govuk-textarea govuk-!-width-three-quarters"
-          id="comment"
-          name="comment"
-          rows={3}
-          value={comment}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      </div>
-      <div className="govuk-button-group">
-        <button className="govuk-button" type="submit">Continue</button>
-        <button className="govuk-button govuk-button--secondary" type="button" onClick={onCancel}>Cancel</button>
-      </div>
-    </form>
-  );
-}
+const COMMENT_HINT =
+  'This information will give context to data set users. Please be descriptive but do not include personally identifiable information. You may wish to include: The original file name, start date of data, description of the fares, products, OpCo, locations/region, routes/service numbers for which the data applies, or any other useful high level information. The description should reflect the data included at a high level.';
 
 function UploadStepView({
   orgId,
@@ -71,15 +30,17 @@ function UploadStepView({
   prefillUrlLink,
   reviewUrl,
   onCancel,
+  onCommentError,
 }: Readonly<{
   orgId: string;
   datasetId: string;
   comment: string;
   modifyDraft: boolean;
-  /** Django's `DatasetUpdateModify` binds the form to the draft revision, pre-filling its URL link. */
+  /** Django's modify views bind the form to the draft revision, pre-filling its URL link. */
   prefillUrlLink: boolean;
   reviewUrl: string;
   onCancel: () => void;
+  onCommentError: (message: string) => void;
 }>) {
   const [selectedItem, setSelectedItem] = useState<FaresUploadItem | null>(null);
   const [urlLink, setUrlLink] = useState('');
@@ -115,10 +76,11 @@ function UploadStepView({
     setIsSubmitting(true);
     try {
       const formData = new FormData();
-      formData.set('comment', comment);
       formData.set('selected_item', selectedItem);
       if (modifyDraft) {
         formData.set('modify_draft', 'true');
+      } else {
+        formData.set('comment', comment);
       }
       if (selectedItem === URL_LINK_ITEM_ID) {
         formData.set('url_link', urlLink);
@@ -132,6 +94,12 @@ function UploadStepView({
       );
       globalThis.location.href = data.redirect || reviewUrl;
     } catch (error) {
+      const commentFieldError = error instanceof ApiError ? error.firstFieldErrors().comment : undefined;
+      if (commentFieldError) {
+        // Django validates the comment on its own wizard step, so its errors render there.
+        onCommentError(commentFieldError);
+        return;
+      }
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred while uploading. Please try again.');
       setIsSubmitting(false);
     }
@@ -157,58 +125,73 @@ function UploadStepView({
   );
 }
 
-type FaresUpdatePageContentProps = {
-  /**
-   * Django `fares.views.update.DatasetUpdateModify` (`update/review/update`): upload step only,
-   * modifying the draft of an update revision. Cancel returns to `update/review`.
-   */
-  isUpdateReview?: boolean;
-};
+/**
+ * - `update`: Django `fares.views.update.FeedUpdateWizard` (`update/`), comment then upload, starting a new draft
+ *   from the live data set.
+ * - `publishModify`: Django `FaresDatasetUploadModify` (`review/update/`), replacing the data of a first-publish draft.
+ * - `updateModify`: Django `fares.views.update.DatasetUpdateModify` (`update/review/update/`), replacing the data of
+ *   an update draft.
+ */
+export type FaresUpdateMode = 'update' | 'publishModify' | 'updateModify';
 
-export function FaresUpdatePageContent({ isUpdateReview = false }: Readonly<FaresUpdatePageContentProps>) {
+export function FaresUpdatePageContent({ mode }: Readonly<{ mode: FaresUpdateMode }>) {
   const params = useParams();
-  const searchParams = useSearchParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
-  const modifyDraft = isUpdateReview || searchParams.get('modifyDraft') === 'true';
+  const modifyDraft = mode !== 'update';
+  const isUpdateJourney = mode !== 'publishModify';
 
   const detailUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}`;
   // Django's FeedUpdateWizard and both modify views finish on `update/review`.
   const reviewUrl = `${detailUrl}/update/review`;
-  let cancelUrl = detailUrl;
-  if (isUpdateReview) {
-    cancelUrl = reviewUrl;
-  } else if (modifyDraft) {
-    cancelUrl = `${detailUrl}/review`;
-  }
+  const cancelUrl = {
+    update: detailUrl,
+    publishModify: `${detailUrl}/review`,
+    updateModify: reviewUrl,
+  }[mode];
 
-  const [step, setStep] = useState<Step>(modifyDraft ? UPLOAD_STEP : COMMENT_STEP);
-  const [stepBeforeCancel, setStepBeforeCancel] = useState<typeof COMMENT_STEP | typeof UPLOAD_STEP>(
-    modifyDraft ? UPLOAD_STEP : COMMENT_STEP,
-  );
+  const initialStep = modifyDraft ? UPLOAD_STEP : COMMENT_STEP;
+  const [step, setStep] = useState<Step>(initialStep);
+  const [stepBeforeCancel, setStepBeforeCancel] = useState<typeof COMMENT_STEP | typeof UPLOAD_STEP>(initialStep);
   const [comment, setComment] = useState('');
   const [commentError, setCommentError] = useState('');
 
   useEffect(() => {
-    if (isUpdateReview) {
-      document.title = `Update data set: ${step}`;
-    }
-  }, [isUpdateReview, step]);
+    const titlePrefix = isUpdateJourney ? 'Update data set' : 'Provide data';
+    document.title = `${commentError && step === COMMENT_STEP ? 'Error: ' : ''}${titlePrefix}: ${step}`;
+  }, [isUpdateJourney, step, commentError]);
 
   const handleCommentSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setCommentError('');
     if (!comment.trim()) {
-      setCommentError('Enter a comment in the box below');
+      setCommentError(REQUIRED_COMMENT_ERROR);
       return;
     }
+    setCommentError('');
     setStep(UPLOAD_STEP);
+  };
+
+  const handleServerCommentError = (message: string) => {
+    setCommentError(message);
+    setStep(COMMENT_STEP);
   };
 
   const handleCancelClick = (from: typeof COMMENT_STEP | typeof UPLOAD_STEP) => {
     setStepBeforeCancel(from);
     setStep(CANCEL_STEP);
   };
+
+  const stepperSteps: PublishStep[] = isUpdateJourney
+    ? [
+        { label: '1. Comment', state: step === COMMENT_STEP ? 'selected' : 'previous' },
+        { label: '2. Update', state: step === UPLOAD_STEP ? 'selected' : 'next' },
+        { label: '3. Review and publish', state: 'next' },
+      ]
+    : [
+        { label: '1. Describe data', state: 'previous' },
+        { label: '2. Provide data', state: 'selected' },
+        { label: '3. Review and publish', state: 'next' },
+      ];
 
   if (step === CANCEL_STEP) {
     return (
@@ -224,20 +207,15 @@ export function FaresUpdatePageContent({ isUpdateReview = false }: Readonly<Fare
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <div className="govuk-breadcrumbs">
-          <PublishStepper
-            steps={[
-              { label: '1. Comment', state: step === COMMENT_STEP ? 'selected' : 'previous' },
-              { label: '2. Update', state: step === UPLOAD_STEP ? 'selected' : 'next' },
-              { label: '3. Review and publish', state: 'next' },
-            ]}
-          />
+          <PublishStepper steps={stepperSteps} />
         </div>
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds indented-text">
             {step === COMMENT_STEP ? (
-              <CommentStepView
+              <PublishCommentStep
                 comment={comment}
+                hint={COMMENT_HINT}
                 errorMessage={commentError}
                 onChange={setComment}
                 onSubmit={handleCommentSubmit}
@@ -250,9 +228,10 @@ export function FaresUpdatePageContent({ isUpdateReview = false }: Readonly<Fare
                 datasetId={datasetId}
                 comment={comment}
                 modifyDraft={modifyDraft}
-                prefillUrlLink={isUpdateReview}
+                prefillUrlLink={modifyDraft}
                 reviewUrl={reviewUrl}
                 onCancel={() => handleCancelClick(UPLOAD_STEP)}
+                onCommentError={handleServerCommentError}
               />
             ) : null}
             <hr className="govuk-section-break govuk-section-break--xl govuk-section-break" />

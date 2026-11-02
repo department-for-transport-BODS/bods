@@ -14,8 +14,11 @@ type TimetableUpdateSuccessData = {
   ptiEnforcedDate: string;
 };
 
-/** Django `publish.views.timetable.update.RevisionUpdateSuccessView`. */
-export function TimetableUpdateSuccessContent() {
+/**
+ * Django `publish/revision_publish_success.html`: `timetables.views.review.RevisionPublishSuccessView`
+ * (`success/`) and, with `update`, `publish.views.timetable.update.RevisionUpdateSuccessView` (`update/success/`).
+ */
+export function TimetableUpdateSuccessContent({ update = false }: Readonly<{ update?: boolean }>) {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
@@ -23,8 +26,8 @@ export function TimetableUpdateSuccessContent() {
   const detailUrl = publishAppPath(`/publish/org/${orgId}/dataset/timetable/${datasetId}`);
 
   useEffect(() => {
-    document.title = 'Data set updated';
-  }, []);
+    document.title = update ? 'Data set updated' : 'Data set published';
+  }, [update]);
 
   const fetchSuccess = useCallback(
     () => api.get<TimetableUpdateSuccessData>(`/api/publish/timetables/update-success/${orgId}/${datasetId}/`),
@@ -47,7 +50,7 @@ export function TimetableUpdateSuccessContent() {
           <div className="govuk-grid-column-two-thirds">
             <hr className="govuk-section-break govuk-section-break--m govuk-section-break" />
             <div className="govuk-panel govuk-panel--confirmation">
-              <h1 className="govuk-panel__title">Your data set has been successfully updated</h1>
+              <h1 className="govuk-panel__title">Your data set has been successfully {update ? 'updated' : 'published'}</h1>
             </div>
             <p className="govuk-body-m">
               {data.isPtiCompliant

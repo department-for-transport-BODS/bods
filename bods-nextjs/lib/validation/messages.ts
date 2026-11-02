@@ -17,6 +17,9 @@ export const DATA_SET_UPLOAD_ERRORS = {
   fileMissing: 'Please provide a file',
 } as const;
 
+/** `transit_odp.publish.constants.REQUIRED_COMMENT_ERROR_MESSAGE`. */
+export const REQUIRED_COMMENT_ERROR = 'Enter a comment in the box below';
+
 export const TIMETABLE_PUBLISH_ERRORS = {
   dataSetDesc: 'Enter a description in the data set description box below',
   shortDesc: 'Enter a short description in the data set short description box below',

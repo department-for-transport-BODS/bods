@@ -111,7 +111,7 @@ describe('TimetableReviewPageContent', () => {
       expect(screen.getByRole('button', { name: 'Publish data' })).toBeDisabled();
       expect(screen.getByRole('button', { name: 'Update data' })).toHaveAttribute(
         'href',
-        publishPath('/org/1/dataset/timetable/9/update'),
+        publishPath('/org/1/dataset/timetable/9/review/update'),
       );
     });
   });
@@ -125,12 +125,12 @@ describe('TimetableReviewPageContent', () => {
       expect(screen.queryByText('1. Comment')).not.toBeInTheDocument();
     });
 
-    it('links the failed upload back to the update page', () => {
+    it('links the failed upload to review/update', () => {
       renderContent(failedStatus);
 
       expect(screen.getByRole('button', { name: 'Publish correct data set' })).toHaveAttribute(
         'href',
-        publishPath('/org/1/dataset/timetable/9/update'),
+        publishPath('/org/1/dataset/timetable/9/review/update'),
       );
     });
   });
@@ -168,16 +168,14 @@ describe('getTimetablePublishRedirect', () => {
   const ids = { orgId: '1', datasetId: '9' };
 
   it('goes to update/success after publishing an update revision', () => {
-    expect(getTimetablePublishRedirect({ ...ids, isUpdate: true }, '/publish/org/1/dataset/timetable')).toBe(
+    expect(getTimetablePublishRedirect({ ...ids, isUpdate: true })).toBe(
       publishPath('/org/1/dataset/timetable/9/update/success'),
     );
   });
 
-  it('follows the server redirect for a first publish', () => {
-    expect(getTimetablePublishRedirect({ ...ids, isUpdate: false }, '/somewhere')).toBe('/somewhere');
-  });
-
-  it('falls back to the timetable list for a first publish', () => {
-    expect(getTimetablePublishRedirect({ ...ids, isUpdate: false })).toBe(publishPath('/org/1/dataset/timetable'));
+  it('goes to success after a first publish, like Django PublishRevisionView', () => {
+    expect(getTimetablePublishRedirect({ ...ids, isUpdate: false })).toBe(
+      publishPath('/org/1/dataset/timetable/9/success'),
+    );
   });
 });

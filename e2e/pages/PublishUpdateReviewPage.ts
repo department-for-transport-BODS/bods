@@ -2,7 +2,13 @@ import { expect, Page } from '@playwright/test';
 
 export type UpdateDatasetType = 'timetable' | 'fares';
 
-const UPDATE_STEPS = ['1. Comment', '2. Update', '3. Review and publish'];
+/** Django's update journeys use Comment / Update; the first-publish journey uses Describe / Provide. */
+export type PublishJourney = 'update' | 'publish';
+
+const STEPS: Record<PublishJourney, string[]> = {
+  update: ['1. Comment', '2. Update', '3. Review and publish'],
+  publish: ['1. Describe data', '2. Provide data', '3. Review and publish'],
+};
 
 export class PublishUpdateReviewPage {
   constructor(private readonly page: Page) {}
@@ -17,16 +23,72 @@ export class PublishUpdateReviewPage {
     });
   }
 
-  async navigateToModify(type: UpdateDatasetType, orgId: string, datasetId: string): Promise<void> {
-    await this.page.goto(`${this.datasetPath(type, orgId, datasetId)}/update/review/update`, {
+  /** `update/review/update` for an update draft, `review/update` for a first-publish draft. */
+  async navigateToModify(
+    type: UpdateDatasetType,
+    orgId: string,
+    datasetId: string,
+    journey: PublishJourney = 'update',
+  ): Promise<void> {
+    const suffix = journey === 'update' ? 'update/review/update' : 'review/update';
+    await this.page.goto(`${this.datasetPath(type, orgId, datasetId)}/${suffix}`, {
       waitUntil: 'domcontentloaded',
     });
   }
 
-  async assertUpdateStepper(): Promise<void> {
-    for (const step of UPDATE_STEPS) {
+  async navigateToUpdate(type: UpdateDatasetType, orgId: string, datasetId: string): Promise<void> {
+    await this.page.goto(`${this.datasetPath(type, orgId, datasetId)}/update`, { waitUntil: 'domcontentloaded' });
+  }
+
+  /** `success` after a first publish, `update/success` after publishing an update. */
+  async navigateToSuccess(
+    type: UpdateDatasetType,
+    orgId: string,
+    datasetId: string,
+    journey: PublishJourney,
+  ): Promise<void> {
+    const suffix = journey === 'update' ? 'update/success' : 'success';
+    await this.page.goto(`${this.datasetPath(type, orgId, datasetId)}/${suffix}`, { waitUntil: 'domcontentloaded' });
+  }
+
+  async assertUpdateStepper(journey: PublishJourney = 'update'): Promise<void> {
+    for (const step of STEPS[journey]) {
       await expect(this.page.locator('.govuk-breadcrumbs').getByText(step, { exact: true })).toBeVisible();
     }
+  }
+
+  private get commentField() {
+    return this.page.getByRole('textbox', { name: 'Comment on data set updates' });
+  }
+
+  async assertCommentStep(): Promise<void> {
+    await expect(
+      this.page.getByRole('heading', { level: 1, name: 'Provide a comment on what has been updated' }),
+    ).toBeVisible();
+    await this.assertUpdateStepper('update');
+    await expect(this.commentField).toHaveAttribute('name', 'comment-comment');
+  }
+
+  async continueWithoutComment(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Continue' }).click();
+    await expect(this.page.getByRole('link', { name: 'Enter a comment in the box below' })).toHaveAttribute(
+      'href',
+      '#id_comment-comment',
+    );
+  }
+
+  async continueWithComment(comment: string): Promise<void> {
+    await this.commentField.fill(comment);
+    await this.page.getByRole('button', { name: 'Continue' }).click();
+    await expect(this.page.getByRole('group', { name: 'Update your published data set' })).toBeVisible();
+  }
+
+  async assertSuccessPanel(journey: PublishJourney): Promise<void> {
+    const verb = journey === 'update' ? 'updated' : 'published';
+    await expect(
+      this.page.getByRole('heading', { level: 1, name: `Your data set has been successfully ${verb}` }),
+    ).toBeVisible();
+    await expect(this.page).toHaveTitle(journey === 'update' ? 'Data set updated' : 'Data set published');
   }
 
   async assertReviewLoaded(datasetName: string): Promise<void> {
@@ -98,9 +160,9 @@ export class PublishUpdateReviewPage {
     ).toBeVisible();
   }
 
-  async assertModifyForm(): Promise<void> {
+  async assertModifyForm(journey: PublishJourney = 'update'): Promise<void> {
     await this.assertModifyHeading();
-    await this.assertUpdateStepper();
+    await this.assertUpdateStepper(journey);
     await expect(this.page.locator('[data-module="app-radio-accordion"] [data-module="govuk-radios"]')).toHaveCount(1);
     await expect(this.urlRadio).toHaveAttribute('name', 'selected_item');
     await expect(this.urlRadio).toHaveAttribute('value', 'url_link-conditional');
@@ -127,14 +189,21 @@ export class PublishUpdateReviewPage {
     await this.page.getByRole('button', { name: 'Cancel', exact: true }).click();
   }
 
-  async assertCancelStep(type: UpdateDatasetType, orgId: string, datasetId: string): Promise<void> {
+  /** Confirm returns to the review page the modify page came from. */
+  async assertCancelStep(
+    type: UpdateDatasetType,
+    orgId: string,
+    datasetId: string,
+    journey: PublishJourney = 'update',
+  ): Promise<void> {
     await expect(
       this.page.getByRole('heading', { level: 1, name: 'Would you like to cancel updating this data set?' }),
     ).toBeVisible();
     await expect(this.page.getByText('Any changes you have made so far will not be saved.')).toBeVisible();
+    const reviewSuffix = journey === 'update' ? 'update/review/' : 'review/';
     await expect(this.page.getByRole('button', { name: 'Confirm' })).toHaveAttribute(
       'href',
-      new RegExp(`/org/${orgId}/dataset/${type}/${datasetId}/update/review/$`),
+      new RegExp(`/org/${orgId}/dataset/${type}/${datasetId}/${reviewSuffix}$`),
     );
   }
 

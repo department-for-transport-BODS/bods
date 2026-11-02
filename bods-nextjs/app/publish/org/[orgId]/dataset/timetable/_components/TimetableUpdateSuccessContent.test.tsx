@@ -17,10 +17,22 @@ const mockGet = api.get as jest.Mock;
 describe('TimetableUpdateSuccessContent', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('shows the PTI compliant confirmation', async () => {
+  it('shows the first-publish confirmation', async () => {
     mockGet.mockResolvedValue({ isPtiCompliant: true, ptiEnforcedDate: '2021-08-02' });
 
     render(<TimetableUpdateSuccessContent />);
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Your data set has been successfully published' }),
+    ).toBeInTheDocument();
+    expect(mockGet).toHaveBeenCalledWith('/api/publish/timetables/update-success/1/9/');
+    expect(document.title).toBe('Data set published');
+  });
+
+  it('shows the PTI compliant confirmation', async () => {
+    mockGet.mockResolvedValue({ isPtiCompliant: true, ptiEnforcedDate: '2021-08-02' });
+
+    render(<TimetableUpdateSuccessContent update />);
 
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Your data set has been successfully updated' }),
@@ -62,7 +74,7 @@ describe('TimetableUpdateSuccessContent', () => {
   it('shows an error when the context cannot be loaded', async () => {
     mockGet.mockRejectedValue(new Error('Dataset not found'));
 
-    render(<TimetableUpdateSuccessContent />);
+    render(<TimetableUpdateSuccessContent update />);
 
     expect(await screen.findByText('Dataset not found')).toBeInTheDocument();
     expect(screen.queryByText('Your data set has been successfully updated')).not.toBeInTheDocument();

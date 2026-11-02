@@ -6,7 +6,7 @@ import { TimetableUpdateSuccessContent } from '../../../_components/TimetableUpd
 export default function TimetableUpdateSuccessPage() {
   return (
     <ProtectedRoute>
-      <TimetableUpdateSuccessContent />
+      <TimetableUpdateSuccessContent update />
     </ProtectedRoute>
   );
 }
