@@ -12,6 +12,7 @@ import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
 import { SearchSummaryBar, type SearchSummaryFilter } from './SearchSummaryBar';
+import { NoSearchResults } from './NoSearchResults';
 
 interface BrowserDatasetItem {
   id: number;
@@ -359,6 +360,8 @@ function DatasetBrowserPageInner({
               {error && <p className="govuk-body">{error}</p>}
               {isLoading ? (
                 <p className="govuk-body">Loading results...</p>
+              ) : !error && datasets.length === 0 ? (
+                <NoSearchResults />
               ) : (
                 datasets.map((dataset, index) => {
                   const statusValue = dataset.status || 'published';

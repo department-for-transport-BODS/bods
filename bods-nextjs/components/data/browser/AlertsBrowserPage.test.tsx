@@ -61,10 +61,21 @@ describe('AlertsBrowserPage search summary', () => {
     );
   });
 
+  it('shows the Django no-results help when the search matches nothing', async () => {
+    setSearchParams('q=Nowhere');
+    render(<AlertsBrowserPage {...props} />);
+
+    expect(
+      await screen.findByRole('heading', { name: 'Having trouble finding what you want?' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('0 results')).toBeInTheDocument();
+  });
+
   it('keeps the empty summary bar when there is no search term', async () => {
     render(<AlertsBrowserPage {...props} />);
 
     await screen.findByText('2 results');
+    expect(screen.queryByText('Having trouble finding what you want?')).not.toBeInTheDocument();
     const summary = screen.getByRole('region', { name: 'Search filters' });
     expect(summary).toBeEmptyDOMElement();
     expect(document.querySelector('hr.pillbox-break')).toBeInTheDocument();

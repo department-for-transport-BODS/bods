@@ -9,6 +9,7 @@ import { dataApiPath } from '@/lib/api-paths';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
 import { SearchSummaryBar } from './SearchSummaryBar';
+import { NoSearchResults } from './NoSearchResults';
 
 interface AlertsBrowserPageProps {
   title: string;
@@ -233,6 +234,8 @@ function AlertsBrowserPageInner({
               {error && <p className="govuk-body">{error}</p>}
               {isLoading ? (
                 <p className="govuk-body">Loading results...</p>
+              ) : !error && filteredAndSorted.length === 0 ? (
+                <NoSearchResults />
               ) : (
                 filteredAndSorted.map((item, index) => (
                   <div className="app-data-browser__result-item" key={item.id}>
