@@ -9,6 +9,7 @@ import { useApiResource } from '@/hooks/useApiResource';
 import { formatDateTime } from '@/lib/utils/date';
 import { statusIndicatorClass, statusLabel } from '../../_components/avlStatus';
 import { Pagination } from '@/components/shared/Pagination';
+import { publishAppPath } from '@/config/client';
 
 interface ChangelogEntry {
   revisionId: number;
@@ -42,8 +43,8 @@ function AvlChangelogContent() {
     return Number.isNaN(parsed) || parsed < 1 ? 1 : parsed;
   }, [searchParams]);
 
-  const detailUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}`;
-  const baseChangelogUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/changelog`;
+  const detailUrl = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/`);
+  const baseChangelogUrl = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/changelog/`);
 
   const loadChangelog = useCallback(
     () => api.get<ChangelogResponse>(`/api/publish/avl/changelog/${orgId}/${datasetId}/?page=${page}`),

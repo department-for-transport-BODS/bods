@@ -7,23 +7,26 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { AvlFeedDetailContent, type AvlFeedDetail } from './AvlFeedDetailContent';
 import { publishAppPath } from '@/config/client';
+import { ApiError } from '@/lib/api-client';
 
 const mockUseParams = jest.fn();
-const mockReplace = jest.fn();
+const mockNotFound = jest.fn();
 const mockApiGet = jest.fn();
 
 jest.mock('next/navigation', () => ({
   useParams: () => mockUseParams(),
-  useRouter: () => ({
-    replace: mockReplace,
-  }),
+  notFound: () => mockNotFound(),
 }));
 
-jest.mock('@/lib/api-client', () => ({
-  api: {
-    get: (path: string) => mockApiGet(path),
-  },
-}));
+jest.mock('@/lib/api-client', () => {
+  const actual = jest.requireActual('@/lib/api-client');
+  return {
+    ...actual,
+    api: {
+      get: (path: string) => mockApiGet(path),
+    },
+  };
+});
 
 jest.mock('next/link', () => {
   return function MockLink({ children, href, ...props }: { children: React.ReactNode; href: string }) {
@@ -256,19 +259,30 @@ describe('AvlFeedDetailContent', () => {
     expect(screen.getByTestId('feed-actions')).toHaveTextContent('published');
   });
 
-  it('redirects draft feed to review page', async () => {
-    const draftFeed = {
-      ...mockFeedDetail,
-      status: 'draft',
-    };
-
-    mockApiGet.mockResolvedValue(draftFeed);
+  it('renders not found for a draft-only feed, like Django', async () => {
+    mockApiGet.mockResolvedValue({ ...mockFeedDetail, status: 'success', hasLiveRevision: false });
 
     render(<AvlFeedDetailContent />);
 
-    await waitFor(() => {
-      expect(mockReplace).toHaveBeenCalledWith('/org/org-123/dataset/avl/dataset-456/review/');
-    });
+    await waitFor(() => expect(mockNotFound).toHaveBeenCalled());
+    expect(screen.queryByTestId('feed-detail-table')).not.toBeInTheDocument();
+  });
+
+  it('renders not found when the API returns 404', async () => {
+    mockApiGet.mockRejectedValue(new ApiError('Dataset not found', 404, {}));
+
+    render(<AvlFeedDetailContent />);
+
+    await waitFor(() => expect(mockNotFound).toHaveBeenCalled());
+  });
+
+  it('renders a feed with a live revision', async () => {
+    mockApiGet.mockResolvedValue({ ...mockFeedDetail, hasLiveRevision: true });
+
+    render(<AvlFeedDetailContent />);
+
+    expect(await screen.findByTestId('feed-detail-table')).toBeInTheDocument();
+    expect(mockNotFound).not.toHaveBeenCalled();
   });
 
   it('handles dummy feed correctly', async () => {
