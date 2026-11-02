@@ -241,7 +241,7 @@ def test_password_change_requires_authentication(client_factory):
         },
     )
 
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 def test_password_change_rejects_incorrect_current_password(user, client_factory):
