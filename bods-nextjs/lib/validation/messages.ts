@@ -21,3 +21,9 @@ export const AVL_PUBLISH_ERRORS = {
   comment: 'Please provide a comment',
   consent: 'You must confirm you have reviewed the data quality report before publishing',
 } as const;
+
+// EditFeedDescriptionForm in transit_odp/publish/forms/dataset.py and transit_odp/fares/forms.py.
+export const EDIT_DESCRIPTION_ERRORS = {
+  description: 'Enter a description in the data set description box below',
+  shortDescription: 'Enter a short description in the data set short description box below',
+} as const;

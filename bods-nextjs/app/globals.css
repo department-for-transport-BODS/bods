@@ -453,6 +453,12 @@ body {
   text-align: right;
 }
 
+/* transit_odp/frontend/assets/sass/components/button/_button-holder.scss */
+.button-holder button:not(:last-child),
+.button-holder a:not(:last-child) {
+  margin-right: 1.5rem;
+}
+
 .dataset-property-table .flex-between {
   align-items: flex-start;
 }
