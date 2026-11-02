@@ -1,12 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
-import { PublishStepper } from '@/components/publish';
+import { PublishCancelStep, PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
-import { publishAppPath } from '@/config/client';
+import { publishAppPath, wwwPath } from '@/config/client';
 import {
   FaresUploadItem,
   FaresUploadStep,
@@ -19,19 +18,6 @@ const UPLOAD_STEP = 'upload';
 const CANCEL_STEP = 'cancel';
 
 type Step = typeof COMMENT_STEP | typeof UPLOAD_STEP | typeof CANCEL_STEP;
-
-function CancelStepView({ onConfirm, onBack }: Readonly<{ onConfirm: () => void; onBack: () => void }>) {
-  return (
-    <>
-      <h1 className="govuk-heading-l">Would you like to cancel updating this data set?</h1>
-      <p className="govuk-body">Any changes you have made so far will not be saved.</p>
-      <div className="govuk-button-group">
-        <button className="govuk-button" type="button" onClick={onConfirm}>Confirm</button>
-        <button className="govuk-button govuk-button--secondary" type="button" onClick={onBack}>Cancel</button>
-      </div>
-    </>
-  );
-}
 
 function CommentStepView({
   comment,
@@ -146,7 +132,6 @@ function UploadStepView({
       heading={modifyDraft ? 'Choose how to provide your data set' : 'Update your published data set'}
       submitButtonText="Continue"
       errorTitleId="upload-error-title"
-      urlLinkHint="Please provide a URL link where your NeTEx files are hosted. Example address: 'mybuscompany.com/fares.xml'."
       disableCancel={isSubmitting}
       onSelectedItemChange={setSelectedItem}
       onUrlLinkChange={setUrlLink}
@@ -191,9 +176,9 @@ export function FaresUpdatePageContent({ isUpdateReview = false }: Readonly<Fare
 
   useEffect(() => {
     if (isUpdateReview) {
-      document.title = 'Update data set: upload';
+      document.title = `Update data set: ${step}`;
     }
-  }, [isUpdateReview]);
+  }, [isUpdateReview, step]);
 
   const handleCommentSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -210,29 +195,31 @@ export function FaresUpdatePageContent({ isUpdateReview = false }: Readonly<Fare
     setStep(CANCEL_STEP);
   };
 
+  if (step === CANCEL_STEP) {
+    return (
+      <PublishCancelStep
+        heading="Would you like to cancel updating this data set?"
+        confirmHref={publishAppPath(`${cancelUrl}/`)}
+        onBack={() => setStep(stepBeforeCancel)}
+      />
+    );
+  }
+
   return (
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
-        {step === CANCEL_STEP ? null : (
-          <div className="govuk-breadcrumbs">
-            <PublishStepper
-              steps={[
-                { label: '1. Comment', state: step === COMMENT_STEP ? 'selected' : 'previous' },
-                { label: '2. Update', state: step === UPLOAD_STEP ? 'selected' : 'next' },
-                { label: '3. Review and publish', state: 'next' },
-              ]}
-            />
-          </div>
-        )}
+        <div className="govuk-breadcrumbs">
+          <PublishStepper
+            steps={[
+              { label: '1. Comment', state: step === COMMENT_STEP ? 'selected' : 'previous' },
+              { label: '2. Update', state: step === UPLOAD_STEP ? 'selected' : 'next' },
+              { label: '3. Review and publish', state: 'next' },
+            ]}
+          />
+        </div>
 
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds indented-text">
-            {step === CANCEL_STEP ? (
-              <CancelStepView
-                onConfirm={() => { globalThis.location.href = cancelUrl; }}
-                onBack={() => setStep(stepBeforeCancel)}
-              />
-            ) : null}
             {step === COMMENT_STEP ? (
               <CommentStepView
                 comment={comment}
@@ -259,14 +246,14 @@ export function FaresUpdatePageContent({ isUpdateReview = false }: Readonly<Fare
             <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
             <ul className="govuk-list app-list--nav govuk-!-font-size-19">
               <li>
-                <Link className="govuk-link large-font" href={publishAppPath('/guide-me')}>
+                <a className="govuk-link large-font" href={publishAppPath('/guidance/operator-requirements')}>
                   View our guidelines here
-                </Link>
+                </a>
               </li>
               <li>
-                <Link className="govuk-link large-font" href="/account">
+                <a className="govuk-link large-font" href={wwwPath('/contact')}>
                   Contact support desk
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

@@ -116,7 +116,7 @@ function TimetablePublish() {
 
   const uploadValidationSummaryErrors = step === 2
     ? [
-        errors.method ? { text: errors.method, href: '#method-link' } : null,
+        errors.method ? { text: errors.method, href: `#${URL_LINK_ITEM_ID}-radio` } : null,
         errors.link ? { text: errors.link, href: '#id_url_link' } : null,
         errors.file ? { text: errors.file, href: '#id_upload_file' } : null,
       ].filter((error): error is { text: string; href: string } => error !== null)
@@ -166,13 +166,14 @@ function TimetablePublish() {
 
             {step === 2 && (
               <div>
-                <h1 className="govuk-heading-xl">Choose how to provide your data set</h1>
                 <ErrorSummary errors={uploadValidationSummaryErrors} summaryId="timetable-upload-error-title" />
                 <DataProviderRadioGroup
+                  legend="Choose how to provide your data set"
                   selectedMethod={selectedMethod}
                   link={link}
-                  urlHint="Please provide data set URI that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files."
-                  fileHint="Please provide data set file that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files."
+                  fileAccept=".xml,.zip"
+                  urlHint="Please provide data set URL that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files."
+                  fileHint="Please provide data set file that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files"
                   fileSelected={file !== null}
                   errors={{ method: errors.method, link: errors.link, file: errors.file }}
                   onMethodChange={setSelectedMethod}
