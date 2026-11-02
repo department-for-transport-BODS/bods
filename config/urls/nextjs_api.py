@@ -36,6 +36,16 @@ from transit_odp.publish.views.api import (
     ProgressAPIView,
     get_agent_dashboard_organisations_api,
 )
+from transit_odp.publish.views.edit_description_api import (
+    get_fares_dataset_edit_api,
+    get_fares_revision_edit_api,
+    get_timetables_dataset_edit_api,
+    get_timetables_revision_edit_api,
+    save_fares_dataset_edit_api,
+    save_fares_revision_edit_api,
+    save_timetables_dataset_edit_api,
+    save_timetables_revision_edit_api,
+)
 from transit_odp.publish.views.requires_attention_api import (
     get_timetable_requires_attention_api,
 )
@@ -55,9 +65,7 @@ from transit_odp.publish.views.timetable_feed_detail_api import (
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
     delete_timetables_dataset_api,
-    edit_timetables_dataset_description_api,
     get_timetables_data_quality_status_api,
-    get_timetables_dataset_edit_api,
     get_timetables_list_api,
     get_timetables_review_status_api,
     publish_timetables_dataset_api,
@@ -352,8 +360,38 @@ urlpatterns = [
     ),
     path(
         "timetables/dataset-edit/<int:pk1>/<int:pk>/save/",
-        edit_timetables_dataset_description_api,
+        save_timetables_dataset_edit_api,
         name="nextjs-timetables-dataset-edit-save",
+    ),
+    path(
+        "timetables/revision-edit/<int:pk1>/<int:pk>/",
+        get_timetables_revision_edit_api,
+        name="nextjs-timetables-revision-edit-get",
+    ),
+    path(
+        "timetables/revision-edit/<int:pk1>/<int:pk>/save/",
+        save_timetables_revision_edit_api,
+        name="nextjs-timetables-revision-edit-save",
+    ),
+    path(
+        "fares/dataset-edit/<int:pk1>/<int:pk>/",
+        get_fares_dataset_edit_api,
+        name="nextjs-fares-dataset-edit-get",
+    ),
+    path(
+        "fares/dataset-edit/<int:pk1>/<int:pk>/save/",
+        save_fares_dataset_edit_api,
+        name="nextjs-fares-dataset-edit-save",
+    ),
+    path(
+        "fares/revision-edit/<int:pk1>/<int:pk>/",
+        get_fares_revision_edit_api,
+        name="nextjs-fares-revision-edit-get",
+    ),
+    path(
+        "fares/revision-edit/<int:pk1>/<int:pk>/save/",
+        save_fares_revision_edit_api,
+        name="nextjs-fares-revision-edit-save",
     ),
     path(
         "org/<int:pk1>/dataset/timetable/upload/",

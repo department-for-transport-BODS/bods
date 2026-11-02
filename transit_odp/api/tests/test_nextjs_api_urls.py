@@ -82,6 +82,26 @@ def test_session_auth_api_is_available_on_every_nextjs_host(urlconf, path, view_
             "/api/timetables/feed-line-detail/1/2/",
             "nextjs-timetables-feed-line-detail",
         ),
+        (
+            "/api/timetables/dataset-edit/1/2/",
+            "nextjs-timetables-dataset-edit-get",
+        ),
+        (
+            "/api/timetables/dataset-edit/1/2/save/",
+            "nextjs-timetables-dataset-edit-save",
+        ),
+        (
+            "/api/timetables/revision-edit/1/2/",
+            "nextjs-timetables-revision-edit-get",
+        ),
+        (
+            "/api/timetables/revision-edit/1/2/save/",
+            "nextjs-timetables-revision-edit-save",
+        ),
+        ("/api/fares/dataset-edit/1/2/", "nextjs-fares-dataset-edit-get"),
+        ("/api/fares/dataset-edit/1/2/save/", "nextjs-fares-dataset-edit-save"),
+        ("/api/fares/revision-edit/1/2/", "nextjs-fares-revision-edit-get"),
+        ("/api/fares/revision-edit/1/2/save/", "nextjs-fares-revision-edit-save"),
     ],
 )
 def test_application_api_is_shared_by_www_and_publish(urlconf, path, view_name):

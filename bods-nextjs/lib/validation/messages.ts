@@ -54,3 +54,9 @@ export const FARES_PUBLISH_ERRORS = {
   uploadFile: 'Please provide a file',
   emptyUploadFile: 'Please provide a non-empty file',
 } as const;
+
+// EditFeedDescriptionForm in transit_odp/publish/forms/dataset.py and transit_odp/fares/forms.py.
+export const EDIT_DESCRIPTION_ERRORS = {
+  description: 'Enter a description in the data set description box below',
+  shortDescription: 'Enter a short description in the data set short description box below',
+} as const;
