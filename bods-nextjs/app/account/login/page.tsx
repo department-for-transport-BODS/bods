@@ -116,7 +116,9 @@ export default function LoginPage() {
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl">Sign in</h1>
+            <h1 className="govuk-heading-xl">
+              {verifiedEmail ? 'Email address confirmed' : 'Sign in'}
+            </h1>
 
             {(error || fieldErrors.email || fieldErrors.password) && (
               <div
@@ -152,9 +154,6 @@ export default function LoginPage() {
                 </div>
               </div>
             )}
-            <h1 className="govuk-heading-xl">
-              {verifiedEmail ? 'Email address confirmed' : 'Sign in'}
-            </h1>
 
             {verifiedEmail && (
               <>

@@ -56,6 +56,7 @@ describe('Login page', () => {
     renderPage();
 
     expect(await screen.findByRole('heading', { name: 'Email address confirmed' })).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(screen.getByText('Your email address has been confirmed.')).toBeInTheDocument();
     expect(screen.getByText('You can now sign in to your account.')).toBeInTheDocument();
     expect(screen.getByLabelText(/Email/)).toHaveValue('consumer@example.com');
@@ -64,7 +65,8 @@ describe('Login page', () => {
   it('keeps the ordinary sign-in heading when nothing was confirmed', async () => {
     renderPage();
 
-    expect(screen.getByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Sign in' })).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     await waitFor(() => {
       expect(api.get).toHaveBeenCalledWith('/api/auth/login/');
     });
