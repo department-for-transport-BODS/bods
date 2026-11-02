@@ -14,7 +14,7 @@ import { PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 import { dataApiPath } from '@/lib/api-paths';
-import { publishAppPath } from '@/config/client';
+import { publishAppPath, wwwPath } from '@/config/client';
 import { formatDateTime, formatDateTimeWithAbbreviatedMonth } from '@/lib/utils/date';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
 
@@ -519,9 +519,12 @@ function FaresReviewPageContent({ mapboxToken, isUpdate = false }: Readonly<Fare
   const datasetId = params.datasetId as string;
 
   const modifyDraftUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/update?modifyDraft=true`;
-  const supportBusOperatorsUrl = '/publish/guide-me';
+  // Django `FaresRevisionPublishFormViolations` always sends "Update data" to `fares:update-modify`.
+  const updateModifyUrl = publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/update/review/update`);
+  const revisionEditUrl = publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/revision-edit/`);
+  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
   const dataQualityGuidanceUrl = `${supportBusOperatorsUrl}?section=dataquality`;
-  const contactSupportUrl = '/account';
+  const contactSupportUrl = wwwPath('/contact');
 
   const {
     statusData,
@@ -698,7 +701,7 @@ function FaresReviewPageContent({ mapboxToken, isUpdate = false }: Readonly<Fare
                       <>
                         <h3 className="govuk-heading-m govuk-!-margin-top-6">Recommended actions</h3>
                         <div className="button-holder">
-                          <Link className="govuk-button" href={modifyDraftUrl} style={{ marginRight: '1.5rem' }}>
+                          <Link className="govuk-button" href={updateModifyUrl} style={{ marginRight: '1.5rem' }}>
                             Update data
                           </Link>
                           <Link
@@ -719,13 +722,14 @@ function FaresReviewPageContent({ mapboxToken, isUpdate = false }: Readonly<Fare
                         <div className="govuk-checkboxes__item">
                           <input
                             className="govuk-checkboxes__input"
-                            id="publish-review-confirmation"
-                            name="publish-review-confirmation"
+                            id="id_consent"
+                            name="consent"
                             type="checkbox"
+                            required
                             checked={hasReviewed}
                             onChange={(event) => setHasReviewed(event.target.checked)}
                           />
-                          <label className="govuk-label govuk-checkboxes__label" htmlFor="publish-review-confirmation">
+                          <label className="govuk-label govuk-checkboxes__label" htmlFor="id_consent">
                             {hasProfileViolations
                               ? 'I acknowledge my data does not meet the required standard, as detailed in the validation report, and I am publishing non-compliant data to the Bus Open Data Service.'
                               : 'I have reviewed the submission and wish to publish my data'}
@@ -781,13 +785,29 @@ function FaresReviewPageContent({ mapboxToken, isUpdate = false }: Readonly<Fare
                       <th scope="row" className="govuk-table__header">
                         Description
                       </th>
-                      <td className="govuk-table__cell">{statusData?.description || '-'}</td>
+                      <td className="govuk-table__cell">
+                        <div className="flex-between">
+                          {statusData?.description || '-'}
+                          <span>
+                            <a className="right-justify govuk-link" href={revisionEditUrl}>
+                              Edit
+                            </a>
+                          </span>
+                        </div>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">
                         Short description
                       </th>
-                      <td className="govuk-table__cell">{statusData?.shortDescription || '-'}</td>
+                      <td className="govuk-table__cell dont-break-out">
+                        <div className="flex-between">
+                          {statusData?.shortDescription || '-'}
+                          <a className="govuk-link" href={revisionEditUrl}>
+                            Edit
+                          </a>
+                        </div>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">

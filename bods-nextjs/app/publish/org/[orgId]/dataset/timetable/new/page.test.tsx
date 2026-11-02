@@ -37,7 +37,7 @@ const provideViaLink = async () => {
 
 const provideViaFile = async () => {
   await userEvent.click(screen.getByLabelText('Upload data set to Bus Open Data Service'));
-  await userEvent.upload(screen.getByLabelText('Upload file'), xmlFile);
+  await userEvent.upload(screen.getByLabelText('Upload File'), xmlFile);
   await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 };
 
@@ -86,10 +86,10 @@ describe('Timetable - Publish - Page', () => {
     await fillDescriptionStep();
     await userEvent.click(screen.getByLabelText('Provide a link to your data set'));
 
-    expect(screen.getByText('Please provide data set URI that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files.')).toBeInTheDocument();
+    expect(screen.getByText('Please provide data set URL that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files.')).toBeInTheDocument();
     const urlInput = screen.getByLabelText('URL Link');
     expect(urlInput).toHaveClass('govuk-!-width-three-quarters');
-    expect(urlInput.closest('.govuk-radios__conditional')).not.toBeNull();
+    expect(urlInput.closest('.govuk-radios__conditional')).not.toHaveClass('govuk-radios__conditional--hidden');
   });
 
   it('shows file guidance and confirmation in a conditional section when a file is selected', async () => {
@@ -98,14 +98,15 @@ describe('Timetable - Publish - Page', () => {
     await fillDescriptionStep();
     await userEvent.click(screen.getByLabelText('Upload data set to Bus Open Data Service'));
 
-    const fileInput = screen.getByLabelText('Upload file');
-    expect(screen.getByText('Please provide data set file that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files.')).toBeInTheDocument();
-    expect(fileInput.closest('.govuk-radios__conditional')).not.toBeNull();
-    expect(fileInput).toHaveClass('govuk-!-width-three-quarters');
+    const fileInput = screen.getByLabelText('Upload File');
+    expect(screen.getByText('Please provide data set file that contains either TransXChange (see description in guidance) or zip consisting only of TransXChange files')).toBeInTheDocument();
+    expect(fileInput.closest('.govuk-radios__conditional')).not.toHaveClass('govuk-radios__conditional--hidden');
+    expect(fileInput).toHaveClass('govuk-file-upload', 'hidden-overflow');
 
     await userEvent.upload(fileInput, xmlFile);
 
     expect(screen.getByText('Your file has been selected').closest('.govuk-radios__conditional')).toBeNull();
+    expect(screen.getByText('Your file has been selected')).toBeVisible();
   });
 
   it('shows an error summary and allows cancellation from the provide-data step', async () => {
@@ -115,7 +116,7 @@ describe('Timetable - Publish - Page', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
     expect(screen.getByRole('heading', { name: 'There is a problem' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Select how you want to provide your data set' })).toHaveAttribute('href', '#method-link');
+    expect(screen.getByRole('link', { name: 'Select how you want to provide your data set' })).toHaveAttribute('href', '#url_link-conditional-radio');
 
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 

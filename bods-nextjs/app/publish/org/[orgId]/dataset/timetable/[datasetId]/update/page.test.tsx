@@ -32,7 +32,7 @@ describe('TimetableUpdatePage', () => {
     const file = new File(['<xml />'], 'replacement.xml', { type: 'text/xml' });
 
     await user.click(screen.getByLabelText('Upload data set to Bus Open Data Service'));
-    await user.upload(screen.getByLabelText('Upload file'), file);
+    await user.upload(screen.getByLabelText('Upload File'), file);
     await user.click(screen.getByRole('button', { name: 'Continue' }));
 
     await waitFor(() => expect(api.post).toHaveBeenCalled());
