@@ -11,7 +11,13 @@ jest.mock('@/hooks/useAuth', () => ({
   useAuth: jest.fn(),
 }));
 
+const replace = jest.fn();
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: jest.fn(), replace }),
+}));
+
 type MockUser = {
+  account_type?: number;
   is_org_user?: boolean;
   is_single_org_user?: boolean;
   is_agent_user?: boolean;
@@ -40,37 +46,40 @@ describe('PublishPage', () => {
 
   it.each([
     [
-      'single-organisation users with an organisation id',
-      {
-        is_org_user: true,
-        is_single_org_user: true,
-        is_agent_user: false,
-        organisation_id: 123,
-      },
+      'consumer (developer) users',
+      { account_type: 4, is_org_user: false, is_single_org_user: false, is_agent_user: false, organisation_id: null },
+      publishAppPath('/gatekeeper'),
+      publishAppPath('/gatekeeper'),
+    ],
+    [
+      'consumer (site admin) users',
+      { account_type: 1, is_org_user: false, is_single_org_user: false, is_agent_user: false, organisation_id: null },
+      publishAppPath('/gatekeeper'),
+      publishAppPath('/gatekeeper'),
+    ],
+    [
+      'agent users',
+      { account_type: 5, is_org_user: true, is_single_org_user: false, is_agent_user: true, organisation_id: 123 },
+      publishAppPath('/org'),
+      publishAppPath('/agent-dashboard'),
+    ],
+    [
+      'organisation admin users',
+      { account_type: 2, is_org_user: true, is_single_org_user: true, is_agent_user: false, organisation_id: 123 },
       publishAppPath('/org/123/dataset'),
       publishAppPath('/org/123/dataset/timetable'),
     ],
     [
-      'single-organisation users without an organisation id',
-      {
-        is_org_user: true,
-        is_single_org_user: true,
-        is_agent_user: false,
-        organisation_id: null,
-      },
-      publishAppPath('/org'),
-      publishAppPath('/org'),
+      'organisation staff users',
+      { account_type: 3, is_org_user: true, is_single_org_user: true, is_agent_user: false, organisation_id: 456 },
+      publishAppPath('/org/456/dataset'),
+      publishAppPath('/org/456/dataset/timetable'),
     ],
     [
-      'multi-organisation users',
-      {
-        is_org_user: true,
-        is_single_org_user: false,
-        is_agent_user: true,
-        organisation_id: 123,
-      },
+      'organisation users without an organisation id',
+      { account_type: 2, is_org_user: true, is_single_org_user: true, is_agent_user: false, organisation_id: null },
       publishAppPath('/org'),
-      publishAppPath('/agent-dashboard'),
+      publishAppPath('/org'),
     ],
   ])(
     'uses the expected dashboard links for %s',
@@ -81,8 +90,18 @@ describe('PublishPage', () => {
 
       expect(screen.getByRole('link', { name: 'Publish data' })).toHaveAttribute('href', expectedPublishHref);
       expect(screen.getByRole('link', { name: 'Review my data' })).toHaveAttribute('href', expectedReviewHref);
+      expect(replace).not.toHaveBeenCalled();
     },
   );
+
+  it('redirects abods users straight to the abods gatekeeper without rendering the dashboard', () => {
+    setUser({ account_type: 6, is_org_user: true, is_single_org_user: false, is_agent_user: false, organisation_id: 9 });
+
+    render(<PublishPage />);
+
+    expect(replace).toHaveBeenCalledWith(publishAppPath('/abods-gatekeeper'));
+    expect(screen.queryByRole('heading', { name: 'Publish bus open data' })).not.toBeInTheDocument();
+  });
 
   it('renders the supporting navigation links', () => {
     setUser(null);

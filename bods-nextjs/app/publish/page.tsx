@@ -6,27 +6,32 @@
  * Entry page for publishing bus open data.
  */
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { HOSTS, publishAppPath, wwwPath } from '@/config/client';
 import { useAuth } from '@/hooks/useAuth';
+import { getPublishHomeLinks, isAbodsUser } from '@/lib/publish-home-links';
 
 function PublishDashboard() {
   const { user } = useAuth();
+  const router = useRouter();
+  const abodsUser = isAbodsUser(user);
 
-  // all publish navigation inside Next routes.
-  let startView = publishAppPath('/org');
-  if (user?.is_single_org_user && user.organisation_id) {
-    startView = publishAppPath(`/org/${user.organisation_id}/dataset`);
+  // Django's PublishHomeView.dispatch sends signed-in abods users straight to the abods gatekeeper.
+  useEffect(() => {
+    if (abodsUser) {
+      router.replace(publishAppPath('/abods-gatekeeper'));
+    }
+  }, [abodsUser, router]);
+
+  if (abodsUser) {
+    return null;
   }
 
-  let reviewView = publishAppPath('/org');
-  if (user?.is_single_org_user && user.organisation_id) {
-    reviewView = publishAppPath(`/org/${user.organisation_id}/dataset/timetable`);
-  } else if (user?.is_agent_user) {
-    reviewView = publishAppPath('/agent-dashboard');
-  }
+  const { startView, reviewView } = getPublishHomeLinks(user);
 
   return (
     <>
