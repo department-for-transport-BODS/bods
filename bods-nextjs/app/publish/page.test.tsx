@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
-import PublishPage from './page';
-import { publishAppPath, wwwPath } from '@/config/client';
+import { render, screen, within } from '@testing-library/react';
+import PublishPage, { metadata } from './page';
+import { HOSTS, publishAppPath, wwwPath } from '@/config/client';
 import { useAuth } from '@/hooks/useAuth';
 
 jest.mock('@/components/auth/ProtectedRoute', () => ({
@@ -42,6 +42,23 @@ describe('PublishPage', () => {
     expect(screen.getByText('Bus routes and timetable')).toBeInTheDocument();
     expect(screen.getByText('Automatic Vehicle Location (AVL)')).toBeInTheDocument();
     expect(screen.getByText('Fares')).toBeInTheDocument();
+  });
+
+  it('uses the Django page title', () => {
+    expect(metadata.title).toBe('Publish bus open data');
+  });
+
+  it('links both breadcrumbs like Django', () => {
+    setUser(null);
+
+    render(<PublishPage />);
+
+    const breadcrumbs = within(screen.getByRole('navigation', { name: 'Breadcrumb' }));
+    const links = breadcrumbs.getAllByRole('link');
+    expect(links.map((link) => [link.textContent, link.getAttribute('href')])).toEqual([
+      ['Bus Open Data Service', HOSTS.www],
+      ['Publish Bus Open Data', HOSTS.publish],
+    ]);
   });
 
   it.each([
@@ -88,7 +105,8 @@ describe('PublishPage', () => {
 
       render(<PublishPage />);
 
-      expect(screen.getByRole('link', { name: 'Publish data' })).toHaveAttribute('href', expectedPublishHref);
+      // Django renders the start link with role="button".
+      expect(screen.getByRole('button', { name: 'Publish data' })).toHaveAttribute('href', expectedPublishHref);
       expect(screen.getByRole('link', { name: 'Review my data' })).toHaveAttribute('href', expectedReviewHref);
       expect(replace).not.toHaveBeenCalled();
     },
