@@ -9,9 +9,10 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorDisplay } from '@/components/shared/ErrorDisplay';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { Pagination } from '@/components/shared/Pagination';
-import { publishPath, wwwPath } from '@/config/client';
+import { publishPath } from '@/config/client';
 import { useApiResource } from '@/hooks/useApiResource';
 import { api } from '@/lib/api-client';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 import { LineHelpModal } from './LineHelpModal';
 import './requires-attention.css';
 
@@ -106,12 +107,11 @@ export function RequiresAttentionContent({ kind }: { kind: RequiresAttentionKind
     <>
       <div className="govuk-width-container">
         <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: wwwPath('/') },
-            { label: 'Publish Open Data Service', href: publishPath('/') },
+          items={hostBreadcrumbs(
+            'publish',
             { label: data?.ancestor ?? config.defaultAncestor, href: publishPath(listPath) },
             { label: 'Service Codes Requiring Attention', href: publishPath(attentionPath), current: true },
-          ]}
+          )}
         />
       </div>
 
