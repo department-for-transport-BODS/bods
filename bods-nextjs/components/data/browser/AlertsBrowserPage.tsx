@@ -8,6 +8,7 @@ import { HOSTS } from '@/config/client';
 import { dataApiPath } from '@/lib/api-paths';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
+import { SearchSummaryBar } from './SearchSummaryBar';
 
 interface AlertsBrowserPageProps {
   title: string;
@@ -210,6 +211,11 @@ function AlertsBrowserPageInner({
               <div className="app-data-browser__results-heading">
                 <span className="govuk-body">{filteredAndSorted.length.toLocaleString()} results</span>
               </div>
+              <SearchSummaryBar
+                searchTerm={q}
+                clearSearchHref={`${pathname}?ordering=${encodeURIComponent(ordering)}`}
+                showContaining
+              />
               <div className="app-data-browser__sort-control">
                 <label className="govuk-label" htmlFor="ordering">Sort by</label>
                 <select
@@ -249,4 +255,3 @@ function AlertsBrowserPageInner({
     </>
   );
 }
-

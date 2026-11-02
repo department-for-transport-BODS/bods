@@ -90,7 +90,7 @@ export function BrowseSearchBanner({
                 className={`app-data-browser__searchbox${suggestions ? ' autocomplete' : ''}`}
               >
                 <input
-                  className="app-data-browser__searchbox-input"
+                  className="govuk-input app-data-browser__searchbox-input"
                   id="search"
                   name="q"
                   type="search"
@@ -136,4 +136,3 @@ export function BrowseSearchBanner({
     </div>
   );
 }
-

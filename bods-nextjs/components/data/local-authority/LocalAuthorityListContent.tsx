@@ -8,8 +8,6 @@
  * API: transit_odp/browse/views/api.py - local_authority_list_api
  */
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { notFound, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { BrowseSearchBanner } from '@/components/data/browser/BrowseSearchBanner';
@@ -18,6 +16,7 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorDisplay } from '@/components/shared/ErrorDisplay';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { RangePagination } from '@/components/shared/RangePagination';
+import { SearchSummaryBar } from '@/components/data/browser/SearchSummaryBar';
 import { dataPath } from '@/config/client';
 import { ApiError, api } from '@/lib/api-client';
 import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
@@ -152,19 +151,12 @@ function LocalAuthorityListInner() {
                       <h3 className="govuk-heading-m">Sorry, no results found{data.q ? ` for ${data.q}` : ''}</h3>
                     )}
                   </div>
-                  <div className="app-data-browser__filter-pillbox">
-                    {data.q && (
-                      <>
-                        <span className="govuk-label govuk-!-font-weight-bold govuk-!-padding-right-3">Containing</span>
-                        <Link href={`${pathname}?ordering=${encodeURIComponent(data.ordering)}`}>
-                          <span className="app-data-browser__filter-pill">
-                            <Image src="/assets/images/icon-cross.png" alt="delete-icon" width={18} height={19} />
-                            {data.q}
-                          </span>
-                        </Link>
-                      </>
-                    )}
-                  </div>
+                  <SearchSummaryBar
+                    searchTerm={data.q}
+                    clearSearchHref={`${pathname}?ordering=${encodeURIComponent(data.ordering)}`}
+                    showContaining
+                    removeSectionBreakTopMargin
+                  />
                   <div className="app-data-browser__sort-control govuk-form-group">
                     <label className="govuk-label" htmlFor="ordering">
                       Sort by

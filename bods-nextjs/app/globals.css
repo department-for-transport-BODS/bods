@@ -116,6 +116,12 @@ body {
   white-space: nowrap;
 }
 
+@media (min-width: 40.0625em) {
+  .govuk-heading-xl {
+    line-height: 50px;
+  }
+}
+
 .app-masthead__title_agent_dashboard {
   color: #ffffff !important;
   margin-bottom: 20px;
@@ -316,6 +322,7 @@ body {
   align-items: center;
   font-family: "GDS Transport", arial, sans-serif;
   font-size: 1.125rem;
+  line-height: 1.3157894737;
 }
 
 .app-data-browser__title-link {
@@ -381,35 +388,52 @@ body {
 
 .app-data-browser__filter-pillbox {
   display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
   align-items: center;
-  background-color: #f8f8f8;
-  min-height: 48px;
-  padding: 10px;
+  background-color: #f6f5f5;
+  min-height: 40px;
+  padding: 15px;
   border: 0;
-  margin-bottom: 12px;
+  margin: 0;
+}
+
+.app-data-browser__filter-pillbox a {
+  text-decoration: none;
 }
 
 .app-data-browser__filter-pill {
   border: 1px solid #505a5f;
   border-radius: 4px;
-  padding: 5px 10px;
+  padding: 5px;
   display: inline-flex;
   align-items: center;
-  background-color: #ffffff;
-  font-size: 16px;
-  font-family: GDS Transport, arial, sans-serif;
+  justify-content: flex-start;
+  background-color: #f9f9f8;
+  color: #0b0c0c;
+  font: inherit;
 }
 
-.app-data-browser__pill-remove {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  margin-right: 4px;
-  font-size: 16px;
-  line-height: 1;
+.app-data-browser__filter-pill-image {
   padding: 5px;
-  overflow-clip-margin: content-box;
-  overflow: clip;
+  align-self: center;
+  width: 26px;
+  height: 26px;
+}
+
+.app-data-browser__filter-pill-label {
+  padding: 5px;
+  color: #0b0c0c;
+}
+
+.pillbox-break {
+  border-bottom-color: #0b0c0c;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.pillbox-break.app-data-browser__section-break--no-top-margin {
+  margin-top: 0;
 }
 
 .app-data-browser__sort-control {
@@ -1042,7 +1066,7 @@ span.text-color-red {
 }
 
 .help-modal .help-icon {
-  color: #0b0c0c;
+  color: #1d70b8;
   cursor: pointer;
 }
 
@@ -1054,6 +1078,20 @@ span.text-color-red {
 .help-modal .help-icon-blue {
   color: #1d70b8;
   cursor: pointer;
+}
+
+.help-modal .help-icon:not(.help-icon-white):hover,
+.help-modal .help-icon:not(.help-icon-white):focus,
+.help-modal .help-icon-blue:hover,
+.help-modal .help-icon-blue:focus {
+  color: #1d70b8;
+}
+
+.help-modal .help-icon:not(.help-icon-white):focus-visible,
+.help-modal .help-icon-blue:focus-visible,
+.help-modal [role="button"]:focus-visible {
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
 }
 
 .help-modal .overlay {
