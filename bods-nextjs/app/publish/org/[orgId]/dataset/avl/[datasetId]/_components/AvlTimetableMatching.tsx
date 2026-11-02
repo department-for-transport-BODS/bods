@@ -16,7 +16,7 @@ export function AvlTimetableMatching({ matching, datasetId, orgId }: AvlTimetabl
   return (
     <div>
       <p className="govuk-body govuk-!-margin-bottom-0">
-        {!matching || matching === '0%' ? (
+        {!matching ? (
           <>
             <FontAwesomeIcon icon={faCircleExclamation} aria-hidden="true" />
             {' Pending '}
@@ -28,7 +28,7 @@ export function AvlTimetableMatching({ matching, datasetId, orgId }: AvlTimetabl
           </>
         )}
       </p>
-      {matching && matching !== '0%' && (
+      {matching && (
         // Plain anchor: this is a file download served by a route handler, not a page.
         <a href={matchingReportUrl} className="govuk-link govuk-!-margin-left-5 govuk-!-margin-top-1">
           Download matching report
