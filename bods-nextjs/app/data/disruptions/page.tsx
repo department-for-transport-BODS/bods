@@ -13,7 +13,7 @@ export default function DisruptionsPage() {
 }
 
 export const metadata = {
-  title: 'Browse Disruption Data - Bus Open Data Service',
+  title: 'Browse Disruption Data',
   description: 'Search and browse disruption data.',
 };
 
