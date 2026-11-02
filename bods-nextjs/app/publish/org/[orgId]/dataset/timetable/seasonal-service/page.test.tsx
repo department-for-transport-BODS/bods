@@ -57,7 +57,7 @@ describe('Seasonal services - list page', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Seasonal service operating dates' })).toBeInTheDocument();
     const crumbs = screen.getByRole('navigation', { name: /breadcrumb/i });
     expect(within(crumbs).getByRole('link', { name: 'Bus Open Data Service' })).toBeInTheDocument();
-    expect(within(crumbs).getByRole('link', { name: 'Publish Open Data Service' })).toBeInTheDocument();
+    expect(within(crumbs).getByRole('link', { name: 'Publish Bus Open Data' })).toBeInTheDocument();
     expect(within(crumbs).getByRole('link', { name: 'Review My Timetables Data' })).toHaveAttribute(
       'href',
       expect.stringContaining('/org/55/dataset/timetable/'),
