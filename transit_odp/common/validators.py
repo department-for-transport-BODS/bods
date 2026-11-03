@@ -1,42 +1,31 @@
-import os
-import string
-
-import pandas as pd
-from django.conf import settings
+from better_profanity import profanity
 from django.core.exceptions import ValidationError
 
-TRANSLATOR = str.maketrans(string.punctuation, " " * len(string.punctuation))
+ALLOWED_PROFANITY_WORDS = set()
+_profanity_configured = False
+_profanity_whitelist = None
 
 
-def get_banned_words():
-    # TODO CM - What is this?
-    if get_banned_words.banned_words is None:
-        get_banned_words.banned_words = set(
-            pd.read_csv(
-                os.path.join(settings.APPS_DIR, "common/swear_word_list.csv"),
-                names=["word"],
-            )["word"]
-        )
-    return get_banned_words.banned_words
+def _configure_profanity():
+    global _profanity_configured, _profanity_whitelist
 
+    whitelist = sorted(ALLOWED_PROFANITY_WORDS)
+    if _profanity_configured and _profanity_whitelist == whitelist:
+        return profanity
 
-get_banned_words.banned_words = None
+    profanity.load_censor_words(whitelist_words=list(whitelist))
+    _profanity_whitelist = whitelist
+    _profanity_configured = True
+
+    return profanity
 
 
 def check_banned_words(text: str) -> bool:
-    """Checks for banned_words in `text`.
-
-    Returns True if `text` contains a banned word, else False."""
-    banned_words = get_banned_words()
-    return any(word in banned_words for word in text.split())
+    """Return True when the text contains a word from the profanity library."""
+    return _configure_profanity().contains_profanity(text)
 
 
 def validate_profanity(text: str) -> None:
-    """Validates text does not contain profanities"""
-    text = text.lower()
-
-    # replace punctuation with white space
-    text.translate(TRANSLATOR)
-
+    """Validate that text does not contain profanities."""
     if check_banned_words(text):
         raise ValidationError("Profane words are not allowed", code="profanity")
