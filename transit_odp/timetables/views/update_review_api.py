@@ -10,6 +10,7 @@ from transit_odp.timetables.views.api import (
     _authenticate_user,
     _get_user_org,
 )
+from transit_odp.users.constants import AccountType
 
 DATASET_NOT_FOUND_ERROR = "Dataset not found"
 
@@ -26,7 +27,7 @@ def get_timetables_update_success_api(request, pk1, pk):
     if user is None:
         return JsonResponse({"error": AUTH_REQUIRED_ERROR}, status=401)
 
-    if not user.is_org_user:
+    if not user.is_org_user or user.account_type == AccountType.abods_user.value:
         return JsonResponse({"error": ORG_ACCESS_REQUIRED_ERROR}, status=403)
 
     if _get_user_org(user, pk1) is None:

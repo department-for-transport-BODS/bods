@@ -9,7 +9,7 @@ from config.hosts import PUBLISH_HOST
 from transit_odp.data_quality.factories.report import PTIObservationFactory
 from transit_odp.organisation.constants import TimetableType
 from transit_odp.organisation.factories import DatasetFactory, DatasetRevisionFactory
-from transit_odp.users.constants import OrgAdminType
+from transit_odp.users.constants import AccountType, OrgAdminType
 from transit_odp.users.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
@@ -81,6 +81,20 @@ def test_update_success_rejects_non_org_user(update_success):
     client.force_login(UserFactory())
 
     assert client.get(_success_url(dataset)).status_code == 403
+
+
+def test_update_success_rejects_abods_user(update_success):
+    client, user, dataset = update_success
+    abods_user = UserFactory(
+        account_type=AccountType.abods_user.value,
+        organisations=(user.organisations.first(),),
+    )
+    client.force_login(abods_user)
+
+    response = client.get(_success_url(dataset))
+
+    assert response.status_code == 403
+    assert response.json() == {"error": "Org user access required"}
 
 
 def test_update_success_404_for_dataset_in_another_organisation(update_success):
