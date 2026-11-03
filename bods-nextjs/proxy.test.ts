@@ -204,6 +204,15 @@ describe('subdomain routing proxy', () => {
       expect(response.headers.get('x-middleware-rewrite')).toBeNull();
     });
 
+    it('keeps account inactive on the publish host', () => {
+      const response = proxy(
+        request('https://publish.xyz.com/account/inactive', 'publish.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
     it('keeps account logout on the data host', () => {
       const response = proxy(request('https://data.xyz.com/account/logout', 'data.xyz.com'));
 

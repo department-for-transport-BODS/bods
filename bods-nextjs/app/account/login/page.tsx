@@ -7,9 +7,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
+import { AuthError } from '@/lib/auth/session-auth';
+import { HOSTS } from '@/config/client';
 import { useBodsArea } from '@/lib/bods-host-context';
-import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 import { resolvePostLoginRedirect } from '@/lib/auth/post-login-redirect';
+import { errorSummaryItems } from '@/lib/form-errors';
+import { LOGIN_ERRORS } from '@/lib/validation/messages';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,16 +20,34 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<{        // used to identify field validation errors - different from the above error for API authentication errors
+  const [fieldErrors, setFieldErrors] = useState<{
     email?: string;
     password?: string;
   }>({});
+  const [summaryAttempt, setSummaryAttempt] = useState(0);
   const [isSummaryHighlighted, setIsSummaryHighlighted] = useState(false);
   const summaryRef = useRef<HTMLDivElement>(null);
   const { login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const area = useBodsArea();
+  const breadcrumbs = [
+    { label: 'Bus Open Data Service', href: HOSTS.www },
+    ...(area === 'www'
+      ? [{ label: 'Bus Open Data Service', href: HOSTS.www }]
+      : [
+          {
+            label:
+              area === 'data'
+                ? 'Find Open Data Service'
+                : area === 'publish'
+                  ? 'Publish Open Data Service'
+                  : 'BODS admin home',
+            href: HOSTS[area],
+          },
+        ]),
+    { label: 'Sign in', href: '/account/login' },
+  ];
 
   useEffect(() => {
     let isCancelled = false;
@@ -51,8 +72,10 @@ export default function LoginPage() {
   }, []);
 
   useEffect(() => {
-    if (!isSummaryHighlighted) return;
+    if (!error && !fieldErrors.email && !fieldErrors.password) return;
+
     summaryRef.current?.focus();
+    setIsSummaryHighlighted(true);
     const handleDocumentClick = (event: MouseEvent) => {
       const target = event.target;
 
@@ -66,28 +89,29 @@ export default function LoginPage() {
     return () => {
       document.removeEventListener('click', handleDocumentClick);
     };
-  }, [isSummaryHighlighted]);
+  }, [error, fieldErrors.email, fieldErrors.password, summaryAttempt]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
-    setIsSummaryHighlighted(true);
-    const emailInput =  e.currentTarget.elements.namedItem('email') as HTMLInputElement;
+    setFieldErrors({});
+    setIsSummaryHighlighted(false);
+    setSummaryAttempt((attempt) => attempt + 1);
+    const emailInput = e.currentTarget.elements.namedItem('login') as HTMLInputElement;
     const nextFieldErrors: { email?: string; password?: string } = {};
 
     if (!email.trim()) {
-      nextFieldErrors.email = 'Please provide an email';
-    }
-    else if (emailInput.validity.typeMismatch) {
-      nextFieldErrors.email = 'Enter an email address in the right format, like name@example.com';
+      nextFieldErrors.email = LOGIN_ERRORS.emailRequired;
+    } else if (emailInput.validity.typeMismatch) {
+      nextFieldErrors.email = LOGIN_ERRORS.emailInvalid;
     }
     if (!password) {
-      nextFieldErrors.password = 'Please provide a password';
+      nextFieldErrors.password = LOGIN_ERRORS.passwordRequired;
     }
 
     setFieldErrors(nextFieldErrors);
 
-    if (Object.keys(nextFieldErrors).length > 0){
+    if (Object.keys(nextFieldErrors).length > 0) {
       return;
     }
 
@@ -103,58 +127,49 @@ export default function LoginPage() {
       router.push(destination);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid email or password');
+      if (err instanceof AuthError && err.code === 'account_inactive') {
+        router.push('/account/inactive/');
+        return;
+      }
+
+      setError(err instanceof Error ? err.message : LOGIN_ERRORS.invalidCredentials);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const summaryErrors = [
+    ...errorSummaryItems(fieldErrors, {
+      email: '#id_login',
+      password: '#id_password',
+    }),
+    ...(error
+      ? [{ text: error, href: '#', className: 'govuk-error-message' }]
+      : []),
+  ];
+
   return (
     <div className="govuk-width-container">
-      <Breadcrumbs items={hostBreadcrumbs(area, { label: 'Sign in', current: true })} />
+      <Breadcrumbs items={breadcrumbs} />
 
       <div className="govuk-main-wrapper">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
-            <h1 className="govuk-heading-xl">Sign in</h1>
-
-            {(error || fieldErrors.email || fieldErrors.password) && (
-              <div
-                ref={summaryRef}
-                tabIndex={-1}
-                className={`govuk-error-summary ${
-                  isSummaryHighlighted ? 'app-error-summary--highlighted' : ''
-                }`}
-                aria-labelledby="error-summary-title"
-                role="alert"
-              >
-                <h2 className="govuk-error-summary__title" id="error-summary-title">
-                  There is a problem
-                </h2>
-                <div className="govuk-error-summary__body">
-                  <ul className="govuk-list govuk-error-summary__list">
-                    {fieldErrors.email && (
-                      <li>
-                        <a className="govuk-link" href="#email">
-                          {fieldErrors.email}
-                        </a>
-                      </li>
-                    )}
-                    {fieldErrors.password && (
-                      <li>
-                        <a className="govuk-link" href="#password">
-                          {fieldErrors.password}
-                        </a>
-                      </li>
-                    )}
-                    {error && <li>{error}</li>}
-                  </ul>
-                </div>
-              </div>
-            )}
             <h1 className="govuk-heading-xl">
               {verifiedEmail ? 'Email address confirmed' : 'Sign in'}
             </h1>
+
+            {summaryErrors.length > 0 && (
+              <ErrorSummary
+                containerRef={summaryRef}
+                tabIndex={-1}
+                dataModule="govuk-error-summary"
+                errors={summaryErrors}
+                className={
+                  isSummaryHighlighted ? 'app-error-summary--highlighted' : ''
+                }
+              />
+            )}
 
             {verifiedEmail && (
               <>
@@ -163,53 +178,50 @@ export default function LoginPage() {
               </>
             )}
 
-            {error && <ErrorSummary errors={[error]} />}
-
             <form onSubmit={handleSubmit} noValidate>
               <div className={`govuk-form-group ${fieldErrors.email ? 'govuk-form-group--error' : ''}`}>
-                <label className="govuk-label" htmlFor="email">
-                  Email<span className="govuk-visually-hidden"> (required)</span>*
-                </label>
+                <label className="govuk-label" htmlFor="id_login">Email*</label>
+                {fieldErrors.email && (
+                  <span className="govuk-error-message" id="1_id_login-error">
+                    {fieldErrors.email}
+                  </span>
+                )}
                 <input
-                  className={`govuk-input ${fieldErrors.email ? 'govuk-input--error' : ''}`}
-                  id="email"
-                  name="email"
+                  className={`govuk-!-width-three-quarters govuk-input ${fieldErrors.email ? 'govuk-input--error' : ''}`}
+                  id="id_login"
+                  name="login"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  placeholder=""
+                  maxLength={320}
                   required
                   autoComplete="email"
-                  aria-invalid={Boolean(fieldErrors.email)}
-                  aria-describedby={fieldErrors.email ? 'email-error' : undefined}
                 />
-                {fieldErrors.email && (
-                  <p className="govuk-error-message" id="email-error">
-                    {fieldErrors.email}
-                  </p>
-                )}
               </div>
 
               <div className={`govuk-form-group ${fieldErrors.password ? 'govuk-form-group--error' : ''}`}>
-                <label className="govuk-label" htmlFor="password">
-                  Password<span className="govuk-visually-hidden"> (required)</span>*
-                </label>
+                <label className="govuk-label" htmlFor="id_password">Password*</label>
+                <span id="id_password-hint" className="govuk-hint">
+                  Your password should be at least 8 characters long.
+                </span>
+                {fieldErrors.password && (
+                  <span className="govuk-error-message" id="1_id_password-error">
+                    {fieldErrors.password}
+                  </span>
+                )}
                 <input
-                  className={`govuk-input ${fieldErrors.password ? 'govuk-input--error' : ''}`}
-                  id="password"
+                  className={`govuk-!-width-three-quarters govuk-input ${fieldErrors.password ? 'govuk-input--error' : ''}`}
+                  id="id_password"
                   name="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder=""
                   required
                   autoComplete="current-password"
-                  aria-invalid={Boolean(fieldErrors.password)}
-                  aria-describedby={fieldErrors.password ? 'password-error' : undefined}
+                  aria-describedby="id_password-hint"
                 />
-                {fieldErrors.password && (
-                  <p className="govuk-error-message" id="password-error">
-                    {fieldErrors.password}
-                  </p>
-                )}
               </div>
 
               <button

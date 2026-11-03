@@ -1,8 +1,11 @@
+import type { Ref } from 'react';
+
 export type ErrorSummaryItem =
   | string
   | {
       text: string;
       href?: string;
+      className?: string;
     };
 
 interface ErrorSummaryProps {
@@ -14,6 +17,7 @@ interface ErrorSummaryProps {
   itemClassName?: string;
   tabIndex?: number;
   dataModule?: string;
+  containerRef?: Ref<HTMLDivElement>;
 }
 
 export function ErrorSummary({
@@ -25,6 +29,7 @@ export function ErrorSummary({
   itemClassName = '',
   tabIndex,
   dataModule,
+  containerRef,
 }: ErrorSummaryProps) {
   if (errors.length === 0) {
     return null;
@@ -40,6 +45,7 @@ export function ErrorSummary({
       role="alert"
       tabIndex={tabIndex}
       data-module={dataModule}
+      ref={containerRef}
     >
       <h2 className={headingClassName} id={summaryId}>
         {title}
@@ -52,9 +58,10 @@ export function ErrorSummary({
             }
 
             const key = `${error.text}-${error.href || 'no-link'}`;
+            const itemClassNames = [itemClassName, error.className].filter(Boolean).join(' ');
 
             return (
-              <li className={itemClassName} key={key}>
+              <li className={itemClassNames} key={key}>
                 {error.href ? <a href={error.href}>{error.text}</a> : error.text}
               </li>
             );

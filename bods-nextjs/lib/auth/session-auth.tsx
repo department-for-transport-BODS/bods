@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from 'react';
 import { getCsrfToken } from '@/lib/api-client';
+import { LOGIN_ERRORS } from '@/lib/validation/messages';
 import type { User } from '@/types';
 
 interface AuthContextValue {
@@ -23,6 +24,7 @@ interface AuthContextValue {
 interface LoginResponse {
   user?: Partial<User>;
   detail?: string;
+  code?: string;
   non_field_errors?: string[];
 }
 
@@ -31,6 +33,17 @@ interface CsrfResponse {
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+export class AuthError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly code?: string,
+  ) {
+    super(message);
+    this.name = 'AuthError';
+  }
+}
 
 function getErrorMessage(payload: unknown, fallback: string): string {
   if (!payload || typeof payload !== 'object') return fallback;
@@ -120,14 +133,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const { ok, data } = await authRequest<LoginResponse>('/api/auth/login/', {
+      const { ok, status, data } = await authRequest<LoginResponse>('/api/auth/login/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
       if (!ok || !data) {
-        throw new Error(getErrorMessage(data, 'Invalid email or password'));
+        throw new AuthError(
+          getErrorMessage(data, LOGIN_ERRORS.invalidCredentials),
+          status,
+          data?.code,
+        );
       }
 
       const currentUser = data.user ? normaliseUser(data.user) : await fetchCurrentUser();
