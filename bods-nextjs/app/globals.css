@@ -386,7 +386,7 @@ body {
   margin-bottom: 12px;
 }
 
-.app-data-browser__filter-pillbox {
+.search-pillbox {
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
@@ -398,11 +398,11 @@ body {
   margin: 0;
 }
 
-.app-data-browser__filter-pillbox a {
+.search-pillbox a {
   text-decoration: none;
 }
 
-.app-data-browser__filter-pill {
+.pill-item {
   border: 1px solid #505a5f;
   border-radius: 4px;
   padding: 5px;
@@ -414,14 +414,14 @@ body {
   font: inherit;
 }
 
-.app-data-browser__filter-pill-image {
+.pill-item__image {
   padding: 5px;
   align-self: center;
   width: 26px;
   height: 26px;
 }
 
-.app-data-browser__filter-pill-label {
+.pill-item__label {
   padding: 5px;
   color: #0b0c0c;
 }
@@ -430,10 +430,6 @@ body {
   border-bottom-color: #0b0c0c;
   margin-top: 10px;
   margin-bottom: 15px;
-}
-
-.pillbox-break.app-data-browser__section-break--no-top-margin {
-  margin-top: 0;
 }
 
 .app-data-browser__sort-control {
