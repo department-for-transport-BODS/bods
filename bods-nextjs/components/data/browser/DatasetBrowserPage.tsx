@@ -11,7 +11,7 @@ import type { DatasetType } from '@/types';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
-import { SearchSummaryBar, type SearchSummaryFilter } from './SearchSummaryBar';
+import { FilterPillbox, type FilterPill } from '@/components/shared/FilterPillbox';
 import { NoSearchResults } from './NoSearchResults';
 
 interface BrowserDatasetItem {
@@ -155,7 +155,7 @@ function DatasetBrowserPageInner({
 
   const selectedOrgLabel = organisations.find((org) => org.value === urlState.organisation)?.label || '';
   const selectedAreaLabel = areas.find((item) => item.value === urlState.area)?.label || '';
-  const searchSummaryFilters: SearchSummaryFilter[] = [];
+  const searchSummaryFilters: FilterPill[] = [];
   const filterHref = (key: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete(key);
@@ -348,7 +348,7 @@ function DatasetBrowserPageInner({
 
             <div className="govuk-grid-column-two-thirds">
               <div className="app-data-browser__results-heading"><span className="govuk-body">{datasets.length.toLocaleString()} results</span></div>
-              <SearchSummaryBar filters={searchSummaryFilters} />
+              <FilterPillbox filters={searchSummaryFilters} />
               <div className="app-data-browser__sort-control">
                 <label className="govuk-label" htmlFor="ordering">Sort by</label>
                 <select className="govuk-select" id="ordering" value={urlState.ordering} onChange={(e) => updateQuery({ ordering: e.target.value })}>

@@ -13,9 +13,7 @@
 export { DatasetCard } from './DatasetCard';
 export { DatasetList } from './DatasetList';
 export { DatasetSearch } from './DatasetSearch';
-export { DatasetListWithSearch } from './DatasetListWithSearch';
 export { DatasetFilters } from './DatasetFilters';
-export { ActiveFilterTags } from './ActiveFilterTags';
 export { DataQualityBadge } from './DataQualityBadge';
 export * from './dataset-detail';
 export { RouteMap } from './RouteMap';

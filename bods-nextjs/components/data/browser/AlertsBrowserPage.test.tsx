@@ -54,7 +54,7 @@ describe('AlertsBrowserPage search summary', () => {
     await screen.findByText('2 results');
     const summary = screen.getByRole('region', { name: 'Search filters' });
     expect(within(summary).getByText('Containing')).toBeInTheDocument();
-    expect(within(summary).getByText('London')).toHaveClass('app-data-browser__filter-pill-label');
+    expect(within(summary).getByText('London')).toHaveClass('pill-item__label');
     expect(within(summary).getByRole('link', { name: 'London' })).toHaveAttribute(
       'href',
       '/disruptions?ordering=-modified',

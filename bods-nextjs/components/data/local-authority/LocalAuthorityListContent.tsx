@@ -16,7 +16,7 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { ErrorDisplay } from '@/components/shared/ErrorDisplay';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { RangePagination } from '@/components/shared/RangePagination';
-import { SearchSummaryBar } from '@/components/data/browser/SearchSummaryBar';
+import { FilterPillbox } from '@/components/shared/FilterPillbox';
 import { dataPath } from '@/config/client';
 import { ApiError, api } from '@/lib/api-client';
 import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
@@ -151,10 +151,10 @@ function LocalAuthorityListInner() {
                       <h3 className="govuk-heading-m">Sorry, no results found{data.q ? ` for ${data.q}` : ''}</h3>
                     )}
                   </div>
-                  <SearchSummaryBar
+                  <FilterPillbox
                     searchTerm={data.q}
                     clearSearchHref={`${pathname}?ordering=${encodeURIComponent(data.ordering)}`}
-                    showContaining
+                    searchLabel="Containing"
                     removeSectionBreakTopMargin
                   />
                   <div className="app-data-browser__sort-control govuk-form-group">
