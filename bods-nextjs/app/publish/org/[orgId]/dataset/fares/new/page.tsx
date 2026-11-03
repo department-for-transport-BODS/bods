@@ -274,7 +274,7 @@ function FaresCreatePageContent() {
               processingDataset ? (
                 <>
                   <ErrorSummary errors={processingError ? [processingError] : []} summaryId="fares-processing-error-title" />
-                  <div className="govuk-panel govuk-panel--confirmation bods-bg-blue-light">
+                  <div className="govuk-panel govuk-panel--confirmation">
                     <h2 className="govuk-panel__title govuk-!-font-size-36">Your data is being processed</h2>
                     <div className="govuk-panel__body govuk-!-font-size-19">
                       <div className="pb3-l">
