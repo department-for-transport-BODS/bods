@@ -4,3 +4,24 @@
 	@extend .govuk-link;
 	font-weight: 700;
 }
+
+.pb3-l {
+	padding-bottom: govuk-spacing(4);
+}
+
+.loading-white {
+	width: 0%;
+	height: govuk-spacing(6);
+	background-color: govuk-colour("white");
+	text-align: center;
+	line-height: govuk-spacing(6);
+	color: govuk-colour("white");
+}
+
+.loading-white-lg {
+	width: govuk-spacing(9);
+	height: govuk-spacing(7);
+	@include govuk-font($size: 27, $weight: bold);
+	color: govuk-colour("white");
+	align-content: center;
+}
