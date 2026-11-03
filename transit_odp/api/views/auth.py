@@ -112,9 +112,7 @@ class LoginAPIView(APIView):
         return super().get_throttles()
 
     def throttled(self, request, wait):
-        exception = Throttled(
-            detail="Too many failed login attempts. Try again later."
-        )
+        exception = Throttled(detail="Too many failed login attempts. Try again later.")
         exception.wait = wait
         raise exception
 

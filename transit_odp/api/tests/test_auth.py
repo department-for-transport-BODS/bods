@@ -13,7 +13,6 @@ from transit_odp.organisation.factories import OrganisationFactory
 from transit_odp.users.constants import AccountType
 from transit_odp.users.factories import AgentUserFactory, UserFactory
 
-
 pytestmark = pytest.mark.django_db
 
 NEW_PASSWORD = "newPassword_34324()()"
@@ -86,9 +85,7 @@ def test_login_api_returns_django_invalid_credentials_message(client_factory):
 
 
 @override_settings(ACCOUNT_LOGIN_ATTEMPTS_LIMIT=100)
-def test_login_api_returns_django_unverified_email_message(
-    client_factory, mailoutbox
-):
+def test_login_api_returns_django_unverified_email_message(client_factory, mailoutbox):
     cache.clear()
     email = "unverified-dbods-2740@example.com"
     password = "Correct-password-123!"
