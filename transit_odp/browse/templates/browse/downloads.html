@@ -69,7 +69,7 @@
           {% include "browse/snippets/help_modals/gtfs.html" %}
         </li>
         <li>
-          <b>{% trans "TXC profile" %}:</b> {% trans "TXC 2.4 PTI v1.1" %}
+          <b>{% trans "TXC profile" %}:</b> {% blocktrans %}TXC {{ TXC_VERSION }} PTI v1.1{% endblocktrans %}
         </li>
         <li>
           <b>{% trans "Mode" %}:</b> {% trans "Bus" %}
@@ -219,13 +219,13 @@
       </p>
       <p class="govuk-body">
         {% blocktrans %}
-          Download coach data in ATCO-CIF or TxC 2.4 PTI.
+          Download coach data in ATCO-CIF or TxC {{ TXC_VERSION }} PTI.
         {% endblocktrans %}
       </p>
       <ul class="govuk-list">
         <li>
           <b>{% trans "Format" %}:</b>
-          {% trans "TxC2.4 PTI/ATCO.CIF" %}
+          {% blocktrans %}TxC{{ TXC_VERSION }} PTI/ATCO.CIF{% endblocktrans %}
         </li>
         <li>
           <b>{% trans "Mode" %}:</b> {% trans "Coach" %}

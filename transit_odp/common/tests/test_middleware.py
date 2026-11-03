@@ -1,7 +1,9 @@
 from random import choices
 from string import ascii_letters
+from unittest.mock import patch
 
 import pytest
+from django.db import DatabaseError, connection
 from django_hosts.resolvers import reverse
 
 import config
@@ -97,6 +99,55 @@ def test_api_request_middleware_remove_api_key(client_factory):
     assert request.requestor == user
     assert request.path_info == "/api/v1/fares/dataset/"
     assert request.query_string == "noc=BLAH&status=active"
+
+
+@pytest.fixture
+def exhausted_api_request_id_sequence():
+    """Next APIRequest insert succeeds, the one after hits the sequence ceiling.
+
+    ALTER SEQUENCE is transactional, so the test's rollback restores it.
+    """
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT pg_get_serial_sequence('site_admin_apirequest', 'id')")
+        (sequence,) = cursor.fetchone()
+        cursor.execute(f"ALTER SEQUENCE {sequence} MAXVALUE 5 RESTART WITH 5")
+
+
+def test_api_request_middleware_survives_id_sequence_exhaustion(
+    client_factory, exhausted_api_request_id_sequence, caplog
+):
+    host = config.hosts.DATA_HOST
+    url = reverse("api:fares-api-list", host=host)
+    client = client_factory(host=host)
+    user = UserFactory()
+    client.force_login(user=user)
+
+    first = client.get(url, {"noc": "BLAH"})
+    second = client.get(url, {"noc": "BLAH"})
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert list(APIRequest.objects.values_list("id", flat=True)) == [5]
+    assert "Failed to log API request" in caplog.text
+    assert "reached maximum value of sequence" in caplog.text
+
+
+def test_api_request_middleware_survives_database_error(client_factory, caplog):
+    host = config.hosts.DATA_HOST
+    url = reverse("api:fares-api-list", host=host)
+    client = client_factory(host=host)
+    user = UserFactory()
+    client.force_login(user=user)
+
+    with patch.object(
+        APIRequest.objects, "create", side_effect=DatabaseError("db unavailable")
+    ):
+        response = client.get(url, {"noc": "BLAH"})
+
+    assert response.status_code == 200
+    assert APIRequest.objects.count() == 0
+    assert "Failed to log API request" in caplog.text
+    assert "db unavailable" in caplog.text
 
 
 def test_security_headers(client_factory):

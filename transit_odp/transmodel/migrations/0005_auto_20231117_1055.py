@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="bookingarrangements",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     models.Q(
                         ("email__isnull", False), models.Q(("email", ""), _negated=True)
                     ),
