@@ -52,7 +52,7 @@ class TestAcceptInvite:
         view.post()
 
         # Assert
-        assert mocked_adapter.unstash_invitation_started.called_once_with(request)
+        mocked_adapter.unstash_invitation_started.assert_called_once_with(request)
 
     def test_view_returns_410_when_invitation_already_accepted(
         self, mocker, rf: RequestFactory
@@ -85,7 +85,7 @@ class TestAcceptInvite:
             return_value=invitation,
         )
         mocked_render = mocker.patch(
-            "django.shortcuts.render",
+            "transit_odp.users.views.invitations.render",
             return_value=None,
         )
         mocker.patch(
@@ -97,7 +97,7 @@ class TestAcceptInvite:
         view.post()
 
         # Assert
-        assert mocked_render.called_once_with(
+        mocked_render.assert_called_once_with(
             request, "users/invitation_expired.html", context={}
         )
 
@@ -133,7 +133,7 @@ class TestAcceptInvite:
             return_value=invitation,
         )
         mocked_render = mocker.patch(
-            "django.shortcuts.render",
+            "transit_odp.users.views.invitations.render",
             return_value=None,
         )
         mocker.patch(
@@ -145,7 +145,7 @@ class TestAcceptInvite:
         view.post()
 
         # Assert
-        assert mocked_render.called_once_with(
+        mocked_render.assert_called_once_with(
             request, "users/invitation_expired.html", context={}
         )
 

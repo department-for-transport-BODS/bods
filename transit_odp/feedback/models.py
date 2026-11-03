@@ -15,5 +15,5 @@ class SatisfactionRating(models.IntegerChoices):
 class Feedback(models.Model):
     date = models.DateField(default=timezone.localdate)
     page_url = models.CharField(max_length=MAX_URL_LEN)
-    satisfaction_rating = models.IntegerField(choices=SatisfactionRating.choices)
+    satisfaction_rating = models.IntegerField(choices=SatisfactionRating)
     comment = models.CharField(max_length=1200, blank=True)

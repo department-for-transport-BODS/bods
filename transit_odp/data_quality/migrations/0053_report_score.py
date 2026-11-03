@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="dataqualityreport",
             constraint=models.CheckConstraint(
-                check=models.Q(("score__gte", 0.0), ("score__lte", 1.0)),
+                condition=models.Q(("score__gte", 0.0), ("score__lte", 1.0)),
                 name="dq_score_must_be_between_0_and_1",
             ),
         ),
