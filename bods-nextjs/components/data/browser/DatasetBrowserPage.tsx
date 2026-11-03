@@ -6,10 +6,13 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
 import { HOSTS, dataPath } from '@/config/client';
 import { dataApiPath } from '@/lib/api-paths';
+import { datasetDetailPath } from '@/lib/dataset-paths';
+import type { DatasetType } from '@/types';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
-import Image from 'next/image'
+import { FilterPillbox, type FilterPill } from '@/components/shared/FilterPillbox';
+import { NoSearchResults } from './NoSearchResults';
 
 interface BrowserDatasetItem {
   id: number;
@@ -27,6 +30,7 @@ interface BrowserDatasetItem {
 }
 
 interface DatasetBrowserPageProps {
+  datasetType: DatasetType;
   title: string;
   breadcrumbLabel: string;
   description: string;
@@ -66,8 +70,8 @@ function formatCompactDateTime(dateValue?: string | null): string {
 }
 
 function normaliseStatus(status: string | null): string {
-  if (!status || status === 'live') return 'published';
-  return status;
+  if (status === 'live') return 'published';
+  return status || '';
 } 
 
 export function DatasetBrowserPage(props: DatasetBrowserPageProps) {
@@ -79,6 +83,7 @@ export function DatasetBrowserPage(props: DatasetBrowserPageProps) {
 }
 
 function DatasetBrowserPageInner({
+  datasetType,
   title,
   breadcrumbLabel,
   description,
@@ -150,6 +155,53 @@ function DatasetBrowserPageInner({
 
   const selectedOrgLabel = organisations.find((org) => org.value === urlState.organisation)?.label || '';
   const selectedAreaLabel = areas.find((item) => item.value === urlState.area)?.label || '';
+  const searchSummaryFilters: FilterPill[] = [];
+  const filterHref = (key: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(key);
+    const queryString = params.toString();
+    return queryString ? `${pathname}?${queryString}` : pathname;
+  };
+  const formatFilterDate = (value: string) => {
+    const [year, month, day] = value.split('-');
+    return year && month && day ? `${day}/${month}/${year.slice(-2)}` : value;
+  };
+
+  if (urlState.area) {
+    searchSummaryFilters.push({
+      key: 'area',
+      label: selectedAreaLabel || urlState.area,
+      href: filterHref('area'),
+    });
+  }
+  if (urlState.organisation) {
+    searchSummaryFilters.push({
+      key: 'organisation',
+      label: selectedOrgLabel || urlState.organisation,
+      href: filterHref('organisation'),
+    });
+  }
+  if (urlState.status) {
+    searchSummaryFilters.push({
+      key: 'status',
+      label: urlState.status === 'published' ? 'Published' : 'Inactive',
+      href: filterHref('status'),
+    });
+  }
+  if (includeDateFilters && urlState.start) {
+    searchSummaryFilters.push({
+      key: 'start',
+      label: formatFilterDate(urlState.start),
+      href: filterHref('start'),
+    });
+  }
+  if (includeDateFilters && urlState.publishedAt) {
+    searchSummaryFilters.push({
+      key: 'published_at',
+      label: formatFilterDate(urlState.publishedAt),
+      href: filterHref('published_at'),
+    });
+  }
 
   const datasets = useMemo(() => {
     return rawDatasets
@@ -296,14 +348,7 @@ function DatasetBrowserPageInner({
 
             <div className="govuk-grid-column-two-thirds">
               <div className="app-data-browser__results-heading"><span className="govuk-body">{datasets.length.toLocaleString()} results</span></div>
-              {status && (
-                <div className="app-data-browser__filter-pillbox">
-                  <span className="app-data-browser__filter-pill">
-                    <button type="button" className="app-data-browser__pill-remove" onClick={() => updateQuery({ status: '' })}><Image src="/assets/images/icon-cross.png" alt="" width={18} height={19}/></button>
-                    {status === 'published' ? 'Published' : 'Inactive'}
-                  </span>
-                </div>
-              )}
+              <FilterPillbox filters={searchSummaryFilters} />
               <div className="app-data-browser__sort-control">
                 <label className="govuk-label" htmlFor="ordering">Sort by</label>
                 <select className="govuk-select" id="ordering" value={urlState.ordering} onChange={(e) => updateQuery({ ordering: e.target.value })}>
@@ -315,6 +360,8 @@ function DatasetBrowserPageInner({
               {error && <p className="govuk-body">{error}</p>}
               {isLoading ? (
                 <p className="govuk-body">Loading results...</p>
+              ) : !error && datasets.length === 0 ? (
+                <NoSearchResults />
               ) : (
                 datasets.map((dataset, index) => {
                   const statusValue = dataset.status || 'published';
@@ -341,7 +388,7 @@ function DatasetBrowserPageInner({
                       {index > 0 && <hr className="app-data-browser__result-divider" />}
                       <DataBrowserResultCard
                         title={titleValue}
-                        href={dataPath(`/${dataset.id}`)}
+                        href={datasetDetailPath(datasetType, dataset.id)}
                         status={statusValue}
                         statusLabel={statusValue === 'inactive' ? 'Inactive' : 'Published'}
                         keyValues={keyValues}
@@ -358,4 +405,3 @@ function DatasetBrowserPageInner({
     </>
   );
 }
-

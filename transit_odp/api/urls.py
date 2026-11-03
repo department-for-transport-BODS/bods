@@ -18,12 +18,7 @@ from transit_odp.api.views import (
     TimetablesViewSet,
     v2,
 )
-from transit_odp.api.views.auth import (
-    CSRFTokenAPIView,
-    CurrentUserAPIView,
-    LoginAPIView,
-    LogoutAPIView,
-)
+from transit_odp.api.views.auth import CurrentUserAPIView
 from transit_odp.api.views.avl import (
     AVLManageSubscriptionsView,
     AVLManageSubscriptionDetailView,
@@ -46,11 +41,65 @@ from transit_odp.api.views.browser import (
     BrowseOrganisationListView,
     BrowseTimetableListView,
 )
+from transit_odp.avl.views.dataset_detail_api import get_browse_avl_detail_api
+from transit_odp.browse.views.api import (
+    local_authority_detail_api,
+    local_authority_list_api,
+)
+from transit_odp.browse.views.dataset_subpages_api import (
+    dataset_feedback_api,
+    dataset_subscription_api,
+    get_dataset_changelog_api,
+    get_dataset_feedback_success_api,
+    get_dataset_subscription_success_api,
+)
+from transit_odp.browse.views.download_api import (
+    get_download_avl_api,
+    get_download_coach_api,
+    get_download_disruptions_api,
+    get_download_fares_api,
+    get_download_timetables_api,
+)
+from transit_odp.browse.views.operators_api import (
+    licence_detail_api,
+    licence_line_detail_api,
+    operator_contact_api,
+    operator_detail_api,
+    operators_list_api,
+)
+from transit_odp.fares.views.dataset_detail_api import get_browse_fares_detail_api
+from transit_odp.publish.views.api import AVLRealTimeDataView
+from transit_odp.timetables.views.dataset_detail_api import (
+    get_browse_timetable_detail_api,
+)
 from transit_odp.timetables.views.line_detail_api import (
     get_browse_timetable_line_detail_api,
 )
 
 app_name = "api"
+
+# Data host dataset sub-pages (changelog, subscription, feedback), one set per
+# dataset type: browser/<timetables|avl|fares>/<pk>/<sub-page>/
+DATASET_SUBPAGE_PATTERNS = [
+    path(
+        f"browser/{kind}/<int:pk>/{route}",
+        view,
+        {"kind": kind},
+        name=f"browser-{kind}-{name}",
+    )
+    for kind in ("timetables", "avl", "fares")
+    for route, view, name in (
+        ("changelog/", get_dataset_changelog_api, "changelog"),
+        ("subscription/", dataset_subscription_api, "subscription"),
+        (
+            "subscription/success/",
+            get_dataset_subscription_success_api,
+            "subscription-success",
+        ),
+        ("feedback/", dataset_feedback_api, "feedback"),
+        ("feedback/success/", get_dataset_feedback_success_api, "feedback-success"),
+    )
+]
 
 # TODO - refactor into api_v1,
 router_v1 = DefaultRouter()
@@ -75,12 +124,28 @@ urlpatterns = [
         name="browser-timetables",
     ),
     path(
+        "browser/timetables/<int:pk>/",
+        get_browse_timetable_detail_api,
+        name="browser-timetable-detail",
+    ),
+    path(
         "browser/timetables/<int:pk>/line-detail/",
         get_browse_timetable_line_detail_api,
         name="browser-timetable-line-detail",
     ),
+    *DATASET_SUBPAGE_PATTERNS,
     path("browser/avl/", BrowseAVLListView.as_view(), name="browser-avl"),
+    path(
+        "browser/avl/<int:pk>/",
+        get_browse_avl_detail_api,
+        name="browser-avl-detail",
+    ),
     path("browser/fares/", BrowseFaresListView.as_view(), name="browser-fares"),
+    path(
+        "browser/fares/<int:pk>/",
+        get_browse_fares_detail_api,
+        name="browser-fares-detail",
+    ),
     path(
         "browser/admin-areas/",
         BrowseAdminAreaListView.as_view(),
@@ -90,6 +155,67 @@ urlpatterns = [
         "browser/organisations/",
         BrowseOrganisationListView.as_view(),
         name="browser-organisations",
+    ),
+    path(
+        "browser/downloads/timetables/",
+        get_download_timetables_api,
+        name="browser-download-timetables",
+    ),
+    path(
+        "browser/downloads/avl/",
+        get_download_avl_api,
+        name="browser-download-avl",
+    ),
+    path(
+        "browser/downloads/fares/",
+        get_download_fares_api,
+        name="browser-download-fares",
+    ),
+    path(
+        "browser/downloads/disruptions/",
+        get_download_disruptions_api,
+        name="browser-download-disruptions",
+    ),
+    path(
+        "browser/downloads/coach/",
+        get_download_coach_api,
+        name="browser-download-coach",
+    ),
+    path("browser/operators/", operators_list_api, name="browser-operators"),
+    path(
+        "browser/operators/<int:pk>/",
+        operator_detail_api,
+        name="browser-operator-detail",
+    ),
+    path(
+        "browser/operators/<int:pk>/contact/",
+        operator_contact_api,
+        name="browser-operator-contact",
+    ),
+    path(
+        "browser/operators/licence/<slug:number>/",
+        licence_detail_api,
+        name="browser-operator-licence-detail",
+    ),
+    path(
+        "browser/operators/licence/<slug:number>/line/details/",
+        licence_line_detail_api,
+        name="browser-operator-licence-line-detail",
+    ),
+    path(
+        "browser/avl-feed/real-time-bus-location/",
+        AVLRealTimeDataView.as_view(),
+        name="browser-avl-real-time-bus-location",
+    ),
+    path(
+        "browser/local-authority/",
+        local_authority_list_api,
+        name="browser-local-authority",
+    ),
+    path(
+        "browser/local-authority/detail/",
+        local_authority_detail_api,
+        name="browser-local-authority-detail",
     ),
     # Authentication endpoints for NextJS
     path("user/", CurrentUserAPIView.as_view(), name="current-user"),

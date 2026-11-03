@@ -30,7 +30,7 @@ export function TimetableDateFilter({ currDate }: { currDate: string }) {
         picker = new AirDatepicker(input, {
           locale: localeEn,
           dateFormat: 'dd/MM/yyyy',
-          selectedDates: [new Date(currDate)],
+          selectedDates: currDate ? [new Date(currDate)] : [],
           buttons: [
             { content: 'Exit', onClick: (dp) => dp.hide() },
             { content: 'Today', onClick: (dp) => dp.update({ selectedDates: [new Date()] }) },

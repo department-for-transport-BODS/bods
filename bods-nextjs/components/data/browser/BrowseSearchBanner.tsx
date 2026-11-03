@@ -1,6 +1,6 @@
 'use client';
 
-import type { FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 
 interface BrowseSearchBannerProps {
   title: string;
@@ -8,8 +8,16 @@ interface BrowseSearchBannerProps {
   searchValue: string;
   placeholder: string;
   onSearchChange: (value: string) => void;
-  onSearchSubmit: () => void;
+  /** Receives the chosen suggestion when one was clicked, otherwise nothing. */
+  onSearchSubmit: (value?: string) => void;
+  /**
+   * Terms for prefix autocomplete (Django's `BODSFrontend.AutoCompleteSearch`):
+   * from two typed characters, case-insensitive prefix matches are listed.
+   */
+  suggestions?: string[];
 }
+
+const MIN_AUTOCOMPLETE_LENGTH = 2;
 
 export function BrowseSearchBanner({
   title,
@@ -18,10 +26,53 @@ export function BrowseSearchBanner({
   placeholder,
   onSearchChange,
   onSearchSubmit,
+  suggestions,
 }: BrowseSearchBannerProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isListOpen, setIsListOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+
+  const matches =
+    suggestions && isListOpen && searchValue.length >= MIN_AUTOCOMPLETE_LENGTH
+      ? suggestions.filter((term) => term.slice(0, searchValue.length).toUpperCase() === searchValue.toUpperCase())
+      : [];
+
+  useEffect(() => {
+    if (!suggestions) return undefined;
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setIsListOpen(false);
+        setActiveIndex(-1);
+      }
+    };
+    document.addEventListener('click', closeOnOutsideClick);
+    return () => document.removeEventListener('click', closeOnOutsideClick);
+  }, [suggestions]);
+
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     onSearchSubmit();
+  };
+
+  const chooseSuggestion = (term: string) => {
+    onSearchChange(term);
+    setIsListOpen(false);
+    setActiveIndex(-1);
+    onSearchSubmit(term);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (matches.length === 0) return;
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setActiveIndex((index) => (index + 1 >= matches.length ? 0 : index + 1));
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setActiveIndex((index) => (index - 1 < 0 ? matches.length - 1 : index - 1));
+    } else if (event.key === 'Enter' && activeIndex > -1) {
+      event.preventDefault();
+      chooseSuggestion(matches[activeIndex]);
+    }
   };
 
   return (
@@ -33,15 +84,23 @@ export function BrowseSearchBanner({
             <p id="search-description" className="govuk-body app-data-browser__search-description">
               {description}
             </p>
-            <form onSubmit={handleSubmit}>
-              <div className="app-data-browser__searchbox">
+            <form onSubmit={handleSubmit} autoComplete={suggestions ? 'off' : undefined}>
+              <div
+                ref={containerRef}
+                className={`app-data-browser__searchbox${suggestions ? ' autocomplete' : ''}`}
+              >
                 <input
-                  className="app-data-browser__searchbox-input"
+                  className="govuk-input app-data-browser__searchbox-input"
                   id="search"
                   name="q"
                   type="search"
                   value={searchValue}
-                  onChange={(event) => onSearchChange(event.target.value)}
+                  onChange={(event) => {
+                    onSearchChange(event.target.value);
+                    setIsListOpen(true);
+                    setActiveIndex(-1);
+                  }}
+                  onKeyDown={handleKeyDown}
                   placeholder={placeholder}
                   aria-labelledby="search-description"
                 />
@@ -56,6 +115,19 @@ export function BrowseSearchBanner({
                     </g>
                   </svg>
                 </button>
+                {matches.length > 0 && (
+                  <div id="searchautocomplete-list" className="autocomplete-items">
+                    {matches.map((term, index) => (
+                      <div
+                        key={term}
+                        className={index === activeIndex ? 'autocomplete-active' : undefined}
+                        onClick={() => chooseSuggestion(term)}
+                      >
+                        <strong>{term}</strong>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </form>
           </div>
@@ -64,4 +136,3 @@ export function BrowseSearchBanner({
     </div>
   );
 }
-

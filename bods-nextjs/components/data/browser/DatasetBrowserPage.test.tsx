@@ -3,8 +3,15 @@ import { DatasetBrowserPage } from './DatasetBrowserPage';
 import { api } from '@/lib/api-client';
 import { dataPath } from '@/config/client';
 
-const searchParams = new URLSearchParams('status=live');
+const searchParams = new URLSearchParams();
 const mockPush = jest.fn();
+
+function setSearchParams(query = '') {
+  for (const key of Array.from(searchParams.keys())) {
+    searchParams.delete(key);
+  }
+  new URLSearchParams(query).forEach((value, key) => searchParams.set(key, value));
+}
 
 jest.mock('next/navigation', () => ({
   usePathname: () => '/fares',
@@ -18,6 +25,7 @@ jest.mock('@/hooks/useFilterOptions', () => ({
 }));
 
 const props = {
+  datasetType: 'FARES' as const,
   title: 'Fares data',
   breadcrumbLabel: 'Fares Data',
   description: 'Search for a specific operator or NOC',
@@ -42,13 +50,45 @@ function mockDataset(bodsCompliance?: boolean | null) {
 }
 
 describe('dataset browser compliance', () => {
+  beforeEach(() => setSearchParams());
   afterEach(() => jest.clearAllMocks());
+
+  it('does not display a published filter when no status filter was requested', async () => {
+    mockDataset();
+    render(<DatasetBrowserPage {...props} />);
+
+    await screen.findByText('83504');
+    expect(screen.queryByText('Having trouble finding what you want?')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Status')).toHaveValue('');
+    expect(screen.getByRole('region', { name: 'Search filters' })).toBeEmptyDOMElement();
+  });
+
+  it('shows the Django no-results help when nothing matches', async () => {
+    jest.mocked(api.get).mockResolvedValue({ results: [] });
+    render(<DatasetBrowserPage {...props} />);
+
+    expect(
+      await screen.findByRole('heading', { name: 'Having trouble finding what you want?' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Check your spelling and try again')).toBeInTheDocument();
+  });
+
+  it('displays the Django choice label for an active status filter', async () => {
+    setSearchParams('status=live');
+    mockDataset();
+    render(<DatasetBrowserPage {...props} />);
+
+    await screen.findByText('83504');
+    expect(screen.getByLabelText('Status')).toHaveValue('published');
+    expect(screen.getByRole('region', { name: 'Search filters' })).toHaveTextContent('Published');
+  });
 
   it('links the timetable Browse breadcrumb to search', async () => {
     mockDataset();
     render(
       <DatasetBrowserPage
         {...props}
+        datasetType="TIMETABLE"
         title="Timetable data"
         breadcrumbLabel="Timetable Data"
         endpointPath="/api/browser/timetables/"
@@ -59,6 +99,20 @@ describe('dataset browser compliance', () => {
     await screen.findByText('83504');
     expect(screen.getByRole('link', { name: 'Browse' })).toHaveAttribute(
       'href', dataPath('/search'),
+    );
+  });
+
+  it.each([
+    ['TIMETABLE', '/timetable/dataset/83504'],
+    ['AVL', '/avl/dataset/83504'],
+    ['FARES', '/fares/dataset/83504'],
+  ] as const)('links %s results to the Django-matching detail URL', async (datasetType, path) => {
+    mockDataset();
+    render(<DatasetBrowserPage {...props} datasetType={datasetType} />);
+
+    expect(await screen.findByRole('link', { name: /Arriva UK Bus/ })).toHaveAttribute(
+      'href',
+      dataPath(path),
     );
   });
 

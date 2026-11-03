@@ -8,6 +8,8 @@ import { HOSTS } from '@/config/client';
 import { dataApiPath } from '@/lib/api-paths';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
+import { FilterPillbox } from '@/components/shared/FilterPillbox';
+import { NoSearchResults } from './NoSearchResults';
 
 interface AlertsBrowserPageProps {
   title: string;
@@ -210,6 +212,11 @@ function AlertsBrowserPageInner({
               <div className="app-data-browser__results-heading">
                 <span className="govuk-body">{filteredAndSorted.length.toLocaleString()} results</span>
               </div>
+              <FilterPillbox
+                searchTerm={q}
+                clearSearchHref={`${pathname}?ordering=${encodeURIComponent(ordering)}`}
+                searchLabel="Containing"
+              />
               <div className="app-data-browser__sort-control">
                 <label className="govuk-label" htmlFor="ordering">Sort by</label>
                 <select
@@ -227,6 +234,8 @@ function AlertsBrowserPageInner({
               {error && <p className="govuk-body">{error}</p>}
               {isLoading ? (
                 <p className="govuk-body">Loading results...</p>
+              ) : !error && filteredAndSorted.length === 0 ? (
+                <NoSearchResults />
               ) : (
                 filteredAndSorted.map((item, index) => (
                   <div className="app-data-browser__result-item" key={item.id}>
@@ -249,4 +258,3 @@ function AlertsBrowserPageInner({
     </>
   );
 }
-

@@ -4,7 +4,7 @@ import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 export const metadata = {
-  title: 'Find bus open data - Bus Open Data Service',
+  title: 'Find bus open data',
   description:
     'The Bus Open Data Service provides bus timetable, vehicle location and fares data for every local bus service in England.',
 };

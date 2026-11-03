@@ -116,6 +116,12 @@ body {
   white-space: nowrap;
 }
 
+@media (min-width: 40.0625em) {
+  .govuk-heading-xl {
+    line-height: 50px;
+  }
+}
+
 .app-masthead__title_agent_dashboard {
   color: #ffffff !important;
   margin-bottom: 20px;
@@ -316,6 +322,7 @@ body {
   align-items: center;
   font-family: "GDS Transport", arial, sans-serif;
   font-size: 1.125rem;
+  line-height: 1.3157894737;
 }
 
 .app-data-browser__title-link {
@@ -379,37 +386,50 @@ body {
   margin-bottom: 12px;
 }
 
-.app-data-browser__filter-pillbox {
+.search-pillbox {
   display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
   align-items: center;
-  background-color: #f8f8f8;
-  min-height: 48px;
-  padding: 10px;
+  background-color: #f6f5f5;
+  min-height: 40px;
+  padding: 15px;
   border: 0;
-  margin-bottom: 12px;
+  margin: 0;
 }
 
-.app-data-browser__filter-pill {
+.search-pillbox a {
+  text-decoration: none;
+}
+
+.pill-item {
   border: 1px solid #505a5f;
   border-radius: 4px;
-  padding: 5px 10px;
+  padding: 5px;
   display: inline-flex;
   align-items: center;
-  background-color: #ffffff;
-  font-size: 16px;
-  font-family: GDS Transport, arial, sans-serif;
+  justify-content: flex-start;
+  background-color: #f9f9f8;
+  color: #0b0c0c;
+  font: inherit;
 }
 
-.app-data-browser__pill-remove {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  margin-right: 4px;
-  font-size: 16px;
-  line-height: 1;
+.pill-item__image {
   padding: 5px;
-  overflow-clip-margin: content-box;
-  overflow: clip;
+  align-self: center;
+  width: 26px;
+  height: 26px;
+}
+
+.pill-item__label {
+  padding: 5px;
+  color: #0b0c0c;
+}
+
+.pillbox-break {
+  border-bottom-color: #0b0c0c;
+  margin-top: 10px;
+  margin-bottom: 15px;
 }
 
 .app-data-browser__sort-control {
@@ -1042,7 +1062,7 @@ span.text-color-red {
 }
 
 .help-modal .help-icon {
-  color: #0b0c0c;
+  color: #1d70b8;
   cursor: pointer;
 }
 
@@ -1054,6 +1074,20 @@ span.text-color-red {
 .help-modal .help-icon-blue {
   color: #1d70b8;
   cursor: pointer;
+}
+
+.help-modal .help-icon:not(.help-icon-white):hover,
+.help-modal .help-icon:not(.help-icon-white):focus,
+.help-modal .help-icon-blue:hover,
+.help-modal .help-icon-blue:focus {
+  color: #1d70b8;
+}
+
+.help-modal .help-icon:not(.help-icon-white):focus-visible,
+.help-modal .help-icon-blue:focus-visible,
+.help-modal [role="button"]:focus-visible {
+  outline: 3px solid #ffdd00;
+  outline-offset: 2px;
 }
 
 .help-modal .overlay {
@@ -1184,4 +1218,147 @@ span.text-color-red {
 /* add the yellow box around the red error summary box which appears when the error is focused */
 .app-error-summary--highlighted{
   outline: 3px solid #ffdd00;
+}
+
+/* Dataset detail: error panel, API URL panel (transit_odp/frontend/assets/sass) */
+.app-panel--error {
+  background: #d4351c;
+}
+
+.app-panel--error .govuk-panel__title {
+  font-size: 2rem;
+  color: #ffffff;
+}
+
+.app-panel--error .govuk-panel__body {
+  font-size: 1.5rem;
+}
+
+/* Operator profiles (data host): autocomplete, licence list, compliance indicators, feed URL panel */
+.autocomplete {
+  position: relative;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 3px solid var(--govuk-colour-black);
+  z-index: 99;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #c5c7c8;
+  color: var(--govuk-colour-black);
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 1.1875rem;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: var(--govuk-colour-white);
+  border-bottom: 1px solid #b1b4b6;
+}
+
+.autocomplete-items div:hover,
+.autocomplete-active {
+  background-color: #003078 !important;
+  color: var(--govuk-colour-white);
+}
+
+ul.licence-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul.licence-list .compliance-indicator {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #b1b4b6;
+}
+
+ul.licence-list .compliance-indicator.compliant {
+  background-color: #00703c;
+}
+
+ul.licence-list .compliance-indicator.non-compliant {
+  background-color: #d4351c;
+}
+
+ul.licence-list a {
+  padding-left: 30px;
+}
+
+.compliance-indicator-help-icon {
+  position: relative;
+}
+
+.csp-total-inscope-inseason {
+  font-weight: 400;
+  font-size: 1.6875rem;
+  line-height: 1.1111111111;
+}
+
+.csp-inline {
+  display: inline !important;
+}
+
+.api-url-panel {
+  display: flex;
+  justify-content: space-between;
+  border: 0.15rem solid #f3f2f1;
+  padding: 25px;
+}
+
+.api-url-panel__url {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+  color: #505a5f;
+}
+
+.no-wrap {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Operator licence services table (common.scss in the Django frontend) */
+.js-hidden {
+  display: none;
+}
+
+.sra-dot {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.sra-dot-red {
+  background-color: #d4351c;
+}
+
+.sra-dot-green {
+  background-color: #00703c;
+}
+
+.sort-column > .sort-icon {
+  margin-left: 5px;
+}
+
+.sort-column > .fa-sort-asc,
+.sort-column > .sort-icon.fa-sort-up {
+  position: relative;
+  top: 6px;
+}
+
+#licence-services-table th {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+  color: #1d70b8;
 }

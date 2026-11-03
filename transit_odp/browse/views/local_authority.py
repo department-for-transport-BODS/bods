@@ -218,6 +218,87 @@ def get_service_code_exemption_map(lta_list) -> Dict[str, ServiceCodeExemption]:
         return {}
 
 
+def parse_auth_ids(raw_auth_ids: Optional[str]) -> List[int]:
+    """Parse the ``auth_ids`` query param, e.g. ``[1, 2]`` -> ``[1, 2]``."""
+    return [
+        int(lta_id.replace("[", "").replace("]", ""))
+        for lta_id in (raw_auth_ids or "").split(",")
+    ]
+
+
+def get_lta_list_summary(
+    lta_list, is_uilta_prefetch_sra_active: bool, is_complete_service_page_active: bool
+) -> Tuple[int, int, int]:
+    """
+    Return (total in scope, services requiring attention, percentage) for the
+    LocalAuthority rows which share one UI LTA, as shown on the LTA list page.
+    """
+    ui_lta: UILta = lta_list[0].ui_lta
+    if is_uilta_prefetch_sra_active:
+        total_inscope = ui_lta.total_inscope
+        timetable_sra = ui_lta.timetable_sra
+        if is_complete_service_page_active:
+            timetable_sra = ui_lta.overall_sra
+    else:
+        total_inscope = len(get_in_scope_in_season_lta_service_numbers(lta_list))
+        timetable_sra = get_requires_attention_data_lta_line_level_length(lta_list)
+
+    try:
+        percentage = round(100 * (timetable_sra / total_inscope))
+    except ZeroDivisionError:
+        percentage = 0
+    return total_inscope, timetable_sra, percentage
+
+
+def get_lta_detail_summary(
+    lta_objs,
+    is_avl_require_attention_active: bool,
+    is_fares_require_attention_active: bool,
+    is_uilta_prefetch_sra_active: bool,
+) -> Dict[str, int]:
+    """Service counts shown on the LTA detail page."""
+    if is_uilta_prefetch_sra_active:
+        ui_lta: UILta = lta_objs[0].ui_lta
+        return {
+            "total_inscope": ui_lta.total_inscope,
+            "timetable_sra": ui_lta.timetable_sra,
+            "overall_sra": ui_lta.overall_sra,
+            "avl_sra": ui_lta.avl_sra,
+            "fares_sra": ui_lta.fares_sra,
+        }
+
+    total_inscope = len(get_in_scope_in_season_lta_service_numbers(lta_objs))
+    timetable_sra = get_requires_attention_data_lta_line_level_objects(lta_objs)
+    avl_sra = fares_sra = []
+    if is_avl_require_attention_active:
+        avl_sra = get_avl_records_require_attention_lta_line_level_objects(lta_objs)
+
+    if is_fares_require_attention_active:
+        fares_sra = get_fares_records_require_attention_lta_line_level_objects(lta_objs)
+    overall_sra = len(
+        get_overall_sra_unique_services(timetable_sra, avl_sra, fares_sra)
+    )
+    return {
+        "total_inscope": total_inscope,
+        "timetable_sra": len(timetable_sra),
+        "overall_sra": overall_sra,
+        "avl_sra": len(avl_sra),
+        "fares_sra": len(fares_sra),
+    }
+
+
+def get_lta_licence_organisation_map(lta_objs) -> List[dict]:
+    """Licences (with operator and compliance) for the services of the given LTAs."""
+    distinct_licence_names = set(
+        [
+            service.licence.number
+            for lta in lta_objs
+            for service in lta.registration_numbers.all()
+        ]
+    )
+    return get_operator_with_licence_number(list(distinct_licence_names))
+
+
 class LocalAuthorityView(BaseListView):
     template_name = "browse/local_authority.html"
     model = LocalAuthority
@@ -257,38 +338,16 @@ class LocalAuthorityView(BaseListView):
         for lta in all_ltas_current_page:
             lta_list = lta_list_per_ui_ltas[lta.ui_lta_name_trimmed]
             setattr(lta, "auth_ids", [x.id for x in lta_list])
-            ui_lta: UILta = lta_list[0].ui_lta
-            if is_uilta_prefetch_sra_active:
-                total_inscope = ui_lta.total_inscope
-                timetable_sra = ui_lta.timetable_sra
-                if is_complete_service_page_active:
-                    timetable_sra = ui_lta.overall_sra
-            else:
-                total_inscope = len(
-                    get_in_scope_in_season_lta_service_numbers(lta_list)
-                )
-                timetable_sra = get_requires_attention_data_lta_line_level_length(
-                    lta_list
-                )
+            total_inscope, timetable_sra, percentage = get_lta_list_summary(
+                lta_list,
+                is_uilta_prefetch_sra_active,
+                is_complete_service_page_active,
+            )
 
             context["total_in_scope_in_season_services"] = total_inscope
             context["total_services_requiring_attention"] = timetable_sra
-
-            try:
-                context["services_require_attention_percentage"] = round(
-                    100
-                    * (
-                        context["total_services_requiring_attention"]
-                        / context["total_in_scope_in_season_services"]
-                    )
-                )
-            except ZeroDivisionError:
-                context["services_require_attention_percentage"] = 0
-            setattr(
-                lta,
-                "services_require_attention_percentage",
-                context["services_require_attention_percentage"],
-            )
+            context["services_require_attention_percentage"] = percentage
+            setattr(lta, "services_require_attention_percentage", percentage)
 
         return context
 
@@ -356,32 +415,17 @@ class LocalAuthorityDetailView(BaseDetailView):
         for combined_authority_id in combined_authority_ids:
             lta_objs.append(self.model.objects.get(id=combined_authority_id))
 
-        if is_uilta_prefetch_sra_active:
-            ui_lta: UILta = lta_objs[0].ui_lta
-            total_inscope = ui_lta.total_inscope
-            timetable_sra = ui_lta.timetable_sra
-            overall_sra = ui_lta.overall_sra
-            avl_sra = ui_lta.avl_sra
-            fares_sra = ui_lta.fares_sra
-        else:
-            total_inscope = len(get_in_scope_in_season_lta_service_numbers(lta_objs))
-            timetable_sra = get_requires_attention_data_lta_line_level_objects(lta_objs)
-            avl_sra = fares_sra = []
-            if is_avl_require_attention_active:
-                avl_sra = get_avl_records_require_attention_lta_line_level_objects(
-                    lta_objs
-                )
-
-            if is_fares_require_attention_active:
-                fares_sra = get_fares_records_require_attention_lta_line_level_objects(
-                    lta_objs
-                )
-            overall_sra = len(
-                get_overall_sra_unique_services(timetable_sra, avl_sra, fares_sra)
-            )
-            timetable_sra = len(timetable_sra)
-            avl_sra = len(avl_sra)
-            fares_sra = len(fares_sra)
+        summary = get_lta_detail_summary(
+            lta_objs,
+            is_avl_require_attention_active,
+            is_fares_require_attention_active,
+            is_uilta_prefetch_sra_active,
+        )
+        total_inscope = summary["total_inscope"]
+        timetable_sra = summary["timetable_sra"]
+        overall_sra = summary["overall_sra"]
+        avl_sra = summary["avl_sra"]
+        fares_sra = summary["fares_sra"]
 
         context["total_in_scope_in_season_services"] = total_inscope
         context["total_timetable_records_requiring_attention"] = timetable_sra
@@ -390,16 +434,7 @@ class LocalAuthorityDetailView(BaseDetailView):
             context["total_services_requiring_attention"] = overall_sra
             context["total_location_records_requiring_attention"] = avl_sra
             context["total_fares_records_requiring_attention"] = fares_sra
-            distinct_licence_names = set(
-                [
-                    service.licence.number
-                    for lta in lta_objs
-                    for service in lta.registration_numbers.all()
-                ]
-            )
-            licence_organisation_map = get_operator_with_licence_number(
-                list(distinct_licence_names)
-            )
+            licence_organisation_map = get_lta_licence_organisation_map(lta_objs)
 
             context["licence_organisation_map"] = licence_organisation_map
         try:

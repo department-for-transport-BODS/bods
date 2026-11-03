@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { TRANSXCHANGE_VERSION } from '@/config/client';
+import { datasetListPath } from '@/lib/dataset-paths';
 import { DataHelpSidebar } from '@/components/data/DataHelpSidebar';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { HOSTS, dataPath } from '@/config/client';
@@ -39,7 +40,7 @@ export default function DataSearchSelectPage() {
             <div className="govuk-grid-column-two-thirds">
               <div className="govuk-!-padding-right-9">
                 <div className="govuk-grid-row">
-                  <Link className="govuk-link-bold govuk-body" href={dataPath('/timetables?status=live')}>
+                  <Link className="govuk-link-bold govuk-body" href={datasetListPath('TIMETABLE', { status: 'live' })}>
                     Timetables data
                   </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
@@ -54,7 +55,7 @@ export default function DataSearchSelectPage() {
                 </div>
 
                 <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <Link className="govuk-link-bold govuk-body" href={dataPath('/avl?status=live')}>
+                  <Link className="govuk-link-bold govuk-body" href={datasetListPath('AVL', { status: 'live' })}>
                     Location data
                   </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
@@ -70,7 +71,7 @@ export default function DataSearchSelectPage() {
                 </div>
 
                 <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <Link className="govuk-link-bold govuk-body" href={dataPath('/fares?status=live')}>
+                  <Link className="govuk-link-bold govuk-body" href={datasetListPath('FARES', { status: 'live' })}>
                     Fares data
                   </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
@@ -85,7 +86,7 @@ export default function DataSearchSelectPage() {
                 </div>
 
                 <div className="govuk-grid-row govuk-!-margin-top-7">
-                  <Link className="govuk-link-bold govuk-body" href={dataPath('/disruptions')}>
+                  <Link className="govuk-link-bold govuk-body" href={dataPath('/disruptions/organisations/')}>
                     Disruption data
                   </Link>
                   <p className="govuk-body govuk-!-padding-top-3">
