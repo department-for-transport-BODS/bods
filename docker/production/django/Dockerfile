@@ -1,7 +1,7 @@
 ARG BASE_IMAGE=python:3.10-slim
 
 # Step 1 - Build frontend assets
-FROM node:20-slim
+FROM node:24-slim
 
 WORKDIR /app
 
