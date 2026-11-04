@@ -21,10 +21,10 @@ export default async function ChangelogPage() {
       <Breadcrumbs
         items={[
           { label: 'Bus Open Data Service', href: HOSTS.www },
-          { label: 'Service Changelog', current: true },
+          { label: 'Service Changelog', href: wwwPath('/changelog/'), current: true },
         ]}
       />
-      <div className="govuk-main-wrapper">
+      <div className="govuk-main-wrapper app-main-class">
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             <h1 className="govuk-heading-xl">Service changelog</h1>

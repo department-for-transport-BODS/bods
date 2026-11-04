@@ -19,6 +19,7 @@ from transit_odp.avl.views.api import (
     update_avl_dataset_api,
 )
 from transit_odp.changelog.views import get_known_issues_api
+from transit_odp.feedback.api import GlobalFeedbackAPIView
 from transit_odp.fares.views.api import (
     create_fares_dataset_api,
     deactivate_fares_dataset_api,
@@ -97,6 +98,7 @@ from transit_odp.users.views.api import (
 )
 
 urlpatterns = [
+    path("feedback/", GlobalFeedbackAPIView.as_view(), name="nextjs-global-feedback"),
     path("auth/", include("config.urls.session_auth_api")),
     path(
         "organisation/profile/<int:pk>/",

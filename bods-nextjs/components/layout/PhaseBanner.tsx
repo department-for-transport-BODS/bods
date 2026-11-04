@@ -6,13 +6,19 @@
  * TODO: At a later date this should be replaced with an off the shelf lib component that can be shared across the estate
  */
 
+'use client';
+
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface PhaseBannerProps {
   hideGlobalFeedback?: boolean;
 }
 
 export function PhaseBanner({ hideGlobalFeedback = false }: PhaseBannerProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const shouldHideGlobalFeedback = hideGlobalFeedback || pathname === '/feedback';
 
   return (
     <div className="govuk-phase-banner">
@@ -20,10 +26,17 @@ export function PhaseBanner({ hideGlobalFeedback = false }: PhaseBannerProps) {
         <strong className="govuk-tag govuk-phase-banner__content__tag">BETA</strong>
         <span className="govuk-phase-banner__text">
           This is a new service – your{' '}
-          {hideGlobalFeedback ? (
+          {shouldHideGlobalFeedback ? (
             'feedback'
           ) : (
-            <Link href="/feedback" className="govuk-link">
+            <Link
+              href="/feedback"
+              className="govuk-link"
+              onClick={(event) => {
+                event.preventDefault();
+                router.push(`/feedback?url=${encodeURIComponent(window.location.href)}`);
+              }}
+            >
               feedback
             </Link>
           )}{' '}
