@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import type { AvlFeedDetail } from './AvlFeedDetailContent';
+import { AvlTimetableMatching } from './AvlTimetableMatching';
 import { statusIndicatorClass, statusLabel } from '../../_components/avlStatus';
 import { AvlMatchingHelpModal } from '@/components/publish/AvlMatchingHelpModal';
 import { formatDateTime } from '@/lib/utils/date';
@@ -13,7 +12,7 @@ interface AvlFeedDetailTableProps {
 }
 
 export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProps) {
-  const editUrl = `/publish/org/${orgId}/dataset/avl/${feedDetail.datasetId}/dataset-edit`;
+  const editUrl = publishAppPath(`/org/${orgId}/dataset/avl/${feedDetail.datasetId}/dataset-edit/`);
   const formattedPublishedAt = formatDateTime(feedDetail.publishedAt);
   const hasPublishedTimestamp = formattedPublishedAt !== '-';
   const publishedByDisplay = feedDetail.publishedBy || 'System';
@@ -102,7 +101,11 @@ export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProp
           </th>
           <td className="govuk-table__cell govuk-!-padding-3">
             <div className="stacked">
-              <AvlTimetableMatchingSection matching={feedDetail.avlTimetablesMatching} />
+              <AvlTimetableMatching
+                matching={feedDetail.avlTimetablesMatching}
+                datasetId={feedDetail.datasetId}
+                orgId={orgId}
+              />
             </div>
           </td>
         </tr>
@@ -133,7 +136,7 @@ export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProp
             <div className="flex-between">
               <span>{hasPublishedTimestamp ? `${formattedPublishedAt} by ${publishedByDisplay}` : '-'}</span>
               <span className="right-justify">
-                <Link className="govuk-link" href={publishAppPath(`/org/${orgId}/dataset/avl/${feedDetail.datasetId}/changelog`)}>
+                <Link className="govuk-link" href={publishAppPath(`/org/${orgId}/dataset/avl/${feedDetail.datasetId}/changelog/`)}>
                   View change log
                 </Link>
               </span>
@@ -151,23 +154,5 @@ export function AvlFeedDetailTable({ feedDetail, orgId }: AvlFeedDetailTableProp
         </tr>
       </tbody>
     </table>
-  );
-}
-
-function AvlTimetableMatchingSection({ matching }: { matching?: string }) {
-  return (
-    <p className="govuk-body govuk-!-margin-bottom-0">
-      {!matching || matching === '0%' ? (
-        <>
-          <FontAwesomeIcon icon={faCircleExclamation} aria-hidden="true" />
-          {' Pending '}
-        </>
-      ) : (
-        <>
-          {matching !== '100%' && <FontAwesomeIcon icon={faCircleExclamation} aria-hidden="true" />}
-          {matching} completely matched AVL to Timetables
-        </>
-      )}
-    </p>
   );
 }

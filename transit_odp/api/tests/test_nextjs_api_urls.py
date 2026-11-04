@@ -46,6 +46,16 @@ def test_session_auth_api_is_available_on_every_nextjs_host(urlconf, path, view_
         ("/api/avl/update-context/1/2/", "nextjs-avl-update-context"),
         ("/api/avl/requires-attention/1/", "nextjs-avl-requires-attention"),
         ("/api/fares/list/1/", "nextjs-fares-list"),
+        ("/api/fares/requires-attention/1/", "nextjs-fares-requires-attention"),
+        (
+            "/api/timetables/requires-attention/1/",
+            "nextjs-timetables-requires-attention",
+        ),
+        ("/api/fares/update-success/1/2/", "nextjs-fares-update-success"),
+        (
+            "/api/timetables/update-success/1/2/",
+            "nextjs-timetables-update-success",
+        ),
         (
             "/api/timetables/review-status/1/2/",
             "nextjs-timetables-review-status",
@@ -54,6 +64,44 @@ def test_session_auth_api_is_available_on_every_nextjs_host(urlconf, path, view_
             "/api/timetables/data-quality-status/1/2/",
             "nextjs-timetables-data-quality-status",
         ),
+        ("/api/seasonal-services/1/", "nextjs-seasonal-services-list"),
+        ("/api/seasonal-services/1/licences/", "nextjs-seasonal-services-licences"),
+        (
+            "/api/seasonal-services/1/validate-licence/",
+            "nextjs-seasonal-services-validate-licence",
+        ),
+        ("/api/seasonal-services/1/create/", "nextjs-seasonal-services-create"),
+        ("/api/seasonal-services/1/delete/", "nextjs-seasonal-services-delete"),
+        ("/api/seasonal-services/1/2/", "nextjs-seasonal-services-detail"),
+        ("/api/seasonal-services/1/2/update/", "nextjs-seasonal-services-update"),
+        (
+            "/api/timetables/feed-detail/1/2/",
+            "nextjs-timetables-feed-detail",
+        ),
+        (
+            "/api/timetables/feed-line-detail/1/2/",
+            "nextjs-timetables-feed-line-detail",
+        ),
+        (
+            "/api/timetables/dataset-edit/1/2/",
+            "nextjs-timetables-dataset-edit-get",
+        ),
+        (
+            "/api/timetables/dataset-edit/1/2/save/",
+            "nextjs-timetables-dataset-edit-save",
+        ),
+        (
+            "/api/timetables/revision-edit/1/2/",
+            "nextjs-timetables-revision-edit-get",
+        ),
+        (
+            "/api/timetables/revision-edit/1/2/save/",
+            "nextjs-timetables-revision-edit-save",
+        ),
+        ("/api/fares/dataset-edit/1/2/", "nextjs-fares-dataset-edit-get"),
+        ("/api/fares/dataset-edit/1/2/save/", "nextjs-fares-dataset-edit-save"),
+        ("/api/fares/revision-edit/1/2/", "nextjs-fares-revision-edit-get"),
+        ("/api/fares/revision-edit/1/2/save/", "nextjs-fares-revision-edit-save"),
     ],
 )
 def test_application_api_is_shared_by_www_and_publish(urlconf, path, view_name):

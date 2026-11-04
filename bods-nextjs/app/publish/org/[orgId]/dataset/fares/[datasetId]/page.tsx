@@ -7,7 +7,8 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ErrorSummary } from '@/components/shared';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
-import { HOSTS, publishAppPath } from '@/config/client';
+import { publishAppPath, wwwPath } from '@/config/client';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 type FaresDetailResponse = {
   datasetId: number;
@@ -89,12 +90,18 @@ function FaresDatasetDetailContent() {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
-  const updateDatasetUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/update`;
-  const deactivateDatasetUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/deactivate`;
+  const datasetUrl = publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}`);
+  const updateDatasetUrl = `${datasetUrl}/update`;
+  const deactivateDatasetUrl = `${datasetUrl}/deactivate`;
+  const editDescriptionUrl = `${datasetUrl}/dataset-edit/`;
 
   const [data, setData] = useState<FaresDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    document.title = 'Data set detail';
+  }, []);
 
   useEffect(() => {
     let isCancelled = false;
@@ -132,13 +139,12 @@ function FaresDatasetDetailContent() {
     <div className="govuk-width-container">
       <div className="govuk-main-wrapper">
         <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
+          items={hostBreadcrumbs(
+            'publish',
             { label: 'Choose data type', href: publishAppPath(`/org/${orgId}/dataset`) },
             { label: 'Fares Data Sets', href: publishAppPath(`/org/${orgId}/dataset/fares`) },
-            { label: data?.name || `Dataset ${datasetId}`, current: true, truncateAt: 20 },
-          ]}
+            { label: data?.name || `Dataset ${datasetId}`, href: datasetUrl, truncateAt: 20 },
+          )}
         />
 
         {loading ? <p className="govuk-body">Loading dataset details...</p> : null}
@@ -174,11 +180,27 @@ function FaresDatasetDetailContent() {
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Description</th>
-                      <td className="govuk-table__cell">{data.description || '-'}</td>
+                      <td className="govuk-table__cell">
+                        <div className="flex-between">
+                          {data.description || '-'}
+                          <span>
+                            <a className="right-justify govuk-link" href={editDescriptionUrl}>
+                              Edit
+                            </a>
+                          </span>
+                        </div>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Short description</th>
-                      <td className="govuk-table__cell">{data.shortDescription || '-'}</td>
+                      <td className="govuk-table__cell dont-break-out">
+                        <div className="flex-between">
+                          {data.shortDescription || '-'}
+                          <a className="govuk-link" href={editDescriptionUrl}>
+                            Edit
+                          </a>
+                        </div>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Status</th>
@@ -282,14 +304,14 @@ function FaresDatasetDetailContent() {
                 <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
                 <ul className="govuk-list app-list--nav govuk-!-font-size-19">
                   <li>
-                    <Link className="govuk-link" href={publishAppPath('/guide-me')}>
+                    <a className="govuk-link" href={publishAppPath('/guidance/operator-requirements')}>
                       View our guidelines here
-                    </Link>
+                    </a>
                   </li>
                   <li>
-                    <Link className="govuk-link" href="/account">
+                    <a className="govuk-link" href={wwwPath('/contact')}>
                       Contact support desk
-                    </Link>
+                    </a>
                   </li>
                 </ul>
               </div>

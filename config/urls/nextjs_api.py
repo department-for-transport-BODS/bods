@@ -28,16 +28,44 @@ from transit_odp.fares.views.api import (
     publish_fares_dataset_api,
     update_fares_dataset_api,
 )
+from transit_odp.fares.views.requires_attention_api import (
+    get_fares_requires_attention_api,
+)
+from transit_odp.fares.views.update_review_api import get_fares_update_success_api
 from transit_odp.publish.views.api import (
     ProgressAPIView,
     get_agent_dashboard_organisations_api,
 )
+from transit_odp.publish.views.edit_description_api import (
+    get_fares_dataset_edit_api,
+    get_fares_revision_edit_api,
+    get_timetables_dataset_edit_api,
+    get_timetables_revision_edit_api,
+    save_fares_dataset_edit_api,
+    save_fares_revision_edit_api,
+    save_timetables_dataset_edit_api,
+    save_timetables_revision_edit_api,
+)
+from transit_odp.publish.views.requires_attention_api import (
+    get_timetable_requires_attention_api,
+)
+from transit_odp.publish.views.seasonal_services_api import (
+    create_seasonal_service_api,
+    delete_seasonal_service_api,
+    get_seasonal_service_api,
+    get_seasonal_service_licences_api,
+    list_seasonal_services_api,
+    update_seasonal_service_dates_api,
+    validate_seasonal_service_licence_api,
+)
+from transit_odp.publish.views.timetable_feed_detail_api import (
+    get_timetables_feed_detail_api,
+    get_timetables_feed_line_detail_api,
+)
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
     delete_timetables_dataset_api,
-    edit_timetables_dataset_description_api,
     get_timetables_data_quality_status_api,
-    get_timetables_dataset_edit_api,
     get_timetables_list_api,
     get_timetables_review_status_api,
     publish_timetables_dataset_api,
@@ -53,6 +81,9 @@ from transit_odp.timetables.views.data_quality_api import (
 )
 from transit_odp.timetables.views.line_detail_api import (
     get_timetables_line_detail_api,
+)
+from transit_odp.timetables.views.update_review_api import (
+    get_timetables_update_success_api,
 )
 from transit_odp.users.views.api import (
     create_organisation_invite_api,
@@ -190,6 +221,16 @@ urlpatterns = [
     ),
     path("fares/list/<int:pk1>/", get_fares_list_api, name="nextjs-fares-list"),
     path(
+        "fares/requires-attention/<int:pk1>/",
+        get_fares_requires_attention_api,
+        name="nextjs-fares-requires-attention",
+    ),
+    path(
+        "timetables/requires-attention/<int:pk1>/",
+        get_timetable_requires_attention_api,
+        name="nextjs-timetables-requires-attention",
+    ),
+    path(
         "fares/review-status/<int:pk1>/<int:pk>/",
         get_fares_review_status_api,
         name="nextjs-fares-review-status",
@@ -210,6 +251,11 @@ urlpatterns = [
         name="nextjs-fares-update",
     ),
     path(
+        "fares/update-success/<int:pk1>/<int:pk>/",
+        get_fares_update_success_api,
+        name="nextjs-fares-update-success",
+    ),
+    path(
         "fares/deactivate/<int:pk1>/<int:pk>/",
         deactivate_fares_dataset_api,
         name="nextjs-fares-deactivate",
@@ -218,6 +264,11 @@ urlpatterns = [
         "timetables/review-status/<int:pk1>/<int:pk>/",
         get_timetables_review_status_api,
         name="nextjs-timetables-review-status",
+    ),
+    path(
+        "timetables/update-success/<int:pk1>/<int:pk>/",
+        get_timetables_update_success_api,
+        name="nextjs-timetables-update-success",
     ),
     path(
         "timetables/data-quality-status/<int:pk1>/<int:pk>/",
@@ -256,6 +307,16 @@ urlpatterns = [
         "timetables/line-detail/<int:pk1>/<int:pk>/",
         get_timetables_line_detail_api,
         name="nextjs-timetables-line-detail",
+    ),
+    path(
+        "timetables/feed-detail/<int:pk1>/<int:pk>/",
+        get_timetables_feed_detail_api,
+        name="nextjs-timetables-feed-detail",
+    ),
+    path(
+        "timetables/feed-line-detail/<int:pk1>/<int:pk>/",
+        get_timetables_feed_line_detail_api,
+        name="nextjs-timetables-feed-line-detail",
     ),
     path(
         "data-quality/definitions/",
@@ -299,12 +360,77 @@ urlpatterns = [
     ),
     path(
         "timetables/dataset-edit/<int:pk1>/<int:pk>/save/",
-        edit_timetables_dataset_description_api,
+        save_timetables_dataset_edit_api,
         name="nextjs-timetables-dataset-edit-save",
+    ),
+    path(
+        "timetables/revision-edit/<int:pk1>/<int:pk>/",
+        get_timetables_revision_edit_api,
+        name="nextjs-timetables-revision-edit-get",
+    ),
+    path(
+        "timetables/revision-edit/<int:pk1>/<int:pk>/save/",
+        save_timetables_revision_edit_api,
+        name="nextjs-timetables-revision-edit-save",
+    ),
+    path(
+        "fares/dataset-edit/<int:pk1>/<int:pk>/",
+        get_fares_dataset_edit_api,
+        name="nextjs-fares-dataset-edit-get",
+    ),
+    path(
+        "fares/dataset-edit/<int:pk1>/<int:pk>/save/",
+        save_fares_dataset_edit_api,
+        name="nextjs-fares-dataset-edit-save",
+    ),
+    path(
+        "fares/revision-edit/<int:pk1>/<int:pk>/",
+        get_fares_revision_edit_api,
+        name="nextjs-fares-revision-edit-get",
+    ),
+    path(
+        "fares/revision-edit/<int:pk1>/<int:pk>/save/",
+        save_fares_revision_edit_api,
+        name="nextjs-fares-revision-edit-save",
     ),
     path(
         "org/<int:pk1>/dataset/timetable/upload/",
         create_timetables_dataset_api,
         name="nextjs-timetables-upload-compat",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/",
+        list_seasonal_services_api,
+        name="nextjs-seasonal-services-list",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/licences/",
+        get_seasonal_service_licences_api,
+        name="nextjs-seasonal-services-licences",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/validate-licence/",
+        validate_seasonal_service_licence_api,
+        name="nextjs-seasonal-services-validate-licence",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/create/",
+        create_seasonal_service_api,
+        name="nextjs-seasonal-services-create",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/delete/",
+        delete_seasonal_service_api,
+        name="nextjs-seasonal-services-delete",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/<int:pk>/",
+        get_seasonal_service_api,
+        name="nextjs-seasonal-services-detail",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/<int:pk>/update/",
+        update_seasonal_service_dates_api,
+        name="nextjs-seasonal-services-update",
     ),
 ]

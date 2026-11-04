@@ -157,31 +157,12 @@ class TestUserFaresFeedbackView(TestUserAVLFeedbackView):
 
 
 class TestFaresArchiveDownloads:
-    def test_download_returns_file_response_when_direct_s3_is_disabled(
-        self, client_factory
-    ):
-        archive = BulkDataArchiveFactory(dataset_type=FaresType)
-        client = client_factory(host=DATA_HOST)
-
-        with patch(
-            "transit_odp.browse.views.fares_views.flag_is_active", return_value=False
-        ):
-            response = client.get(reverse("downloads-fares-bulk", host=DATA_HOST))
-
-        assert response.status_code == 200
-        assert response.as_attachment is True
-        assert response.filename == archive.data.name
-
-    def test_download_redirects_to_signed_url_when_direct_s3_is_enabled(
-        self, client_factory
-    ):
+    def test_download_redirects_to_signed_url(self, client_factory):
         archive = BulkDataArchiveFactory(dataset_type=FaresType)
         client = client_factory(host=DATA_HOST)
         signed_url = "https://example.test/signed-url"
 
         with patch(
-            "transit_odp.browse.views.fares_views.flag_is_active", return_value=True
-        ), patch(
             "transit_odp.browse.views.fares_views.generate_signed_url",
             return_value=signed_url,
         ) as mocked_generate_signed_url:

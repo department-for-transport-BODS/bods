@@ -18,12 +18,18 @@ class AVLDataset(Dataset):
     def to_validation_reports_response(self):
         org_name = self.organisation.name
         revision = self.live_revision
+        if revision is None:
+            raise Http404
+
         reports = revision.avl_validation_reports.all().order_by("-created")[:7]
         reports = [
             r
             for r in reports
             if r.file and (r.critical_count > 0 or r.non_critical_count > 0)
         ]
+
+        if not reports:
+            raise Http404
 
         created = reports[0].created
         buffer_ = BytesIO()

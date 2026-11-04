@@ -473,6 +473,12 @@ body {
   text-align: right;
 }
 
+/* transit_odp/frontend/assets/sass/components/button/_button-holder.scss */
+.button-holder button:not(:last-child),
+.button-holder a:not(:last-child) {
+  margin-right: 1.5rem;
+}
+
 .dataset-property-table .flex-between {
   align-items: flex-start;
 }
@@ -1361,4 +1367,190 @@ ul.licence-list a {
   overflow: hidden;
   cursor: pointer;
   color: #1d70b8;
+}
+/*
+ * Seasonal services journey.
+ * Ported from transit_odp/frontend/assets/sass/components/{table/_seasonal_service,
+ * table/_table,forms/_forms,widgets/_widgets}.scss and scoped to the pages that use them.
+ */
+.seasonal-services-page .hide-using-position {
+  position: absolute;
+  overflow: hidden;
+  height: 1px;
+  width: 1px;
+  padding: 0;
+  margin: 0;
+}
+
+.seasonal-services-page .custom_govuk_table_border {
+  border: solid 1px #979797;
+  padding: 20px;
+}
+
+/* Django's sass `@extend .govuk-table` gives the table the GOV.UK typography. */
+.seasonal-services-page .custom_govuk_table {
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.25;
+  color: #0b0c0c;
+  margin-bottom: 20px;
+}
+
+.seasonal-services-page .custom_govuk_table .actions-column-table {
+  color: #1d70b8;
+  font-weight: normal;
+}
+
+.seasonal-services-page .custom_govuk_table .column-header-link {
+  color: #1d70b8;
+  font-size: 18px;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+.seasonal-services-page .custom_govuk_table .column-header-link:focus {
+  color: #0b0c0c;
+  background-color: #ffdd00;
+  box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
+  text-decoration: none;
+  outline: 3px solid transparent;
+}
+
+.seasonal-services-page .custom_govuk_table .order-up,
+.seasonal-services-page .custom_govuk_table .order-down {
+  display: none;
+}
+
+.seasonal-services-page .custom_govuk_table .asc a,
+.seasonal-services-page .custom_govuk_table .desc a {
+  font-weight: bold;
+}
+
+.seasonal-services-page .custom_govuk_table .asc .order-up,
+.seasonal-services-page .custom_govuk_table .desc .order-down {
+  display: inline;
+}
+
+.seasonal-services-page .button-table-link {
+  color: #1d70b8;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.seasonal-services-page .seasonal_service_empty_body_table {
+  width: 100%;
+}
+
+.seasonal-services-page .seasonal_service_empty_body_table p {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.3;
+  color: #505a5f;
+}
+
+.seasonal-services-page .heading-container,
+.seasonal-service .heading-container {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.seasonal-service .licence {
+  margin-bottom: 5rem;
+}
+
+.seasonal-service .buttons {
+  margin-top: 5rem;
+}
+
+.seasonal-service .buttons button {
+  margin-right: 0.2rem;
+}
+
+.seasonal-service .govuk-heading-s {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.seasonal-service .heading-container .govuk-heading-s {
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.seasonal-service .date-container {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  margin-bottom: 5rem;
+}
+
+.seasonal-service .date-container .date {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 47%;
+}
+
+.seasonal-service .service-code-widget {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 40px;
+  margin-top: 0;
+  padding: 5px;
+  border: 2px solid #0b0c0c;
+  border-radius: 0;
+  font-size: 19px;
+  line-height: 1.25;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.seasonal-service .service-code-widget input {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.seasonal-service .service-code-widget p {
+  color: #505a5f;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+.seasonal-service .service-code-widget input {
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: none;
+  height: auto;
+  width: auto;
+  flex: 1;
+}
+
+.seasonal-service .service-code-widget input:focus {
+  outline: unset;
+  outline-offset: unset;
+  box-shadow: unset;
+}
+
+.seasonal-service .service-code-widget:focus-within {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+  box-shadow: inset 0 0 0 2px;
+}
+
+.seasonal-service .service-code-widget.govuk-input--error {
+  border-color: #d4351c;
 }

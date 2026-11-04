@@ -1,5 +1,231 @@
 {% load i18n %}
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "November 2026 (1.65.1)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.65.1 (Nov 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Resolved an issue preventing timetables from being generated in GTFS format.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "October 2026 (1.65.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.65.0 (Oct 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Resolved an issue where the Integrated Data processing workflow could fail during execution, improving reliability and resilience of downstream data processing.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Reduced excessive logging within the Integrated Data service to improve performance, lower operational overheads and enhance monitoring effectiveness.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Added enhanced logging for invalid records received through the PDBRD CSV Upload API and PDBRD WECA API, providing better visibility of data quality issues and supporting troubleshooting.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Updated the PDBRD database schema to align registration number field lengths across services, improving consistency when processing registration data.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Removed legacy ABODS front-end code that is no longer required, reducing technical debt and simplifying future development.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Continued migration of the Create Data administrative interface by modernising supporting front-end components and dependencies.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Upgraded supporting software components across services to improve resilience, maintainability and application of security updates.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "September 2026 (1.64.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.64.0 (Sep 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Resolved an issue where validation ZIP file downloads could be empty, even when the download completed successfully.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue affecting bank holiday rules for Scotland and the rest of the UK.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Improved the reliability of timetable and fares data processing.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue that prevented some BODS service updates from being applied.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue where some ABODS links were not working correctly.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Improved the way the Disruptions service handles reference data errors.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Updated the way BODS checks for inappropriate language.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Upgraded supporting software used by BODS services to improve resilience and maintain security updates.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "September 2026 (1.63.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.63.0 (Sep 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Migrated the ABODS front-end web application framework from Angular to Next.js. This release will not change any ABODS functionality. Users may notice some minor visual differences, for example in the display of tables or in the alignment of text in the header.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "August 2026 (1.62.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.62.0 (Aug 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Resolved an issue where Street Manager roadworks was not being ingested into the Disruptions service.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue where ABODS corridors stopped working for an organisation after one corridor creator was deleted.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue with the ABODS service monitoring page, restoring visibility for users using the Safari browser.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Removed the unused direct S3 URL feature flag from BODS.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Removed old changelog pages from Fares and Disruptions.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Updated Next.js in Fares create-data to version 16.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Completed Next.js migration work for Disruptions.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Replaced the previous CSRF approach in Disruptions as part of the Next.js migration.
+    {% endblocktrans %}
+  </li>
+    <li>
+    {% blocktrans %}
+      Upgraded Node versions across BODS, ABODS and Disruptions to improve resilience and apply security updates.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
+  {% trans "July 2026 (1.61.0)" %}
+</h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.61.0 (Jul 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Restricted the PDBRD registrations CSV download to the logged-in user's organisation, resolving an issue where large downloads were failing.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Improved performance and reliability of archive downloads on BODS.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue with the SwaggerUI widgets on the API documentation pages, restoring full functionality on the "Try API" pages.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Backend improvements to the AVL subscription process within Integrated Data.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Upgraded components to improve resilience and apply security updates.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Performance improvements.
+    {% endblocktrans %}
+  </li>
+</ul>
+<h3 class="govuk-heading-m govuk-!-margin-bottom-5">
   {% trans "June 2026 (1.60.0)" %}
 </h3>
 <h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.60.0 (June 2026)</h4>

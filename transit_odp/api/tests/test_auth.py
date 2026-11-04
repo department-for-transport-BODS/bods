@@ -188,6 +188,36 @@ def test_serialize_user_includes_routing_fields_for_agent_user():
     assert payload["is_agent_user"] is True
 
 
+@pytest.mark.parametrize(
+    "account_type", [AccountType.developer.value, AccountType.site_admin.value]
+)
+def test_serialize_user_marks_consumer_users_as_non_org_users(account_type):
+    user = UserFactory(account_type=account_type)
+
+    payload = _serialize_user(user)
+
+    assert payload["account_type"] == account_type
+    assert payload["organisation_id"] is None
+    assert payload["is_org_user"] is False
+    assert payload["is_single_org_user"] is False
+    assert payload["is_agent_user"] is False
+
+
+def test_serialize_user_includes_routing_fields_for_abods_user():
+    organisation = OrganisationFactory()
+    user = UserFactory(
+        account_type=AccountType.abods_user.value,
+        organisations=(organisation,),
+    )
+
+    payload = _serialize_user(user)
+
+    assert payload["account_type"] == AccountType.abods_user.value
+    assert payload["is_org_user"] is True
+    assert payload["is_single_org_user"] is False
+    assert payload["is_agent_user"] is False
+
+
 PASSWORD_CHANGE_URL = "/api/auth/password/change/"
 
 
@@ -211,7 +241,7 @@ def test_password_change_requires_authentication(client_factory):
         },
     )
 
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 def test_password_change_rejects_incorrect_current_password(user, client_factory):
