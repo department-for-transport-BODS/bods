@@ -10,6 +10,10 @@ const REQUEST_HEADERS_TO_REMOVE = [
 ];
 
 const DJANGO_NAMESPACES = {
+  www: {
+    upstreamPrefix: '/api/',
+    upstreamHost: new URL(DJANGO_HOSTS.www).host,
+  },
   auth: {
     upstreamPrefix: '/api/auth/',
     // Session auth is mounted on every Django service host, so the upstream is

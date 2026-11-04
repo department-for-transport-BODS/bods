@@ -40,6 +40,10 @@ describe('ChangelogPage', () => {
     await renderPage();
 
     expect(screen.getByRole('heading', { level: 1, name: 'Service changelog' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Service Changelog' })).toHaveAttribute(
+      'href',
+      wwwPath('/changelog/'),
+    );
     expect(screen.getByRole('link', { name: 'View operator guidance' })).toHaveAttribute(
       'href',
       publishAppPath('/guidance/operator-requirements/'),
@@ -57,7 +61,14 @@ describe('ChangelogPage', () => {
   it('renders release notes from the loader', async () => {
     await renderPage();
 
-    expect(screen.getByRole('heading', { level: 3, name: 'June 2026 (1.60.0)' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: 'June 2026 (1.60.0)' })).toHaveClass(
+      'govuk-heading-m',
+      'govuk-!-margin-bottom-5',
+    );
+    expect(screen.getByRole('heading', { level: 4, name: 'Release 1.60.0 (June 2026)' })).toHaveClass(
+      'govuk-heading-s',
+      'govuk-!-margin-bottom-5',
+    );
     expect(screen.getByRole('heading', { level: 3, name: 'March 2023 (1.24.0)' })).toBeInTheDocument();
     expect(screen.getByText('Optimised queries.')).toBeInTheDocument();
     expect(screen.getByText('Service > OperatingPeriod').tagName).toBe('CODE');
