@@ -1,0 +1,182 @@
+/*
+ * Styles for the "Review my data" list pages.
+ * Ported from transit_odp/frontend/assets/sass/components/table/_table.scss,
+ * progress/_progress.scss, status_indicator/_status_indicator.scss and
+ * common.scss (hide-using-position). Scoped to .review-list-table so other
+ * custom_govuk_table users are unaffected.
+ */
+
+/* Django's .custom_govuk_table @extends .govuk-table, which supplies the gap before the pagination */
+.custom_govuk_table.review-list-table {
+  margin-bottom: 20px;
+}
+
+@media (min-width: 40.0625em) {
+  .custom_govuk_table.review-list-table {
+    margin-bottom: 30px;
+  }
+}
+
+.custom_govuk_table.review-list-table .govuk-table__header,
+.custom_govuk_table.review-list-table .govuk-table__cell {
+  font-size: 18px;
+}
+
+.custom_govuk_table.review-list-table .govuk-table__header {
+  font-weight: 700;
+}
+
+.custom_govuk_table.review-list-table .govuk-table__row .govuk-table__cell:last-child {
+  word-break: break-word;
+}
+
+.review-list-table .column-header-link {
+  color: #1d70b8;
+  font-size: 18px;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+.review-list-table .column-header-link:focus {
+  color: #0b0c0c;
+  background-color: #ffdd00;
+  box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
+  text-decoration: none;
+  outline: 3px solid transparent;
+}
+
+.review-list-table .hide-using-position {
+  position: absolute;
+  overflow: hidden;
+  height: 1px;
+  width: 1px;
+  padding: 0;
+  margin: 0;
+}
+
+/* Show the up / down caret only for the column that is sorted */
+.review-list-table .order-up,
+.review-list-table .order-down {
+  display: none;
+}
+
+.review-list-table .asc a,
+.review-list-table .desc a {
+  font-weight: bold;
+}
+
+.review-list-table .asc .order-up,
+.review-list-table .desc .order-down {
+  display: inline-block;
+  /* Same advance as Django's FontAwesome caret glyph (320/512em), not the SVG's 1.25em default */
+  width: 0.625em;
+  height: 1em;
+}
+
+/* Django's status indicator palette */
+.review-list-table .status-indicator::before {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0 0.4rem 0 0.2rem;
+}
+
+.review-list-table .status-indicator--success::before {
+  background-color: #006435;
+}
+
+.review-list-table .status-indicator--indexing::before {
+  background-color: #005ea5;
+}
+
+.review-list-table .status-indicator--warning::before {
+  background-color: #ffbf47;
+}
+
+.review-list-table .status-indicator--inactive::before {
+  background-color: #d4351c;
+}
+
+.review-list-table .status-indicator--error::before {
+  background-color: #b10e1e;
+}
+
+.review-list-table .status-indicator--draft::before,
+.review-list-table .status-indicator--pending::before {
+  background-color: #bfc1c3;
+}
+
+.review-list-table .pie-progress {
+  height: 18px;
+}
+
+.review-list-table .pie-progress .progress-percent {
+  color: #006435;
+  font-size: 18px;
+}
+
+.review-list-table .pie-progress .progress-text {
+  color: #0b0c0c;
+  font-size: 18px;
+}
+
+/*
+ * Blue review banner. Django builds these with govuk-font(), which scales between mobile and
+ * tablet+ (transit_odp/frontend/assets/sass/components/publish_list/_publish_list.scss), and
+ * spaces stats with govuk-spacing(7) = 40px. globals.css has the desktop sizes only.
+ */
+.review-banner.review-list-banner .review-stat {
+  margin: 0 40px 40px 0;
+}
+
+.review-banner.review-list-banner .review-stat:last-child {
+  margin-right: unset;
+}
+
+.review-banner.review-list-banner .review-stat__top {
+  font-size: 32px;
+  line-height: 35px;
+}
+
+.review-banner.review-list-banner .review-stat__bottom {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.review-banner.review-list-banner .review-stat__description {
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.review-banner.review-list-banner a.review-stat__link {
+  font-size: 14px;
+  line-height: 16px;
+}
+
+/* Django's play marker is a 0.75em-wide webfont glyph; the SVG defaults to 1.25em, which
+   makes "More details" wrap in the narrow stat columns. */
+.review-banner.review-list-banner .review-stat > svg {
+  width: 0.75em;
+  height: 1em;
+}
+
+@media (min-width: 40.0625em) {
+  .review-banner.review-list-banner .review-stat__top {
+    font-size: 48px;
+    line-height: 50px;
+  }
+
+  .review-banner.review-list-banner .review-stat__bottom {
+    font-size: 19px;
+    line-height: 25px;
+  }
+
+  .review-banner.review-list-banner .review-stat__description {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .review-banner.review-list-banner a.review-stat__link {
+    font-size: 16px;
+    line-height: 20px;
+  }
+}

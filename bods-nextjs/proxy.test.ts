@@ -26,6 +26,30 @@ describe('subdomain routing proxy', () => {
       expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/publish/org/42');
     });
 
+    it.each(['/gatekeeper', '/abods-gatekeeper'])('rewrites the publish gatekeeper page %s to the internal publish route', (path) => {
+      const url = `https://publish.xyz.com${path}`;
+      const response = proxy(request(url, 'publish.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(`/publish${path}`);
+    });
+
+    it('rewrites the PPC download paths to the publish route handlers', () => {
+      const paths = [
+        '/org/42/dataset/ppc-archive/',
+        '/org/42/dataset/avl/7/download-matching-report/',
+        '/org/42/dataset/avl/7/validation-report/',
+      ];
+
+      paths.forEach((path) => {
+        const url = `https://publish.xyz.com${path}`;
+        const response = proxy(request(url, 'publish.xyz.com'));
+
+        expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(
+          `/publish${path}`,
+        );
+      });
+    });
+
     it('rewrites operator requirements on the publish host without losing the section query', () => {
       const url = 'https://publish.xyz.com/guidance/operator-requirements?section=dataquality';
       const response = proxy(request(url, 'publish.xyz.com'));
@@ -204,6 +228,15 @@ describe('subdomain routing proxy', () => {
       expect(response.headers.get('x-middleware-rewrite')).toBeNull();
     });
 
+    it('keeps account inactive on the publish host', () => {
+      const response = proxy(
+        request('https://publish.xyz.com/account/inactive', 'publish.xyz.com'),
+      );
+
+      expect(response.headers.get('location')).toBeNull();
+      expect(response.headers.get('x-middleware-rewrite')).toBeNull();
+    });
+
     it('keeps account logout on the data host', () => {
       const response = proxy(request('https://data.xyz.com/account/logout', 'data.xyz.com'));
 
@@ -306,9 +339,9 @@ describe('subdomain routing proxy', () => {
     });
 
     it('routes legacy local data paths to the local data hostname', () => {
-      const response = proxy(request('http://localhost:3000/data/timetables', 'localhost:3000'));
+      const response = proxy(request('http://localhost:3000/data/timetable', 'localhost:3000'));
 
-      expect(response.headers.get('location')).toBe('http://data.localhost:3000/timetables');
+      expect(response.headers.get('location')).toBe('http://data.localhost:3000/timetable');
     });
 
     it('keeps login on the local publish hostname', () => {

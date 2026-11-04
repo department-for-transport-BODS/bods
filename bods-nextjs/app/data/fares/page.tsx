@@ -4,6 +4,7 @@ import { featureFlags } from '@/config/feature-flags';
 export default function FaresPage() {
   return (
     <DatasetBrowserPage
+        datasetType="FARES"
       title="Fares data"
       breadcrumbLabel="Fares Data"
       description="Search for a specific operator or NOC"
@@ -19,7 +20,7 @@ export default function FaresPage() {
 }
 
 export const metadata = {
-  title: 'Browse Fares Data - Bus Open Data Service',
+  title: 'Browse Fares Data',
   description: 'Search and browse fares datasets.',
 };
 

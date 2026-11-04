@@ -1,60 +1,96 @@
-import { render, screen } from '@testing-library/react';
-import { waitFor } from '@testing-library/dom';
-import userEvent from '@testing-library/user-event';
-import SelectOrgPage from './page';
-import { getPaginated } from '@/lib/api-client';
-import { useAuth } from '@/hooks/useAuth';
+import { render, screen } from "@testing-library/react";
+import { waitFor } from "@testing-library/dom";
+import SelectOrgPage from "./page";
+import { getPaginated } from "@/lib/api-client";
+import { useAuth } from "@/hooks/useAuth";
+import { publishAppPath } from "@/config/client";
+import { metadata as selectOrgMetadata } from "./page";
 
 const mockPush = jest.fn();
 const mockUseSearchParams = jest.fn();
 
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: mockPush,
   }),
   useSearchParams: () => mockUseSearchParams(),
 }));
 
-jest.mock('@/components/auth/ProtectedRoute', () => ({
-  ProtectedRoute: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+jest.mock("@/components/auth/ProtectedRoute", () => ({
+  ProtectedRoute: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
-jest.mock('@/hooks/useAuth', () => ({
+jest.mock("@/hooks/useAuth", () => ({
   useAuth: jest.fn(),
 }));
 
-jest.mock('@/lib/api-client', () => ({
+jest.mock("@/lib/api-client", () => ({
   getPaginated: jest.fn(),
 }));
 
 const dataTypeOptions = [
-  { dataType: 'timetable', expectedUrl: '/publish/org/123/dataset/timetable' },
-  { dataType: 'avl', expectedUrl: '/publish/org/123/dataset/avl' },
-  { dataType: 'fares', expectedUrl: '/publish/org/123/dataset/fares' },
+  {
+    dataType: "timetable",
+    expectedUrl: publishAppPath("/org/123/dataset/timetable"),
+  },
+  { dataType: "avl", expectedUrl: publishAppPath("/org/123/dataset/avl") },
+  { dataType: "fares", expectedUrl: publishAppPath("/org/123/dataset/fares") },
 ];
 
-describe('SelectOrgPage routing', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockUseSearchParams.mockReturnValue(new URLSearchParams('dataType=timetable'));
+describe("SelectOrgPage routing", () => {
+  it("uses the Django page title", () => {
+    expect(selectOrgMetadata.title).toBe("Operator Dashboard");
   });
 
-  it('renders the operator dashboard heading, breadcrumb, and helper text', async () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUseSearchParams.mockReturnValue(
+      new URLSearchParams("dataType=timetable"),
+    );
+  });
+
+  it("renders the operator dashboard heading, breadcrumb, and helper text", async () => {
     (useAuth as jest.Mock).mockReturnValue({
       user: { is_single_org_user: false, is_agent_user: true },
     });
     (getPaginated as jest.Mock).mockResolvedValue({
-      results: [{ id: 123, name: 'OrganisationOne' }],
+      results: [{ id: 123, name: "OrganisationOne" }],
     });
 
     render(<SelectOrgPage />);
 
-    expect(screen.getByRole('heading', { name: 'Operator Dashboard' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Operator Dashboard' })).toBeInTheDocument();
-    expect(await screen.findByText('Choose an operator to view or publish data')).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Operator Dashboard" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Operator Dashboard" }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("Choose an operator to view or publish data"),
+    ).toBeInTheDocument();
   });
 
-  it('keeps non-single organisation users on organisation selection', async () => {
+  it("matches Django when there are no organisations", async () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      user: { is_single_org_user: false, is_agent_user: true },
+    });
+    (getPaginated as jest.Mock).mockResolvedValue({ results: [] });
+
+    render(<SelectOrgPage />);
+
+    expect(
+      await screen.findByText(
+        /You don’t have any operators yet to act as an agent on behalf of/,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Go to My Account" }),
+    ).toHaveAttribute("href", publishAppPath("/account"));
+  });
+
+  it("keeps non-single organisation users on organisation selection", async () => {
     (useAuth as jest.Mock).mockReturnValue({
       user: {
         is_org_user: true,
@@ -64,19 +100,23 @@ describe('SelectOrgPage routing', () => {
       },
     });
     (getPaginated as jest.Mock).mockResolvedValue({
-      results: [{ id: 123, name: 'OrganisationOne' }],
+      results: [{ id: 123, name: "OrganisationOne" }],
     });
 
     render(<SelectOrgPage />);
 
-    await waitFor(() => expect(screen.getByText('OrganisationOne')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("OrganisationOne")).toBeInTheDocument(),
+    );
     expect(mockPush).not.toHaveBeenCalled();
   });
 
   it.each(dataTypeOptions)(
-    'routes single organisation users directly to their $dataType dataset page',
+    "routes single organisation users directly to their $dataType dataset page",
     async ({ dataType, expectedUrl }) => {
-      mockUseSearchParams.mockReturnValue(new URLSearchParams(`dataType=${dataType}`));
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams(`dataType=${dataType}`),
+      );
       (useAuth as jest.Mock).mockReturnValue({
         user: {
           is_org_user: true,
@@ -86,7 +126,7 @@ describe('SelectOrgPage routing', () => {
         },
       });
       (getPaginated as jest.Mock).mockResolvedValue({
-        results: [{ id: 123, name: 'OrganisationOne' }],
+        results: [{ id: 123, name: "OrganisationOne" }],
       });
 
       render(<SelectOrgPage />);
@@ -95,7 +135,7 @@ describe('SelectOrgPage routing', () => {
     },
   );
 
-  it('defaults single organisation users directly to the dataset chooser page', async () => {
+  it("defaults single organisation users directly to the dataset chooser page", async () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams());
     (useAuth as jest.Mock).mockReturnValue({
       user: {
@@ -106,20 +146,22 @@ describe('SelectOrgPage routing', () => {
       },
     });
     (getPaginated as jest.Mock).mockResolvedValue({
-      results: [{ id: 123, name: 'OrganisationOne' }],
+      results: [{ id: 123, name: "OrganisationOne" }],
     });
 
     render(<SelectOrgPage />);
 
     await waitFor(() =>
-      expect(mockPush).toHaveBeenCalledWith('/publish/org/123/dataset'),
+      expect(mockPush).toHaveBeenCalledWith(publishAppPath("/org/123/dataset")),
     );
   });
 
   it.each(dataTypeOptions)(
-    'routes selected organisations to the requested $dataType dataset page',
+    "routes selected organisations to the requested $dataType dataset page",
     async ({ dataType, expectedUrl }) => {
-      mockUseSearchParams.mockReturnValue(new URLSearchParams(`dataType=${dataType}`));
+      mockUseSearchParams.mockReturnValue(
+        new URLSearchParams(`dataType=${dataType}`),
+      );
       (useAuth as jest.Mock).mockReturnValue({
         user: {
           is_org_user: true,
@@ -129,18 +171,18 @@ describe('SelectOrgPage routing', () => {
         },
       });
       (getPaginated as jest.Mock).mockResolvedValue({
-        results: [{ id: 123, name: 'OrganisationOne' }],
+        results: [{ id: 123, name: "OrganisationOne" }],
       });
 
       render(<SelectOrgPage />);
 
-      await userEvent.click(await screen.findByRole('button', { name: 'OrganisationOne' }));
-
-      expect(mockPush).toHaveBeenCalledWith(expectedUrl);
+      expect(
+        await screen.findByRole("link", { name: "OrganisationOne" }),
+      ).toHaveAttribute("href", expectedUrl);
     },
   );
 
-  it('defaults selected organisations to the dataset chooser page', async () => {
+  it("defaults selected organisations to the dataset chooser page", async () => {
     mockUseSearchParams.mockReturnValue(new URLSearchParams());
     (useAuth as jest.Mock).mockReturnValue({
       user: {
@@ -151,13 +193,13 @@ describe('SelectOrgPage routing', () => {
       },
     });
     (getPaginated as jest.Mock).mockResolvedValue({
-      results: [{ id: 123, name: 'OrganisationOne' }],
+      results: [{ id: 123, name: "OrganisationOne" }],
     });
 
     render(<SelectOrgPage />);
 
-    await userEvent.click(await screen.findByRole('button', { name: 'OrganisationOne' }));
-
-    expect(mockPush).toHaveBeenCalledWith('/publish/org/123/dataset');
+    expect(
+      await screen.findByRole("link", { name: "OrganisationOne" }),
+    ).toHaveAttribute("href", publishAppPath("/org/123/dataset"));
   });
 });

@@ -3,7 +3,7 @@ from typing import Optional, TypedDict
 
 import pytz
 from django.db.models import ObjectDoesNotExist
-from django.http import FileResponse
+from django.http import FileResponse, Http404
 from django.views.generic import DetailView
 
 from transit_odp.avl.models import PostPublishingCheckReport, PPCReportType
@@ -125,6 +125,9 @@ class AvlFeedDetailView(OrgUserViewMixin, BaseDetailView):
 class ValidationFileDownloadView(BaseDetailView):
     model = AVLDataset
 
+    def get_queryset(self):
+        return super().get_queryset().filter(organisation_id=self.kwargs["pk1"])
+
     def get(self, *args, **kwargs):
         return self.get_object().to_validation_reports_response()
 
@@ -132,15 +135,20 @@ class ValidationFileDownloadView(BaseDetailView):
 class DownloadPPCWeeklyReportView(DetailView):
     model = AVLDataset
 
+    def get_queryset(self):
+        return super().get_queryset().filter(organisation_id=self.kwargs["pk1"])
+
     def get(self, *args, **kwargs):
-        dataset_id = self.kwargs["pk"]
+        dataset = self.get_object()
         self.ppc_avl_dataset = (
             PostPublishingCheckReport.objects.filter(
-                dataset__id=dataset_id, granularity=PPCReportType.WEEKLY
+                dataset__id=dataset.id, granularity=PPCReportType.WEEKLY
             )
             .order_by("-created")
             .first()
         )
+        if self.ppc_avl_dataset is None or not self.ppc_avl_dataset.file:
+            raise Http404
         return self.render_to_response()
 
     def render_to_response(self):

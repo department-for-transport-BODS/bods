@@ -9,7 +9,8 @@ import { ErrorSummary } from '@/components/shared';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { getCsrfToken } from '@/lib/api-client';
 import { validateAvlDescriptionStep } from '@/lib/validation/avl-publish';
-import { HOSTS } from '@/config/client';
+import { publishAppPath } from '@/config/client';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 interface DatasetEditResponse {
   datasetId: number;
@@ -18,21 +19,28 @@ interface DatasetEditResponse {
   shortDescription: string;
 }
 
+function navigateTo(url: string, { refresh = false } = {}) {
+  const separator = url.includes('?') ? '&' : '?';
+  globalThis.location.href = refresh ? `${url}${separator}refresh=${Date.now()}` : url;
+}
+
 function AvlDatasetEditContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
-  const detailUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}`;
-  const listUrl = `/publish/org/${orgId}/dataset/avl`;
+  const datasetPath = `/org/${orgId}/dataset/avl/${datasetId}/`;
+  const detailUrl = publishAppPath(datasetPath);
+  const listUrl = publishAppPath(`/org/${orgId}/dataset/avl/`);
   const modeParam = searchParams.get('mode');
   const editMode = modeParam === 'revision' ? 'revision' : 'live';
   const redirectParam = searchParams.get('redirect');
-  const hasReturnUrl = Boolean(redirectParam && redirectParam.startsWith('/publish/'));
-  const returnUrl = hasReturnUrl ? redirectParam as string : detailUrl;
+  // Only return to public pages of this feed (e.g. its review page), never an arbitrary URL.
+  const hasReturnUrl = Boolean(redirectParam && redirectParam.startsWith(datasetPath));
+  const returnUrl = hasReturnUrl ? publishAppPath(redirectParam as string) : detailUrl;
   const editUrl = hasReturnUrl
-    ? `/publish/org/${orgId}/dataset/avl/${datasetId}/dataset-edit?mode=${editMode}&redirect=${encodeURIComponent(returnUrl)}`
-    : `/publish/org/${orgId}/dataset/avl/${datasetId}/dataset-edit?mode=${editMode}`;
+    ? publishAppPath(`${datasetPath}dataset-edit/?mode=${editMode}&redirect=${encodeURIComponent(redirectParam as string)}`)
+    : publishAppPath(`${datasetPath}dataset-edit/`);
 
   const [feedName, setFeedName] = useState('');
   const [description, setDescription] = useState('');
@@ -144,12 +152,11 @@ function AvlDatasetEditContent() {
       }
 
       if (hasReturnUrl) {
-        const separator = returnUrl.includes('?') ? '&' : '?';
-        globalThis.location.href = `${returnUrl}${separator}refresh=${Date.now()}`;
+        navigateTo(returnUrl, { refresh: true });
         return;
       }
 
-      globalThis.location.href = data.redirect || detailUrl;
+      navigateTo(data.redirect || detailUrl);
     } catch {
       setSubmitError('An error occurred while saving. Please try again.');
       setIsSubmitting(false);
@@ -194,16 +201,15 @@ function AvlDatasetEditContent() {
   return (
     <div className="govuk-width-container">
       <Breadcrumbs
-        items={[
-          { label: 'Bus Open Data Service', href: HOSTS.www },
-          { label: 'Publish Bus Open Data', href: HOSTS.publish },
+        items={hostBreadcrumbs(
+          'publish',
           {
             label: 'Your data feed',
             href: listUrl,
           },
           {
             label: breadcrumbFeedName,
-            href: detailUrl,
+            href: returnUrl,
             truncateAt: 20,
           },
           {
@@ -211,7 +217,7 @@ function AvlDatasetEditContent() {
             href: editUrl,
             current: true,
           },
-        ]}
+        )}
       />
 
       <div className="govuk-main-wrapper">

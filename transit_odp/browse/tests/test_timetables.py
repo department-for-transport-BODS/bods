@@ -134,7 +134,7 @@ class TestTimeTableSearchView(TestFaresSearchView):
 
 
 class TestTimetableArchiveDownloads:
-    def test_download_redirects_to_signed_url_with_no_prefix_when_direct_s3_is_disabled(
+    def test_download_redirects_to_signed_url_with_timetables_prefix(
         self, client_factory
     ):
         archive = BulkDataArchiveFactory(dataset_type=TimetableType)
@@ -142,9 +142,6 @@ class TestTimetableArchiveDownloads:
         signed_url = "https://example.test/signed-url"
 
         with patch(
-            "transit_odp.browse.views.timetable_views.flag_is_active",
-            return_value=False,
-        ) as mocked_flag_is_active, patch(
             "transit_odp.browse.views.timetable_views.generate_signed_url",
             return_value=signed_url,
         ) as mocked_generate_signed_url:
@@ -152,28 +149,6 @@ class TestTimetableArchiveDownloads:
 
         assert response.status_code == 302
         assert response["Location"] == signed_url
-        mocked_flag_is_active.assert_called_once_with("", "is_direct_s3_url_active")
-        mocked_generate_signed_url.assert_called_once_with(archive.data.name)
-
-    def test_download_redirects_to_signed_url_with_timetables_prefix_when_direct_s3_is_enabled(
-        self, client_factory
-    ):
-        archive = BulkDataArchiveFactory(dataset_type=TimetableType)
-        client = client_factory(host=DATA_HOST)
-        signed_url = "https://example.test/signed-url"
-
-        with patch(
-            "transit_odp.browse.views.timetable_views.flag_is_active",
-            return_value=True,
-        ) as mocked_flag_is_active, patch(
-            "transit_odp.browse.views.timetable_views.generate_signed_url",
-            return_value=signed_url,
-        ) as mocked_generate_signed_url:
-            response = client.get(reverse("downloads-bulk", host=DATA_HOST))
-
-        assert response.status_code == 302
-        assert response["Location"] == signed_url
-        mocked_flag_is_active.assert_called_once_with("", "is_direct_s3_url_active")
         mocked_generate_signed_url.assert_called_once_with(
             f"timetables/{archive.data.name}"
         )
@@ -182,34 +157,7 @@ class TestTimetableArchiveDownloads:
 class TestTimetableRegionArchiveDownloads:
     region_code = TravelineRegions.NORTH_EAST.value
 
-    def test_download_returns_file_response_when_direct_s3_is_disabled(
-        self, client_factory
-    ):
-        archive = BulkDataArchiveFactory(
-            dataset_type=TimetableType,
-            traveline_regions=self.region_code,
-        )
-        client = client_factory(host=DATA_HOST)
-
-        with patch(
-            "transit_odp.browse.views.timetable_views.flag_is_active",
-            return_value=False,
-        ):
-            response = client.get(
-                reverse(
-                    "downloads-bulk-region",
-                    kwargs={"region_code": self.region_code},
-                    host=DATA_HOST,
-                )
-            )
-
-        assert response.status_code == 200
-        assert response.as_attachment is True
-        assert response.filename == archive.data.name
-
-    def test_download_redirects_to_signed_url_when_direct_s3_is_enabled(
-        self, client_factory
-    ):
+    def test_download_redirects_to_signed_url(self, client_factory):
         archive = BulkDataArchiveFactory(
             dataset_type=TimetableType,
             traveline_regions=self.region_code,
@@ -218,9 +166,6 @@ class TestTimetableRegionArchiveDownloads:
         signed_url = "https://example.test/signed-url"
 
         with patch(
-            "transit_odp.browse.views.timetable_views.flag_is_active",
-            return_value=True,
-        ), patch(
             "transit_odp.browse.views.timetable_views.generate_signed_url",
             return_value=signed_url,
         ) as mocked_generate_signed_url:

@@ -3,7 +3,8 @@ import '@testing-library/jest-dom';
 import mapboxgl from 'mapbox-gl';
 import { api } from '@/lib/api-client';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
-import FaresReviewPage from './FaresReviewPageContent';
+import { publishPath, wwwPath } from '@/config/client';
+import FaresReviewPage, { getFaresPublishRedirect } from './FaresReviewPageContent';
 
 jest.mock('next/navigation', () => ({
   useParams: () => ({ orgId: '1', datasetId: '9' }),
@@ -127,6 +128,34 @@ describe('FaresReviewPage', () => {
     );
   });
 
+  it('matches the Django consent field, revision Edit links and related links', () => {
+    renderPage({ ...baseStatus, description: 'Long text', shortDescription: 'Short' });
+
+    const checkbox = screen.getByRole('checkbox', {
+      name: 'I have reviewed the submission and wish to publish my data',
+    });
+    expect(checkbox).toHaveAttribute('name', 'consent');
+    expect(checkbox).toHaveAttribute('id', 'id_consent');
+
+    const editLinks = screen.getAllByRole('link', { name: 'Edit' });
+    expect(editLinks).toHaveLength(2);
+    editLinks.forEach((link) =>
+      expect(link).toHaveAttribute('href', publishPath('/org/1/dataset/fares/9/revision-edit/')),
+    );
+    expect(editLinks[0]).toHaveClass('right-justify');
+    expect(editLinks[0].closest('.flex-between')).toHaveTextContent('Long text');
+    expect(editLinks[1].closest('.flex-between')).toHaveTextContent('Short');
+
+    expect(screen.getByRole('link', { name: 'View our guidelines here' })).toHaveAttribute(
+      'href',
+      publishPath('/guidance/operator-requirements'),
+    );
+    expect(screen.getByRole('link', { name: 'Contact support desk' })).toHaveAttribute(
+      'href',
+      wwwPath('/contact'),
+    );
+  });
+
   it('does not show the validation check panel when the fares validator flag is off', () => {
     renderPage({ ...baseStatus, isFaresValidatorActive: false });
 
@@ -174,7 +203,7 @@ describe('FaresReviewPage', () => {
     );
     expect(screen.getByRole('heading', { name: 'Recommended actions' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Update data' })).toHaveAttribute(
-      'href', '/publish/org/1/dataset/fares/9/update?modifyDraft=true',
+      'href', publishPath('/org/1/dataset/fares/9/update/review/update'),
     );
     expect(screen.getByRole('link', { name: 'Delete data' })).toHaveAttribute(
       'href', expect.stringContaining('/org/1/dataset/fares/9/delete'),
@@ -262,9 +291,13 @@ describe('FaresReviewPage', () => {
     );
     expect(screen.getByRole('link', { name: 'guidance.' })).toHaveAttribute(
       'href',
-      '/publish/guide-me?section=dataquality',
+      `${publishPath('/guidance/operator-requirements')}?section=dataquality`,
     );
     expect(screen.queryByText('Supplied data set has failed to upload')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Publish correct data set' })).toHaveAttribute(
+      'href',
+      publishPath('/org/1/dataset/fares/9/review/update'),
+    );
   });
 
   it('shows the standard antivirus message even when a pipeline message is stored', () => {
@@ -276,7 +309,7 @@ describe('FaresReviewPage', () => {
     });
 
     expect(screen.getByText(/Our antivirus scan detected an issue with your dataset/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'contact support' })).toHaveAttribute('href', '/account');
+    expect(screen.getByRole('link', { name: 'contact support' })).toHaveAttribute('href', wwwPath('/contact'));
   });
 
   it('links the suspicious file fallback message to the contact page', () => {
@@ -288,7 +321,57 @@ describe('FaresReviewPage', () => {
         'Our antivirus scan detected an issue with your dataset. If you believe this to be wrong, please contact support.',
     });
 
-    expect(screen.getByRole('link', { name: 'contact support' })).toHaveAttribute('href', '/account');
+    expect(screen.getByRole('link', { name: 'contact support' })).toHaveAttribute('href', wwwPath('/contact'));
     expect(screen.queryByText(/\{support_url\}/)).not.toBeInTheDocument();
+  });
+});
+
+describe('FaresReviewPage update mode (update/review/)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGet.mockReturnValue(new Promise(() => {}));
+    mockUseDatasetReview.mockReturnValue({
+      statusData: baseStatus,
+      progress: 50,
+      isInitialLoading: false,
+      errorMessage: '',
+      setErrorMessage: jest.fn(),
+    });
+  });
+
+  it('uses the Comment / Update stepper when isUpdate is set', () => {
+    render(<FaresReviewPage mapboxToken="pk.test" isUpdate />);
+
+    expect(screen.getByText('1. Comment')).toBeInTheDocument();
+    expect(screen.getByText('2. Update')).toBeInTheDocument();
+    expect(screen.queryByText('1. Describe data')).not.toBeInTheDocument();
+  });
+
+  it('uses the Describe data / Provide data stepper on the first-publish route, even with a live revision', () => {
+    mockUseDatasetReview.mockReturnValue({
+      statusData: { ...baseStatus, hasLiveRevision: true },
+      progress: 50,
+      isInitialLoading: false,
+      errorMessage: '',
+      setErrorMessage: jest.fn(),
+    });
+    render(<FaresReviewPage mapboxToken="pk.test" />);
+
+    expect(screen.getByText('1. Describe data')).toBeInTheDocument();
+    expect(screen.queryByText('1. Comment')).not.toBeInTheDocument();
+  });
+});
+
+describe('getFaresPublishRedirect', () => {
+  const ids = { orgId: '1', datasetId: '9' };
+
+  it('goes to update/success after publishing an update revision', () => {
+    expect(getFaresPublishRedirect({ ...ids, isUpdate: true })).toBe(
+      publishPath('/org/1/dataset/fares/9/update/success'),
+    );
+  });
+
+  it('goes to success after a first publish, like Django ReviewView', () => {
+    expect(getFaresPublishRedirect({ ...ids, isUpdate: false })).toBe(publishPath('/org/1/dataset/fares/9/success'));
   });
 });

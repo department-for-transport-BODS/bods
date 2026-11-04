@@ -46,6 +46,7 @@ const wwwOnlyRoutePrefixes = [
 // came from and the session cookie is set for that host.
 const sharedRoutePrefixes = [
   '/account/login',
+  '/account/inactive',
   '/account/logout',
   '/account/logout-success',
   '/account/signup',

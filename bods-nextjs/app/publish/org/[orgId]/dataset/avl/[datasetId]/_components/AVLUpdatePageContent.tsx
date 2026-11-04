@@ -30,9 +30,9 @@ export function AVLUpdatePageContent({ avlIpAllowList }: { avlIpAllowList: strin
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
-  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
+  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements/');
   const contactSupportUrl = wwwPath('/contact');
-  const reviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`;
+  const reviewUrl = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/update/review/`);
 
   const [step, setStep] = useState<Step>('comment');
 
@@ -194,7 +194,7 @@ export function AVLUpdatePageContent({ avlIpAllowList }: { avlIpAllowList: strin
   };
 
   const onCancelClick = () => {
-    globalThis.location.href = `/publish/org/${orgId}/dataset/avl/${datasetId}/update/cancel`;
+    globalThis.location.href = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/update/cancel/`);
   };
 
   const activeStep = step;

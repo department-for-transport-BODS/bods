@@ -30,7 +30,7 @@ export class TimetableUploadPage {
   }
 
   async provideDataByUrl(url: string): Promise<void> {
-    await this.page.locator('#method-link').check();
+    await this.page.locator('#url_link-conditional-radio').check();
     await this.page.locator('#id_url_link').fill(url);
   }
 

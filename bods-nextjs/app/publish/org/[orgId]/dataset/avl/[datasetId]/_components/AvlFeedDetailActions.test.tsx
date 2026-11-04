@@ -57,14 +57,12 @@ describe('AvlFeedDetailActions', () => {
       />
     );
 
-    const updateButton = screen.getByRole('button', { name: /Update data feed/i });
-    expect(updateButton).toHaveAttribute(
-      'href',
-      '/publish/org/org-123/dataset/avl/dataset-456/update'
-    );
+    const href = screen.getByRole('button', { name: /Update data feed/i }).getAttribute('href');
+    expect(href).toMatch(/\/org\/org-123\/dataset\/avl\/dataset-456\/update\/$/);
+    expect(href).not.toMatch(/\/publish\/org/);
   });
 
-  it('links to correct deactivate URL with feed name', () => {
+  it('links to the Django deactivate URL', () => {
     render(
       <AvlFeedDetailActions
         feedDetail={mockFeedDetail}
@@ -73,11 +71,9 @@ describe('AvlFeedDetailActions', () => {
       />
     );
 
-    const deactivateButton = screen.getByRole('button', { name: /Deactivate data feed/i });
-    expect(deactivateButton).toHaveAttribute(
-      'href',
-      '/publish/org/org-123/dataset/avl/dataset-456/archive?name=Test%20Feed'
-    );
+    const href = screen.getByRole('button', { name: /Deactivate data feed/i }).getAttribute('href');
+    expect(href).toMatch(/\/org\/org-123\/dataset\/avl\/dataset-456\/deactivate\/$/);
+    expect(href).not.toMatch(/\/publish\/org/);
   });
 
   it('does not render buttons for dummy feeds', () => {
@@ -128,21 +124,6 @@ describe('AvlFeedDetailActions', () => {
     expect(deactivateButton).not.toBeInTheDocument();
   });
 
-  it('handles feed names with special characters in URL', () => {
-    const specialFeed = { ...mockFeedDetail, name: 'Feed & Event (2026)' };
-
-    render(
-      <AvlFeedDetailActions
-        feedDetail={specialFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
-
-    const deactivateButton = screen.getByRole('button', { name: /Deactivate data feed/i });
-    expect(deactivateButton).toHaveAttribute('href', expect.stringContaining('name='));
-  });
-
   it('renders buttons with correct CSS classes', () => {
     render(
       <AvlFeedDetailActions
@@ -160,25 +141,23 @@ describe('AvlFeedDetailActions', () => {
     expect(deactivateButton).toHaveClass('govuk-button--secondary');
   });
 
-  it('renders update button for draft feeds', () => {
-    const draftFeed = { ...mockFeedDetail, status: 'draft' };
+  it.each(['success', 'indexing', 'pending'])(
+    'renders both buttons linking to update and deactivate for %s status',
+    (status) => {
+      render(
+        <AvlFeedDetailActions
+          feedDetail={{ ...mockFeedDetail, status }}
+          orgId="org-123"
+          datasetId="dataset-456"
+        />
+      );
 
-    render(
-      <AvlFeedDetailActions
-        feedDetail={draftFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
-
-    const updateButton = screen.getByRole('button', { name: /Update data feed/i });
-    expect(updateButton).toBeInTheDocument();
-    expect(updateButton).toHaveAttribute(
-      'href',
-      '/publish/org/org-123/dataset/avl/dataset-456/review'
-    );
-    expect(screen.queryByRole('button', { name: /Deactivate data feed/i })).not.toBeInTheDocument();
-  });
+      expect(screen.getByRole('button', { name: /Update data feed/i }).getAttribute('href')).toMatch(
+        /\/update\/$/
+      );
+      expect(screen.getByRole('button', { name: /Deactivate data feed/i })).toBeInTheDocument();
+    }
+  );
 
   it('renders both buttons for awaiting review feeds', () => {
     const awaitingReviewFeed = { ...mockFeedDetail, status: 'awaiting_review' };
@@ -193,27 +172,5 @@ describe('AvlFeedDetailActions', () => {
 
     expect(screen.getByRole('button', { name: /Update data feed/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Deactivate data feed/i })).toBeInTheDocument();
-  });
-
-  it('handles long feed names correctly in URL encoding', () => {
-    const longNameFeed = {
-      ...mockFeedDetail,
-      name: 'This is a very long feed name that contains spaces and should be encoded properly',
-    };
-
-    render(
-      <AvlFeedDetailActions
-        feedDetail={longNameFeed}
-        orgId="org-123"
-        datasetId="dataset-456"
-      />
-    );
-
-    const deactivateButton = screen.getByRole('button', { name: /Deactivate data feed/i });
-    const href = deactivateButton.getAttribute('href');
-
-    expect(href).toContain('archive');
-    expect(href).toContain('name=');
-    expect(href).not.toContain(' '); // Spaces should be encoded
   });
 });

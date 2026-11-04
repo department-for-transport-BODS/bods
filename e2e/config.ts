@@ -25,7 +25,7 @@ export interface E2EConfig {
 
 export const config: E2EConfig = {
   baseUrl: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
-  organisationId: '1',
+  organisationId: process.env.TEST_ORGANISATION_ID || '1',
   defaultTimeoutMs: Number(process.env.DEFAULT_TIMEOUT_MS || '30000'),
   navigationTimeoutMs: Number(process.env.NAVIGATION_TIMEOUT_MS || '30000'),
   testUser: {

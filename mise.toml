@@ -1,4 +1,4 @@
 [tools]
-node = "20"
+node = "24"
 python = "3.10"
 yarn = "1.22.22"
