@@ -1,16 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { api } from '@/lib/api-client';
+import { useCallback } from 'react';
+import { notFound, useParams } from 'next/navigation';
+import { api, ApiError } from '@/lib/api-client';
 import { useApiResource } from '@/hooks/useApiResource';
 import { AvlFeedDetailTable } from './AvlFeedDetailTable';
 import { AvlCompliancePanels } from './AvlCompliancePanels';
 import { AvlFeedDetailSidebar } from './AvlFeedDetailSidebar';
 import { AvlFeedDetailActions } from './AvlFeedDetailActions';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
-import { HOSTS, publishAppPath } from '@/config/client';
+import { publishAppPath } from '@/config/client';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 export interface AvlFeedDetail {
   datasetId: number;
@@ -30,30 +31,29 @@ export interface AvlFeedDetail {
   avlComplianceStatus: string;
   avlTimetablesMatching?: string;
   isDummy: boolean;
+  hasLiveRevision?: boolean;
 }
 
 export function AvlFeedDetailContent() {
   const params = useParams();
-  const router = useRouter();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
 
-  const fetchFeedDetail = useCallback(
-    () => api.get<AvlFeedDetail>(`/api/publish/avl/detail/${orgId}/${datasetId}/`),
-    [datasetId, orgId],
-  );
-
-  const {
-    data: feedDetail,
-    isLoading,
-    error,
-  } = useApiResource<AvlFeedDetail>(fetchFeedDetail, 'Failed to load feed details');
-
-  useEffect(() => {
-    if (feedDetail?.status === 'draft') {
-      router.replace(`/publish/org/${orgId}/dataset/avl/${datasetId}/review`);
+  const fetchFeedDetail = useCallback(async () => {
+    try {
+      const data = await api.get<AvlFeedDetail>(`/api/publish/avl/detail/${orgId}/${datasetId}/`);
+      // Django's feed detail only serves published feeds and 404s draft-only ones.
+      return { feed: data?.hasLiveRevision === false ? null : data };
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) return { feed: null };
+      throw err;
     }
-  }, [datasetId, feedDetail?.status, orgId, router]);
+  }, [datasetId, orgId]);
+
+  const { data, isLoading, error } = useApiResource(fetchFeedDetail, 'Failed to load feed details');
+  const feedDetail = data?.feed ?? null;
+
+  if (data && !data.feed) notFound();
 
   if (isLoading) {
     return (
@@ -79,7 +79,7 @@ export function AvlFeedDetailContent() {
                 <h2 className="govuk-error-summary__title">Unable to load feed details</h2>
                 <div className="govuk-error-summary__body">
                   <p className="govuk-body">{error || 'Feed not found'}</p>
-                  <Link className="govuk-link" href={publishAppPath(`/org/${orgId}/dataset/avl`)}>
+                  <Link className="govuk-link" href={publishAppPath(`/org/${orgId}/dataset/avl/`)}>
                     Back to feeds
                   </Link>
                 </div>
@@ -91,31 +91,26 @@ export function AvlFeedDetailContent() {
     );
   }
 
-  if (feedDetail.status === 'draft') {
-    return null;
-  }
-
   return (
     <div className="govuk-width-container">
       <Breadcrumbs
-        items={[
-          { label: 'Bus Open Data Service', href: HOSTS.www },
-          { label: 'Publish Bus Open Data', href: HOSTS.publish },
+        items={hostBreadcrumbs(
+          'publish',
           {
             label: 'Choose data type',
-            href: HOSTS.publish,
+            href: publishAppPath(`/org/${orgId}/dataset/`),
           },
           {
             label: 'Bus Location Data Feeds',
-            href: publishAppPath(`/org/${orgId}/dataset/avl`),
+            href: publishAppPath(`/org/${orgId}/dataset/avl/`),
           },
           {
             label: feedDetail.name,
-            href: publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}`),
+            href: publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/`),
             current: true,
             truncateAt: 20,
           },
-        ]}
+        )}
       />
 
       <div className="govuk-main-wrapper">

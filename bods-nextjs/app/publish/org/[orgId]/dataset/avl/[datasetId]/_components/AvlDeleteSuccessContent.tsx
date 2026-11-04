@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { publishAppPath } from '@/config/client';
 
 export function AvlDeleteSuccessContent() {
   const params = useParams();
   const orgId = params.orgId as string;
-  const listUrl = `/publish/org/${orgId}/dataset/avl`;
+  const listUrl = publishAppPath(`/org/${orgId}/dataset/avl/`);
 
   return (
     <div className="govuk-width-container">

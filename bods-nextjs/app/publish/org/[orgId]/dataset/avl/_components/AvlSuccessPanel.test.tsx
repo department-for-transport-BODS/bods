@@ -61,14 +61,14 @@ describe('AvlSuccessPanel', () => {
       render(<AvlSuccessPanel update={false} />);
 
       const link = screen.getByRole('link', { name: /data feeds page/i });
-      expect(link).toHaveAttribute('href', '/publish/org/org-123/dataset/avl');
+      expect(link).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl/'));
     });
 
     it('provides button to view published feed', () => {
       render(<AvlSuccessPanel update={false} />);
 
       const button = screen.getByRole('button', { name: /View published data feed/i });
-      expect(button).toHaveAttribute('href', '/publish/org/org-123/dataset/avl/dataset-456');
+      expect(button).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl/dataset-456/'));
       expect(button).toHaveClass('govuk-button');
     });
 
@@ -83,7 +83,7 @@ describe('AvlSuccessPanel', () => {
       render(<AvlSuccessPanel update={false} />);
 
       const guidanceLink = screen.getByRole('link', { name: /guidance page/i });
-      expect(guidanceLink).toHaveAttribute('href', publishAppPath('/guidance/operator-requirements?section=buslocation'));
+      expect(guidanceLink).toHaveAttribute('href', publishAppPath('/guidance/operator-requirements/?section=buslocation'));
     });
 
     it('mentions compliance error status', () => {
@@ -118,14 +118,14 @@ describe('AvlSuccessPanel', () => {
       render(<AvlSuccessPanel update={true} />);
 
       const link = screen.getByRole('link', { name: /data feeds page/i });
-      expect(link).toHaveAttribute('href', '/publish/org/org-123/dataset/avl');
+      expect(link).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl/'));
     });
 
     it('still provides button to view updated feed', () => {
       render(<AvlSuccessPanel update={true} />);
 
       const button = screen.getByRole('button', { name: /View published data feed/i });
-      expect(button).toHaveAttribute('href', '/publish/org/org-123/dataset/avl/dataset-456');
+      expect(button).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl/dataset-456/'));
     });
   });
 
@@ -139,7 +139,7 @@ describe('AvlSuccessPanel', () => {
       render(<AvlSuccessPanel update={false} />);
 
       const link = screen.getByRole('link', { name: /data feeds page/i });
-      expect(link).toHaveAttribute('href', '/publish/org/test-org-123/dataset/avl');
+      expect(link).toHaveAttribute('href', publishAppPath('/org/test-org-123/dataset/avl/'));
     });
 
     it('constructs correct detail URL with org ID and dataset ID', () => {
@@ -151,7 +151,7 @@ describe('AvlSuccessPanel', () => {
       render(<AvlSuccessPanel update={false} />);
 
       const button = screen.getByRole('button', { name: /View published data feed/i });
-      expect(button).toHaveAttribute('href', '/publish/org/test-org-789/dataset/avl/test-dataset-999');
+      expect(button).toHaveAttribute('href', publishAppPath('/org/test-org-789/dataset/avl/test-dataset-999/'));
     });
   });
 

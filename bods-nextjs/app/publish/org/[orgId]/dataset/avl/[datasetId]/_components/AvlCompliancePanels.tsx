@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { AvlFeedDetail } from './AvlFeedDetailContent';
+import { publishAppPath } from '@/config/client';
 
 enum AvlComplianceStatus {
   Compliant = 'Compliant',
@@ -14,7 +15,9 @@ interface AvlCompliancePanelsProps {
 
 export function AvlCompliancePanels({ feedDetail }: AvlCompliancePanelsProps) {
   const status = feedDetail.avlComplianceStatus;
-  const validationReportUrl = `/publish/org/${feedDetail.organisationId}/dataset/avl/${feedDetail.datasetId}/validation-report/`;
+  const validationReportUrl = publishAppPath(
+    `/org/${feedDetail.organisationId}/dataset/avl/${feedDetail.datasetId}/validation-report/`,
+  );
 
   // No panel for compliant status
   if (status === AvlComplianceStatus.Compliant) {

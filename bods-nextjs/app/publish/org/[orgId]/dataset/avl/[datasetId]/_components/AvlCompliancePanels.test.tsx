@@ -7,6 +7,7 @@
 import { render, screen } from '@testing-library/react';
 import { AvlCompliancePanels } from './AvlCompliancePanels';
 import type { AvlFeedDetail } from './AvlFeedDetailContent';
+import { publishAppPath } from '@/config/client';
 
 jest.mock('next/link', () => {
   return function MockLink({ children, href, ...props }: { children: React.ReactNode; href: string }) {
@@ -98,7 +99,7 @@ describe('AvlCompliancePanels', () => {
     render(<AvlCompliancePanels feedDetail={partiallyCompliantFeed} />);
 
     const link = screen.getByRole('link', { name: /Download validation report/i });
-    expect(link).toHaveAttribute('href', '/publish/org/123/dataset/avl/456/validation-report/');
+    expect(link).toHaveAttribute('href', publishAppPath('/org/123/dataset/avl/456/validation-report/'));
   });
 
   it('renders error panel for non-compliant status', () => {
@@ -122,7 +123,7 @@ describe('AvlCompliancePanels', () => {
     render(<AvlCompliancePanels feedDetail={nonCompliantFeed} />);
 
     const link = screen.getByRole('link', { name: /Download validation report/i });
-    expect(link).toHaveAttribute('href', '/publish/org/123/dataset/avl/456/validation-report/');
+    expect(link).toHaveAttribute('href', publishAppPath('/org/123/dataset/avl/456/validation-report/'));
   });
 
   it('uses correct validation report URL with dataset ID', () => {
@@ -135,7 +136,7 @@ describe('AvlCompliancePanels', () => {
     render(<AvlCompliancePanels feedDetail={nonCompliantFeed} />);
 
     const link = screen.getByRole('link', { name: /Download validation report/i });
-    expect(link).toHaveAttribute('href', '/publish/org/123/dataset/avl/789/validation-report/');
+    expect(link).toHaveAttribute('href', publishAppPath('/org/123/dataset/avl/789/validation-report/'));
   });
 
   it('renders nothing for unknown compliance status', () => {

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
+import { publishAppPath } from '@/config/client';
 import { useApiResource } from '@/hooks/useApiResource';
 
 type AvlDeleteContext = {
@@ -20,9 +21,9 @@ export function AvlDeletePageContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const reviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/review`;
-  const updateReviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`;
-  const fallbackSuccessUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/delete/success`;
+  const reviewUrl = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/review/`);
+  const updateReviewUrl = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/update/review/`);
+  const fallbackSuccessUrl = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/delete/success/`);
 
   const loadContext = useCallback(
     () => api.get<AvlDeleteContext>(`/api/publish/avl/review-status/${orgId}/${datasetId}/`),

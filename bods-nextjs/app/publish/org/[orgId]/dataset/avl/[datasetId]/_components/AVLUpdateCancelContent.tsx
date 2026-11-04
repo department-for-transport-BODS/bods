@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api-client';
+import { publishAppPath } from '@/config/client';
 
 const DRAFT_LIKE_STATUSES = new Set(['draft', 'success', 'indexing', 'pending', 'processing']);
 
@@ -13,9 +14,9 @@ export function AVLUpdateCancelContent() {
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
 
-  const formUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
-  const detailUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}`;
-  const reviewUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/review`;
+  const formUrl = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/update/`);
+  const detailUrl = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/`);
+  const reviewUrl = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/review/`);
   const [confirmUrl, setConfirmUrl] = useState(detailUrl);
 
   useEffect(() => {

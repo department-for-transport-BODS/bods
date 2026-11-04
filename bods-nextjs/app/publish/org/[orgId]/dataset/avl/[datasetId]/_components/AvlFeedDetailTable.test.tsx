@@ -140,6 +140,53 @@ describe('AvlFeedDetailTable', () => {
     expect(tableContent.textContent).toContain('95%');
   });
 
+  it('links to the matching report download as a plain anchor when matching exists', () => {
+    render(<AvlFeedDetailTable feedDetail={mockFeedDetail} orgId="123" />);
+
+    const link = screen.getByRole('link', { name: 'Download matching report' });
+    expect(link.getAttribute('href')).toMatch(
+      /\/org\/123\/dataset\/avl\/456\/download-matching-report\/$/,
+    );
+    expect(link.getAttribute('href')).not.toMatch(/\/publish\/org/);
+  });
+
+  it.each([undefined, null])(
+    'shows Pending and hides the matching report link when there is no score (%p)',
+    (avlTimetablesMatching) => {
+      render(
+        <AvlFeedDetailTable
+          feedDetail={{
+            ...mockFeedDetail,
+            avlTimetablesMatching: avlTimetablesMatching as string | undefined,
+          }}
+          orgId="123"
+        />,
+      );
+
+      expect(screen.getByText('Pending')).toBeInTheDocument();
+      expect(screen.queryByText(/completely matched AVL to Timetables/)).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('link', { name: 'Download matching report' }),
+      ).not.toBeInTheDocument();
+    },
+  );
+
+  it('shows a 0% score and the matching report link like Django', () => {
+    render(
+      <AvlFeedDetailTable
+        feedDetail={{ ...mockFeedDetail, avlTimetablesMatching: '0%' }}
+        orgId="123"
+      />,
+    );
+
+    expect(screen.getByText('0% completely matched AVL to Timetables')).toBeInTheDocument();
+    expect(screen.queryByText('Pending')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Download matching report' })).toHaveAttribute(
+      'href',
+      expect.stringMatching(/\/org\/123\/dataset\/avl\/456\/download-matching-report\/$/),
+    );
+  });
+
   it('provides edit link for description when not dummy', () => {
     render(
       <AvlFeedDetailTable
@@ -161,10 +208,17 @@ describe('AvlFeedDetailTable', () => {
     );
 
     const editLinks = screen.getAllByRole('link', { name: /Edit/i });
-    expect(editLinks[0]).toHaveAttribute(
-      'href',
-      '/publish/org/org-123/dataset/avl/456/dataset-edit'
-    );
+    const href = editLinks[0].getAttribute('href');
+    expect(href).toMatch(/\/org\/org-123\/dataset\/avl\/456\/dataset-edit\/$/);
+    expect(href).not.toMatch(/\/publish\/org/);
+  });
+
+  it('links to the change log with a trailing slash like Django', () => {
+    render(<AvlFeedDetailTable feedDetail={mockFeedDetail} orgId="org-123" />);
+
+    const href = screen.getByRole('link', { name: 'View change log' }).getAttribute('href');
+    expect(href).toMatch(/\/org\/org-123\/dataset\/avl\/456\/changelog\/$/);
+    expect(href).not.toMatch(/\/publish\/org/);
   });
 
   it('does not show edit links for dummy feeds', () => {

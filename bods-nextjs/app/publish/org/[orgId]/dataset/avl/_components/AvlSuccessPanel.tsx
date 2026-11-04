@@ -12,8 +12,8 @@ export function AvlSuccessPanel({ update }: AvlSuccessPanelProps) {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
-  const listUrl = `/publish/org/${orgId}/dataset/avl`;
-  const detailUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}`;
+  const listUrl = publishAppPath(`/org/${orgId}/dataset/avl/`);
+  const detailUrl = publishAppPath(`/org/${orgId}/dataset/avl/${datasetId}/`);
 
   return (
     <div className="govuk-width-container">
@@ -48,7 +48,7 @@ export function AvlSuccessPanel({ update }: AvlSuccessPanelProps) {
               necessary an error report will be sent to you. If there are still missing fields at the end of 7 days
               the feed will change to a compliance error status. To learn more about the compliance error status and
               how it works please read the{' '}
-              <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements?section=buslocation')}>
+              <Link className="govuk-link" href={publishAppPath('/guidance/operator-requirements/?section=buslocation')}>
                 guidance page.
               </Link>
             </p>

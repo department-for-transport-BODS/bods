@@ -2,14 +2,15 @@
 
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { publishAppPath } from '@/config/client';
 
 export function AVLCreateCancelContent() {
   const params = useParams();
   const router = useRouter();
   const orgId = params.orgId as string;
 
-  const formUrl = `/publish/org/${orgId}/dataset/avl/new`;
-  const listUrl = `/publish/org/${orgId}/dataset/avl`;
+  const formUrl = publishAppPath(`/org/${orgId}/dataset/avl/new/`);
+  const listUrl = publishAppPath(`/org/${orgId}/dataset/avl/`);
 
   const goBackOrFallback = () => {
     if (globalThis.history.length > 1) {

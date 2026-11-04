@@ -22,7 +22,7 @@ export function AVLCreatePageContent({ avlIpAllowList }: { avlIpAllowList: strin
   const params = useParams();
   const orgId = params.orgId as string;
 
-  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
+  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements/');
   const contactSupportUrl = wwwPath('/contact');
   const [step, setStep] = useState<Step>('description');
 
@@ -139,7 +139,7 @@ export function AVLCreatePageContent({ avlIpAllowList }: { avlIpAllowList: strin
   };
 
   const onCancelClick = () => {
-    globalThis.location.href = `/publish/org/${orgId}/dataset/avl/new/cancel`;
+    globalThis.location.href = publishAppPath(`/org/${orgId}/dataset/avl/new/cancel/`);
   };
 
   const activeStep = step;

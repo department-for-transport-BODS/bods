@@ -5,6 +5,7 @@
  */
 
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { publishAppPath } from '@/config/client';
 import { AvlReviewPageContent } from './AvlReviewPageContent';
 
 const mockUseParams = jest.fn();
@@ -201,8 +202,21 @@ describe('AvlReviewPageContent', () => {
       expect(editLinks).toHaveLength(2);
       expect(editLinks[0]).toHaveAttribute(
         'href',
-        '/publish/org/org-123/dataset/avl/dataset-456/dataset-edit?mode=revision&redirect=%2Fpublish%2Forg%2Forg-123%2Fdataset%2Favl%2Fdataset-456%2Fupdate%2Freview',
+        publishAppPath(
+          '/org/org-123/dataset/avl/dataset-456/dataset-edit/?mode=revision&redirect=%2Forg%2Forg-123%2Fdataset%2Favl%2Fdataset-456%2Fupdate%2Freview%2F',
+        ),
       );
     });
+  });
+
+  it('links Delete and Publish correct data feed to public URLs with trailing slashes', async () => {
+    render(<AvlReviewPageContent isUpdate={false} />);
+
+    const deleteLink = await screen.findByRole('button', { name: 'Delete data feed' });
+    expect(deleteLink).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl/dataset-456/delete/'));
+    expect(screen.getByRole('button', { name: 'Publish correct data feed' })).toHaveAttribute(
+      'href',
+      publishAppPath('/org/org-123/dataset/avl/dataset-456/update/'),
+    );
   });
 });

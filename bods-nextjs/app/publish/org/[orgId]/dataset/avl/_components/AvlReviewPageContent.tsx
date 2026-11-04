@@ -57,13 +57,15 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
   const [hasReviewed, setHasReviewed] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const updateUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/update`;
-  const deleteUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/delete`;
-  const reviewUrl = isUpdate
-    ? `/publish/org/${orgId}/dataset/avl/${datasetId}/update/review`
-    : `/publish/org/${orgId}/dataset/avl/${datasetId}/review`;
-  const editUrl = `/publish/org/${orgId}/dataset/avl/${datasetId}/dataset-edit?mode=revision&redirect=${encodeURIComponent(reviewUrl)}`;
-  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
+  const datasetPath = `/org/${orgId}/dataset/avl/${datasetId}`;
+  const updateUrl = publishAppPath(`${datasetPath}/update/`);
+  const deleteUrl = publishAppPath(`${datasetPath}/delete/`);
+  // Same-origin public path handed to dataset-edit, which only accepts paths under this feed.
+  const reviewPath = isUpdate ? `${datasetPath}/update/review/` : `${datasetPath}/review/`;
+  const editUrl = publishAppPath(
+    `${datasetPath}/dataset-edit/?mode=revision&redirect=${encodeURIComponent(reviewPath)}`,
+  );
+  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements/');
   const contactSupportUrl = wwwPath('/contact');
 
   const handlePublish = async () => {
@@ -86,9 +88,9 @@ export function AvlReviewPageContent({ isUpdate }: AvlReviewPageContentProps) {
         publishPath,
       );
 
-      globalThis.location.href = data.redirect || (isUpdate
-        ? `/publish/org/${orgId}/dataset/avl/${datasetId}/update/success`
-        : `/publish/org/${orgId}/dataset/avl/${datasetId}/success`);
+      globalThis.location.href = data.redirect || publishAppPath(
+        isUpdate ? `${datasetPath}/update/success/` : `${datasetPath}/success/`,
+      );
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred while publishing. Please try again.');
       setIsPublishing(false);

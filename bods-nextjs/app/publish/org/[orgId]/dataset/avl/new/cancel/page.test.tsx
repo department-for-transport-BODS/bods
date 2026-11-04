@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { publishAppPath } from '@/config/client';
 import AVLCreateCancelPage from './page';
 
 const mockUseParams = jest.fn();
@@ -33,9 +34,9 @@ describe('AVLCreateCancelPage', () => {
     render(<AVLCreateCancelPage />);
 
     const backLink = screen.getByRole('link', { name: 'Back' });
-    expect(backLink).toHaveAttribute('href', '/publish/org/org-123/dataset/avl/new');
+    expect(backLink).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl/new/'));
 
     const confirmLink = screen.getByRole('button', { name: 'Confirm' });
-    expect(confirmLink).toHaveAttribute('href', '/publish/org/org-123/dataset/avl');
+    expect(confirmLink).toHaveAttribute('href', publishAppPath('/org/org-123/dataset/avl/'));
   });
 });

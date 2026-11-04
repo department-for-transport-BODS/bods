@@ -33,6 +33,23 @@ describe('subdomain routing proxy', () => {
       expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(`/publish${path}`);
     });
 
+    it('rewrites the PPC download paths to the publish route handlers', () => {
+      const paths = [
+        '/org/42/dataset/ppc-archive/',
+        '/org/42/dataset/avl/7/download-matching-report/',
+        '/org/42/dataset/avl/7/validation-report/',
+      ];
+
+      paths.forEach((path) => {
+        const url = `https://publish.xyz.com${path}`;
+        const response = proxy(request(url, 'publish.xyz.com'));
+
+        expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(
+          `/publish${path}`,
+        );
+      });
+    });
+
     it('rewrites operator requirements on the publish host without losing the section query', () => {
       const url = 'https://publish.xyz.com/guidance/operator-requirements?section=dataquality';
       const response = proxy(request(url, 'publish.xyz.com'));
