@@ -9,7 +9,8 @@ import { dataApiPath } from '@/lib/api-paths';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
-import Image from 'next/image'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 interface BrowserDatasetItem {
   id: number;
@@ -299,7 +300,9 @@ function DatasetBrowserPageInner({
               {status && (
                 <div className="app-data-browser__filter-pillbox">
                   <span className="app-data-browser__filter-pill">
-                    <button type="button" className="app-data-browser__pill-remove" onClick={() => updateQuery({ status: '' })}><Image src="/assets/images/icon-cross.png" alt="" width={18} height={19}/></button>
+                    <button type="button" className="app-data-browser__pill-remove" aria-label={`Remove filter: ${status === 'published' ? 'Published' : 'Inactive'}`} onClick={() => updateQuery({ status: '' })}>
+                      <FontAwesomeIcon icon={faXmark} width={18} height={19} aria-hidden="true" />
+                    </button>
                     {status === 'published' ? 'Published' : 'Inactive'}
                   </span>
                 </div>
