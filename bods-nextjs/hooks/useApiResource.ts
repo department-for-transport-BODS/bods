@@ -10,6 +10,7 @@ export function useApiResource<T>(
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [errorStatus, setErrorStatus] = useState<number | null>(null);
 
   useEffect(() => {
     let isCancelled = false;
@@ -17,6 +18,7 @@ export function useApiResource<T>(
     const loadResource = async () => {
       setIsLoading(true);
       setError('');
+      setErrorStatus(null);
 
       try {
         const response = await fetchResource();
@@ -27,6 +29,8 @@ export function useApiResource<T>(
         if (!isCancelled) {
           const errorMessage = err instanceof Error ? err.message : fallbackError;
           setError(errorMessage);
+          const status = (err as { status?: unknown } | null)?.status;
+          setErrorStatus(typeof status === 'number' ? status : null);
         }
       } finally {
         if (!isCancelled) {
@@ -42,5 +46,5 @@ export function useApiResource<T>(
     };
   }, [fallbackError, fetchResource]);
 
-  return { data, isLoading, error };
+  return { data, isLoading, error, errorStatus };
 }

@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AgentDashboardPage from './page';
 import { api } from '@/lib/api-client';
+import { publishAppPath } from '@/config/client';
+import { metadata as agentDashboardMetadata } from './layout';
 
 jest.mock('@/components/auth/ProtectedRoute', () => ({
   ProtectedRoute: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -14,6 +16,10 @@ jest.mock('@/lib/api-client', () => ({
 }));
 
 describe('Agent Dashboard - Page', () => {
+  it('uses the Django page title', () => {
+    expect(agentDashboardMetadata.title).toBe('Agent dashboard');
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -23,6 +29,10 @@ describe('Agent Dashboard - Page', () => {
 
     render(<AgentDashboardPage />);
 
+    expect(screen.getByRole('link', { name: 'Agent Dashboard' })).toHaveAttribute(
+      'href',
+      publishAppPath('/agent-dashboard'),
+    );
     expect(await screen.findByText(/don't have any operators yet/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Go to My Account' })).toHaveAttribute(
       'href',
@@ -46,7 +56,7 @@ describe('Agent Dashboard - Page', () => {
     render(<AgentDashboardPage />);
 
     const link = await screen.findByRole('link', { name: 'Acme Buses' });
-    expect(link).toHaveAttribute('href', '/publish/org/42/dataset/timetable');
+    expect(link).toHaveAttribute('href', publishAppPath('/org/42/dataset/timetable'));
     expect(screen.getByText('2')).toBeInTheDocument();
   });
 

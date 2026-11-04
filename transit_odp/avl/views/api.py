@@ -23,6 +23,7 @@ from transit_odp.avl.models import (
     PPCReportType,
 )
 from transit_odp.avl.tasks import task_validate_avl_feed
+from transit_odp.avl.views.list import ListView as AVLListView
 from transit_odp.avl.views.review import ERROR_DESCRIPTIONS
 from transit_odp.avl.views.utils import get_validation_task_result_from_revision_id
 import pytz
@@ -38,6 +39,7 @@ from transit_odp.publish.requires_attention import (
     get_avl_requires_attention_line_level_data,
 )
 from transit_odp.publish.forms import dataset
+from transit_odp.publish.views.review_list_api import AVL, build_review_list_response
 from transit_odp.timetables.tasks import delete_dataset_revision
 from waffle import flag_is_active
 
@@ -493,149 +495,7 @@ def edit_avl_dataset_description_api(request, pk1, pk):
 
 @require_GET
 def list_avl_datasets_api(request, pk1):
-    user, organisation, _, error_response = _get_request_context(request, pk1)
-    if error_response is not None:
-        return error_response
-
-    tab = request.GET.get("tab", "active")
-    sort_by = request.GET.get("sort_by", "modified")
-    order = request.GET.get("order", "desc")
-    page_value = request.GET.get("page", "1")
-
-    try:
-        page_number = max(1, int(page_value))
-    except (TypeError, ValueError):
-        page_number = 1
-
-    # Map frontend column names to model fields
-    sort_field_map = {
-        "status": "live_revision__status",
-        "name": "live_revision__name",
-        "id": "id",
-        "percent_matching": "percent_matching",
-        "avl_feed_last_checked": "avl_feed_last_checked",
-        "short_description": "live_revision__short_description",
-        "modified": "modified",
-    }
-
-    draft_sort_field_map = {
-        "status": "status",
-        "name": "name",
-        "id": "dataset_id",
-        "avl_feed_last_checked": "dataset__avl_feed_last_checked",
-        "short_description": "short_description",
-        "modified": "modified",
-    }
-
-    if tab == "draft":
-        draft_sort_field = draft_sort_field_map.get(sort_by, "modified")
-        if order != "asc":
-            draft_sort_field = f"-{draft_sort_field}"
-
-        draft_qs = (
-            DatasetRevision.objects.filter(
-                dataset__organisation_id=organisation.id,
-                dataset__dataset_type=DatasetType.AVL.value,
-                is_published=False,
-                is_deleted=False,
-            )
-            .exclude(
-                status__in=[
-                    FeedStatus.inactive.value,
-                    FeedStatus.expired.value,
-                ]
-            )
-            .select_related("dataset", "dataset__live_revision")
-            .order_by(draft_sort_field)
-        )
-
-        draft_results = []
-        for revision in draft_qs:
-            draft_results.append(
-                {
-                    "id": revision.dataset_id,
-                    "name": revision.name or "",
-                    "status": revision.status,
-                    "has_live_revision": revision.dataset.live_revision is not None,
-                    "short_description": revision.short_description or "",
-                    "avl_feed_last_checked": None,
-                    "modified": revision.modified.isoformat()
-                    if revision.modified
-                    else None,
-                }
-            )
-
-        paginator = Paginator(draft_results, 10)
-        page_obj = paginator.get_page(page_number)
-
-        return JsonResponse(
-            {
-                "count": len(draft_results),
-                "page": page_obj.number,
-                "pageSize": 10,
-                "totalPages": paginator.num_pages or 1,
-                "hasNext": page_obj.has_next(),
-                "hasPrevious": page_obj.has_previous(),
-                "results": page_obj.object_list,
-            }
-        )
-
-    sort_field = sort_field_map.get(sort_by, "modified")
-    if order != "asc":
-        sort_field = f"-{sort_field}"
-
-    qs = (
-        Dataset.objects.filter(
-            organisation_id=organisation.id,
-            dataset_type=DatasetType.AVL.value,
-        )
-        .select_related("live_revision")
-        .order_by(sort_field)
-    )
-
-    if tab == "active":
-        qs = qs.filter(live_revision__status="live")
-    elif tab == "archive":
-        qs = qs.filter(live_revision__status__in=["inactive", "expired"])
-    else:
-        qs = qs.filter(live_revision__status="live")
-
-    results = []
-    for dataset in qs:
-        revision = dataset.live_revision
-        if revision is None:
-            continue
-        results.append(
-            {
-                "id": dataset.id,
-                "name": revision.name or "",
-                "status": revision.status,
-                "short_description": revision.short_description or "",
-                "avl_feed_last_checked": (
-                    dataset.avl_feed_last_checked.isoformat()
-                    if dataset.avl_feed_last_checked
-                    else None
-                ),
-                "modified": revision.modified.isoformat()
-                if revision.modified
-                else None,
-            }
-        )
-
-    paginator = Paginator(results, 10)
-    page_obj = paginator.get_page(page_number)
-
-    return JsonResponse(
-        {
-            "count": len(results),
-            "page": page_obj.number,
-            "pageSize": 10,
-            "totalPages": paginator.num_pages or 1,
-            "hasNext": page_obj.has_next(),
-            "hasPrevious": page_obj.has_previous(),
-            "results": page_obj.object_list,
-        }
-    )
+    return build_review_list_response(request, pk1, AVLListView, AVL)
 
 
 def _get_avl_requires_attention_rows(org_id):
