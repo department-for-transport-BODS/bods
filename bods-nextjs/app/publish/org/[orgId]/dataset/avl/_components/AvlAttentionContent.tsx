@@ -5,7 +5,8 @@ import { useCallback } from 'react';
 import { useApiResource } from '@/hooks/useApiResource';
 import { Pagination } from '@/components/shared/Pagination';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
-import { HOSTS } from '@/config/client';
+import { publishAppPath } from '@/config/client';
+import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 interface AttentionSummary {
   available: boolean;
@@ -67,16 +68,15 @@ export function AvlAttentionContent() {
   } = useApiResource<AttentionPageResponse>(loadAttentionData, 'Unable to load service code attention data.');
 
   const summary = data?.summary;
-  const backUrl = `/publish/org/${orgId}/dataset/avl`;
-  const pageBaseUrl = `/publish/org/${orgId}/dataset/avl/attention`;
+  const backUrl = publishAppPath(`/org/${orgId}/dataset/avl/`);
+  const pageBaseUrl = publishAppPath(`/org/${orgId}/dataset/avl/attention/`);
 
   return (
     <>
       <div className="govuk-width-container">
         <Breadcrumbs
-          items={[
-            { label: 'Bus Open Data Service', href: HOSTS.www },
-            { label: 'Publish Bus Open Data', href: HOSTS.publish },
+          items={hostBreadcrumbs(
+            'publish',
             {
               label: 'Review My Bus Location Data',
               href: backUrl,
@@ -86,7 +86,7 @@ export function AvlAttentionContent() {
               href: pageBaseUrl,
               current: true,
             },
-          ]}
+          )}
         />
       </div>
 
