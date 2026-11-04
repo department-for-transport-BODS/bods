@@ -195,6 +195,34 @@ def _serialize_timetable(
     }
 
 
+def build_publish_line_detail_payload(request, organisation, revision) -> dict:
+    """Line properties and timetable for one revision, as shown on publish."""
+    line = request.GET.get("line")
+    service_code = request.GET.get("service")
+    service_type = get_service_type(revision.id, service_code, line)
+    current_valid_files = get_current_files(revision.id, service_code, line)
+    booking_info = None
+    if service_type in ("Flexible", "Flexible/Standard"):
+        booking_info = get_valid_files(
+            revision.id, current_valid_files, service_code, line
+        )
+
+    return {
+        "orgId": organisation.id,
+        "datasetId": revision.dataset_id,
+        "revisionId": revision.id,
+        "feedName": revision.name,
+        "lineName": line,
+        "serviceCode": service_code,
+        "serviceType": service_type,
+        "currentValidFiles": _serialize_files(current_valid_files),
+        **_serialize_booking(service_type, booking_info),
+        "timetable": _serialize_timetable(
+            request, revision.id, service_code, line, public_use=False
+        ),
+    }
+
+
 @require_GET
 def get_timetables_line_detail_api(request, pk1, pk):
     """Publish ``revision-line-detail`` page data."""
@@ -215,31 +243,8 @@ def get_timetables_line_detail_api(request, pk1, pk):
     if revision is None:
         return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
 
-    line = request.GET.get("line")
-    service_code = request.GET.get("service")
-    service_type = get_service_type(revision.id, service_code, line)
-    current_valid_files = get_current_files(revision.id, service_code, line)
-    booking_info = None
-    if service_type in ("Flexible", "Flexible/Standard"):
-        booking_info = get_valid_files(
-            revision.id, current_valid_files, service_code, line
-        )
-
     return JsonResponse(
-        {
-            "orgId": organisation.id,
-            "datasetId": revision.dataset_id,
-            "revisionId": revision.id,
-            "feedName": revision.name,
-            "lineName": line,
-            "serviceCode": service_code,
-            "serviceType": service_type,
-            "currentValidFiles": _serialize_files(current_valid_files),
-            **_serialize_booking(service_type, booking_info),
-            "timetable": _serialize_timetable(
-                request, revision.id, service_code, line, public_use=False
-            ),
-        }
+        build_publish_line_detail_payload(request, organisation, revision)
     )
 
 

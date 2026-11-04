@@ -382,6 +382,10 @@ def publish_fares_dataset_api(request, pk1, pk):
     if _is_loading_status(revision.status):
         return JsonResponse({"error": "Dataset is still processing"}, status=409)
 
+    # Django: PublishRevisionView -> success/, UpdateRevisionPublishView ->
+    # update/success/. Only an update has a live revision before publishing.
+    success_path = "update/success" if revision.dataset.live_revision_id else "success"
+
     if not revision.is_published:
         try:
             revision.publish(user)
@@ -408,7 +412,7 @@ def publish_fares_dataset_api(request, pk1, pk):
 
     return JsonResponse(
         {
-            "redirect": f"/publish/org/{pk1}/dataset/fares/{pk}/publish-success",
+            "redirect": f"/publish/org/{pk1}/dataset/fares/{pk}/{success_path}",
             "published": True,
         },
         status=200,
@@ -493,8 +497,9 @@ def update_fares_dataset_api(request, pk1, pk):
         revision.save()
         _trigger_fares_processing(revision)
 
+    # Django's FeedUpdateWizard and the modify views all end on update/review.
     return JsonResponse(
-        {"redirect": f"/publish/org/{pk1}/dataset/fares/{pk}/review"},
+        {"redirect": f"/publish/org/{pk1}/dataset/fares/{pk}/update/review"},
         status=201,
     )
 

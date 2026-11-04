@@ -14,7 +14,7 @@ import { PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 import { dataApiPath } from '@/lib/api-paths';
-import { publishAppPath } from '@/config/client';
+import { publishAppPath, wwwPath } from '@/config/client';
 import { formatDateTime, formatDateTimeWithAbbreviatedMonth } from '@/lib/utils/date';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
 
@@ -498,16 +498,39 @@ function FaresStopMapPreview({ revisionId, mapboxToken }: Readonly<FaresStopMapP
   );
 }
 
-function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
+/**
+ * Where to go after publishing: Django's ReviewView uses `success` and UpdateRevisionPublishView uses
+ * `update/success`.
+ */
+export const getFaresPublishRedirect = ({
+  orgId,
+  datasetId,
+  isUpdate,
+}: {
+  orgId: string;
+  datasetId: string;
+  isUpdate: boolean;
+}) => publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/${isUpdate ? 'update/success' : 'success'}`);
+
+type FaresReviewPageContentProps = {
+  mapboxToken: string;
+  /** Django `fares.views.review.UpdateRevisionPublishView` (`update/review/`). */
+  isUpdate?: boolean;
+};
+
+function FaresReviewPageContent({ mapboxToken, isUpdate = false }: Readonly<FaresReviewPageContentProps>) {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
 
-  const faresListUrl = `/publish/org/${orgId}/dataset/fares`;
-  const modifyDraftUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/update?modifyDraft=true`;
-  const supportBusOperatorsUrl = '/publish/guide-me';
+  // Django's fares error and warning panels always link to `fares:upload-modify` (`review/update`).
+  const uploadModifyUrl = publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/review/update`);
+  // Django `FaresRevisionPublishFormViolations` always sends "Update data" to `fares:update-modify`.
+  const updateModifyUrl = publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/update/review/update`);
+  const revisionEditUrl = publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}/revision-edit/`);
+  const supportBusOperatorsUrl = publishAppPath('/guidance/operator-requirements');
   const dataQualityGuidanceUrl = `${supportBusOperatorsUrl}?section=dataquality`;
-  const contactSupportUrl = '/account';
+  const contactSupportUrl = wwwPath('/contact');
 
   const {
     statusData,
@@ -521,13 +544,16 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
   );
   const [isPublishing, setIsPublishing] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
+
+  useEffect(() => {
+    document.title = 'Review and publish';
+  }, []);
   const loading = statusData?.loading ?? true;
   const hasBlockingError = Boolean(statusData?.error) || statusData?.status === 'error';
   const canPublish = !hasBlockingError;
   const hasProfileViolations = Boolean(
     statusData?.isFaresValidatorActive && statusData?.validatorError,
   );
-  const isUpdate = statusData?.hasLiveRevision ?? false;
 
   const handlePublish = async () => {
     if (isPublishing) {
@@ -538,11 +564,9 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
     setErrorMessage('');
 
     try {
-      const data = await api.post<{
-        redirect?: string;
-      }>(`/api/publish/fares/publish/${orgId}/${datasetId}/`);
+      await api.post(`/api/publish/fares/publish/${orgId}/${datasetId}/`);
 
-      globalThis.location.href = data.redirect || faresListUrl;
+      globalThis.location.href = getFaresPublishRedirect({ orgId, datasetId, isUpdate });
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred while publishing. Please try again.');
       setIsPublishing(false);
@@ -661,7 +685,7 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
                     schemaValidationReportUrl={statusData?.schemaValidationReportUrl}
                     contactSupportUrl={contactSupportUrl}
                     guidanceUrl={dataQualityGuidanceUrl}
-                    updateUrl={modifyDraftUrl}
+                    updateUrl={uploadModifyUrl}
                   />
                 ) : null}
 
@@ -681,7 +705,7 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
                       <>
                         <h3 className="govuk-heading-m govuk-!-margin-top-6">Recommended actions</h3>
                         <div className="button-holder">
-                          <Link className="govuk-button" href={modifyDraftUrl} style={{ marginRight: '1.5rem' }}>
+                          <Link className="govuk-button" href={updateModifyUrl} style={{ marginRight: '1.5rem' }}>
                             Update data
                           </Link>
                           <Link
@@ -702,13 +726,14 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
                         <div className="govuk-checkboxes__item">
                           <input
                             className="govuk-checkboxes__input"
-                            id="publish-review-confirmation"
-                            name="publish-review-confirmation"
+                            id="id_consent"
+                            name="consent"
                             type="checkbox"
+                            required
                             checked={hasReviewed}
                             onChange={(event) => setHasReviewed(event.target.checked)}
                           />
-                          <label className="govuk-label govuk-checkboxes__label" htmlFor="publish-review-confirmation">
+                          <label className="govuk-label govuk-checkboxes__label" htmlFor="id_consent">
                             {hasProfileViolations
                               ? 'I acknowledge my data does not meet the required standard, as detailed in the validation report, and I am publishing non-compliant data to the Bus Open Data Service.'
                               : 'I have reviewed the submission and wish to publish my data'}
@@ -764,13 +789,29 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
                       <th scope="row" className="govuk-table__header">
                         Description
                       </th>
-                      <td className="govuk-table__cell">{statusData?.description || '-'}</td>
+                      <td className="govuk-table__cell">
+                        <div className="flex-between">
+                          {statusData?.description || '-'}
+                          <span>
+                            <a className="right-justify govuk-link" href={revisionEditUrl}>
+                              Edit
+                            </a>
+                          </span>
+                        </div>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">
                         Short description
                       </th>
-                      <td className="govuk-table__cell">{statusData?.shortDescription || '-'}</td>
+                      <td className="govuk-table__cell dont-break-out">
+                        <div className="flex-between">
+                          {statusData?.shortDescription || '-'}
+                          <a className="govuk-link" href={revisionEditUrl}>
+                            Edit
+                          </a>
+                        </div>
+                      </td>
                     </tr>
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">
@@ -903,10 +944,10 @@ function FaresReviewPageContent({ mapboxToken }: { mapboxToken: string }) {
   );
 }
 
-export default function FaresReviewPage({ mapboxToken }: { mapboxToken: string }) {
+export default function FaresReviewPage({ mapboxToken, isUpdate = false }: Readonly<FaresReviewPageContentProps>) {
   return (
     <ProtectedRoute>
-      <FaresReviewPageContent mapboxToken={mapboxToken} />
+      <FaresReviewPageContent mapboxToken={mapboxToken} isUpdate={isUpdate} />
     </ProtectedRoute>
   );
 }
