@@ -26,6 +26,13 @@ describe('subdomain routing proxy', () => {
       expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe('/publish/org/42');
     });
 
+    it.each(['/gatekeeper', '/abods-gatekeeper'])('rewrites the publish gatekeeper page %s to the internal publish route', (path) => {
+      const url = `https://publish.xyz.com${path}`;
+      const response = proxy(request(url, 'publish.xyz.com'));
+
+      expect(new URL(response.headers.get('x-middleware-rewrite')!, url).pathname).toBe(`/publish${path}`);
+    });
+
     it('rewrites operator requirements on the publish host without losing the section query', () => {
       const url = 'https://publish.xyz.com/guidance/operator-requirements?section=dataquality';
       const response = proxy(request(url, 'publish.xyz.com'));

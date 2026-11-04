@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { api } from '@/lib/api-client';
-import { HOSTS } from '@/config/client';
+import { HOSTS, publishAppPath } from '@/config/client';
 
 interface AgentOrganisation {
   id: number;
@@ -80,7 +80,11 @@ function AgentDashboard() {
           items={[
             { label: 'Bus Open Data Service', href: HOSTS.www },
             { label: 'Publish Bus Open Data', href: HOSTS.publish },
-            { label: 'Agent Dashboard', current: true },
+            {
+              label: 'Agent Dashboard',
+              href: publishAppPath('/agent-dashboard'),
+              current: true,
+            },
           ]}
         />
 
@@ -138,7 +142,7 @@ function AgentDashboard() {
                       <td className="govuk-table__cell govuk-!-font-weight-bold">
                         <Link
                           className="govuk-link"
-                          href={`/publish/org/${organisation.id}/dataset/timetable`}
+                          href={publishAppPath(`/org/${organisation.id}/dataset/timetable`)}
                         >
                           {organisation.name}
                         </Link>

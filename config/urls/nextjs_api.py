@@ -28,9 +28,24 @@ from transit_odp.fares.views.api import (
     publish_fares_dataset_api,
     update_fares_dataset_api,
 )
+from transit_odp.fares.views.requires_attention_api import (
+    get_fares_requires_attention_api,
+)
 from transit_odp.publish.views.api import (
     ProgressAPIView,
     get_agent_dashboard_organisations_api,
+)
+from transit_odp.publish.views.requires_attention_api import (
+    get_timetable_requires_attention_api,
+)
+from transit_odp.publish.views.seasonal_services_api import (
+    create_seasonal_service_api,
+    delete_seasonal_service_api,
+    get_seasonal_service_api,
+    get_seasonal_service_licences_api,
+    list_seasonal_services_api,
+    update_seasonal_service_dates_api,
+    validate_seasonal_service_licence_api,
 )
 from transit_odp.timetables.views.api import (
     create_timetables_dataset_api,
@@ -190,6 +205,16 @@ urlpatterns = [
     ),
     path("fares/list/<int:pk1>/", get_fares_list_api, name="nextjs-fares-list"),
     path(
+        "fares/requires-attention/<int:pk1>/",
+        get_fares_requires_attention_api,
+        name="nextjs-fares-requires-attention",
+    ),
+    path(
+        "timetables/requires-attention/<int:pk1>/",
+        get_timetable_requires_attention_api,
+        name="nextjs-timetables-requires-attention",
+    ),
+    path(
         "fares/review-status/<int:pk1>/<int:pk>/",
         get_fares_review_status_api,
         name="nextjs-fares-review-status",
@@ -306,5 +331,40 @@ urlpatterns = [
         "org/<int:pk1>/dataset/timetable/upload/",
         create_timetables_dataset_api,
         name="nextjs-timetables-upload-compat",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/",
+        list_seasonal_services_api,
+        name="nextjs-seasonal-services-list",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/licences/",
+        get_seasonal_service_licences_api,
+        name="nextjs-seasonal-services-licences",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/validate-licence/",
+        validate_seasonal_service_licence_api,
+        name="nextjs-seasonal-services-validate-licence",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/create/",
+        create_seasonal_service_api,
+        name="nextjs-seasonal-services-create",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/delete/",
+        delete_seasonal_service_api,
+        name="nextjs-seasonal-services-delete",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/<int:pk>/",
+        get_seasonal_service_api,
+        name="nextjs-seasonal-services-detail",
+    ),
+    path(
+        "seasonal-services/<int:pk1>/<int:pk>/update/",
+        update_seasonal_service_dates_api,
+        name="nextjs-seasonal-services-update",
     ),
 ]
