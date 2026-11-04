@@ -2,13 +2,17 @@ from django.contrib.auth import get_user
 from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import (
+    require_GET,
+    require_http_methods,
+    require_POST,
+)
 from django_hosts import reverse
 from waffle import flag_is_active
 
 import config.hosts
 from transit_odp.publish.forms import (
-    EditFeedDescriptionForm,
+    FeedCommentForm,
     FeedDescriptionForm,
     FeedUploadForm,
 )
@@ -37,6 +41,8 @@ AUTH_REQUIRED_ERROR = "Authentication required"
 ORG_ACCESS_REQUIRED_ERROR = "Org user access required"
 ORG_NOT_FOUND_ERROR = "Organisation not found"
 REVISION_NOT_FOUND_ERROR = "Dataset revision not found"
+DATASET_NOT_FOUND_ERROR = "Dataset not found"
+DRAFT_EXISTS_ERROR = "A draft update already exists"
 
 
 def _authenticate_user(request):
@@ -248,11 +254,12 @@ def create_timetables_dataset_api(request, pk1):
     return JsonResponse({"redirect": review_url}, status=201)
 
 
-@require_POST
-def update_timetables_dataset_api(request, pk1, pk):
-    user, _, revision, error_response = _get_request_context(request, pk1, pk)
-    if error_response is not None:
-        return error_response
+def _modify_timetables_draft(request, user, pk1, pk):
+    """Django ``TimetableUploadModify`` / ``DatasetUpdateModify``: replace the
+    data of the existing draft revision."""
+    revision = _get_revision_for_dataset(pk1, pk)
+    if revision is None:
+        return JsonResponse({"error": REVISION_NOT_FOUND_ERROR}, status=404)
 
     upload_form = FeedUploadForm(
         data=request.POST,
@@ -274,10 +281,85 @@ def update_timetables_dataset_api(request, pk1, pk):
         revision.save()
         _trigger_timetables_processing(revision)
 
+    # DatasetUpdateModify returns to update/review, TimetableUploadModify to review.
+    is_update = request.POST.get("is_update") == "true"
+    review_path = "update/review" if is_update else "review"
     return JsonResponse(
-        {"redirect": f"/publish/org/{pk1}/dataset/timetable/{pk}/review"},
+        {"redirect": f"/publish/org/{pk1}/dataset/timetable/{pk}/{review_path}"},
         status=201,
     )
+
+
+def _start_timetables_update(request, user, dataset):
+    """Django ``FeedUpdateWizard``: start a new draft revision from the live
+    data set with a comment and new data."""
+    if dataset.revisions.get_draft().exists():
+        return JsonResponse({"error": DRAFT_EXISTS_ERROR}, status=409)
+
+    revision = dataset.start_revision()
+    comment_form = FeedCommentForm(data=request.POST, instance=revision, is_update=True)
+    if not comment_form.is_valid():
+        return JsonResponse(
+            {
+                "error": "Comment validation failed",
+                "field_errors": comment_form.errors,
+            },
+            status=400,
+        )
+
+    upload_form = FeedUploadForm(
+        data=request.POST, files=request.FILES, instance=revision, is_update=True
+    )
+    if not upload_form.is_valid():
+        return JsonResponse(
+            {"error": "Upload validation failed", "field_errors": upload_form.errors},
+            status=400,
+        )
+
+    all_data = {}
+    all_data.update(comment_form.cleaned_data)
+    all_data.update(upload_form.cleaned_data)
+    all_data["last_modified_user"] = user
+
+    with transaction.atomic():
+        for key, value in all_data.items():
+            setattr(revision, key, value)
+        revision.save()
+        _trigger_timetables_processing(revision)
+
+    return JsonResponse(
+        {
+            "redirect": (
+                f"/publish/org/{dataset.organisation_id}/dataset/timetable/"
+                f"{dataset.id}/update/review"
+            )
+        },
+        status=201,
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def update_timetables_dataset_api(request, pk1, pk):
+    user, organisation, _, error_response = _get_request_context(request, pk1)
+    if error_response is not None:
+        return error_response
+
+    dataset = Dataset.objects.filter(
+        id=pk,
+        organisation_id=organisation.id,
+        dataset_type=DatasetType.TIMETABLE.value,
+    ).first()
+    if dataset is None:
+        return JsonResponse({"error": DATASET_NOT_FOUND_ERROR}, status=404)
+
+    if request.method == "GET":
+        # Django's FeedUpdateWizard binds its upload form to ``start_revision()``,
+        # which copies the live revision's URL link.
+        return JsonResponse({"urlLink": dataset.start_revision().url_link or ""})
+
+    if request.POST.get("modify_draft") == "true":
+        return _modify_timetables_draft(request, user, pk1, pk)
+    return _start_timetables_update(request, user, dataset)
 
 
 @require_GET
@@ -445,46 +527,6 @@ def get_timetables_review_status_api(request, pk1, pk):
 
 
 @require_GET
-def get_timetables_dataset_edit_api(request, pk1, pk):
-    _, _, revision, error_response = _get_request_context(request, pk1, pk)
-    if error_response is not None:
-        return error_response
-
-    return JsonResponse(
-        {
-            "datasetId": revision.dataset_id,
-            "name": revision.name or "",
-            "description": revision.description or "",
-            "shortDescription": revision.short_description or "",
-        },
-        status=200,
-    )
-
-
-@require_POST
-def edit_timetables_dataset_description_api(request, pk1, pk):
-    _, _, revision, error_response = _get_request_context(request, pk1, pk)
-    if error_response is not None:
-        return error_response
-
-    form = EditFeedDescriptionForm(data=request.POST, instance=revision)
-    if not form.is_valid():
-        return JsonResponse(
-            {"error": "Description validation failed", "field_errors": form.errors},
-            status=400,
-        )
-
-    revision.description = form.cleaned_data["description"]
-    revision.short_description = form.cleaned_data["short_description"]
-    revision.save()
-
-    return JsonResponse(
-        {"redirect": f"/publish/org/{pk1}/dataset/timetable/{pk}/review"},
-        status=200,
-    )
-
-
-@require_GET
 def get_timetables_list_api(request, pk1):
     return build_review_list_response(request, pk1, TimetableListView, TIMETABLE)
 
@@ -498,12 +540,16 @@ def publish_timetables_dataset_api(request, pk1, pk):
     if _is_loading_status(revision.status):
         return JsonResponse({"error": "Dataset is still processing"}, status=409)
 
+    # Django: PublishRevisionView -> success/, UpdateRevisionPublishView ->
+    # update/success/. Only an update has a live revision before publishing.
+    success_path = "update/success" if revision.dataset.live_revision_id else "success"
+
     if not revision.is_published:
         revision.publish(user)
 
     return JsonResponse(
         {
-            "redirect": f"/publish/org/{pk1}/dataset/timetable",
+            "redirect": f"/publish/org/{pk1}/dataset/timetable/{pk}/{success_path}",
             "published": True,
         },
         status=200,

@@ -1,11 +1,15 @@
 'use client';
 
 /**
- * Publish line detail (preview of a line in a timetable revision under review)
- *
- * Source: transit_odp/publish/templates/publish/revision_review/review_line_metadata.html
- * View: transit_odp/timetables/views/review.py - LineMetadataRevisionView
- * API: transit_odp/timetables/views/line_detail_api.py - get_timetables_line_detail_api
+ * Publish line detail. Two variants share this component:
+ * - review (default): preview of a line in a revision under review.
+ *   Source: transit_odp/publish/templates/publish/revision_review/review_line_metadata.html
+ *   View: transit_odp/timetables/views/review.py - LineMetadataRevisionView
+ *   API: transit_odp/timetables/views/line_detail_api.py - get_timetables_line_detail_api
+ * - published: a line of the live revision, linked from the feed-detail page.
+ *   Source: transit_odp/publish/templates/publish/dataset_detail/review_line_metadata.html
+ *   View: transit_odp/publish/views/timetable/detail.py - LineMetadataDetailView
+ *   API: transit_odp/publish/views/timetable_feed_detail_api.py - get_timetables_feed_line_detail_api
  */
 
 import { notFound, useParams, useSearchParams } from 'next/navigation';
@@ -13,15 +17,22 @@ import { Suspense, useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { MapboxRouteMap } from '@/components/data/MapboxRouteMap';
 import { ErrorSummary } from '@/components/shared';
+import { OperatorRequirementsHelp } from '@/components/publish/OperatorRequirementsHelp';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { LinePropertyTable } from '@/components/timetables/LinePropertyTable';
 import type { PublishLineDetail } from '@/components/timetables/line-detail-types';
 import { TimetableVisualiser } from '@/components/timetables/TimetableVisualiser';
-import { publishAppPath, wwwPath } from '@/config/client';
+import { publishAppPath } from '@/config/client';
 import { ApiError, api } from '@/lib/api-client';
 import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
-function LineDetail({ isTimetableVisualiserActive }: { isTimetableVisualiserActive: boolean }) {
+interface LineDetailProps {
+  isTimetableVisualiserActive: boolean;
+  /** Show a line of the live revision (feed-detail flow) instead of a revision under review. */
+  published?: boolean;
+}
+
+function LineDetail({ isTimetableVisualiserActive, published = false }: LineDetailProps) {
   const params = useParams();
   const searchParams = useSearchParams();
   const orgId = params.orgId as string;
@@ -33,7 +44,8 @@ function LineDetail({ isTimetableVisualiserActive }: { isTimetableVisualiserActi
 
   const query = new URLSearchParams(searchParams.toString());
   query.set('includeTimetable', String(isTimetableVisualiserActive));
-  const apiPath = `/api/publish/timetables/line-detail/${orgId}/${datasetId}/?${query.toString()}`;
+  const apiResource = published ? 'feed-line-detail' : 'line-detail';
+  const apiPath = `/api/publish/timetables/${apiResource}/${orgId}/${datasetId}/?${query.toString()}`;
 
   useEffect(() => {
     let cancelled = false;
@@ -74,11 +86,13 @@ function LineDetail({ isTimetableVisualiserActive }: { isTimetableVisualiserActi
   }
 
   const datasetPath = `/org/${orgId}/dataset/timetable/${datasetId}`;
-  const selfQuery = new URLSearchParams({
-    line: line.lineName,
-    revision_id: String(line.revisionId),
-    service: line.serviceCode,
-  });
+  const selfQuery = new URLSearchParams(
+    published
+      ? { line: line.lineName, service: line.serviceCode }
+      : { line: line.lineName, revision_id: String(line.revisionId), service: line.serviceCode },
+  );
+  const datasetCrumbHref = published ? datasetPath : `${datasetPath}/review`;
+  const lineCrumbHref = `${datasetPath}/${published ? 'detail' : 'review/detail'}?${selfQuery.toString()}`;
 
   return (
     <div className="govuk-width-container">
@@ -87,8 +101,8 @@ function LineDetail({ isTimetableVisualiserActive }: { isTimetableVisualiserActi
           'publish',
           { label: 'Choose data type', href: publishAppPath(`/org/${orgId}/dataset`) },
           { label: 'Timetables Data Sets', href: publishAppPath(`/org/${orgId}/dataset/timetable`) },
-          { label: line.feedName, href: publishAppPath(`${datasetPath}/review`), truncateAt: 20 },
-          { label: line.lineName, href: publishAppPath(`${datasetPath}/review/detail?${selfQuery.toString()}`) },
+          { label: line.feedName, href: publishAppPath(datasetCrumbHref), truncateAt: 20 },
+          { label: line.lineName, href: publishAppPath(lineCrumbHref) },
         )}
       />
       <div className="govuk-main-wrapper">
@@ -111,19 +125,7 @@ function LineDetail({ isTimetableVisualiserActive }: { isTimetableVisualiserActi
             <LinePropertyTable line={line} />
           </div>
           <div className="govuk-grid-column-one-third">
-            <h2 className="govuk-heading-m">Need help with operator data requirements?</h2>
-            <ul className="govuk-list app-list--nav govuk-!-font-size-19">
-              <li>
-                <a className="govuk-link" href={publishAppPath('/guidance/operator-requirements')}>
-                  View our guidelines here
-                </a>
-              </li>
-              <li>
-                <a className="govuk-link" href={wwwPath('/contact')}>
-                  Contact support desk
-                </a>
-              </li>
-            </ul>
+            <OperatorRequirementsHelp />
           </div>
           {isTimetableVisualiserActive && line.timetable ? (
             <div className="govuk-grid-row">
@@ -138,11 +140,11 @@ function LineDetail({ isTimetableVisualiserActive }: { isTimetableVisualiserActi
   );
 }
 
-export default function LineDetailPageContent({ isTimetableVisualiserActive }: { isTimetableVisualiserActive: boolean }) {
+export default function LineDetailPageContent(props: LineDetailProps) {
   return (
     <ProtectedRoute>
       <Suspense fallback={null}>
-        <LineDetail isTimetableVisualiserActive={isTimetableVisualiserActive} />
+        <LineDetail {...props} />
       </Suspense>
     </ProtectedRoute>
   );

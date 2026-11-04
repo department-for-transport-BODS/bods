@@ -8,14 +8,24 @@ export const LOGIN_ERRORS = {
   unverifiedEmail: (email: string) =>
     `The email address ${email} has not yet been verified. We have sent you another confirmation email.`,
   tooManyAttempts: 'Too many failed login attempts. Try again later.',
+}
+// Django `FeedUploadForm`/`FaresFeedUploadForm` `url_link`/`upload_file` error messages. The
+// no-selection error is raised by `clean()` on the `url_link` field.
+export const DATA_SET_UPLOAD_ERRORS = {
+  noSelection: 'Please provide a file or url',
+  link: 'Please provide a URL link',
+  fileMissing: 'Please provide a file',
 } as const;
+
+/** `transit_odp.publish.constants.REQUIRED_COMMENT_ERROR_MESSAGE`. */
+export const REQUIRED_COMMENT_ERROR = 'Enter a comment in the box below';
 
 export const TIMETABLE_PUBLISH_ERRORS = {
   dataSetDesc: 'Enter a description in the data set description box below',
   shortDesc: 'Enter a short description in the data set short description box below',
-  method: 'Select how you want to provide your data set',
-  link: 'Please provide a URL link',
-  fileMissing: 'Please provide a file',
+  method: DATA_SET_UPLOAD_ERRORS.noSelection,
+  link: DATA_SET_UPLOAD_ERRORS.link,
+  fileMissing: DATA_SET_UPLOAD_ERRORS.fileMissing,
   fileType:
     'The selected file must be a TransXChange XML file or a zip file containing only TransXChange files',
   consent: 'You must confirm you have reviewed the data quality report before publishing',
@@ -43,4 +53,10 @@ export const FARES_PUBLISH_ERRORS = {
   urlLink: 'Please provide a URL link',
   uploadFile: 'Please provide a file',
   emptyUploadFile: 'Please provide a non-empty file',
+} as const;
+
+// EditFeedDescriptionForm in transit_odp/publish/forms/dataset.py and transit_odp/fares/forms.py.
+export const EDIT_DESCRIPTION_ERRORS = {
+  description: 'Enter a description in the data set description box below',
+  shortDescription: 'Enter a short description in the data set short description box below',
 } as const;

@@ -120,3 +120,30 @@ export const formatDateTimeFeedsList = (value?: string | null): string => {
 
   return `${datePart}, ${timePart}`;
 };
+
+const ordinalSuffix = (day: number): string => {
+  if (day % 100 >= 11 && day % 100 <= 13) {
+    return 'th';
+  }
+  return ({ 1: 'st', 2: 'nd', 3: 'rd' } as Record<number, string>)[day % 10] ?? 'th';
+};
+
+/**
+ * Formats an ISO date (YYYY-MM-DD, optionally with a time) like Django's `date:"jS F Y"`,
+ * e.g. "2nd August 2021". Returns "-" when the value is missing or cannot be parsed.
+ */
+export const formatDateWithOrdinal = (value?: string | null): string => {
+  const match = value?.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) {
+    return '-';
+  }
+
+  const [, year, month, day] = match;
+  const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  if (Number.isNaN(date.getTime())) {
+    return '-';
+  }
+
+  const monthName = new Intl.DateTimeFormat('en-GB', { month: 'long', timeZone: 'UTC' }).format(date);
+  return `${Number(day)}${ordinalSuffix(Number(day))} ${monthName} ${year}`;
+};
