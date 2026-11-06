@@ -9,6 +9,13 @@ function formatReleaseMonth(date: string): string {
   }).format(new Date(`${date}-01T00:00:00Z`));
 }
 
+function formatReleaseDate(date: string): string {
+  const [year, month] = date.split('-');
+  const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  return `${monthLabels[Number(month) - 1]} ${year}`;
+}
+
 function InlineText({ text }: { text: string }) {
   return (
     <>
@@ -27,6 +34,9 @@ export function ReleaseNotesSection({ releaseNotes }: { releaseNotes: ReleaseNot
           <h3 className="govuk-heading-m govuk-!-margin-bottom-5">
             {formatReleaseMonth(release.date)} ({release.version})
           </h3>
+          <h4 className="govuk-heading-s govuk-!-margin-bottom-5">
+            Release {release.version} ({formatReleaseDate(release.date)})
+          </h4>
           {release.summary && (
             <p className="govuk-body govuk-!-font-size-19">{release.summary}</p>
           )}

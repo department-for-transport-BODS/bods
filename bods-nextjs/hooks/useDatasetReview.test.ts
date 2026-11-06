@@ -157,6 +157,20 @@ describe('useDatasetReview', () => {
     expect(result.current.progress).toBe(42);
   });
 
+  it('does not poll until enabled', async () => {
+    const { rerender } = renderHook(
+      ({ enabled }: { enabled: boolean }) =>
+        useDatasetReview<Review>('2', REVIEW_PATH, undefined, '', { enabled }),
+      { initialProps: { enabled: false } },
+    );
+    await flush();
+    expect(mockApiGet).not.toHaveBeenCalled();
+
+    rerender({ enabled: true });
+    await flush();
+    expect(mockApiGet).toHaveBeenCalledWith(PROGRESS_PATH);
+  });
+
   it('stops polling and reports an error when the review fails after processing completes', async () => {
     mockApiGet.mockImplementationOnce(() => Promise.resolve({ loading: true, progress: 0 }));
     mockApiGet.mockImplementation((path: string) => {
