@@ -1,5 +1,4 @@
 // Create flow keeps form state in-page and waits for processing before opening review.
-'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
@@ -14,7 +13,11 @@ import {
   UPLOAD_FILE_ITEM_ID,
   URL_LINK_ITEM_ID,
 } from '../_components/FaresUploadStep';
+import type { Metadata } from 'next';
 
+export const metadata: Metadata = {
+  title: 'Publish new data set: description',
+};
 const DESCRIPTION_STEP = 'description';
 const CANCEL_STEP = 'cancel';
 const UPLOAD_STEP = 'upload';
@@ -337,13 +340,6 @@ function FaresCreatePageContent() {
     </div>
   );
 }
-import type { Metadata } from 'next';
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { FaresCreatePageContent } from './_components/FaresCreatePageContent';
-
-export const metadata: Metadata = {
-  title: 'Publish new data set: description',
-};
 
 export default function FaresCreatePage() {
   return (
