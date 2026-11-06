@@ -18,6 +18,7 @@ from transit_odp.avl.views.api import (
     publish_avl_dataset_api,
     update_avl_dataset_api,
 )
+from transit_odp.browse.views.data_catalogue import DataCatalogueDownloadURLAPIView
 from transit_odp.changelog.views import get_known_issues_api
 from transit_odp.feedback.api import GlobalFeedbackAPIView
 from transit_odp.fares.views.api import (
@@ -98,6 +99,11 @@ from transit_odp.users.views.api import (
 )
 
 urlpatterns = [
+    path(
+        "catalogue/",
+        DataCatalogueDownloadURLAPIView.as_view(),
+        name="nextjs-catalogue-url",
+    ),
     path("feedback/", GlobalFeedbackAPIView.as_view(), name="nextjs-global-feedback"),
     path("auth/", include("config.urls.session_auth_api")),
     path(
