@@ -1,11 +1,41 @@
+import logging
+
 from django.http import Http404
 from django.shortcuts import redirect
 from django.views.generic import DetailView
 from waffle import flag_is_active
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from transit_odp.browse.cfn import generate_signed_url
 from transit_odp.site_admin.constants import DataCatalogue
 from transit_odp.site_admin.models import DocumentArchive
+
+logger = logging.getLogger(__name__)
+
+
+class DataCatalogueDownloadURLAPIView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        catalogue = DocumentArchive.objects.filter(category=DataCatalogue).last()
+        if catalogue is None:
+            return Response(status=404)
+
+        try:
+            download_url = generate_signed_url(
+                f"data-catalogue/{catalogue.archive.name}"
+            )
+        except Exception:
+            logger.exception("Unable to generate the data catalogue download URL.")
+            return Response(
+                {"detail": "Unable to generate the data catalogue download URL."},
+                status=500,
+            )
+
+        return Response({"url": download_url})
 
 
 class DownloadDataCatalogueView(DetailView):
