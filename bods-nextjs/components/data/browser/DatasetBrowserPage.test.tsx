@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { DatasetBrowserPage } from './DatasetBrowserPage';
 import { api } from '@/lib/api-client';
 import { dataPath } from '@/config/client';
@@ -142,5 +142,32 @@ describe('dataset browser compliance', () => {
 
     await screen.findByText('83504');
     expect(screen.queryByText('BODS compliant data:')).not.toBeInTheDocument();
+  });
+});
+
+describe('dataset browser status filter removal', () => {
+  afterEach(() => {
+    searchParams.delete('ordering');
+    searchParams.set('status', 'live');
+    jest.clearAllMocks();
+  });
+
+  it.each([
+    ['published', 'Published'],
+    ['inactive', 'Inactive'],
+  ])('renders and removes the %s filter without an image request', async (status, label) => {
+    searchParams.set('status', status);
+    searchParams.set('ordering', '-modified');
+    mockDataset();
+    render(<DatasetBrowserPage {...props} />);
+
+    await screen.findByText('results', { exact: false });
+    const removeButton = screen.getByRole('button', { name: `Remove filter: ${label}` });
+    expect(removeButton.querySelector('svg')).toHaveAttribute('data-icon', 'xmark');
+    expect(removeButton.querySelector('img')).toBeNull();
+
+    fireEvent.click(removeButton);
+
+    expect(mockPush).toHaveBeenCalledWith('/fares?ordering=-modified');
   });
 });

@@ -11,6 +11,8 @@ import type { DatasetType } from '@/types';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { BrowseSearchBanner } from './BrowseSearchBanner';
 import { DataBrowserResultCard } from './DataBrowserResultCard';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FilterPillbox, type FilterPill } from '@/components/shared/FilterPillbox';
 import { NoSearchResults } from './NoSearchResults';
 
@@ -348,6 +350,16 @@ function DatasetBrowserPageInner({
 
             <div className="govuk-grid-column-two-thirds">
               <div className="app-data-browser__results-heading"><span className="govuk-body">{datasets.length.toLocaleString()} results</span></div>
+              {status && (
+                <div className="app-data-browser__filter-pillbox">
+                  <span className="app-data-browser__filter-pill">
+                    <button type="button" className="app-data-browser__pill-remove" aria-label={`Remove filter: ${status === 'published' ? 'Published' : 'Inactive'}`} onClick={() => updateQuery({ status: '' })}>
+                      <FontAwesomeIcon icon={faXmark} width={18} height={19} aria-hidden="true" />
+                    </button>
+                    {status === 'published' ? 'Published' : 'Inactive'}
+                  </span>
+                </div>
+              )}
               <FilterPillbox filters={searchSummaryFilters} />
               <div className="app-data-browser__sort-control">
                 <label className="govuk-label" htmlFor="ordering">Sort by</label>
