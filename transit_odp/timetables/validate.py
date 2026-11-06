@@ -16,7 +16,6 @@ from transit_odp.timetables.utils import get_transxchange_schema
 from transit_odp.validate.xml import FileValidator, XMLValidator
 from transit_odp.validate.zip import ZippedValidator
 
-
 logger = getLogger(__name__)
 
 CREATION_DATETIME_OBSERVATION = Observation(
@@ -99,9 +98,7 @@ class DatasetTXCValidator:
             doc = etree.parse(file_)
             version = doc.getroot().get("SchemaVersion")
             validated_against = (
-                version
-                if version in self._schemas
-                else DEFAULT_TXC_SCHEMA_VERSION
+                version if version in self._schemas else DEFAULT_TXC_SCHEMA_VERSION
             )
             schema = self._schemas[validated_against]
 
