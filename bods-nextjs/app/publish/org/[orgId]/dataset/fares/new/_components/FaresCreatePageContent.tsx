@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { PublishStepper } from '@/components/publish';
 import { ErrorSummary } from '@/components/shared';
 import { publishAppPath, wwwPath } from '@/config/client';
+import { useDatasetReview } from '@/hooks/useDatasetReview';
 import { ApiError, api } from '@/lib/api-client';
 import { errorSummaryItems } from '@/lib/form-errors';
 import {
@@ -29,6 +30,20 @@ const ERROR_ANCHORS = {
   uploadFile: '#id_upload_file',
 };
 
+type FaresProcessingStatus = {
+  loading: boolean;
+  progress: number;
+};
+
+function getDatasetIdFromReviewRedirect(redirect: string, orgId: string): string | null {
+  const prefix = `/publish/org/${orgId}/dataset/fares/`;
+  if (!redirect.startsWith(prefix)) {
+    return null;
+  }
+
+  return redirect.slice(prefix.length).match(/^(\d+)\/review\/?$/)?.[1] ?? null;
+}
+
 export function FaresCreatePageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
@@ -46,6 +61,23 @@ export function FaresCreatePageContent() {
   const [uploadErrors, setUploadErrors] = useState<FaresUploadErrors>({});
   const [submitError, setSubmitError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [processingDataset, setProcessingDataset] = useState<{
+    datasetId: string;
+    reviewUrl: string;
+  } | null>(null);
+  const {
+    statusData: processingStatus,
+    progress,
+    errorMessage: processingError,
+  } = useDatasetReview<FaresProcessingStatus>(
+    processingDataset?.datasetId ?? '',
+    processingDataset
+      ? `/api/publish/fares/review-status/${orgId}/${processingDataset.datasetId}/`
+      : '',
+    'Unable to check processing status. Please refresh and try again.',
+    '',
+    { enabled: processingDataset !== null },
+  );
 
   const summaryErrors =
     step === 'description'
@@ -63,6 +95,12 @@ export function FaresCreatePageContent() {
       document.querySelector<HTMLElement>('.govuk-error-summary')?.focus();
     }
   }, [descriptionErrors, uploadErrors, submitError, summaryErrors.length]);
+
+  useEffect(() => {
+    if (processingDataset && processingStatus && !processingStatus.loading) {
+      globalThis.location.href = processingDataset.reviewUrl;
+    }
+  }, [processingDataset, processingStatus]);
 
   const handleDescriptionSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -119,13 +157,15 @@ export function FaresCreatePageContent() {
       }
 
       const data = await api.post<{ redirect?: string }>(`/api/publish/fares/create/${orgId}/`, formData);
-      if (!data.redirect) {
+      const datasetId = data.redirect ? getDatasetIdFromReviewRedirect(data.redirect, orgId) : null;
+      if (!data.redirect || !datasetId) {
         setSubmitError('Unexpected response from server.');
         setIsSubmitting(false);
         return;
       }
 
-      globalThis.location.href = publishAppPath(data.redirect);
+      setProcessingDataset({ datasetId, reviewUrl: publishAppPath(data.redirect) });
+      setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
       if (error instanceof ApiError && error.hasFieldErrors) {
@@ -185,6 +225,32 @@ export function FaresCreatePageContent() {
                 onSubmit={handleDescriptionSubmit}
                 onCancel={() => handleCancel('description')}
               />
+            ) : processingDataset ? (
+              <>
+                <ErrorSummary errors={processingError ? [processingError] : []} summaryId="fares-processing-error-title" />
+                <div className="govuk-panel govuk-panel--confirmation bods-bg-blue-light">
+                  <h2 className="govuk-panel__title govuk-!-font-size-36">Your data is being processed</h2>
+                  <div className="govuk-panel__body govuk-!-font-size-19">
+                    <div className="pb3-l">
+                      The data format is being checked to confirm it is NeTEx.
+                      <br />
+                      Once successfully validated the data set details will
+                      <br />
+                      be shown here.
+                    </div>
+                    <div id="progressOuterDiv" className="progress-bar-outer">
+                      <div
+                        className="loading-white"
+                        id="progressInnerDiv"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                    <span className="loading-white-lg" id="progressSpan">
+                      {progress}%
+                    </span>
+                  </div>
+                </div>
+              </>
             ) : (
               <FaresCreateUploadStep
                 selectedItem={selectedItem}
