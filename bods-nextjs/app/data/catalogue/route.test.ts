@@ -3,6 +3,7 @@
 import { NextRequest } from 'next/server';
 import { GET } from './route';
 import { forwardToDjango } from '@/lib/django-gateway';
+import { DJANGO_HOSTS } from '@/config/server';
 
 jest.mock('@/lib/django-gateway', () => ({
   forwardToDjango: jest.fn(),
@@ -20,66 +21,30 @@ const request = new NextRequest('http://data.localhost:3000/catalogue');
 describe('data catalogue route', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('forwards to Django /catalogue/ on the data host', async () => {
-    mockForward.mockResolvedValue(new Response('xlsx'));
+  it('requests a signed download URL from the Django www API', async () => {
+    mockForward.mockResolvedValue(
+      Response.json({ url: 'https://cdn.example.test/data-catalogue/catalogue.zip' }),
+    );
 
-    await GET(request);
+    const response = await GET(request);
 
     expect(mockForward).toHaveBeenCalledWith(
       request,
-      '/catalogue/',
-      expect.stringMatching(/^data\./),
+      '/api/catalogue/',
+      new URL(DJANGO_HOSTS.www).host,
     );
-  });
-
-  it('streams the file and preserves Content-Disposition and Content-Type', async () => {
-    mockForward.mockResolvedValue(
-      new Response('file-bytes', {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/zip',
-          'Content-Disposition': 'attachment; filename="data_catalogue.zip"',
-        },
-      }),
-    );
-
-    const response = await GET(request);
-
-    expect(response.status).toBe(200);
-    expect(response.headers.get('Content-Disposition')).toBe(
-      'attachment; filename="data_catalogue.zip"',
-    );
-    expect(response.headers.get('Content-Type')).toBe('application/zip');
-    expect(await response.text()).toBe('file-bytes');
-  });
-
-  it('passes through the signed-URL redirect when direct S3 URLs are active', async () => {
-    mockForward.mockResolvedValue(
-      new Response(null, {
-        status: 302,
-        headers: { Location: 'https://cdn.example.test/data-catalogue/file.zip?sig=abc' },
-      }),
-    );
-
-    const response = await GET(request);
-
     expect(response.status).toBe(302);
     expect(response.headers.get('Location')).toBe(
-      'https://cdn.example.test/data-catalogue/file.zip?sig=abc',
+      'https://cdn.example.test/data-catalogue/catalogue.zip',
     );
   });
 
-  it('drops encoding headers that no longer describe the decoded body', async () => {
-    mockForward.mockResolvedValue(
-      new Response('decoded', {
-        headers: { 'Content-Encoding': 'gzip', 'Content-Length': '3' },
-      }),
-    );
+  it('returns a gateway error when the API does not provide an HTTPS URL', async () => {
+    mockForward.mockResolvedValue(Response.json({ url: 'http://example.test/file.zip' }));
 
     const response = await GET(request);
 
-    expect(response.headers.get('Content-Encoding')).toBeNull();
-    expect(response.headers.get('Content-Length')).toBeNull();
+    expect(response.status).toBe(502);
   });
 
   it('renders the 404 page when no catalogue has been uploaded', async () => {
