@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { publishAppPath, wwwPath } from '@/config/client';
+import { useDatasetReview } from '@/hooks/useDatasetReview';
 import { api, ApiError } from '@/lib/api-client';
 import { FaresCreatePageContent } from './FaresCreatePageContent';
 
@@ -12,7 +13,12 @@ jest.mock('@/lib/api-client', () => {
   return { ...actual, api: { post: jest.fn() } };
 });
 
+jest.mock('@/hooks/useDatasetReview', () => ({
+  useDatasetReview: jest.fn(),
+}));
+
 const mockPost = api.post as jest.Mock;
+const mockUseDatasetReview = useDatasetReview as jest.Mock;
 
 function summaryLinks() {
   return Array.from(document.querySelectorAll('.govuk-error-summary__list a')).map((link) => [
@@ -30,6 +36,7 @@ function completeDescription() {
 describe('FaresCreatePageContent', () => {
   beforeEach(() => {
     mockPost.mockReset();
+    mockUseDatasetReview.mockReturnValue({ statusData: null, progress: 0, errorMessage: '' });
   });
 
   it('shows the Django description errors and links to the Django guidance and contact pages', () => {
@@ -83,6 +90,39 @@ describe('FaresCreatePageContent', () => {
       expect(summaryLinks()).toEqual([['Enter a valid URL to your data set', '#id_url_link']]),
     );
     expect(screen.getByLabelText('url link')).toHaveClass('govuk-input--error');
+  });
+
+  it('keeps the user on the upload step and shows progress until the dataset is ready for review', async () => {
+    mockPost.mockResolvedValue({
+      redirect: '/publish/org/7/dataset/fares/42/review',
+    });
+    mockUseDatasetReview.mockReturnValue({
+      statusData: { loading: true, progress: 20 },
+      progress: 20,
+      errorMessage: '',
+    });
+    const { container } = render(<FaresCreatePageContent />);
+
+    completeDescription();
+    fireEvent.click(screen.getByLabelText('Upload data set to Bus Open Data Service'));
+    fireEvent.change(screen.getByLabelText('Choose file'), {
+      target: { files: [new File(['fares'], 'fares.zip')] },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Your data is being processed' })).toBeInTheDocument();
+    });
+    expect(screen.getByText('20%')).toBeInTheDocument();
+    expect(screen.getByText('2. Provide data')).toBeInTheDocument();
+    expect(mockUseDatasetReview).toHaveBeenLastCalledWith(
+      '42',
+      '/api/publish/fares/review-status/7/42/',
+      'Unable to check processing status. Please refresh and try again.',
+      '',
+      { enabled: true },
+    );
+    expect(container.querySelector('input[type="file"]')).not.toBeInTheDocument();
   });
 
   it('renders the Django cancel step and returns to the previous step', () => {
