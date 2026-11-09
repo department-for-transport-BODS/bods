@@ -3,7 +3,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { useParams } from 'next/navigation';
-import { FormEvent, ReactNode, useEffect, useState } from 'react';
+import { FormEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { ErrorSummary } from '@/components/shared';
 import { api } from '@/lib/api-client';
 import { PublishStepper } from '@/components/publish';
@@ -150,6 +150,121 @@ function ErrorSummaryTable({ name, ownerName }: Readonly<{ name: string; ownerNa
   );
 }
 
+type ReviewServiceNumbersProps = {
+  datasetPath: string;
+  revisionId: number;
+  distinctAttributes: NonNullable<TimetableReviewStatusResponse['distinctAttributes']>;
+};
+
+function ReviewServiceNumbers({
+  datasetPath,
+  revisionId,
+  distinctAttributes,
+}: Readonly<ReviewServiceNumbersProps>) {
+  const accordionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let active = true;
+    const root = accordionRef.current;
+    if (!root) return;
+
+    import('govuk-frontend').then(({ Accordion }) => {
+      if (active) new Accordion(root);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return (
+    <div>
+      <h2 className="govuk-heading-l">Review Service Numbers</h2>
+      <div
+        ref={accordionRef}
+        className="govuk-accordion"
+        data-module="govuk-accordion"
+        id="timetable-review-service-numbers"
+      >
+        {Object.entries(distinctAttributes).map(([licence, nocs], licenceIndex) => {
+          const licenceNumber = licenceIndex + 1;
+          const headingId = `timetable-review-licence-heading-${licenceNumber}`;
+          const contentId = `timetable-review-licence-content-${licenceNumber}`;
+          return (
+            <div className="govuk-accordion__section" key={licence}>
+              <div className="govuk-accordion__section-header">
+                <h2 className="govuk-accordion__section-heading">
+                  <span
+                    className="govuk-accordion__section-button"
+                    id={headingId}
+                    aria-controls={contentId}
+                  >
+                    {licence}
+                  </span>
+                </h2>
+              </div>
+              <div
+                id={contentId}
+                className="govuk-accordion__section-content"
+                aria-labelledby={headingId}
+              >
+                {Object.entries(nocs).map(([noc, lines], nocIndex) => {
+                  const nocNumber = nocIndex + 1;
+                  const nocHeadingId = `timetable-review-licence-${licenceNumber}-noc-heading-${nocNumber}`;
+                  const nocContentId = `timetable-review-licence-${licenceNumber}-noc-content-${nocNumber}`;
+                  return (
+                    <div className="govuk-accordion__section govuk-!-padding-left-7" key={noc}>
+                      <div className="govuk-accordion__section-header">
+                        <h2 className="govuk-accordion__section-heading">
+                          <span
+                            className="govuk-accordion__section-button"
+                            id={nocHeadingId}
+                            aria-controls={nocContentId}
+                          >
+                            {noc}
+                          </span>
+                        </h2>
+                      </div>
+                      <div
+                        id={nocContentId}
+                        className="govuk-accordion__section-content"
+                        aria-labelledby={nocHeadingId}
+                      >
+                        {Object.entries(lines).map(([line, serviceCodes]) =>
+                          serviceCodes.map((serviceCode) => {
+                            const query = new URLSearchParams({
+                              line,
+                              revision_id: String(revisionId),
+                              service: serviceCode,
+                            });
+                            return (
+                              <p
+                                className="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom"
+                                key={`${line}-${serviceCode}`}
+                              >
+                                <a
+                                  className="govuk-link"
+                                  href={`${publishAppPath(`${datasetPath}/review/detail/`)}?${query}`}
+                                >
+                                  {line} - {serviceCode}
+                                </a>
+                              </p>
+                            );
+                          }),
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function TimetableReviewPageContent({ isUpdate = false }: Readonly<TimetableReviewPageContentProps>) {
   const params = useParams();
   const orgId = params.orgId as string;
@@ -210,6 +325,7 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
   const noValidFile = statusData?.error === 'NO_VALID_FILE_TO_PROCESS';
 
   const datasetPath = `/org/${orgId}/dataset/timetable/${datasetId}`;
+  const dataQualityScorePercent = dataQuality?.score != null ? Math.round(dataQuality.score * 100) : null;
   // Django links to `update-modify` (`update/review/update`) from the update review and
   // `upload-modify` (`review/update`) from the first-publish review.
   const updateUrl = publishAppPath(isUpdate ? `${datasetPath}/update/review/update` : `${datasetPath}/review/update`);
@@ -257,6 +373,9 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
     const dqStatus = dataQuality?.status ?? 'PENDING';
     const isFailure = dqStatus === 'FAILURE';
     const isSuccess = dqStatus === 'SUCCESS';
+    const ragLevel = dataQuality?.ragLevel
+      ? `${dataQuality.ragLevel.charAt(0).toUpperCase()}${dataQuality.ragLevel.slice(1).toLowerCase()}`
+      : null;
     return (
       <section id="dqs-review-section">
         <div className="app-dqs-panel">
@@ -276,7 +395,7 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
               <>
                 <h2 className="govuk-heading-m">
                   3b Data quality check
-                  {dataQuality?.ragLevel ? ` - ${dataQuality.ragLevel}` : null}
+                  {ragLevel ? ` - ${ragLevel}${dataQualityScorePercent != null ? ` (${dataQualityScorePercent}%)` : ''}` : null}
                   {reportId && criticalIssuesTag ? <> - <span className="shifted-tag-top-3">{criticalIssuesTag}</span></> : null}
                 </h2>
                 <p className="govuk-body">
@@ -291,6 +410,9 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
                 ) : null}
                 <table className="govuk-table govuk-!-margin-top-2">
                   <tbody className="govuk-table__body">
+                    {dataQualityScorePercent != null ? (
+                      <tr className="govuk-table__row"><td className="govuk-table__cell">{dataQualityScorePercent}%</td><td className="govuk-table__cell">Data quality score</td></tr>
+                    ) : null}
                     <tr className="govuk-table__row"><td className="govuk-table__cell">{dataQuality?.criticalCount || 0}</td><td className="govuk-table__cell">Critical data quality observations</td></tr>
                     <tr className="govuk-table__row"><td className="govuk-table__cell">{dataQuality?.advisoryCount || 0}</td><td className="govuk-table__cell">Advisory data quality observations</td></tr>
                   </tbody>
@@ -316,39 +438,40 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
             ) : null}
           </div>
         </div>
-        {isSuccess ? (
-          <form method="post" onSubmit={handlePublish} noValidate>
-            <div className="govuk-form-group">
-              <div className="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
-                <div className="govuk-checkboxes__item">
-                  <input
-                    className="govuk-checkboxes__input"
-                    id="id_consent"
-                    name="consent"
-                    type="checkbox"
-                    checked={hasReviewed}
-                    onChange={(event) => setHasReviewed(event.target.checked)}
-                  />
-                  <label className="govuk-label govuk-checkboxes__label" htmlFor="id_consent">
-                    {DATA_QUALITY_CONSENT_LABEL}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <button
-              type="submit"
-              name="submit"
-              value="submit"
-              className="govuk-button"
-              disabled={!hasReviewed || isPublishing}
-            >
-              {isPublishing ? 'Publishing...' : 'Publish data'}
-            </button>
-          </form>
-        ) : null}
       </section>
     );
   };
+
+  const renderPublishForm = () => dataQuality?.status === 'SUCCESS' ? (
+    <form method="post" onSubmit={handlePublish} noValidate>
+      <div className="govuk-form-group">
+        <div className="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+          <div className="govuk-checkboxes__item">
+            <input
+              className="govuk-checkboxes__input"
+              id="id_consent"
+              name="consent"
+              type="checkbox"
+              checked={hasReviewed}
+              onChange={(event) => setHasReviewed(event.target.checked)}
+            />
+            <label className="govuk-label govuk-checkboxes__label" htmlFor="id_consent">
+              {DATA_QUALITY_CONSENT_LABEL}
+            </label>
+          </div>
+        </div>
+      </div>
+      <button
+        type="submit"
+        name="submit"
+        value="submit"
+        className="govuk-button"
+        disabled={!hasReviewed || isPublishing}
+      >
+        {isPublishing ? 'Publishing...' : 'Publish data'}
+      </button>
+    </form>
+  ) : null;
 
   // Django `publish/revision_review/property_table.html`.
   const renderPropertyTable = () => (
@@ -387,7 +510,19 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
         <tr className="govuk-table__row">
           <th scope="row" className="govuk-table__header">Data quality report</th>
           <td className="govuk-table__cell">
-            {reportId && criticalIssuesTag ? <p className="govuk-body govuk-!-margin-bottom-2">{criticalIssuesTag}</p> : null}
+            {dataQualityScorePercent != null && dataQuality?.ragLevel ? (
+              <p className="govuk-body govuk-!-margin-bottom-2">
+                {dataQualityScorePercent}%
+                {' '}
+                <span
+                  className={`status-indicator status-indicator--${dataQuality.ragLevel.toLowerCase() === 'green' ? 'success' : dataQuality.ragLevel.toLowerCase() === 'amber' ? 'warning' : 'error'} govuk-!-font-weight-bold`}
+                >
+                  {dataQuality.ragLevel.toUpperCase()}
+                </span>
+              </p>
+            ) : reportId && criticalIssuesTag ? (
+              <p className="govuk-body govuk-!-margin-bottom-2">{criticalIssuesTag}</p>
+            ) : null}
             <span className="no-wrap right-justify" id="id-publish-review-quality-report">
               {dataQuality?.status === 'SUCCESS' ? (
                 <a className="govuk-link" target="_blank" rel="noopener noreferrer" href={reportUrl}>View data quality report</a>
@@ -432,74 +567,21 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
     </table>
   );
 
-  // Django `publish/revision_review/review_service_codes.html`.
-  const renderServiceCodes = () => (
-    <div>
-      <h2 className="govuk-heading-l">Review Service Numbers</h2>
-      <div className="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
-        {Object.entries(statusData?.distinctAttributes ?? {}).map(([licence, nocs], licenceIndex) => (
-          <div className="govuk-accordion__section" key={licence}>
-            <div className="govuk-accordion__section-header">
-              <h2 className="govuk-accordion__section-heading">
-                <span className="govuk-accordion__section-button" id={`accordion-default-heading-${licenceIndex + 1}`}>
-                  {licence}
-                </span>
-              </h2>
-            </div>
-            {Object.entries(nocs).map(([noc, lines], nocIndex) => (
-              <div
-                key={noc}
-                id={`sub-accordion-content-${licenceIndex + 1}`}
-                className="govuk-accordion__section-content"
-                aria-labelledby={`sub-accordion-heading-${licenceIndex + 1}`}
-              >
-                <div className="govuk-accordion__section govuk-!-padding-left-7">
-                  <div className="govuk-accordion__section-header">
-                    <h2 className="govuk-accordion__section-heading">
-                      <span className="govuk-accordion__section-button" id={`sub-accordion-heading-${nocIndex + 1}`}>{noc}</span>
-                    </h2>
-                  </div>
-                  <div
-                    id={`sub-accordion-content-${nocIndex + 1}`}
-                    className="govuk-accordion__section-content"
-                    aria-labelledby={`sub-accordion-heading-${nocIndex + 1}`}
-                  >
-                    {Object.entries(lines).map(([line, serviceCodes]) =>
-                      serviceCodes.map((serviceCode) => {
-                        const query = new URLSearchParams({
-                          line,
-                          revision_id: String(statusData?.revisionId ?? ''),
-                          service: serviceCode,
-                        });
-                        return (
-                          <p className="govuk-body govuk-!-margin-left-7 govuk-!-padding-bottom-3 border-bottom-custom" key={`${line}-${serviceCode}`}>
-                            <a className="govuk-link" href={`${publishAppPath(`${datasetPath}/review/detail/`)}?${query}`}>
-                              {line} - {serviceCode}
-                            </a>
-                          </p>
-                        );
-                      }),
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
   // Django `publish/revision_review/success_content.html`.
-  const renderSuccessContent = () => (
+  const renderSuccessContent = (review: TimetableReviewStatusResponse) => (
     <>
       {renderValidationPanel()}
       {renderDataQualityPanel()}
+      {renderPublishForm()}
       <div id="preview-section">
         <h2 className="govuk-heading-l dont-break-out">{name}</h2>
-        {statusData?.revisionId ? <MapboxRouteMap revisionId={statusData.revisionId} ariaLabel="Interactive map showing timetable routes" /> : null}
+        <MapboxRouteMap revisionId={review.revisionId} ariaLabel="Interactive map showing timetable routes" />
         {renderPropertyTable()}
-        {renderServiceCodes()}
+        <ReviewServiceNumbers
+          datasetPath={datasetPath}
+          revisionId={review.revisionId}
+          distinctAttributes={review.distinctAttributes ?? {}}
+        />
         <div className="btn-group-justified">
           <a role="button" className="govuk-button govuk-button--secondary" href={deleteUrl}>Delete data</a>
         </div>
@@ -608,7 +690,7 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
             ) : statusData?.error ? (
               renderErrorState()
             ) : (
-              renderSuccessContent()
+              renderSuccessContent(statusData)
             )}
           </div>
 
