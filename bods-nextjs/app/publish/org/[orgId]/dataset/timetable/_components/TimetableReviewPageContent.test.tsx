@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { useDatasetReview } from '@/hooks/useDatasetReview';
 import { publishPath } from '@/config/client';
@@ -21,6 +21,9 @@ jest.mock('@/components/data/MapboxRouteMap', () => ({
 }));
 
 const mockUseDatasetReview = useDatasetReview as jest.Mock;
+const mockAccordionConstructor = jest.fn();
+
+jest.mock('govuk-frontend', () => ({ Accordion: mockAccordionConstructor }), { virtual: true });
 
 const renderContent = (status: Record<string, unknown> | null, isUpdate?: boolean) => {
   mockUseDatasetReview.mockReturnValue({
@@ -62,7 +65,13 @@ const successStatus = {
   lastModifiedUser: null,
   error: null,
   validationState: 'passed',
-  distinctAttributes: {},
+  distinctAttributes: {
+    PD12345678: {
+      ABCD: {
+        'Route 1': ['PB20003801'],
+      },
+    },
+  },
   dataQuality: { status: 'PENDING' },
 };
 
@@ -70,7 +79,7 @@ describe('TimetableReviewPageContent', () => {
   beforeEach(() => jest.clearAllMocks());
 
   describe('processed draft', () => {
-    it('renders the Django property table with revision-edit links and Last updated', () => {
+    it('renders the property table with revision-edit links and Last updated', () => {
       renderContent(successStatus, true);
 
       const rowHeaders = screen.getAllByRole('rowheader').map((cell) => cell.textContent);
@@ -93,6 +102,20 @@ describe('TimetableReviewPageContent', () => {
         'href',
         publishPath('/org/1/dataset/timetable/9/delete/'),
       );
+      expect(screen.getByRole('link', { name: 'Route 1 - PB20003801' })).toHaveAttribute(
+        'href',
+        expect.stringContaining('revision_id=42'),
+      );
+    });
+
+    it('initializes the service-number accordion after review data renders', async () => {
+      renderContent(successStatus);
+
+      await waitFor(() => {
+        expect(mockAccordionConstructor).toHaveBeenCalledWith(
+          document.getElementById('timetable-review-service-numbers'),
+        );
+      });
     });
 
     it('hides the consent form while the data quality report is generating', () => {
@@ -103,12 +126,34 @@ describe('TimetableReviewPageContent', () => {
     });
 
     it('shows the Django consent form once the data quality report is ready', () => {
-      renderContent({ ...successStatus, dataQuality: { status: 'SUCCESS', reportId: 5, hasCriticalIssues: false, showUpdate: true } });
+      renderContent({
+        ...successStatus,
+        dataQuality: {
+          status: 'SUCCESS',
+          score: 0.9,
+          ragLevel: 'red',
+          criticalCount: 0,
+          advisoryCount: 0,
+          reportId: 5,
+          hasCriticalIssues: false,
+          showUpdate: true,
+        },
+      });
 
+      expect(screen.getByRole('heading', { name: /3b Data quality check - Red \(90%\)/ })).toBeInTheDocument();
+      const qualityRow = screen.getByRole('row', { name: /Data quality report/ });
+      expect(within(qualityRow).getByText('90%')).toBeInTheDocument();
+      expect(within(qualityRow).getByText('RED')).toHaveClass('status-indicator--error');
       const consent = screen.getByLabelText('I have reviewed the data quality report and wish to publish my data');
       expect(consent).toHaveAttribute('name', 'consent');
       expect(consent).toHaveAttribute('id', 'id_consent');
-      expect(screen.getByRole('button', { name: 'Publish data' })).toBeDisabled();
+      const dataQualityHeading = screen.getByRole('heading', { name: /3b Data quality check/ });
+      const serviceNumbersHeading = screen.getByRole('heading', { name: 'Review Service Numbers' });
+      const publishButton = screen.getByRole('button', { name: 'Publish data' });
+      expect(dataQualityHeading.compareDocumentPosition(consent)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      expect(consent.compareDocumentPosition(serviceNumbersHeading)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      expect(publishButton.compareDocumentPosition(serviceNumbersHeading)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      expect(publishButton).toBeDisabled();
       expect(screen.getByRole('button', { name: 'Update data' })).toHaveAttribute(
         'href',
         publishPath('/org/1/dataset/timetable/9/review/update'),

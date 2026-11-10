@@ -611,6 +611,16 @@ ul.dashed > li::before {
   background: transparent;
 }
 
+.app-dqs-panel.timetable-review-panel {
+  padding: 20px;
+}
+
+@media (min-width: 641px) {
+  .app-dqs-panel.timetable-review-panel {
+    padding: 30px;
+  }
+}
+
 .app-dqs-panel__body {
   font-family: "GDS Transport", arial, sans-serif;
   font-size: 19px;
