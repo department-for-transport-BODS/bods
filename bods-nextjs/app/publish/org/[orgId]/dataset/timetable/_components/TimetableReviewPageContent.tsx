@@ -98,7 +98,7 @@ export const getTimetablePublishRedirect = ({
 function PtiPanel({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <section>
-      <div className="app-dqs-panel govuk-!-margin-bottom-3">
+      <div className="app-dqs-panel timetable-review-panel govuk-!-margin-bottom-3">
         <div className="app-dqs-panel__body">
           <div className="app-dqs-panel__success">{children}</div>
         </div>
@@ -378,7 +378,7 @@ export function TimetableReviewPageContent({ isUpdate = false }: Readonly<Timeta
       : null;
     return (
       <section id="dqs-review-section">
-        <div className="app-dqs-panel govuk-!-margin-bottom-3">
+        <div className="app-dqs-panel timetable-review-panel govuk-!-margin-bottom-3">
           <div className="app-dqs-panel__body">
             {isFailure ? (
               <>
