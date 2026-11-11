@@ -654,7 +654,7 @@ function FaresReviewPageContent({ mapboxToken, isUpdate = false }: Readonly<Fare
         <div className="govuk-grid-row">
           <div className="govuk-grid-column-two-thirds">
             {isInitialLoading || loading ? (
-              <div className="govuk-panel govuk-panel--confirmation bods-bg-blue-light">
+              <div className="govuk-panel govuk-panel--confirmation">
                 <h2 className="govuk-panel__title govuk-!-font-size-36">Your data is being processed</h2>
                 <div className="govuk-panel__body govuk-!-font-size-19">
                   <div className="pb3-l">
