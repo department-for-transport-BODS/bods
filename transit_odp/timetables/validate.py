@@ -16,6 +16,7 @@ from transit_odp.timetables.utils import get_transxchange_schema
 from transit_odp.validate.xml import FileValidator, XMLValidator
 from transit_odp.validate.zip import ZippedValidator
 
+
 logger = getLogger(__name__)
 
 CREATION_DATETIME_OBSERVATION = Observation(
@@ -46,16 +47,10 @@ REVISION_NUMBER_OBSERVATION = Observation(
     rules=[],
 )
 
-SUPPORTED_TXC_VERSIONS = ("2.4", "2.4.1")
-DEFAULT_TXC_SCHEMA_VERSION = "2.4"
-
 
 class DatasetTXCValidator:
     def __init__(self, revision: DatasetRevision):
-        self._schemas = {
-            version: get_transxchange_schema(version)
-            for version in SUPPORTED_TXC_VERSIONS
-        }
+        self._schema = get_transxchange_schema()
         self._revision = revision
 
     def get_number_of_files_uploaded(self):
@@ -89,28 +84,28 @@ class DatasetTXCValidator:
     def get_violations(self):
         violations = []
         for name, file_ in self.iter_get_files():
-            error = XMLValidator(file_).dangerous_xml_check()
-            if error:
-                violations.append(BaseSchemaViolation.from_error(error[0]))
+            try:
+                error = XMLValidator(file_).dangerous_xml_check()
+                if error:
+                    violations.append(BaseSchemaViolation.from_error(error[0]))
+                    continue
+
+                file_.seek(0)
+                doc = etree.parse(file_)
+            except Exception as exc:
+                violations.append(
+                    BaseSchemaViolation(
+                        filename=Path(name).name,
+                        line=getattr(exc, "lineno", 0) or 0,
+                        details=getattr(exc, "msg", None) or str(exc),
+                    )
+                )
                 continue
 
-            file_.seek(0)
-            doc = etree.parse(file_)
-            version = doc.getroot().get("SchemaVersion")
-            validated_against = (
-                version if version in self._schemas else DEFAULT_TXC_SCHEMA_VERSION
-            )
-            schema = self._schemas[validated_against]
+            is_valid = self._schema.validate(doc)
 
-            logger.info(
-                "Validating %s: file SchemaVersion=%s against TxC XSD %s",
-                name,
-                version,
-                validated_against,
-            )
-
-            if not schema.validate(doc):
-                for error in schema.error_log:
+            if not is_valid:
+                for error in self._schema.error_log:
                     violations.append(BaseSchemaViolation.from_error(error))
         return violations
 
