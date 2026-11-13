@@ -1,0 +1,69 @@
+image: docker:18.09.7
+
+services:
+  - docker:18.09.7-dind
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DRIVER: overlay2
+
+  # Store command to install Python3 into Alpine based image
+  INSTALL_PYTHON:
+    apk update && apk add --no-cache python3 python3-dev py3-pip py3-virtualenv &&
+    pip3 install --upgrade pip setuptools &&
+    ln -sf /usr/bin/pip3 /usr/bin/pip &&
+    ln -sf /usr/bin/python3 /usr/bin/python
+
+stages:
+  - build
+
+# UTILITIES
+
+# Adds timestamps to log output. Also works with Alpine
+.logging: &logging |-
+  use_printf=`printf "%(true)T\n" -1 2>/dev/null` || use_printf=false
+  use_awk=`awk 'BEGIN{print(strftime("true"));}'` || use_awk=false
+  echo "logging: use_printf=$use_printf; use_awk=$use_awk"
+  if $use_printf ; then
+      logging_pipe=/tmp/$$.logging
+      mkfifo $logging_pipe
+      (set +x;while read -r line;do printf "[%(%Y/%m/%d %H:%M:%S)T] %s\n" -1 "$line";done) <$logging_pipe&
+      exec >$logging_pipe 2>&1
+      rm $logging_pipe
+    elif $use_awk ; then
+      logging_pipe=/tmp/$$.logging
+      mkfifo $logging_pipe
+      awk '{printf("[%s] %s\n",strftime("%Y/%m/%d %H:%M:%S"),$0);}' <$logging_pipe&
+      exec >$logging_pipe 2>&1
+      rm $logging_pipe
+    else
+      echo "Can't setup timestamped logging."
+    fi
+  echo "logging: Started."
+
+before_script:
+  - *logging
+  - docker info
+  - eval $INSTALL_PYTHON
+  - python3 -m venv .venv
+  - source .venv/bin/activate
+  - pip install awscli
+  - $(aws ecr get-login --no-include-email --region eu-west-1) # will pick up secret keys set in GitLab UI
+
+build-and-release-base-image:
+  stage: build
+  variables:
+    BASE_IMAGE_NAME: "ito-transit-bodp-base"
+    BASE_IMAGE_URI: ${REGISTRY_ADDRESS}/${BASE_IMAGE_NAME}:latest
+  script:
+    - cd docker/production/django_base
+    - docker pull $BASE_IMAGE_URI || true
+    - >
+      docker build
+      --file ./Dockerfile
+      --cache-from $BASE_IMAGE_URI
+      --tag ${BASE_IMAGE_URI} .
+    - docker push ${BASE_IMAGE_URI}
+  only:
+    changes:
+      - docker/production/django_base/*

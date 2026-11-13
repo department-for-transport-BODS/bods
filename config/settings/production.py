@@ -104,12 +104,9 @@ LOCAL_AUTHORITY_COMPARISON_FILE_NAME = env(
 
 # STATIC
 # ------------------------
-STORAGES = {
-    "default": {"BACKEND": "config.custom_storage.MediaRootS3Boto3Storage"},
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    },
-}
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+DEFAULT_FILE_STORAGE = "config.custom_storage.MediaRootS3Boto3Storage"
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/"
 
 # WhiteNoise
