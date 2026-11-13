@@ -205,7 +205,7 @@ class UserSettings(models.Model):
 
     intended_use = models.IntegerField(
         _("What best describes intended use"),
-        choices=IntendedUse.choices,
+        choices=IntendedUse,
         null=True,
         default=IntendedUse.APP,
     )

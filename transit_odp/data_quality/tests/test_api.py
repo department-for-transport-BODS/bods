@@ -38,29 +38,31 @@ class BaseAPITests:
     # helper method
     def get_response(self, url):
         self.client.login(username=self.org_admin.username, password="password")
-        return self.client.get(url, HTTP_HOST=self.hostname)
+        return self.client.get(url, headers={"host": self.hostname})
 
     def test_cannot_post(self):
         self.client.login(username=self.org_admin.username, password="password")
-        response = self.client.post(self.endpoint_url, HTTP_HOST=self.hostname)
+        response = self.client.post(self.endpoint_url, headers={"host": self.hostname})
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_cannot_put(self):
         self.client.login(username=self.org_admin.username, password="password")
-        response = self.client.put(self.endpoint_url, HTTP_HOST=self.hostname)
+        response = self.client.put(self.endpoint_url, headers={"host": self.hostname})
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_cannot_patch(self):
         self.client.login(username=self.org_admin.username, password="password")
-        response = self.client.patch(self.endpoint_url, HTTP_HOST=self.hostname)
+        response = self.client.patch(self.endpoint_url, headers={"host": self.hostname})
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_cannot_delete(self):
         self.client.login(username=self.org_admin.username, password="password")
-        response = self.client.delete(self.endpoint_url, HTTP_HOST=self.hostname)
+        response = self.client.delete(
+            self.endpoint_url, headers={"host": self.hostname}
+        )
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
