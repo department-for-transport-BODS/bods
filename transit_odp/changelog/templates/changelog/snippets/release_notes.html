@@ -1,7 +1,66 @@
 {% load i18n %}
+
 <h3 class="govuk-heading-m govuk-!-margin-bottom-5">
-  {% trans "November 2026 (1.65.1)" %}
+  {% trans "November 2026 (1.66.0)" %}
 </h3>
+<h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.66.0 (Nov 2026)</h4>
+<p class="govuk-body govuk-!-font-size-19">
+  {% blocktrans %}
+    This release deployed the following changes:
+  {% endblocktrans %}
+</p>
+<ul class="govuk-list govuk-list--bullet">
+  <li>
+    {% blocktrans %}
+      Resolved an issue where selecting Speed on the ABODS Corridor Graph continued to display Journey Time data.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue that caused corridors to flash when selecting stops in ABODS.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Added missing guidance to the ABODS On-time Performance calculation help window.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue where the PDBRD CSV Upload API could return a 504 response.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved unexpected behaviour when using the activeOnly and latestOnly parameters in PDBRD.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue where the Sign Out button in PDBRD did not correctly log users out of the application.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Resolved an issue affecting the updating and deletion of users within the BODS administration interface.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Decommissioned an unused legacy WECA background task.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Updated the BODS database to improve capacity and prevent database sequence exhaustion.
+    {% endblocktrans %}
+  </li>
+  <li>
+    {% blocktrans %}
+      Upgraded supporting software components across services to improve resilience, maintainability.
+    {% endblocktrans %}
+  </li>
+</ul>
 <h4 class="govuk-heading-s govuk-!-margin-bottom-5">Release 1.65.1 (Nov 2026)</h4>
 <p class="govuk-body govuk-!-font-size-19">
   {% blocktrans %}

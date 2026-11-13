@@ -1,5 +1,3 @@
-# Base image is only rebuilt by deploy workflows when this file changes.
-# (rebuild 2026-11-06).
 FROM python:3.14-slim
 
 RUN apt-get update && apt-get install -y g++
