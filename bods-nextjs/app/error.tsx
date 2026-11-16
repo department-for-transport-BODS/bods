@@ -14,6 +14,8 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { wwwPath } from '@/config/client';
 
+const SERVER_ERROR_TITLE = 'Server Error';
+
 interface ErrorProps {
   error: Error & { digest?: string };
   reset?: () => void;
@@ -23,6 +25,11 @@ export default function Error({ error }: ErrorProps) {
   useEffect(() => {
     console.error('Application error:', error);
   }, [error]);
+
+  // Error boundaries can't export `metadata`; Django's 500.html title_tag is "Server Error".
+  useEffect(() => {
+    document.title = SERVER_ERROR_TITLE;
+  }, []);
 
   return (
     <div className="govuk-width-container">

@@ -5,31 +5,51 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ErrorSummary } from '@/components/shared';
+import { publishAppPath } from '@/config/client';
 import { api } from '@/lib/api-client';
+
+interface ReviewStatusResponse {
+  name?: string;
+  hasLiveRevision?: boolean;
+  status?: string;
+}
 
 function FaresDeletePageContent() {
   const params = useParams();
   const orgId = params.orgId as string;
   const datasetId = params.datasetId as string;
 
-  const reviewUrl = `/publish/org/${orgId}/dataset/fares/${datasetId}/review`;
+  const datasetUrl = publishAppPath(`/org/${orgId}/dataset/fares/${datasetId}`);
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [datasetName, setDatasetName] = useState('');
   const [hasLiveRevision, setHasLiveRevision] = useState(false);
+  const [liveRevisionStatus, setLiveRevisionStatus] = useState('');
 
   useEffect(() => {
+    const statusUrl = `/api/publish/fares/review-status/${orgId}/${datasetId}/`;
     api
-      .get<{ name?: string; hasLiveRevision?: boolean }>(
-        `/api/publish/fares/review-status/${orgId}/${datasetId}/`,
-      )
-      .then((data: { name?: string; hasLiveRevision?: boolean }) => {
+      .get<ReviewStatusResponse>(statusUrl)
+      .then(async (data) => {
         setDatasetName(data.name || '');
-        setHasLiveRevision(Boolean(data.hasLiveRevision));
+        const hasLive = Boolean(data.hasLiveRevision);
+        setHasLiveRevision(hasLive);
+        if (hasLive) {
+          // Django's cancel target depends on the live revision's status.
+          const live = await api.get<ReviewStatusResponse>(`${statusUrl}?revision=live`);
+          setLiveRevisionStatus(live.status || '');
+        }
       })
       .catch(() => {});
   }, [orgId, datasetId]);
+
+  // Mirrors fares/feed_delete.html (back link) and RevisionDeleteFaresView.get_cancel_url.
+  const backUrl = hasLiveRevision ? datasetUrl : `${datasetUrl}/review`;
+  let cancelUrl = `${datasetUrl}/review`;
+  if (hasLiveRevision) {
+    cancelUrl = liveRevisionStatus === 'expired' ? datasetUrl : `${datasetUrl}/update/review`;
+  }
 
   const heading = hasLiveRevision
     ? 'Would you like to cancel updating this data set'
@@ -60,7 +80,7 @@ function FaresDeletePageContent() {
   return (
     <div className="govuk-width-container">
       <div className="govuk-back-link-wrapper">
-        <Link className="govuk-back-link" href={reviewUrl}>
+        <Link className="govuk-back-link" href={backUrl}>
           Back
         </Link>
       </div>
@@ -76,7 +96,7 @@ function FaresDeletePageContent() {
               <button type="button" className="govuk-button" onClick={handleDelete} disabled={isDeleting}>
                 {isDeleting ? 'Deleting...' : 'Delete'}
               </button>
-              <Link role="button" className="govuk-button govuk-button--secondary" href={reviewUrl}>
+              <Link role="button" className="govuk-button govuk-button--secondary" href={cancelUrl}>
                 Cancel
               </Link>
             </div>

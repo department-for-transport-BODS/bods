@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { dataPath, wwwPath } from '@/config/client';
 import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
+import { TxcHelp } from '@/components/data/bulk-download/help-modals';
 import { DownloadHelpModal } from './DownloadHelpModal';
 
 /**
@@ -14,33 +15,6 @@ import { DownloadHelpModal } from './DownloadHelpModal';
 interface DownloadsContentProps {
   isGtfsServiceAlertsLive: boolean;
   ptiPdfUrl: string;
-}
-
-function TxcHelp({ ptiPdfUrl }: { ptiPdfUrl: string }) {
-  return (
-    <DownloadHelpModal heading="TransXChange">
-      <p className="govuk-body">
-        TransXChange is the UK nationwide standard for exchanging bus schedules and related data. It
-        is used for:
-      </p>
-      <ul className="govuk-list govuk-list--bullet">
-        <li>The electronic registration of bus routes</li>
-        <li>The Traffic Area Network</li>
-        <li>
-          The exchange of bus routes with other computer systems such as journey planners and
-          vehicle real-time tracking systems
-        </li>
-      </ul>
-      <p className="govuk-body">
-        TransXChange is part of a family of coherent transport related XML standards that follow
-        GovTalk guidelines. The latest transxchange profile used on BODS can be{' '}
-        <a className="govuk-link" href={ptiPdfUrl} target="_blank">
-          found here
-        </a>
-        .
-      </p>
-    </DownloadHelpModal>
-  );
 }
 
 function GtfsHelp() {

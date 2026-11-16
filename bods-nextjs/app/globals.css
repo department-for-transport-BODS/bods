@@ -227,25 +227,40 @@ body {
 .bods-dropdown {
   display: block;
   font-family: "GDS Transport", arial, sans-serif;
-  font-size: 17px;
+  /* govuk-font($size: 16) as in Django's .bods-dropdown */
+  font-size: 14px;
+  line-height: 1.14286;
   color: #ffffff;
   background: none;
   position: relative;
 }
 
-.bods-dropdown::after {
+@media (min-width: 40.0625em) {
+  .bods-dropdown {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+}
+
+/*
+ * Arrow mirrors Django's .bods-dropdown::after (govuk-shape-arrow, 10px base).
+ * It lives on the toggle button, not the <li>, so it is part of the click target
+ * and is centred on the text line.
+ */
+.bods-dropdown .bods-dropdown__toggle::after {
   content: "";
   display: inline-block;
   margin-left: 5px;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 8px solid #ffffff;
-  vertical-align: middle;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 5px 5px 0;
+  border-top-color: #ffffff;
 }
 
-.bods-dropdown.open::after {
-  border-top: 0;
-  border-bottom: 8px solid #ffffff;
+.bods-dropdown.open .bods-dropdown__toggle::after {
+  border-width: 0 5px 5px;
+  border-top-color: transparent;
+  border-bottom-color: #ffffff;
 }
 
 .bods-dropdown .bods-dropdown__toggle {
@@ -358,35 +373,36 @@ body {
 .app-data-browser__key-value-list {
   list-style: none;
   padding: 0;
-  margin: 12px 0 8px;
+  margin: 15px 0 0;
   font-family: "GDS Transport", arial, sans-serif;
   font-size: 19px;
   line-height: 25px;
 }
 
+/* Django `.key-value-list`: inline-blocks, so a wrapped key lines the value up with its last line. */
 .app-data-browser__key-value-item {
-  display: flex;
-  margin-bottom: 4px;
+  display: block;
+  margin: 0;
 }
 
 .app-data-browser__item-key {
+  display: inline-block;
   width: 35%;
-  flex-shrink: 0;
+  padding-bottom: 10px;
   font-weight: 700;
 }
 
 .app-data-browser__item-value {
-  flex: 1;
+  display: inline-block;
 }
 
+/* Django's `.search-list__heading` has no styles: a plain block whose inline span ignores its margins. */
 .app-data-browser__results-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+  margin: 0;
 }
 
 .search-pillbox {
+  box-sizing: content-box;
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
@@ -433,12 +449,12 @@ body {
 }
 
 .app-data-browser__sort-control {
-  margin-bottom: 16px;
+  margin-bottom: 30px;
   max-width: 240px;
 }
 
 .app-data-browser__result-item {
-  margin-bottom: 24px;
+  margin-bottom: 3rem;
 }
 
 .app-data-browser__result-divider {
