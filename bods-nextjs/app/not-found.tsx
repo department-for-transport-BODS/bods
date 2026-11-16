@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { wwwPath } from '@/config/client';
 
 export const metadata = {
-  title: 'Page not found - Bus Open Data Service',
+  title: 'Page not found',
 };
 
 export default function NotFound() {

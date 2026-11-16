@@ -3,7 +3,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AVLUpdateCancelContent } from '../../_components/AVLUpdateCancelContent';
 
 export const metadata: Metadata = {
-  title: 'Update data feed',
+  title: 'Update data feed: cancel',
 };
 
 export default function AVLUpdateCancelPage() {

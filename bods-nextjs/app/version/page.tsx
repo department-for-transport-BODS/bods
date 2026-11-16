@@ -6,6 +6,8 @@
 
 import { clientConfig } from '@/config/client';
 
+export const metadata = { title: 'Version' };
+
 export default function VersionPage() {
   const version = clientConfig.appVersion;
 

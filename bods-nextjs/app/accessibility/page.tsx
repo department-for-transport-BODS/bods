@@ -7,6 +7,8 @@
 import Link from 'next/link';
 import { HOSTS } from '@/config/client';
 
+export const metadata = { title: 'Accessibility statement' };
+
 export default function AccessibilityPage() {
   return (
     <div className="govuk-width-container">

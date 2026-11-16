@@ -48,7 +48,7 @@ export function FeedbackForm({ pageUrl }: FeedbackFormProps) {
         comment,
         page_url: pageUrl,
       });
-      router.push('/feedback/thank-you/');
+      router.push('/global-feedback/thank-you/');
     } catch (error) {
       if (error instanceof ApiError && error.hasFieldErrors) {
         setFieldErrors(error.firstFieldErrors());
@@ -64,50 +64,58 @@ export function FeedbackForm({ pageUrl }: FeedbackFormProps) {
 
   return (
     <>
-      <h1 className="govuk-heading-l">Give feedback on Bus Open Data Service</h1>
+      <h1 className="govuk-heading-xl">Give feedback on Bus Open Data Service</h1>
       <ErrorSummary errors={errors} />
 
       <form onSubmit={handleSubmit} noValidate>
-        <fieldset
-          className="govuk-fieldset"
-          aria-describedby={fieldErrors.satisfaction_rating ? 'satisfaction-rating-error' : undefined}
-        >
-          <legend className="govuk-label govuk-!-font-weight-bold">
-            How did you find Bus Open Data Service today?
-          </legend>
-          {fieldErrors.satisfaction_rating && (
-            <p className="govuk-error-message" id="satisfaction-rating-error">
-              <span className="govuk-visually-hidden">Error:</span>{' '}
-              {fieldErrors.satisfaction_rating}
-            </p>
-          )}
-          <div className="govuk-radios">
-            {RATINGS.map((option) => (
-              <div className="govuk-radios__item" key={option.value}>
-                <input
-                  className="govuk-radios__input"
-                  id={`satisfaction_rating_${option.value}`}
-                  name="satisfaction_rating"
-                  type="radio"
-                  value={option.value}
-                  checked={rating === option.value}
-                  onChange={(event) => setRating(event.target.value)}
-                  required={option.value === '1'}
-                />
-                <label
-                  className="govuk-label govuk-radios__label"
-                  htmlFor={`satisfaction_rating_${option.value}`}
-                >
-                  {option.label}
-                </label>
-              </div>
-            ))}
-          </div>
-        </fieldset>
+        <p className="govuk-label govuk-!-font-weight-bold">
+          How did you find Bus Open Data Service today?
+        </p>
+        <div className="govuk-form-group">
+          <fieldset
+            className="govuk-fieldset"
+            aria-describedby={fieldErrors.satisfaction_rating ? 'satisfaction-rating-error' : undefined}
+          >
+            <legend className="govuk-fieldset__legend govuk-fieldset__legend--xl">
+              Satisfaction Rating
+            </legend>
+            {fieldErrors.satisfaction_rating && (
+              <p className="govuk-error-message" id="satisfaction-rating-error">
+                <span className="govuk-visually-hidden">Error:</span>{' '}
+                {fieldErrors.satisfaction_rating}
+              </p>
+            )}
+            <div className="govuk-radios">
+              {RATINGS.map((option) => (
+                <div className="govuk-radios__item" key={option.value}>
+                  <input
+                    className="govuk-radios__input"
+                    id={`satisfaction_rating_${option.value}`}
+                    name="satisfaction_rating"
+                    type="radio"
+                    value={option.value}
+                    checked={rating === option.value}
+                    onChange={(event) => setRating(event.target.value)}
+                    required={option.value === '1'}
+                  />
+                  <label
+                    className="govuk-label govuk-radios__label"
+                    htmlFor={`satisfaction_rating_${option.value}`}
+                  >
+                    {option.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </fieldset>
+        </div>
 
-        <div className="govuk-form-group govuk-!-margin-top-6">
-          <label className="govuk-label govuk-!-font-weight-bold" htmlFor="comment">
-            How could we improve this service? (optional)
+        <p className="govuk-label govuk-!-font-weight-bold">
+          How could we improve this service? (optional)
+        </p>
+        <div className="govuk-form-group">
+          <label className="govuk-label" htmlFor="comment">
+            Comment
           </label>
           <div id="comment-hint" className="govuk-hint">
             Do not include any personal or financial information such as your National Insurance or credit card numbers.
@@ -131,8 +139,10 @@ export function FeedbackForm({ pageUrl }: FeedbackFormProps) {
             }
             onChange={(event) => setComment(event.target.value)}
           />
-          <div className="govuk-hint">You have {MAX_COMMENT_LENGTH - comment.length} characters remaining</div>
         </div>
+        <span className="govuk-hint">
+          You have {MAX_COMMENT_LENGTH - comment.length} characters remaining
+        </span>
 
         <input type="hidden" name="page_url" value={pageUrl} readOnly />
         <button className="govuk-button" type="submit" disabled={isSubmitting}>

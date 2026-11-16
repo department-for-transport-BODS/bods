@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Breadcrumbs } from '@/components/shared/Breadcrumbs';
 import { dataPath, publishAppPath, publishPath, wwwPath } from '@/config/client';
 
+export const metadata = { title: 'Guidance' };
+
 export default function GuidancePage() {
   return (
     <div className="govuk-width-container">

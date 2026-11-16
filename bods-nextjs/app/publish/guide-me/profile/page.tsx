@@ -7,6 +7,8 @@ import { GuideMeRedirect, type DestinationFor } from '../_components/GuideMeRedi
 const destinationFor: DestinationFor = (user) =>
   user.organisation_id ? `/account/manage/org-profile/${user.organisation_id}` : '/account';
 
+export const metadata = { title: 'Guide me' };
+
 export default function GuideMeProfileRedirectPage() {
   return <GuideMeRedirect destinationFor={destinationFor} />;
 }

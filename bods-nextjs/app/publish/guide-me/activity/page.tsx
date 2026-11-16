@@ -19,6 +19,8 @@ const destinationFor: DestinationFor = (user) => {
   return '/org';
 };
 
+export const metadata = { title: 'Guide me' };
+
 export default function GuideMeActivityRedirectPage() {
   return <GuideMeRedirect destinationFor={destinationFor} />;
 }

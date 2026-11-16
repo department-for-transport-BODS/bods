@@ -28,14 +28,23 @@ export default async function FeedbackPage({ searchParams }: FeedbackPageProps) 
               Visit the <Link className="govuk-link" href={wwwPath('/contact')}>Contact us</Link> page.
             </p>
             <hr className="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
-            <a
-              className="govuk-link"
-              href="https://twitter.com/busopendata?ref_src=twsrc%5Etfw"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Bus open data service Twitter
-            </a>
+            <div>
+              <a
+                className="govuk-link"
+                href="https://twitter.com/busopendata?ref_src=twsrc%5Etfw"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <img
+                  src="/assets/images/feedback/twitter_icon.png"
+                  alt="twitter icon"
+                  height="auto"
+                  width="auto"
+                  style={{ width: '30px', height: '30px' }}
+                />
+                Bus open data service Twitter
+              </a>
+            </div>
           </aside>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { dataPath, wwwPath } from '@/config/client';
 import { hostBreadcrumbs } from '@/lib/host-breadcrumbs';
 
 export const metadata = {
-  title: 'Guide me - Bus Open Data Service',
+  title: 'Guide me',
   description:
     'Step by step guidance for finding, downloading and consuming data published on the Bus Open Data Service.',
 };

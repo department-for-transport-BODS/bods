@@ -9,6 +9,8 @@
 import { connection } from 'next/server';
 import { serverConfig } from '@/config/server';
 
+export const metadata = { title: 'Contact us' };
+
 export default async function ContactPage() {
   await connection();
 

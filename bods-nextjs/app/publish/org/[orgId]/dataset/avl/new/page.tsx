@@ -5,7 +5,7 @@ import { serverConfig } from '@/config/server';
 import { AVLCreatePageContent } from '../_components/AVLCreatePageContent';
 
 export const metadata: Metadata = {
-  title: 'Publish new data feed',
+  title: 'Publish new data feed: description',
 };
 
 export default async function AVLCreatePage() {
