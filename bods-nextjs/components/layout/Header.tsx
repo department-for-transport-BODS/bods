@@ -94,8 +94,9 @@ export function Header() {
         setDropdownOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    // Django's my-account-menu.js also listens for document clicks.
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
   const serviceName = serviceHomeName(area) + " next.js";
@@ -136,11 +137,13 @@ export function Header() {
                   <li
                     ref={dropdownRef}
                     className={`govuk-header__navigation-item dropdown bods-dropdown${dropdownOpen ? ' open' : ''}`}
+                    // As in Django, a click anywhere in the "My account" area toggles the menu;
+                    // the button inside keeps it keyboard-operable.
+                    onClick={() => setDropdownOpen((prev) => !prev)}
                   >
                     <button
                       type="button"
                       className="govuk-header__link bods-dropdown__toggle"
-                      onClick={() => setDropdownOpen((prev) => !prev)}
                       aria-expanded={dropdownOpen}
                       aria-haspopup="true"
                     >

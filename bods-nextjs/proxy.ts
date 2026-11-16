@@ -37,6 +37,7 @@ const wwwOnlyRoutePrefixes = [
   '/changelog',
   '/contact',
   '/cookie',
+  '/global-feedback',
   '/privacy-policy',
   '/version',
 ];
