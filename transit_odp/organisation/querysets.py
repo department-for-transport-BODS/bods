@@ -878,16 +878,12 @@ class DatasetQuerySet(models.QuerySet):
                         Value(prefix_timetable_url),
                         F("id"),
                         Value(suffix_timetable_url),
-                        output_field=CharField(),
                     ),
                 ),
                 When(
                     Q(dataset_type=FaresType),
                     then=Concat(
-                        Value(prefix_fares_url),
-                        F("id"),
-                        Value(suffix_fares_url),
-                        output_field=CharField(),
+                        Value(prefix_fares_url), F("id"), Value(suffix_fares_url)
                     ),
                 ),
                 default=None,
@@ -921,7 +917,6 @@ class DatasetQuerySet(models.QuerySet):
                         Value(prefix_timetable_url),
                         F("id"),
                         Value(suffix_timetable_url),
-                        output_field=CharField(),
                     ),
                 ),
                 When(
@@ -930,16 +925,12 @@ class DatasetQuerySet(models.QuerySet):
                         Value(prefix_avl_url),
                         F("id"),
                         Value(suffix_avl_url),
-                        output_field=CharField(),
                     ),
                 ),
                 When(
                     Q(dataset_type=FaresType),
                     then=Concat(
-                        Value(prefix_fares_url),
-                        F("id"),
-                        Value(suffix_fares_url),
-                        output_field=CharField(),
+                        Value(prefix_fares_url), F("id"), Value(suffix_fares_url)
                     ),
                 ),
                 default=None,
