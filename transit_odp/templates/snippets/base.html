@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load cookie_consent_tags %}
 {% load parse_dictionary %}
+{% load django_axe %}
 <!DOCTYPE html>
 <html lang="en" class="govuk-template">
   <head>
@@ -67,6 +68,7 @@
           </script>
         {% endif %}
       {% endblock %}
+      {% django_axe_script %}
     </body>
   {% endblock %}
 </html>
