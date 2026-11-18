@@ -188,7 +188,6 @@ class DatasetRevisionAdmin(admin.ModelAdmin):
     def has_add_permission(self, request, instance=None):
         return False
 
-    @admin.action(description="Publish selected datasets")
     def publish_revisions(self, request, queryset):
         if queryset.exclude(status=SUCCESS).exists():
             self.message_user(
@@ -198,6 +197,8 @@ class DatasetRevisionAdmin(admin.ModelAdmin):
 
         for revision in queryset:
             revision.publish(user=request.user)
+
+    publish_revisions.short_description = "Publish selected datasets"
 
 
 class StuckRevision(DatasetRevision):
@@ -234,13 +235,14 @@ class StuckRevisionAdmin(admin.ModelAdmin):
             .order_by("created")
         )
 
-    @admin.action(description="Set revision to error state.")
     def action_set_to_error(self, request, revisions):
         for revision in revisions:
             task = revision.etl_results.order_by("id").last()
             task.to_error("dataset_validate", DatasetETLTaskResult.SYSTEM_ERROR)
             task.additional_info = "Put into error state by Admin."
             task.save()
+
+    action_set_to_error.short_description = "Set revision to error state."
 
     def latest_task_progress(self, instance):
         return instance.latest_task_progress
@@ -290,13 +292,14 @@ class FaresStuckRevisionAdmin(admin.ModelAdmin):
     def latest_task_status(self, instance):
         return instance.latest_task_status
 
-    @admin.action(description="Set revision to error state")
     def action_set_to_error(self, request, revisions):
         for revision in revisions:
             task = revision.etl_results.order_by("id").last()
             task.to_error("dataset_validate", DatasetETLTaskResult.SYSTEM_ERROR)
             task.additional_info = "Put into error state by Admin."
             task.save()
+
+    action_set_to_error.short_description = "Set revision to error state"
 
     def has_delete_permission(self, request, instance=None):
         return False
