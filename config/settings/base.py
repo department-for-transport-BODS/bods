@@ -230,6 +230,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
+    # Health checks must bypass middleware that may access sessions or the database.
+    "transit_odp.common.middleware.HealthcheckMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
