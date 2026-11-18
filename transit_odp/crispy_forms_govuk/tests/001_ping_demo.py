@@ -9,7 +9,7 @@ try:
     from django.urls import reverse
 except ImportError:
     # 'reverse' path for Django<1.10
-    from django.urls import reverse
+    from django.core.urlresolvers import reverse
 
 
 @pytest.mark.parametrize(
