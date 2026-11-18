@@ -243,6 +243,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
+    # Health checks must bypass middleware that may access sessions or the database.
+    "transit_odp.common.middleware.HealthcheckMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -614,15 +616,6 @@ OTC_API_KEY = env("OTC_API_KEY", default="")
 OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA = env.int(
     "OTC_DAILY_JOB_EFFECTIVE_DATE_TIMEDELTA", default=3
 )
-# WECA API
-# -------------------------------------------------------------------------------
-WECA_API_URL = env(
-    "WECA_API_URL", default="https://registrations.travelwest.info/agileBase/Public.ab"
-)
-WECA_AUTH_TOKEN = env("WECA_AUTH_TOKEN", default="WECA_AUTH_TOKEN")
-WECA_PARAM_C = env("WECA_PARAM_C", default="WECA_PARAM_C")
-WECA_PARAM_T = env("WECA_PARAM_T", default="WECA_PARAM_T")
-WECA_PARAM_R = env("WECA_PARAM_R", default="WECA_PARAM_R")
 
 # EP API
 # -------------------------------------------------------------------------------
