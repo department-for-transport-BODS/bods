@@ -126,10 +126,11 @@ describe('TimetableFeedDetailContent', () => {
     expect(within(row('Owner')).getByText('Test Org')).toBeInTheDocument();
     expect(within(row('TransXChange version')).getByText('2.4')).toBeInTheDocument();
     expect(within(row('Last updated')).getByText('10 Apr 2026 14:20 by publisher')).toBeInTheDocument();
-    expect(within(row('Last updated')).getByRole('link', { name: 'View change log' })).toHaveAttribute(
-      'href',
-      expect.stringContaining('/org/1/dataset/timetable/9/changelog'),
-    );
+    const changelogHref = within(row('Last updated'))
+      .getByRole('link', { name: 'View change log' })
+      .getAttribute('href');
+    expect(changelogHref).toMatch(/\/org\/1\/dataset\/timetable\/9\/changelog\/$/);
+    expect(changelogHref).not.toMatch(/\/publish\/org/);
   });
 
   it('links description edits and the publisher / download links to the Django routes', async () => {
@@ -354,6 +355,15 @@ describe('TimetableFeedDetailContent', () => {
       expect(screen.queryByRole('heading', { name: 'Review Service Numbers' })).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Update data set' })).not.toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'Contact support desk' })).toBeInTheDocument();
+    });
+
+    it('links to the change log with a trailing slash like Django', async () => {
+      renderPage(errored);
+      await screen.findByRole('heading', { name: 'Data set not available' });
+
+      const href = screen.getByRole('link', { name: 'View change log' }).getAttribute('href');
+      expect(href).toMatch(/\/org\/1\/dataset\/timetable\/9\/changelog\/$/);
+      expect(href).not.toMatch(/\/publish\/org/);
     });
   });
 

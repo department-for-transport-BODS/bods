@@ -937,6 +937,37 @@ a.review-stat__link:visited {
   font-size: 18px;
 }
 
+/*
+ * List of error messages under a table row (Django core/_lists.scss .govuk-list--error);
+ * govuk-frontend has no such modifier, so without this the list keeps its default margins.
+ */
+.govuk-list--error {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.govuk-list--error li {
+  padding-left: 15px;
+  border-left: 5px solid #d4351c;
+}
+
+/*
+ * Changelog tables (feed_change_log_table.html): bold headers, 18px cells, and the error row
+ * sits flush under its revision row so the pair reads as one row (Django _table.scss).
+ */
+.custom_govuk_table--changelog .govuk-table__header {
+  font-weight: 700;
+}
+
+.custom_govuk_table--changelog .govuk-table__cell {
+  font-size: 18px;
+}
+
+.custom_govuk_table--changelog .govuk-table__row + .govuk-table__row--error .govuk-table__cell {
+  border-top: 0;
+  padding-top: 0;
+}
+
 /* Ported from transit_odp/frontend/assets/sass/components/data_quality/_data_quality.scss */
 .total_vehicles {
   width: 23%;

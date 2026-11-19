@@ -94,6 +94,7 @@ function FaresDatasetDetailContent() {
   const updateDatasetUrl = `${datasetUrl}/update`;
   const deactivateDatasetUrl = `${datasetUrl}/deactivate`;
   const editDescriptionUrl = `${datasetUrl}/dataset-edit/`;
+  const changelogUrl = `${datasetUrl}/changelog/`;
 
   const [data, setData] = useState<FaresDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -245,8 +246,17 @@ function FaresDatasetDetailContent() {
                     <tr className="govuk-table__row">
                       <th scope="row" className="govuk-table__header">Last updated</th>
                       <td className="govuk-table__cell">
-                        {formatDateTime(data.lastModified)}
-                        {data.lastModifiedUser ? ` by ${data.lastModifiedUser}` : ''}
+                        <div className="flex-between">
+                          <span>
+                            {formatDateTime(data.lastModified)}
+                            {data.lastModifiedUser ? ` by ${data.lastModifiedUser}` : ''}
+                          </span>
+                          <span className="right-justify">
+                            <a className="govuk-link" href={changelogUrl}>
+                              View change log
+                            </a>
+                          </span>
+                        </div>
                       </td>
                     </tr>
                     <tr className="govuk-table__row">
