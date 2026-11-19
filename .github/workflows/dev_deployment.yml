@@ -175,7 +175,7 @@ jobs:
         service: celeryflower
         container: celeryflower
         task_definition_family: bodds_celeryflower_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -185,7 +185,7 @@ jobs:
         service: celeryworker
         container: celeryworker
         task_definition_family: bodds_celeryworker_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -195,7 +195,7 @@ jobs:
         service: celerybeat
         container: celerybeat
         task_definition_family: bodds_celerybeat_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -205,7 +205,7 @@ jobs:
         service: frontend
         container: frontend
         task_definition_family: bodds_frontend_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -215,7 +215,7 @@ jobs:
         service: api_frontend
         container: frontend
         task_definition_family: bodds_api_frontend_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -225,7 +225,7 @@ jobs:
         service: api_frontend_internal
         container: frontend
         task_definition_family: bodds_api_frontend_internal_${{ env.ENVIRONMENT_NAME }}
-        image_id: ${{ steps.check-image.outputs.image }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.django_tag }}
         cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
         wait_for_service_stability: false
 
@@ -269,3 +269,49 @@ jobs:
         subnets: ${{ steps.params.outputs.SUBNETS }}
         security_groups: ${{ steps.params.outputs.SECURITY_GROUPS }}
         environment: ${{ env.ENVIRONMENT_NAME }}
+
+  # Runs concurrently with deploy_django - both only depend on build_and_push.
+  deploy_nextjs:
+    name: 'deploy_nextjs'
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+
+    steps:
+    # Configure AWS credentials against the BODS Shared-Services account
+    - name: Configure AWS credentials in Shared-Services
+      uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # 6.2.0
+      with:
+        aws-region: ${{ env.AWS_REGION }}
+        role-to-assume: ${{ env.BODS_DEFAULT_GITHUB_ACTIONS_ASSUME_ROLE_ARN }}
+        role-session-name: ${{ env.ENVIRONMENT_NAME }}-deployment
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+
+    # Now assume a role in the Environment Specific account
+    - name: Configure AWS Credentials in the environment specific account
+      uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # 6.2.0
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        role-to-assume: ${{ vars.ASSUME_ROLE_ARN }}
+        role-session-name: testAWSCLISession
+        role-duration-seconds: 3600
+        role-skip-session-tagging: true
+        role-chaining: true
+
+    - name: Update frontend_v2 task
+      uses: department-for-transport-BODS/.github/actions/update-ecs-task-definition@v1
+      with:
+        service: frontend_v2
+        container: frontend_v2
+        task_definition_family: bodds_frontend_v2_${{ env.ENVIRONMENT_NAME }}
+        image_id: ${{ needs.build_and_push.outputs.registry }}/${{ env.ECR_NEXTJS_REPOSITORY_NAME }}:${{ needs.build_and_push.outputs.nextjs_tag }}
+        cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
+        wait_for_service_stability: false
+
+    - name: Wait for frontend_v2 service stability
+      uses: department-for-transport-BODS/.github/actions/wait-for-ecs-service-stability@v1
+      with:
+        cluster_name: bodds-${{ env.ENVIRONMENT_NAME }}
+        service_names: frontend_v2
